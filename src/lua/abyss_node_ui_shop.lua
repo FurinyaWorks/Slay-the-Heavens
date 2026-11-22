@@ -92,9 +92,6 @@ function M.install(ctx)
         else ctx.paintShop() end
         return true
     end
-    require('abyss_controller').bind(ctx.options.controller,hit,'node',ctx.openShop,function()
-        return ctx.self.visible and inShop() and not ctx.self.shopOpen and not ctx.self.shopBusy
-    end,1)
     function ctx.closeShop()
         if ctx.self.shopBusy then return false end
         ctx.shopSelection:clear();ctx.resetButtons()

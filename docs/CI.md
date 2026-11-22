@@ -65,7 +65,7 @@ Licenses 与 Quality、Quick feedback 一样使用 GitHub 原生同引用 concur
 - 迁移前的管理员握手：GitHub 对只读 CI 隐藏 Ruleset 的 `bypass_actors`，不能将缺失字段当作空数组。原管理员协调器必须亲见空数组，将完整规则、ID 和规范化 `updated_at` 的 SHA-256 绑定到精确 HEAD 审查状态的 `[rules:<摘要>]`。队列发布器要求该状态作者与原生入队者的不可变用户 ID 一致，并通过现有 Metadata 只读 API 重核作者仍为仓库 admin；公开规则及版本须与授权摘要完全匹配，下载后再读。该证明依赖现有可信管理员协调器，不是加密签名，也不表示 CI 亲见隐藏字段；规则变更或身份降权须重新授权。该历史见证在本轮仅作只读兼容；实际操作者权限与新云端门禁按下文合同，不重复要求连接器取得 Admin 或状态写权限。[API 字段可见性](https://docs.github.com/en/rest/repos/rules#get-a-repository-ruleset)与[用户权限读取](https://docs.github.com/en/rest/collaborators/collaborators#get-repository-permissions-for-a-user)。
 - **历史上线顺序**：实现经独审与 Full 合入后，先启用 Require merge queue，再将 Required 的 `full-quality` 切换为同 Actions 来源的 `pr-quality`；读回保留 Strict、Squash、ALLGREEN、空 bypass 和原四项检查。真实样本仍须逐项保存成员、base/head、组合回归、暂停/失败剔除与合后 push 证据；不能从配置已开启推断全部验收完成。
 - 先维持原 Strict 门禁和 `npm run merge:auto`，避免切换时放宽旧准入；要实现真正免更新分支的吞吐收益，还须**在演练后**适配旧协调器对固定 BASE / Strict 的假设，再决定是否关闭 Strict。禁止先关闭 Strict 或临时删除 `independent-review`/`full-quality` 来消除队列等待。
-- **回退**：若需停用 Require merge queue，必须先恢复 Actions 来源的 `full-quality` 为 Required 并读回，保留原四项检查、independent-review 与 Strict；不能留下只有 PR Fast 的保护。原入口会拒绝缺少 Full 队列的 Fast 准入。组织迁移后的唯一仓库是 `FurinyaWorks/Slay-the-Abyss`。
+- **回退**：若需停用 Require merge queue，必须先恢复 Actions 来源的 `full-quality` 为 Required 并读回，保留原四项检查、independent-review 与 Strict；不能留下只有 PR Fast 的保护。原入口会拒绝缺少 Full 队列的 Fast 准入。当前主仓库为 `FurinyaWorks/Slay-the-Heavens`，固定 ID 为 `1429751262`。
 
 官方依据：[GitHub Merge Queue 配置](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue)；[merge_group 事件](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#merge_group)。
 

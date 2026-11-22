@@ -37,7 +37,7 @@ test('map uses the approved stage, external backdrop, viewport and shared theme 
   assert.deepEqual(changed.size, [60, 60]);
 });
 
-test('static controls are native, readable, unique and fit phone and console safe areas', () => {
+test('static controls are native, readable, unique and fit phone and desktop safe areas', () => {
   function visit(control, parentX = 0, parentY = 0, hidden = false) {
     assert(['container', 'image', 'text', 'cursorArea'].includes(control.kind));
     const [x, y] = control.position ?? [0, 0], [w, h] = control.size;
@@ -59,13 +59,10 @@ test('static controls are native, readable, unique and fit phone and console saf
     for (const child of children) visit(child, gx, gy, hidden);
   }
   for (const control of layout.controls) visit(control);
-  const buttons = ['previous', 'next'].map(name => index.get(name));
-  for (let i = 0; i < buttons.length; i++) for (let j = i + 1; j < buttons.length; j++) {
-    assert(Math.abs(buttons[i].position[1] - buttons[j].position[1]) >= (buttons[i].size[1] + buttons[j].size[1]) / 2);
-  }
+  assert.equal(index.get('dragArea').kind, 'cursorArea');
 });
 
-test('node and edge pools match controller contract, with type meanings and without the retired state legend', () => {
+test('node and edge pools retain route geometry and pointer targets, with type meanings and without the retired state legend', () => {
   for (let i = 1; i <= geometry.maxNodes; i++) {
     const node = index.get(`node${i}`);
     assert.equal(node.visible, false);
@@ -73,7 +70,7 @@ test('node and edge pools match controller contract, with type meanings and with
       ['icon'], 'no extra marker or per-node disc');
     const hit = node.children.find(child => child.name === 'hit');
     assert.deepEqual(hit.size, node.size);
-    assert.equal(hit.focusable, true);
+    assert.equal(hit.focusable, undefined);
     for (const name of ['icon', 'ring', 'hit']) {
       assert(node.children.some(child => child.name === name), name);
     }
@@ -81,7 +78,7 @@ test('node and edge pools match controller contract, with type meanings and with
   for (let i = 1; i <= geometry.maxEdges; i++) assert.equal(index.get(`edge${i}`).visible, false);
   assert(![...index.keys()].some(name => name.startsWith('legend')));
   assert(index.get('typeLegend'), 'node TYPE legend remains distinct from retired STATE legend');
-  for (const name of ['previous', 'next']) assert.equal(index.get(name).visible, false);
+  for (const name of ['previous', 'next']) assert.equal(index.has(name), false);
   assert.equal(index.has('focus'), false, 'recenter is an internal entry behaviour, not a visible button');
   assert.equal(index.get('notice').size[1], 40);
   assert.deepEqual(index.get('node1').children.find(c => c.name === 'ring').children.map(c => c.image), [theme.image.ring, theme.image.ring]);
@@ -100,7 +97,7 @@ test('custom output directory receives the standalone controls and both Lua map 
   }
 });
 
-test('actual Lua controller validates navigation, scroll, locked input, path and multi-device geometry', () => {
+test('actual Lua map validates pointer navigation, scrolling, locked input and multi-device geometry', () => {
   buildUiTheme();
   buildLuaData();
   buildMapLayout();

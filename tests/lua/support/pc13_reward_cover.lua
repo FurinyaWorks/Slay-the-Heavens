@@ -79,7 +79,7 @@ host:update(F.Theme.motion.slow)
 assert(title.localScaleX==1 and title.fontColor.a==255 and shade.imageColor.a==alpha)
 battle:GetChild('cardReward').click()
 assert(host.battleUI.rewardScreen=='cards' and not cover.visible)
-assert(host.battleUI:controllerBack() and not cover.visible)
+assert(host.battleUI:cancelAim() and not cover.visible)
 assert(list.visible and not battle:GetChild('rewardStage').visible)
 assert(title.localScaleX==1 and shade.imageColor.a==alpha)
 

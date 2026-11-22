@@ -1,6 +1,6 @@
 -- Read state, issue Run commands. No damage/energy/outcome rules live in this view.
 local Theme = require("abyss_theme")
-local Controller = require("abyss_controller")
+local Pointer = require('abyss_pointer_input')
 local Run = require("abyss_run")
 local M = {}
 local L = Theme.layout
@@ -126,12 +126,8 @@ function M.install(owner, ownership, host, dependencies)
           for _,helpOnly in ipairs({false,true})do
             local slot, control, input = i, dependencies.child((helpOnly and 'potionHelp' or 'potion') .. i), {}
             ownership.potionInputs[#ownership.potionInputs+1] = input
-            Controller.bind(host.controller,control,"battle",function()
-                if helpOnly then return owner:openHelp(owner:potionHelpSpec(slot),control,false) end
-                owner.suppressClick=false;return owner:openPotionMenu(slot)
-            end,dependencies.controllerReady,30+slot,"potions")
             control:AddCursorEventListener(host.clickEvent, function(event)
-                if Controller.pointerBlocked(host.controller)then return false end
+                if Pointer.blocked(host.platform)then return false end
                 if input.consumed and input.consumed.touch == (event and event.touchId) then input.consumed=nil return end
                 if dependencies.swallowed(event) then return end
                 if ownership.potionPointerObserved then

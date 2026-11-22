@@ -245,11 +245,35 @@ const relicDetailFiles=Object.freeze({
  'tests/helpers/relic-detail-source.mjs':'2fd994110473464aa1fad34f720423ddaa4e4ac68b3ca8d2a4020cd4f5eaa4a0',
  'tests/fixtures/relic-detail-source.json.gz':'981b97459ad1d75b79d03e197534dbab883d1f79055c7e2776d9ec32f09a9327',
 });
-const actionButtonFiles=Object.freeze({
+const mapRoomEntryFiles=Object.freeze({
  ...relicDetailFiles,
- 'tests/helpers/develop-release-backflow-source.mjs':'87df494b403bff6fd2ba1cc38d39696692d86a0a7c0210fbca7930cf3c7b5815',
- 'tests/helpers/action-buttons-source.mjs':'d24cc24959b1699ce549fb7b3d0a78af0aa2385d8b95a5905a99b62e83e1f603',
- 'tests/fixtures/action-buttons-source.json.gz':'1e9fb9a9d7ff0ead307c6a4a992da20190462befd2e566191992ced1485a2f3a',
+ "tests/helpers/combined-epoch/source-epoch-runtime.mjs":'1622c962ace1197fb07fc926676ccf99a7381d4138788921d482f58ed6b1d81e',
+ 'tests/helpers/develop-release-backflow-source.mjs':'a150c2b6677e6e7befc35c440099418b5a1f3e87e37a7467042064e1a10df519',
+ 'tests/fixtures/develop-map-room-entry-source.json.gz':'bff89df36b2fbbf1bec727dae075c632dba48d50c6c8c75b8e3f271d7600c160',
+});
+const deckPagesFiles=Object.freeze({
+ ...mapRoomEntryFiles,
+ 'tests/helpers/develop-release-backflow-source.mjs':'6907c5660f7585d9a58b122ff605bc76f69267af0ca4580cfeadbb133a02e50b',
+ 'tests/fixtures/develop-deck-pages-source.json.gz':'d3a6b845870da64358c3ca36307062c02cc39d2e070e21eb875f9e2e42d02036',
+});
+const inputRetirementFiles=Object.freeze({
+ ...deckPagesFiles,
+ 'tests/helpers/develop-release-backflow-source.mjs':'c98ed483a6f206491e3647109f4d2f78511faada0c124df2b8ec8399a682e6e2',
+ 'tests/helpers/input-retirement-source.mjs':'d1d3222246ac29175ceea5a119bb99598e7265efb5863e9918f4e90713578924',
+ 'tests/helpers/character-preparation-source.mjs':'c33aaa686a55d39650ee65920db03df9023dd1551680f4cae8436f6403f97833',
+ 'tests/helpers/rebased-release-source.mjs':'faa43fceaf4e6e51c71e950213eefe15432428245f1a1df412f22e99c6c614cd',
+ 'tests/fixtures/develop-input-retirement-source.json.gz':'ed86f17b8f643d4392828e582582859d7b86d0a143de94b1fac4cfab9a5bf912',
+ 'tests/fixtures/develop-combat-pile-opening-source.json.gz':'a9e96c6caa44e21e45493a63385bf315ba9eaaf9a30257533bc46ccf9e51f9e6',
+ 'tests/helpers/ending-terminal-source.mjs':'d97a3b655ac591e8b2a95dd4e8e856ce3b472ec5d5f6c34337d63e4899d4f6a6',
+ 'tests/helpers/character-preparation-source.json.gz':'a3d61ed1e47036e5288cc4bc673388065ee0ace71497cba74da5b669a0a16790',
+ 'tests/fixtures/architecture-admission-before.json.gz':'93c84b252594eb1362c2bdb5a46cf5c82b7c05129df6d0695dd9e7fd79f2ca42',
+ 'tests/helpers/sts-feedback-ci.json.gz':'c91fadf0cda8b9b3d8fbe562854aa6c59ae007c13f1b978c6c905448eaf06f59',
+});
+const actionButtonFiles=Object.freeze({
+ ...inputRetirementFiles,
+ 'tests/helpers/develop-release-backflow-source.mjs':'ef51cd698c391f8b14b66bd4968d6d81717646578a75e908d00b9ec7906362a3',
+ 'tests/helpers/action-buttons-source.mjs':'fdb6c73f52cf92fededa3d48fded11f05e21356ec66864a43c54bdf51781d4cd',
+ 'tests/fixtures/action-buttons-source.json.gz':'86634a756c4085906261d4d318118bb1f7692a642479651526c1ace0fefe4487',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){

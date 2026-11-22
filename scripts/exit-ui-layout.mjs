@@ -3,7 +3,7 @@ import { nativeControls, nativeTheme } from './native-ui-theme.mjs';
 export function exitControls(theme = nativeTheme) {
   const { plate, text } = nativeControls(theme);
   const { color: c, font: f, space: s } = theme, l = theme.layout.exitMenu;
-  // Native presets keep all four states visible on mouse, touch and controller.
+  // Native presets keep all four states visible on mouse and touch.
   const button = (name, frame, label, primary = false) => {
     const size = frame.slice(2);
     const variants = {
@@ -12,7 +12,7 @@ export function exitControls(theme = nativeTheme) {
       pressed: [c.buttonPressedFill, c.buttonPressedText, c.goldBright], disabled: [c.panelSunken, c.textMuted, c.line],
     };
     return { name, kind: 'container', position: frame.slice(0, 2), size, children: [
-      { name: 'hit', kind: 'presetButton', size: [...size], focusable: true,
+      { name: 'hit', kind: 'presetButton', size: [...size],
         states: Object.fromEntries(Object.keys(variants).map(state => [state, state])),
         children: Object.entries(variants).map(([state, [fill, ink, border]]) => ({
           name: state, kind: 'container', size: [...size],

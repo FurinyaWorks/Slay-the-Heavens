@@ -3,6 +3,10 @@
   "baseCommit": "4c75a31fafcd27c204b957cd7dbc75ac6d9f5ab0",
   "hashRule": "SHA256 raw binary bytes; Lua/JSON/SVG CRLF normalized to LF. Categories record provenance, not clearance. Update manually after rights review.",
   "categories": {
+    "deck-browser-host-evidence": {
+      "status": "Project-generated offline geometry and text renders using native control IDs and system font fallbacks. No atlas textures, font files or official game captures are included.",
+      "evidence": "docs/evidence/deck-pages-20261122/README.md and its raw Host tree and raster diagnostics."
+    },
     "opening-statue-simulator-evidence": {
       "status": "Project rendering of the owner-supplied opening statue design using native shape IDs. Simulator comparison evidence. Game and platform rights remain with their respective owners.",
       "evidence": "scripts/sts-neow-guide-layout.mjs and docs/evidence/neow-geo-statue-preview.png; BeyondSimulator 0.5.2 rendering of the native Lua opening UI fixture."
@@ -241,6 +245,30 @@
       "category": "v2-native-menu-layout-evidence",
       "sha256": "cafccfd7aa0c47a8d4898626e3be9eb981d5052597f19abd530f8d62f7a70ce7",
       "evidence": "TASK-112 review comparison generated from the project's before and after layout trees, runtime-map.png and rasterized system Noto Sans CJK text."
+    },
+    "docs/evidence/deck-pages-20261122/visual/develop-first-open.png": {
+      "sha256": "aaa9b562db06d7e2c6a80e87a98e8cdade33770c4dbf7182ec9e4074fd508b5b",
+      "category": "deck-browser-host-evidence"
+    },
+    "docs/evidence/deck-pages-20261122/visual/formal-detail.png": {
+      "sha256": "9f34bc4feba951ab1028d6caa475a180a893b10dda3b00870f706a29b589687f",
+      "category": "deck-browser-host-evidence"
+    },
+    "docs/evidence/deck-pages-20261122/visual/formal-empty-filter.png": {
+      "sha256": "b1a1601ea91b6ba33dba9429c4ad8d6e5631aab1558237a9a11ebaa43c97eafb",
+      "category": "deck-browser-host-evidence"
+    },
+    "docs/evidence/deck-pages-20261122/visual/formal-feedback.png": {
+      "sha256": "dcb8a5c416aef72d702c3583b6010f2afefc153c090c99171f7067beab4999d7",
+      "category": "deck-browser-host-evidence"
+    },
+    "docs/evidence/deck-pages-20261122/visual/formal-page1.png": {
+      "sha256": "0ee11baea5a7f33b7fb955af55236af499571409a80629b9b846b980fe7588e3",
+      "category": "deck-browser-host-evidence"
+    },
+    "docs/evidence/deck-pages-20261122/visual/formal-page2.png": {
+      "sha256": "9a7fe4b3ff1d734752afbe9038f2b6bf8e766e8d2a8de571191fcd8563f3429e",
+      "category": "deck-browser-host-evidence"
     },
     "docs/evidence/neow-geo-statue-preview.png": {
       "sha256": "18cf82689b2a3185d51aaa90979acd0fc40e7150fd744bde5716db95d33aa92d",

@@ -17,10 +17,7 @@ local function shown(c)
  while c do if c.visible==false then return false end;c=c.parent end;return true
 end
 local function eq(a,b,message)assert(a==b,(message or '')..': '..tostring(a)..' ~= '..tostring(b))end
-local focus,usingController,settled=nil,false,0
-local api={events={Confirm='confirm',Cancel='cancel',Focus='focus'},directions={Left='left',Right='right'},
- modes={Specified='specified',NearestControl='nearest'},isController=function()return usingController end,
- getFocus=function()return focus end,setFocus=function(c)assert(c);focus=c end}
+local settled=0
 local cursor={CursorDown='down',CursorDrag='drag',CursorUp='up',CursorEndDrag='endDrag',CursorEnter='enter',CursorExit='exit'}
 local root=F.Viewport.apply(F.control({children=F.Layout}),1280,720)
 local face=get(root,'battlePanel/card1')
@@ -31,7 +28,7 @@ local pool=get(face,'artSamples')
 Native.decorate(pool)
 local first,tail=get(pool,'group000/shape0000'),get(pool,'group000/shape0001')
 local host=F.GameUI.new(root,F.Data,F.Presentation,'click',{seed=42,prologue=false,campaign=true,
- cursorEvents=cursor,controllerApi=api,imageSource='static',imageTypes={basic=17,stretch=23},
+ cursorEvents=cursor,imageSource='static',imageTypes={basic=17,stretch=23},
  color=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end,settle=function()settled=settled+1;return true end})
 root.ui=host;assert(testStart(host))
 local run=host.run
@@ -104,17 +101,17 @@ assert(confirm.visible and not confirm.activeInHierarchy)
 host.nodeUI:update(0);assert(not stale());F.setEngineActive(nodePanel,true)
 confirm.listeners.up({touchId=21});confirm.listeners.click({touchId=21})
 eq(run.phase,'ending_proceed');assert(not stale(),'inactive owner cannot revive')
-host.nodeUI:render();host:syncController();host:update(0)
+host.nodeUI:render();host:update(0)
 local replaced=host.nodeUI.actions.confirm.handler
 confirm.listeners.down({touchId=22})
 run.endingProceed=S.C.copy(owner);host.nodeUI:update(0);run.endingProceed=owner
 confirm.listeners.up({touchId=22});confirm.listeners.click({touchId=22})
 assert(not replaced(),'replaced/restored Proceed owner must not revive stale callback')
 eq(run.phase,'ending_proceed')
-host.nodeUI:render();host:syncController();host:update(0)
+host.nodeUI:render();host:update(0)
 local successful=host.nodeUI.actions.confirm.handler
-usingController=true;host:syncController();assert(host.controller:focus(confirm))
-assert(confirm.canControllerFocus);confirm.navigationListeners.confirm()
+local freshProceed={touchId=23}
+confirm.listeners.down(freshProceed);confirm.listeners.up(freshProceed);confirm.listeners.click(freshProceed)
 eq(run.phase,'victory');eq(run.ending,'true_victory');eq(host.mode,'victory')
 assert(not run.endingProceed and not run.rewards and run.nodeFlow.complete)
 assert(shown(get(root,'menuPanel/result'))and not shown(nodePanel))
@@ -125,7 +122,10 @@ assert(confirm.visible and not shown(confirm),'expected inherited hidden child')
 assert(not pool.visible and not first.visible and not tail.visible and not shown(pool))
 frozen=S.C.copy(run,{[run.data]=run.data})
 assert(not successful());assert(not stale());assert(not replaced())
-up({touchId=13});click({touchId=13});confirm.navigationListeners.confirm();host:update(0)
+up({touchId=13});click({touchId=13})
+confirm.listeners.click(freshProceed)
+confirm.listeners.down({touchId=24});confirm.listeners.up({touchId=24});confirm.listeners.click({touchId=24})
+host:update(0)
 S.same(run,frozen);assert(not pool.visible and not first.visible and not tail.visible);eq(settled,0)
-print('PASS input: pointer selection/cancel preserved; stale modal/inactive/replaced owner callbacks rejected; fresh controller Proceed -> true_victory exactly once; no implicit settlement')
+print('PASS input: pointer selection/cancel preserved; stale modal/inactive/replaced owner callbacks rejected; fresh pointer Proceed -> true_victory exactly once; no implicit settlement')
 print('NATIVE_ART_ENDING_TRANSITION_PASS 1 focused integration; synthetic two-slot/one-host; native engine/real asset/natural route/save import NOT_RUN')

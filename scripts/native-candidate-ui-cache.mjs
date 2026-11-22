@@ -1,5 +1,6 @@
 import {existsSync,readFileSync} from 'node:fs';
 import {dirname,join} from 'node:path';
+import {deckBrowserTemplateName} from './deck-ui-layout.mjs';
 import {fileRecord} from './evidence-files.mjs';
 export function reusableUi(base,generated,{privateTemplates=false,galleryImageTypes}={}) {
  // The legacy receipt only carries the shared image/group/background bindings.
@@ -18,5 +19,8 @@ export function reusableUi(base,generated,{privateTemplates=false,galleryImageTy
  if(![image,group,background].every(n=>Number.isSafeInteger(n)&&n>0)||image===group)return null;
  if(receipt.officialPortraits?.imageTemplateIndex!==image||receipt.officialPortraits?.containerTemplateIndex!==group)return null;
  return {receipt:fileRecord(receiptPath),templateResults:{AbyssReadyCardImage:{templateIndex:image},
-  AbyssReadyCardGroup:{templateIndex:group},AbyssOfficialBackgroundImage:{templateIndex:background}}};
+  AbyssReadyCardGroup:{templateIndex:group},AbyssOfficialBackgroundImage:{templateIndex:background},
+  ...(Number.isSafeInteger(receipt.deckBrowser?.templateIndex)&&receipt.deckBrowser.templateIndex>0?
+    {[deckBrowserTemplateName]:{templateIndex:receipt.deckBrowser.templateIndex},
+      ...Object.fromEntries((receipt.deckBrowser.parts??[]).map(({name,templateIndex})=>[name,{templateIndex}]))}:{})}};
 }

@@ -7,9 +7,9 @@ import { gunzipSync } from 'node:zlib';
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const normalize = source => source.replaceAll('\r\n', '\n');
 const archive = readFileSync(new URL('../fixtures/action-buttons-source.json.gz', import.meta.url));
-assert.equal(hash(archive), '1e9fb9a9d7ff0ead307c6a4a992da20190462befd2e566191992ced1485a2f3a');
+assert.equal(hash(archive), '86634a756c4085906261d4d318118bb1f7692a642479651526c1ace0fefe4487');
 const { base, files } = JSON.parse(gunzipSync(archive));
-assert.equal(base, 'd7ae494a3136b2f4f707428fefeeae478c6e0495');
+assert.equal(base, '438f48d60a2e5aa81cf82d6f30b909327999226e');
 for (const row of Object.values(files)) assert.equal(hash(row.before), row.beforeSha);
 
 export const actionButtonsOwns = path => Object.hasOwn(files, path);

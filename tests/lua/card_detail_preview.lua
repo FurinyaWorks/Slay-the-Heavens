@@ -112,30 +112,6 @@ test('text-only and V4 inspection keep descriptions and reset preview state',fun
  end
 end)
 
-test('controller details hide paging immediately and return to the same controller page',function()
- local focus
- local api={events={Confirm='confirm',Cancel='cancel',Focus='focus'},directions={Left='left',Right='right'},
-  modes={Specified='specified'},getFocus=function()return focus end,setFocus=function(v)focus=v end,isController=function()return true end}
- local host,root=F.fixture(nil,nil,nil,nil,false,nil,nil,api);assert(F.start(host))
- host.run.deck={};for i=1,24 do host.run.deck[i]={uid=i,cardId='bash',upgraded=false}end
- assert(host:openDeck());host:update(0);assert(host.deckUI:controllerStep(1));host:update(0)
- local panel=root:GetChild('deckPanel');local grid=panel:GetChild('grid')
- assert(host.deckUI.controllerPage==2 and panel:GetChild('pageHint').visible)
- local function confirm(hit)
-  host:syncController();focus=hit;assert(hit.navigationListeners.confirm())
- end
- confirm(grid.items[0]:GetChild('hit'))
- for _,name in ipairs({'previous','next','pageHint'})do assert(not panel:GetChild(name).visible,'detail must hide paging immediately: '..name)end
- host:update(.01)
- local hit=panel:GetChild('upgradePreview'):GetChild('hit');confirm(hit)
- assert(host.deckUI.cardDetail.preview)
- assert(not hit.click(),'same-frame pointer click must not double-toggle')
- assert(host.deckUI.cardDetail.preview)
- host:update(.01);assert(hit.click());assert(not host.deckUI.cardDetail.preview)
- assert(host.deckUI:back());host:update(0)
- assert(host.deckUI.controllerPage==2 and host.deckUI.bindings[grid.items[0]].uid==13)
- host:closeDeck()
-end)
 test('Searing Blow count-only constructor copies retain their real baseline',function()
  local host,panel,grid=setup({{uid=61,cardId='searing_blow',upgraded=false,upgrades=2,searingBlowCopyUpgrades=2}})
  local before=Combat.copy(host.run);assert(grid.items[0]:GetChild('hit').click())

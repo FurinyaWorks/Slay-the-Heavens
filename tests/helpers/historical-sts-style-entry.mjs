@@ -10,15 +10,21 @@ import {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';
 import {assertStsStyleCiCurrent} from './sts-style-ci-source.mjs';
 import {historicalStsStyleFixtures} from './historical-sts-style-runner.mjs';
 import {discoverJs} from '../../scripts/ci-shards.mjs';
+import {beforeDeckPages} from './develop-release-backflow-source.mjs';
+import {beforeInputRetirement,beforeInputRetirementReader,beforeInputRetirementStsSuite} from './input-retirement-source.mjs';
+import {inputRetirementStsWitness} from './input-retirement-sts-binding.mjs';
 import {runLua} from '../../scripts/test-lua.mjs';
 const script=process.argv[2],timeout=Number(process.argv[3]),started=Date.now(),root=fileURLToPath(new URL('../..',import.meta.url));
 assert(historicalStsStyleFixtures.includes(script));assert(Number.isSafeInteger(timeout)&&timeout>0);
 const remaining=()=>{const value=timeout-(Date.now()-started);assert(value>0,'historical StS fixture exceeded original total deadline');return value;};
 const raw=p=>readFileSync(join(root,p),'utf8');
 const config='config/architecture.json';
-assert.equal(sourceEpoch.preCombinedSource(config,raw(config),{target:'stsStylePrior',readSource:raw}),ciRepairSourceEpoch.proof.current[config].source,'all current production owners authenticate before historical materialization');
-assertStsStyleCiCurrent(discoverJs(),(p,e)=>readFileSync(join(root,p),e));
-assert.equal(createHash('sha256').update(raw(script).replaceAll('\r\n','\n')).digest('hex'),stsStylePriorRuntime.files[script].sha256,'full original Lua contract is unchanged');
+const beforeRetirement=beforeInputRetirementReader(raw);
+const beforeBrowse=path=>beforeDeckPages(path,beforeRetirement(path));
+assert.equal(sourceEpoch.preCombinedSource(config,beforeBrowse(config),{target:'stsStylePrior',readSource:beforeBrowse}),ciRepairSourceEpoch.proof.current[config].source,'all current production owners authenticate before historical materialization');
+const suite=beforeInputRetirementStsSuite(discoverJs(),(p,e)=>readFileSync(join(root,p),e),inputRetirementStsWitness);
+assertStsStyleCiCurrent(suite.paths,suite.read);
+assert.equal(createHash('sha256').update(beforeInputRetirement(script,raw(script)).replaceAll('\r\n','\n')).digest('hex'),stsStylePriorRuntime.files[script].sha256,'full original Lua contract is unchanged');
 const directory=mkdtempSync(join(tmpdir(),'abyss-sts-style-'));
 try{
  for(const [path,row]of Object.entries(stsStylePriorRuntime.files)){

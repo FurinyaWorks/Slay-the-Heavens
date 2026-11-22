@@ -131,7 +131,7 @@ test('approved pages keep live input identities while unrelated pages retain the
     // The rounded face is visible independently of the native input receiver.
     if(path.endsWith('/hit')){
      const hit=current.get(path);assert.equal(hit.kind,'cursorArea');
-     assert.deepEqual(hit.size,before.size);assert.equal(hit.focusable,true);
+     assert.deepEqual(hit.size,before.size);assert.equal(hit.focusable,undefined);
      const art=current.get(path.replace(/\/hit$/,'/art'));
      assert.notEqual(art.visible,false);
      assert.equal(child(art,'roundedButton').kind,'container');
@@ -201,7 +201,7 @@ test('approved pages keep live input identities while unrelated pages retain the
    if(path==='/SlayTheAbyss/potionPanel'){
     const popup=current.get(path);
     const battlePopup=current.get('/SlayTheAbyss/battlePanel/potionHelp/potionPopup');
-    assert.deepEqual(popup,{...battlePopup,name:'potionPanel',isolateNavigation:true});
+    assert.deepEqual(popup,{...battlePopup,name:'potionPanel'});
     continue;
    }
    if(retiredPickerChild(path)||retiredChoice(path)){

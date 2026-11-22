@@ -30,7 +30,7 @@ test('Main potion runtime preserves explicit actions, stale ownership, and the r
  const r=runLua('tests/lua/approved_main_potions.lua');
  assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/APPROVED_MAIN_POTIONS_PASS/);
 });
-test('Main host isolates the small potion card controller scope and keeps global inventory off battle',()=>{
+test('Main host isolates the small potion card pointer input and keeps global inventory off battle',()=>{
  const r=runLua('tests/lua/approved_main_host_potions.lua');
  assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/APPROVED_MAIN_HOST_POTIONS_PASS/);
 });

@@ -9,13 +9,10 @@ local function get(root,path)
  local c=root;for part in path:gmatch('[^/]+')do c=assert(c:GetChild(part),path)end;return c
 end
 local function fixture()
- local focus;local settled=0
- local api={events={Confirm='confirm',Cancel='cancel',Focus='focus'},directions={Left='left',Right='right'},
-  modes={Specified='specified',NearestControl='nearest'},isController=function()return true end,
-  getFocus=function()return focus end,setFocus=function(c)assert(c);focus=c end}
+ local settled=0
  local root=F.Viewport.apply(F.control({children=F.Layout}),1280,720)
  local host=F.GameUI.new(root,F.Data,F.Presentation,'click',{seed=42,prologue=false,campaign=true,
-  cursorEvents=cursor,controllerApi=api,imageSource='static',color=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end,
+  cursorEvents=cursor,imageSource='static',color=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end,
   settle=function()settled=settled+1;return true end})
  root.ui=host;assert(testStart(host));local map=S.stage(host.run)
  host.map,host.mapUI.map,host.nodeUI.map=map,map,map
@@ -37,8 +34,7 @@ test(function()
  assert(not get(root,'menuPanel/result').visible and not host.settlementRequested and settled()==0)
  assert(run.nodeFlow.type=='boss'and map.nodes[#map.nodes].type=='boss')
  local hit=get(root,'nodePanel/confirm/hit')
- assert(host.controller:focus(hit));assert(hit.canControllerFocus)
- hit.navigationListeners.confirm()
+ hit.click()
  assert(run.phase=='victory'and run.ending=='true_victory'and host.mode=='victory')
  assert(get(root,'menuPanel/title').text:find('真结局',1,true)and settled()==0)
  assert(F.statValue(root,'floor')=='55 / 55')
@@ -53,8 +49,8 @@ test(function()
  host.nodeUI:update(0);run.endingProceed=owner
  hit.listeners.up({touchId=1});hit.listeners.click({touchId=1})
  assert(run.phase=='ending_proceed'and not stale(),'invalidated owner cannot revive after repair')
- host.nodeUI:render();host:syncController();host:update(0)
- assert(host.controller:focus(hit));hit.navigationListeners.confirm()
+ host.nodeUI:render();host:update(0)
+ hit.listeners.down({touchId=2});hit.listeners.up({touchId=2});hit.listeners.click({touchId=2})
  assert(run.phase=='victory'and not run.endingProceed)
 end)
 test(function()

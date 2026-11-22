@@ -8,7 +8,7 @@ import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 
 const common=['construct','start','select','element','confirm'];
-const main=['construct','refresh','pointer down','foreign up','foreign click','pointer up','start click','close selection','stale click','start','select','element','confirm','deck','deck close','resize','invalid dt','update','open menu','close menu','dynamic method','dynamic close','second shared platform','first captured controller','begin combat','combat tick','open exit','settle false','settle throw','settle nil','settle once','disable failure','disable retry','disabled update','second disable'];
+const main=['construct','refresh','pointer down','foreign up','foreign click','pointer up','start click','close selection','stale click','start','select','element','confirm','deck','deck close','resize','invalid dt','update','open menu','close menu','dynamic method','dynamic close','second shared platform','first captured pointer owner','begin combat','combat tick','open exit','settle false','settle throw','settle nil','settle once','disable failure','disable retry','disabled update','second disable'];
 const sequences={
  '':main,
  'short-clock':[...common,'refresh','disable'], 'short-wide':[...common,'refresh','disable'],
@@ -29,9 +29,9 @@ const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const contract=String.raw`
 local currentEvents,currentBefore={},nil
 local known={}
-for label in ([[construct|start|select|element|confirm|confirm retry|refresh|refresh mixed capture|pointer down|foreign up|foreign click|pointer up|start click|close selection|stale click|deck|deck close|resize|invalid dt|update|open menu|close menu|dynamic method|dynamic close|second shared platform|first captured controller|begin combat|combat tick|open exit|settle false|settle throw|settle nil|settle once|disable failure|disable retry|disabled update|second disable|disable|real active combat with pending playback|disable live playback|real map entry|native end turn and playback|terminal combat fixture and real reward creation|native reward proceed|reward down|reward up|same-content replacement pending owner|stale reward owner click|fresh reward down|fresh reward up|fresh reward reopen|native reward proceed again|controlled chapter one terminal treasure|real chapter one treasure claim|native chapter continue|controlled chapter two terminal treasure|real chapter two ending|combat|menu|pause interior|blocked confirmation|route|close route|resume|victory|egg open|egg update|egg close|egg cleanup failure|egg cleanup retry|synchronous deck|synchronous battle|synchronous map|synchronous node|synchronous potion|synchronous egg]]):gmatch('[^|]+')do known[label]=true end
+for label in ([[construct|start|select|element|confirm|confirm retry|refresh|refresh mixed capture|pointer down|foreign up|foreign click|pointer up|start click|close selection|stale click|deck|deck close|resize|invalid dt|update|open menu|close menu|dynamic method|dynamic close|second shared platform|first captured pointer owner|begin combat|combat tick|open exit|settle false|settle throw|settle nil|settle once|disable failure|disable retry|disabled update|second disable|disable|real active combat with pending playback|disable live playback|real map entry|native end turn and playback|terminal combat fixture and real reward creation|native reward proceed|reward down|reward up|same-content replacement pending owner|stale reward owner click|fresh reward down|fresh reward up|fresh reward reopen|native reward proceed again|controlled chapter one terminal treasure|real chapter one treasure claim|native chapter continue|controlled chapter two terminal treasure|real chapter two ending|combat|menu|pause interior|blocked confirmation|route|close route|resume|victory|egg open|egg update|egg close|egg cleanup failure|egg cleanup retry|synchronous deck|synchronous battle|synchronous map|synchronous node|synchronous potion|synchronous egg]]):gmatch('[^|]+')do known[label]=true end
 local uiOnly={}
-for label in ([[refresh|refresh mixed capture|update|combat tick|egg update|egg open|egg close|start|select|element|pointer down|foreign up|foreign click|pointer up|start click|close selection|stale click|deck|deck close|dynamic method|dynamic close|resize|invalid dt|open menu|close menu|open exit|menu|pause interior|blocked confirmation|route|close route|resume|first captured controller|stale reward owner click|reward down|reward up|fresh reward down|fresh reward up|disabled update]]):gmatch('[^|]+')do uiOnly[label]=true end
+for label in ([[refresh|refresh mixed capture|update|combat tick|egg update|egg open|egg close|start|select|element|pointer down|foreign up|foreign click|pointer up|start click|close selection|stale click|deck|deck close|dynamic method|dynamic close|resize|invalid dt|open menu|close menu|open exit|menu|pause interior|blocked confirmation|route|close route|resume|first captured pointer owner|stale reward owner click|reward down|reward up|fresh reward down|fresh reward up|disabled update]]):gmatch('[^|]+')do uiOnly[label]=true end
 local function check(value,label,why)assert(value,'CURRENT_HOST '..label..': '..why)end
 local currentMismatch
 local function different(path,a,b)currentMismatch=currentMismatch or(path..' '..tostring(a)..' / '..tostring(b));return false end
@@ -113,7 +113,7 @@ ABYSS_HOST_CURRENT_AFTER=function(label,host,result,F,hosts)
   if not expectedFailure then check(h and h.root and result[2]==true,label,'constructor must finish after its supported callback')end
  elseif label=='construct'or label=='second shared platform'then
   check(h and h.mode=='menu'and not h.run and not h.characterOpen,label,'fresh current Host')
-  if label=='second shared platform'then check(hosts[1].controller~=h.controller,label,'controller owner must remain distinct')end
+  if label=='second shared platform'then check(hosts[1].root~=h.root,label,'native roots must remain distinct')end
  elseif label=='pointer down'or label=='foreign up'or label=='foreign click'or label=='pointer up'or label=='stale click'or label=='close selection'then
   check(not h.characterOpen,label,'foreign/stale input must not open selection')
  elseif label=='start'or label=='start click'then check(h.characterOpen==true,label,'accepted Start must open selection')
@@ -137,7 +137,7 @@ ABYSS_HOST_CURRENT_AFTER=function(label,host,result,F,hosts)
  elseif label=='close route'then check(not h.routeOpen and not h.exitOpen and not h.menuOpen,label,'route returns directly to its caller, without a hidden parent menu')
  elseif label=='invalid dt'then check(result[2]==false and result[3]=='invalid_delta',label,'reject invalid delta')
  elseif label=='disabled update'then check(result[2]==false and result[3]=='ui_disabled',label,'disabled lifecycle rejects updates')
- elseif label=='first captured controller'then check(#events('first controller')==1 and #events('second controller')==0,label,'captured controller cannot switch owners')
+ elseif label=='first captured pointer owner'then check(result[2]==true and not hosts[2].exitOpen,label,'pointer command cannot switch hosts')
  elseif label=='begin combat'or label=='combat'or label=='real map entry'then check(h.run.phase=='combat'and h.mode=='battle',label,'combat command reaches real battle')
  elseif label=='terminal combat fixture and real reward creation'then check(h.run.phase=='reward',label,'core creates rewards')
  elseif label=='native reward proceed'or label=='native reward proceed again'then check(h.run.phase=='map'and h.run.pendingCombatRewards,label,'reward owner survives returning to map')
@@ -181,6 +181,16 @@ end
 export function installCurrentHostContract(directory){
  const file=path.join(directory,'tests/lua/support/game_ui_host_trace.lua');let source=fs.readFileSync(file,'utf8');
  for(const [before,after]of [
+  [`local firstSync,secondSync=host.controller.sync,second.controller.sync
+host.controller.sync=function(...)record('first controller');return firstSync(...)end
+second.controller.sync=function(...)record('second controller');return secondSync(...)end
+step('first captured controller',function()return host:syncController()end)`,
+   `step('first captured pointer owner',function()
+    local hit=root:GetChild('exitEntry'):GetChild('open'):GetChild('hit')
+    hit.listeners.down({touchId=71});hit.listeners.up({touchId=71})
+    local opened=hit.click({touchId=71})
+    return opened and host.exitOpen and host:closeExit()
+   end)`],
   ['ABYSS_HOST_CONTROL=function(control)','ABYSS_HOST_CONTROL=function(control)\n if not ABYSS_HOST_FULL_TRACE then return end'],
   ["elseif kind=='battle' then record('callback result',args[7].onChange())", "elseif kind=='battle' then print('CURRENT_HOST_SIGNATURE_ADAPTER battle options=6');assert(args.n==6 and type(args[6])=='table' and type(args[6].onChange)=='function','CURRENT battle constructor exact six-argument API');record('callback result',args[6].onChange())"],
   ["step('help',function()return button('runMenu','help').click()end)",

@@ -6,7 +6,22 @@ local Nodes = require("abyss_nodes")
 local Data = require("abyss_data")
 local Presentation = require("abyss_presentation")
 local Layout = require("abyss_ui_layout")
-local Templates = require("abyss_ui_templates")
+local NativeTemplates = require("abyss_ui_templates")
+local hasBrowserBinding,browserBinding=pcall(require,"abyss_deck_browser_binding")
+local BrowserParts = hasBrowserBinding and type(browserBinding)=='table' and browserBinding.parts or {}
+local Templates = {}
+for name,spec in pairs(NativeTemplates)do Templates[name]=spec end
+if #BrowserParts>0 then
+    local card=Combat.copy(NativeTemplates.AbyssBattlePileCard)
+    for _,part in ipairs(BrowserParts)do
+        local mount=card
+        for _,segment in ipairs(part.path)do
+            for _,child in ipairs(mount.children)do if child.name==segment then mount=child;break end end
+        end
+        mount.children=NativeTemplates[part.name].children
+    end
+    Templates.AbyssBattlePileCard=card
+end
 local Viewport = require("abyss_viewport")
 local Theme = require("abyss_theme")
 local Surfaces = require("abyss_monster_surfaces")
@@ -88,6 +103,11 @@ function Control:AddNavigationEventListener(event,fn) NativeContract.listener(ev
     assert(not self.navigationListeners[event],'duplicate navigation listener')
     self.navigationListeners[event]=fn
 end
+function Control:RemoveNavigationEventListener(event,fn)
+    if not self.navigationListeners or self.navigationListeners[event]~=fn then return false end
+    self.navigationListeners[event]=nil
+    return true
+end
 function Control:SetControllerNavigation(direction,mode,target)
     self.navigation=self.navigation or {};self.navigation[direction]={mode=mode,target=target}
 end
@@ -163,6 +183,34 @@ local function monsterActors()
       end}
 end
 -- Explicit native platform fixture: production GameUI remains unmodified.
+local function deckBrowser()
+    local serial=0
+    return {
+        parts=BrowserParts,
+        create=function(parent,part)
+            local box=control(assert(NativeTemplates[part and part.name or 'AbyssBattlePileCard']),parent)
+            serial=serial+1
+            parent.children['nativeBrowserCard'..serial]=box
+            return box
+        end,
+        destroy=function(box)
+            for key,child in pairs(box.parent.children)do
+                if child==box then box.parent.children[key]=nil;break end
+            end
+            destroyControl(box)
+        end,
+    }
+end
+-- Replay cases that exercise the predecessor's native Grid callbacks opt in.
+local function legacyPileGrid(panel)
+    local old=panel:GetChild('pileGrid')
+    if old.kind=='grid' then return old end
+    local grid=control({name='pileGrid',kind='grid',size={old.sizeDeltaX,old.sizeDeltaY},
+        itemTemplate=Templates.AbyssBattlePileCard and 'AbyssBattlePileCard' or 'AbyssDeckCard',
+        grid={columns=5,itemSize={150,210},spacing={27,27},padding={18,45,30,30}}},panel)
+    panel.children.pileGrid=grid
+    return grid
+end
 local function withMonsterActors(platform)
     if platform.nativeMonsterArtEnabled==nil then platform.nativeMonsterArtEnabled=require('abyss_art_features').flags.monsters end
     platform.monsterActors=platform.monsterActors or monsterActors()
@@ -173,13 +221,14 @@ local function newGameUI(root,data,presentation,event,platform)
     return GameUI.new(root,data,presentation,event,withMonsterActors(platform))
 end
 -- Rule and gesture suites start on the map directly; prologue suites pass prologue = true.
-local function fixture(data, settle, music, cursorEvents, prologue, sound, pointer, controllerApi)
+local function fixture(data, settle, music, cursorEvents, prologue, sound, pointer, controllerApi, browserFactory)
     local canvas = control({ children = Layout })
     local root = Viewport.apply(canvas, 1280, 720)
+    if not browserFactory then legacyPileGrid(root:GetChild('deckPanel')) end
     local ui = GameUI.new(root, data or Data, Presentation, "click",
         { seed = 1, nativeMonsterArtEnabled=require('abyss_art_features').flags.monsters, monsterActors=monsterActors(), imageTypes={basic=1,stretch=2}, imageSource = "static", color = function(r,g,b,a) return { r=r,g=g,b=b,a=a } end, settle = settle, music = music, cursorEvents = cursorEvents,
           prologue = prologue == true, sound = sound, cursorPosition = pointer and pointer.position,
-          touchScreen = pointer and pointer.touchScreen, keyEvents = pointer and pointer.keyEvents, controllerApi=controllerApi })
+          touchScreen = pointer and pointer.touchScreen, keyEvents = pointer and pointer.keyEvents, controllerApi=controllerApi, deckBrowser=browserFactory })
     root.ui = ui
     return ui, root
 end
@@ -292,6 +341,8 @@ return {
     preview = preview,
     control = control,
     monsterActors = monsterActors,
+    deckBrowser = deckBrowser,
+    legacyPileGrid = legacyPileGrid,
     setEngineActive = setEngineActive,
     fixture = fixture,
     statValue = statValue,

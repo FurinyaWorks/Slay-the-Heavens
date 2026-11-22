@@ -1,6 +1,5 @@
 local Actors=require('abyss_monster_surfaces')
 local Powers=require('abyss_monster_power_surfaces')
-local Controller=require('abyss_controller')
 local function run(kind,trigger)
  local dead=false;local operations=0;local manager;local hook;local retired=0
  local function native(name)
@@ -40,10 +39,8 @@ end
 for _,kind in ipairs({'actor','power'})do
  run(kind);run(kind,'instantiate');run(kind,'SetVisible');run(kind,'SetAsLastSibling');run(kind,'retire');run(kind,'clear')
 end
--- Controller retirement must not even inspect an engine-invalid handle.
+-- Reject any access to the engine-invalid handle below.
 local invalid=setmetatable({},{__index=function()error('invalid native read')end,__newindex=function()error('invalid native write')end})
-local record={control=invalid};local c={byControl={[invalid]=record},records={record},memory={battle=invalid}}
-assert(Controller.unbind(c,invalid,true));assert(#c.records==0 and next(c.byControl)==nil and next(c.memory)==nil)
 -- View ownership forget traverses the existing manager objects without native operations.
 local pv=require('abyss_monster_power_view').new({},function()error('picture')end,function()error('tint')end,function()error('ink')end)
 local iv=require('abyss_monster_intent_particle_view').new({},function()error('picture')end,function()error('tint')end)
@@ -54,4 +51,4 @@ assert(not pcall(pv.render,pv,invalid,1,{},{}));assert(not pcall(iv.paint,iv,inv
 local art=require('abyss_monster_art').new({}, {nativeMonsterArtEnabled=false},{}, {})
 art.pools[invalid]=pool;art:onEngineDestroy();assert(n==4 and next(art.pools)==nil)
 require('abyss_monster_art').forgetBox(invalid)
-print('MONSTER_ENGINE_TEARDOWN_PASS strict no-native forget / actor+power allocate+setter reentry / controller / view ownership')
+print('MONSTER_ENGINE_TEARDOWN_PASS strict no-native forget / actor+power allocate+setter reentry / view ownership')

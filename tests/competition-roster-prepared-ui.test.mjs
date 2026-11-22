@@ -6,6 +6,7 @@ import {readFileSync,readdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {runLua,shardLuaScripts} from '../scripts/test-lua.mjs';
 import {discoverJs,jsShard,timings} from '../scripts/ci-shards.mjs';
+import {beforeInputRetirement} from './helpers/input-retirement-source.mjs';
 const read=path=>readFileSync(path,'utf8').replaceAll('\r\n','\n');
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const entry='tests/lua/competition_roster_prepared_ui.lua';
@@ -28,7 +29,7 @@ function originalPreparedUiSource(value){
  assert.equal(createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex'),proof.originalGitBlob);
  return value;
 }
-for(const slice of slices)test(`configured-source prepared UI retains original cases ${slice.first}–${slice.last}`,t=>{
+for(const slice of slices)test(`configured-source prepared UI checks direct, click and touch cases ${slice.first}–${slice.last}`,t=>{
  const started=Date.now(),result=runLua(slice.path,{timeout:30000});
  assert.equal(result.status,0,result.stdout+result.stderr);
  const expected=Array.from({length:slice.last-slice.first+1},(_,i)=>slice.first+i);
@@ -38,7 +39,10 @@ for(const slice of slices)test(`configured-source prepared UI retains original c
  t.diagnostic(`Lua fixture ${slice.path}: ${Date.now()-started} ms; original cases ${expected.join(',')}`);
 });
 historicalTest('bounded prepared UI registrar reverses every reviewed byte and rejects range case seed or execution drift',()=>{
- const bounded=read(entry),original=originalPreparedUiSource(bounded);
+ const current=read(new URL(`../${entry}`,import.meta.url)),bounded=beforeInputRetirement(entry,current);
+ assert.equal(bounded,read(entry),'authenticate the predecessor before replaying the exact historical registrar');
+ const original=originalPreparedUiSource(bounded);
+ assert.throws(()=>originalPreparedUiSource(beforeInputRetirement(entry,current.replace("touchId=73","touchId=74"))),/exact reviewed/);
  assert.equal(hash(original),'ff9d0aa399934e599c93ef086aac9a518c9de859ee44e5a0db03ea769bf31c55');
  assert.equal(proof.originalGitBlob,'208b8c3e8944f8822211d59269a418c911172ba5');
  assert.equal(read(slices[1].path),`assert(loadfile("${entry}"))(19,33)\n`);

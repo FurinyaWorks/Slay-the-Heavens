@@ -30,12 +30,11 @@ local function unchanged(root)
  end
 end
 local function fixture(source,profile)
- local focus,samples=nil,0
- local api={events={Confirm='confirm',Cancel='cancel',Focus='focus'},directions={Left='left',Right='right'},
-  modes={Specified='specified'},getFocus=function()return focus end,setFocus=function(c)focus=c end,isController=function()return true end}
+ local samples=0
+ local cursor={CursorDown='down',CursorUp='up',CursorExit='exit',CursorEndDrag='endDrag'}
  local root=F.Viewport.apply(F.control({children=F.Layout}),1280,720)
  local ui=F.GameUI.new(root,source,F.Presentation,'click',{campaign=true,campaignProfile=profile or 'competition-two-act',
-  imageSource='static',color=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end,controllerApi=api,
+  imageSource='static',color=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end,cursorEvents=cursor,
   newSeed=function()samples=samples+1;return 3 end})
  assert(ui:start())
  return ui,root,function()return samples end
@@ -49,7 +48,7 @@ local invalid={
 }
 invalid[3].source.characterId,invalid[3].source.originalV4Role='ironclad','RD'
 for index,scenario in ipairs(invalid)do local source=scenario.source;for _,role in ipairs(scenario.roles)do
- for _,route in ipairs({'direct','click','controller'})do
+ for _,route in ipairs({'direct','click','touch'})do
   if selected()then
   local ui,root,samples=fixture(source)
   local verifySource,verifySelection=unchanged(source),unchanged(ui.characterSelection)
@@ -60,8 +59,10 @@ for index,scenario in ipairs(invalid)do local source=scenario.source;for _,role 
   local hit=root:GetChild('characterPanel'):GetChild(role=='raiden'and 'character4'or 'traveler'):GetChild('hit')
   local called,accepted,reason=pcall(function()
    if route=='direct'then return ui:selectCharacter(role)
-   elseif route=='click'then return hit.click()
-   else return hit.navigationListeners.confirm()end
+   elseif route=='click'then return hit.click()end
+   local finger={touchId=73}
+   hit.listeners.down(finger);hit.listeners.up(finger)
+   return hit.click(finger)
   end)
   Original.prepare,Catalog.prepareSelected=prepare,selected
   assert(called and accepted==false,'configured '..index..' '..role..' '..route..' escaped/refused late: '..tostring(accepted))

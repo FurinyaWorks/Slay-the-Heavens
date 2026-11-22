@@ -4,18 +4,15 @@ import { gameLayout } from '../scripts/game-ui-layout.mjs';
 import { deckCardTemplate } from '../scripts/deck-ui-layout.mjs';
 import { nativeTheme as theme } from '../scripts/native-ui-theme.mjs';
 
-test('battle piles reserve one hidden five-column native scroller and a black veil without replacing the browser', () => {
+test('read-only piles reserve an empty native host and retain the separate selection Grid', () => {
   const panel=gameLayout().controls.find(c=>c.name==='deckPanel');
   const grid=panel.children.find(c=>c.name==='pileGrid');
   const veil=panel.children.find(c=>c.name==='pileVeil');
-  assert.equal(grid.kind,'grid');assert.equal(grid.visible,false);
-  assert.equal(grid.grid.columns,5);assert.equal(grid.grid.horizontal,false);
-  assert.equal(grid.grid.scrollbar,true);assert.equal(grid.itemTemplate,deckCardTemplate().name);
-  assert.ok(grid.grid.itemSize[0]>=theme.v25Battle.layout.card.size[0]);
-  assert.equal(grid.grid.padding[2],grid.grid.padding[3]);
-  const [top,bottom,left,right]=grid.grid.padding;
-  assert.ok(left+5*grid.grid.itemSize[0]+4*grid.grid.spacing[0]+right<=grid.size[0]);
-  assert.ok(top+2*grid.grid.itemSize[1]+grid.grid.spacing[1]+bottom<=grid.size[1]);
+  assert.equal(grid.kind,'container');
+  assert.equal(grid.visible,false);
+  assert.equal(grid.grid,undefined);
+  assert.equal(grid.itemTemplate,undefined);
+  assert.deepEqual(grid.children??[],[]);
   assert.equal(veil.colour,'#000000');assert.equal(veil.opacity,.9);assert.equal(veil.visible,false);
   assert.ok(panel.children.indexOf(veil)<panel.children.findIndex(c=>c.name==='blocker'));
   assert.equal(panel.children.find(c=>c.name==='grid').grid.columns,6);
@@ -111,16 +108,16 @@ test('deck filters fit beside the normal title without covering the native grid 
   assert.ok(Math.min(...buttons.map(c => c.position[1] - c.size[1] / 2)) > grid.position[1] + grid.size[1] / 2);
 });
 
-test('controller overlays isolate nearest-control navigation and deck pages leave the card viewport clear', () => {
+test('overlays avoid navigation metadata and deck pages leave the card viewport clear', () => {
   const layout = gameLayout(undefined, {originalCharacters: true});
   for (const name of ['deckPanel','potionPanel','choicePanel','characterPanel','exitPanel']) {
-    assert.equal(layout.controls.find(c => c.name === name).isolateNavigation, true, name);
+    assert.equal(layout.controls.find(c => c.name === name).isolateNavigation, undefined, name);
   }
   const deck = layout.controls.find(c => c.name === 'deckPanel');
   const grid = deck.children.find(c => c.name === 'grid');
   for (const name of ['previous','next','pageHint']) {
     const control = deck.children.find(c => c.name === name);
-    assert.equal(control.visible, false, 'controller-only paging starts hidden');
+    assert.equal(control.visible, false, 'paging starts hidden until the browser opens');
     assert.ok(control.position[1] + control.size[1] / 2 < grid.position[1] - grid.size[1] / 2);
   }
 });
@@ -131,7 +128,7 @@ test('controller overlays isolate nearest-control navigation and deck pages leav
  const textHit=panel.children.find(c=>c.name==='detailHit');
  assert.equal(toggle.visible,false);
  assert.equal(toggle.children[0].kind,'presetButton');
- assert.equal(toggle.children[0].focusable,true);
+ assert.equal(toggle.children[0].focusable,undefined);
  assert.ok(toggle.size[1]>=48);
  assert.ok(toggle.position[1]+toggle.size[1]/2<textHit.position[1]-textHit.size[1]/2);
  for(const state of toggle.children[0].children)assert.equal(state.children.find(c=>c.name==='label').text.content,'升级预览');

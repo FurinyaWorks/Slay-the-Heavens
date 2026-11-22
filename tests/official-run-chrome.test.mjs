@@ -233,11 +233,11 @@ test('the official action palette reaches combat, reward choices, room loot and 
  }
  const treasure=at('nodePanel/treasureView');
  for(const path of ['nodePanel/eventView/option1','nodePanel/pickerView/matchRetry','nodePanel/confirm']){
-  const box=at(path);assert(child(box,'roundedButton'),path);assert(child(box,'hit').focusable,path);
+  const box=at(path);assert(child(box,'roundedButton'),path);assert.equal(child(box,'hit').focusable,undefined,path);
  }
  for(let i=1;i<=theme.layout.nativeNode.rewardList.rows.length;i++){
   const row=child(treasure,'rewardItem'+i);
-  assert(child(row,'roundedButton'),'room reward row '+i);assert(child(row,'hit').focusable);
+  assert(child(row,'roundedButton'),'room reward row '+i);assert.equal(child(row,'hit').focusable,undefined);
  }
 });
 

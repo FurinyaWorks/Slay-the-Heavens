@@ -241,7 +241,7 @@ local function forward(owner,record,method,key,...)
     active(owner,record)
     local args=table.pack(...)
     for index=1,args.n do args[index]=unwrap(owner,args[index])end
-    if key=='AddCursorEventListener' or key=='AddKeyEventListener' or key=='AddNavigationEventListener'then
+    if key=='AddCursorEventListener' or key=='AddKeyEventListener'then
         local callback=args[2]
         if type(callback)=='function'then
             args[2]=function(...)

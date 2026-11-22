@@ -16,7 +16,7 @@ const states=['normal','hover','pressed','disabled'];
 
 test('deck entry is an STS-style fanned card stack with a same-ink count pip inside the menu-sibling disc',()=>{
   const open=entry('deckEntry'),hit=child(open,'hit');
-  assert.equal(hit.kind,'presetButton');assert.equal(hit.focusable,true);
+  assert.equal(hit.kind,'presetButton');assert.equal(hit.focusable,undefined);
   assert.deepEqual(open.size,[80,48]);
   for(const name of states){
     const state=child(hit,name);
@@ -48,7 +48,7 @@ test('deck entry is an STS-style fanned card stack with a same-ink count pip ins
 
 test('nonbattle potion entry shows readable count and retains passive compatibility silhouettes without new actions',()=>{
   const open=entry('potionEntry'),hit=child(open,'hit');
-  assert.equal(open.children.length,1);assert.equal(hit.kind,'presetButton');assert.equal(hit.focusable,true);
+  assert.equal(open.children.length,1);assert.equal(hit.kind,'presetButton');assert.equal(hit.focusable,undefined);
   for(const name of states){
     const state=child(hit,name);assert.equal(child(state,'label').visible,true);
     const face=child(state,'entryFace');assert.equal(face.kind,'image');assert.deepEqual(face.size,open.size);

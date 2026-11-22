@@ -34,5 +34,5 @@ test('both pile return routes resolve the supplied theme ink without changing th
  assert.equal(label(art).text.colour,source.officialAssets.buttonInk);assert.equal(label(art).text.content,'返回');
  assert.ok(contrast(label(art).text.colour,child(art,'plate').colour)>=4.5);
  assert.deepEqual(button.position,before.position);assert.deepEqual(button.size,before.size);assert.equal(button.visible,before.visible);
- assert.equal(hit.kind,'cursorArea');assert.equal(hit.focusable,true);assert.deepEqual(hit.size,before.size);
+ assert.equal(hit.kind,'cursorArea');assert.equal(hit.focusable,undefined);assert.deepEqual(hit.size,before.size);
 });

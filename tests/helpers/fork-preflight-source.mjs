@@ -190,6 +190,12 @@ function beforeDevelopSessionRelicCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  let lf=normalize(source);
  const sessionRelicSha='5130bc86b8e09a85aa7981393335cecec6d76a1b38f2ab2a80ac4810b22fa2d9';
+ if(hash(lf)==='e663e8a932fe1ec63fc25905ad114d09d5405afcf4081a4fdcc4db0e42e14604'){
+  const prior=lf.replace(/^const actionButtonFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
+   .replace('Object.entries(actionButtonFiles))','Object.entries(inputRetirementFiles))');
+  assert.equal(hash(prior),'fc97fced179f8f70f9d9b7969f6df780f5f73a1bbe04aca865d0ced3ef75e610','exact pointer-only copier predecessor');
+  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+ }
  if(hash(lf)==='768c396aeaac6ee13d554699f1877d5ede1df175365ba0c7374fe59f34d465c0'){
   lf=lf.replace(/^const actionButtonFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
    .replace('Object.entries(actionButtonFiles))','Object.entries(relicDetailFiles))');
@@ -207,6 +213,14 @@ function beforeDevelopSessionRelicCopier(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeDevelopBackflowCopier(path,source){
+ if(path==='tests/helpers/copy-integration-source-closure.mjs'&&typeof source==='string'
+  &&hash(normalize(source))==='dbb15c5ae00750913e1c44c41c670181ab87bb7ee5cecade9fb2592c65c5556b'
+  &&(!source.includes('\r')||!/[\r\n]/.test(source.replaceAll('\r\n','')))){
+  const prior=normalize(source).replace(/^const mapRoomEntryFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
+   .replace('Object.entries(mapRoomEntryFiles))','Object.entries(relicDetailFiles))');
+  assert.equal(hash(prior),'8f750c5899d830865b07c6802e292041388e1bf15d7a706b00d18da8a6903f32','exact map-room copier predecessor');
+  source=source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+ }
  source=beforeDevelopSessionRelicCopier(path,source);
  source=beforeDevelopActorFocusCopier(path,source);
  source=beforeDevelopStasisUpgradeCopier(path,source);

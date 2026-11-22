@@ -92,7 +92,7 @@ assert(battle.info and liveRoot:GetChild('battlePanel'):GetChild('statusInfo').v
 local pages=battle.info.pages
 assert(pages and pages>0,'gold keyword definitions must be reachable in reward mode')
 assert(not run.rewards.cardResolved and #run.deck==10)
-assert(battle:controllerBack())
+assert(battle:cancelAim())
 local hit=liveRoot:GetChild('battlePanel'):GetChild('card1'):GetChild('hit')
 hit.listeners.enter();battle:update(F.Theme.layout.statusInfo.delay)
 assert(battle.info and battle.info.kind=='rewardCard','real reward hover did not open keyword definitions')
@@ -103,8 +103,8 @@ hit.listeners.down({touchId=47});battle:update(F.Theme.layout.statusInfo.delay)
 assert(battle.info and battle.info.kind=='rewardCard','real reward hold did not open keyword definitions')
 hit.listeners.up({touchId=47});hit.click({touchId=47})
 assert(not run.rewards.cardResolved and #run.deck==10,'holding keyword definitions accidentally claimed a card')
-if battle.info then assert(battle:controllerBack())end
-assert(battle:controllerBack())
+if battle.info then assert(battle:cancelAim())end
+assert(battle:cancelAim())
 assert(not battle.info and not battle:openHelp(old,nil,true),'old hover survived leaving selection')
 F.click(liveRoot,'battlePanel','cardReward')
 assert(not battle:openHelp(old,nil,true),'old hover survived reward epoch')

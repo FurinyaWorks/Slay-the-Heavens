@@ -10,10 +10,7 @@ local function nativeRows(text,font,width)
  end
  return lines+math.max(1,math.ceil(used*font/width))
 end
-local focus,usingController
-local api={events={Confirm='confirm',Cancel='cancel',Focus='focus'},directions={Left='left',Right='right'},
- modes={Specified='specified'},getFocus=function()return focus end,setFocus=function(v)focus=v end,isController=function()return usingController==true end}
-local host,root=F.fixture(nil,nil,nil,nil,nil,nil,nil,api)
+local host,root=F.fixture()
 assert(F.start(host,'traveler'))
 assert(Run.obtainRelic(host.run,'Potion Belt'))
 assert(Run.obtainRelic(host.run,'sacred_bark'))
@@ -85,10 +82,6 @@ for i,page in ipairs(pages)do
  assert(detailHit.click(),'tap must reach the next page')
 end
 assert(host.deckUI.detailPage==1,'last page cycles back to the first')
-usingController=true;host:syncController();focus=detailHit
-assert(detailHit.navigationListeners.confirm(),'controller confirmation reaches the existing reading surface')
-assert(host.deckUI.detailPage==2)
-usingController=false;host:update(.01)
 assert(host.deckUI:close())
 assert(root:GetChild('exitEntry'):GetChild('open'):GetChild('hit').click())
 S.capture('mobile-pause',root,F.Layout)

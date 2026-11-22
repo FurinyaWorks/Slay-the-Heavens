@@ -168,6 +168,7 @@ local function advance(s,row)
  if not read then failed(s,row,status);retire(s,row);return false end
  if not valid(s,row)then retire(s,row);return false end
  if status.phase=='failed' or status.phase=='release_failed'then failed(s,row,status.reason or status.phase);retire(s,row);return false end
+ if why==true or status.phase=='ready'then row.progress=(row.progress or 0)+1 end
  if status.phase=='ready'then row.ready=true;return true end
  return false
 end
@@ -264,12 +265,16 @@ function M.new(binding,api)
     if entry.page==page then return false,entry.reason end
    end end
   end
+  local pending,progress=false,0
   for _,row in pairs(s.records)do
    if not row.retired and row.page==page then
-    if not row.ready then return false,row.reason end
+    if row.reason then return false,row.reason end
+    pending=pending or not row.ready
+    progress=progress+(row.progress or 0)
    end
    if not row.retired and not row.ready and not row.page then return false,'UNAVAILABLE texture page owner' end
   end
+  if pending then return false,nil,progress end
   return true
  end
  return self
