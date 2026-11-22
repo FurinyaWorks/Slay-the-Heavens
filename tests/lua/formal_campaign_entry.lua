@@ -3,8 +3,8 @@
 -- no keys or historical wins are granted. This is not a natural playthrough.
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Map,Run=require('abyss_map'),require('abyss_run')
-local function awaitNativePage(host)
-    for _=1,80 do
+local function awaitNativePage(host,maxTicks)
+    for _=1,maxTicks or 80 do
         if not host.starting and not(host.prologue and host.prologue:covering())
             and not(host.pageReveal and host.pageReveal:covered())then assert(not host.disabled);return end
         OnUpdate(0.05)
@@ -143,7 +143,9 @@ local function fight(host,root,floor)
     awaitNativePage(host)
     local nextNode=Map.available(host.map)[1]
     assert(nextNode.floor==floor and host.mapUI:choose(nextNode.id))
-    awaitNativePage(host)
+    -- The Act 1 Guardian's narration and two scene fades take about six seconds.
+    local guardianEntry=host.run.act==1 and nextNode.type=='boss'
+    awaitNativePage(host,guardianEntry and 140 or nil)
     assert(host.mode=='battle' and host.run.phase=='combat')
     -- Controlled final-damage boundary; encounter construction and rewards stay real.
     for _,enemy in ipairs(host.run.combat.enemies)do enemy.hp=0 end
