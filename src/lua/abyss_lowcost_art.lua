@@ -16,9 +16,16 @@ local function current(pool,icon,state)
  return painted[pool]==state and pool.alive~=false and icon.alive~=false
   and icon.parent==state.parent and pool.parent==state.parent
 end
-local function fallback(pool,icon,state)
+local function fallback(pool,icon,state,restore)
  visible(pool,false)
- if current(pool,icon,state)then visible(icon,true)end
+ local active=painted[pool]
+ if not active or not current(pool,icon,active)then return end
+ if active~=state then
+  -- The outer visibility write may have hidden a newly painted event.
+  if not active.asset then return end
+  active.ready=false
+ elseif restore==false then return end
+ visible(icon,true)
 end
 local function check(pool,icon,state)
  if current(pool,icon,state)then return end
@@ -109,11 +116,8 @@ function M.hide(icon,restore)
  if not pool then return end
  local token={parent=icon.parent}
  painted[pool]=token
- visible(pool,false)
- if current(pool,icon,token)then
-  painted[pool]=nil
-  if restore~=false then visible(icon,true)end
- end
+ fallback(pool,icon,token,restore)
+ if current(pool,icon,token)then painted[pool]=nil end
 end
 function M.scale(icon,scale)
  local pool=poolFor(icon);local state=pool and painted[pool]

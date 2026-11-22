@@ -148,4 +148,26 @@ end
 assert(events==49)
 assert(not Art.paint(eventIcon,'event','missing',330,platform))
 assert(not eventPool.visible and eventIcon.visible)
+local firstEventShape=eventPool:GetChild('shape0')
+local setEventImage,setPoolVisible=firstEventShape.SetImage,eventPool.SetVisible
+local rejectImage,reenterOnHide
+function firstEventShape:SetImage(...)
+ if rejectImage then rejectImage=false;reenterOnHide=true;return false end
+ return setEventImage(self,...)
+end
+function eventPool:SetVisible(value)
+ if not value and reenterOnHide then
+  reenterOnHide=false
+  assert(Art.paint(eventIcon,'event','duplicator',330,platform))
+  assert(self.visible and not eventIcon.visible)
+ end
+ return setPoolVisible(self,value)
+end
+for _,id in ipairs({'face_trader','missing'})do
+ rejectImage=id~='missing';reenterOnHide=not rejectImage
+ assert(not Art.paint(eventIcon,'event',id,330,platform))
+ assert(not reenterOnHide and (eventPool.visible or eventIcon.visible),id..' reentry must leave a picture')
+ assert(Art.paint(eventIcon,'event','duplicator',330,platform))
+ assert(eventPool.visible and not eventIcon.visible)
+end
 print('EVENT_ART_POOL_PASS '..events..' '..masks)
