@@ -67,3 +67,21 @@ test('blessing, map and reward potion slots mount the same final battle faces in
   }
  }
 });
+
+test('battle and noncombat potion popups share compact panel and action tokens',()=>{
+ const tree=layout(),battle=child(tree,'battlePanel'),theme=officialAssetsTheme(nativeTheme);
+ const popup=child(child(battle,'potionHelp'),'potionPopup');
+ assert.deepEqual(child(tree,'potionPanel'),{...popup,name:'potionPanel',isolateNavigation:true});
+ assert.equal(child(popup,'plate').image,theme.image.rect);
+ assert.equal(child(popup,'plate').colour,theme.color.panel);
+ assert.equal(child(popup,'border').colour,theme.color.goldDim);
+ const use=child(popup,'use'),discard=child(popup,'discard');
+ assert.deepEqual(use.size,discard.size);
+ assert.ok(discard.position[0]-use.position[0]>use.size[0]);
+ for(const [button,tone] of [[use,'neutral'],[discard,'cancel']])for(const state of button.children){
+  const material=child(state,'roundedButton');
+  const colours=tone==='neutral'&&state.name==='disabled'?[theme.color.line,theme.color.panel]
+   :theme.officialAssets.roundedButtonPalettes[tone][state.name];
+  assert.deepEqual(material.children.map(layer=>child(layer,'horizontal').colour),colours);
+ }
+});

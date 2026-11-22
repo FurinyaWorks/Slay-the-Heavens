@@ -232,10 +232,10 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
         if cell and not more then M.paint(icon,relics[i],style.icon,platform,run)end
         paintCounter(slot,run,cell and not more and relics[i] or nil,official)
     end
-    function self.refreshBar(_,run,visible)
+    function self.refreshBar(_,run,visible,inputBlocked)
         local relics=run and run.relics or {}
         local style=official and battleBar or baseBar
-        self.barInteractive=official and visible and not self.visible or false
+        self.barInteractive=official and visible and not inputBlocked and not self.visible or false
         if not self.barInteractive or self.barRun~=run or self.hoverIndex and relics[self.hoverIndex]~=self.hoverId then
             self:resetBarHover()
         end
