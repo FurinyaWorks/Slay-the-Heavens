@@ -307,7 +307,7 @@ export function applyOfficialAssets(trees,theme){
   composeOfficialRun(tree,theme);
  }
  finishOfficialComposition(trees);
- for(const tree of trees)attachLowCostArt(tree);
+ for(const tree of trees)attachLowCostArt(tree,theme.lowCostArt?.event);
  // Camp and Match still hide all six semantic parents. Only configured slots
  // have input bindings or receive card data, so retire the other face payloads.
  const count=node=>1+children(node).reduce((sum,c)=>sum+count(c),0);

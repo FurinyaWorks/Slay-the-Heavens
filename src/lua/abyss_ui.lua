@@ -258,6 +258,7 @@ function OnStart()
               end,
               tweenSequence = game.TweenSequence, easeTypes = Enum.EaseType,
               imageTypes = Enum.ImageType and {basic=Enum.ImageType.Basic,stretch=Enum.ImageType.Stretch},
+              imageFillRight = Enum.ImageFillHorizontalType and Enum.ImageFillHorizontalType.Right,
               textAlignments = {horizontal=Enum.TextHorizontalAlignment,vertical=Enum.TextVerticalAlignment},
               cursorPosition = function() return game.GetCursorUIPos() end,
               touchScreen = function() return game.GetDevice() == Enum.Device.Mobile end,
