@@ -3,6 +3,7 @@ local Theme = require("abyss_theme")
 local number = require("abyss_numbers").integer
 local C = Theme.color
 local M = {}
+local RewardList = require("abyss_node_ui_treasure_list")
 
 -- Installs the treasure responsibility on one node UI instance.
 function M.install(ctx)
@@ -98,7 +99,7 @@ function M.install(ctx)
         local function renderTreasureReward()
             if opened and hasReward then
                 ctx.state(row, true) ctx.state(take, true, false, true)
-                ctx.relicPicture(row:GetChild('icon'),relicId,Theme.layout.nativeNode.treasure.rewardDisc,Theme.icon.gold)
+                RewardList.paintPicture(ctx,row,{kind=relicId and 'relic' or 'gold',id=relicId},Theme.layout.nativeNode.treasure.rewardDisc)
                 row:GetChild("name").text = relicId and ("遗物 · " .. name) or name
                 row:GetChild("description").text = boss and "使用左右按钮查看，领取其中一件" or relicId and ctx.relicText(relicId) or "遗物已全部持有，改为金币"
                 if boss then

@@ -112,7 +112,7 @@ print('${marker}')
  return stage;
 }
 
-test('official run HUD keeps complete health through the blessing, map and battle',t=>{
+test('official run HUD keeps complete health and the same live gold balance through blessing, map and battle',t=>{
  const stage=runOfficial(t,`
 local F=H.F
 local root=F.Viewport.apply(F.control({children=F.Layout}),1280,720)
@@ -126,17 +126,20 @@ local node=root:GetChild('nodePanel')
 local map=root:GetChild('mapPanel'):GetChild('resources')
 local battle=root:GetChild('battlePanel')
 assert(host.mode=='node' and node:GetChild('hp').text=='80/80')
+assert(node:GetChild('gold').text=='99')
 assert(F.click(root,'nodePanel','eventView/option1'))
 assert(F.click(root,'nodePanel','eventView/option2'))
 assert(host.run.hp==88 and host.run.maxHp==88 and node:GetChild('hp').text=='88/88')
 assert(F.click(root,'nodePanel','eventView/option1'))
 assert(host.mode=='map' and map:GetChild('hp').text=='88/88')
 assert(H.Run.increaseMaxHp(host.run,23))
+H.Run.gainGold(host.run,55)
 host:refresh()
-assert(map:GetChild('hp').text=='111/111')
+assert(map:GetChild('hp').text=='111/111' and map:GetChild('gold').text=='154')
 local first=assert(F.Nodes.available(host.run,host.map)[1])
 assert(host.mapUI:choose(first.id))
 assert(host.mode=='battle' and battle:GetChild('player').text=='111/111')
+assert(battle:GetChild('piles').text=='154')
 local combat=host.run.combat
 C.damage(combat,combat.enemies[1],combat.player,12,true)
 host:refresh()
@@ -153,9 +156,38 @@ assert(battle:GetChild('player').text=='99/111')
   assert(health.size[0]>='999/999'.length*.6*health.text.fontSize+4,pageName+' needs a full health line with native text padding');
   assert(left(health)-right(heart)>=3,pageName+' health clears the heart');
   assert(left(gold)-right(health)>=4,pageName+' health clears the gold icon');
+  assert(right(gold)<left(child(resources,pageName==='battlePanel'?'piles':'gold')),pageName+' gold icon clears the amount');
   const hints=child(page,'resourceHints');
   if(hints)assert(left(child(hints,'gold'))-right(child(hints,'hp'))>=4,pageName+' resource hints stay separate');
  }
+});
+
+test('recycled treasure rows show the gold bag or the relic illustration as their reward changes',t=>{
+ runOfficial(t,`
+local F=H.F
+local root=F.Viewport.apply(F.control({children=F.Layout}),1280,720)
+local treasure=root:GetChild('nodePanel'):GetChild('treasureView')
+local paint=require('abyss_node_ui_treasure_list').paintPicture
+local relic=require('abyss_relic_view_ui')
+local theme=require('abyss_theme')
+local platform={imageSource='static'}
+local c={
+ show=function(control,visible)control:SetVisible(visible)end,
+ relicPicture=function(control,id,size,fallback)relic.paint(control,id,size,platform,nil,fallback)end,
+}
+for _,name in ipairs({'reward','rewardItem1'})do
+ local row=treasure:GetChild(name)
+ local icon,bag=row:GetChild('icon'),row:GetChild('goldBag')
+ assert(not bag.visible)
+ for _,kind in ipairs({'gold','relic','gold','sapphire'})do
+  paint(c,row,{kind=kind,id=kind=='relic' and 'burning_blood' or nil},48)
+  assert(bag.visible==(kind=='gold'),name..'/'..kind)
+  if kind=='gold' then assert(not icon.visible and not row:GetChild('iconArt').visible) end
+  if kind=='relic' then assert(icon.imageId==relic.icon('burning_blood',true)) end
+  if kind=='sapphire' then assert(icon.visible and icon.imageId==theme.icon.node.treasure.id) end
+ end
+end
+`,'OFFICIAL_TREASURE_GOLD_BAG_PASS');
 });
 
 test('official long reward descriptions keep the same full illustration and type slots on recycled shared faces',t=>{

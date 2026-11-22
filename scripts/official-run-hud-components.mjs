@@ -1,3 +1,5 @@
+import {goldBag} from './v25-character-layout.mjs';
+
 // One official run HUD material. Existing pages retain their live writer and
 // input handles; mounting a component never creates another action owner.
 const parts=node=>node?.children??node?.controls??[];
@@ -6,10 +8,15 @@ const clone=structuredClone;
 
 export function prepareOfficialRunHud(root,theme){
  const hud=theme.officialAssets.battleHud,bar=child(root,'topBar');
- for(const [name,key,font]of [['hpIcon','hpIcon'],['player','hp',hud.numberSize],['goldIcon','goldIcon'],['piles','gold',hud.numberSize]]){
+ for(const [name,key,font]of [['hpIcon','hpIcon'],['player','hp',hud.numberSize],['piles','gold',hud.numberSize]]){
   const node=child(root,name);node.position=hud[key].slice(0,2);node.size=hud[key].slice(2);
   if(font&&node.text)Object.assign(node.text,{fontSize:font,minFontSize:14,align:'left'});
  }
+ const gold=child(root,'goldIcon'),[x,y,width,height]=hud.goldIcon;
+ delete gold.image;delete gold.colour;
+ // Keep the display bounds for the shared resource hint and layout checks.
+ Object.assign(gold,{kind:'container',position:[x,y],size:[width,height],
+  children:[goldBag('bag',theme,[0,0],[width,height],{compact:true})]});
  child(root,'floor').visible=false;
  const heading=clone(child(root,'player'));heading.name='officialHeroHeading';
  heading.position=hud.heading.slice(0,2);heading.position[1]-=hud.y;heading.size=hud.heading.slice(2);
@@ -94,6 +101,7 @@ export function officialRunHudComponent(battle){
 export function mountOfficialResource(node,reference){
  if(!node)return;
  const name=node.name,content=node.text?.content;
+ if(node.kind==='image'&&reference.kind==='container'){delete node.image;delete node.colour;}
  Object.assign(node,clone(reference),{name});
  if(node.text)node.text.content=content;
 }
