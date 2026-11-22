@@ -157,19 +157,25 @@ for(const after of [...Object.values(stasis.added),...Object.values(actorFocus.a
 const priorCurrent=path=>layers.find(layer=>Object.hasOwn(layer,path))?.[path]??
  (Object.hasOwn(actorFocus.added,path)?actorFocus.added[path]:undefined);
 const current=path=>Object.hasOwn(sessionRelic.files,path)?sessionRelic.files[path]:priorCurrent(path);
-export const developBackflowOwns=path=>relicDetailOwns(path)||current(path)!==undefined;
+const priorDevelopBackflowOwns=path=>relicDetailOwns(path)||current(path)!==undefined;
 const roomEntryArchive=readFileSync(new URL('../fixtures/develop-map-room-entry-source.json.gz',import.meta.url));
 assert.equal(hash(roomEntryArchive),'bff89df36b2fbbf1bec727dae075c632dba48d50c6c8c75b8e3f271d7600c160','exact Develop map-room predecessor archive');
 const roomEntry=JSON.parse(gunzipSync(roomEntryArchive));
 assert.equal(roomEntry.base,'d7ae494a3136b2f4f707428fefeeae478c6e0495');
+const mapRoomBackflowOwns=path=>Object.hasOwn(roomEntry.files,path);
+export const developBackflowOwns=path=>mapRoomBackflowOwns(path)||priorDevelopBackflowOwns(path);
 for(const [path,{before,after}] of Object.entries(roomEntry.files)){
- assert(developBackflowOwns(path)||/^src\/lua\/abyss_[a-z0-9_]+\.lua$/.test(path),'map-room replay owner: '+path);
+ assert(priorDevelopBackflowOwns(path)||/^src\/lua\/abyss_[a-z0-9_]+\.lua$/.test(path),'map-room replay owner: '+path);
  assert(matches(before.source,before),'exact Develop map-room predecessor: '+path);
  assert.match(after.sha256,/^[a-f0-9]{64}$/);
  assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
 }
 export function assertDevelopBackflowCurrent(path,source){
- source=roomEntryCurrent(path,source);
+ if(mapRoomBackflowOwns(path)){
+  assert(matches(source,roomEntry.files[path].after),'fresh current production owner: '+path);
+  if(!priorDevelopBackflowOwns(path))return;
+  source=predecessor(roomEntry.files,path,source);
+ }
  if(relicDetailOwns(path)){
   assertRelicDetailCurrent(path,source);
   return;
@@ -189,11 +195,6 @@ function predecessor(layer,path,source){
  const before=layer[path].before.source;
  return source.includes('\r\n')?before.replaceAll('\n','\r\n'):before;
 }
-function roomEntryCurrent(path,source){
- if(!Object.hasOwn(roomEntry.files,path))return source;
- assert(matches(source,roomEntry.files[path].after),'fresh current production owner: '+path);
- return predecessor(roomEntry.files,path,source);
-}
 function mapRoomOwnerError(path){
  return 'combined linked owner identity: '+path+' changed during Develop backflow validation (map-room validation)';
 }
@@ -201,7 +202,7 @@ function mapRoomOwnerReader(read,historicalOwners){
  let epoch;
  return path=>{
   const source=read(path);
-  if(!Object.hasOwn(roomEntry.files,path))return source;
+  if(!mapRoomBackflowOwns(path))return source;
   const current=matches(source,roomEntry.files[path].after);
   const binding=historicalOwners&&Object.hasOwn(historicalOwners,path)?historicalOwners[path]:undefined;
   const exactHistorical=binding===null?source==null:
