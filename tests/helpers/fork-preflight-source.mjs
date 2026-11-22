@@ -443,7 +443,7 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
- const releaseRead=(path,encoding)=>beforeRebasedRelease(path,read(path,encoding));
+ const releaseRead=(path,encoding)=>beforeRebasedRelease(path,beforeDevelopBackflow(path,read(path,encoding)));
  assertReleaseCapacityCohort(releaseRead);
  assertRefinedReleaseSourcesCurrent((path,encoding)=>beforeReleaseCapacitySource(path,shopEntryPreflightRead(releaseRead)(path,encoding)));
  for(const [path,row] of Object.entries(coopLabCi.files)){
