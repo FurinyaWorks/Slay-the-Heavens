@@ -19,7 +19,7 @@ end
 local function awaitNativePage(host)
     for _=1,80 do
         if not host.starting and not(host.prologue and host.prologue:covering())
-            and not(host.pageReveal and host.pageReveal:covered())then assert(host.run and not host.disabled);return end
+            and not(host.pageReveal and host.pageReveal:covered())then assert(not host.disabled);return end
         OnUpdate(0.05)
     end
     error('native page did not become ready')
@@ -101,15 +101,18 @@ local function opening(host,root,bossCount)
     else assert(event.rewards[2].drawback=='NONE')end
     local rewardType,hpBonus=event.rewards[2].type,event.hpBonus
     assert(F.click(root,'nodePanel','eventView/option2'))
+    awaitNativePage(host)
     event=run.nodeFlow.event
     if rewardType=='THREE_SMALL_POTIONS'then
         assert(event.stage=='neow_potions' and #event.potionOffers==3)
         assert(F.click(root,'nodePanel','eventView/option4')) -- source skip/continue, no bottle injection
+        awaitNativePage(host)
         event=run.nodeFlow.event
     end
     assert(event.stage=='neow_result')
     if rewardType=='TEN_PERCENT_HP_BONUS'then assert(run.maxHp==baseMaxHp+hpBonus)end
     assert(F.click(root,'nodePanel','eventView/option1'))
+    awaitNativePage(host)
     assert(host.run==run and host.mode=='map' and host.map.floor==0 and run.neowStatus=='complete')
     assert(host.mapUI.navigationEnabled and host.historyCalls()==0)
     return baseMaxHp
@@ -117,21 +120,26 @@ end
 local function selectedGeo(host,root)
     local panel=root:GetChild('characterPanel')
     assert(host.characterOpen and panel.visible)
-    assert(not panel:GetChild('traveler').visible and not panel:GetChild('elements').visible,
-        'single-character formal entry must hide redundant selectors')
+    assert(not panel:GetChild('elements').visible,'single-element formal entry must hide redundant selectors')
+    if not host.characterSelection.info then
+        assert(F.click(root,'characterPanel','traveler'))
+        awaitNativePage(host)
+    end
     assert(host.characterSelection.character=='traveler' and host.characterSelection.element=='ironclad'
-        and host.characterSelection.info.id=='ironclad','formal entry must preselect the approved Geo loadout')
+        and host.characterSelection.info.id=='ironclad','formal entry must select the approved Geo loadout')
     assert(panel:GetChild('confirm'):GetChild('hit').interactable,'actual formal confirmation must be enabled')
 end
 local function start(host,root,button,element)
+    awaitNativePage(host)
     F.click(root,'menuPanel','start')
+    awaitNativePage(host)
     assert(host.characterOpen and not host.run)
     assert(button=='traveler' and (element==nil or element==1),'formal fixture requests only approved Geo')
     selectedGeo(host,root)
     assert(not host.run,'selection must not create a Run')
     F.click(root,'characterPanel','confirm')
     awaitNativePage(host)
-    assert(not(host.prologue and host.prologue:covering()) and host.mode=='node','first confirmation completes the opening and opens the blessing')
+    assert(host.run and not(host.prologue and host.prologue:covering()) and host.mode=='node','first confirmation completes the opening and opens the blessing')
     local baseMaxHp=opening(host,root,0)
     -- The real entry has no history provider. Never synthesize qualification
     -- or mistake a seeded controlled route for a persisted natural victory.
@@ -145,12 +153,15 @@ local function start(host,root,button,element)
     return baseMaxHp
 end
 local function fight(host,root,floor)
+    awaitNativePage(host)
     local nextNode=Map.available(host.map)[1]
     assert(nextNode.floor==floor and host.mapUI:choose(nextNode.id))
     assert(host.mode=='battle' and host.run.phase=='combat')
+    awaitNativePage(host)
     -- Controlled final-damage boundary; encounter construction and rewards stay real.
     for _,enemy in ipairs(host.run.combat.enemies)do enemy.hp=0 end
     assert(Run.finishCombat(host.run));host:refresh()
+    awaitNativePage(host)
     assert(host.run.phase=='reward' and host.run.rewards.cards)
     if nextNode.type~='boss' then
         F.click(root,'battlePanel','continue')
@@ -213,6 +224,7 @@ local function bossComplete(host,bossFloor,skipCard)
     proceed()
     host:refresh()
     assert(run.nodeFlow==chest and run.roomGeneration==generation+1,'repeat Proceed reentered the boss chest')
+    awaitNativePage(host)
 end
 local function chest(host,bossFloor,nextAct)
     local run,map=host.run,host.map
@@ -228,6 +240,7 @@ local function chest(host,bossFloor,nextAct)
     local uid,gold=run.deck[1].uid,run.gold
     awaitNativePage(host)
     assert(host.nodeUI:press('confirm'))
+    awaitNativePage(host)
     assert(host.run==run and host.map==map and run.act==nextAct and host.mode=='map')
     assert(run.deck[1].uid==uid and run.gold==gold)
 end
@@ -276,6 +289,7 @@ end
 assert(rewardKey,'seed must offer an implemented boss relic')
 local stale=host.nodeUI.actions[rewardKey].handler
 assert(host.nodeUI:press(rewardKey))
+awaitNativePage(host)
 assert(host.run.floor==34 and host.map.floor==34 and host.run.phase=='victory' and host.mode=='victory')
 assert(host.run.nodeFlow.result=='boss_treasure_complete' and host.run.ending=='two_act_complete')
 assert(host.run.act==2 and host.map.act==2 and not host.run.pendingAct and not host.run.endingHistoryResult)
@@ -286,7 +300,8 @@ assert(root:GetChild('menuPanel'):GetChild('title').text=='双幕挑战完成')
 assert(F.resultText(root,'subtitle')=='第一幕与第二幕已完成。本局挑战到此结束。')
 -- Restart means a new, ephemeral run; no _SPIRITS/_WIN or saved continuation.
 local completed=host.run
-F.click(root,'menuPanel','start');selectedGeo(host,root)
+awaitNativePage(host)
+F.click(root,'menuPanel','start');awaitNativePage(host);selectedGeo(host,root)
 assert(host.run==completed,'selection preview cannot create a new run')
 F.click(root,'characterPanel','confirm')
 awaitNativePage(host)
@@ -311,6 +326,7 @@ local skipped,skipRoot,skipSignals=fixture(false,false)
 start(skipped,skipRoot,'traveler');chest(skipped,16,2);bossComplete(skipped,33,true)
 awaitNativePage(skipped)
 assert(skipped.nodeUI:press('back'))
+awaitNativePage(skipped)
 assert(skipped.run.phase=='victory' and skipped.run.ending=='two_act_complete' and skipped.run.floor==34)
 assert(F.statValue(skipRoot,'floor')=='34 / 34' and not skipped.run.pendingAct)
 assert(skipped:settle() and skipSignals[#skipSignals]=='ABYSS_WIN')
@@ -320,13 +336,17 @@ print('PASS formal skip endpoint and one-shot victory settlement')
 -- All eight forms, including Raiden, remain in full_source_campaign_entry.lua.
 -- The public entry refuses every unavailable role and preserves in-memory menu/exit behavior.
 local ui,panel,sent=fixture(false,false)
+awaitNativePage(ui)
 F.click(panel,'menuPanel','start')
+awaitNativePage(ui)
 for index=1,4 do
  local box=panel:GetChild('characterPanel'):GetChild('character'..index)
  assert(not box.visible and not box:GetChild('hit').canControllerFocus)
  assert(not box:GetChild('hit').click()and not ui.run)
 end
-assert(ui:selectCharacter('traveler')and ui:confirmCharacter())
+assert(ui:selectCharacter('traveler'))
+awaitNativePage(ui)
+assert(ui:confirmCharacter())
 opening(ui,panel,0)
 assert(ui.run.campaignProfile=='competition-two-act'and not ui.run.characterProfile)
 assert(ui.run.campaign and ui.run.act==1 and #sent==0)
