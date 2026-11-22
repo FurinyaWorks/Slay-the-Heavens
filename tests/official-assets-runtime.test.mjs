@@ -1036,6 +1036,49 @@ assert(host.run.nodeFlow.complete and not shelf.visible,'leaving through the vis
 `, 'OFFICIAL_SHOP_ROUTE_INK_PASS');
 });
 
+test('official draw pile return paints shared hover and press without changing the hit target',t=>{
+ runOfficial(t,`
+local host,_,_,_,_,_,_,root=H.setup({'strike','defend'},{'cultist'})
+local deck,panel=host.deckUI,root:GetChild('deckPanel')
+local button=panel:GetChild('pileReturn')
+local hit,art=button:GetChild('hit'),button:GetChild('art')
+local chrome=art:GetChild('roundedButton')
+local theme=require('abyss_theme')
+local palette=theme.officialAssets.roundedButtonPalettes.cancel
+local function state(expected)
+ for i,role in ipairs({'rim','cloth'})do
+  for _,part in ipairs(chrome:GetChild(role):GetChildren())do
+   sameColour(part.imageColor,palette[expected][i],expected..' '..role)
+  end
+ end
+ local scale=expected=='pressed' and theme.layout.deckView.pressedScale or 1
+ assert((art.localScaleX or 1)==scale and (hit.localScaleX or 1)==1,'only the visible face may scale on press')
+end
+local function event(kind,id)return hit.listeners[kind]({touchId=id})end
+local function openDraw()
+ assert(host:openDeck('draw'));host:update(0)
+ assert(deck.pileKind=='draw' and button.visible)
+end
+openDraw()
+event('enter');state('hover')
+event('down');state('pressed')
+event('up');state('hover')
+event('exit');state('normal')
+assert(not event('click') and deck.visible,'leaving must discard the pending click')
+event('down',7);state('pressed')
+event('up',8);state('pressed')
+event('endDrag',7);state('normal')
+event('up',7);assert(not event('click',7) and deck.visible,'drag cancellation must prevent navigation')
+event('down',9);event('up',9);state('normal')
+assert(event('click',9) and not deck.visible,'matching touch still returns to battle')
+openDraw();event('enter');state('hover')
+assert(host:closeDeck());state('normal')
+event('enter');state('normal')
+openDraw();state('normal')
+event('enter');event('down');event('up');assert(event('click') and not deck.visible)
+`, 'OFFICIAL_PILE_RETURN_FEEDBACK_PASS');
+});
+
 test('official browser return rejects stale clicks across new choices and browser generations',t=>{
  runOfficial(t,`
 local host,_,_,_,_,_,_,root=H.setup({'strike','defend'},{'cultist'})
