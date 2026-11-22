@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {exactSourceMatches as matches} from './source-fingerprint.mjs';
-import {authenticateInputRetirement,beforeInputRetirement,beforeInputRetirementReader,inputRetirementOwns,isCurrentInputRetirementSource,assertPointerInputSource,pointerInputPath,retiredControllerPath,readRetiredController} from './input-retirement-source.mjs';
+import {authenticateInputRetirement,beforeInputRetirement,beforeInputRetirementReader,inputRetirementOwns,isCurrentInputRetirementSource,beforeCombatEvents,combatEventsOwns,assertPointerInputSource,pointerInputPath,retiredControllerPath,readRetiredController} from './input-retirement-source.mjs';
 import {assertRelicDetailCurrent,authenticateRelicDetail,beforeRelicDetail,relicDetailOwns} from './relic-detail-source.mjs';
 import {beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';
 import {authenticateActionButtons,beforeActionButtons,actionButtonsOwns} from './action-buttons-source.mjs';
@@ -183,11 +183,11 @@ for(const [path,{before,after}] of Object.entries(deckPages.files)){
 }
 export const deckPagesAdded=Object.freeze(Object.keys(deckPages.added));
 function deckPagesPrior(path,source){return predecessor(deckPages.files,path,source);}
-export function beforeDeckPages(path,source,options){return deckPagesPrior(path,beforeInputRetirement(path,beforeActionButtons(path,source),options));}
+export function beforeDeckPages(path,source,options){return deckPagesPrior(path,beforeInputRetirement(path,beforeCombatEvents(path,beforeActionButtons(path,source)),options));}
 const deckPagesOwns=path=>Object.hasOwn(deckPages.files,path);
 const productionOwner=path=>path===architecturePath||path.startsWith('src/lua/');
 const recentBackflowOwns=path=>mapRoomBackflowOwns(path)||deckPagesOwns(path)||(productionOwner(path)&&inputRetirementOwns(path));
-export const developBackflowOwns=path=>actionButtonsOwns(path)||recentBackflowOwns(path)||priorDevelopBackflowOwns(path);
+export const developBackflowOwns=path=>combatEventsOwns(path)||actionButtonsOwns(path)||recentBackflowOwns(path)||priorDevelopBackflowOwns(path);
 const matchEventRepairPath='src/lua/abyss_match_event_ui.lua';
 const beforeMatchEventRepair=(path,source)=>path===matchEventRepairPath?beforeNativeFlowFixture(path,source):source;
 
@@ -198,8 +198,17 @@ function currentRecentBackflowOwner(path,source){
 }
 export function assertDevelopBackflowCurrent(path,source){
  const priorActions=beforeActionButtons(path,source);
- if(priorActions!==source)source=priorActions;
- else if(actionButtonsOwns(path)&&!recentBackflowOwns(path)&&!priorDevelopBackflowOwns(path))assert.fail('fresh current production owner: '+path);
+ if(actionButtonsOwns(path)&&!recentBackflowOwns(path)&&!priorDevelopBackflowOwns(path)){
+  assert.notEqual(priorActions,source,'fresh current production owner: '+path);
+  return;
+ }
+ source=priorActions;
+ if(combatEventsOwns(path)){
+  const priorEvents=beforeCombatEvents(path,source);
+  assert.notEqual(priorEvents,source,'fresh current production owner: '+path);
+  if(!recentBackflowOwns(path)&&!priorDevelopBackflowOwns(path))return;
+  source=priorEvents;
+ }
  source=beforeMatchEventRepair(path,source);
  if(recentBackflowOwns(path)){
   assert(currentRecentBackflowOwner(path,source),'fresh current production owner: '+path);
@@ -323,8 +332,17 @@ export function authenticateDevelopBackflow(path,source,read,options){
 function authenticateDevelopBackflowWithReaders(path,source,readLive,readLinked,options){
  source=authenticateActionButtons(path,source,readLive);
  const readActions=owner=>beforeActionButtons(owner,readLive(owner));
- const retiredInput=authenticateInputRetirement(path,source,readActions,options);
- const readInputLive=beforeInputRetirementReader(readActions),readInputLinked=beforeInputRetirementReader(readLinked);
+ const beforeCloseout=beforeCombatEvents(path,source);
+ if(beforeCloseout!==source){
+  const live=readActions(path);
+  assert(typeof live==='string'&&live.replaceAll('\r\n','\n')===source.replaceAll('\r\n','\n'),
+   'combined linked owner identity: '+path+' during combat/event backflow validation');
+ }
+ source=beforeCloseout;
+ const readCloseout=owner=>beforeCombatEvents(owner,readActions(owner));
+ const retiredInput=authenticateInputRetirement(path,source,readCloseout,options);
+ const readInputLive=beforeInputRetirementReader(readCloseout);
+ const readInputLinked=beforeInputRetirementReader(owner=>beforeCombatEvents(owner,readLinked(owner)));
  const readDeckLive=owner=>deckPagesPrior(owner,readInputLive(owner));
  const deckPrior=deckPagesPrior(path,retiredInput);
  if(deckPrior!==retiredInput){

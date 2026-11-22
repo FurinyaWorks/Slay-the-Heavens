@@ -286,7 +286,8 @@ const inputRetirementFiles=Object.freeze({
  'tests/helpers/game-ui-extraction-source-inverse.mjs':'53382c07cd63cd010a8aa3c9b2dc12ba3a38ac628d3104cce8eb2ef3c8c33d8c',
  [runtime]:'4bf2e1c7038d0bbe0bffd85ec5be1c4685811b63bf79653f56756779b5463348',
  'tests/helpers/develop-release-backflow-source.mjs':'cf5458eeed5203f9264cfc1c60f1ec0e8c37ec4840cae06668a8002edaf94a7f',
- 'tests/helpers/input-retirement-source.mjs':'e1baf52f24fc6094236919fd9cfe140072049ed131052b16339e2bf5a2d1c544',
+ 'tests/helpers/input-retirement-source.mjs':'2b13027c13b868eebf20c8b7028d3a051a7e5b9f1740cb1c8edaa0d137e63f2e',
+ 'tests/fixtures/develop-combat-events-source.json.gz':'cba13fa1ef76da1402fc54fdc4c172e7e3012a9d61cb2383ebbbd77e31223b57',
  'tests/helpers/character-preparation-source.mjs':'f4758613abd573df8543411e535a5644f952352f5ce5e67650c89ba2059cc771',
  'tests/helpers/rebased-release-source.mjs':'09cd53484024ec226c747686da16d05ee229b763b41f55533d92d2d1a6cd35a5',
  'tests/helpers/native-host-replay-source.mjs':'9a9adcd1ffd1f89db073f735335ccbb51d4112bf8a4ff83de9bf2338f81b19b7',
@@ -307,7 +308,7 @@ const inputRetirementFiles=Object.freeze({
 });
 const actionButtonFiles=Object.freeze({
  ...inputRetirementFiles,
- 'tests/helpers/develop-release-backflow-source.mjs':'16122d2dd752891c85f49e408455b0b7bb3f518905ca8b494c899e8c06baaf75',
+ 'tests/helpers/develop-release-backflow-source.mjs':'d2726d04a3c6d575c783314da979cadbb77c767aedbee2bf85daaa77da446674',
  'tests/helpers/action-buttons-source.mjs':'fdb6c73f52cf92fededa3d48fded11f05e21356ec66864a43c54bdf51781d4cd',
  'tests/fixtures/action-buttons-source.json.gz':'86634a756c4085906261d4d318118bb1f7692a642479651526c1ace0fefe4487',
 });

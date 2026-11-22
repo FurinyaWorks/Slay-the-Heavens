@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
+import {beforeActionButtons} from './action-buttons-source.mjs';
 import {beforeNativeFixtureInputRetirement} from './native-fixture-replay-source.mjs';
 import {beforeNativeHostInputRetirement} from './native-host-replay-source.mjs';
 import {beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';
@@ -39,7 +40,23 @@ function configLayoutMatches(source,expected,{allowConfigLayout=false}={}){
  try{JSON.parse(source);return true;}catch{return false;}
 }
 
+const combatEventsArchive=readFileSync(new URL('../fixtures/develop-combat-events-source.json.gz',import.meta.url));
+assert.equal(hash(combatEventsArchive),'cba13fa1ef76da1402fc54fdc4c172e7e3012a9d61cb2383ebbbd77e31223b57','exact Develop combat and event sources');
+const combatEvents=JSON.parse(gunzipSync(combatEventsArchive));
+assert.equal(combatEvents.base,'0397645a8ffa5eb8af2e02d7c033ef5c486fbf1e');
+for(const [path,row] of Object.entries(combatEvents.files)){
+ assert(/^(?:scripts|src\/lua)\//.test(path)&&matches(row.before.source,row.before),'exact combat/event predecessor: '+path);
+ assert.match(row.after.sha256,/^[a-f0-9]{64}$/);assert.match(row.after.gitBlob,/^[a-f0-9]{40}$/);
+}
+export const combatEventsOwns=path=>Object.hasOwn(combatEvents.files,path);
+export function beforeCombatEvents(path,source){
+ const row=Object.hasOwn(combatEvents.files,path)&&combatEvents.files[path];
+ if(!row||!matches(source,row.after))return source;
+ return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
+}
+
 export function beforeMergedInputRetirement(path,source,options){
+ source=beforeCombatEvents(path,beforeActionButtons(path,source));
  if(path==='scripts/potion-discard-layout.mjs')source=beforeNativeFlowFixture(path,source);
  return beforeNativeHostInputRetirement(path,beforeNativeFixtureInputRetirement(path,source,options),options);
 }
@@ -80,7 +97,8 @@ export function authenticateInputRetirement(path,source,read,options){
  try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
  const witness=beforeMergedInputRetirement(path,live);
  const merged=beforeMergedInputRetirement(path,source)!==source;
- assert((witness!==live)===merged&&matches(witness,files[path].after),
+ assert((witness!==live)===merged&&matches(witness,files[path].after)
+  &&(!merged||normalize(live)===normalize(source)),
   'combined linked owner identity: '+path+' during input retirement validation');
  return prior;
 }
