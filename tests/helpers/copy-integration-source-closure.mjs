@@ -84,13 +84,15 @@ const refinedReleaseFiles=Object.freeze({
 const loadingRecoveryFiles=Object.freeze({
  ...refinedReleaseFiles,
  'tests/helpers/pc13-reward-cover-source.mjs':'cd9cf4d774a92df100e6e367bdbc41a58fa281cef428316f1671fd878167cd92',
- 'tests/helpers/loading-recovery-source.mjs':'4c1f7ecbb81a3fcc3fb44c32c340895b0832465988aadb26818b76d1ccb3c097',
+ 'tests/helpers/loading-recovery-source.mjs':'43bc339bf238105e3967e774cc6fa15091d386d8ad9746671bc9c2865780c4f4',
  'tests/helpers/release-map-deck-source.mjs':'c661e5dfa5035a09a47935bd7bfbc3e1f37b992d809bc7387d93e757c3df6fd5',
  'tests/helpers/release-map-room-source.json.gz':'834f71a1a70fe4858c4874497f8f7b46ae02a8f1949041aacc2d91353d190b13',
  'tests/helpers/release-map-deck-source.json.gz':'8e16866bcec2fdc7628cbc91f7a74f09c18b9f621c6e065b75b2c98a8172a2d4',
  'tests/helpers/combat-visual-source.mjs':'6fbf561edae2163cb68163834289ea70b8ec94868507677be0f21fd9cabbfc7b',
  'tests/fixtures/combat-visual-source.json.gz':'c182bc4a8f2afef8e3aec0b32a43dcfd2c4f0c214763a34a86dec8e07daadc3d',
- 'tests/helpers/energy-reference-source.mjs':'c640c2cf869dc51bcb4b47f143f91e3cb799bec0a80212166592a8c8c29f59c1',
+ 'tests/helpers/energy-reference-source.mjs':'a8db68450b733114e4b5cb9c345d6d7935b9309e150e4ce7717e9c833e4df0ad',
+ 'tests/fixtures/release-reward-entry-source.json.gz':'1ebaf2212130772f299fc9dca4a0664dbdf768a75bd3c5899a52d2efd38b7b1b',
+ 'tests/fixtures/release-reward-transition-source.json.gz':'a25a1fd1ad58ef7d504ec2743fd32fa6aa2a54c5e4b41734c1f3a9bb092478d2',
  'tests/fixtures/energy-reference-source.json.gz':'2b0f8c497c73a8afca47b01a41c7c8800f92c2879202c827df663269329ef19e',
  'tests/helpers/recording-0401-source.json.gz':'9af199338e44fb660599900c5474624853f02be24aa5590029f37cee2a551e24',
 });

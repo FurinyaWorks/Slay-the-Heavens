@@ -70,7 +70,7 @@ for(const {before,after} of Object.values(releaseUiBuild.files)){
 function beforeLoadingRecoveryCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=normalize(source);
- if(hash(lf)!=='59aea7227a28551936a3014fba1ca713079961f73cd56e164c92c2094c3ae5fc')return source;
+ if(hash(lf)!=='92da908833bf36c0c924b5752c582c78302cd794b53f01eedb49fbb5956d3f4c')return source;
  const prior=lf.replace(/const loadingRecoveryFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
   .replace('Object.entries(loadingRecoveryFiles))','Object.entries(refinedReleaseFiles))');
  assert.equal(hash(prior),'42a2fae24acaca0ff0214e5e0e592b2ff4cfd7f1e506578ba36faf327d17ae87','exact loading recovery helper copy predecessor');

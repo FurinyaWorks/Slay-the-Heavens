@@ -29,8 +29,8 @@ const sources={
     ],
   },
   'tests/sts-page-reveal.test.mjs':{
-    after:'51a2673d70699bbbce4de7debce36ec78914796d7a4b321a6a57f45768332598',
-    before:'ac2064f70e5eeac6ee3cbd8ddf97d95d7bdb232eb0686af93af3d42ffad9aa83',
+    after:'e91c95b68e2f6cccec2bc194a661433af5223a643d58734827c4ca56db18c371',
+    before:'828db52f47c9082190dac88f6eb74b49fb9bae45420fbc5a843de2a61987f5e9',
     edits:[
       ["\nfor _,operation in ipairs({'lookup','visibility'})do\n local nested,events,trigger=nil,{},true\n local replacement={page='mapPanel',run={}}\n local function reenter()\n  if not trigger then return end\n  trigger=false\n  assert(nested:request(replacement))\n end\n local recovery={SetVisible=function()if operation=='visibility'then reenter()end end}\n local native={SetVisible=function()end,SetAsLastSibling=function()end,GetChild=function(_,name)\n  if name~='cancel'then return end\n  if operation=='lookup'then reenter()end\n  return recovery\n end}\n nested=Gate.new(native,function()return false end,function(epoch)events[#events+1]=epoch end)\n assert(not nested:request({page='menuPanel',run={}}),'superseded request advanced after recovery '..operation)\n assert(nested.intent==replacement and #events==1 and events[1]==nested.epoch,'stale recovery request notified the newer epoch')\nend\n",''],
       [`
