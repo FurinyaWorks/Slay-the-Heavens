@@ -47,7 +47,31 @@ const portraitLifecycle=JSON.parse(gunzipSync(portraitLifecycleArchive));
 assert.equal(portraitLifecycle.base,'8a59d03c26ec54360c4e6953958522dc8d2e8d07');
 assert.deepEqual(Object.keys(portraitLifecycle.files),["src/lua/abyss_traveler_portraits.lua"]);
 for(const path of Object.keys(portraitLifecycle.files))assert(![cardDisplay.files,mapRender.files,files,shop].some(layer=>Object.hasOwn(layer,path)),'distinct Develop portraitLifecycle source owner: '+path);
-const layers=[portraitLifecycle.files,cardDisplay.files,mapRender.files,files,shop];
+const sessionRelicArchive=readFileSync(new URL('../fixtures/develop-session-relic-source.json.gz',import.meta.url));
+assert.equal(hash(sessionRelicArchive),'c5420298bbdf7cb8894d9839bdc48c8bd4b3ea3da004789a0f88ca465fef67bd','exact Develop session relic predecessor archive');
+const sessionRelic=JSON.parse(gunzipSync(sessionRelicArchive));
+assert.equal(sessionRelic.base,'2f9444dcbd33ac71a6507db1775be5b70533e68a');
+assert.deepEqual(Object.keys(sessionRelic.files),[
+ 'config/architecture.json',
+ 'src/lua/abyss_boss_relics.lua',
+ 'src/lua/abyss_node_ui.lua',
+ 'src/lua/abyss_relic_card_rewards.lua',
+ 'src/lua/abyss_relic_choices.lua',
+ 'src/lua/abyss_relic_hooks.lua',
+ 'src/lua/abyss_relic_pending.lua',
+ 'src/lua/abyss_relic_pending_ui.lua',
+ 'src/lua/abyss_run.lua',
+ 'src/lua/abyss_run_settlement.lua',
+ 'src/lua/abyss_shop_relics.lua',
+ 'src/lua/abyss_uncommon_relics.lua',
+ 'tests/helpers/combined-epoch/source-epoch-runtime.mjs',
+]);
+const priorLayers=[portraitLifecycle.files,cardDisplay.files,mapRender.files,files,shop];
+for(const [path,row] of Object.entries(sessionRelic.files)){
+ const prior=priorLayers.find(layer=>Object.hasOwn(layer,path))?.[path];
+ if(prior)assert(matches(row.before.source,prior.after),'exact session relic predecessor: '+path);
+}
+const layers=[sessionRelic.files,...priorLayers];
 for(const {before,after} of layers.flatMap(layer=>Object.values(layer))){
  assert.equal(hash(before.source),before.sha256);
  assert.equal(blob(before.source),before.gitBlob);
@@ -64,19 +88,26 @@ function matches(source,expected){
 export function assertDevelopBackflowCurrent(path,source){
  assert(matches(source,current(path).after),'fresh current production owner: '+path);
 }
-function predecessor(layer,path,source){
- if(!Object.hasOwn(layer,path)||!matches(source,layer[path].after))return source;
+export const configSourceTokens=source=>source.replace(/"(?:\\.|[^"\\])*"|[ \t\r\n]+/g,token=>token.startsWith('"')?token:'');
+function matchesInput(source,row,allowConfigLayout){
+ if(matches(source,row.after))return true;
+ if(!allowConfigLayout||!row.after.tokensSha256||typeof source!=='string'||source.includes('\r\r\n'))return false;
+ if(hash(configSourceTokens(source))!==row.after.tokensSha256)return false;
+ try{JSON.parse(source);return true;}catch{return false;}
+}
+function predecessor(layer,path,source,allowConfigLayout){
+ if(!Object.hasOwn(layer,path)||!matchesInput(source,layer[path],allowConfigLayout))return source;
  const before=layer[path].before.source;
  return source.includes('\r\n')?before.replaceAll('\n','\r\n'):before;
 }
-export function beforeDevelopBackflow(path,source){
- return layers.reduce((prior,layer)=>predecessor(layer,path,prior),source);
+export function beforeDevelopBackflow(path,source,{allowConfigLayout=false}={}){
+ return layers.reduce((prior,layer)=>predecessor(layer,path,prior,allowConfigLayout),source);
 }
 const forethoughtOwners=['src/lua/abyss_deck_ui.lua','scripts/deck-ui-layout.mjs'];
-export function authenticateDevelopBackflow(path,source,read){
- const prior=beforeDevelopBackflow(path,source);
+export function authenticateDevelopBackflow(path,source,read,{allowConfigLayout=false}={}){
+ const prior=beforeDevelopBackflow(path,source,{allowConfigLayout});
  if(prior===source)return source;
- const row=layers.find(layer=>Object.hasOwn(layer,path)&&matches(source,layer[path].after))[path];
+ const row=layers.find(layer=>Object.hasOwn(layer,path)&&matchesInput(source,layer[path],allowConfigLayout))[path];
  const owners=forethoughtOwners.includes(path)?forethoughtOwners:[path];
  for(const owner of owners){
   let live;
