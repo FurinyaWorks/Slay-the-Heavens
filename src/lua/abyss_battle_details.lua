@@ -70,7 +70,9 @@ function M.install(owner, ownership, host, dependencies)
     function owner:showStatus(index, source, transient, powerTips)
         return self:openHelp({index = index, toggle = not transient and not powerTips, powerTips = powerTips}, source, transient)
     end
-    local function actorDetailAvailable(transient, enemyReader)
+    local function detailAvailable(spec, transient, enemyReader)
+        if spec.powerTips and not enemyReader and owner.potionAim then return false end
+        if spec.kind then return true end
         if owner.gesture or owner.carry or owner.potionMenu then return false end
         if owner.potionAim and (owner.potionAim.moving or transient and not enemyReader) then return false end
         return not (transient and owner.info and not owner.info.transient)
@@ -91,12 +93,20 @@ function M.install(owner, ownership, host, dependencies)
         local actor = spec.index == 0 and battle.player or battle.enemies[spec.index]
         if Actors.isPresent(actor) then return battle, actor, reward end
     end
+    local function paintHelp(battle, transient, enemyReader, cancelled)
+        if enemyReader then
+            if not transient then
+                dependencies.cancelActionInputs()
+                for _, input in pairs(ownership.enemyInputs) do input.held, input.released = nil, nil end
+            end
+            host.renderInfo(battle)
+        else owner:renderDetailsOnly(cancelled) end
+    end
     function owner:openHelp(spec, source, transient)
         local battle, actor, reward = helpContext(spec)
         if not actor then return false end
         local enemyReader = spec.powerTips and spec.index > 0
-        if not spec.kind and not actorDetailAvailable(transient, enemyReader) then return false end
-        if spec.powerTips and not enemyReader and self.potionAim then return false end
+        if not detailAvailable(spec, transient, enemyReader) then return false end
         local cancelled = not enemyReader and dependencies.cancelPotionAim("已取消药水瞄准。")
         if repeatsDetail(spec, source, transient, battle, actor) then
             closeInfo()
@@ -110,13 +120,7 @@ function M.install(owner, ownership, host, dependencies)
         self.info={index=spec.index,id=actor.id,actor=actor,battle=battle,kind=spec.kind,powerTips=spec.powerTips,statusId=spec.statusId,
             offset=spec.offset,position=transient and spec.position or nil,uid=spec.uid,source=source,transient=transient==true,turn=battle.turn,
             slot=spec.slot,potionId=spec.potionId,inventory=spec.inventory,reward=reward and spec or nil}
-        if enemyReader then
-            if not transient then
-                dependencies.cancelActionInputs()
-                for _, input in pairs(ownership.enemyInputs) do input.held, input.released = nil, nil end
-            end
-            host.renderInfo(battle)
-        else self:renderDetailsOnly(cancelled) end
+        paintHelp(battle, transient, enemyReader, cancelled)
         return self.info ~= nil
     end
     function owner.queueHelp(_,spec,source,held,touch,card)

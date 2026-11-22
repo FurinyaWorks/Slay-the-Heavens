@@ -98,9 +98,10 @@ test('real generated layout uses an empty actor layer and one complete hidden ca
  const layer=descendants(layout).filter(n=>n.name==='actorLayer');assert.equal(layer.length,1);assert.deepEqual(layer[0].position,[0,0]);assert.deepEqual(layer[0].children,[]);assert(!layer[0].mask);
  assert(!descendants(layout).some(n=>/^enemy\d+$/.test(n.name)||/^monsterArt\d*$/.test(n.name)),'no fixed live/corpse pool cap');
  const [actor]=templates.filter(t=>t.name===monsterActorTemplateName);assert(actor);assert.equal(templates.filter(t=>t.name===monsterActorTemplateName).length,1);
- assert.equal(actor.visible,false);assert.equal(actor.children.length,35);assert.equal(actor.children[0].name,'monsterArt');assert.equal(actor.children[0].visible,false);
+ assert.equal(actor.visible,false);assert.equal(actor.children.length,36);assert.equal(actor.children[0].name,'monsterArt');assert.equal(actor.children[0].visible,false);
+ assert.equal(actor.blockCursor,true);assert.equal(actor.children.find(c=>c.name==='hpHit')?.kind,'cursorArea');
  assert.deepEqual(actor.children.slice(1),enemyUnitTemplate().children,'entire existing HP/intent/status/target unit retained byte-exact');
- assert.deepEqual(monsterActorInventory(actor),{templateName:monsterActorTemplateName,controlsPerActor:647,shapesPerActor:600,powerTemplateName:monsterPowerTemplateName,controlsPerPower:7,powerAllocation:'per-power-instance',allocation:'per-drawable-actor-instance',measurement:'offline-template-count-not-official-load',officialImport:'not_run',devices:'not_run'});
+ assert.deepEqual(monsterActorInventory(actor),{templateName:monsterActorTemplateName,controlsPerActor:648,shapesPerActor:600,powerTemplateName:monsterPowerTemplateName,controlsPerPower:7,powerAllocation:'per-power-instance',allocation:'per-drawable-actor-instance',measurement:'offline-template-count-not-official-load',officialImport:'not_run',devices:'not_run'});
  const shapes=descendants(actor).filter(n=>/^shape\d+$/.test(n.name));assert.equal(shapes.length,600);assert(shapes.every(n=>n.visible===false&&n.opacity===0));
  for(const tree of [layout,...templates])assertNativeUiCapacity(tree);
  const stage=descendants(layout).find(n=>n.children?.some(c=>c.name==='actorLayer'));assertBattleStageContract(stage,{host:true});
@@ -110,7 +111,7 @@ test('real generated layout uses an empty actor layer and one complete hidden ca
  // Module inventory must include the generated binding even when discovered without custom overrides.
  writeFileSync(join(dir,'abyss_data.lua'),'return {}');writeFileSync(join(dir,'abyss_original_v4_data.lua'),'return {}');
  assert(candidateScriptFiles('src/lua',dir).some(m=>m.name===monsterActorBindingModule));
- const noArt=monsterActorTemplate(null);assert.equal(descendants(noArt).length,35);assert.equal(noArt.visible,false);
+ const noArt=monsterActorTemplate(null);assert.equal(descendants(noArt).length,36);assert.equal(noArt.visible,false);
  assert.equal(descendants(battleLayout()).filter(n=>n.name==='actorLayer').length,1);
 });
 function fixture(t,{invalid=false,invalidPower=false,aliasedTier=false}={}) {
@@ -135,7 +136,7 @@ test('candidate registers the complete actor and binds exact returned actor/grou
  const f=fixture(t),receipt=await f.run(),actor=f.indices.get(monsterActorTemplateName),group=f.indices.get('AbyssReadyCardGroup'),power=f.indices.get(monsterPowerTemplateName);
  assert.deepEqual(artBuildOptionsFromReceipt(receipt),{artFeatures:{cards:false,menuBackground:false,selectionAvatar:false,battlePortrait:false,monsters:true}});
  assert.equal(receipt.monsterActors.powerTemplateIndex,power);
- assert.equal(receipt.monsterActors.templateIndex,actor);assert.equal(receipt.monsterActors.containerTemplateIndex,group);assert.equal(receipt.monsterActors.controlsPerActor,647);
+ assert.equal(receipt.monsterActors.templateIndex,actor);assert.equal(receipt.monsterActors.containerTemplateIndex,group);assert.equal(receipt.monsterActors.controlsPerActor,648);
  assert.match(f.sources.get(monsterActorBindingModule),new RegExp(`templateIndex=${actor},containerTemplateIndex=${group},powerTemplateIndex=${power},enabled=true`));
  const registered=f.calls.findIndex(c=>c.name==='scene_add_client_template'&&c.args.template.name===monsterActorTemplateName);
  assert(registered>=0);assert(f.calls.findIndex(c=>c.name==='scene_set_client_script')>registered);

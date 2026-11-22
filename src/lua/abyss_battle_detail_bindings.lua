@@ -24,6 +24,22 @@ local function closeSource(owner, closeInfo, control, silent)
         if silent ~= true then owner:renderDetailsOnly() end
     end
 end
+local function bindEnemyReaders(bindHelp, screenSlot, box, entryAt, guard, cleanups)
+    for _, name in ipairs({"intentHit", "hpHit"}) do
+        if guard and not guard() then return end
+        local control = box:GetChild(name)
+        local function describe()
+            local entry = entryAt()
+            if not entry or control.visible == false or not Actors.isPresent(entry.actor) then return end
+            return {index = entry.index, screenSlot = screenSlot, controlBox = guard and box or nil, powerTips = true}
+        end
+        bindHelp(control, describe, true, nil, guard, cleanups, "enemy")
+    end
+end
+local function helpPressReady(owner, token, run)
+    return token and owner.active and not owner.busy and not owner.gesture and not owner.carry and run == token.run
+        and run.phase == "combat" and run.combat == token.battle and run.combat.turn == token.turn
+end
 -- Explicit ports preserve the approved implementation without a shared constructor closure.
 function M.install(owner, _ownership, host, dependencies)
     local touchScreen = host.platform and host.platform.touchScreen
@@ -102,8 +118,7 @@ function M.install(owner, _ownership, host, dependencies)
         if not current() then return end
         local function ready(token)
             local run=owner.run
-            return current() and token and owner.active and not owner.busy and not owner.gesture and not owner.carry and run==token.run
-                and run.phase=="combat" and run.combat==token.battle and run.combat.turn==token.turn
+            return current() and helpPressReady(owner, token, run)
                 and dependencies.helpActorReady(token,run)
                 and (not owner.potionAim or enemyReader and not owner.potionAim.moving or not token.spec.powerTips)
                 and potionCurrent(token.spec,run)
@@ -195,18 +210,7 @@ function M.install(owner, _ownership, host, dependencies)
     end
 
     local function bindActorHelp(screenSlot, box, entryAt, guard, cleanups)
-        if screenSlot > 0 then
-            for _, name in ipairs({"intentHit", "hpHit"}) do
-                if guard and not guard() then return end
-                local control = box:GetChild(name)
-                local function describe()
-                    local entry = entryAt()
-                    if not entry or control.visible == false or not Actors.isPresent(entry.actor) then return end
-                    return {index = entry.index, screenSlot = screenSlot, controlBox = guard and box or nil, powerTips = true}
-                end
-                bindHelp(control, describe, true, nil, guard, cleanups, "enemy")
-            end
-        end
+        if screenSlot > 0 then bindEnemyReaders(bindHelp, screenSlot, box, entryAt, guard, cleanups) end
         if guard then return end
         for slot = 1, L.statusIcon.perRow * L.statusIcon.rows do
             local position = slot
