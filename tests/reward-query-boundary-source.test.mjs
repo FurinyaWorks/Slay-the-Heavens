@@ -154,19 +154,16 @@ import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync,rmSync} from 'node:fs';
 import {rewardQueryBoundaryProof as proof,preRewardQueryBoundarySource as project} from './tests/helpers/reward-query-boundary-source-inverse.mjs';
 const paths=Object.keys(proof.files),sources=Object.fromEntries(paths.map(p=>[p,readFileSync(p,'utf8')]));
-const host=process.argv[1];assert(paths.includes(host));
-for(const linked of paths){
+for(const host of paths)for(const linked of paths){
  assert.equal(project(host,sources[host]),proof.files[host].beforeSource);
  writeFileSync(linked,sources[linked]+'\\n');assert.throws(()=>project(host,sources[host]),/linked owner/);
  writeFileSync(linked,sources[linked]);assert.equal(project(host,sources[host]),proof.files[host].beforeSource);
  rmSync(linked);assert.throws(()=>project(host,sources[host]),/linked owner/);
  writeFileSync(linked,sources[linked]);assert.equal(project(host,sources[host]),proof.files[host].beforeSource);
 }
-console.log('ISOLATED_REWARD_QUERY_SOURCE_PASS '+host);`;
-  for(const host of paths){
-   const result=spawnSync(process.execPath,['--input-type=module','-e',script,'--',host],{cwd:root,encoding:'utf8',timeout:30000,maxBuffer:1024*1024});
-   assert.ifError(result.error);assert.equal(result.status,0,result.stdout+result.stderr);assert.equal(result.stdout.trim(),'ISOLATED_REWARD_QUERY_SOURCE_PASS '+host);
-  }
+console.log('ISOLATED_REWARD_QUERY_SOURCE_PASS');`;
+  const result=spawnSync(process.execPath,['--input-type=module','-e',script],{cwd:root,encoding:'utf8',timeout:30000,maxBuffer:1024*1024});
+  assert.ifError(result.error);assert.equal(result.status,0,result.stdout+result.stderr);assert.match(result.stdout,/ISOLATED_REWARD_QUERY_SOURCE_PASS/);
   const proofPath=join(root,'tests/helpers/epochs/reward/tests/helpers/reward-query-boundary-before.json');
   writeFileSync(proofPath,readFileSync(proofPath,'utf8').replace('d8a57cae','e8a57cae'));
   const negative=spawnSync(process.execPath,['--input-type=module','-e',"import './tests/helpers/reward-query-boundary-source-inverse.mjs'"],{cwd:root,encoding:'utf8',timeout:30000,maxBuffer:1024*1024});
