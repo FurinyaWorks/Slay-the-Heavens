@@ -58,7 +58,8 @@ local function paintPortraits(details,state,platform)
     for _,id in ipairs(Select.characters)do
         if id=='traveler' then
             for _,element in ipairs(Select.elements)do
-                visible(portraits:GetChild('traveler_'..element),key=='traveler_'..element)
+                local portrait=portraits:GetChild('traveler_'..element)
+                if portrait then visible(portrait,key=='traveler_'..element)end
             end
         else visible(portraits:GetChild(id),id==key) end
     end

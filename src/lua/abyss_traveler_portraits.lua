@@ -442,8 +442,7 @@ local function enabled(flags,key)
     return type(flags)=='table' and flags[key]==true
 end
 local function selectionFallback(panel,details,official)
-    local portraits=details:GetChild('portraits')
-    return official and {panel:GetChild('v25Background'),portraits} or {portraits}
+    return official and {panel:GetChild('v25Background')} or {details:GetChild('portraits')}
 end
 local function fallbackControls(row)
     return (row.name~='selection' or row.active or row.restoreOnPause)and row.fallback or {}
@@ -457,19 +456,15 @@ local function pendingSelection(state)
 end
 local function advanceSelection(row,dt)
     if not row.active or not row.panel.visible then return end
-    if pendingSelection(row.adapter:status()) and not row.timedOut then
+    if pendingSelection(row.adapter:status()) then
         row.wait=(row.wait or 0)+dt
-        if row.wait>=4 then
-            row.timedOut=true
-            row.adapter:pause()
-        end
     elseif row.fadeTime then
         row.fadeTime=math.max(0,row.fadeTime-dt)
     end
 end
 local function paintSelection(row,state)
     local visible=row.active and row.panel.visible
-    local pending=visible and pendingSelection(state) and not row.timedOut
+    local pending=visible and pendingSelection(state)
     local waiting=pending and (row.wait or 0)>=.5
     if waiting and row.dots and row.dots.alive~=false then
         local label=dots[1+math.floor((row.wait-.5)*6)%#dots]
@@ -677,7 +672,7 @@ function M.new(stage,report,flags,cardTemplates)
             if not resultOwned then
                 if wanted[row.name] and not row.active then row.active=true;accepted=row.adapter:begin()
                 elseif not wanted[row.name] and row.active then
-                    row.active=false;row.wait,row.timedOut,row.fadeTime=nil,nil,nil
+                    row.active=false;row.wait,row.fadeTime=nil,nil
                     accepted=row.adapter:pause()
                 end
             end
@@ -746,7 +741,7 @@ function M.new(stage,report,flags,cardTemplates)
         local start=os.clock()
         for i=1,64 do
             local progressed,kind=false,nil
-            for _,row in ipairs(buildOrder)do if row.active and not row.timedOut then
+            for _,row in ipairs(buildOrder)do if row.active then
                 local advance,phase=row.adapter:step()
                 if advance then progressed=true;kind=phase;break end
             end end
@@ -763,7 +758,7 @@ function M.new(stage,report,flags,cardTemplates)
         if destroyed then return true end
         pendingSync=nil;epoch=epoch+1;local old=busy;busy=true;local ok=true
         for _,row in ipairs(rows)do
-            row.active=false;row.wait,row.timedOut,row.fadeTime=nil,nil,nil
+            row.active=false;row.wait,row.fadeTime=nil,nil
             if not row.adapter:release()then ok=false end
         end
         paint();pendingSync=nil;busy=old;return ok

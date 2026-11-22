@@ -30,6 +30,26 @@ test('official HUD renders a native settings icon in every button state',()=>{
  }
 });
 
+test('official HUD shows a fanned stack of cards alongside the count in every deck button state',()=>{
+ const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme);
+ const open=child(child(layout,'deckEntry'),'open'),hit=child(open,'hit');
+ applyOfficialAssets([layout],theme);
+ assert.equal(child(open,'hit'),hit);
+ for(const state of hit.children){
+  const overlay=child(state,'officialBattleHud'),symbol=child(overlay,'symbol');
+  assert.equal(symbol.kind,'container');
+  assert.equal(symbol.children.length,3);
+  const [back,middle,front]=symbol.children;
+  assert(back.rotation>middle.rotation&&middle.rotation>front.rotation);
+  for(const card of symbol.children){
+   assert(card.size[1]>card.size[0]);
+   assert.deepEqual(card.children.map(part=>part.image),[theme.image.rect,theme.image.rect]);
+   assert(card.children.every(part=>part.raycastTarget===false));
+  }
+  assert.deepEqual(child(overlay,'count').position,[10,0]);
+ }
+});
+
 test('official composition rejects a missing run page before mutating any host',()=>{
  const theme=officialAssetsTheme(nativeTheme),layout=gameLayout();
  const stage=child(layout,'stage')??layout,key=stage.children?'children':'controls';

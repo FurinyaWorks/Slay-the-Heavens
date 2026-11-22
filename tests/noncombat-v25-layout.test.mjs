@@ -157,6 +157,8 @@ test('official generated selection retires the legacy full-screen shade above it
  assert.equal(shade.visible,false,'ready artwork must not inherit the old full-screen backdrop shade');
  assert.equal(child(panel,'blocker').kind,'cursorArea','retire paint only; retain the selection input barrier');
  const fallback=child(panel,'v25Background');
+ assert.equal(child(child(child(panel,'details'),'portraits'),'traveler_ironclad'),undefined,
+  'the published Geo slot must not contain a catalog placeholder');
  assert.equal(fallback.visible,true,'the controller still owns its loading fallback');
  assert.deepEqual(parts(fallback),[{
   name:'fill',kind:'image',position:[0,0],size:[1280,720],image:100001,colour:'#0F1117',raycastTarget:false,
@@ -229,11 +231,11 @@ scope('failed')
 rejectCreation=false
 portraits:sync('menu',false,false,'ironclad')
 portraits:sync('menu',true,false,'ironclad')
-portraits:tick(4);local timedOut=created
+local beforeSlowLoad=created
+portraits:tick(4.1)
 for _=1,10 do portraits:tick(1/60)end
-assert(created==timedOut and fallback.visible and not dots.visible and not art.visible)
-portraits:sync('menu',false,false,'ironclad')
-portraits:sync('menu',true,false,'ironclad')
+assert(created>beforeSlowLoad and fallback.visible and dots.visible and not art.visible,
+ 'a slow native load must continue past the former deadline')
 local setVisible=art.SetVisible;local reentered=false
 art.SetVisible=function(self,value)
  setVisible(self,value)
@@ -244,6 +246,9 @@ end
 for _=1,600 do portraits:tick(1/60);if reentered then break end end
 assert(reentered and not art.visible and fallback.visible and not fade.visible and not dots.visible,
  'late Geo art became visible after the next role was chosen')
+portraits:sync('menu',true,false,'ironclad')
+assert(portraits:status().selection.phase=='ready' and art.visible and not fallback.visible,
+ 'the slow load must finish and the authored art must survive reentry')
 portraits:onEngineDestroy();portraits:tick();scope('destroyed')
 assert(#covered==0,'inherited full-screen shade covers the approved selection art: '..table.concat(covered,','))
 print('SELECTION_OVERLAY_SCOPE_PASS created='..created)

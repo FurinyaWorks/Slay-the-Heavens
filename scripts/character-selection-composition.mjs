@@ -43,6 +43,8 @@ export function characterSelectionComposition(panel,theme){
   deckTitle:[[115,430,480,25],16,'#E7CA5A'],deckSummary:[[115,455,480,47],16,'#F3EFDA']};
  for(const [name,[box,font,colour]]of Object.entries(specs))placeText(child(details,name),box,font,colour);
  details.children=details.children.filter(n=>!['deckOpen','deckRule'].includes(n.name));
+ const portraits=child(details,'portraits');
+ portraits.children=portraits.children.filter(n=>n.name!=='traveler_ironclad');
  Object.assign(child(details,'portraitLoading'),frame(885,455,72,30));
  Object.assign(child(details,'portraitFade'),frame(645,84,552,451));
  for(const name of ['relicTag','portraitFrame','floorShadow','officialSelectionFigure']){const n=child(details,name);if(n)n.visible=false;}

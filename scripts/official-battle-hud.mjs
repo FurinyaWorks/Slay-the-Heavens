@@ -20,13 +20,24 @@ function energyFinish(root,theme){
  const number=child(root,'energy');
  Object.assign(number.text,{outline:true,outlineColour:'#4C2425',outlineOpacity:1});
 }
+function deckSymbol(variant,colour){
+ const centerX=child(variant,'ring').position[0];
+ const cards=['back2','back1','front'].map(name=>{
+  const card=structuredClone(child(variant,name));
+  card.position[0]-=centerX;
+  for(const part of card.children)part.raycastTarget=false;
+  child(card,'border').colour=colour;
+  return card;
+ });
+ return {name:'symbol',kind:'container',position:[-16,0],size:[30,30],scale:[1.15,1.15],children:cards};
+}
 export function officialBattleUtilityFaces(stage,theme){
  for(const entry of ['deckEntry','exitEntry']){
   const hit=child(child(child(stage,entry),'open'),'hit');if(!hit)continue;
   for(const variant of hit.children){
    const deck=entry==='deckEntry',colour=variant.name==='hover'?'#FFF3CE':variant.name==='disabled'?'#8F918B':'#D6CBA5';
    variant.children.push({name:'officialBattleHud',kind:'container',size:[...variant.size],visible:false,children:[
-    ...(deck?[text('symbol',[-16,0],[30,36],'▱',18,colour)]:[
+    ...(deck?[deckSymbol(variant,colour)]:[
      {name:'symbol',kind:'image',position:[0,0],size:[28,28],image:theme.icon.settings,colour},
     ]),
     ...(deck?[text('count',[10,0],[34,36],'',18,colour)]:[]),
