@@ -342,6 +342,7 @@ for (const officialAssets of [false, true]) {
 
 test('Forethought authenticates its complete Lua and layout owners',async()=>{
  const {beforeDevelopBackflow,authenticateDevelopBackflow}=await import('./helpers/develop-release-backflow-source.mjs');
+ const {gunzipSync}=await import('node:zlib');
  const lua='src/lua/abyss_deck_ui.lua',layout='scripts/deck-ui-layout.mjs';
  const read=path=>readFileSync(path,'utf8');
  const crlf=source=>source.replaceAll('\n','\r\n');
@@ -352,6 +353,10 @@ test('Forethought authenticates its complete Lua and layout owners',async()=>{
  assert.equal(authenticateDevelopBackflow(lua,crlf(read(lua)),path=>crlf(read(path))),crlf(priorLua));
  assert.throws(()=>authenticateDevelopBackflow(lua,read(lua),path=>path===layout?priorLayout:read(path)),/linked owner identity/);
  assert.throws(()=>authenticateDevelopBackflow(lua,read(lua),path=>read(path)+(path==='src/lua/abyss_card_skin.lua'?'\n':'')),/linked owner identity/);
+ const archive=readFileSync(new URL('./fixtures/develop-map-room-entry-source.json.gz',import.meta.url));
+ const predecessor=JSON.parse(gunzipSync(archive)).files[lua].before.source;
+ assert.notEqual(authenticateDevelopBackflow(layout,read(layout),read),read(layout));
+ assert.throws(()=>authenticateDevelopBackflow(layout,read(layout),path=>path===lua?predecessor:read(path)),/linked owner identity/);
  const foreign=read(lua)+'\n';
  assert.equal(authenticateDevelopBackflow(lua,foreign,()=>assert.fail('foreign source read')),foreign);
 });

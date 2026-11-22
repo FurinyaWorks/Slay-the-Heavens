@@ -158,7 +158,7 @@ const priorCurrent=path=>layers.find(layer=>Object.hasOwn(layer,path))?.[path]??
 const current=path=>Object.hasOwn(sessionRelic.files,path)?sessionRelic.files[path]:priorCurrent(path);
 export const developBackflowOwns=path=>relicDetailOwns(path)||current(path)!==undefined;
 const roomEntryArchive=readFileSync(new URL('../fixtures/develop-map-room-entry-source.json.gz',import.meta.url));
-assert.equal(hash(roomEntryArchive),'d18b944c49a30960cb2ab0dfa52aac9bbd2a0f0597ce2043de017d8e1ec3338b','exact Develop map-room predecessor archive');
+assert.equal(hash(roomEntryArchive),'eddc1f3d920264c350db5632a5b3c4c7ad80c48a109fb03ddb03def5ec3a20b9','exact Develop map-room predecessor archive');
 const roomEntry=JSON.parse(gunzipSync(roomEntryArchive));
 assert.equal(roomEntry.base,'d7ae494a3136b2f4f707428fefeeae478c6e0495');
 for(const [path,{before,after}] of Object.entries(roomEntry.files)){
@@ -254,7 +254,14 @@ export function authenticateDevelopBackflow(path,source,read,options){
   assert(matches(live,roomEntry.files[path].after),'combined linked owner identity: '+path+' during map-room validation');
  }
  const readLive=read;
- read=owner=>predecessor(roomEntry.files,owner,readLive(owner));
+ read=owner=>{
+  const live=readLive(owner);
+  if(owner!==path&&Object.hasOwn(roomEntry.files,owner)){
+   assert(matches(live,roomEntry.files[owner].after),
+    'combined linked owner identity: '+owner+' during map-room validation');
+  }
+  return predecessor(roomEntry.files,owner,live);
+ };
  source=roomPrior;
  source=authenticateRelicDetail(path,source,read);
  const sessionPrior=beforeSessionRelic(path,source,options);
