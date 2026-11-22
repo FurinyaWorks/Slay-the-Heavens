@@ -1,3 +1,5 @@
+import {roundedButtonState} from './native-rounded-button.mjs';
+
 // Frozen V25 battle.js deck-shell/deck-back + sts-battle-restore.css:105-108.
 // Separate decoration only: the native scroller clones the live hand template.
 export function battlePileChrome(theme){
@@ -9,22 +11,17 @@ export function battlePileChrome(theme){
   {name:'heading',kind:'text',position:[-143,282],size:[570,56],text:{content:'',fontSize:26,minFontSize:26,align:'left',valign:'middle',colour:'#E9DDB6'}},
  ]};
 }
-export function battlePileReturn(button,pile,texture,ink='#E0BC73'){
- button.position=pile?[-550,-237]:button.position;
+export function battlePileReturn(button, ink){
+ button.position=[-550,-237];
+ const palettes={
+  normal:['#BCA348','#8C3739'],hover:['#D9BE60','#A84D43'],
+  pressed:['#C6A858','#592A2B'],disabled:['#716650','#483332'],
+ };
  for(const state of button.children[0].children){
-  const colour=state.name==='hover'?'#A84D43':state.name==='pressed'?'#592A2B':'#8E3632';
-  for(const part of state.children){
-   if(part.name==='border'&&pile){part.image=100001;part.colour='#9B7A4E';}
-   if(part.name==='plate'&&pile){part.image=texture??100001;part.colour=colour;part.size=button.size.map(v=>v-4);}
-   if(part.name==='label'&&pile){part.text.colour=ink;part.text.content='返回';}
-  }
- }
- if(pile&&texture){
-  // Keep the permanent artwork outside preset-button state subtrees. The
-  // installed Simulator has no normalChildId binding for native presets.
-  const art=button.children[0].children.find(state=>state.name==='normal');
-  art.name='art';
-  button.children=[art,{name:'hit',kind:'cursorArea',size:[...button.size],focusable:true}];
+  roundedButtonState(state,button.size,palettes[state.name]);
+  const label=state.children.find(part=>part.name==='label');
+  label.text.colour=state.name==='disabled'?'#AFA18C':ink;
+  label.text.content='返回';
  }
  return button;
 }

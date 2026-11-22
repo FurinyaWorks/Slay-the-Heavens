@@ -34,12 +34,16 @@ test('official menu and selection reuse live inputs with bounded native decorati
  assert.equal(JSON.stringify(child(stage,'battlePanel')),oldBattle);
  assert.equal(child(menu,'vista').visible,false);
  assert.equal(child(menu,'emblem').visible,false);
+ assert(child(child(menu,'v25MainMenu'),'sts1TitleLogo'),'retain the released #797 logo');
+ for(const name of ['exitPanel','runMenu'])for(const key of ['guide','help'])
+  assert.equal(child(child(stage,name),key),undefined,'retain the released #784 removal in '+name);
  // Pin the approved menu geometry independently of the layout theme.
- assert.deepEqual(child(menu,'start').position,[-426.41148325358853,-174.83528161530285]);
- assert.deepEqual(child(menu,'start').size,[316.9377990430622,59.681190223166844]);
+ assert.deepEqual(child(menu,'start').position,[-464,-114]);
+ assert.deepEqual(child(menu,'start').size,[208,48]);
  assert.deepEqual(start.size,child(menu,'start').size,'paint and hit areas share the approved bounds');
  assert.deepEqual(child(child(menu,'start'),'officialResultLabel'),{...resultLabel,name:'officialResultLabel',visible:false});
  for(const key of ['confirm','cancel'])for(const state of parts(child(child(panel,key),'hit'))){
+  assert.equal(child(state,'label').text.content,key==='confirm'?'开始挑战':'返回');
   const flag=child(state,'v25Flag'),cloth=child(flag,'cloth'),rim=child(flag,'rim');
   assert(rim&&cloth,'smooth buttons retain separate rim and cloth');
   for(const [surface,radius] of [[rim,10],[cloth,8]]){
@@ -52,6 +56,7 @@ test('official menu and selection reuse live inputs with bounded native decorati
   assert.equal(all(flag).some(n=>n.image===theme.officialAssets.images.button),false,'official rectangle must not replace original flag');
  }
  assert.equal(child(panel,'v25Background').visible,true);
+ assert.equal(child(child(panel,'v25Background'),'veil'),undefined,'preserve #785 removal of persistent full-screen selection shade');
  assert.equal(all(panel).filter(n=>n.name==='officialGeoBadge').length,0,'the selected character must not become an unrelated geo icon');
  const constellation=child(child(child(panel,'v25Roster'),'selected'),'v25Constellation');
  assert.equal(constellation.visible,true);assert.equal(all(constellation).filter(n=>n.kind==='image').length,93);
@@ -62,7 +67,8 @@ test('official menu and selection reuse live inputs with bounded native decorati
  assert.equal(bag.kind,'container');assert.equal(all(bag).some(n=>n.image===theme.icon.gold),false,'approved grey money bag must not become a round coin');
  assert(all(bag).filter(n=>n.kind==='image').every(n=>n.image===theme.image.rect));
  assert.equal(child(bag,'bag').children[0].colour,'#D1D0BD');
- assert.equal(child(selectedSlot(panel),'innerFrame0').colour,'#957749');
+ assert.equal(child(selectedSlot(panel),'selection').children[0].colour,'#E5C846');
+ assert.equal(child(selectedSlot(panel),'selection').visible,false,'gold frame is selected only at runtime');
  assert.deepEqual(child(child(panel,'details'),'officialSelectionFigure').scale,[1,1]);
 });
 function selectedSlot(panel){return child(child(panel,'v25Roster'),'selected');}
@@ -91,11 +97,12 @@ test('production background preserves the exact approved experiment rows, includ
 test('selection uses static exact-alpha geometry and reuses the selected frame without a glyph overlay',()=>{
  const theme=officialAssetsTheme(nativeTheme),layout=withViewport(gameLayout(),theme);applyOfficialNoncombatLayout(layout,theme);
  const panel=child(child(layout,'stage')??layout,'characterPanel'),slot=selectedSlot(panel),initial=child(slot,'selectedInitial');
- assert.deepEqual(slot.size,[124,124]);assert(child(slot,'rim'));
+ assert.deepEqual(slot.size,[100,100]);assert(child(slot,'stone'));
+ assert.deepEqual(slot.position,[-226,-226.5]);
  assert.equal(initial,undefined);
  const symbol=child(slot,'v25Constellation');assert.deepEqual(symbol.size,[118,118]);
  assert.deepEqual(symbol.position,[0,0]);assert(symbol.visible);
- assert(all(symbol).filter(n=>n.kind==='image').every(n=>[theme.image.rect,100006].includes(n.image)&&n.colour==='#FFE0A2'));
+ assert(all(symbol).filter(n=>n.kind==='image').every(n=>[theme.image.rect,100006].includes(n.image)&&n.colour==='#202A29'));
  assert.equal(all(symbol).filter(n=>n.kind==='image'&&n.image===100006).length,49);
  for(const arc of all(symbol).filter(n=>n.kind==='image'&&n.image===100006)){
   assert.equal(arc.fill.shape,'horizontal');assert.equal(arc.fill.from,'right');
@@ -105,6 +112,35 @@ test('selection uses static exact-alpha geometry and reuses the selected frame w
  applyOfficialNoncombatLayout(layout,theme);
  assert.equal(parts(selectedSlot(panel)).filter(n=>n.name==='v25Constellation').length,1);
  assert.equal(parts(panel).filter(n=>n.name==='lumineSelectionBackground').length,1);
+});
+
+test('official host uses direct inventory actions, read-only relic details and explicit run discard',async t=>{
+ const {mkdtempSync,mkdirSync,readFileSync,rmSync}=await import('node:fs');
+ const {join,resolve}=await import('node:path');
+ const {spawnSync}=await import('node:child_process');
+ const {createRequire}=await import('node:module');
+ const {buildUI}=await import('../scripts/build-ui.mjs');
+ const {buildLuaData,luaString}=await import('../scripts/build-lua-data.mjs');
+ mkdirSync('build/test-tmp',{recursive:true});
+ const directory=mkdtempSync(resolve('build/test-tmp/sts-ui-'));
+ t.after(()=>rmSync(directory,{recursive:true,force:true}));
+ buildLuaData('data',join(directory,'abyss_data.lua'));
+ buildUI(directory,undefined,{officialAssets:true,nativePageLifecycle:true});
+ const stage=child(JSON.parse(readFileSync(join(directory,'game-ui.json'),'utf8')),'stage');
+ for(const [name,sha] of [
+  ['menuPanel','9978170ae0f37c189e71a6dfbf6b5f24128230e576961e3be212e69804d70ab0'],
+  ['exitPanel','d60b5a107eab5c3bdb79a36c7359cb1be27c833a2e18a450a3b266856c7d98ce'],
+  ['runMenu','a0c480ad85bfa3b3490d6ea6d3c6ae3561a700e60114ee0303810010d71a9b81'],
+ ]){
+  assert.equal(createHash('sha256').update(JSON.stringify(child(stage,name))).digest('hex'),sha,
+   'preserve the complete integrated pile and menu layout: '+name);
+ }
+ const script=`package.path=${luaString(directory.replaceAll('\\','/')+'/?.lua;src/lua/?.lua')}
+dofile('tests/lua/support/sts_ui_closeout.lua')`;
+ const require=createRequire(import.meta.url);
+ const result=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),'-e',script],{encoding:'utf8',timeout:60000});
+ assert.equal(result.status,0,result.error?.message??result.stderr+result.stdout);
+ assert.match(result.stdout,/STS_UI_CLOSEOUT_PASS/);
 });
 
 const require=createRequire(import.meta.url),directory=mkdtempSync(join(tmpdir(),'selection-overlay-'));

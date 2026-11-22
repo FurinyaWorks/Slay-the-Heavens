@@ -258,6 +258,12 @@ local function confirmStart(ui,id)
     local elements={ironclad=true,silent=true,defect=true,watcher=true}
     assert(ui:selectCharacter((elements[id] or id=='traveler') and 'traveler' or id))
     if elements[id] then assert(ui:selectElement(id))end
+    -- Rule fixtures advance the real readiness scheduler before confirmation.
+    -- Native Fade entry tests drive OnUpdate explicitly and retain timed phases.
+    if ui.pageReveal and not ui.pageReveal:usesFade()then
+        local intent=require('abyss_page_reveal').intent(ui)
+        for _=1,2 do if ui.pageReveal:step(intent)then ui:refresh()end end
+    end
     return ui:confirmCharacter()
 end
 local function startRun(ui,id)

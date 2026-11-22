@@ -9,7 +9,6 @@ import {officialBattleHud,officialBattleUtilityFaces} from './official-battle-hu
 import {officialBattleCardChrome} from './official-battle-card-chrome.mjs';
 import {installStsReferenceCardChrome,stsReferenceRuntimeGeometry,geoCardReferenceTokens} from './sts-card-reference-profile.mjs';
 import {loadLowCostArt,attachLowCostArt} from './lowcost-art.mjs';
-import {battlePileReturn} from './official-battle-pile-chrome.mjs';
 import {preflightOfficialRoots,composeOfficialRun,finishOfficialComposition} from './official-run-layout.mjs';
 const children=node=>node?.controls??node?.children??[];
 const child=(node,name)=>children(node).find(item=>item.name===name);
@@ -31,8 +30,15 @@ export function officialAssetsTheme(source){
   theme.color.node=structuredClone(approved.color.node);
   theme.layout.v25Menu={...structuredClone(approved.layout.v25Menu),...structuredClone(nativeMenuFrames)};
   theme.menuPresentation={...theme.menuPresentation,...structuredClone(nativeMenuFrames),fontSize:24,labelX:0};
+  theme.layout.exitMenu.title[0]=0;
+  // #784 compacted the official run menu when the guide was removed.
+  Object.assign(theme.layout.runMenu,{
+   panel:[460,122,280,448],map:[460,190,252,56],mainMenu:[460,126,252,56],
+   rule:[460,84,232,2],abandon:[460,42,252,56],quit:[460,-22,252,56],dismissHint:[460,-72,260,40],
+  });
   Object.assign(theme.layout.rewardPick,structuredClone(approved.layout.rewardPick));
   theme.layout.nativeNode.event=structuredClone(approved.layout.nativeNode.event);
+  theme.layout.deckView.pileViewport=[0,-75.5,918,557];
   theme.layout.nativeNode.event.neow.bubbleText=[-45,96,270,130];
  if(theme.officialAssets?.profile!=='official-assets-first-v1')throw Error('Missing official asset theme');
   Object.assign(theme.officialAssets.rewardRows,{pressed:theme.officialAssets.neowChoice.pressed,
@@ -156,6 +162,7 @@ function buttonFaces(node,theme){
  if(!isStateButton&&!(hasHit&&hasCaption))return;
  const faces=isStateButton?parts:[node];
   for(const face of faces){
+  if(child(face,'roundedButton'))continue;
   const label=child(face,'label');if(!label||!face.size||face.size[0]<face.size[1]*1.8)continue;
   for(const name of ['plate','normal','hover','pressed','disabled','selected']){
    const plate=child(face,name);
@@ -282,9 +289,15 @@ export function applyOfficialAssets(trees,theme){
    if(child(node,'roundFrame')&&child(node,'skin')&&child(node,'costDisc')){cardFace(node,theme);cardHosts++;}
    else {buttonFaces(node,theme);panelSurfaces(node,theme,relicHosts);pageBackgrounds(node,theme);roomTextFits(node,theme);}
   });
-  const pileReturn=child(child(tree,'stage')??tree,'deckPanel');
-  if(child(pileReturn,'pileReturn'))battlePileReturn(child(pileReturn,'pileReturn'),true,theme.officialAssets.images.button,theme.officialAssets.buttonInk);
-  const tools=child(pileReturn,'pileTools');
+  const deckPanel=child(child(tree,'stage')??tree,'deckPanel');
+  const pileReturn=child(deckPanel,'pileReturn');
+  if(pileReturn){
+   // The installed Simulator cannot bind the normal child of a native preset.
+   const preset=child(pileReturn,'hit'),art=child(preset,'normal');
+   art.name='art';
+   pileReturn.children=[art,{name:'hit',kind:'cursorArea',size:[...preset.size],focusable:preset.focusable}];
+  }
+  const tools=child(deckPanel,'pileTools');
   if(tools)for(const control of children(tools)){
    const backing=child(control,'officialButtonBacking');if(backing)backing.visible=false;
   }

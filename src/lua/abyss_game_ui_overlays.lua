@@ -82,8 +82,8 @@ function M.resourceHint(self,canManagePotions,inCombat)
 end
 
 function M.openPotions(self)
-    return function(_)
-            if not self.potionUI:open(self.run)then return false end
+    return function(_,slot)
+            if not self.potionUI:open(self.run,slot)then return false end
             self.battleUI.selected=nil;self:refresh();return true
         end
 end
@@ -147,10 +147,13 @@ function M.confirmExit(self,owner)
         end
 end
 
+local function canOpenDeck(openingCovered,self)
+    return not openingCovered() and not deckBlocked(self)
+        and (self.mode=='map' or self.mode=='battle' or self.mode=='node')
+end
 function M.openDeck(openingCovered,self)
     return function(_,pileKind)
-            if openingCovered() or deckBlocked(self)
-                or (self.mode ~= "map" and self.mode ~= "battle" and self.mode ~= "node") then return false end
+            if not canOpenDeck(openingCovered,self) then return false end
             if pileKind then
                 if self.mode~='battle' or not self.deckUI:openPile(self.run,pileKind)then return false end
             elseif not self.deckUI:open(self.run)then return false end
@@ -173,8 +176,7 @@ function M.openStarterDeck(openingCovered,self,platform,owner)
 end
 function M.openRelics(self,openingCovered,platform)
     return function(_,index)
-            if openingCovered() or deckBlocked(self) or self.deckUI.visible
-                or (self.mode~="map" and self.mode~="battle" and self.mode~="node") then return false end
+            if self.deckUI.visible or not canOpenDeck(openingCovered,self) then return false end
             PageReveal.registerSource(platform,'deckPanel')
             if not self.deckUI:inspectRelics(self.run,self.relicUI,index) then return false end
             self.battleUI.selected=nil

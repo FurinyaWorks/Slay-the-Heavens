@@ -59,15 +59,13 @@ function liyueElements(picture, p, colour) {
     [(i - 3) * p.elements.step, p.elements.y, p.elements.size, p.elements.size], image, colour));
 }
 
-export function styleLiyuePageReveal(cover, theme) {
-  const { picture } = helpers(theme), p = theme.layout.prologue;
+export function stylePageReveal(cover) {
   const part = name => cover.children.find(node => node.name === name);
-  const veil = part('veil'), message = part('message'), cancel = part('cancel');
-  veil.colour = p.shade;
-  message.text.colour = p.ink;
-  message.position = p.title.slice(0, 2);
+  part('veil').colour = '#000000';
+  part('message').visible = false;
+  const cancel=part('cancel');
   cancel.position = [0, -318];
-  cover.children.splice(cover.children.indexOf(veil) + 1, 0, liyueSeal(picture, p), ...liyueElements(picture, p, p.ink));
+  cancel.children.find(node=>node.name==='label').text.content='返回';
 }
 
 export function prologueControl(theme = nativeTheme) {

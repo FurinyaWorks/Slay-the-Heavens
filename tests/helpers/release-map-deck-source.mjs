@@ -1,3 +1,4 @@
+import {beforeReleaseUiCloseoutSource,ownsReleaseUiCloseoutSource} from './release-ui-closeout-source.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
@@ -39,12 +40,13 @@ export function beforeMapRoomSource(path,source){
 }
 
 export function beforeMapDeckSource(path,source,read){
-  source=beforeMapRoomSource(path,source);
+  source=beforeMapRoomSource(path,beforeReleaseUiCloseoutSource(path,source,read));
   if(!Object.hasOwn(files,path)||!current(source,files[path].after))return source;
   for(const [owner,{after}] of Object.entries(files)){
     let live;
     try{live=read(owner,'utf8');}catch{assert.fail('map deck linked owner missing: '+owner);}
-    assert(current(beforeMapRoomSource(owner,typeof live==='string'?live:live?.toString('utf8')),after),'map deck linked owner identity: '+owner);
+    const text=typeof live==='string'?live:live?.toString('utf8');
+    assert(current(beforeMapRoomSource(owner,beforeReleaseUiCloseoutSource(owner,text,read)),after),'map deck linked owner identity: '+owner);
   }
   const prior=files[path].before.source;
   return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
@@ -54,7 +56,7 @@ export function mapDeckPriorRead(read){
   return (path,encoding)=>{
     const value=read(path,encoding);
     if(typeof value==='string')return beforeMapDeckSource(path,value,read);
-    if(!Buffer.isBuffer(value)||!Object.hasOwn(files,path)&&!Object.hasOwn(roomFiles,path))return value;
+    if(!Buffer.isBuffer(value)||(!Object.hasOwn(files,path)&&!Object.hasOwn(roomFiles,path)&&!ownsReleaseUiCloseoutSource(path)))return value;
     const text=value.toString('utf8'),prior=beforeMapDeckSource(path,text,read);
     return prior===text?value:Buffer.from(prior);
   };

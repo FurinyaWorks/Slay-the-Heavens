@@ -34,10 +34,13 @@ local function native(workKey)
  assert(host and script.updating,'actual ordinary-player native startup failed')
  local root=canvas:GetChild('stage');root.ui=host
  host.seed='2' -- deterministic offline route only; not natural/device evidence
+ for _=1,80 do if not host.pageReveal:covered()then break end;OnUpdate(.05)end
  F.click(root,'menuPanel','start')
+ for _=1,80 do if not host.pageReveal:covered()then break end;OnUpdate(.05)end
  assert(host.characterOpen and not host.run)
  local panel=root:GetChild('characterPanel')
- assert(not panel:GetChild('traveler').visible and host.characterSelection.info.id=='ironclad')
+ assert(panel:GetChild('traveler').visible and host.characterSelection.info==nil)
+ assert(panel:GetChild('title').visible and not panel:GetChild('details').visible and not panel:GetChild('confirm').visible)
  for i=1,4 do assert(not panel:GetChild('character'..i).visible)end
  assert(not panel:GetChild('hint').text:find('待验收',1,true),'old acceptance blocker remains in player flow')
  for _,id in ipairs({'raiden','hutao','arlecchino','furina','unknown'})do assert(not host:selectCharacter(id) and not host.run)end
@@ -54,9 +57,9 @@ local function native(workKey)
  host:confirmCharacter() -- stale programmatic confirmation after the panel has closed
  assert(host.run==run,'duplicate confirmation created another run')
  assert(not(host.prologue and host.prologue:covering()) and host.mode=='node' and run.nodeFlow.event.id=='neow')
- F.click(root,'nodePanel','eventView/option1')
- F.click(root,'nodePanel','eventView/option2')
- F.click(root,'nodePanel','eventView/option1')
+ F.click(root,'nodePanel','eventView/option1');finishOpening(host)
+ F.click(root,'nodePanel','eventView/option2');finishOpening(host)
+ F.click(root,'nodePanel','eventView/option1');finishOpening(host)
  assert(host.mode=='map' and host.mapUI.navigationEnabled and host.run==run)
  local first=F.Nodes.available(run,host.map)[1]
  assert(first and host.mapUI:choose(first.id))

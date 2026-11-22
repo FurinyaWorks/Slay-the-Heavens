@@ -29,6 +29,12 @@ local Lifecycle = require('abyss_game_ui_lifecycle')
 local Input = require('abyss_game_ui_input')
 local PageReveal=require('abyss_page_reveal')
 
+local function revealMotion(platform)
+    if platform.prologue==true and platform.color then return {color=platform.color,duration=Theme.motion.slow}end
+end
+local function legacyPrologue(panel,platform,gate)
+    return panel and platform.prologue==true and platform.color and not gate
+end
 function M.new(root, data, presentation, clickEvent, platform)
     -- A seed is an explicit replay/test override. Normal runs sample at Start,
     -- never while constructing the title screen or refreshing the UI.
@@ -46,19 +52,23 @@ function M.new(root, data, presentation, clickEvent, platform)
         self.pageReveal=PageReveal.new(cover,platform.presentationReady,function()
             owner.exitGeneration=owner.exitGeneration+1;owner.menuGeneration=owner.menuGeneration+1
         end,{full={0,0,Theme.canvas.base[1],Theme.canvas.base[2]},
-            deckPanel=Theme.layout.deckView.viewport,
+            deckPanel=Theme.layout.deckView.viewport,deckBrowser=Theme.layout.deckView.pileViewport,
             nodePanel=Theme.layout.nativeNode.backdrop,battlePanel=Theme.layout.rewardPick.stage,
             potionPanel={0,0,Theme.layout.modal.size[1],Theme.layout.modal.size[2]},
-            choicePanel=Theme.layout.combatChoice.panel})
-        if controller then controller.blocked=function()return self.pageReveal:covered() and not self.exitOpen end end
+            choicePanel=Theme.layout.combatChoice.panel},revealMotion(platform))
+        if controller then controller.blocked=function()return self.pageReveal:covered() and (not self.exitOpen or self.routeOpen) end end
+        cover.disableCursorEventPassthrough=true
         cover:GetChild('blocker'):AddCursorEventListener(clickEvent,function()return true end)
         local cancel=cover:GetChild('cancel'):GetChild('hit')
-        local function leave()
-            if not self.pageReveal:covered() or self.exitOpen then return false end
+        local function canRecover()return self.pageReveal.state=='failed' and (not self.exitOpen or self.routeOpen) end
+        function self.recoverPage(_)
+            if not canRecover()then return false end
+            if self.routeOpen then return self:closeExit() end
             return self:openMenu()
         end
-        cancel:AddCursorEventListener(clickEvent,leave)
-        Controller.bind(controller,cancel,'pageReveal',leave,function()return self.pageReveal:covered() and not self.exitOpen end,1)
+        local function recover()return self:recoverPage()end
+        cancel:AddCursorEventListener(clickEvent,recover)
+        Controller.bind(controller,cancel,'pageReveal',recover,canRecover,1)
     end
     local newSeed = platform.newSeed or function() return require("abyss_new_run_seed").next() end
     local bgm = Bgm.new(platform.music)
@@ -116,7 +126,7 @@ function M.new(root, data, presentation, clickEvent, platform)
     self.closePotions = Overlays.closePotions(self)
     local prologuePanel = root:GetChild("prologuePanel")
     -- Native entry opts into the short interstitial; rule-only hosts stay immediate.
-    if prologuePanel and platform.prologue==true and platform.color then
+    if legacyPrologue(prologuePanel,platform,self.pageReveal)then
         self.prologue=require('abyss_prologue').new(prologuePanel,{color=platform.color,clickEvent=clickEvent,
             progress=View.openingProgress(self,child,platform),
             onPhase=function()self:refresh()end,onCancel=function()self.starting=false end})

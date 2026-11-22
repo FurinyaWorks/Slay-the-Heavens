@@ -60,8 +60,21 @@ assert(host:openDeck('draw'));settle();assert(#host.deckUI.cards==0 and not host
 local other;for _,candidate in ipairs(run.deck)do if candidate.cardId~=card.cardId then other=candidate;break end end;assert(other)
 for i=1,3 do local instance=F.Combat.copy(i==2 and card or other);instance.uid=900+i;run.combat.draw[i]=instance end
 local originalPile=F.Combat.copy(run.combat.draw)
-sizes={};assert(host:openDeck('draw'));settle();local deck=host.deckUI
+local renderOriginal=host.battleUI.render;local openRenders=0
+host.battleUI.render=function(self,...)openRenders=openRenders+1;return renderOriginal(self,...)end
+sizes={};assert(host:openDeck('draw'));local deck=host.deckUI
+assert(openRenders==1,'opening the deck rendered the covered battle twice')
+host.battleUI.render=renderOriginal
+assert(deck.calibrating and not pile.items[0].visible,'calibration painted a provisional card')
+assert(host.pageReveal.localFrame==F.Theme.layout.deckView.pileViewport,'deck preparation covered title or sort controls')
+settle()
 assert(deck.indexBase==0 and sizes[1]==1 and sizes[2]==3,'first nonempty list did not calibrate its actual zero base')
+local field=panel:GetChild('pileTools'):GetChild('type')
+assert(field:GetChild('hit').click());assert(field:GetChild('direction').localRotationZ==0)
+assert(field:GetChild('hit').click());assert(field:GetChild('direction').localRotationZ==180)
+assert(panel:GetChild('pileTools'):GetChild('cost'):GetChild('hit').click())
+assert(field:GetChild('direction').localRotationZ==0,'switching fields retained a stale descending arrow')
+
 assert(require('abyss_art_features').flags.cards==false)
 for _,mode in ipairs({'type','cost','name','original'})do assert(deck:setPileSort(mode));assert(not host.pageReveal:covered(),'ordinary cards=false sort acquired a cover')end
 assert(deck:setPileSort('name'));local firstName=host.nodeUI.presentation[deck.cards[1].cardId].name
@@ -136,13 +149,13 @@ local function boot(amount,origin)
  script={object=canvas,GetParam=function()return false end,EnableUpdate=function()end}
  G.new=function(root,data,presentation,event,platform)p=platform;host=create(root,data,presentation,event,platform);return host end
  dofile('src/lua/abyss_ui.lua');OnStart();G.new=create;local update=OnUpdate
- for i=1,5 do update(1/60)end;assert(host and not host.pageReveal:covered());assert(host:start())
- for i=1,5 do update(1/60)end;assert(F.confirmStart(host))
+ for i=1,60 do update(1/60)end;assert(host and not host.pageReveal:covered());assert(host:start())
+ for i=1,60 do update(1/60)end;assert(F.confirmStart(host))
  for i=1,240 do
   if not host.starting and not(host.prologue and host.prologue:covering())and not host.pageReveal:covered()then break end
   update(1/60)
  end
- assert(host.run and not host.starting and not host.prologue:covering()and not host.pageReveal:covered(),'native deck opening did not finish')
+ assert(host.run and not host.starting and not(host.prologue and host.prologue:covering())and not host.pageReveal:covered(),'native deck opening did not finish')
  local original=C.copy(host.run.deck);host.run.deck={}
  for i=1,amount do local card=C.copy(original[(i-1)%#original+1]);card.uid=1000+i;host.run.deck[i]=card end
  local grid=host.root:GetChild('deckPanel'):GetChild('pileGrid');grid.indexBase=origin;grid.deferRefresh=true
