@@ -71,7 +71,12 @@ function beforeTravelerStatusCiSource(path,source){
  const copier=path==='tests/helpers/copy-integration-source-closure.mjs';
  const regression=path==='tests/integration-source-epoch.test.mjs';
  if((!copier&&!regression)||typeof source!=='string'||source.includes('\r\r\n'))return source;
- const lf=normalize(source),sha=hash(lf);
+ let lf=normalize(source);
+ if(copier&&hash(lf)==='6eaac416afd6b25c2949cc5bb7b011d573e7fc9012f5cac3b7387d5988b4ae54'){
+  lf=lf.replace(" 'tests/helpers/release-map-deck-source.mjs':'675e7f011f5481b8a1bbf0112762c2ee9c7c757ec6401c04032e2ab610f30345',", " 'tests/helpers/release-map-deck-source.mjs':'c661e5dfa5035a09a47935bd7bfbc3e1f37b992d809bc7387d93e757c3df6fd5',");
+  assert.equal(hash(lf),'2c468260f8ca242e3a9e2d3d683616b45cca8ac6ad962388d7e0c5c0ceb2f85a','exact Forethought helper copy predecessor');
+ }
+ const sha=hash(lf);
  let prior,expected;
  if(copier&&sha==='2c468260f8ca242e3a9e2d3d683616b45cca8ac6ad962388d7e0c5c0ceb2f85a'){
   prior=lf.replace(/const travelerStatusFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
@@ -90,10 +95,6 @@ function beforeTravelerStatusCiSource(path,source){
 function beforeLoadingRecoveryCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  let lf=normalize(source);
- if(hash(lf)==='6eaac416afd6b25c2949cc5bb7b011d573e7fc9012f5cac3b7387d5988b4ae54'){
-  lf=lf.replace(" 'tests/helpers/release-map-deck-source.mjs':'675e7f011f5481b8a1bbf0112762c2ee9c7c757ec6401c04032e2ab610f30345',", " 'tests/helpers/release-map-deck-source.mjs':'c661e5dfa5035a09a47935bd7bfbc3e1f37b992d809bc7387d93e757c3df6fd5',");
-  assert.equal(hash(lf),'2c468260f8ca242e3a9e2d3d683616b45cca8ac6ad962388d7e0c5c0ceb2f85a','exact Forethought helper copy predecessor');
- }
  if(hash(lf)==='eb6e433e3a66f62e4b5aece6f475322cbf3d6d68e6d5e85107676cdff98719ac'){
   lf=lf.replace(" 'tests/helpers/energy-reference-source.mjs':'eda0da3e4206a76c9bfe2b48a040e24c217a9b2f1416a673b728c03c4da4a2b7',\n",
    " 'tests/helpers/energy-reference-source.mjs':'a8db68450b733114e4b5cb9c345d6d7935b9309e150e4ce7717e9c833e4df0ad',\n")
