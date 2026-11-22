@@ -1,5 +1,6 @@
 import {beforeCombatVisualSource,combatVisualPriorRead,assertCombatVisualCurrent} from './combat-visual-source.mjs';
 import {beforeMapDeckSource,mapDeckPriorRead} from './release-map-deck-source.mjs';
+import {beforeTravelerStatusSource,travelerStatusPriorRead} from './traveler-status-source.mjs';
 import {authorizeReleaseUiRestore,beforeReleaseShopEntry,shopEntryPriorRead,shopEntrySourcePaths} from './release-ui-restore-source.mjs';
 import {beforeRefinedReleaseProduction,refinedReleaseProductionPaths} from './refined-release-source.mjs';
 import {beforeAuthenticatedReleaseUiRestore,beforeReleaseControlsGuideRemoval,beforeReleaseForgeGridUi,beforeReleaseRightClick,beforeReleaseSharedRelicUi,beforeReleaseUiRestore,releaseControlsGuideRemovalSourcePaths,releaseForgeSourcePaths,releaseRightClickSourcePaths,releaseSharedRelicSourcePaths,releaseUiRestoreSourcePaths} from './release-ui-restore-source.mjs';
@@ -107,6 +108,8 @@ const currentContinuationOwners = new Set([
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
+ source=beforeTravelerStatusSource(path,source,read,true);
+ read=travelerStatusPriorRead(read);
  source=beforeSlimeSplitSource(path,source,read,true);
  source=beforeMapDeckSource(path,source,read);
  read=mapDeckPriorRead(read);
