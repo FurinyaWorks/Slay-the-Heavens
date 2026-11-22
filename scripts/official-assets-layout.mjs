@@ -188,8 +188,7 @@ function relicSurfaces(stage,theme){
   }
  }
  if(panel)for(const host of [panel,...children(panel).filter(n=>/^row\d+$/.test(n.name))]){
-  // The existing battle potion information window uses these same native
-  // rectangle materials. Keep its live bounds and every read-only input owner.
+  // Keep the compact relic information surfaces and their live input bounds.
   setImage(required(host,host===panel?'frame':'border'),theme.image.rect,theme.color.goldDim);
   setImage(required(host,'plate'),theme.image.rect,theme.color.panelSunken);protectedHosts.add(host);
  }
@@ -198,7 +197,7 @@ function relicSurfaces(stage,theme){
 function panelSurfaces(node,theme,protectedHosts){
  // Keep all modal catchers, live field paths, sizes and visibility. Only replace
 // large landscape image surfaces; do not stretch the landscape plaque into icons.
- if(node.kind!=='container'||protectedHosts?.has(node))return;
+ if(node.kind!=='container'||protectedHosts?.has(node)||node.name==='potionPopup')return;
  const hasText=children(node).some(item=>item.kind==='text');
  if(!hasText)return;
  for(const name of ['face','panel','plate']){
@@ -297,7 +296,7 @@ export function applyOfficialAssets(trees,theme){
    art.name='art';
    pileReturn.children=[art,{name:'hit',kind:'cursorArea',size:[...preset.size]}];
   }
-  const tools=child(deckPanel,'pileTools');
+  const tools=child(deckPanel,'deckSort');
   if(tools)for(const control of children(tools)){
    const backing=child(control,'officialButtonBacking');if(backing)backing.visible=false;
   }

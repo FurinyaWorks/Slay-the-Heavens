@@ -26,6 +26,25 @@
       "note": "统一局内操作的圆角材质、状态色与地图返回位置。示意来自真实生成布局，官方设备待验。"
     },
     {
+      "codePath": "scripts/official-run-layout.mjs",
+      "codePaths": [
+        "scripts/ui-layout.mjs",
+        "scripts/official-assets-layout.mjs",
+        "src/lua/abyss_battle_potion_popup.lua"
+      ],
+      "targetVersion": "v2.0.0",
+      "state": "potionPopup",
+      "revision": "shared-rounded-palette",
+      "status": "CURRENT_IMPLEMENTATION",
+      "backlogTask": "TASK-4.15",
+      "reference": {
+        "path": "docs/reviews/develop-potion-popup.md",
+        "sha256": "2a29f361ecb479effba363568c9235ed8ad287aec6c9225bbaf4ebd0f4f11ed9"
+      },
+      "supersedes": [],
+      "note": "Release #871 回流。战斗与非战斗共用紧凑弹窗，保留等宽按钮、状态色及战后遗物栏。"
+    },
+    {
       "codePath": "scripts/v25-menu-layout.mjs",
       "targetVersion": "v2.0.0",
       "state": "menuPanel",

@@ -185,7 +185,9 @@ test('approved pages keep live input identities while unrelated pages retain the
   for(const key of ['position','size','visible','scale','rotation','states','focusable','interactable','raycastTarget']){
    const potionLabel=/^\/SlayTheAbyss\/potionEntry\/open\/hit\/(?:normal|hover|pressed|disabled)\/label$/.test(path);
    const relicHit=/^\/SlayTheAbyss\/relicBar\/slot\d+\/hit$/.test(path);
-   const expected=key==='size'&&relicHit?[theme.officialAssets.battleRelicBar.hit,theme.officialAssets.battleRelicBar.hit]:key==='size'&&cardText.get(node)==='cost'
+   const footer=/^\/SlayTheAbyss\/deckPanel\/(browserDescription|rarityTip|previous|next|pageHint)$/.exec(path);
+   const frame=footer&&theme.layout.deckView.browser.footer[footer[1]];
+   const expected=key==='position'&&frame?frame.slice(0,2):key==='size'&&frame?frame.slice(2):key==='size'&&relicHit?[theme.officialAssets.battleRelicBar.hit,theme.officialAssets.battleRelicBar.hit]:key==='size'&&cardText.get(node)==='cost'
     ?child(child(child(layout,'battlePanel'),'card1'),'cost').size:key==='visible'&&potionLabel?false:before[key];
    assert.deepEqual(node[key],expected,path+' '+key);
   }
@@ -197,8 +199,6 @@ test('approved pages keep live input identities while unrelated pages retain the
     if(expected.autoSize&&(expected.minFontSize*1.45+4>before.size?.[1]||path.endsWith('/shopView/removal/description')))expected.minFontSize=nativeTheme.font.minimum;assert.deepEqual(actual,expected,path);}
  }
   const canonical=child(child(layout,'battlePanel'),'card1');
-  const browserFilters=new Map(['All','Attack','Skill','Power','Status','Curse']
-   .map((name,i)=>['/SlayTheAbyss/deckPanel/filter'+name,[209+i*59,282]]));
   for(const [path,node,before]of containers){
    if(path==='/SlayTheAbyss/potionPanel'){
     const popup=current.get(path);
@@ -246,9 +246,10 @@ test('approved pages keep live input identities while unrelated pages retain the
     if(caption)assert.equal(caption.text.content,'返回战利品');
     continue;
    }
-   const expected=path==='/SlayTheAbyss/deckPanel/pileGrid'
-    ? {...before,position:[0,-75.5],size:[918,557]}
-    : browserFilters.has(path)?{...before,position:browserFilters.get(path)}:before;
+   const footer=/^\/SlayTheAbyss\/deckPanel\/(browserDescription|rarityTip|previous|next|pageHint)$/.exec(path);
+   const frame=path==='/SlayTheAbyss/deckPanel/pileGrid'?theme.layout.deckView.pileViewport
+    :footer&&theme.layout.deckView.browser.footer[footer[1]];
+   const expected=frame?{...before,position:frame.slice(0,2),size:frame.slice(2)}:before;
    for(const key of Object.keys(expected)){
     const choiceSlot=/^\/SlayTheAbyss\/choicePanel\/card([12])$/.exec(path);
     if(choiceSlot&&key==='position'){

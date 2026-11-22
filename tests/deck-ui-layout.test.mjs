@@ -7,14 +7,15 @@ import { nativeTheme as theme } from '../scripts/native-ui-theme.mjs';
 test('read-only piles reserve an empty native host and retain the separate selection Grid', () => {
   const panel=gameLayout().controls.find(c=>c.name==='deckPanel');
   const grid=panel.children.find(c=>c.name==='pileGrid');
-  const veil=panel.children.find(c=>c.name==='pileVeil');
+  const chrome=panel.children.find(c=>c.name==='pileChrome');
+  const veil=chrome.children.find(c=>c.name==='shade');
   assert.equal(grid.kind,'container');
   assert.equal(grid.visible,false);
   assert.equal(grid.grid,undefined);
   assert.equal(grid.itemTemplate,undefined);
   assert.deepEqual(grid.children??[],[]);
-  assert.equal(veil.colour,'#000000');assert.equal(veil.opacity,.9);assert.equal(veil.visible,false);
-  assert.ok(panel.children.indexOf(veil)<panel.children.findIndex(c=>c.name==='blocker'));
+  assert.equal(veil.colour,'#000000');assert.equal(veil.opacity,.85);assert.equal(chrome.visible,false);
+  assert.ok(panel.children.indexOf(chrome)<panel.children.findIndex(c=>c.name==='blocker'));
   assert.equal(panel.children.find(c=>c.name==='grid').grid.columns,6);
 });
 
@@ -22,15 +23,7 @@ function walk(control, fn) { fn(control); for (const child of control.children ?
 test('approved deck uses a six-column vertical native scroller and a read-only reusable card template', () => {
   const panel = gameLayout().controls.find(c => c.name === 'deckPanel');
   const grid = panel.children.find(c => c.name === 'grid');
-  const filters = ['All','Attack','Skill','Power','Status','Curse'].map(id =>
-    panel.children.find(c => c.name === 'filter' + id));
-  assert.equal(filters.length, 6);
-  for (const control of filters) {
-    assert.ok(control, 'missing native card type filter');
-    assert.equal(control.visible, false, 'filters are gated by the browse lifecycle');
-    assert.equal(control.children.find(c => c.name === 'hit').kind, 'presetButton');
-    assert.equal(control.children.find(c => c.name === 'selected').visible, false);
-  }
+  assert.ok(panel.children.every(control => !control.name.startsWith('filter')));
   assert.equal(panel.children.find(c => c.name === 'sortoriginal').children[0].kind, 'presetButton');
   assert.equal(panel.children.find(c => c.name === 'browseTitle').visible, false);
   assert.equal(panel.visible, false);
@@ -84,7 +77,6 @@ test('deck overlay and close remain inside approved canvas safe areas at every d
     const k = Math.min(device[0] / theme.canvas.base[0], device[1] / theme.canvas.base[1]);
     const panel = layout.controls.find(c => c.name === 'deckPanel');
     for (const c of ['close','grid','browseTitle','sortoriginal','sorttype','sortcost',
-      'filterAll','filterAttack','filterSkill','filterPower','filterStatus','filterCurse',
       'previous','next','pageHint','upgradePreview'].map(name => panel.children.find(c => c.name === name)).concat([
       layout.controls.find(c => c.name === 'deckEntry').children.find(c => c.name === 'open')])) {
       assert.ok((Math.abs(c.position[0]) + c.size[0] / 2 + theme.canvas.safe.x) * k <= device[0] / 2);
@@ -93,19 +85,16 @@ test('deck overlay and close remain inside approved canvas safe areas at every d
   }
 });
 
-test('deck filters fit beside the normal title without covering the native grid or close button', () => {
+test('the simplified-Chinese sort header has three native buttons and clears the shared HUD', () => {
   const panel = gameLayout().controls.find(c => c.name === 'deckPanel');
-  const grid = panel.children.find(c => c.name === 'grid');
-  const browseTitle = panel.children.find(c => c.name === 'browseTitle');
-  const sorts = ['sortoriginal','sorttype','sortcost'].map(name => panel.children.find(c => c.name === name));
-  const buttons = ['filterAll','filterAttack','filterSkill','filterPower','filterStatus','filterCurse']
-    .map(name => panel.children.find(c => c.name === name));
-  const controls = [browseTitle, ...buttons, ...sorts, panel.children.find(c => c.name === 'close')];
-  for (let i = 1; i < controls.length; i++) {
-    const a = controls[i - 1], b = controls[i];
-    assert.ok(a.position[0] + a.size[0] / 2 <= b.position[0] - b.size[0] / 2, a.name + ' overlaps ' + b.name);
-  }
-  assert.ok(Math.min(...buttons.map(c => c.position[1] - c.size[1] / 2)) > grid.position[1] + grid.size[1] / 2);
+  const sort = panel.children.find(c => c.name === 'deckSort');
+  const chrome = panel.children.find(c => c.name === 'pileChrome');
+  const shade = chrome.children.find(c => c.name === 'shade');
+  const {height} = theme.officialAssets.battleHud;
+  assert.deepEqual(sort.children.map(control => control.name), ['plate', 'original', 'type', 'cost']);
+  assert.deepEqual(sort.children.slice(1).map(control => control.children[0].text.content), ['获得顺序', '类型', '耗能']);
+  assert.equal(shade.position[1] + shade.size[1] / 2, theme.canvas.base[1] / 2 - height);
+  assert.ok(sort.position[1] + 22 < shade.position[1] + shade.size[1] / 2);
 });
 
 test('overlays avoid navigation metadata and deck pages leave the card viewport clear', () => {

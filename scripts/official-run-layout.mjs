@@ -65,8 +65,7 @@ export function finishOfficialComposition(trees){
 function roundRunActions(host,theme){
  const panels={
   deckPanel:{close:'secondary',upgradePreview:'secondary',previous:'secondary',next:'secondary',
-   filterAll:'secondary',filterAttack:'secondary',filterSkill:'secondary',filterPower:'secondary',
-   filterStatus:'secondary',filterCurse:'secondary',sortoriginal:'secondary',sorttype:'secondary',sortcost:'secondary'},
+   sortoriginal:'secondary',sorttype:'secondary',sortcost:'secondary'},
   choicePanel:{before:'secondary',after:'secondary',confirm:'primary'},
   relicPanel:{close:'secondary',previous:'secondary',next:'secondary'},
   runMenu:{resume:'primary',map:'secondary',abandon:'danger',quit:'danger'},
@@ -76,8 +75,9 @@ function roundRunActions(host,theme){
   roundedPresetButton(required(required(required(host,panel),name),'hit'),theme,role);
  }
  const deck=required(host,'deckPanel');
- for(const [i,filter] of ['All','Attack','Skill','Power','Status','Curse'].entries()){
-  required(deck,'filter'+filter).position=[209+i*59,282];
+ for(const [name,frame] of Object.entries(theme.layout.deckView.browser.footer)){
+  const control=required(deck,name);
+  control.position=frame.slice(0,2);control.size=frame.slice(2);
  }
  const grid=required(deck,'pileGrid'),viewport=theme.layout.deckView.pileViewport;
  grid.position=viewport.slice(0,2);grid.size=viewport.slice(2);
@@ -98,10 +98,9 @@ function roundRunActions(host,theme){
  }
 }
 function roundBattleActions(battle,theme){
- const popup=required(required(battle,'potionHelp'),'potionPopup'),layout=theme.layout.potionPopup;
- const height=Math.max(layout.actionHeight,theme.layout.nativeText.lineHeight);
- roundedPresetButton(required(popup,'use'),theme,'primary',{size:[layout.width/2,height]});
- roundedPresetButton(required(popup,'discard'),theme,'secondary',{size:[layout.width/3-layout.padding,height]});
+ const popup=required(required(battle,'potionHelp'),'potionPopup');
+ roundedPresetButton(required(popup,'use'),theme,'primary');
+ roundedPresetButton(required(popup,'discard'),theme,'danger');
  roundedPresetButton(required(battle,'skip'),theme,'secondary');
  roundedPresetButton(required(battle,'start'),theme,'primary');
  roundedPresetButton(required(battle,'endTurn'),theme,'turn',{name:'v25Chrome'});

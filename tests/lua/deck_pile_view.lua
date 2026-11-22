@@ -67,10 +67,13 @@ test('discard view keeps group order and Frozen Eye permits the original reverse
     assert(same(before,host.run),'discard detail changed rules or RNG')
     for i,c in ipairs(cards) do assert(host.deckUI.cards[i].uid==c.uid) end
     host.deckUI:close();host.run.relics[#host.run.relics+1]='frozen_eye'
-    host.run.combat.draw=Combat.copy(cards)
-    open(host,root,'draw')
-    for i=1,#cards do assert(host.deckUI.cards[i].uid==cards[#cards-i+1].uid) end
-    host.deckUI:close()
+    for _,kind in ipairs({'draw','exhaust'})do
+        host.run.combat[kind]=Combat.copy(cards)
+        open(host,root,kind)
+        assert(not root:GetChild('deckPanel'):GetChild('rarityTip').visible)
+        for i=1,#cards do assert(host.deckUI.cards[i].uid==cards[#cards-i+1].uid) end
+        host.deckUI:close()
+    end
 end)
 
 test('combat pile faces retain temporary cost and growth while permanent deck remains unchanged',function()
@@ -98,13 +101,13 @@ test('empty piles open and invalid contexts cannot replace a visible snapshot',f
     host.run.phase='map';assert(not host.deckUI:openPile(host.run,'draw'))
 end)
 
-test('default pile browsing retains the normal card template and filters',function()
+test('default pile browsing retains the normal card template without filters or sort controls',function()
     local host,_,_,_,_,_,_,root=H.setup()
     host.run.combat.draw={instance(105,'defend')}
     local grid=open(host,root,'draw')
     local panel=root:GetChild('deckPanel')
     assert(not host.deckUI.pileView and grid==panel:GetChild('grid'))
-    assert(not panel:GetChild('pileGrid').visible and panel:GetChild('filterAll').visible)
+    assert(not panel:GetChild('pileGrid').visible and not panel:GetChild('deckSort').visible and host.deckUI.setFilter==nil)
     assert(not grid.items[0]:GetChild('face'):GetChild('nativeRibbon'))
     host.deckUI:close()
 end)

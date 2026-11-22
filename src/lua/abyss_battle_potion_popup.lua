@@ -21,7 +21,10 @@ local function sameSlot(run,token)
 end
 local function anchor(slot)
     local hud=Theme.presentationProfile=='official-assets-first' and Theme.officialAssets.battleHud
-    if hud then return hud.potionX+(slot-1)*hud.potionStep,hud.y-42 end
+    if hud then
+        local relicBar=Theme.officialAssets.battleRelicBar
+        return hud.potionX+(slot-1)*hud.potionStep,relicBar.origin[2]-relicBar.hit/2-Theme.space.s
+    end
     return L.battlePotions.origin[1]+(slot-1)*L.battlePotions.step[1],P.top
 end
 function M.new(root,owner,platform,clickEvent,actions)
@@ -66,7 +69,7 @@ function M.new(root,owner,platform,clickEvent,actions)
         -- source buttons. Reserve their actual frames, plus body descent room.
         local header=math.max(P.header,L.nativeText.lineHeight)
         local actionHeight=math.max(P.actionHeight,L.nativeText.lineHeight)
-        local effectHeight=math.max(L.nativeText.lineHeight,lines*P.line+P.line)
+        local effectHeight=lines==1 and L.nativeText.lineHeight or (lines+1)*P.line
         local h=math.max(P.minimumHeight,P.padding*2+header+effectHeight+P.gap+actionHeight)
         local x,anchorY=anchor(token.slot)
         local y=anchorY-h/2
@@ -84,8 +87,10 @@ function M.new(root,owner,platform,clickEvent,actions)
         child('target').text=item.targetPolicy=='enemy_one' and '对一个敌人' or item.targetPolicy=='enemy_all' and '对所有敌人' or '对自己'
         child('effect').text=effect
         local actionY=-h/2+P.padding+actionHeight/2
-        size('use',-P.width/6,actionY,P.width/2,actionHeight)
-        size('discard',P.width/3-P.padding/2,actionY,P.width/3-P.padding,actionHeight)
+        local actionWidth=(P.width-P.padding*2-P.buttonGap)/2
+        local actionOffset=(actionWidth+P.buttonGap)/2
+        size('use',-actionOffset,actionY,actionWidth,actionHeight)
+        size('discard',actionOffset,actionY,actionWidth,actionHeight)
         enabled('use',item.canUse);enabled('discard',item.canDiscard~=false)
         root:SetVisible(true);root:SetAsLastSibling()
     end

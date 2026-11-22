@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {exactSourceMatches as matches} from './source-fingerprint.mjs';
-import {authenticateInputRetirement,beforeInputRetirement,beforeInputRetirementReader,inputRetirementOwns,isCurrentInputRetirementSource,beforeCombatEvents,combatEventsOwns,assertPointerInputSource,pointerInputPath,retiredControllerPath,readRetiredController} from './input-retirement-source.mjs';
+import {authenticateInputRetirement,beforeInputRetirement,beforeInputRetirementReader,inputRetirementOwns,isCurrentInputRetirementSource,beforeCombatEvents,combatEventsOwns,beforeDevelopUiBackflows,assertPointerInputSource,pointerInputPath,retiredControllerPath,readRetiredController} from './input-retirement-source.mjs';
 import {assertRelicDetailCurrent,authenticateRelicDetail,beforeRelicDetail,relicDetailOwns} from './relic-detail-source.mjs';
 import {beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';
 import {authenticateActionButtons,beforeActionButtons,actionButtonsOwns} from './action-buttons-source.mjs';
@@ -183,7 +183,7 @@ for(const [path,{before,after}] of Object.entries(deckPages.files)){
 }
 export const deckPagesAdded=Object.freeze(Object.keys(deckPages.added));
 function deckPagesPrior(path,source){return predecessor(deckPages.files,path,source);}
-export function beforeDeckPages(path,source,options){return deckPagesPrior(path,beforeInputRetirement(path,beforeCombatEvents(path,beforeActionButtons(path,source)),options));}
+export function beforeDeckPages(path,source,options){return deckPagesPrior(path,beforeInputRetirement(path,beforeCombatEvents(path,beforeActionButtons(path,beforeDevelopUiBackflows(path,source))),options));}
 const deckPagesOwns=path=>Object.hasOwn(deckPages.files,path);
 const productionOwner=path=>path===architecturePath||path.startsWith('src/lua/');
 const recentBackflowOwns=path=>mapRoomBackflowOwns(path)||deckPagesOwns(path)||(productionOwner(path)&&inputRetirementOwns(path));
@@ -197,6 +197,7 @@ function currentRecentBackflowOwner(path,source){
  return matches(source,roomEntry.files[path].after);
 }
 export function assertDevelopBackflowCurrent(path,source){
+ source=beforeDevelopUiBackflows(path,source);
  const priorActions=beforeActionButtons(path,source);
  if(actionButtonsOwns(path)&&!recentBackflowOwns(path)&&!priorDevelopBackflowOwns(path)){
   assert.notEqual(priorActions,source,'fresh current production owner: '+path);
@@ -249,7 +250,7 @@ function recentBackflowOwnerReader(read,historicalOwners){
  let epoch;
  return path=>{
   const controller=path===retiredControllerPath?readRetiredController(read):undefined;
-  const source=controller?controller.source:beforeActionButtons(path,read(path));
+  const source=controller?controller.source:beforeActionButtons(path,beforeDevelopUiBackflows(path,read(path)));
   if(!recentBackflowOwns(path))return source;
   const current=(!controller||controller.restored)&&currentRecentBackflowOwner(path,source);
   const binding=historicalOwners&&Object.hasOwn(historicalOwners,path)?historicalOwners[path]:undefined;
@@ -330,8 +331,15 @@ export function authenticateDevelopBackflow(path,source,read,options){
  return authenticateDevelopBackflowWithReaders(path,source,read,recentBackflowOwnerReader(read),options);
 }
 function authenticateDevelopBackflowWithReaders(path,source,readLive,readLinked,options){
- source=authenticateActionButtons(path,source,readLive);
- const readActions=owner=>beforeActionButtons(owner,readLive(owner));
+ const priorUi=beforeDevelopUiBackflows(path,source);
+ if(priorUi!==source){
+  const live=readLive(path);
+  assert(typeof live==='string'&&live.replaceAll('\r\n','\n')===source.replaceAll('\r\n','\n'),
+   'combined linked owner identity: '+path+' during deck/potion backflow validation');
+ }
+ const readUi=owner=>beforeDevelopUiBackflows(owner,readLive(owner));
+ source=authenticateActionButtons(path,priorUi,readUi);
+ const readActions=owner=>beforeActionButtons(owner,readUi(owner));
  const beforeCloseout=beforeCombatEvents(path,source);
  if(beforeCloseout!==source){
   const live=readActions(path);

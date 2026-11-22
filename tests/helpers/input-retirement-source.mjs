@@ -41,7 +41,7 @@ function configLayoutMatches(source,expected,{allowConfigLayout=false}={}){
 }
 
 const combatEventsArchive=readFileSync(new URL('../fixtures/develop-combat-events-source.json.gz',import.meta.url));
-assert.equal(hash(combatEventsArchive),'cba13fa1ef76da1402fc54fdc4c172e7e3012a9d61cb2383ebbbd77e31223b57','exact Develop combat and event sources');
+assert.equal(hash(combatEventsArchive),'b8f16c6f4ee6b51943792e0e6449699e258ac3065c2bc20d51d3c0cb44541e87','exact Develop combat and event sources');
 const combatEvents=JSON.parse(gunzipSync(combatEventsArchive));
 assert.equal(combatEvents.base,'0397645a8ffa5eb8af2e02d7c033ef5c486fbf1e');
 for(const [path,row] of Object.entries(combatEvents.files)){
@@ -55,8 +55,40 @@ export function beforeCombatEvents(path,source){
  return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
 }
 
+const browserArchive=readFileSync(new URL('../fixtures/develop-deck-browser-backflow-source.json.gz',import.meta.url));
+assert.equal(hash(browserArchive),'9f62aef27e5bc61741311bb2507fa75a58b67544d33136ccbc6a5978edd9f284','exact Develop deck browser archive');
+const browserBackflow=JSON.parse(gunzipSync(browserArchive));
+assert.equal(browserBackflow.base,'beba19bad25db7de71f96af521656c13b882909b');
+for(const [path,row] of Object.entries(browserBackflow.files)){
+ assert(matches(row.before.source,row.before),'exact deck browser predecessor: '+path);
+ assert.match(row.after.sha256,/^[a-f0-9]{64}$/);assert.match(row.after.gitBlob,/^[a-f0-9]{40}$/);
+}
+export function beforeDeckBrowserBackflow(path,source){
+ const row=Object.hasOwn(browserBackflow.files,path)&&browserBackflow.files[path];
+ if(!row||!matches(source,row.after))return source;
+ return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
+}
+
+const potionArchive=readFileSync(new URL('../fixtures/develop-potion-popup-source.json.gz',import.meta.url));
+assert.equal(hash(potionArchive),'6c85ba4df16b702a4f6955b50631d1af9533c141d19fb930a51be22224eabf95','exact Develop potion popup archive');
+const potionBackflow=JSON.parse(gunzipSync(potionArchive));
+assert.equal(potionBackflow.base,'103aa4072bd3801deb6bf090455bd974181a9647');
+for(const [path,row] of Object.entries(potionBackflow.files)){
+ assert(Object.hasOwn(files,path)&&matches(row.before.source,row.before),'exact potion popup predecessor: '+path);
+ assert.match(row.after.sha256,/^[a-f0-9]{64}$/);assert.match(row.after.gitBlob,/^[a-f0-9]{40}$/);
+}
+export function beforePotionBackflow(path,source){
+ const row=Object.hasOwn(potionBackflow.files,path)&&potionBackflow.files[path];
+ if(!row||!matches(source,row.after))return source;
+ return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
+}
+
+export function beforeDevelopUiBackflows(path,source){
+ return beforeDeckBrowserBackflow(path,beforePotionBackflow(path,source));
+}
+
 export function beforeMergedInputRetirement(path,source,options){
- source=beforeCombatEvents(path,beforeActionButtons(path,source));
+ source=beforeCombatEvents(path,beforeActionButtons(path,beforeDevelopUiBackflows(path,source)));
  if(path==='scripts/potion-discard-layout.mjs')source=beforeNativeFlowFixture(path,source);
  return beforeNativeHostInputRetirement(path,beforeNativeFixtureInputRetirement(path,source,options),options);
 }
@@ -64,8 +96,9 @@ export const inputRetirementOwns=path=>Object.hasOwn(files,path);
 export const isCurrentInputRetirementSource=(path,source)=>inputRetirementOwns(path)&&matches(beforeMergedInputRetirement(path,source),files[path].after);
 
 export function beforeInputRetirement(path,source,options){
- if(!Object.hasOwn(files,path))return source;
- const row=files[path],witness=beforeMergedInputRetirement(path,source);
+ const witness=beforeMergedInputRetirement(path,source);
+ if(!Object.hasOwn(files,path))return witness;
+ const row=files[path];
  if(!matches(witness,row.after)&&!configLayoutMatches(witness,row.after,options))return source;
  return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
 }
@@ -97,7 +130,7 @@ export function authenticateInputRetirement(path,source,read,options){
  try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
  const witness=beforeMergedInputRetirement(path,live);
  const merged=beforeMergedInputRetirement(path,source)!==source;
- assert((witness!==live)===merged&&matches(witness,files[path].after)
+ assert((witness!==live)===merged&&(!inputRetirementOwns(path)||matches(witness,files[path].after))
   &&(!merged||normalize(live)===normalize(source)),
   'combined linked owner identity: '+path+' during input retirement validation');
  return prior;

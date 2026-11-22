@@ -9,13 +9,13 @@ const label=face=>child(face,'label');
 const stateInk=(face,activeInk)=>face.name==='disabled'?'#AFA18C':activeInk;
 function luminance(hex){const values=hex.slice(1).match(/../g).map(value=>parseInt(value,16)/255).map(value=>value<=.04045?value/12.92:((value+.055)/1.055)**2.4);return values[0]*.2126+values[1]*.7152+values[2]*.0722;}
 function contrast(first,second){const a=luminance(first),b=luminance(second);return(Math.max(a,b)+.05)/(Math.min(a,b)+.05);}
-test('V25 pile chrome fits the internal design canvas rather than Simulator device pixels',()=>{
+test('pile chrome shades the design canvas below the live HUD',()=>{
  const theme=JSON.parse(readFileSync('data/presentation/ui_theme.json')),chrome=battlePileChrome(theme);
  assert.deepEqual(theme.canvas.base,[1280,720]);
  const shade=chrome.children.find(n=>n.name==='shade');
- assert.equal(shade.position[1]+shade.size[1]/2,316);
+ assert.equal(shade.position[1]+shade.size[1]/2,theme.canvas.base[1]/2-theme.officialAssets.battleHud.height);
  assert.equal(shade.position[1]-shade.size[1]/2,-360);
- for(const n of chrome.children.filter(n=>!n.name.startsWith('vignette'))){const [x,y]=n.position,[w,h]=n.size;assert(x-w/2>=-640.1&&x+w/2<=640.1&&y-h/2>=-360.1&&y+h/2<=360.1,n.name);}
+ for(const n of chrome.children){const [x,y]=n.position,[w,h]=n.size;assert(x-w/2>=-640.1&&x+w/2<=640.1&&y-h/2>=-360.1&&y+h/2<=360.1,n.name);}
  const button=battlePileReturn({position:[0,0],children:[{children:[]}]},true);
  assert.deepEqual(button.position,[-550,-237]);assert(button.position[0]-180/2>=-640);assert(button.position[1]-54/2>=-360);
 });
