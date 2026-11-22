@@ -194,6 +194,30 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     local pileGrid = root:GetChild('pileGrid')
     local grid = browserGrid
     local indexBases=setmetatable({},{__mode='k'})
+    self.browserWarmupPending=Theme.presentationProfile=='official-assets-first' and pileGrid~=nil
+    function self.prepareBrowser()
+        if not self.browserWarmupPending or self.visible then return end
+        self.browserWarmupPending=false
+        if indexBases[pileGrid]~=nil then return end
+        local generation=self.generation
+        local submitting,accepted=true,false
+        local early={}
+        local function remember(control,index)
+            if self.generation~=generation or self.visible or indexBases[pileGrid]~=nil
+                or not control or control.alive==false or (index~=0 and index~=1) then return end
+            pcall(control.SetVisible,control,false)
+            if self.generation==generation and not self.visible then indexBases[pileGrid]=index end
+        end
+        -- Some native hosts defer work on hidden grids. A click always owns
+        -- its refresh and can supersede this optional one-item probe.
+        local ok,result=pcall(pileGrid.RefreshItems,pileGrid,1,function(control,index)
+            if submitting then early.control,early.index=control,index
+            elseif accepted then remember(control,index)end
+        end)
+        submitting,accepted=false,ok and result~=false
+        if accepted then remember(early.control,early.index)end
+        early.control,early.index=nil,nil
+    end
     local function gridColumns() return self.browserShell and 5 or Theme.layout.deckView.columns end
     local function browserHeading(kind)
         if self.previewInfo then return '初始牌组' end
@@ -352,7 +376,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         return self:showDetails(definition,upgraded)
     end
     local function colour(value) return platform.color(value.r, value.g, value.b, value.a) end
-    local function picture(control,id) control:SetImage(platform.imageSource,id) end
+    local function picture(control,id) return control:SetImage(platform.imageSource,id) end
     local function tint(control, value) control.imageColor = colour(value) end
     local function updateForethoughtChoice(choice, token)
         if not self.visible or self.choiceToken~=token or self.battle.pendingChoice~=choice or choice.token==token then
@@ -416,19 +440,17 @@ function M.new(root, presentation, clickEvent, platform, onClose)
             or Combat.cardPreview(battle,instance,nil,definition)
         return CardDisplay.combatText(display,definition,instance,preview,battle)
     end
+    local browserFit=Theme.presentationProfile=='official-assets-first' and CardDisplay.newTextFitter()
     local function paintCardText(face,instance,display,definition,text,bodyUnchanged)
+        local fit=self.browserShell and browserFit or nil
         CardDisplay.writeTitle(face:GetChild("name"),display.name,instance.upgraded,
-            definition.repeatable and (instance.upgrades or 1) or nil,face:GetChild("type"),typeNames[definition.type] or definition.type)
+            definition.repeatable and (instance.upgrades or 1) or nil,face:GetChild("type"),typeNames[definition.type] or definition.type,fit)
         local label=face:GetChild('label')
-        local fits=bodyUnchanged or CardDisplay.writeBody(label,text,face)
+        local fits,accepted=true,true
+        if not bodyUnchanged then fits,accepted=CardDisplay.writeBody(label,text,face,fit) end
         if Theme.cardSkin.text.body then label.fontColor=colour(Theme.cardSkin.text.body)end
         face:GetChild("cost").text = definition.cost == -2 and "" or definition.costMode == "all_energy" and "X" or tostring(definition.cost)
-        return fits
-    end
-    local function paintCardArt(face,definition,display,uid)
-        local art=face:GetChild('art')
-        CardDisplay.writeArt(art,definition,picture,face)
-        CardDisplay.writeNativeArt(face,definition,display.nativeArt,platform,art,uid)
+        return fits,accepted
     end
     local function paintCardSkin(face,definition,look)
         face:GetChild("name").fontColor=colour(Theme.cardSkin.text.title)
@@ -438,33 +460,73 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         tint(face:GetChild("artPlate"), Theme.color.cardType[definition.type] or Theme.color.panelRaised)
         CardSkin.apply(face,definition,platform,look)
     end
+    local function appearanceOf(face,instance,display,definition,base,text)
+        return {face,definition.id,definition.type,definition.rarity or false,definition.color or false,
+            definition.originalV4 and definition.originalV4.role or false,display.name,not not instance.upgraded,
+            definition.repeatable and (instance.upgrades or 1) or false,definition.cost,definition.costMode or false,
+            base or false,not not self.pileView,text}
+    end
+    local function sameAppearance(previous,current)
+        if not previous or not current then return false end
+        for index,value in ipairs(current)do if previous[index]~=value then return false end end
+        return true
+    end
+    local function paintFace(control,face,instance,display,definition,base,selected,text,binding,appearance)
+        local previous=binding and binding.appearance
+        local matches=sameAppearance(previous,appearance)
+        local art=face:GetChild('art')
+        local syncArt=not matches or display.nativeArt or binding.nativeArt or art.visible~=true
+        if syncArt then PageReveal.registerSource(platform,'deckPanel') end
+        local accepted,artPending=true,display.nativeArt~=nil
+        if not matches then
+            if binding then binding.appearance=nil end
+            local bodyUnchanged=previous and previous[1]==face and binding.bodyText==text
+            local _,textAccepted=paintCardText(face,instance,display,definition,text,bodyUnchanged)
+            accepted=CardDisplay.writeArt(art,definition,picture,face)~=false and textAccepted~=false
+        end
+        if display.nativeArt then
+            CardDisplay.writeNativeArt(face,definition,display.nativeArt,platform,art,instance.uid)
+        elseif syncArt then
+            local _,clean=CardDisplay.clearNativeArt(face,art)
+            artPending=not clean
+        end
+        if matches then return accepted,artPending end
+        paintCardSkin(face,definition,{cost=definition.cost,baseCost=base,selected=selected,
+            surfaceScope=self.pileView and 'battle' or 'deck',templateKind=self.browserShell and 'attack' or nil,
+            templateMaterials=self.browserShell})
+        if self.browserShell then
+            for _,name in ipairs({'nativePlayableRim','glow','costHalo'})do
+                accepted=face:GetChild(name):SetVisible(false)~=false and accepted
+            end
+        end
+        control:GetChild("uid").text=selected and '已选择' or ''
+        return accepted,artPending
+    end
     local function fill(control, instance, catalog)
-        PageReveal.registerSource(platform,'deckPanel')
+        local generation=self.generation
         local battle=(self.choiceToken or self.pileKind) and self.battle
         local definition = Combat.cardDefinition(battle or {catalog=catalog}, instance)
         local display = assert(presentation[instance.cardId], "missing deck presentation " .. instance.cardId)
         local face = control:GetChild("face")
         local binding = self.bindings[control]
         local text=cardBody(display,definition,instance,battle)
-        paintCardText(face,instance,display,definition,text,self.browserShell and binding and binding.bodyText==text)
-        paintCardArt(face,definition,display,instance.uid)
         local printed=catalog.cards[instance.cardId]
         local base=instance.upgraded and printed.upgrade and printed.upgrade.cost or printed.cost
         local selected=false
         for _,uid in ipairs(self.choiceSelected or {}) do if uid==instance.uid then selected=true end end
-        paintCardSkin(face,definition,{cost=definition.cost,baseCost=base,selected=selected,
-            surfaceScope=self.pileView and 'battle' or 'deck',templateKind=self.browserShell and 'attack' or nil,
-            templateMaterials=self.browserShell})
-        if self.browserShell then
-            face:GetChild('nativePlayableRim'):SetVisible(false)
-            face:GetChild('glow'):SetVisible(false)
-            face:GetChild('costHalo'):SetVisible(false)
-        end
-        control:GetChild("uid").text = selected and '已选择' or ''
+        local appearance=self.browserShell and CardSkin.referenceGeometry(face)
+            and appearanceOf(face,instance,display,definition,base,text)
+        local accepted,artPending=paintFace(control,face,instance,display,definition,base,selected,text,binding,appearance)
+        if self.generation~=generation or control.alive==false then return false end
         local hit=control:GetChild('hit')
-        hit:SetVisible(true)
-        bindCard(control,hit,instance,text,fill)
-        control:SetVisible(true)
+        if hit.visible~=true then accepted=hit:SetVisible(true)~=false and accepted end
+        if self.generation~=generation then return false end
+        bindCard(control,hit,instance,accepted and text or nil,fill)
+        local painted=self.bindings[control]
+        if control.visible~=true then accepted=control:SetVisible(true)~=false and accepted end
+        if self.generation~=generation then return false end
+        painted.appearance,painted.nativeArt=accepted and appearance or nil,artPending
+        return true
     end
     local function detailVersion(instance,display,state,battle)
         local definition=Combat.cardDefinition(state,instance)
@@ -789,8 +851,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
             local key=index-base+1
             local instance=cards[key]
             if not instance then CardDisplay.clearNativeArt(control:GetChild('face'));control:SetVisible(false);prepared(0,control);return end
-            fill(control,instance,catalog)
-            prepared(key,control)
+            if fill(control,instance,catalog) then prepared(key,control) end
         end)
         refreshing=false
         ready()

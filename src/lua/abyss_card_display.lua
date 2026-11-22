@@ -48,16 +48,18 @@ local function placePortrait(control,definition,face,reference)
     local content=Theme.layout.card.v25Content
     if reference or content and face and bodyFrames[face]~=true then
         local position=reference and reference.portrait.position or content.icons[definition.type] or content.icons.attack
-        control:SetAnchoredPosition(position[1],position[2])
+        return control:SetAnchoredPosition(position[1],position[2])~=false
     end
+    return true
 end
 function M.writeArt(control,definition,picture,face)
     local image,status,source=M.art(definition)
     local reference=face and CardSkin.referenceGeometry(face)
     local width,height=portraitSize(source,status,reference)
-    picture(control,image)
-    control:SetSizeDelta(width,height)
-    placePortrait(control,definition,face,reference)
+    local pictured=picture(control,image)~=false
+    local sized=control:SetSizeDelta(width,height)~=false
+    local placed=placePortrait(control,definition,face,reference)
+    return pictured and sized and placed
 end
 -- Candidate-only binding into controls already owned by the real card face.
 -- Weak keys do not keep recycled native controls alive. Failed versions wait
@@ -244,6 +246,27 @@ function M.fit(text,maximum,width,height,lineScale,advance)
     end
     return Theme.font.minimum,false
 end
+-- A browser can fit the same starter card or live description in many cells.
+-- Cache exact inputs with a fixed budget and let uncommon text fit normally.
+function M.newTextFitter()
+    local cache,count={},0
+    return function(text,maximum,width,height,lineScale,advance)
+        local previous=cache[text]
+        local minimum=Theme.font.minimum
+        if previous and previous.maximum==maximum and previous.width==width and previous.height==height
+            and previous.minimum==minimum and previous.lineScale==lineScale and previous.advance==advance then
+            return previous.font,previous.fits
+        end
+        local font,fits=M.fit(text,maximum,width,height,lineScale,advance)
+        if #text>1024 then return font,fits end
+        if not previous then
+            if count==128 then cache,count={},0 end
+            count=count+1
+        end
+        cache[text]={maximum=maximum,width=width,height=height,minimum=minimum,lineScale=lineScale,advance=advance,font=font,fits=fits}
+        return font,fits
+    end
+end
 local function titleMetrics()
     local card=Theme.layout.card
     local reference=Theme.presentationProfile=='official-assets-first'and Theme.officialAssets.stsCardReference and Theme.officialAssets.stsCardReference.geometry
@@ -253,11 +276,12 @@ local function titleMetrics()
     if reference then maximum=math.max(14,Theme.font.minimum,Theme.officialAssets.stsCardReference.typography.title)end
     return width,titleHeight,maximum
 end
-function M.title(name,upgraded,upgrades)
+function M.title(name,upgraded,upgrades,fitText)
+    local fit=fitText or M.fit
     local suffix=upgraded and ('＋'..(upgrades and integer(upgrades) or '')) or ''
     local width,titleHeight,maximum=titleMetrics()
     local text=name..suffix
-    local font,fits=M.fit(text,maximum,width,titleHeight,1.65)
+    local font,fits=fit(text,maximum,width,titleHeight,1.65)
     -- Prefer a readable two-line full name to shrinking a complete English
     -- title into one line. The canonical presentation name is never changed.
     if units(text)*maximum>width then
@@ -268,20 +292,20 @@ function M.title(name,upgraded,upgrades)
             if not score or size<score then best=a..'\n'..b;score=size end
         end
         if best then
-            local candidate,ok=M.fit(best,maximum,width,titleHeight,1.65)
+            local candidate,ok=fit(best,maximum,width,titleHeight,1.65)
             if ok then text,font,fits=best,candidate,true end
         end
     end
     -- Keep the approved one-line title band. Only an upgrade suffix that makes
     -- a complete readable name overflow moves to the existing type text slot.
     if not fits and upgraded then
-        local plainFont,plainFits=M.fit(name,maximum,width,titleHeight,1.65)
+        local plainFont,plainFits=fit(name,maximum,width,titleHeight,1.65)
         if plainFits then return name,plainFont,true,suffix end
     end
     return text,font,fits,''
 end
-function M.writeTitle(control,name,upgraded,upgrades,typeControl,typeText)
-    local text,font,fits,marker=M.title(name,upgraded,upgrades)
+function M.writeTitle(control,name,upgraded,upgrades,typeControl,typeText,fitText)
+    local text,font,fits,marker=M.title(name,upgraded,upgrades,fitText)
     -- Fit plain glyphs first; native inline colour belongs only to the upgrade
     -- marker, even when the readable full name moves that marker to the type.
     if upgraded then
@@ -347,17 +371,18 @@ end
 -- Body budget keeps the reviewed 1.3x line step; wrapping itself now follows
 -- native kinsoku/Latin-run breaks (see lines above).
 local bodyLine,bodyAdvance=1.3,1
-function M.fitBody(text,box)
-    return M.fit(text,Theme.font.card,box[1],box[2],bodyLine,bodyAdvance)
+function M.fitBody(text,box,fitText)
+    local fit=fitText or M.fit
+    return fit(text,Theme.font.card,box[1],box[2],bodyLine,bodyAdvance)
 end
-local function bodyLayout(text,reference)
+local function bodyLayout(text,reference,fitText)
     local card=Theme.layout.card
     local box=reference and reference.body.size or card.textBox
-    local font,fits=M.fitBody(text,box)
+    local font,fits=M.fitBody(text,box,fitText)
     -- Official cards share fixed illustration/type/body slots. The legacy
     -- long-text fallback shrinks only one card's picture into a narrow strip.
     local compact=not fits and Theme.presentationProfile~='official-assets-first'
-    if compact then box=card.longTextBox;font,fits=M.fitBody(text,box)end
+    if compact then box=card.longTextBox;font,fits=M.fitBody(text,box,fitText)end
     return box,font,fits,compact
 end
 local function bodyPosition(box,reference,compact)
@@ -369,18 +394,19 @@ local function bodyPosition(box,reference,compact)
 end
 local function placeBody(control,box,reference,compact)
     if control.SetSizeDelta then
-        control:SetSizeDelta(box[1],box[2])
+        local sized=control:SetSizeDelta(box[1],box[2])~=false
         local position=bodyPosition(box,reference,compact)
-        control:SetAnchoredPosition(position[1],position[2])
+        return control:SetAnchoredPosition(position[1],position[2])~=false and sized
     end
+    return true
 end
-function M.writeBody(control,text,face)
+function M.writeBody(control,text,face,fitText)
     local reference=face and CardSkin.referenceGeometry(face)
-    local box,font,fits,compact=bodyLayout(text,reference)
-    placeBody(control,box,reference,compact)
+    local box,font,fits,compact=bodyLayout(text,reference,fitText)
+    local placed=placeBody(control,box,reference,compact)
     if face and not reference then bodyFrame(face,compact)end
     control.text,control.fontSize=text,font
-    return fits
+    return fits,placed
 end
 local valueStyles = {
     up = { arrow = '↑', colourKey = 'cardValueIncrease' },

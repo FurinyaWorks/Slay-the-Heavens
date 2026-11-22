@@ -314,6 +314,14 @@ local function applyRevealStep(gate,reveal,changed,repaint)
     end
     paintReveal(gate)
 end
+local function prepareRunDeck(gate)
+    local deck=view.deckUI
+    if not deck or not deck.browserWarmupPending or not view.run or not gate or gate:covered() then return end
+    if view.disabled or view.exitOpen or view.sessionPaused or view.starting or view.battleUI.busy then return end
+    if view.mode=='map' or view.mode=='battle' and view.run.phase=='combat' then
+        deck:prepareBrowser()
+    end
+end
 function OnUpdate(dt)
     if not view or view.disabled then return end
     local ok, reason = pcall(function()
@@ -350,6 +358,7 @@ function OnUpdate(dt)
         if gate then
             applyRevealStep(gate,reveal,gate:step(reveal.intent(view),dt))
         end
+        prepareRunDeck(gate)
     end)
     if not ok then failed("update", reason) end
 end

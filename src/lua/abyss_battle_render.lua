@@ -12,7 +12,7 @@ function M.install(owner, _ownership, host, dependencies)
         if not dependencies.renderFeedbackReady(run) then return end
         dependencies.renderDetails(dependencies.renderFrame(run))
     end
-    function owner:render(presentationOnly)
+    function owner:render(presentationOnly, deckCoversHand)
         local run = dependencies.prepareRenderInputs(self, presentationOnly)
         if not dependencies.renderFeedbackReady(run) then return end
         dependencies.syncRenderIdentity(run)
@@ -34,7 +34,14 @@ function M.install(owner, _ownership, host, dependencies)
         dependencies.renderPilesAndTurn(frame)
         dependencies.renderResult(frame)
         dependencies.renderEnemies(frame)
-        local playable = host.cardView.renderCards(self.data, self.presentation, frame.battle, frame.fighting, frame.active, frame.reward, frame.picking)
+        local playable
+        if deckCoversHand and not self.active and self.suspendedBattle and self.suspendedBattle==frame.battle then
+            -- Input and actors still retire through this render. The retained
+            -- hand will be projected from current state when browsing closes.
+            host.cardView.suspendHand()
+        else
+            playable=host.cardView.renderCards(self.data,self.presentation,frame.battle,frame.fighting,frame.active,frame.reward,frame.picking)
+        end
         host.cardView.renderDrag()
         dependencies.renderDetails(frame)
         dependencies.button("endTurn", frame.active == true, not playable)

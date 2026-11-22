@@ -67,11 +67,17 @@ for i=1,3 do local instance=F.Combat.copy(i==2 and card or other);instance.uid=9
 local originalPile=F.Combat.copy(run.combat.draw)
 local renderOriginal=host.battleUI.render;local openRenders=0
 host.battleUI.render=function(self,...)openRenders=openRenders+1;return renderOriginal(self,...)end
-local definition=F.Combat.cardDefinition;local definitionReads=0
+local definition=F.Combat.cardDefinition;local definitionReads,coveredHandReads=0,0
+local handUids={};for _,instance in ipairs(run.combat.hand)do handUids[instance.uid]=true end
 F.Combat.cardDefinition=function(state,instance,...)
- if state==run.combat and instance.uid>=901 and instance.uid<=903 then definitionReads=definitionReads+1 end
+ if state==run.combat then
+  if instance.uid>=901 and instance.uid<=903 then definitionReads=definitionReads+1 end
+  if handUids[instance.uid] then coveredHandReads=coveredHandReads+1 end
+ end
  return definition(state,instance,...)
 end
+local handBox=root:GetChild('battlePanel'):GetChild('card1')
+local handTitle=handBox:GetChild('name').text
 local itemSize=pile.GetItemSize;local geometryReads=0
 pile.GetItemSize=function(self)geometryReads=geometryReads+1;return itemSize(self)end
 sizes={};assert(host:openDeck('draw'));local deck=host.deckUI
@@ -81,6 +87,9 @@ assert(probeHidden,'calibration painted a provisional card')
 assert(not deck.calibrating and not deck.pendingGrid and not host.pageReveal:covered(),'synchronous combat pile missed the opening turn')
 assert(geometryReads==1,'synchronous pile callbacks repeatedly read native grid geometry')
 assert(definitionReads==3,'pile face preview resolved a definition twice: '..definitionReads)
+assert(coveredHandReads==0,'opening the pile projected the covered battle hand')
+assert(not handBox:GetChild('nativePlayableRim').visible and handBox:GetChild('name').text==handTitle,
+    'suspending the hand failed to retire the playable glow or preserve the backdrop')
 F.Combat.cardDefinition=definition
 pile.GetItemSize=itemSize
 local Display=require('abyss_card_display')
@@ -105,6 +114,8 @@ for i=2,#deck.cards do assert(host.nodeUI.presentation[deck.cards[i-1].cardId].n
 assert(deck:setPileSort('name'));assert(host.nodeUI.presentation[deck.cards[1].cardId].name~=firstName,'display order did not actually reverse')
 for i,c in ipairs(run.combat.draw)do assert(c.uid==originalPile[i].uid and c.cardId==originalPile[i].cardId,'display sort changed the real pile order')end
 assert(host:closeDeck());settle()
+assert(host.battleUI.active and handBox:GetChild('name').text==handTitle,
+    'closing the browser failed to restore the battle hand')
 for _,instance in ipairs(run.combat.draw)do instance.cardId=card.cardId end
 -- Opt into a one-slot runtime source on the real visible faces only. This is
 -- an isolated native-API counter fixture, not an SDK rendering/performance claim.
@@ -228,12 +239,22 @@ package.loaded.abyss_art_features={schemaVersion=2,flags={cards=false,menuBackgr
 Color=setmetatable({FromRGBA=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end},{__call=function(_,r,g,b,a)return{r=r,g=g,b=b,a=a}end})
 Enum={ImageSource={StaticReference='static'},ImageType={Basic='basic',Stretch='stretch'},CursorEventType={CursorClick='click'},Device={Controller='controller',MobileController='mobileController',Mobile='mobile'}}
 local function boot(amount,origin,deferred)
- local canvas=F.control({children=F.Layout});local host,p;local actors=F.monsterActors()
+ local canvas=F.control({children=F.Layout});local host,p,grid;local actors=F.monsterActors()
+ local submitted={}
  package.loaded.abyss_monster_actor_binding={enabled=true,templateIndex=actors.templateIndex,containerTemplateIndex=actors.containerTemplateIndex,powerTemplateIndex=actors.powerTemplateIndex}
  game={GetUICanvasSize=function()return 1280,720 end,IsTestPlay=function()return true end,GetDevice=function()return'desktop'end,GetCursorUIPos=function()return 0,0 end,
   InstantiateClientUIControl=actors.instantiate,DestroyClientUIControl=actors.destroy}
  script={object=canvas,GetParam=function()return false end,EnableUpdate=function()end}
- G.new=function(root,data,presentation,event,platform)p=platform;host=create(root,data,presentation,event,platform);return host end
+ G.new=function(root,data,presentation,event,platform)
+  p=platform;host=create(root,data,presentation,event,platform)
+  grid=root:GetChild('deckPanel'):GetChild('pileGrid');grid.indexBase=origin;grid.deferRefresh=deferred~=false
+  local refresh=grid.RefreshItems
+  function grid:RefreshItems(amount,callback)
+   submitted[#submitted+1]={amount=amount,visible=host.deckUI.visible}
+   return refresh(self,amount,callback)
+  end
+  return host
+ end
  dofile('src/lua/abyss_ui.lua');OnStart();G.new=create;local update=OnUpdate
  for i=1,60 do update(1/60)end;assert(host and not host.pageReveal:covered());assert(host:start())
  for i=1,60 do update(1/60)end;assert(F.confirmStart(host))
@@ -249,12 +270,21 @@ local function boot(amount,origin,deferred)
  end
  local original=C.copy(host.run.deck);host.run.deck={}
  for i=1,amount do local card=C.copy(original[(i-1)%#original+1]);card.uid=1000+i;host.run.deck[i]=card end
- local grid=host.root:GetChild('deckPanel'):GetChild('pileGrid');grid.indexBase=origin;grid.deferRefresh=deferred~=false
  if deferred==false then
+  assert(#submitted==1 and submitted[1].amount==1 and not submitted[1].visible,
+      'eligible idle frame did not prepare one hidden native index')
+  assert(not host.deckUI.visible and next(host.deckUI.bindings)==nil,'preparation painted a speculative card')
   local hit=host.root:GetChild('deckEntry'):GetChild('open'):GetChild('hit')
   assert(host.mode=='map' and not host.pageReveal:covered() and hit.click(),'map top-bar input did not reach the browser')
+  assert(#submitted==2 and submitted[2].amount==amount and submitted[2].visible,
+      'first click repeated calibration despite its idle callback')
  else
+  local idleCallback=grid.refreshCallback
   assert(host:openDeck())
+  if idleCallback then
+   idleCallback(nil,1-origin)
+   assert(host.deckUI.calibrating and host.deckUI.indexBase==nil,'late warmup callback changed the active refresh')
+  end
  end
  return host,p,grid,update
 end

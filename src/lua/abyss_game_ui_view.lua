@@ -249,10 +249,13 @@ function M.refreshDeckEntry(child,self)
         end
 end
 
+local function utilityHudVisible(run,inMenu,deckOpen,blocked)
+    return not (run and run.phase=='ending_proceed' or inMenu or deckOpen or blocked)
+end
 function M.refreshUtilities(child,self,inCombat,refreshPotionEntry,refreshDeckEntry)
     return function(run,inMenu,deckOpen,potionOpen,blocked,returnAvailable)
-            local ending=run and run.phase=='ending_proceed'
-            local hudVisible=not ending and not inMenu and not deckOpen and not blocked
+            local browser=deckOpen and self.deckUI.browserShell
+            local hudVisible=utilityHudVisible(run,inMenu,deckOpen,blocked)
             local utilitiesVisible=hudVisible and not potionOpen
             local inventoryVisible=hudVisible and (not potionOpen or self.potionUI.localPanel==true)
             child("combatRewards"):SetVisible(returnAvailable)
@@ -262,15 +265,16 @@ function M.refreshUtilities(child,self,inCombat,refreshPotionEntry,refreshDeckEn
             child("deckEntry"):SetVisible(utilitiesVisible)
             -- STS has no separate relic button: the discs under the HP row are the one control.
             child("relicEntry"):SetVisible(false)
-            self.relicUI:refreshBar(run,inventoryVisible,potionOpen)
+            self.relicUI:refreshBar(run,inventoryVisible,potionOpen,browser)
+            child("potionEntry"):SetVisible(not inCombat() and inventoryVisible)
+            child("nodePanel"):GetChild("potions"):SetVisible(false)
+            if browser then return end
             for _,state in ipairs({'normal','hover','pressed','disabled'})do
                 local variant=child('relicEntry'):GetChild('open'):GetChild('hit'):GetChild(state)
                 variant:GetChild('label').text=run and '遗物 '..#run.relics or '遗物'
                 variant:GetChild('count').text=run and number(#run.relics) or ''
             end
-            child("potionEntry"):SetVisible(not inCombat() and inventoryVisible)
             refreshPotionEntry(run,mapPotionVisible(self))
-            child("nodePanel"):GetChild("potions"):SetVisible(false)
             refreshDeckEntry(run)
         end
 end
@@ -308,10 +312,12 @@ function M.refreshPageVisibility(menu,self,suspendBattle,child,refreshMapResourc
     return function(run,inMenu,deckOpen,potionOpen,blocked)
             if syncNative then syncNative(run) end
             menu:SetVisible(inMenu and not self.characterOpen and not self.easterEggOpen)
-            -- A deck open still commits one battle render below (input retirement,
-            -- art ownership and suspension), after the host's visibility writes.
+            -- Battle mode renders below after visibility writes. An already
+            -- inactive battle behind the map has no projection to refresh.
+            local deferRender=deckOpen and (self.mode=='battle' or self.mode=='map'
+                and self.deckUI.browserShell and not self.battleUI.active)
             self.battleUI:setActive(self.mode == "battle" and not deckOpen and not potionOpen and not blocked,
-                suspendBattle(run,deckOpen,potionOpen),self.mode=='battle' and deckOpen)
+                suspendBattle(run,deckOpen,potionOpen),deferRender)
             child("battlePanel"):SetVisible(self.mode == "battle")
             refreshMapVisibility(run,deckOpen,potionOpen or blocked)
             self.nodeUI:setVisible(self.mode == "node" and not deckOpen and not potionOpen and not blocked,self.mode == "node",true)
@@ -321,7 +327,7 @@ end
 
 function M.renderBattlePage(self,child)
     return function(run)
-            self.battleUI:render()
+            self.battleUI:render(nil,self.deckUI.visible and self.deckUI.browserShell)
             if run.phase == "combat" and self.presentedBattle ~= run.combat then
                 self.presentedBattle = run.combat
                 local guardian = false

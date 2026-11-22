@@ -236,7 +236,7 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
         if cell and not more then M.paint(icon,relics[i],style.icon,platform,run)end
         paintCounter(slot,run,cell and not more and relics[i] or nil,official)
     end
-    function self.refreshBar(_,run,visible,inputBlocked)
+    function self.refreshBar(_,run,visible,inputBlocked,deferHiddenPaint)
         local relics=run and run.relics or {}
         local style=official and battleBar or baseBar
         self.barInteractive=official and visible and not inputBlocked and not self.visible or false
@@ -245,6 +245,7 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
         end
         self.barRun=run
         bar:SetVisible(visible and run~=nil)
+        if deferHiddenPaint and not visible then return end
         bar:GetChild('tray'):SetVisible(false) -- STS: discs float under the HP row, no tray capsule
         local cells=M.barCells(#relics,style.count)
         for i=1,boundCount do paintBarCell(i,cells[i] or false,relics,run,style)end
