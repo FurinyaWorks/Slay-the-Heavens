@@ -1,4 +1,4 @@
-import {beforeReleaseUiCloseoutSource,ownsReleaseUiCloseoutSource} from './release-ui-closeout-source.mjs';
+import {beforeReleaseUiCloseoutSource,ownsReleaseUiCloseoutSource,releaseUiCloseoutPriorRead} from './release-ui-closeout-source.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
@@ -34,6 +34,41 @@ function current(source,binding){
   return hash(text)===binding.sha256&&blob(text)===binding.gitBlob;
 }
 
+const forethoughtSources=Object.freeze({
+  "src/lua/abyss_deck_ui.lua": {
+    before: {"sha256": "f361dc43c095aa9e4497bda4e758c161a5110978c33b4c0a89792815859aaac2", "gitBlob": "04033812db991fe1e86c8becf1017f4a689033d8"},
+    after: {"sha256": "07a324f7e75903a2ff6382b9b846f7ecd67f78871d90c30cdb1a369dbc7b50bf", "gitBlob": "b71aee53556b1ac44ab8c406b61fdfcf886cb1dc"},
+    fragments: [
+      ["local cardChoiceTitle=\"选择卡牌\"\n", ""],
+      ["    local function updateForethoughtChoice(choice, token)\n        if not self.visible or self.choiceToken~=token or self.battle.pendingChoice~=choice or choice.token==token then\n            return false\n        end\n        self.choiceToken,self.choiceSelected=choice.token,choice.selected\n        root:GetChild('title').text=cardChoiceTitle..' · 已选'..#choice.selected\n        return true\n    end\n    local function isForethoughtToggle(choice)\n        local item=choice.item\n        return choice.multiple and choice.op=='colorless' and item and item.effect.kind=='forethought'\n    end\n    local function pickChoice(control,binding,repaint)\n        local callback,token,uid=self.onPick,self.choiceToken,binding.uid\n        local choice=self.battle.pendingChoice\n        if callback and isForethoughtToggle(choice) then\n            local ok,reason=callback(token,uid)\n            if updateForethoughtChoice(choice,token) and control.alive~=false then\n                repaint(control,binding.instance,self.catalog)\n            end\n            return ok,reason\n        end\n        self:close()\n        if callback then callback(token,uid) end\n    end\n", ""],
+      ["                return pickChoice(control,b,fill)\n", "                local callback,token,uid=self.onPick,self.choiceToken,b.uid\n                self:close()\n                if callback then callback(token,uid) end\n"],
+      ["colorless=cardChoiceTitle,exhaustChoose", "colorless='选择卡牌',exhaustChoose"],
+    ],
+  },
+  "scripts/deck-ui-layout.mjs": {
+    before: {"sha256": "f43c5472a1afacf23e8b2a908fa7eb5082e561314c90abbb65d7ccd7ca799d85", "gitBlob": "161be4cb01025636d544391d612e6170f081eba1"},
+    after: {"sha256": "37919d2a0abf089e7d0b9c449b5168829eb0aba80d944f5fb7c55cb11815d101", "gitBlob": "bd59f85d8c3652a76d958530b6f34a45ac64d0ca"},
+    fragments: [
+      ["  const closeFrame = [...l.deckView.close];\n  closeFrame[2] = Math.max(closeFrame[2], 4 * f.label + 2 * s.s);\n", ""],
+      ["      button('close', closeFrame, '关闭'),\n", "      button('close', l.deckView.close, '关闭'),\n"],
+    ],
+  },
+});
+
+function beforeForethoughtSource(path,source,read){
+  const row=Object.hasOwn(forethoughtSources,path) && forethoughtSources[path];
+  if(!row || !current(source,row.after))return source;
+  for(const [owner,binding] of Object.entries(forethoughtSources)){
+    let live;
+    try{live=read(owner,'utf8');}catch{assert.fail('Forethought linked owner missing: '+owner);}
+    assert(current(live,binding.after),'Forethought linked owner identity: '+owner);
+  }
+  let prior=normalize(source);
+  for(const [after,before] of row.fragments)prior=prior.replace(after,()=>before);
+  assert(current(prior,row.before),'exact Forethought predecessor: '+path);
+  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
+
 export function beforeMapRoomSource(path,source){
   const row=roomFiles[path];
   if(!row||!current(source,row.after))return source;
@@ -43,13 +78,17 @@ export function beforeMapRoomSource(path,source){
 export function beforeMapDeckSource(path,source,read){
   const closeout=beforeReleaseUiCloseoutSource(path,source,read);
   const currentCloseout=closeout!==source;
-  source=beforeMapRoomSource(path,beforeLoadingRecoverySource(path,closeout));
+  const closeoutRead=releaseUiCloseoutPriorRead(read,currentCloseout?path:undefined);
+  const forethought=Object.hasOwn(forethoughtSources,path)&&current(closeout,forethoughtSources[path].after);
+  source=beforeMapRoomSource(path,beforeLoadingRecoverySource(path,beforeForethoughtSource(path,closeout,closeoutRead)));
   if(!Object.hasOwn(files,path)||!current(source,files[path].after))return source;
   for(const [owner,{after}] of Object.entries(files)){
     let live;
     try{live=read(owner,'utf8');}catch{assert.fail('map deck linked owner missing: '+owner);}
     const text=typeof live==='string'?live:live?.toString('utf8');
-    const prior=beforeMapRoomSource(owner,beforeLoadingRecoverySource(owner,beforeReleaseUiCloseoutSource(owner,text,read,currentCloseout)));
+    const input=beforeReleaseUiCloseoutSource(owner,text,read,currentCloseout);
+    if(forethought&&Object.hasOwn(forethoughtSources,owner))assert(current(input,forethoughtSources[owner].after),'fresh Forethought linked owner: '+owner);
+    const prior=beforeMapRoomSource(owner,beforeLoadingRecoverySource(owner,beforeForethoughtSource(owner,input,closeoutRead)));
     assert(current(prior,after),'map deck linked owner identity: '+owner);
   }
   const prior=files[path].before.source;
@@ -60,7 +99,7 @@ export function mapDeckPriorRead(read){
   return (path,encoding)=>{
     const value=read(path,encoding);
     if(typeof value==='string')return beforeMapDeckSource(path,value,read);
-    if(!Buffer.isBuffer(value)||(!Object.hasOwn(files,path)&&!Object.hasOwn(roomFiles,path)&&!ownsReleaseUiCloseoutSource(path)))return value;
+    if(!Buffer.isBuffer(value)||(!Object.hasOwn(files,path)&&!Object.hasOwn(roomFiles,path)&&!ownsReleaseUiCloseoutSource(path)&&!Object.hasOwn(forethoughtSources,path)))return value;
     const text=value.toString('utf8'),prior=beforeMapDeckSource(path,text,read);
     return prior===text?value:Buffer.from(prior);
   };

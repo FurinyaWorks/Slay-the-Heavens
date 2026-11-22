@@ -1,3 +1,4 @@
+local advanceShop = dofile('tests/lua/support/shop_timeline.lua')
 local NativeContract = dofile('tests/lua/support/native_ui_contract.lua')
 -- Real Run/Map/Nodes and generated native controls; no gameplay rules are mocked.
 package.path = "src/lua/?.lua;build/lua/?.lua;" .. package.path
@@ -45,7 +46,7 @@ local function setup(pointerEvents)
     local root=control(assert(find(Layout)))
     local ui=UI.new(root,run,map,Presentation,"click",nil,{cursorEvents=pointerEvents~=false and cursor or nil,color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end})
     ui:setVisible(true)
-    assert(root:GetChild("merchant"):GetChild("talk"):GetChild("hit").listeners.click());ui:update(.31)
+    assert(root:GetChild("merchant"):GetChild("talk"):GetChild("hit").listeners.click());advanceShop(ui)
     local function get(key)
         local box=root for part in key:gmatch("[^/]+") do box=assert(box:GetChild(part),key) end
         return box

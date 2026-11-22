@@ -237,6 +237,36 @@
     }
   },
   "files": {
+    "docs/evidence/shop-828/after-click.png": {
+      "sha256": "d6639f6cedb18da1b32bcd6cdea34ae0d759ed8d0cf9a28257f02ac48c0abdab",
+      "category": "platform-evidence",
+      "evidence": "docs/evidence/shop-828/README.md; generated-layout Fengari control tree projected in Chromium, with atlas stand-ins"
+    },
+    "docs/evidence/shop-828/after-room.png": {
+      "sha256": "56b49e42f2071660f023959db2d94e7fd2164ae931b0400dd27aea3ce2376a50",
+      "category": "platform-evidence",
+      "evidence": "docs/evidence/shop-828/README.md; generated-layout Fengari control tree projected in Chromium, with atlas stand-ins"
+    },
+    "docs/evidence/shop-828/after-shelf.png": {
+      "sha256": "bd7fd6ff7c93d9450724241bac3031b7bf0b9426527d7aeeabd1115d27e21efd",
+      "category": "platform-evidence",
+      "evidence": "docs/evidence/shop-828/README.md; generated-layout Fengari control tree projected in Chromium, with atlas stand-ins"
+    },
+    "docs/evidence/shop-828/after-transition.png": {
+      "sha256": "94c0a78f1b14ad55d52b3576f8fdf494a626a65b219af8266e08e02b730caaf0",
+      "category": "platform-evidence",
+      "evidence": "docs/evidence/shop-828/README.md; generated-layout Fengari control tree projected in Chromium, with atlas stand-ins"
+    },
+    "docs/evidence/shop-828/before-room.png": {
+      "sha256": "64b3b2e1e8125133509325440baa4f19b97f19a4c1bd79a6be475260ce304f56",
+      "category": "platform-evidence",
+      "evidence": "docs/evidence/shop-828/README.md; generated-layout Fengari control tree projected in Chromium, with atlas stand-ins"
+    },
+    "docs/evidence/shop-828/before-shelf.png": {
+      "sha256": "27051c76c5364053909723834157beac35ef2a69d9b440e8bf18e8684bbfa06b",
+      "category": "platform-evidence",
+      "evidence": "docs/evidence/shop-828/README.md; generated-layout Fengari control tree projected in Chromium, with atlas stand-ins"
+    },
     "docs/evidence/sts1-combat-reference-20261121/energy-comparison.png": {
       "sha256": "52f577179f30a51b439ff8a997bb22e18645e65848293292ab7104619d0b027e",
       "category": "sts1-combat-sdk-evidence"

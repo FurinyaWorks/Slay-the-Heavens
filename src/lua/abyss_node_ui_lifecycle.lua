@@ -50,7 +50,7 @@ function M.install(ctx)
         ctx.roomMotion:update(dt)
         ctx.updateShop(dt)
         ctx.rewardDetail:update(dt)
-        ctx.shopSelection:update(dt)
+        if self.shopOpen then ctx.shopSelection:update(dt) end
         ctx.updateMatch(dt)
         if self.visible then ctx.merchant:update(dt) end
         local function observeActiveGestures()
@@ -81,6 +81,28 @@ function M.install(ctx)
 
     end
 
+    local function stagedVisibleEvent(node)
+        return node and node.type == 'event' and stagedEvent(node.event.id)
+    end
+
+    local function retireStagedActions(self)
+        if not self.view or not stagedVisibleEvent(self.view.node) then return end
+        for _, entry in pairs(self.actions) do
+            if entry.observe then entry.observe() end
+        end
+    end
+
+    local function refreshShownPage(self)
+        if require('abyss_relic_pending').owner(self.run) then self:render();return end
+        local node = self.view and self.view.node
+        if not node then return end
+        if ctx.options.enhancedRooms or stagedVisibleEvent(node) or node.type == 'shop' and self.shopOpen then
+            self:render()
+        elseif node.type == 'shop' then
+            ctx.paintShop()
+        end
+    end
+
     function ctx.self:setVisible(value,retainPage,renderByHost)
         assert(type(value) == "boolean", "node visibility must be boolean")
         if value and not self.run then return false, "node_unbound" end
@@ -94,60 +116,59 @@ function M.install(ctx)
         local wasVisible = self.visible
         if not value then self.pendingGeneration=(self.pendingGeneration or 0)+1 end
         -- Retaining the covered page must never keep its input controller live.
-        self.visible = value ctx.root:SetVisible(value or retainPage==true)
-        local needsVisibilityRender = value and not wasVisible and not renderByHost
-        if needsVisibilityRender and require('abyss_relic_pending').owner(self.run)then self:render()end
-        -- Let Match's own visibility guard retire its clock, retaining a failed
-        -- pair's explicit-retry state across modal hide/show.
-        if not value then ctx.updateMatch(0) end
-        local function refreshVisibility()
-            local function stagedVisibleEvent() return self.view.node.type=='event' and stagedEvent(self.view.node.event.id) end
-            if not value and self.view and self.view.node and stagedVisibleEvent() then
-                for _, entry in pairs(self.actions) do if entry.observe then entry.observe() end end
-            elseif needsVisibilityRender and self.view and self.view.node and (ctx.options.enhancedRooms or self.view.node.type=='shop'
-                or self.view.node.type=='event' and stagedEvent(self.view.node.event.id)) then
-                self:render()
-            end
+        self.visible = value
+        if not value then
+            -- Match retires its clock and keeps a failed pair available for retry.
+            ctx.updateMatch(0)
+            retireStagedActions(self)
+        elseif not wasVisible and not renderByHost then
+            refreshShownPage(self)
         end
-        refreshVisibility()
-
+        ctx.root:SetVisible(value or retainPage==true)
     end
 
-    local function currentCampView(self, flow)
-        -- Camp controls need the live node identity and phase, not a rebuilt map and eligible deck.
+    local function currentPendingRelic(self)
+        if self.renderRun ~= self.run or self.renderMap ~= self.map
+            or require('abyss_relic_pending').owner(self.run) ~= self.pendingOwner then return false, 'stale_action' end
+        return true, self.view
+    end
+
+    local function currentRoomView(self, flow)
+        -- Room actions check the live node identity. Transactions check their live offers.
         local view = self.view
-        if flow.id ~= self.nodeId or not view or not view.node or view.phase ~= self.run.phase
-            or view.node.complete ~= flow.complete then return false, "stale_action" end
+        if flow.id ~= self.nodeId or not view or not view.node or view.node.type ~= flow.type or view.phase ~= self.run.phase
+            or view.node.complete ~= flow.complete then return false, 'stale_action' end
         return true, view
     end
 
-    local function currentPendingView(self)
-        if self.renderRun~=self.run or self.renderMap~=self.map
-            or require('abyss_relic_pending').owner(self.run)~=self.pendingOwner then return false,'stale_action'end
-        return true,self.view
-    end
-
-    local function inputCovered()
-        return ctx.options.inputCovered and ctx.options.inputCovered()
+    local function usesRoomSnapshot(self, flow)
+        return flow and self.run.phase ~= 'ending_proceed'
+            and (flow.type == 'shop' or ctx.options.enhancedRooms and flow.type == 'camp')
     end
 
     function ctx.current()
         local self = ctx.self
-        if not self.visible or inputCovered() then return false, "panel_hidden" end
+        if not self.visible or ctx.options.inputCovered and ctx.options.inputCovered() then return false, "panel_hidden" end
         if self.busy or self.presentationBusy or self.shopBusy then return false, "unavailable_action" end
-        if self.pendingOwner then return currentPendingView(self) end
+        if self.pendingOwner then return currentPendingRelic(self) end
         if self.renderRun ~= self.run or self.renderMap ~= self.map then return false, "stale_action" end
         local flow = self.run.nodeFlow
-        if ctx.options.enhancedRooms and flow and flow.type == 'camp' and self.run.phase ~= 'ending_proceed' then
-            return currentCampView(self, flow)
-        end
+        if usesRoomSnapshot(self, flow) then return currentRoomView(self, flow) end
         local view = Nodes.view(self.run, self.map)
         if not view.node or view.node.id ~= self.nodeId then return false, "stale_action" end
         return true, view
     end
 
     function ctx.notify(ok, reason)
-        if ctx.onChange then ctx.onChange(ok, reason, ctx.self) end
+        if ctx.onChange then
+            local node = ctx.self.view.node
+            -- The host refresh immediately following a purchase may reuse this render.
+            if node and node.type=='shop' then
+                ctx.shopNotification = {actions=ctx.self.actions, visible=ctx.self.visible}
+            end
+            ctx.onChange(ok, reason, ctx.self)
+            ctx.shopNotification=nil
+        end
         return ok, reason
     end
 

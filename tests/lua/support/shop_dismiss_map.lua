@@ -1,3 +1,4 @@
+local advanceShop = dofile('tests/lua/support/shop_timeline.lua')
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Map=require('abyss_map')
 local cursor={CursorDown='down',CursorDrag='drag',CursorUp='up',CursorEnter='enter',CursorExit='exit',CursorEndDrag='endDrag'}
@@ -30,7 +31,7 @@ local function same(a,b)
  for k in pairs(b)do if a[k]==nil then return false end end
  return true
 end
-assert(tap(receiver(panel,'merchant/talk'),10));h.nodeUI:update(.31)
+assert(tap(receiver(panel,'merchant/talk'),10));advanceShop(h.nodeUI)
 local relic,outside=receiver(panel,'shopView/relic3'),receiver(panel,'shopDismiss')
 assert(tap(relic,11));assert(get(panel,'shopView/detail').visible)
 local before=F.Combat.copy(h.run);local run,map,flow=h.run,h.map,h.run.nodeFlow

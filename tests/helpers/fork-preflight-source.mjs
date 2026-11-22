@@ -72,12 +72,16 @@ function beforeTravelerStatusCiSource(path,source){
  const regression=path==='tests/integration-source-epoch.test.mjs';
  if((!copier&&!regression)||typeof source!=='string'||source.includes('\r\r\n'))return source;
  let lf=normalize(source);
- if(copier&&hash(lf)==='526945527d3ad125ab354ba317c94ec699f8260c3450c92bfc2eaa9f8452b9d8'){
-  lf=lf.replace(" 'tests/helpers/release-map-deck-source.mjs':'0ce722b519a95e9e3cb700cc9e3d61be24c888b66e3c7f21a168ffd527dc0648',\n"," 'tests/helpers/release-map-deck-source.mjs':'c661e5dfa5035a09a47935bd7bfbc3e1f37b992d809bc7387d93e757c3df6fd5',\n")
+ if(copier&&hash(lf)==='db1b49593218745fb5ab46967e1041f4991afa7c42c4a969365fe431d172bd54'){
+  lf=lf.replace(" 'tests/helpers/release-map-deck-source.mjs':'d76d9d67c6e696d966fe9608a46e66eea0c0e2739c06dd9672151afd4b1f0973',\n"," 'tests/helpers/release-map-deck-source.mjs':'dd02f8976ed65dae8d055f881020f71d6169a4e396c9cd0bc72d6c84c9254e9a',\n")
      .replace(" 'tests/helpers/combat-visual-source.mjs':'795056833d48bd9a2e5a1944a5d9b56fb5d0f0ce7967fdbac72da5566ae5e35d',\n"," 'tests/helpers/combat-visual-source.mjs':'6fbf561edae2163cb68163834289ea70b8ec94868507677be0f21fd9cabbfc7b',\n")
-     .replace(" 'tests/helpers/release-ui-closeout-source.mjs':'ccd87b38f5846159b15b4e398e0e0a5a67bddb1f5fac14901bae9539a7cb31ef',\n","")
-     .replace(" 'tests/fixtures/release-ui-closeout-source.json.gz':'9d169f7f031e95c8a9c329087b0d9a71d526da584f65da18031537897e3fcc5c',\n","");
-  assert.equal(hash(lf),'2c468260f8ca242e3a9e2d3d683616b45cca8ac6ad962388d7e0c5c0ceb2f85a','exact Release UI closeout helper copy predecessor');
+     .replace(" 'tests/helpers/release-ui-closeout-source.mjs':'f6fb79da8b86bf18ee6a3ca75423e5dd47adb38f008d9cb61ccc385e3ba875a5',\n","")
+     .replace(" 'tests/fixtures/release-ui-closeout-source.json.gz':'02a330727ee69d39f64eea57938911ee2c924bd560f96380fc91983db6ee726a',\n","");
+  assert.equal(hash(lf),'3910354d5306dd7ff7a86d282e5f5716b7ec8e3982d98e5a29d26d32bddd48d4','exact Release UI closeout helper copy predecessor');
+ }
+ if(copier&&hash(lf)==='3910354d5306dd7ff7a86d282e5f5716b7ec8e3982d98e5a29d26d32bddd48d4'){
+  lf=lf.replace(" 'tests/helpers/release-map-deck-source.mjs':'dd02f8976ed65dae8d055f881020f71d6169a4e396c9cd0bc72d6c84c9254e9a',", " 'tests/helpers/release-map-deck-source.mjs':'c661e5dfa5035a09a47935bd7bfbc3e1f37b992d809bc7387d93e757c3df6fd5',");
+  assert.equal(hash(lf),'2c468260f8ca242e3a9e2d3d683616b45cca8ac6ad962388d7e0c5c0ceb2f85a','exact Forethought helper copy predecessor');
  }
  const sha=hash(lf);
  let prior,expected;
@@ -174,14 +178,15 @@ function assertCoopJsInventory(paths,preceding,read){
 }
 const shopEntryTests={
  js:['tests/shop-entry.test.mjs','3b687d1afb6ee83dc7103bc4c074e990a748a96ef55c4cba326498a5ed2d1919'],
- lua:['tests/lua/shop_entry.lua','85547fda98f035ff78a0cebdf56e91ba43899f0579d706c4cb045e13a55f6259'],
+ lua:['tests/lua/shop_entry.lua','85547fda98f035ff78a0cebdf56e91ba43899f0579d706c4cb045e13a55f6259',
+  'e2b0e5297f87eb64525710b871ba23bd9bbcf81e942623c316759e9991dcebeb'],
 };
-function beforeAddedTest(paths,[path,sha],read){
+function beforeAddedTest(paths,[path,...authenticated],read){
  const position=paths.indexOf(path);
  if(position===-1)return paths;
  assert.equal(paths.lastIndexOf(path),position,'duplicate inventory source: '+path);
  const source=read(path,'utf8');
- assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha,'fresh added inventory source: '+path);
+ assert(typeof source==='string'&&!source.includes('\r\r\n')&&authenticated.includes(hash(normalize(source))),'fresh added inventory source: '+path);
  return paths.filter(test=>test!==path);
 }
 export function beforeShopEntryInventory(paths,kind,read=readFileSync){

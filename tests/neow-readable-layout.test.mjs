@@ -29,5 +29,5 @@ test('Neow uses the existing geo placeholder, never the shop merchant bust',()=>
  assert.equal(npc.image,nativeTheme.icon.geo);
  const images=c=>[...(c.image?[c.image]:[]),...(c.children??[]).flatMap(images)];
  assert.ok(!images(figure).includes(nativeTheme.image.merchant),'Neow is not the old-road merchant');
- assert.ok(images(panel.children.find(c=>c.name==='merchant')).includes(nativeTheme.image.merchant),'shop merchant must remain');
+ for(const name of ['merchant','shopRoom'])assert.ok(!images(panel.children.find(c=>c.name===name)).includes(nativeTheme.image.merchant));
 });
