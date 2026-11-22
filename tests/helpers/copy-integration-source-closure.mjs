@@ -185,18 +185,33 @@ const developBackflowFiles=Object.freeze({
  ...stsCloseoutFiles,
  'tests/fixtures/develop-traveler-touch-source.json.gz':'58bed3fd2bfe7a20e5e9d2b9760b5f7dd165bde92201dd49fa90e36bb17168c9',
  'tests/helpers/release-map-deck-source.mjs':'87a1f219bfca2f4ae049896248efd8217c76e90010aee0a1567e51b0e6fc0aa1',
- 'tests/fixtures/develop-card-display-responsibilities-source.json.gz':'fafb7ec975e6ae3fa1f0629a7366a0f673bbad64668afede85267e7af0d0871c',
- 'tests/helpers/develop-release-backflow-source.mjs':'697fc3b432beb23e5624eae3022ac5e7db758f84c6e1972c5222793a86f75845',
+ 'tests/helpers/develop-release-backflow-source.mjs':'70df2b48d5d0573d959be2dd80cf7799722c7cafa5e7b09701eac0d15b644036',
  'tests/fixtures/develop-release-backflow-source.json.gz':'c50d048f5daaa4ecc7ffa110ca9a4dc144cb4393e51fb8666c572b16347bede4',
  'tests/helpers/character-preparation-source.mjs':'1adaca46c085f2daaf7450e8421ec4f38bb6b0e30e726f92cc716abef0330fdb',
  'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'4e615ebe00db432f4454613cebc88c3ade5ca1053e6a1bc7ac80fe3c067a5ee3',
  'tests/helpers/sts-selection-fade-source.mjs':'08f3f5786f05014ef56e18ff612c910855bfb1887de50ab8e8c0c86dda65c4cc',
 });
+const eventProjectionFiles=Object.freeze({
+ ...developBackflowFiles,
+ 'tests/helpers/develop-release-backflow-source.mjs':'8d9fcbd160b16bcf9675dbbcc25080793c719a1520f6e9916439eea9dbfd0aad',
+ 'tests/helpers/colorless-catalog-source-inverse.mjs':'b624a090c35dbbb0b2a161092ad98628f5d34767f07d7aee9f5415f0c796726c',
+ 'tests/fixtures/event-projection-predecessors.json.gz':'87e8e3e410ad515264f668ca53abd8fee8bf8c57b7603c10d7c60882cb9339ea',
+});
+const developMapRenderFiles=Object.freeze({
+ ...eventProjectionFiles,
+ 'tests/helpers/develop-release-backflow-source.mjs':'eee9a991d89bb145dd78e5d67bc3e9f4272ef57e6aa32e6e1dee73be87634c08',
+ 'tests/fixtures/develop-map-render-source.json.gz':'9d52d048c3db1818cb7f9e7fdc8cd881639e958b782593f5dae99923c26d80aa',
+});
+const developCardDisplayFiles=Object.freeze({
+ ...developMapRenderFiles,
+ 'tests/helpers/develop-release-backflow-source.mjs':'f2bb907cea9fff64e7f7eb46ee0dd99a4a5f126276d9d0f876ed8aabbea47777',
+ 'tests/fixtures/develop-card-display-responsibilities-source.json.gz':'fafb7ec975e6ae3fa1f0629a7366a0f673bbad64668afede85267e7af0d0871c',
+});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
- for(const [path,sha]of Object.entries(developBackflowFiles)){
+ for(const [path,sha]of Object.entries(developCardDisplayFiles)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});
