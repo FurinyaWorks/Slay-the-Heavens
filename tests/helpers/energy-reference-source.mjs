@@ -50,7 +50,38 @@ assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(framePriorSourc
 assert.match(rewardFrame.after.sha256,/^[a-f0-9]{64}$/);
 assert.match(rewardFrame.after.gitBlob,/^[a-f0-9]{40}$/);
 const rewardFrameContinuation=exactSourceContinuation(rewardFrame);
+// #827 also changed these two linked owners outside the reward transition archive.
+const companionBytes=readFileSync(new URL('../fixtures/release-reward-companion-source.json.gz',import.meta.url));
+assert.equal(hash(companionBytes),'f793e5dfb1d4c8b9a6f90d06e59a4aa777a820372ac13a70628e24dd5919ba88','exact #827 companion source archive');
+const companions=JSON.parse(gunzipSync(companionBytes));
+assert.equal(companions.base,'1896157475ad06417016cdac7b203aa63f3a6d37');
+assert.equal(companions.merged,rewardFrame.base);
+
+function matchesCompanion(source,binding){
+ if(typeof source!=='string'||source.includes('\r\r\n'))return false;
+ const text=source.replaceAll('\r\n','\n');
+ return hash(text)===binding.sha256 &&
+  createHash('sha1').update(`blob ${Buffer.byteLength(text)}\0`).update(text).digest('hex')===binding.gitBlob;
+}
+
+for(const [path,{before,after}] of Object.entries(companions.files)){
+ assert(matchesCompanion(before.source,before),'exact #827 companion predecessor: '+path);
+ assert.match(after.sha256,/^[a-f0-9]{64}$/);
+ assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
+}
+
+function beforeRewardCompanion(path,source,read){
+ if(!Object.hasOwn(companions.files,path))return source;
+ const {before,after}=companions.files[path];
+ if(!matchesCompanion(source,after))return source;
+ let live;
+ try{live=read(path);}catch{assert.fail('combined linked owner missing: '+path);}
+ assert(matchesCompanion(live,after),'combined linked owner identity: '+path+' changed during owner validation');
+ return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
+}
+
 function beforeReward(path,source,read=p=>readFileSync(p,'utf8')){
+ if(Object.hasOwn(companions.files,path))return beforeRewardCompanion(path,source,read);
  const earlierFrame=rewardFrameContinuation.predecessor(path,source,read);
  const beforeFrameRead=owner=>{
   const live=read(owner),prior=rewardFrameContinuation.predecessor(owner,live,read);
@@ -67,6 +98,8 @@ export function beforeEnergyReferenceSource(path,source,read=p=>readFileSync(p,'
  return continuations.get(path)?.predecessor(path,prior,owner=>beforeReward(owner,read(owner),read))??prior;
 }
 export function assertEnergyReferenceCurrent(path,source,read=p=>readFileSync(p,'utf8')){
+ if(Object.hasOwn(companions.files,path))
+  assert.notEqual(beforeRewardCompanion(path,source,read),source,'fresh energy reference source: '+path);
  if(path===rewardFrame.path){
   const prior=rewardFrameContinuation.predecessor(path,source,read);
   assert.notEqual(prior,source,'fresh energy reference source: '+path);

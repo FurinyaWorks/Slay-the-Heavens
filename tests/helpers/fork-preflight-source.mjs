@@ -1,3 +1,4 @@
+import {beforeIllustrationTestSource,beforeReleaseReplayCiSource} from './release-replay-continuations.mjs';
 import {releaseRewardDisplayPriorRead} from './release-ui-closeout-source.mjs';
 import {beforeReleaseShopEntry,releaseUiRestoreArchive,shopEntryPriorRead} from './release-ui-restore-source.mjs';
 import {beforeCombatVisualSource,combatVisualPriorRead} from './combat-visual-source.mjs';
@@ -92,6 +93,27 @@ function beforeTravelerStatusCiSource(path,source){
  const actorTemplate=path==='tests/native-monster-actor-template.test.mjs';
  if((!copier&&!regression&&!actorTemplate)||typeof source!=='string'||source.includes('\r\r\n'))return source;
  let lf=normalize(source);
+ if(copier&&hash(lf)==='b72155ee1af41dfd1300b4f364a1c5de8de666173c95e37cc72fb14bec63afab'){
+  lf=lf.replace(" 'tests/helpers/release-ui-restore-source.mjs':'12525d81e0e26d39b823b398e4f438e3a005dd6e2a10f91f71eec00adf007586',\n"," 'tests/helpers/release-ui-restore-source.mjs':'f80f891d9f7bf72b098efa22b02b8cdcd83b02cd6be90cfb9003ac83cb9eeaed',\n")
+   .replace(" 'tests/helpers/release-replay-continuations.mjs':'693477ca050c9f8eee0817fb308fc5d023bff4b020c4ab147d178b1ebf8fae23',\n"," 'tests/helpers/release-replay-continuations.mjs':'a01c34b0ae81fb75aa761577db7f05dbc3afd7c24ee4eab6c44c47ceef8fa264',\n")
+   .replace(" 'tests/fixtures/release-replay-final-source.json.gz':'2b3737cb405ce06c42d6dfe5f099a234f452f4b174f97dc481d0e149cb1b23fd',\n","");
+  assert.equal(hash(lf),'1637331fc3742191fa287a302c8e19b2dd0e6d5cca4e048e3bafb78b4daffca2','exact final Release replay helper copy predecessor');
+ }
+ if(copier&&hash(lf)==='1637331fc3742191fa287a302c8e19b2dd0e6d5cca4e048e3bafb78b4daffca2'){
+  lf=lf.replace(" 'tests/helpers/release-ui-restore-source.mjs':'f80f891d9f7bf72b098efa22b02b8cdcd83b02cd6be90cfb9003ac83cb9eeaed',\n"," 'tests/helpers/release-ui-restore-source.mjs':'37410ec175d07b09c8dd8062ac2e19d212dc8eeaebc32f38dbf99e7b32d8b7dd',\n")
+   .replace(" 'tests/helpers/release-replay-continuations.mjs':'a01c34b0ae81fb75aa761577db7f05dbc3afd7c24ee4eab6c44c47ceef8fa264',\n"," 'tests/helpers/release-replay-continuations.mjs':'37fababc8fa8b4f9bbd108692b39289b74964eee0a201085a6b756dd8d938d59',\n")
+   .replace(" 'tests/fixtures/release-deck-lineage-source.json.gz':'a32c93925e562ee1c617bd647e18f131a0c066659eb653ba67afe3beb75454d0',\n","");
+  assert.equal(hash(lf),'0905d3901444316d81a8bcb99b9323fc9728e16401c358d0ba1f79b0d79a68d2','exact historical deck helper copy predecessor');
+ }
+ if(copier&&hash(lf)==='0905d3901444316d81a8bcb99b9323fc9728e16401c358d0ba1f79b0d79a68d2'){
+  lf=lf.replace(" 'tests/helpers/combat-visual-source.mjs':'56a4c47f810f88c3dc1380f2c7f7c5cc8e42085950881f93e0fb10355c308ed6',\n 'tests/helpers/release-replay-continuations.mjs':'37fababc8fa8b4f9bbd108692b39289b74964eee0a201085a6b756dd8d938d59',\n 'tests/fixtures/release-replay-continuations.json.gz':'a2abaa3feb21f2f1a2e8f9c9fef3da2af3525073110eebaa394d82b71a095b95',\n"," 'tests/helpers/combat-visual-source.mjs':'f90e9852079ce269b75d69225552b3720fe43fe789f63e2fa09dee15bdff308c',\n");
+  assert.equal(hash(lf),'e9045772fa7bc30c8f12123cfb3ba78996f11f12c9384fe2c781ec296dee4116','exact #829 and #854 helper copy predecessor');
+ }
+ if(copier&&hash(lf)==='e9045772fa7bc30c8f12123cfb3ba78996f11f12c9384fe2c781ec296dee4116'){
+  lf=lf.replace(" 'tests/helpers/energy-reference-source.mjs':'b756c8e44aa38c736bbcdb07ed24a676449ae6184447e18c28cb8b43ab324598',\n 'tests/fixtures/release-reward-companion-source.json.gz':'f793e5dfb1d4c8b9a6f90d06e59a4aa777a820372ac13a70628e24dd5919ba88',\n"," 'tests/helpers/energy-reference-source.mjs':'eda0da3e4206a76c9bfe2b48a040e24c217a9b2f1416a673b728c03c4da4a2b7',\n")
+   .replace(" 'tests/helpers/combat-visual-source.mjs':'f90e9852079ce269b75d69225552b3720fe43fe789f63e2fa09dee15bdff308c',\n 'tests/helpers/traveler-status-source.mjs':'2c853e67bd0148ed6de45a3e6ac0e69fe97dd543f967ecbb492f498c46e3c741',\n 'tests/fixtures/release-battle-detail-source.json.gz':'62be372b9fcdbfee8c06bb68cf3808ec8932ed8097537c85c83fa85310e6ea9f',\n"," 'tests/helpers/combat-visual-source.mjs':'795056833d48bd9a2e5a1944a5d9b56fb5d0f0ce7967fdbac72da5566ae5e35d',\n 'tests/helpers/traveler-status-source.mjs':'41da0aaea833a446033b1fb964d31eebc4c4b5cd22e990a03370636f7afcc5ff',\n");
+  assert.equal(hash(lf),'7f3574e841cfe053de331c55ca4872bde0143c7a1b6bde58b03757ff3a821121','exact reward and battle detail helper copy predecessor');
+ }
  if(copier&&hash(lf)==='7f3574e841cfe053de331c55ca4872bde0143c7a1b6bde58b03757ff3a821121'){
   lf=lf.replace(" 'tests/helpers/release-ui-closeout-source.mjs':'ad5561e57e88406fa9615ff0ac7ed654b625112b7667c0b6da06d8a0fc4e3b84',\n 'tests/fixtures/release-shop-fixture-source.json.gz':'cfafa1b569223099444cb0340d8483ecd5daade105effeb6934802fb73133020',\n"," 'tests/helpers/release-ui-closeout-source.mjs':'f0494e25c04a94b932ff7160f5dd00904cfde3ff8c86beb00eb83968b251ba08',\n");
   assert.equal(hash(lf),'23868164b55d4d54cb3cf6d661f869545a606607ff1bbf4721518c9dfa5ed574','exact shop fixture helper copy predecessor');
@@ -224,10 +246,17 @@ function beforeReleaseBackflowTest(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeReleaseUiBuildSource(path,source){
+ source=beforeReleaseReplayCiSource(path,beforeIllustrationTestSource(path,source),'early');
  source=beforeShopRoomCiSource(path,beforeReleaseBackflowTest(path,beforeReleaseAssetInventory(path,source)));
  source=beforeTravelerStatusCiSource(path,source);
  source=beforeShopEntryCopier(path,beforeReleaseShopEntry(path,beforeLoadingRecoveryCopier(path,source)));
- source=beforeCombatVisualSource(path,source,shopEntryPreflightRead(owner=>readFileSync(owner,'utf8')));
+ const read=shopEntryPreflightRead(owner=>beforeReleaseReplayCiSource(owner,readFileSync(owner,'utf8'),'early'));
+ source=beforeCombatVisualSource(path,source,read);
+ const prior=beforeReleaseReplayCiSource(path,source,'late');
+ if(prior!==source){
+  const readPrior=owner=>beforeReleaseReplayCiSource(owner,beforeCombatVisualSource(owner,read(owner),read),'late');
+  source=beforeCombatVisualSource(path,prior,readPrior);
+ }
  source=beforeSts1MenuCiSource(path,source);
  source=beforeRefinedReleaseCiSource(path,beforeRefinedReleaseCopier(path,capacity.project(path,source)));
  if(!Object.hasOwn(releaseUiBuild.files,path)||typeof source!=='string'||source.includes('\r\r\n'))return source;
@@ -282,13 +311,22 @@ export function beforeShopEntryInventory(paths,kind,read=readFileSync){
  if(kind==='lua')paths=beforeAddedTest(paths,['tests/lua/traveler_power_tooltip.lua','35363665f69113883246aa33984d4ab17eba727a87476256a617dc0f42dd45f7'],read);
  return beforeAddedTest(paths,shopEntryTests[kind],read);
 }
+const releaseAddedJs=[
+ ['tests/detail-latency.test.mjs','310f906435fbbfa45899b30a5344ca83f9de32860d09394b9824de95ee9cffee'],
+ ['tests/forethought-selection.test.mjs','efe0d72d48c9c281f9af7f77fe432cdb2c6cb0edca8ee508f0897ea447a7ffab'],
+ ['tests/potion-sts-structure.test.mjs','56b91c313e26d1129a39b7678a39df7df38a71a2252deb060351c5cc115e6118'],
+ ['tests/sts-selection-fade.test.mjs','3257ed5beda1cca328ac38a080f9112e9394f6d4152d0a0d27e9a6765182df1b'],
+];
+function beforeReleaseJsInventory(paths,read){
+ return releaseAddedJs.reduce((prior,test)=>beforeAddedTest(prior,test,read),paths);
+}
 export function assertCurrentJsInventory(paths,preceding,read=readFileSync){
- paths=beforeAddedTest(paths,['tests/sts-selection-fade.test.mjs',
-  '3257ed5beda1cca328ac38a080f9112e9394f6d4152d0a0d27e9a6765182df1b'],read);
+ paths=beforeReleaseJsInventory(paths,read);
  paths=beforeRefinedReleaseJsInventory(beforeShopEntryInventory(paths,'js',read),[...preceding,coopLabTest],read,true);
  assertCoopJsInventory(paths,preceding,read);
 }
 export function beforeCoopJsInventory(paths,preceding,read=readFileSync){
+ paths=beforeReleaseJsInventory(paths,read);
  paths=beforeRefinedReleaseJsInventory(beforeShopEntryInventory(paths,'js',read),[...preceding,coopLabTest],read);
  if(!paths.includes(coopLabTest))return paths;
  assertCoopJsInventory(paths,preceding,read);

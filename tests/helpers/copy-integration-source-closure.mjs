@@ -75,7 +75,7 @@ const releaseUiFiles=Object.freeze({
 // Refined enemy art extends only the existing historical helper closure.
 const refinedReleaseFiles=Object.freeze({
  ...releaseUiFiles,
- 'tests/helpers/release-ui-restore-source.mjs':'37410ec175d07b09c8dd8062ac2e19d212dc8eeaebc32f38dbf99e7b32d8b7dd',
+ 'tests/helpers/release-ui-restore-source.mjs':'12525d81e0e26d39b823b398e4f438e3a005dd6e2a10f91f71eec00adf007586',
  'tests/helpers/release-shop-entry-source.json.gz':'d3c114b39aa8affa1ae5c2b3ee54117640dcacce750efc24d78312792d8d2ff7',
  'tests/helpers/release-forge-source.json.gz':'8557c9daa0943c815ca11e0c135d081c08081f040bbef85b3cd799f7a586c564',
  'tests/helpers/refined-release-source.mjs':'154f5464849177b48426db7d816f4ddf87d9d26abd6bfcfb543162b4f26450d9',
@@ -94,7 +94,8 @@ const loadingRecoveryFiles=Object.freeze({
  'tests/helpers/release-map-deck-source.json.gz':'8e16866bcec2fdc7628cbc91f7a74f09c18b9f621c6e065b75b2c98a8172a2d4',
  'tests/helpers/combat-visual-source.mjs':'6fbf561edae2163cb68163834289ea70b8ec94868507677be0f21fd9cabbfc7b',
  'tests/fixtures/combat-visual-source.json.gz':'c182bc4a8f2afef8e3aec0b32a43dcfd2c4f0c214763a34a86dec8e07daadc3d',
- 'tests/helpers/energy-reference-source.mjs':'eda0da3e4206a76c9bfe2b48a040e24c217a9b2f1416a673b728c03c4da4a2b7',
+ 'tests/helpers/energy-reference-source.mjs':'b756c8e44aa38c736bbcdb07ed24a676449ae6184447e18c28cb8b43ab324598',
+ 'tests/fixtures/release-reward-companion-source.json.gz':'f793e5dfb1d4c8b9a6f90d06e59a4aa777a820372ac13a70628e24dd5919ba88',
  'tests/fixtures/release-reward-frame-source.json.gz':'09f99aff296875fa9787a94bfd6be19c1a4d76dcb9a33fd6b1f31213d10cd8a5',
  'tests/fixtures/release-reward-entry-source.json.gz':'1ebaf2212130772f299fc9dca4a0664dbdf768a75bd3c5899a52d2efd38b7b1b',
  'tests/fixtures/release-reward-transition-source.json.gz':'a25a1fd1ad58ef7d504ec2743fd32fa6aa2a54c5e4b41734c1f3a9bb092478d2',
@@ -103,8 +104,13 @@ const loadingRecoveryFiles=Object.freeze({
 });
 const travelerStatusFiles=Object.freeze({
  ...loadingRecoveryFiles,
- 'tests/helpers/combat-visual-source.mjs':'795056833d48bd9a2e5a1944a5d9b56fb5d0f0ce7967fdbac72da5566ae5e35d',
- 'tests/helpers/traveler-status-source.mjs':'41da0aaea833a446033b1fb964d31eebc4c4b5cd22e990a03370636f7afcc5ff',
+ 'tests/helpers/combat-visual-source.mjs':'56a4c47f810f88c3dc1380f2c7f7c5cc8e42085950881f93e0fb10355c308ed6',
+ 'tests/helpers/release-replay-continuations.mjs':'693477ca050c9f8eee0817fb308fc5d023bff4b020c4ab147d178b1ebf8fae23',
+ 'tests/fixtures/release-replay-continuations.json.gz':'a2abaa3feb21f2f1a2e8f9c9fef3da2af3525073110eebaa394d82b71a095b95',
+ 'tests/fixtures/release-deck-lineage-source.json.gz':'a32c93925e562ee1c617bd647e18f131a0c066659eb653ba67afe3beb75454d0',
+ 'tests/fixtures/release-replay-final-source.json.gz':'2b3737cb405ce06c42d6dfe5f099a234f452f4b174f97dc481d0e149cb1b23fd',
+ 'tests/helpers/traveler-status-source.mjs':'2c853e67bd0148ed6de45a3e6ac0e69fe97dd543f967ecbb492f498c46e3c741',
+ 'tests/fixtures/release-battle-detail-source.json.gz':'62be372b9fcdbfee8c06bb68cf3808ec8932ed8097537c85c83fa85310e6ea9f',
  'tests/fixtures/traveler-status-source.json.gz':'78ea0afbc225eb83cfd79d24cbed5c1af166e21c07f2adfec3588b488a0d0de2',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};

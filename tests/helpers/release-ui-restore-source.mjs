@@ -1,3 +1,4 @@
+import {beforeEventArtSource,eventArtPriorRead,beforeShopProductionSource,beforeHistoricalDeckSource,beforeReleaseUiCompanionSource} from './release-replay-continuations.mjs';
 import {beforeCombatVisualSource,combatVisualPriorRead} from './combat-visual-source.mjs';
 import {authorizeRefinedReleaseProduction,beforeRefinedReleaseProduction} from './refined-release-source.mjs';
 import assert from 'node:assert/strict';
@@ -53,7 +54,28 @@ export const beforeReleaseShopEntry=shopEntry.project;
 export function shopEntryPriorRead(read){
  return (path,...args)=>beforeReleaseShopEntry(path,read(path,...args));
 }
-export const beforeRecordingUi=(path,source)=>recording.project(path,beforeCombatVisualSource(path,source));
+// #854 precedes #834. Older projectors and their readers see the same stage.
+function beforeShopProductionUi(path,source,read,eventRead){
+ return beforeShopProductionSource(path,beforeEventArtSource(path,source,read),eventRead);
+}
+function shopProductionPriorRead(eventRead){
+ return (path,encoding)=>{
+  const raw=eventRead(path,encoding);
+  if(typeof raw==='string')return beforeShopProductionSource(path,raw,eventRead);
+  if(!Buffer.isBuffer(raw))return raw;
+  const text=raw.toString('utf8'),prior=beforeShopProductionSource(path,text,eventRead);
+  return prior===text?raw:Buffer.from(prior);
+ };
+}
+const liveEventRead=eventArtPriorRead(readFileSync);
+const liveShopRead=shopProductionPriorRead(liveEventRead);
+const liveShopEntryRead=shopEntryPriorRead(liveShopRead);
+export const beforeRecordingUi=(path,source,read)=>recording.project(path,beforeCombatVisualSource(path,source,read&&((owner)=>read(owner,'utf8'))));
+const beforeHistoricalRecordingUi=(path,source,read,deckOptions)=>{
+ const prior=beforeRecordingUi(path,source,read);
+ const deck=beforeHistoricalDeckSource(path,prior,source,read,deckOptions);
+ return beforeReleaseUiCompanionSource(path,deck,source,read);
+};
 export const releaseForgeSourcePaths=Object.freeze(Object.keys(forgeGrid.files).filter(path=>path.startsWith('src/lua/')));
 export const beforeReleaseForgeGridUi=forgeGrid.project;
 export const releaseControlsGuideRemovalSourcePaths=Object.freeze(Object.keys(controlsGuideRemoval.files).filter(path=>path.startsWith('src/lua/')));
@@ -63,10 +85,20 @@ export const beforeReleaseControlsGuideRemoval=controlsGuideRemoval.project;
 export const releaseRightClickSourcePaths=Object.freeze(Object.keys(rightClick.files));
 export const releaseUiRestoreSourcePaths=Object.freeze([...new Set([...Object.keys(files),...Object.keys(fieldCancel.files)])]);
 export const beforeReleaseRightClick=(path,source)=>rightClick.project(path,fieldCancel.project(path,source));
-export const beforeReleaseUiRestore=(path,source)=>project(path,beforeReleaseRightClick(path,beforeReleaseControlsGuideRemoval(path,beforeReleaseSharedRelicUi(path,beforeReleaseForgeGridUi(path,beforeRefinedReleaseProduction(path,beforeRecordingUi(path,beforeReleaseShopEntry(path,source))))))));
+export function beforeReleaseUiRestore(path,source){
+ const shopSource=beforeShopProductionUi(path,source,readFileSync,liveEventRead);
+ const recorded=beforeHistoricalRecordingUi(path,beforeReleaseShopEntry(path,shopSource),liveShopEntryRead);
+ const refined=beforeRefinedReleaseProduction(path,recorded);
+ const forge=beforeReleaseForgeGridUi(path,refined);
+ const relics=beforeReleaseSharedRelicUi(path,forge);
+ return project(path,beforeReleaseRightClick(path,beforeReleaseControlsGuideRemoval(path,relics)));
+}
 const authorizationPaths=[...new Set([...releaseUiRestoreSourcePaths,...releaseRightClickSourcePaths,...releaseControlsGuideRemovalSourcePaths,...releaseSharedRelicSourcePaths,...releaseForgeSourcePaths])];
 
 export function authorizeReleaseUiRestore(samples,read){
+ const eventRead=eventArtPriorRead(read);
+ samples=samples.map(([path,input])=>[path,beforeShopProductionUi(path,input,read,eventRead)]);
+ read=shopProductionPriorRead(eventRead);
  for(const [path,input] of samples){
   const expected=shopEntry.files[path]?.after;
   if(matches(input,expected))assert(matches(read(path),expected),'shop entry linked owner changed: '+path);
@@ -84,8 +116,10 @@ export function authorizeReleaseUiRestore(samples,read){
   assert(matches(read(path),expected),'recording UI linked owner changed: '+path);
  }
  const rawRead=read;
- samples=samples.map(([path,input])=>[path,beforeRecordingUi(path,input)]);
- read=path=>beforeRecordingUi(path,rawRead(path));
+ // The original forge cohort still validates its deck at the #790 boundary.
+ const atForge={stopAtForge:true};
+ samples=samples.map(([path,input])=>[path,beforeHistoricalRecordingUi(path,input,rawRead,atForge)]);
+ read=path=>beforeHistoricalRecordingUi(path,rawRead(path),rawRead,atForge);
  authorizeRefinedReleaseProduction(samples,read);
  // A combined replay that contains current menu code must use the same release
  // version for every sampled menu owner. Older all-historical views still replay.

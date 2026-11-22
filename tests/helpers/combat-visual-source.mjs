@@ -1,7 +1,8 @@
+import {beforeEventArtSource,eventArtPriorRead,beforeBattleUiQualitySource} from './release-replay-continuations.mjs';
 import {beforeReleaseUiCloseoutSource,releaseUiCloseoutPriorRead} from './release-ui-closeout-source.mjs';
 import {beforeEnergyReferenceSource,energyReferencePriorRead,assertEnergyReferenceCurrent} from './energy-reference-source.mjs';
 import {beforeMapDeckSource,mapDeckPriorRead} from './release-map-deck-source.mjs';
-import {beforeTravelerStatusSource,travelerStatusPriorRead} from './traveler-status-source.mjs';
+import {beforeBattleDetailSource,beforeTravelerStatusSource,travelerStatusPriorRead} from './traveler-status-source.mjs';
 // Exact predecessor view for historical receipts; live builds keep current sources.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -20,10 +21,14 @@ for(const [path,row]of Object.entries(rows)){
  continuations.set(path,exactSourceContinuation(row));
 }
 export function beforeCombatVisualSource(path,source,read=p=>readFileSync(p,'utf8')){
+ source=beforeEventArtSource(path,source,read);
+ read=eventArtPriorRead(read);
  const closeout=beforeReleaseUiCloseoutSource(path,source,read);
  read=releaseUiCloseoutPriorRead(read,closeout!==source?path:undefined);
  source=closeout;
- source=beforeTravelerStatusSource(path,source,read);
+ const travelerInput=source;
+ source=beforeBattleDetailSource(path,source,read);
+ source=beforeBattleUiQualitySource(path,source,travelerInput,read);
  read=travelerStatusPriorRead(read);
  source=beforeMapDeckSource(path,source,read);
  read=mapDeckPriorRead(read);
@@ -39,6 +44,8 @@ export function combatVisualPriorRead(read=readFileSync){return(path,encoding)=>
 };}
 
 export function assertCombatVisualCurrent(path,source,read=p=>readFileSync(p,'utf8')){
+ source=beforeEventArtSource(path,source,read);
+ read=eventArtPriorRead(read);
  const closeout=beforeReleaseUiCloseoutSource(path,source,read);
  read=releaseUiCloseoutPriorRead(read,closeout!==source?path:undefined);
  source=closeout;
