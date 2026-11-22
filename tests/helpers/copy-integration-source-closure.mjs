@@ -83,9 +83,10 @@ const refinedReleaseFiles=Object.freeze({
 });
 const loadingRecoveryFiles=Object.freeze({
  ...refinedReleaseFiles,
- 'tests/helpers/pc13-reward-cover-source.mjs':'669622dc54b057ad81579c872ae45231e51e906c3163c513af57a6ce3ce8a6ea',
- 'tests/helpers/loading-recovery-source.mjs':'e787821394dadfeefb206dda8d8a20bd371d3967eb4722317e5a128477721b01',
- 'tests/helpers/release-map-deck-source.mjs':'85e4ee451443b14722853a3bcfe8349df895db3cf6c186f42242050c38ed5017',
+ 'tests/helpers/pc13-reward-cover-source.mjs':'cd9cf4d774a92df100e6e367bdbc41a58fa281cef428316f1671fd878167cd92',
+ 'tests/helpers/loading-recovery-source.mjs':'4c1f7ecbb81a3fcc3fb44c32c340895b0832465988aadb26818b76d1ccb3c097',
+ 'tests/helpers/release-map-deck-source.mjs':'c661e5dfa5035a09a47935bd7bfbc3e1f37b992d809bc7387d93e757c3df6fd5',
+ 'tests/helpers/release-map-room-source.json.gz':'834f71a1a70fe4858c4874497f8f7b46ae02a8f1949041aacc2d91353d190b13',
  'tests/helpers/release-map-deck-source.json.gz':'8e16866bcec2fdc7628cbc91f7a74f09c18b9f621c6e065b75b2c98a8172a2d4',
  'tests/helpers/combat-visual-source.mjs':'6fbf561edae2163cb68163834289ea70b8ec94868507677be0f21fd9cabbfc7b',
  'tests/fixtures/combat-visual-source.json.gz':'c182bc4a8f2afef8e3aec0b32a43dcfd2c4f0c214763a34a86dec8e07daadc3d',

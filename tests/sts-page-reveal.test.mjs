@@ -290,3 +290,13 @@ dofile('tests/lua/support/pc13_reward_cover.lua')
 dofile('tests/lua/support/modal_cover_setters.lua')
 print('PAGE_REVEAL_PASS')`);
 });
+
+test('official Host publishes painted map rooms immediately when ready and gates pending assets',t=>{
+ const base=resolve('.artifacts/test-tmp');mkdirSync(base,{recursive:true});
+ const out=mkdtempSync(join(base,'page-reveal-map-room-'));t.after(()=>rmSync(out,{recursive:true,force:true}));
+ buildLuaData('data',join(out,'abyss_data.lua'));
+ buildUI(out,undefined,{officialAssets:true,refinedReleaseMonsterArt:true,nativePageLifecycle:true});
+ lua(`package.path=${luaString(out.replaceAll('\\','/')+'/?.lua;src/lua/?.lua;')}..package.path
+dofile('tests/lua/support/map_room_reveal.lua')
+print('PAGE_REVEAL_PASS')`);
+});

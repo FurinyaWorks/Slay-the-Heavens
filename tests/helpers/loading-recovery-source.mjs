@@ -4,8 +4,8 @@ import {createHash} from 'node:crypto';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const sources={
   'src/lua/abyss_game_ui.lua':{
-    after:'8ec5367dc26ea6dc4a916f873984629cba75b4d33b6ad6cbf0d0a0dc7f3f952f',
-    before:'b0d51fcb3dc7e07bd1d50e75397741df277dd5bf9734ffdb9bc7e3c76c33eef1',
+    after:'db087846bd76ce38d79d22a3cc2f078ac9261f0592479b7882f8b78ef045422c',
+    before:'ab28afc0271b29b8a605d6e1eaef972fb994723a9bcd85c5299d5e5177a0e6bc',
     edits:[
       ["        local function canRecover()return self.pageReveal.state=='failed' and not self.exitOpen end\n",''],
       ["            if not canRecover()then return false end","            if not self.pageReveal:covered() or self.exitOpen then return false end"],
@@ -13,13 +13,13 @@ const sources={
     ],
   },
   'src/lua/abyss_game_ui_view.lua':{
-    after:'139eb5b671ede441215a09cd0a6cd1b44eb27703bc692db171d9b036383b41c1',
-    before:'9d5bdaf3ec9a6b3cf8d62b4c6d57128215a38ab20c3d240022af3ca333a1da63',
+    after:'7cd7c4ef3d260c7a173e4ca173797877e528b423fd39ccd606756bf22c83b318',
+    before:'224d9320e4347282f57a142da10375f135eca194f5bdd2f809c13b7529912b8d',
     edits:[["then scope=self.pageReveal.state=='failed' and 'pageReveal' or 'blocked'","then scope='pageReveal'"]],
   },
   'src/lua/abyss_page_reveal.lua':{
-    after:'af170c250864541ebcb2d3a672dc062777d963d2138d5e42b1e5170ab67fc699',
-    before:'11c445d81dc6687b06d6b8d617f524740ee3da92264d3400bb54019c0a8adc61',
+    after:'fc1bc59e66730c9d508286fa82fd23747eedc5f643f4bc639fa5b22a752c2055',
+    before:'43d1188ff22437cb5ee98e93d72211dfaf58fae33f6cac9205edcb982dbcf0af',
     edits:[
       ["        local recovery=cover:GetChild('cancel')\n        if self.epoch~=ticket then return false end\n        if recovery then recovery:SetVisible(false)end\n        if self.epoch~=ticket then return false end\n",''],
       ["            if self:request(intent) and reason then return reject(self,tostring(reason))end", "            self:request(intent)\n            if reason then return reject(self,tostring(reason))end"],
@@ -29,8 +29,8 @@ const sources={
     ],
   },
   'tests/sts-page-reveal.test.mjs':{
-    after:'36bb93baad36b0861c04859afaceec559a263b565885f65cf079e072e4e77a93',
-    before:'594e4a40b4cfdb98178c15ff211a07457a8c18615379d524a722b22eb22c790c',
+    after:'51a2673d70699bbbce4de7debce36ec78914796d7a4b321a6a57f45768332598',
+    before:'ac2064f70e5eeac6ee3cbd8ddf97d95d7bdb232eb0686af93af3d42ffad9aa83',
     edits:[
       ["\nfor _,operation in ipairs({'lookup','visibility'})do\n local nested,events,trigger=nil,{},true\n local replacement={page='mapPanel',run={}}\n local function reenter()\n  if not trigger then return end\n  trigger=false\n  assert(nested:request(replacement))\n end\n local recovery={SetVisible=function()if operation=='visibility'then reenter()end end}\n local native={SetVisible=function()end,SetAsLastSibling=function()end,GetChild=function(_,name)\n  if name~='cancel'then return end\n  if operation=='lookup'then reenter()end\n  return recovery\n end}\n nested=Gate.new(native,function()return false end,function(epoch)events[#events+1]=epoch end)\n assert(not nested:request({page='menuPanel',run={}}),'superseded request advanced after recovery '..operation)\n assert(nested.intent==replacement and #events==1 and events[1]==nested.epoch,'stale recovery request notified the newer epoch')\nend\n",''],
       [`

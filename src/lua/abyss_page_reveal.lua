@@ -35,7 +35,7 @@ function M.intent(owner)
     local battle=owner.battleUI or {}
     local revision,details,detailPage,content=overlayVersion(owner,page)
     return {page=page,mode=owner.mode,run=owner.run,phase=run.phase,
-        battle=run.combat,node=run.nodeFlow,nodeId=flow.id,nodeFloor=flow.floor,mapSeed=flow.mapSeed,
+        battle=run.combat,node=run.nodeFlow,nodeId=flow.id,nodeFloor=flow.floor,nodeType=flow.type,mapSeed=flow.mapSeed,
         mapSignature=flow.mapSignature,roomGeneration=run.roomGeneration,eventId=event.id,characterOpen=owner.characterOpen==true,
         character=character.id,characterDeck=selection.deckOpen==true,act=run.act,floor=run.floor,
         nodeMode=node.mode,picker=node.picker,eventStage=event.stage,event=flow.event,neow=flow.roomKind=='neow',opened=node.opened,
@@ -45,7 +45,7 @@ function M.intent(owner)
 end
 local function sameOwner(a,b,except)
     if not a or not b then return false end
-    for _,key in ipairs({'page','mode','run','phase','battle','node','nodeId','nodeFloor','mapSeed','mapSignature','roomGeneration','eventId','characterOpen','character','characterDeck','act','floor','overlayRevision'})do
+    for _,key in ipairs({'page','mode','run','phase','battle','node','nodeId','nodeFloor','nodeType','mapSeed','mapSignature','roomGeneration','eventId','characterOpen','character','characterDeck','act','floor','overlayRevision'})do
         if key~=except and a[key]~=b[key]then return false end
     end
     return true
@@ -81,6 +81,13 @@ local function sameBase(a,b)
 end
 local function needsSchedulerConfirmation(intent)
     return intent.page=='choicePanel' and intent.phase=='combat'
+end
+local roomTypes={shop=true,event=true,camp=true}
+local function entersMapRoom(previous,intent)
+    return previous and previous.page=='mapPanel' and previous.mode=='map' and previous.phase=='map'
+        and intent.page=='nodePanel' and intent.mode=='node' and intent.phase=='node'
+        and previous.run==intent.run and previous.act==intent.act and intent.nodeId~=nil
+        and not intent.complete and roomTypes[intent.nodeType]==true
 end
 function M.new(cover,ready,onIntent,frames)
     assert(cover and type(ready)=='function','page reveal requires cover and readiness source')
@@ -137,6 +144,7 @@ function M.new(cover,ready,onIntent,frames)
         cover:SetAsLastSibling();return self.epoch==ticket
     end
     function gate:begin(intent)
+        local roomEntry=self.state=='visible' and entersMapRoom(self.published,intent)
         local localChange=localFrame(intent,self.intent)~=nil
         local fast=not needsSchedulerConfirmation(intent) and
             (self.state=='visible' and (canUpdate(intent,self.intent) or localChange)
@@ -146,14 +154,30 @@ function M.new(cover,ready,onIntent,frames)
             if not self:request(intent) and not unchanged then return false end
             if not same(intent,self.intent)then return false end
         end
-        self.painting={epoch=self.epoch,intent=intent,fast=fast,changed=not same(intent,self.intent)}
+        self.painting={epoch=self.epoch,intent=intent,fast=fast,changed=not same(intent,self.intent),roomEntry=roomEntry}
         return true
     end
-    function gate:finish(intent)
+    function gate:finish(intent,roomPainted)
         local ticket=self.painting
         if not ticket then return false end
-        if not same(ticket.intent,intent)then self:request(intent);return false end
         if ticket.epoch~=self.epoch then return false end
+        -- Entry may reset the previous room's picker/page during paint.
+        -- Verify the room identity before checking its new leases.
+        if roomPainted and ticket.roomEntry and sameOwner(ticket.intent,intent) and not intent.complete then
+            local value,reason=readiness(ready,intent)
+            if self.painting~=ticket or ticket.epoch~=self.epoch then return false end
+            self.painting=nil
+            if not value or reason then
+                if not same(intent,self.intent) and not self:request(intent) then return false end
+                if reason then return reject(self,tostring(reason))end
+                return false
+            end
+            self.intent=intent;self.published=intent;self.state='visible';cover:SetVisible(false)
+            if ticket.epoch~=self.epoch then return false end
+            print('ABYSS_PAGE_REVEAL visible page='..tostring(intent.page)..' epoch='..self.epoch)
+            return true
+        end
+        if not same(ticket.intent,intent)then self:request(intent);return false end
         if not ticket.fast or not ticket.changed then self.painting=nil;return false end
         -- Only the explicit post-paint caller can use readiness for new leases.
         local value,reason=readiness(ready,intent)
