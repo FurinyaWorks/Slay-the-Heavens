@@ -37,15 +37,18 @@ function M.install(owner, ownership, host, _dependencies)
             owner.hover = nil
         end
     end
+    local function inputReady()
+        return owner.active and not owner.busy and not (host.options.inputCovered and host.options.inputCovered())
+    end
     local function dragReady(g)
-        return owner.active and not owner.busy and owner.run == g.run and owner.run.phase == "combat"
+        return inputReady() and owner.run == g.run and owner.run.phase == "combat"
             and owner.run.combat == g.battle and g.battle.phase == "player" and g.battle.turn == g.turn
     end
     local function rewardReady(g)
         return RewardOwner.ready(owner, g)
     end
     local function cardReady(g)
-        if not owner.active or owner.busy or owner.run ~= g.run or owner.run.phase ~= g.phase then return false end
+        if not inputReady() or owner.run ~= g.run or owner.run.phase ~= g.phase then return false end
         if g.phase == "combat" then
             local instance = g.battle.hand[g.slot]
             return dragReady(g) and instance ~= nil and instance.uid == g.uid
@@ -92,7 +95,7 @@ function M.install(owner, ownership, host, _dependencies)
     end
     local function actionContextReady(g)
         local run = owner.run
-        if not owner.active or owner.busy or owner.gesture or run ~= g.run then return false end
+        if not inputReady() or owner.gesture or run ~= g.run then return false end
         if run and (run.phase ~= g.phase or run.combat ~= g.battle
             or g.battle and g.battle.turn ~= g.turn) then return false end
         return true

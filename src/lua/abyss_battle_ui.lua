@@ -337,6 +337,7 @@ function M.new(root, data, presentation, clickEvent, platform, options)
         text=function(item,battle)return potionText(item,battle,true):match("\n(.*)") or ''end,
         use=function(slot)return self:usePotion(slot)end,
         discard=function(slot)
+            if options.inputCovered and options.inputCovered()then return false,'panel_hidden' end
             local ok,reason=Run.discardPotion(self.run,slot)
             if ok then self.potionSlots[slot]=nil end
             services.notice(ok and '已丢弃药水。' or reasons[reason] or '当前不能丢弃此药水。')

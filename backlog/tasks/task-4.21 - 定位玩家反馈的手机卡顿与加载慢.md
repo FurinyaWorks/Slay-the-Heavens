@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-31T23:38:00Z'
-updated_date: '2026-11-22 05:48'
+updated_date: '2026-11-22 07:17'
 labels:
   - 待验
   - delivery-verify
@@ -16,6 +16,7 @@ references:
   - docs/evidence/mobile-readability-20261101/
   - docs/evidence/m4-deck-controller-lifecycle-20261102/
   - docs/plans/2026-11-03-m9-engineering-foundation.md
+  - docs/plans/2026-11-22-map-room-entry.md
 parent_task_id: TASK-4
 priority: medium
 type: bug
@@ -92,4 +93,6 @@ M9第二批复验战斗refresh绘制2→1、五张静止牌300更新几何方法
 地图顶栏卡组独立切片基于 release 8af38667。正式资源 Host 按实际顶栏打开 80 张牌，首开地图重绘 1→0、牌框位置提交 1704→408、卡定义计算 93→12、索引探测牌面绘制 1→0；打开关闭地图重绘合计 3→1。关卡组保留地图滚动，旧触点拒绝，卡牌排序与回收、可见槽就绪和原有规则不变。离线计数不代表设备耗时，手机验收继续待验。
 
 本版战斗牌堆反馈切片：非空抽牌、弃牌、消耗堆在原生网格同步返回卡位时当次点击发布。异步网格继续核对当前可见卡位。省掉牌堆中 V4 非手牌的空出牌模拟，减少卡框和网格的重复原生调用。正式布局离线用例已覆盖空堆、0/1 基索引、异步回调、回收、排序、旧输入与 V4 实时说明。手机和官方客户端端到端延迟继续待验。
+
+进入反馈与地图热点修复经 #874 合入 Release，固定提交 8125d64dfe7796b2da957072c023b54d7cc7d740。正常章内缓存的配对离线营地核心 P95 224.90→21.14ms，七类节点与恢复定向通过；冷缓存、高争用及实体设备仍保留验收。Develop 回流沿用正常合并队列。
 <!-- SECTION:NOTES:END -->

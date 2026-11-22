@@ -27,10 +27,14 @@ local View = require('abyss_game_ui_view')
 local RunFlow = require('abyss_game_ui_run')
 local Lifecycle = require('abyss_game_ui_lifecycle')
 local Input = require('abyss_game_ui_input')
+local Navigation = require('abyss_game_ui_navigation')
 local PageReveal=require('abyss_page_reveal')
 
 local function revealMotion(platform)
-    if platform.prologue==true and platform.color then return {color=platform.color,duration=Theme.motion.slow}end
+    if platform.prologue==true and platform.color then
+        return {color=platform.color,duration=Theme.motion.slow,entryDuration=Theme.motion.fast/2,
+            entryTrace=platform.entryTrace}
+    end
 end
 local function legacyPrologue(panel,platform,gate)
     return panel and platform.prologue==true and platform.color and not gate
@@ -84,15 +88,17 @@ function M.new(root, data, presentation, clickEvent, platform)
     local inputCovered=function()return openingCovered() or self.pageReveal and self.pageReveal:covered()end
     local canViewRoute = Overlays.canViewRoute(self,inputCovered)
     local changed = Overlays.changed(self,owner)
+    local function battleEntryCovered()
+        local gate=self.pageReveal
+        return gate and gate.entry and gate:covered()
+    end
     self.battleUI = BattleUI.new(child("battlePanel"), data, presentation, clickEvent,
-        platform, { embedded = true, onChange = changed, onPile=function(kind)return self:openDeck(kind)end })
-    self.mapUI = MapUI.new(child("mapPanel"), nil, function(node)
-        if self.disabled or not self.run or self.mode ~= "map" or self.deckUI and self.deckUI.visible then return false, "not_on_map" end
-        local ok, reason = Nodes.enter(self.run, self.map, node.id)
-        if ok then changed() end
-        return ok, reason
-    end, clickEvent, { embedded = true, color = platform.color, imageSource = platform.imageSource,
+        platform, { embedded = true, onChange = changed, inputCovered=battleEntryCovered,
+            onPile=function(kind)return self:openDeck(kind)end })
+    self.mapUI = MapUI.new(child("mapPanel"), nil, Navigation.requestNodeEntry(self,platform,changed),
+        clickEvent, { embedded = true, color = platform.color, imageSource = platform.imageSource,
         cursor = platform.cursorEvents, controller = controller,
+        inputCovered=inputCovered,
         available=function(map)return Nodes.available(self.run,map)end,
         bossName=function(map)
             local run = self.run
@@ -142,7 +148,7 @@ function M.new(root, data, presentation, clickEvent, platform)
     self.openMenu = Overlays.openMenu(self,owner)
     self.closeExit = Overlays.closeExit(self,owner)
     self.confirmExit = Overlays.confirmExit(self,owner)
-    require('abyss_game_ui_navigation').install(self,owner,neowHistory)
+    Navigation.install(self,owner,neowHistory)
 
     self.openDeck = Overlays.openDeck(inputCovered,self)
     self.openStarterDeck = Overlays.openStarterDeck(inputCovered,self,platform,owner)

@@ -369,15 +369,18 @@ function M.status()
     return status
 end
 function M.presentationReady(page)
+    local pending,progress=false,0
     for _,record in pairs(records)do
         if not record.removed and not record.cancelled and record.page==page then
             if record.failed then return false,record.reason or 'card artwork preparation failed' end
-            if not record.ready then return false end
+            pending=pending or not record.ready
+            progress=progress+#record.controls+#record.groups
         end
         if not record.removed and not record.cancelled and not record.ready and not record.page then
             return false,'UNAVAILABLE card artwork page owner'
         end
     end
+    if pending then return false,nil,progress end
     return true
 end
 return M

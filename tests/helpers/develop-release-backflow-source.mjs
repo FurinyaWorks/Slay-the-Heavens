@@ -157,12 +157,23 @@ const priorCurrent=path=>layers.find(layer=>Object.hasOwn(layer,path))?.[path]??
  (Object.hasOwn(actorFocus.added,path)?actorFocus.added[path]:undefined);
 const current=path=>Object.hasOwn(sessionRelic.files,path)?sessionRelic.files[path]:priorCurrent(path);
 export const developBackflowOwns=path=>relicDetailOwns(path)||current(path)!==undefined;
+const roomEntryArchive=readFileSync(new URL('../fixtures/develop-map-room-entry-source.json.gz',import.meta.url));
+assert.equal(hash(roomEntryArchive),'d18b944c49a30960cb2ab0dfa52aac9bbd2a0f0597ce2043de017d8e1ec3338b','exact Develop map-room predecessor archive');
+const roomEntry=JSON.parse(gunzipSync(roomEntryArchive));
+assert.equal(roomEntry.base,'d7ae494a3136b2f4f707428fefeeae478c6e0495');
+for(const [path,{before,after}] of Object.entries(roomEntry.files)){
+ assert(developBackflowOwns(path),'inherited map-room owner: '+path);
+ assert(matches(before.source,before),'exact Develop map-room predecessor: '+path);
+ assert.match(after.sha256,/^[a-f0-9]{64}$/);
+ assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
+}
 function matches(source,expected){
  if(typeof source!=='string'||source.includes('\r\r\n'))return false;
  const lf=source.replaceAll('\r\n','\n');
  return hash(lf)===expected.sha256&&blob(lf)===expected.gitBlob;
 }
 export function assertDevelopBackflowCurrent(path,source){
+ source=roomEntryCurrent(path,source);
  if(relicDetailOwns(path)){
   assert.notEqual(beforeRelicDetail(path,source),source,'fresh current production owner: '+path);
   return;
@@ -181,6 +192,11 @@ function predecessor(layer,path,source){
  if(!Object.hasOwn(layer,path)||!matches(source,layer[path].after))return source;
  const before=layer[path].before.source;
  return source.includes('\r\n')?before.replaceAll('\n','\r\n'):before;
+}
+function roomEntryCurrent(path,source){
+ if(!Object.hasOwn(roomEntry.files,path))return source;
+ assert(matches(source,roomEntry.files[path].after),'fresh current production owner: '+path);
+ return predecessor(roomEntry.files,path,source);
 }
 function beforePriorDevelopBackflow(path,source){
  return layers.reduce((prior,layer)=>predecessor(layer,path,prior),source);
@@ -208,6 +224,7 @@ function authenticatePriorDevelopBackflow(path,source,read){
 export const configSourceTokens=source=>source.replace(/"(?:\\.|[^"\\])*"|[ \t\r\n]+/g,token=>token.startsWith('"')?token:'');
 export function isSessionRelicSuccessor(path,source,{allowConfigLayout=false}={}){
  if(!Object.hasOwn(sessionRelic.files,path))return false;
+ source=predecessor(roomEntry.files,path,source);
  const expected=sessionRelic.files[path].after;
  if(matches(source,expected))return true;
  if(!allowConfigLayout||!expected.tokensSha256||typeof source!=='string'||source.includes('\r\r\n'))return false;
@@ -220,13 +237,25 @@ function beforeSessionRelic(path,source,options){
  return source.includes('\r\n')?before.replaceAll('\n','\r\n'):before;
 }
 export function beforeDevelopBackflow(path,source,options){
+ source=predecessor(roomEntry.files,path,source);
  source=beforeRelicDetail(path,source);
  return beforePriorDevelopBackflow(path,beforeSessionRelic(path,source,options));
 }
 export function assertCurrentSessionRelicOwner(path,source){
- if(Object.hasOwn(sessionRelic.files,path))assert(matches(source,current(path).after),'combined linked owner identity: '+path);
+ if(Object.hasOwn(sessionRelic.files,path)){
+  assert(matches(predecessor(roomEntry.files,path,source),current(path).after),'combined linked owner identity: '+path);
+ }
 }
 export function authenticateDevelopBackflow(path,source,read,options){
+ const roomPrior=predecessor(roomEntry.files,path,source);
+ if(roomPrior!==source){
+  let live;
+  try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
+  assert(matches(live,roomEntry.files[path].after),'combined linked owner identity: '+path+' during map-room validation');
+ }
+ const readLive=read;
+ read=owner=>predecessor(roomEntry.files,owner,readLive(owner));
+ source=roomPrior;
  source=authenticateRelicDetail(path,source,read);
  const sessionPrior=beforeSessionRelic(path,source,options);
  const sessionSuccessor=sessionPrior!==source;

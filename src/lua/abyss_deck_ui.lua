@@ -644,21 +644,23 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     end
     local function paintGrid(cards,catalog,base,generation)
         local cells,indices={},{}
-        local complete,refreshing=false,true
+        local complete,refreshing,painted=false,true,0
         self.pendingGrid=true
         local function ready()
             if not self.visible or self.generation~=generation or self.detailPages then return true end
             local currentFirst,currentLast=visibleCardWindow(grid,#cards,gridColumns())
             complete=visibleCardsReady(cells,currentFirst,currentLast)
             self.pendingGrid=not complete
-            return complete
+            return complete,painted
         end
         self.gridReady=ready
         local function prepared(index,control)
             local previous=indices[control]
             if previous and cells[previous]==control then cells[previous]=nil end
             indices[control]=nil
-            if index>=1 and index<=#cards then cells[index],indices[control]=control,index end
+            if index>=1 and index<=#cards then
+                cells[index],indices[control]=control,index;painted=painted+1
+            end
             if not refreshing and not complete then ready() end
         end
         grid:RefreshItems(#cards,function(control,index)

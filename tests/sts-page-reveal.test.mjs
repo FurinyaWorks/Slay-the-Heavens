@@ -261,15 +261,16 @@ for i,a in ipairs(run.nodeFlow.event.board)do
 end
 assert(pair);assert(click('pickerView/forgeGrid/card'..pair[1]));assert(click('pickerView/forgeGrid/card'..pair[2]))
 local deck,attempts=#run.deck,run.nodeFlow.event.attemptsLeft
-local covered=true;local ruleCalls=0;local preparations=0;local battleCalls=0
-local host={run=run,mode='node',nodeUI=node,deckUI={update=function()preparations=preparations+1 end},mapUI={update=function()end},
+local covered=true;local ruleCalls=0;local preparations=0;local battleCalls=0;local deckUpdates=0
+local host={run=run,mode='node',nodeUI=node,deckUI={update=function()deckUpdates=deckUpdates+1 end},mapUI={update=function()end},
  battleUI={update=function()battleCalls=battleCalls+1 end},
- pageReveal={covered=function()return covered end},paintArtLoading=function()end,animate=function()end,syncController=function()end}
+ pageReveal={covered=function()return covered end,intent={page='nodePanel'}},paintArtLoading=function()end,animate=function()end,syncController=function()end}
 local original=node.update;node.update=function(self,dt)ruleCalls=ruleCalls+1;return original(self,dt)end
+local prepare=node.prepare;node.prepare=function(self,dt)preparations=preparations+1;return prepare(self,dt)end
 local update=require('abyss_game_ui_lifecycle').update(host,nil,{},function()return false end,function()end,{})
 local before=H.snapshot(run)
 for i=1,3 do assert(update(host,2))end
-H.same(run,before);assert(ruleCalls==0 and battleCalls==0 and preparations==3,'covered update reached a rule/interaction clock')
+H.same(run,before);assert(ruleCalls==0 and battleCalls==0 and preparations==3 and deckUpdates==0,'covered update did not isolate preparation to the target owner')
 covered=false;update(host,0)
 assert(#run.deck==deck and run.nodeFlow.event.attemptsLeft==attempts,'covered wall time leaked into Match resolve')
 update(host,0.05);assert(#run.deck==deck and run.nodeFlow.event.attemptsLeft==attempts,'normal Match wait was skipped')
@@ -299,11 +300,17 @@ test('official Host paints a destination room once, gates pending assets and ret
  const output=mkdtempSync(join(base,'develop-map-room-'));
  t.after(()=>rmSync(output,{recursive:true,force:true}));
  buildLuaData('data',join(output,'abyss_data.lua'));
- buildUI(output,undefined,{officialAssets:true});
+ buildUI(output,undefined,{officialAssets:true,nativePageLifecycle:true});
  const paths=luaString(output.replaceAll('\\','/')+'/?.lua;src/lua/?.lua;');
  lua(`package.path=${paths}..package.path
 dofile('tests/lua/support/map_room_reveal.lua')
 print('PAGE_REVEAL_PASS')`);
+ for(const section of ['rooms','readiness','cancellation']){
+   lua(`package.path=${paths}..package.path
+ABYSS_MAP_ROOM_SECTION=${luaString(section)}
+dofile('tests/lua/support/map_room_transition.lua')
+print('PAGE_REVEAL_PASS native map departure')`);
+ }
 });
 
 for (const officialAssets of [false, true]) {
