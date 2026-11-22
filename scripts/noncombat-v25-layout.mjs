@@ -37,8 +37,7 @@ export function applyOfficialNoncombatLayout(layout,theme){
  }
  child(child(stage,'exitPanel'),'title').position[0]=0;
  positionRunMenu(child(stage,'runMenu'),theme);
- const characterTheme={...theme,v25Character:{...theme.v25Character,story:'使用岩元素护盾与结晶应对敌人。'}};
- applyV25CharacterLayout(layout,characterTheme);
+ applyV25CharacterLayout(layout,theme);
  const panel=child(stage,'characterPanel'),selected=child(child(panel,'v25Roster'),'selected');
  // Preserve the Owner-approved #785 removal of the stationary selection shade.
  const oldVeil=child(panel,'officialBackdropVeil');if(oldVeil)oldVeil.visible=false;
