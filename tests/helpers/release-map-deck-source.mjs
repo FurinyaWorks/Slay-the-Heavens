@@ -75,12 +75,14 @@ export function beforeMapRoomSource(path,source){
 }
 
 export function beforeMapDeckSource(path,source,read){
+  const forethought=Object.hasOwn(forethoughtSources,path)&&current(source,forethoughtSources[path].after);
   source=beforeMapRoomSource(path,beforeLoadingRecoverySource(path,beforeForethoughtSource(path,source,read)));
   if(!Object.hasOwn(files,path)||!current(source,files[path].after))return source;
   for(const [owner,{after}] of Object.entries(files)){
     let live;
     try{live=read(owner,'utf8');}catch{assert.fail('map deck linked owner missing: '+owner);}
     const text=typeof live==='string'?live:live?.toString('utf8');
+    if(forethought&&Object.hasOwn(forethoughtSources,owner))assert(current(text,forethoughtSources[owner].after),'fresh Forethought linked owner: '+owner);
     const prior=beforeMapRoomSource(owner,beforeLoadingRecoverySource(owner,beforeForethoughtSource(owner,text,read)));
     assert(current(prior,after),'map deck linked owner identity: '+owner);
   }
