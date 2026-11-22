@@ -1,4 +1,4 @@
-import {beforeReleaseShopEntry,shopEntryPriorRead} from './release-ui-restore-source.mjs';
+import {beforeReleaseShopEntry,releaseUiRestoreArchive,shopEntryPriorRead} from './release-ui-restore-source.mjs';
 import {beforeCombatVisualSource,combatVisualPriorRead} from './combat-visual-source.mjs';
 import {beforeSts1MenuCiSource} from './sts1-menu-ci-source.mjs';
 import {assertRefinedReleaseSourcesCurrent,beforeRefinedReleaseCiSource,beforeRefinedReleaseJsInventory,refinedReleaseHistoricalInput} from './refined-release-source.mjs';
@@ -66,6 +66,17 @@ for(const {before,after} of Object.values(releaseUiBuild.files)){
  assert.match(after.sha256,/^[a-f0-9]{64}$/);
  assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
 }
+// Exact #808 predecessor for historical Release builds. Actual builds keep the compressed payload.
+const capacity=releaseUiRestoreArchive(readFileSync(new URL('./release-capacity-source.json.gz',import.meta.url)),
+ '29e21e465a4102b3b3db501cf4c9d0d44d2584bb0aa6ce56e9adaa624c1e77d1','4d475a485eae7c9bdd84cba1f69db3b5a4d3ddef');
+function assertCapacitySources(read){
+ const inputs=Object.keys(capacity.files).map(path=>[path,read(path,'utf8')]);
+ const isCurrent=([path,source])=>capacity.project(path,source)!==source;
+ if(!inputs.some(isCurrent))return;
+ for(const input of inputs)assert(isCurrent(input),'fresh Release capacity source: '+input[0]);
+}
+const beforeCapacityRead=read=>(path,encoding)=>capacity.project(path,read(path,encoding));
+
 // Authenticate the current copier before giving old CI receipts its exact predecessor.
 function beforeRefinedReleaseCopier(path,source){
  if(path!=="tests/helpers/copy-integration-source-closure.mjs"||typeof source!=='string'||source.includes('\r\r\n'))return source;
@@ -92,7 +103,7 @@ function beforeReleaseUiBuildSource(path,source){
  source=beforeShopEntryCopier(path,beforeReleaseShopEntry(path,source));
  source=beforeCombatVisualSource(path,source,shopEntryPreflightRead(owner=>readFileSync(owner,'utf8')));
  source=beforeSts1MenuCiSource(path,source);
- source=beforeRefinedReleaseCiSource(path,beforeRefinedReleaseCopier(path,source));
+ source=beforeRefinedReleaseCiSource(path,beforeRefinedReleaseCopier(path,capacity.project(path,source)));
  if(!Object.hasOwn(releaseUiBuild.files,path)||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const text=normalize(source),{before,after}=releaseUiBuild.files[path];
  if(hash(text)!==after.sha256||blob(text)!==after.gitBlob)return source;
@@ -102,7 +113,7 @@ export function beforeReleaseTinyHouseSource(path,source){
  return beforeV2UiPreTinyHouseSource(path,beforeReleaseUiBuildSource(path,source));
 }
 export function historicalReleaseBuildInput(path,read){
- if(!Object.hasOwn(releaseUiBuild.files,path))return refinedReleaseHistoricalInput(path,read);
+ if(!Object.hasOwn(releaseUiBuild.files,path))return refinedReleaseHistoricalInput(path,beforeCapacityRead(read));
  const source=read(path,'utf8'),prior=beforeReleaseUiBuildSource(path,source);
  assert.notEqual(prior,source,'fresh approved build source: '+path);
  return prior;
@@ -222,7 +233,8 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
- read=shopEntryPreflightRead(read);
+ assertCapacitySources(read);
+ read=beforeCapacityRead(shopEntryPreflightRead(read));
  assertRefinedReleaseSourcesCurrent(read);
  read=combatVisualPriorRead(read);
  for(const [path,row] of Object.entries(coopLabCi.files)){
