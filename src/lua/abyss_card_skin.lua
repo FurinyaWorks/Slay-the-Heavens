@@ -77,10 +77,14 @@ function M.referenceGeometry(box)
 end
 local referenceMaterials={frame='frame',frameRails='frame',frameShadow='frameShadow',frameHighlight='frameHighlight',
     plaqueOutline='frame',plaqueFace='plaque',well='portrait',joint0='frame',joint1='frame'}
-local function referenceState(box,root)
+local function referenceState(box,root,templateKind)
     local state=referenceStates[box]
     if state then return state end
     state={root=root,groups={},materials={},wells={},banner={front={},fold={}},bodyMaterials={},frameParts={}}
+    if templateKind then
+        -- Read-only browser faces start with the generated common Geo materials.
+        state.rarity,state.bodyKind,state.wellKind='common','geo',templateKind
+    end
     -- One bounded discovery per face; type/rarity updates never walk the tree.
     local function collect(node,list)
         local children=node:GetChildren()
@@ -131,8 +135,8 @@ local function referencePortrait(state,definition,tint)
     for _,part in ipairs(state.wells[state.kind])do tint(part,colour)end
     state.wellKind=definition.type
 end
-local function referenceBanner(box,definition,tint,root)
-    local state=referenceState(box,root)
+local function referenceBanner(box,definition,tint,root,templateKind)
+    local state=referenceState(box,root,templateKind)
     local key=(definition.rarity=='basic'or definition.rarity=='curse')and'common'or definition.rarity or'common'
     if state.rarity==key then return state end
     local tokens=Theme.officialAssets.stsCardReference
@@ -379,7 +383,20 @@ local function placeReferencePart(part,shape)
     part:SetLocalRotation(0,0,shape.rotation)
     part:SetVisible(true)
 end
-local function referenceKind(state,definition,templateKind)
+local function moveReferencePart(part,shape,previous)
+    if not shape or not previous then return placeReferencePart(part,shape) end
+    if shape.position[1]~=previous.position[1] or shape.position[2]~=previous.position[2] then
+        part:SetAnchoredPosition(shape.position[1],shape.position[2])
+    end
+    if shape.size[1]~=previous.size[1] or shape.size[2]~=previous.size[2] then
+        part:SetSizeDelta(shape.size[1],shape.size[2])
+    end
+    if shape.scale[1]~=previous.scale[1] or shape.scale[2]~=previous.scale[2] then
+        part:SetLocalScale(shape.scale[1],shape.scale[2],1)
+    end
+    if shape.rotation~=previous.rotation then part:SetLocalRotation(0,0,shape.rotation) end
+end
+local function referenceKind(state,definition,templateKind,templateMaterials)
     local kind=state.groups[definition.type]and definition.type or'skill'
     local previous=state.kind
     if not state.kindPainted then
@@ -392,7 +409,8 @@ local function referenceKind(state,definition,templateKind)
     local profiles=Theme.officialAssets.stsCardReference.geometry.frameProfiles
     local geometry=profiles[kind]
     local count=previous and math.max(#profiles[previous],#geometry) or #state.frameParts
-    for i=1,count do placeReferencePart(state.frameParts[i],geometry[i])end
+    local prior=templateMaterials and previous and profiles[previous]
+    for i=1,count do moveReferencePart(state.frameParts[i],geometry[i],prior and prior[i])end
     state.kind=kind
 end
 local function referenceInk(box,platform)
@@ -403,8 +421,8 @@ local function referenceInk(box,platform)
     box:GetChild('type').enableOutline=false
 end
 local function applyReference(box,definition,platform,look,accent,tint,reference)
-    local state=referenceBanner(box,definition,tint,reference)
-    referenceKind(state,definition,look.templateKind)
+    local state=referenceBanner(box,definition,tint,reference,look.templateMaterials and look.templateKind)
+    referenceKind(state,definition,look.templateKind,look.templateMaterials)
     referenceBody(state,definition,tint)
     referencePortrait(state,definition,tint)
     costs(box,definition,look,accent,platform,tint,false)

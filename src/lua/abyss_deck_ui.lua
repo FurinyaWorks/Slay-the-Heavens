@@ -9,7 +9,7 @@ local Controller = require('abyss_controller')
 local typeNames = { attack = "攻击", skill = "技能", power = "能力", status = "状态", curse = "诅咒" }
 local pileNames = {draw="抽牌堆",discard="弃牌堆",exhaust="消耗堆"}
 local rarityOrder = {basic=1,special=2,common=3,uncommon=4,rare=5,curse=6}
-local pileRankKeys = {"status","rarity","name","index"}
+local noPlayPreview = {}
 -- ClientUIGridScrollerControl: current item size/spacing, top/bottom padding,
 -- fixed columns and viewport determine visible rows, including clipped edges.
 -- Only those logical indices must be painted; virtual offscreen items may not exist.
@@ -71,9 +71,9 @@ local function printedField(printed,instance,field)
 end
 
 local function pileCards(run, kind, presentation)
-    local result, pile = {}, run.combat[kind]
+    local result, pile, copies = {}, run.combat[kind], {}
     -- Draw/Exhaust view screens copy with addToBottom; Discard uses its group directly.
-    for i=1,#pile do result[i]=Combat.copy(pile[kind=="discard" and i or #pile-i+1]) end
+    for i=1,#pile do result[i]=Combat.copy(pile[kind=="discard" and i or #pile-i+1],copies) end
     if kind=="discard" or frozenEye(run) then return result end
     local ranked={}
     for i,card in ipairs(result) do
@@ -85,10 +85,10 @@ local function pileCards(run, kind, presentation)
     -- Stable name -> rarity -> status-last ordering from CardGroup's three sorts.
     table.sort(result,function(a,b)
         local x,y=ranked[a],ranked[b]
-        for _,key in ipairs(pileRankKeys) do
-            if x[key]~=y[key] then return x[key]<y[key] end
-        end
-        return false
+        if x.status~=y.status then return x.status<y.status end
+        if x.rarity~=y.rarity then return x.rarity<y.rarity end
+        if x.name~=y.name then return x.name<y.name end
+        return x.index<y.index
     end)
     return result
 end
@@ -357,9 +357,15 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         if self.browserShell then self.bindings[control].bodyText=bodyText end
     end
     local function paintBody(face,binding,display,definition,instance,battle)
-        -- Permanent cards carry no combat modifiers: fill live tokens with their own values.
-        local text=battle and CardDisplay.combatText(display,definition,instance,Combat.cardPreview(battle,instance),battle)
-            or CardDisplay.permanentText(display,definition,instance)
+        local text
+        if battle then
+            -- Original V4 previews simulate a play from hand. Pile cards cannot
+            -- play, so keep the live rules text and omit the empty simulation.
+            local preview=self.pileKind and definition.originalV4 and noPlayPreview or Combat.cardPreview(battle,instance)
+            text=CardDisplay.combatText(display,definition,instance,preview,battle)
+        else
+            text=CardDisplay.permanentText(display,definition,instance)
+        end
         -- The official item template owns this face. Recycled slots with a
         -- different UID can still display exactly the same fitted body.
         if not self.browserShell or not binding or binding.bodyText~=text then
@@ -388,7 +394,8 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         local selected=false
         for _,uid in ipairs(self.choiceSelected or {}) do if uid==instance.uid then selected=true end end
         CardSkin.apply(face,definition,platform,{cost=definition.cost,baseCost=base,selected=selected,
-            surfaceScope=self.pileView and 'battle' or 'deck',templateKind=self.browserShell and 'attack' or nil})
+            surfaceScope=self.pileView and 'battle' or 'deck',templateKind=self.browserShell and 'attack' or nil,
+            templateMaterials=self.pileView})
         if self.browserShell then
             face:GetChild('nativePlayableRim'):SetVisible(false)
             face:GetChild('glow'):SetVisible(false)
@@ -490,6 +497,9 @@ function M.new(root, presentation, clickEvent, platform, onClose)
             else fill(control,cards[1],catalog) end
         end)
         liveFaces()
+        -- Some native grids answer the probe before RefreshItems returns.
+        -- Only then can we submit the full pile in the same input turn.
+        if self.pileView and self.pending and self.generation==generation then self:update(0) end
     end
     local function changeBrowse()
         self.contentRevision=self.contentRevision+1
@@ -633,24 +643,23 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         return self:open(run,nil,nil,kind)
     end
     local function paintGrid(cards,catalog,base,generation)
-        local first,last=visibleCardWindow(grid,#cards,gridColumns())
         local cells,indices={},{}
-        local complete=first>last
-        self.pendingGrid=not complete
-        self.gridReady=function()
+        local complete,refreshing=false,true
+        self.pendingGrid=true
+        local function ready()
             if not self.visible or self.generation~=generation or self.detailPages then return true end
             local currentFirst,currentLast=visibleCardWindow(grid,#cards,gridColumns())
             complete=visibleCardsReady(cells,currentFirst,currentLast)
             self.pendingGrid=not complete
             return complete
         end
+        self.gridReady=ready
         local function prepared(index,control)
-            local wasComplete=complete
             local previous=indices[control]
             if previous and cells[previous]==control then cells[previous]=nil end
             indices[control]=nil
             if index>=1 and index<=#cards then cells[index],indices[control]=control,index end
-            if not wasComplete then self.gridReady() end
+            if not refreshing and not complete then ready() end
         end
         grid:RefreshItems(#cards,function(control,index)
             if not self.visible or self.generation~=generation then return end
@@ -660,6 +669,8 @@ function M.new(root, presentation, clickEvent, platform, onClose)
             fill(control,instance,catalog)
             prepared(key,control)
         end)
+        refreshing=false
+        ready()
     end
     local function controllerModeChanged()
         local mode=platform.controllerApi and platform.controllerApi.isController() or false

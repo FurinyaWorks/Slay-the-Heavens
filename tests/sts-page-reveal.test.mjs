@@ -344,6 +344,7 @@ test('Forethought authenticates its complete Lua and layout owners',async()=>{
  assert.notEqual(priorLayout,read(layout));
  assert.equal(authenticateDevelopBackflow(lua,crlf(read(lua)),path=>crlf(read(path))),crlf(priorLua));
  assert.throws(()=>authenticateDevelopBackflow(lua,read(lua),path=>path===layout?priorLayout:read(path)),/linked owner identity/);
+ assert.throws(()=>authenticateDevelopBackflow(lua,read(lua),path=>read(path)+(path==='src/lua/abyss_card_skin.lua'?'\n':'')),/linked owner identity/);
  const foreign=read(lua)+'\n';
  assert.equal(authenticateDevelopBackflow(lua,foreign,()=>assert.fail('foreign source read')),foreign);
 });

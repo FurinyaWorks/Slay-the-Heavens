@@ -97,6 +97,14 @@ local function timeProjection(owner,name,sample,field)
     end
     error('missing benchmark phase '..name)
 end
+local function deckOpening(open)
+    for index=1,100 do
+        local key,value=debug.getupvalue(open,index)
+        if key=='paintDeckOpening' then return value end
+        if not key then break end
+    end
+    error('missing deck opening phase')
+end
 local function measure(samples,root,kind,action)
     local panel=root:GetChild('deckPanel')
     local grid=panel:GetChild('pileGrid')
@@ -106,7 +114,7 @@ local function measure(samples,root,kind,action)
     local rawRefresh,rawGrid=host.refresh,grid.RefreshItems
     local sample={refresh=0,grid=0,fill=0,refreshes=0,grids=0,fills=0,snapshot=0,projection=0,sort=0}
     local endSnapshot=timeProjection(deck.open,'pileCards',sample,'snapshot')
-    local endProjection=timeProjection(deck.open,'projectCards',sample,'projection')
+    local endProjection=timeProjection(deckOpening(deck.open),'projectCards',sample,'projection')
     grid.flush=function(self)
         for i=0,math.min(self.itemCount,15)-1 do self:recycle(i,i+self.indexBase) end
     end
@@ -177,7 +185,7 @@ print('PILE_FIELDS\tkind\tamount\tmode\tn\tcallback_ms\ttotal_ms\trefresh_ms\tgr
 local samples=tonumber(os.getenv('PILE_SAMPLES')) or 30
 for _,kind in ipairs({'draw','discard','exhaust','master'}) do
     if not os.getenv('PILE_KIND') or os.getenv('PILE_KIND')==kind then
-    for _,amount in ipairs({7,20,75,250}) do
+    for _,amount in ipairs({0,7,20,75,250}) do
         local cold,warm,sort={},{},{}
         for iteration=1,samples do
             local root=setup(amount,kind)
