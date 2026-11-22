@@ -101,6 +101,17 @@ test('single relic content stays above its input shield and preserves original i
   assert.equal(single.visible, false);
   for (const name of ['icon', 'name', 'rarity', 'description', 'status']) assert.ok(single.children.some(c => c.name === name));
   assert.equal(single.children.find(c => c.name === 'icon').colour, '#FFFFFF');
+  const detail = theme.layout.relicView.detail;
+  const boxes = single.children.map(frame);
+  for (const name of ['close', 'previous', 'next']) {
+    const button = panel.children.find(c => c.name === name);
+    boxes.push([...detail[name], ...button.size]);
+  }
+  boxes.forEach(([x, y, w, h], i) => {
+    assert.ok(Math.abs(x) + w / 2 <= detail.size[0] / 2);
+    assert.ok(Math.abs(y) + h / 2 <= detail.size[1] / 2);
+    for (const other of boxes.slice(0, i)) assert.ok(clear(boxes[i], other));
+  });
   const legacyPanel = relicViewControls(theme)[1];
   const legacySingle = legacyPanel.children.find(c => c.name === 'single');
   for (const name of ['rarity', 'status']) {

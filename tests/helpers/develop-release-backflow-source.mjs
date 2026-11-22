@@ -4,6 +4,7 @@ import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {exactSourceMatches as matches} from './source-fingerprint.mjs';
+import {authenticateRelicDetail,beforeRelicDetail,relicDetailOwns} from './relic-detail-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const blob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
@@ -111,7 +112,13 @@ assert(stasisUpgradeAddedPaths.every(path=>actorFocus.luaBefore.includes(path)),
 for(const path of actorFocusOwners.filter(path=>path!==architecturePath)){
  assert(!priorLayers.some(layer=>Object.hasOwn(layer,path))&&!Object.hasOwn(stasis.added,path),'distinct Develop Actor/Focus source owner: '+path);
 }
-const layers=[actorFocus.files,...priorLayers];
+const pileOpenArchive=readFileSync(new URL('../fixtures/develop-combat-pile-opening-source.json.gz',import.meta.url));
+assert.equal(hash(pileOpenArchive),'a9e96c6caa44e21e45493a63385bf315ba9eaaf9a30257533bc46ccf9e51f9e6','exact Develop combat pile opening predecessor archive');
+const pileOpen=JSON.parse(gunzipSync(pileOpenArchive));
+assert.equal(pileOpen.base,'19d4be4d9af4bf42635a224a118fc99898ea7898');
+assert.deepEqual(Object.keys(pileOpen.files),['src/lua/abyss_card_skin.lua',deckPath]);
+assert(matches(pileOpen.files[deckPath].before.source,rewardUi.files[deckPath].after),'combat pile opening follows the exact reward UI predecessor');
+const layers=[pileOpen.files,actorFocus.files,...priorLayers];
 const sessionRelicArchive=readFileSync(new URL('../fixtures/develop-session-relic-source.json.gz',import.meta.url));
 assert.equal(hash(sessionRelicArchive),'3597ea919d88cd07f5e4e8f2c8918c0558f613f6a3fd3d6fda3a08469276db05','exact Develop session relic predecessor archive');
 const sessionRelic=JSON.parse(gunzipSync(sessionRelicArchive));
@@ -150,8 +157,12 @@ for(const after of [...Object.values(stasis.added),...Object.values(actorFocus.a
 const priorCurrent=path=>layers.find(layer=>Object.hasOwn(layer,path))?.[path]??
  (Object.hasOwn(actorFocus.added,path)?actorFocus.added[path]:undefined);
 const current=path=>Object.hasOwn(sessionRelic.files,path)?sessionRelic.files[path]:priorCurrent(path);
-export const developBackflowOwns=path=>current(path)!==undefined;
+export const developBackflowOwns=path=>relicDetailOwns(path)||current(path)!==undefined;
 export function assertDevelopBackflowCurrent(path,source){
+ if(relicDetailOwns(path)){
+  assert.notEqual(beforeRelicDetail(path,source),source,'fresh current production owner: '+path);
+  return;
+ }
  assert(matches(source,current(path).after),'fresh current production owner: '+path);
 }
 export function assertStasisUpgradeAdded(path,source){
@@ -171,13 +182,15 @@ function beforePriorDevelopBackflow(path,source){
  return layers.reduce((prior,layer)=>predecessor(layer,path,prior),source);
 }
 const forethoughtOwners=[deckPath,'scripts/deck-ui-layout.mjs'];
+const pileOpenOwners=[...forethoughtOwners,'src/lua/abyss_card_skin.lua'];
 function authenticatePriorDevelopBackflow(path,source,read){
  const prior=beforePriorDevelopBackflow(path,source);
  if(prior===source)return source;
  const row=layers.find(layer=>Object.hasOwn(layer,path)&&matches(source,layer[path].after))[path];
  const actorOwner=Object.hasOwn(actorFocus.files,path)&&row===actorFocus.files[path];
  const stasisOwner=Object.hasOwn(stasis.files,path)&&(row===stasis.files[path]||(actorOwner&&path===architecturePath));
- const owners=actorOwner?actorFocusOwners:forethoughtOwners.includes(path)?forethoughtOwners:[path];
+ const pileOwner=row===pileOpen.files[path];
+ const owners=actorOwner?actorFocusOwners:pileOwner?pileOpenOwners:forethoughtOwners.includes(path)?forethoughtOwners:[path];
  const linkedOwners=stasisOwner?new Set([...owners,...Object.keys(stasisCurrent)]):owners;
  for(const owner of linkedOwners){
   let live;
@@ -203,12 +216,14 @@ function beforeSessionRelic(path,source,options){
  return source.includes('\r\n')?before.replaceAll('\n','\r\n'):before;
 }
 export function beforeDevelopBackflow(path,source,options){
+ source=beforeRelicDetail(path,source);
  return beforePriorDevelopBackflow(path,beforeSessionRelic(path,source,options));
 }
 export function assertCurrentSessionRelicOwner(path,source){
  if(Object.hasOwn(sessionRelic.files,path))assert(matches(source,current(path).after),'combined linked owner identity: '+path);
 }
 export function authenticateDevelopBackflow(path,source,read,options){
+ source=authenticateRelicDetail(path,source,read);
  const sessionPrior=beforeSessionRelic(path,source,options);
  const sessionSuccessor=sessionPrior!==source;
  if(sessionSuccessor){

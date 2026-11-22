@@ -28,6 +28,11 @@ test('official relic material is shared across run phases while the legacy profi
   const layout=JSON.parse(readFileSync(join(dir,'game-ui.json'),'utf8'));
   const stage=child(layout,'stage')??layout;
   const selectionArt=official?child(child(child(stage,'characterPanel'),'details'),'v25RelicIcon').children:[];
+  const detail=theme.layout.relicView.detail;
+  const single=child(child(stage,'relicPanel'),'single');
+  assert.deepEqual(child(single,'icon').position,detail.icon.slice(0,2));
+  if(official)assert.deepEqual(child(single,'iconArt').position,child(single,'icon').position,
+   'native art and fallback share the same detail anchor');
   const modules=readdirSync(dir).filter(n=>n.endsWith('.lua')).map(n=>n.slice(0,-4));
   const script=join(dir,'verify.lua');
   writeFileSync(script,`local generated=${luaString(dir.replaceAll('\\','/'))}
@@ -77,13 +82,24 @@ for i,id in ipairs(h.run.relics)do assert(bar:GetChild('slot'..i):GetChild('icon
 if official then
  assert(bar:GetChild('slot1'):GetChild('hit').click())
  assert(h.relicUI.selectedIndex==1 and h.relicUI.selected.id=='burning_blood','shared single entry from map')
- checkCrystal(panel:GetChild('single'),Theme.layout.relicView.disc*2)
+ local detail=Theme.layout.relicView.detail
+ local single=panel:GetChild('single')
+ assert(single:GetChild('icon').x==nil and single:GetChild('iconArt').x==nil,'painting preserves the imported anchors')
+ for _,name in ipairs({'frame','contentBlocker'})do
+  local control=panel:GetChild(name)
+  assert(control.sizeDeltaX==detail.size[1] and control.sizeDeltaY==detail.size[2],'inside clicks match the detail panel')
+ end
+ checkCrystal(single,detail.icon[3])
  assert(panel:GetChild('single'):GetChild('icon').imageId==runIcon('burning_blood'),'same single atlas outside combat')
  assert(h.relicUI:turn(1))
  assert(not panel:GetChild('single'):GetChild('iconArt').visible,'other relics must not inherit the crystal')
  assert(panel:GetChild('single'):GetChild('icon').visible)
  assert(h.relicUI:turn(-1))
- checkCrystal(panel:GetChild('single'),Theme.layout.relicView.disc*2)
+ checkCrystal(single,detail.icon[3])
+ assert(h:closeDeck())
+ assert(h:openRelics())
+ assert(panel:GetChild('frame').sizeDeltaX==Theme.layout.relicView.panel[3],'collection restores its wide frame')
+ assert(panel:GetChild('close').x==Theme.layout.relicView.close[1])
  assert(h:closeDeck())
  local battleHost,root=F.fixture();assert(F.start(battleHost))
  local run=battleHost.run

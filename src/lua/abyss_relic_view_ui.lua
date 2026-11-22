@@ -115,35 +115,23 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
             child('frame').imageColor=single and platform.color(155,122,78,255) or platform.color(f.r,f.g,f.b,f.a or 255)
         end
     end
-    local function positionSingle(view,compact)
-        if not compact then return end
-        view:GetChild('icon'):SetAnchoredPosition(-177,8)
-        view:GetChild('icon'):SetSizeDelta(96,96)
-        for name,frame in pairs({name={55,91,350,40},rarity={55,53,350,32},
-            description={55,-30,350,126},status={55,-110,350,34}})do
-            local control=view:GetChild(name)
-            control:SetAnchoredPosition(frame[1],frame[2]);control:SetSizeDelta(frame[3],frame[4])
-        end
-    end
-    local function renderFrame(run,single,compact)
+    local function renderFrame(run,single,layout)
         child('single'):SetVisible(single)
-        local width=compact and 560 or single and Theme.layout.relicView.row[1]+Theme.layout.relicView.disc*2 or Theme.layout.relicView.panel[3]
-        local height=compact and 342 or Theme.layout.relicView.panel[4]
+        local panel=Theme.layout.relicView.panel
+        local width,height=panel[3],panel[4]
+        if single then width,height=layout.size[1],layout.size[2]end
         child('frame'):SetSizeDelta(width,height)
         child('plate'):SetSizeDelta(width-Theme.space.border*2,height-Theme.space.border*2)
         child('contentBlocker'):SetSizeDelta(width,height)
         paintFrame(single)
-        child('close'):SetAnchoredPosition(single and width/2-58 or Theme.layout.relicView.close[1],
-            compact and height/2-33 or Theme.layout.relicView.close[2])
-        child('title'):SetVisible(not compact)
-        child('title').text=single and '遗物详情' or '持有遗物 · '..#run.relics..' 件'
-        return width,height
+        child('close'):SetAnchoredPosition(layout.close[1],layout.close[2])
+        child('title'):SetVisible(not single)
+        child('title').text='持有遗物 · '..#run.relics..' 件'
     end
-    local function renderSingle(run,compact)
+    local function renderSingle(run,layout)
         local e=self:entry(run,self.selectedIndex);self.selected=e
         local view=child('single')
-        positionSingle(view,compact)
-        M.paint(view:GetChild('icon'),e.id,compact and 96 or Theme.layout.relicView.disc*2,platform,run,e.icon)
+        M.paint(view:GetChild('icon'),e.id,layout.icon[3],platform,run,e.icon)
         for _,name in ipairs({'name','rarity','description'})do view:GetChild(name).text=e[name]end
         view:GetChild('status').text=e.status or ''
     end
@@ -163,17 +151,14 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
             else row:SetVisible(false) end
         end
     end
-    local function positionPageControls(single,compact,width,height)
-        for _,name in ipairs({'previous','next'})do
-            local frame=Theme.layout.relicView[name]
-            child(name):SetAnchoredPosition(single and (name=='previous' and -width/2+112 or width/2-112) or frame[1],compact and -height/2+26 or frame[2])
-        end
-    end
-    local function renderPageControls(run,single,compact,width,height)
+    local function renderPageControls(run,single,layout)
         local many=self:pages()>1
         child('previous'):SetVisible(single and self.selectedIndex>1 or not single and many)
         child('next'):SetVisible(single and self.selectedIndex<#run.relics or not single and many)
-        positionPageControls(single,compact,width,height)
+        for _,name in ipairs({'previous','next'})do
+            local frame=layout[name]
+            child(name):SetAnchoredPosition(frame[1],frame[2])
+        end
         child('pageHint'):SetVisible(not single and many)
         child('pageHint').text=not single and many and ('第 '..self.page..'/'..self:pages()..' 页') or ''
         child('placeholder'):SetVisible(#run.relics==0)
@@ -181,11 +166,11 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
     function self.render(_)
         local run=self.run
         local single=self.selectedIndex~=nil
-        local compact=single and official
-        local width,height=renderFrame(run,single,compact)
-        if single then renderSingle(run,compact)end
+        local layout=single and Theme.layout.relicView.detail or Theme.layout.relicView
+        renderFrame(run,single,layout)
+        if single then renderSingle(run,layout)end
         renderRows(run,single,perPage())
-        renderPageControls(run,single,compact,width,height)
+        renderPageControls(run,single,layout)
     end
     function self.open(_,run,index)
         if self.visible or not run then return false end

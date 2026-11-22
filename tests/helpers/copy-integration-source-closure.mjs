@@ -257,11 +257,18 @@ const developReplayFingerprintFiles=Object.freeze({
  'tests/helpers/round3-catalog-source-inverse.mjs':'6fc3ea3a193ac586187ab5749a8c61b3b9e3ec1a87f689b62b545c73ed64ec3e',
  'tests/helpers/source-fingerprint.mjs':'dfbee65636a24c4c4ffe755b27fd741e00ea2e81b044638c424a866b97309d8f',
 });
+const developReplayUiFiles=Object.freeze({
+ ...developReplayFingerprintFiles,
+ 'tests/helpers/develop-release-backflow-source.mjs':'f9787f1c456c0201c0d7a592e0d400cc8547b80017b82472aeecfc010abb1755',
+ 'tests/helpers/relic-detail-source.mjs':'2fd994110473464aa1fad34f720423ddaa4e4ac68b3ca8d2a4020cd4f5eaa4a0',
+ 'tests/fixtures/relic-detail-source.json.gz':'981b97459ad1d75b79d03e197534dbab883d1f79055c7e2776d9ec32f09a9327',
+ 'tests/fixtures/develop-combat-pile-opening-source.json.gz':'a9e96c6caa44e21e45493a63385bf315ba9eaaf9a30257533bc46ccf9e51f9e6',
+});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
- for(const [path,sha]of Object.entries(developReplayFingerprintFiles)){
+ for(const [path,sha]of Object.entries(developReplayUiFiles)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});

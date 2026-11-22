@@ -55,18 +55,27 @@ settle();assert(host:start());settle();assert(F.confirmStart(host));settle();ass
 local run=host.run;local card=F.Combat.copy(run.deck[1]);run.combat.draw={}
 -- EMPTY does not calibrate. The first later nonempty list still probes its real base.
 local panel=root:GetChild('deckPanel');local pile=panel:GetChild('pileGrid');local browser=panel:GetChild('grid');pile.indexBase=0;browser.indexBase=1
-local refresh=pile.RefreshItems;local sizes={};pile.RefreshItems=function(self,n,fn)sizes[#sizes+1]=n;return refresh(self,n,fn)end
+local refresh=pile.RefreshItems;local sizes={};local probeHidden
+pile.RefreshItems=function(self,n,fn)
+ sizes[#sizes+1]=n
+ if n~=1 then return refresh(self,n,fn) end
+ return refresh(self,n,function(control,index)fn(control,index);probeHidden=not control.visible end)
+end
 assert(host:openDeck('draw'));settle();assert(#host.deckUI.cards==0 and not host.deckUI.calibrating and #sizes==1 and sizes[1]==0,'EMPTY refresh count '..#sizes..' sizes '..table.concat(sizes,','));assert(host:closeDeck());settle()
 local other;for _,candidate in ipairs(run.deck)do if candidate.cardId~=card.cardId then other=candidate;break end end;assert(other)
 for i=1,3 do local instance=F.Combat.copy(i==2 and card or other);instance.uid=900+i;run.combat.draw[i]=instance end
 local originalPile=F.Combat.copy(run.combat.draw)
 local renderOriginal=host.battleUI.render;local openRenders=0
 host.battleUI.render=function(self,...)openRenders=openRenders+1;return renderOriginal(self,...)end
+local itemSize=pile.GetItemSize;local geometryReads=0
+pile.GetItemSize=function(self)geometryReads=geometryReads+1;return itemSize(self)end
 sizes={};assert(host:openDeck('draw'));local deck=host.deckUI
 assert(openRenders==1,'opening the deck rendered the covered battle twice')
 host.battleUI.render=renderOriginal
-assert(deck.calibrating and not pile.items[0].visible,'calibration painted a provisional card')
-assert(host.pageReveal.localFrame==F.Theme.layout.deckView.pileViewport,'deck preparation covered title or sort controls')
+assert(probeHidden,'calibration painted a provisional card')
+assert(not deck.calibrating and not deck.pendingGrid and not host.pageReveal:covered(),'synchronous combat pile missed the opening turn')
+assert(geometryReads==1,'synchronous card callbacks repeatedly read native grid geometry')
+pile.GetItemSize=itemSize
 settle()
 assert(deck.indexBase==0 and sizes[1]==1 and sizes[2]==3,'first nonempty list did not calibrate its actual zero base')
 local field=panel:GetChild('pileTools'):GetChild('type')
@@ -116,6 +125,7 @@ artPresentation[other.cardId].nativeArt=F.Combat.copy(metadata);artPresentation[
 deck.allCards[1].cardId=other.cardId
 assert(deck:setPileSort('type'));assert(host.pageReveal:covered()and not Art.presentationReady('deckPanel'),'new native lease was incorrectly treated as the old ready owner');settle()
 pile.deferRefresh=true;assert(deck:setPileSort('type'));assert(deck.pendingGrid and host.pageReveal:covered(),'deferred callbacks must not publish old owner readiness')
+assert(host.pageReveal.localFrame==F.Theme.layout.deckView.pileViewport,'deck preparation covered title or sort controls')
 pile:recycle(0,pile.indexBase);assert(deck.pendingGrid,'one cell cannot certify all prior visible slots')
 pile:flush();assert(not deck.pendingGrid);pile.deferRefresh=false;settle()
 assert(host:closeDeck());settle();assert(host:openDeck('draw'));assert(host.pageReveal:covered(),'new deck session bypassed preparation');settle();assert(deck.openSession>initialSession)
@@ -131,6 +141,42 @@ assert(battleRenders==renders,'master deck sorting repainted the covered battle'
 assert(host:closeDeck());assert(battleRenders>renders,'closing the deck must refresh the returning battle');settle()
 host.battleUI.render=renderBattle
 run.combat.draw={};assert(host:openDeck('draw'));settle();assert(#deck.cards==0 and not deck.pendingGrid and not deck.calibrating,'N to EMPTY left preparation pending')
+
+-- Raiden's live rule highlighting still reads the combat snapshot, even though
+-- cards outside the hand no longer simulate a play to produce an empty preview.
+host,root=F.fixture(nil,function()return true end)
+settle();assert(F.start(host,'raiden'));settle()
+local v4=host.run;assert(require('abyss_run').startCombat(v4,'cultist_solo'));host:refresh();settle()
+local CardDisplay=require('abyss_card_display')
+local preview=F.Combat.cardPreview;local pilePreviews=0
+local grid=root:GetChild('deckPanel'):GetChild('pileGrid')
+for i,kind in ipairs({'draw','discard','exhaust'})do
+ local instance={cardId='RD2-005',uid=900+i}
+ v4.combat[kind]={instance}
+ v4.combat.originalV4.musou=i==2 and {uses=1,ends=1} or {uses=0,ends=0}
+ host:refresh()
+ local definition=F.Combat.cardDefinition(v4.combat,instance)
+ assert(definition.originalV4,'fixture must exercise the original V4 simulator')
+ local expected=CardDisplay.combatText(host.nodeUI.presentation[instance.cardId],definition,instance,preview(v4.combat,instance),v4.combat)
+ F.Combat.cardPreview=function(state,card,...)
+  if state==v4.combat and card.uid==instance.uid then pilePreviews=pilePreviews+1 end
+  return preview(state,card,...)
+ end
+ grid.deferRefresh=i==1
+ assert(F.click(root,'battlePanel',kind..'Icon'))
+ if grid.deferRefresh then
+  assert(host.deckUI.calibrating and host.pageReveal:covered(),'deferred probe bypassed the cover')
+  grid:flush();tick()
+  assert(host.deckUI.pendingGrid and host.pageReveal:covered(),'deferred card fill published the probe')
+  grid:flush();grid.deferRefresh=false
+ end
+ settle()
+ local cell=grid.items[0]
+ assert(host.deckUI.bindings[cell].uid==instance.uid and cell:GetChild('face'):GetChild('label').text==expected,'live rules text changed in '..kind)
+ assert(host:closeDeck());settle()
+ F.Combat.cardPreview=preview
+end
+assert(pilePreviews==0,'pile faces attempted to simulate playing out-of-hand cards')
 print('DECK_REUSE_PASS')`);
 
  // Exercise the actual bootstrap readiness closure, not a replacement predicate.

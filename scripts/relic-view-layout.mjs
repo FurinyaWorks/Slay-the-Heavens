@@ -30,9 +30,11 @@ export function relicTooltip(theme) {
 export function relicViewControls(theme = nativeTheme) {
   const { plate, text } = nativeControls(theme);
   const { color: c, font: f, layout: l, space: s } = theme, v = l.relicView;
+  const detail = v.detail;
   const left = (control) => ({ ...control, text: { ...control.text, align: 'left' } });
-  const top = (control) => ({ ...control, text: { ...control.text, valign: 'top' } });
   const right = (control) => ({ ...control, text: { ...control.text, align: 'right' } });
+  const detailDescription = left(text('description', detail.description, '', f.small, c.text));
+  Object.assign(detailDescription.text, { valign: 'top', minFontSize: f.minimum });
   const button = (name, frame, label) => {
     const size = frame.slice(2), variants = { normal: [c.panelRaised, c.goldBright, c.goldDim],
       hover: [c.panelRaised, c.goldBright, c.goldBright], pressed: [c.buttonPressedFill, c.text, c.goldBright],
@@ -94,13 +96,13 @@ export function relicViewControls(theme = nativeTheme) {
       { name: 'contentBlocker', kind: 'cursorArea', size: v.panel.slice(2), focusable: false },
       text('title', v.title, '持有遗物', f.heading, c.goldBright),
       ...rows,
-      { name: 'single', kind: 'container', size: v.panel.slice(2), visible: false, children: [
-        { name: 'icon', kind: 'image', position: [0, 144], size: [v.disc * 2, v.disc * 2],
+      { name: 'single', kind: 'container', size: detail.size, visible: false, children: [
+        { name: 'icon', kind: 'image', position: detail.icon.slice(0, 2), size: detail.icon.slice(2),
           image: theme.icon.node.treasure.id ?? theme.icon.node.treasure, colour: '#FFFFFF' },
-        text('name', [0, 42, v.row[0], 48], '', f.heading, c.goldBright),
-        text('rarity', [0, 0, v.row[0], 36], '', f.label, c.textDim),
-        top(text('description', [0, -102, v.row[0]-48, v.description[3]], '', theme.presentationProfile==='official-assets-first'?f.body:f.small, c.text)),
-        text('status', [0, -210, v.row[0], 36], '', f.label, c.goldBright),
+        left(text('name', detail.name, '', f.heading, c.goldBright)),
+        left(text('rarity', detail.rarity, '', f.small, c.textDim)),
+        detailDescription,
+        right(text('status', detail.status, '', f.small, c.goldBright)),
       ] },
       { ...text('placeholder', [0, 0, 600, 48], '本局尚未获得遗物。', f.body, c.textDim), visible: false },
       button('close', v.close, '关闭'),

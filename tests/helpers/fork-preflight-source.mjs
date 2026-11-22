@@ -1,5 +1,6 @@
 import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,beforeDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
 import {beforeCalibrationReplay} from './calibration-replay-sources.mjs';
+import {beforeDevelopReplayMerge} from './develop-replay-merge-source.mjs';
 import {beforeStsUiCloseoutSource} from './sts-ui-closeout-source.mjs';
 import {beforeStsFadeCi} from './sts-fade-ci-source.mjs';
 import {beforeIntegratedStsInventory} from './sts-selection-fade-source.mjs';
@@ -207,14 +208,21 @@ function beforeDevelopActorFocusCopier(path,source){
 }
 function beforeDevelopSessionRelicCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
- const lf=normalize(source);
- if(hash(lf)!=='5130bc86b8e09a85aa7981393335cecec6d76a1b38f2ab2a80ac4810b22fa2d9')return source;
+ let lf=normalize(source);
+ const sessionRelicSha='5130bc86b8e09a85aa7981393335cecec6d76a1b38f2ab2a80ac4810b22fa2d9';
+ if(hash(lf)==='8f750c5899d830865b07c6802e292041388e1bf15d7a706b00d18da8a6903f32'){
+  lf=lf.replace(/^const relicDetailFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
+   .replace('Object.entries(relicDetailFiles))','Object.entries(developSessionRelicFiles))');
+  assert.equal(hash(lf),sessionRelicSha,'exact relic detail copier predecessor');
+ }
+ if(hash(lf)!==sessionRelicSha)return source;
  const prior=lf.replace(/^const developSessionRelicFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
   .replace('Object.entries(developSessionRelicFiles))','Object.entries(developActorFocusFiles))');
  assert.equal(hash(prior),'6d3bf93a3d1e020b69673d7864fe574ca8ed858945a02772cd662eb4b042a6ed','exact Develop sessionRelic copier predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeDevelopBackflowCopier(path,source){
+ source=beforeDevelopReplayMerge(path,source);
  source=beforeReplayFingerprintSource(path,source);
  if(path==='tests/helpers/copy-integration-source-closure.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')){
   const lf=normalize(source);
@@ -651,7 +659,9 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  const liveRead=read;
  read=(path,encoding)=>beforeCalibrationReplay(path,liveRead(path,encoding));
  const readCurrent=(path,encoding)=>{
-  const raw=read(path,encoding),priorFingerprint=beforeReplayFingerprintSource(path,raw);
+  const raw=read(path,encoding),priorMerge=beforeDevelopReplayMerge(path,raw);
+  if(path==='tests/helpers/copy-integration-source-closure.mjs')assert.notEqual(raw,priorMerge,'fresh complete integration source: '+path);
+  const priorFingerprint=beforeReplayFingerprintSource(path,priorMerge);
   const prior=beforeDevelopEpochReplayRuntime(path,priorFingerprint);
   if(path===epochReplayRuntimePath)assert(raw!==priorFingerprint&&prior!==priorFingerprint,'fresh complete integration source: '+path);
   return beforeIntegrationReplayTests(path,beforeForkFirstCi(path,prior));
@@ -680,6 +690,7 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
 export function beforePreflightSource(path,source,view='prior'){
  source=beforeCalibrationReplay(path,source);
  source=beforeForkFirstCi(path,source);
+ source=beforeDevelopReplayMerge(path,source);
  source=beforeReplayFingerprintSource(path,source);
  source=beforeDevelopEpochReplayRuntime(path,source);
  source=beforeDevelopBackflow(path,source);

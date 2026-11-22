@@ -7,7 +7,7 @@ const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).diges
 const blob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
 const lf=source=>source.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('./calibration-replay-sources.json.gz',import.meta.url));
-assert.equal(hash(bytes),'2f3514c005b360b35d997b0059f576d5ed47f1eee135242435b5a01a3972bafa','exact historical calibration input archive');
+assert.equal(hash(bytes),'d377e5837084922973e722bcfc6f815a4237d48873c7648412f15847e8a38d4c','exact historical calibration input archive');
 const packet=JSON.parse(gunzipSync(bytes));
 assert.equal(packet.schemaVersion,1);
 assert.equal(packet.base,'469e80240c5b7c60f75ff434bebac62d73c0bd0c');
