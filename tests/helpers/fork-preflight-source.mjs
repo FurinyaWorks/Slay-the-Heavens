@@ -1,4 +1,4 @@
-import {beforeDevelopBackflow} from './develop-release-backflow-source.mjs';
+import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,beforeDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
 import {beforeStsUiCloseoutSource} from './sts-ui-closeout-source.mjs';
 import {beforeStsFadeCi} from './sts-fade-ci-source.mjs';
 import {beforeIntegratedStsInventory} from './sts-selection-fade-source.mjs';
@@ -15,9 +15,9 @@ import {beforeV2UiEvidence,beforeV2UiPreTinyHouseSource,beforeFieldConfirmation,
 import {beforeCharacterPreparationCiSource} from './character-preparation-source.mjs';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
 import {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';
-export {beforeDevelopBackflow};
 export {exactReviewedBuildInput} from './rebased-release-source.mjs';
 export {beforeM05ShopCiSource} from './m05-shop-ci-source.mjs';
+export {assertDevelopBackflowCurrent,authenticateDevelopBackflow,developBackflowOwns};
 // Full-source continuation for historical contracts; no partial/foreign projection.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -371,6 +371,16 @@ export function assertCurrentJsInventory(paths,preceding,read=readFileSync){
  paths=beforeRefinedReleaseJsInventory(beforeShopEntryInventory(paths,'js',read),[...preceding,coopLabTest],read,true);
  assertCoopJsInventory(paths,preceding,read);
 }
+export function assertCurrentLuaInventory(paths,preceding,read=readFileSync){
+ const additions=[...Object.keys(newerTests.lua),shopEntryTests.lua[0],'tests/lua/shop_dismiss.lua'];
+ assert.deepEqual([...paths].sort(),[...preceding,...additions].sort(),'complete current raw discovery inventory (Lua)');
+ const prior=beforeShopEntryInventory(paths,'lua',(path,encoding)=>{
+  const source=read(path,encoding);
+  if(developBackflowOwns(path))assertDevelopBackflowCurrent(path,source);
+  return source;
+ });
+ assert.deepEqual([...prior].sort(),preceding,'complete Release bootstrap raw discovery inventory');
+}
 export function beforeCoopJsInventory(paths,preceding,read=readFileSync){
  paths=beforeRefinedReleaseJsInventory(beforeShopEntryInventory(paths,'js',read),[...preceding,coopLabTest],read);
  if(!paths.includes(coopLabTest))return paths;
@@ -444,18 +454,23 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
- const releaseRead=(path,encoding)=>beforeRebasedRelease(path,beforeDevelopBackflow(path,read(path,encoding)));
+ const readBackflow=(path,encoding)=>{
+  const source=read(path,encoding);
+  if(developBackflowOwns(path))assertDevelopBackflowCurrent(path,source);
+  return authenticateDevelopBackflow(path,source,owner=>read(owner,'utf8'));
+ };
+ const releaseRead=(path,encoding)=>beforeRebasedRelease(path,readBackflow(path,encoding));
  assertReleaseCapacityCohort(releaseRead);
  assertRefinedReleaseSourcesCurrent((path,encoding)=>beforeReleaseCapacitySource(path,shopEntryPreflightRead(releaseRead)(path,encoding)));
  for(const [path,row] of Object.entries(coopLabCi.files)){
-  const raw=read(path,'utf8'),projected=beforeLuaInventoryTest(path,raw);
+  const raw=readBackflow(path,'utf8'),projected=beforeLuaInventoryTest(path,raw);
   if(path===luaInventoryTest)assert.notEqual(projected,raw,'fresh complete integration source: '+path);
   const input=beforeRelicCrystal(path,beforeMapCiSource(path,beforeReleaseUiBuildSource(path,beforeRebasedCi(path,projected))));
   const source=beforeV2UiEvidence(path,beforeTinyHouseIntegratedSource(path,beforeFieldConfirmation(path,beforeRewardScreenCiSource(path,beforeCardFeedbackCiSource(path,input)))));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha,'fresh complete integration source: '+path);
  }
  for(const [path,sha] of Object.entries(sourceSuccessors)){
-  const current=beforeNativeButtonRepairCopier(path,beforeNativeButtonRepair(path,beforeDevelopBackflow(path,read(path,'utf8'))));
+  const current=beforeNativeButtonRepairCopier(path,beforeNativeButtonRepair(path,readBackflow(path,'utf8')));
   const source=beforeV2UiAdmission(path,beforeCoopCiSource(path,beforeStsUiCloseoutSource(path,current)));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha,'fresh complete integration source: '+path);
  }
