@@ -65,8 +65,7 @@ export function finishOfficialComposition(trees){
 function roundRunActions(host,theme){
  const panels={
   deckPanel:{close:'secondary',upgradePreview:'secondary',previous:'secondary',next:'secondary',
-   filterAll:'secondary',filterAttack:'secondary',filterSkill:'secondary',filterPower:'secondary',
-   filterStatus:'secondary',filterCurse:'secondary',sortoriginal:'secondary',sorttype:'secondary',sortcost:'secondary'},
+   sortoriginal:'secondary',sorttype:'secondary',sortcost:'secondary'},
   choicePanel:{before:'secondary',after:'secondary',confirm:'primary'},
   relicPanel:{close:'secondary',previous:'secondary',next:'secondary'},
   runMenu:{resume:'primary',map:'secondary',abandon:'danger',quit:'danger'},
