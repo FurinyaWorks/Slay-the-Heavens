@@ -17,7 +17,7 @@ for(const [path,row]of Object.entries(integratedCiProof.files))for(const binding
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob);
 }
 // Release hotfixes retain the frozen integration view. Only complete source
-// files from 5d34dc3327a0ad1a4597e9e4f8e246a694334106 select this predecessor.
+// files from dd7b9cdc1e86094965dbf50f89b92aebbe2c8381 select this predecessor.
 const releaseSuccessors=Object.freeze({
  "config/architecture.json":"178e876a145f71b181220a81fd76b9983281dc36187f07b871f33e6b1f795861",
  "data/presentation/ui_theme.json":"75236c40c76d9f8fd02937c566c6a10665e4581cc6cf36f1f4510b8348bf7005",
@@ -32,7 +32,7 @@ const releaseSuccessors=Object.freeze({
  "scripts/sts-reward-row-layout.mjs":"b8063690a9dafb1ecb377c579c899742a91702c6df8643ff611dddf302f56477",
  "scripts/v25-character-layout.mjs":"24c3cdd81def1de79b0cb8a8367d871704ce1e20719bcb29fd16292863d423c0",
  "scripts/v25-node-layout.mjs":"9cb0b2a38f3171a7fe1fc1b9174de8b4533f2c64f8181857c17d00c36fe276e1",
- "src/lua/abyss_game_ui_view.lua":"0a28b56effa6cd7b5a62f8b3fb3250bc2b11c7bf37b2429484ebefcf22dc9ecc",
+ "src/lua/abyss_game_ui_view.lua":"21aaed83def99c1306b87f41d122f36e1bdae66569f0f58e9079e807f4e480c0",
  "src/lua/abyss_v25_menu_view.lua":"a2a3b9d001699e2bb638193d26523a94e93cefeb0bb222b814619b7d81b8430e",
  "tests/deck-browser-reveal-reuse.test.mjs":"0f28cadcf64bee721889b84a0bb855c7f22664ca95748a3bd5812721d87edb63",
  "tests/enemy-status-hand-clearance.test.mjs":"913b331159bf9c97f73246977e521a70658c2b28d445fa58965710c0675eeb7b",

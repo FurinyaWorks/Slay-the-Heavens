@@ -18,9 +18,9 @@ const reviewedContracts=Object.freeze({
  'tests/official-assets.test.mjs':6,
 });
 const releaseOwners=readFileSync(new URL('../fixtures/release-selection-replay-successors.json',import.meta.url));
-assert.equal(hash(releaseOwners),'2f5a062d5bdbf419dd1b085eb0cdbeb3eeb2f01c4c25d9447b9e9d680639e615','exact Release selection successor view');
+assert.equal(hash(releaseOwners),'6e98d1458c606172c0d7f9f9010189995b0db25573a5ebc0d35103c252b4938f','exact Release selection successor view');
 const {head,files:successors}=JSON.parse(releaseOwners);
-assert.equal(head,'5d34dc3327a0ad1a4597e9e4f8e246a694334106');
+assert.equal(head,'dd7b9cdc1e86094965dbf50f89b92aebbe2c8381');
 function historicalSelectionOwner(path,source,row){
  if(!Object.hasOwn(successors,path))return beforeCurrentProductionSource(path,source);
  const successor=successors[path];

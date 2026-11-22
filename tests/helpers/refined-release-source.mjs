@@ -31,13 +31,13 @@ function matches(source,binding){
  return hash(lf)===binding.sha256&&blob(lf)===binding.gitBlob;
 }
 const successorBytes=readFileSync(new URL('./refined-release-successor-source.json.gz',import.meta.url));
-assert.equal(hash(successorBytes),'79e11bf3d78cecb730751c553f3411db0b3c1a0311966c6a00e882dc8c8812b9','exact refined Release successor archive');
+assert.equal(hash(successorBytes),'42e07bbfd3fe5c4ccfa04581fb7bafdb5d9ed99d1d58e586b16bd93511d14ce5','exact refined Release successor archive');
 const successors=JSON.parse(gunzipSync(successorBytes));
-assert.equal(successors.base,'5d34dc3327a0ad1a4597e9e4f8e246a694334106');
+assert.equal(successors.base,'dd7b9cdc1e86094965dbf50f89b92aebbe2c8381');
 for(const {before} of Object.values(successors.files))assert(matches(before.source,before));
 export function beforeSelectionReplaySuccessor(path,source){
  if(path!=='tests/helpers/replay-reviewed-selection.mjs'||typeof source!=='string'||source.includes('\r\r\n')||
-  hash(normalize(source))!=='626c19f3a4c62b6e371026443da4c4d48f5e68ef6fc29986a3a2fb9ce8688b69')return source;
+  hash(normalize(source))!=='a95fd1508156d5842fa7896ba9268039abfab1b844dded5e1c45442e17013bf0')return source;
  const prior=normalize(source).replace(/^const releaseOwners=[^\n]*\n[\s\S]*?(?=^export function replayReviewedSelection)/m,'')
   .replace("import {stageReleaseReplayDependencies} from './release-selection-replay-dependencies.mjs';\n",'')
   .replace('  stageReleaseReplayDependencies(directory);\n','')

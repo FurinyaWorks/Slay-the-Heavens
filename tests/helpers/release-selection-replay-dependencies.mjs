@@ -6,10 +6,10 @@ import { gunzipSync } from 'node:zlib';
 
 const hash = source => createHash('sha256').update(source).digest('hex');
 const archive = readFileSync(new URL('../fixtures/release-selection-replay-dependencies.json.gz', import.meta.url));
-assert.equal(hash(archive), '71de229c115e71f8e0e9fcda91cf739b3786bad030ca2f0ecfdd7539e1604682');
+assert.equal(hash(archive), '067022903c97b4474874e68b9265d81c037eddb137d4c4831c22eb9d37c9d5f0');
 const { base, head, files } = JSON.parse(gunzipSync(archive));
 assert.equal(base, 'e65d9b98fbec69442047650254238cd9244df805');
-assert.equal(head, '5d34dc3327a0ad1a4597e9e4f8e246a694334106');
+assert.equal(head, 'dd7b9cdc1e86094965dbf50f89b92aebbe2c8381');
 
 export function stageReleaseReplayDependencies(directory) {
   for (const [path, entry] of Object.entries(files)) {

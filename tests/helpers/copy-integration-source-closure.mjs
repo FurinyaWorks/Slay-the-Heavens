@@ -121,8 +121,8 @@ const atomicCardEffectsFiles=Object.freeze({
 });
 const compactPopupReplayFiles=Object.freeze({
  ...atomicCardEffectsFiles,
- 'tests/helpers/refined-release-source.mjs':'63f2dabbd4aaf3b3b29721d2c0f27747591975ec0b01d1146adcf18f4f9a22bc',
- 'tests/helpers/refined-release-successor-source.json.gz':'79e11bf3d78cecb730751c553f3411db0b3c1a0311966c6a00e882dc8c8812b9',
+ 'tests/helpers/refined-release-source.mjs':'b9b619fbcc2ef0b0647f7b01949478970f4b360937e999ab93b14cace37a4b47',
+ 'tests/helpers/refined-release-successor-source.json.gz':'42e07bbfd3fe5c4ccfa04581fb7bafdb5d9ed99d1d58e586b16bd93511d14ce5',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
