@@ -1,3 +1,4 @@
+import {releaseRewardDisplayPriorRead} from './release-ui-closeout-source.mjs';
 import {beforeReleaseShopEntry,releaseUiRestoreArchive,shopEntryPriorRead} from './release-ui-restore-source.mjs';
 import {beforeCombatVisualSource,combatVisualPriorRead} from './combat-visual-source.mjs';
 import {beforeSts1MenuCiSource} from './sts1-menu-ci-source.mjs';
@@ -91,6 +92,11 @@ function beforeTravelerStatusCiSource(path,source){
  const actorTemplate=path==='tests/native-monster-actor-template.test.mjs';
  if((!copier&&!regression&&!actorTemplate)||typeof source!=='string'||source.includes('\r\r\n'))return source;
  let lf=normalize(source);
+ if(copier&&hash(lf)==='bd53081a4e0d764483a918bbaef33da93a0536a5d86a3cecb5e32151a58a8381'){
+  lf=lf.replace(" 'tests/helpers/release-ui-closeout-source.mjs':'2d7c5fbf5bcfcbc8bec90826ddd370fceaaeab9bbb0828532adb06d675701023',\n"," 'tests/helpers/release-ui-closeout-source.mjs':'a3d1de143ef40fdaab5a08bca47e4e1ff29414d2e3e97826fb68db84885998ab',\n")
+     .replace(" 'tests/fixtures/release-reward-display-source.json.gz':'16fb43b697f02531c0d25a8504b43294c0535ba4f432ac6b04a20ec42bd962cd',\n",'');
+  assert.equal(hash(lf),'66f19b9a8f4cdc7d58af5cfb30aa8ce2799ce65ae06735fd34e898b3c59e7fbe','exact reward display helper copy predecessor');
+ }
  if(copier&&hash(lf)==='66f19b9a8f4cdc7d58af5cfb30aa8ce2799ce65ae06735fd34e898b3c59e7fbe'){
   lf=lf.replace(" 'tests/helpers/release-map-deck-source.mjs':'d76d9d67c6e696d966fe9608a46e66eea0c0e2739c06dd9672151afd4b1f0973',\n"," 'tests/helpers/release-map-deck-source.mjs':'dd02f8976ed65dae8d055f881020f71d6169a4e396c9cd0bc72d6c84c9254e9a',\n")
      .replace(" 'tests/helpers/combat-visual-source.mjs':'795056833d48bd9a2e5a1944a5d9b56fb5d0f0ce7967fdbac72da5566ae5e35d',\n"," 'tests/helpers/combat-visual-source.mjs':'6fbf561edae2163cb68163834289ea70b8ec94868507677be0f21fd9cabbfc7b',\n")
@@ -228,6 +234,7 @@ export function beforeReleaseTinyHouseSource(path,source){
  return beforeV2UiPreTinyHouseSource(path,beforeReleaseUiBuildSource(path,source));
 }
 export function historicalReleaseBuildInput(path,read){
+ read=releaseRewardDisplayPriorRead(read);
  if(!Object.hasOwn(releaseUiBuild.files,path))return refinedReleaseHistoricalInput(path,beforeCapacityRead(read));
  const source=read(path,'utf8'),prior=beforeReleaseUiBuildSource(path,source);
  assert.notEqual(prior,source,'fresh approved build source: '+path);
@@ -354,6 +361,7 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
+ read=releaseRewardDisplayPriorRead(read);
  const requireCurrent=assertCapacitySources(read);
  read=beforeCapacityRead(shopEntryPreflightRead(read),requireCurrent);
  assertRefinedReleaseSourcesCurrent(read);
