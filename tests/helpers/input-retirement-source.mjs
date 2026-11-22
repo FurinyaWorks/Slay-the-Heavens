@@ -94,6 +94,17 @@ function suitePredecessor(path,source,layer){
  return normalize(source)===source?row.before.source:row.before.source.replaceAll('\n','\r\n');
 }
 
+// Release and StS receipts share the same signed deck-pages predecessors.
+export function beforeDeckPagesSuiteSource(path,source,{requireCurrent=false}={}){
+ if(!Object.hasOwn(suite.deck.files,path))return source;
+ const {before,after}=suite.deck.files[path];
+ const current=matches(beforeInputRetirement(path,source),after);
+ if(requireCurrent)assert(current&&(!inputRetirementOwns(path)||isCurrentInputRetirementSource(path,source)),
+  'fresh complete integration source: '+path);
+ if(!current)return source;
+ return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
+}
+
 export function beforeInputRetirementStsSuite(paths,read,trustSuccessors){
  assert.deepEqual(Object.keys(trustSuccessors).sort(),Object.keys(suite.trustPredecessors).sort(),'exact StS helper trust leaf paths');
  for(const sha of Object.values(trustSuccessors))assert.match(sha,/^[a-f0-9]{64}$/,'input retirement StS helper trust leaf');

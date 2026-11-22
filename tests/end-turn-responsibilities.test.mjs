@@ -8,6 +8,7 @@ import {preEndTurnResponsibilitiesSource as prior,endTurnResponsibilitiesReader 
 import {preRelicQuerySource,relicQueryReader} from './helpers/relic-query-source-inverse.mjs';
 import {sourceEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 import {relicQuerySourceProof} from './helpers/epochs/develop/tests/helpers/relic-query-source-inverse.mjs';
+import {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 const file='src/lua/abyss_end_turn_powers.lua',read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n'),hash=s=>createHash('sha256').update(s).digest('hex');
 const before=read('tests/fixtures/end-turn-responsibilities-before.lua');
 function replay(source,fixture){mkdirSync('build/end-turn-responsibilities',{recursive:true});const root=mkdtempSync(join('build/end-turn-responsibilities','vm-'));
@@ -93,20 +94,21 @@ test('EndTurn current source composes into frozen N35 and freshly authenticates 
   reads.push(p);if(p!==changed)return read(p);
   if(mode==='throw')throw Error('owner sentinel');
   if(mode==='missing')return undefined;if(mode==='null')return null;if(mode==='foreign')return 'foreign';
+  if(p===retiredControllerPath)return beforeInputRetirementReader(read)(p)+(mode==='drift'?'\n':'');
   if(mode==='old')return Object.values(sourceEpoch.proof.targets).find(target=>target.files[p]?.sha256!==sourceEpoch.proof.current[p]?.sha256).files[p]?.source;
   return read(p)+'\n';
  };
  const wrapped=relicQueryReader(raw);assert.equal(relicQueryReader(wrapped),wrapped);
  assert.equal(preRelicQuerySource(file,current),old);assert.equal(wrapped(file),old);
- const outerReadCount=325;
+ const outerReadCount=403;
  let validReads;
  for(const readSource of [raw,wrapped]){
   changed=undefined;reads=[];assert.equal(preRelicQuerySource(file,current,{readSource}),old);
   if(!validReads){
    // Nested source cohorts have their own fresh reads before and after the
    // original owners. Bind the full live trace to its exact frozen order.
-   assert.equal(reads.length,6588);
-   assert.equal(hash(JSON.stringify(reads)),'afabd4fabc424b96c725f591c6eb943b7a969b858a3be8122a35f19e987c5f16');
+   assert.equal(reads.length,8150);
+   assert.equal(hash(JSON.stringify(reads)),'78bb454171aed5367d039514c30a57c9971c0be116f11e048df8f3a08bc7cbb2');
    let position=-1;
    for(const owner of owners){
     position=reads.indexOf(owner,position+1);
@@ -115,10 +117,13 @@ test('EndTurn current source composes into frozen N35 and freshly authenticates 
    validReads=[...reads];
   }
   assert.deepEqual(reads,validReads);
-  for(const owner of owners){
-   for(mode of ['drift','foreign','old','null','missing','throw']){
+  for(const owner of [...owners,pointerInputPath]){
+   const modes=owner===retiredControllerPath?['drift','foreign','old','throw']:
+    owner===pointerInputPath?['drift','foreign','null','missing','throw']:['drift','foreign','old','null','missing','throw'];
+   for(mode of modes){
     changed=owner;reads=[];
-    const message=mode==='throw'?'combined linked owner missing: '+owner+': owner sentinel':'combined linked owner identity: '+owner;
+    const message=owner===pointerInputPath?'combined linked owner missing: '+retiredControllerPath:
+     mode==='throw'?'combined linked owner missing: '+owner+': owner sentinel':'combined linked owner identity: '+owner;
     assert.throws(()=>preRelicQuerySource(file,current,{readSource}),error=>{
      assert.ok(error.message.includes(message),error.message);return true;
     });
@@ -133,16 +138,18 @@ test('EndTurn current source composes into frozen N35 and freshly authenticates 
  assert.throws(()=>preRelicQuerySource(file,current,{readSource:null}),{code:'ERR_ASSERTION',actual:'object',expected:'function',message:/^linked owner reader(?:\n|$)/});
  assert.equal(preRelicQuerySource(file,current.replaceAll('\n','\r\n'),{readSource:p=>read(p).replaceAll('\n','\r\n')}),old);
  const config='config/architecture.json';
- assert.throws(()=>preRelicQuerySource(file,current,{readSource:p=>p===config?JSON.stringify(JSON.parse(read(p))):read(p)}),{message:'combined linked owner identity: '+config});
- // The first 325 observations belong to the outer authenticated projection.
+ const configDrift='combined linked owner missing: '+config+': combined linked owner identity: '+config+
+  ' changed during Develop backflow validation (deck-pages validation)';
+ assert.throws(()=>preRelicQuerySource(file,current,{readSource:p=>p===config?JSON.stringify(JSON.parse(read(p))):read(p)}),{message:configDrift});
+ // The first 403 observations belong to the outer authenticated projection.
  // Mutate the first config observation from the wrapped N35 projector.
  const firstInnerConfig=validReads.indexOf(config,outerReadCount);
- assert.equal(firstInnerConfig,327);
+ assert.equal(firstInnerConfig,405);
  const innerOccurrence=validReads.slice(0,firstInnerConfig+1).filter(path=>path===config).length;
  let configReads=0;reads=[];
  assert.throws(()=>preRelicQuerySource(file,current,{readSource:p=>{
   reads.push(p);return read(p)+(p===config&&++configReads===innerOccurrence?'\n':'');
- }}),/relic query linked owner missing: .*: combined linked owner identity: config\/architecture\.json$/,'inner validation cannot reuse an earlier outer success');
+ }}),{message:'relic query linked owner missing: src/lua/abyss_relic_hooks.lua: '+configDrift},'inner validation cannot reuse an earlier outer success');
  assert.equal(configReads,innerOccurrence);
  assert.deepEqual(reads,validReads.slice(0,firstInnerConfig+1),'inner drift stops at the first new configuration read');
 });

@@ -1,3 +1,6 @@
+import {beforeInputRetirementTestInventory,readRetiredInputLuaReceipt} from './input-retirement-inventory.mjs';
+import {beforeDeckPagesSuiteSource} from './input-retirement-source.mjs';
+export {beforeInputRetirementTestInventory} from './input-retirement-inventory.mjs';
 import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,beforeDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
 import {beforeCalibrationReplay} from './calibration-replay-sources.mjs';
 import {beforeNativeHostReplay} from './native-host-replay-source.mjs';
@@ -436,6 +439,16 @@ function beforePowerMembershipConfig(path,source){
 const luaInventoryTest="tests/sts-style-source-epoch.test.mjs";
 const luaInventoryTestSha='5b02801e4b9837497fa8f9f20388cff207afa78e7f2a7f358b9ac9332e7b1774';
 const luaInventoryTestBlob='b43000381568f9b167c528e5f96f870c9f144d7a';
+function beforeInputRetirementInventoryTest(source){
+ if(hash(source)!=='3b28f64febf618d28d413c7ffb063053a46f048068aa291d9901d216f10e7a99'||
+    blob(source)!=='e561cbe4364a9dc107408ffac4d61b7715b11638')return source;
+ const prior=source.replace('assertCurrentJsInventory,beforeInputRetirementTestInventory,beforeShopEntryInventory',
+  'assertCurrentJsInventory,beforeShopEntryInventory')
+  .replace("  paths=beforeInputRetirementTestInventory(paths,'lua',read,{required:true});\n",'');
+ assert.equal(hash(prior),'54d5d3c02c45616cb282fad68678cd034de2f91fe8d478a1512139504ab7e860','exact live input retirement inventory test predecessor');
+ assert.equal(blob(prior),'97df72579410fd9691412e49ddd14dc86a7f93be');
+ return prior;
+}
 function beforeHistoricalProductionInventoryTest(source){
  if(hash(source)!=='54d5d3c02c45616cb282fad68678cd034de2f91fe8d478a1512139504ab7e860'||blob(source)!=='97df72579410fd9691412e49ddd14dc86a7f93be')return source;
  const rewrites=[
@@ -456,7 +469,7 @@ function beforeHistoricalProductionInventoryTest(source){
 }
 function beforeLuaInventoryTest(path,source){
  if(path!==luaInventoryTest||typeof source!=='string'||source.includes('\r\r\n'))return source;
- const current=beforeHistoricalProductionInventoryTest(normalize(source));
+ const current=beforeHistoricalProductionInventoryTest(beforeInputRetirementInventoryTest(normalize(source)));
  if(hash(current)!==luaInventoryTestSha||blob(current)!==luaInventoryTestBlob)return source;
  const start=" assertCurrentJsInventory(rawJs,integratedCiProof.inventory);\n // These five tests remain in current Full discovery.",end=" const newTest=";
  assert.equal(current.split(start).length,2,'exact live Lua test boundary');
@@ -520,6 +533,7 @@ export function beforeReleaseAdditionalInventory(paths,kind,read=readFileSync){
  return paths.filter(path=>!Object.hasOwn(newerTests[kind],path));
 }
 export function beforeShopEntryInventory(paths,kind,read=readFileSync){
+ paths=beforeInputRetirementTestInventory(paths,kind,read);
  if(kind==='js')paths=beforeIntegratedStsInventory(paths,read);
  paths=beforeReleaseAdditionalInventory(paths,kind,read);
  const [path,...authenticated]=shopEntryTests[kind];
@@ -531,10 +545,12 @@ export function beforeShopEntryInventory(paths,kind,read=readFileSync){
  return paths.filter(test=>test!==path);
 }
 export function assertCurrentJsInventory(paths,preceding,read=readFileSync){
+ paths=beforeInputRetirementTestInventory(paths,'js',read,{required:true});
  paths=beforeRefinedReleaseJsInventory(beforeShopEntryInventory(paths,'js',read),[...preceding,coopLabTest],read,true);
  assertCoopJsInventory(paths,preceding,read);
 }
 export function assertCurrentLuaInventory(paths,preceding,read=readFileSync){
+ paths=beforeInputRetirementTestInventory(paths,'lua',read,{required:true});
  const additions=[...Object.keys(newerTests.lua),shopEntryTests.lua[0],'tests/lua/shop_dismiss.lua'];
  assert.deepEqual([...paths].sort(),[...preceding,...additions].sort(),'complete current raw discovery inventory (Lua)');
  const prior=beforeShopEntryInventory(paths,'lua',(path,encoding)=>{
@@ -746,8 +762,12 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
   const source=readCurrent(path,encoding);
   // The merged runtime helper was checked before its exact replay projection.
   if(path===epochReplayRuntimePath)return beforeDevelopBackflow(path,source);
-  if(developBackflowOwns(path))assertDevelopBackflowCurrent(path,source);
-  return beforeNativeFixtureReplay(path,beforeNativeHostReplay(path,authenticateDevelopBackflow(path,source,owner=>readCurrent(owner,'utf8'))));
+  const production=developBackflowOwns(path);
+  if(production)assertDevelopBackflowCurrent(path,source);
+  const requireCurrent=path.startsWith('scripts/')||(path!==replayAssetLedger&&Object.hasOwn(sourceSuccessors,path));
+  const input=production?source:beforeDeckPagesSuiteSource(path,source,{requireCurrent});
+  const backflow=authenticateDevelopBackflow(path,input,owner=>readCurrent(owner,'utf8'));
+  return beforeNativeFixtureReplay(path,beforeNativeHostReplay(path,backflow));
  };
  const releaseRead=(path,encoding)=>beforeRebasedRelease(path,readBackflow(path,encoding));
  assertReleaseCapacityCohort(releaseRead);
@@ -774,7 +794,7 @@ export function beforePreflightSource(path,source,view='prior'){
  source=beforeDevelopReplayMerge(path,source);
  source=beforeReplayFingerprintSource(path,source);
  source=beforeDevelopEpochReplayRuntime(path,source);
- source=beforeDevelopBackflow(path,source);
+ source=beforeDevelopBackflow(path,beforeDeckPagesSuiteSource(path,source));
  source=beforeNativeHostReplay(path,source);
  source=beforeNativeFixtureReplay(path,source);
  source=beforeNativeButtonRepairCopier(path,beforeNativeButtonRepair(path,source));
@@ -801,7 +821,14 @@ export function beforePreflightSource(path,source,view='prior'){
  const eol=source.includes('\r\n')?'\r\n':'\n';return prior.replaceAll('\n',eol);
 }
 export function preflightPriorRead(read=readFileSync,view='prior'){return(path,encoding)=>{
- const raw=read(path,encoding);if(typeof raw!=='string'&&!Buffer.isBuffer(raw))return raw;
+ let raw;
+ try{raw=read(path,encoding);}catch(error){
+  if(error.code!=='ENOENT'||!Object.hasOwn(archiveFiles,path))throw error;
+  const row=archiveFiles[path].current,source=readRetiredInputLuaReceipt(path,row?.sha256,read,row);
+  if(source===undefined)throw error;
+  raw=encoding?source:Buffer.from(source);
+ }
+ if(typeof raw!=='string'&&!Buffer.isBuffer(raw))return raw;
  const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=beforePreflightSource(path,text,view);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}

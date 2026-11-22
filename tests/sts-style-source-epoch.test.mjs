@@ -1,6 +1,6 @@
 import {actorFocusAdded,assertActorFocusInventory,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';
 import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
-import {assertCurrentJsInventory,beforeShopEntryInventory} from './helpers/fork-preflight-source.mjs';
+import {assertCurrentJsInventory,beforeInputRetirementTestInventory,beforeShopEntryInventory} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import {integratedRead,integratedCiProof,integratedPriorInventory,assertIntegratedCurrent} from './helpers/integrated-ci-source.mjs';
 import assert from 'node:assert/strict';
@@ -36,6 +36,7 @@ test('release additions remain in raw Full and exact historical inventories reje
   'tests/lua/shop_dismiss.lua','tests/lua/shop_entry.lua','tests/lua/traveler_power_tooltip.lua'];
  const liveLuaInventory=[...integratedCiProof.luaInventory,...liveLuaAdditions].sort();
  const historicalLua=(paths,read=readFileSync)=>{
+  paths=beforeInputRetirementTestInventory(paths,'lua',read,{required:true});
   assert.deepEqual(paths,liveLuaInventory,'exact live Lua discovery inventory');
   const prior=beforeShopEntryInventory(paths,'lua',read);
   assert.deepEqual(prior,integratedCiProof.luaInventory,'exact integrated Lua predecessor inventory');

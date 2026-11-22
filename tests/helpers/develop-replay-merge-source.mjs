@@ -33,11 +33,18 @@ const mapRoomCohortPaths=new Set([
  'tests/lua/node_event_copy.lua',
  'tests/official-battle-potion-hud-source-epoch.test.mjs',
  'tests/defect-actor-boundary.test.mjs',
+ 'tests/integration-source-epoch.test.mjs',
+ 'tests/helpers/historical-sts-style-entry.mjs',
+ 'tests/lua/menu_input_boundaries_current.lua',
+ 'tests/lua/noncombat_v25_menu.lua',
+ 'tests/lua/support/committed_defeat_fixture.lua',
+ 'tests/lua/support/session_menu_v25.lua',
+ 'tests/sts-page-reveal.test.mjs',
 ]);
 export function beforeMapRoomReplayCohort(path,source){
  if(!mapRoomCohortPaths.has(path))return source;
  mapRoomReplayCohort??=releaseUiRestoreArchive(readFileSync(new URL('./map-room-replay-cohort-source.json.gz',import.meta.url)),
-  '792a15ae76ba27f4d5676e059a6023628476768956666bbaf8661b7b2062d8ad','67fc8750dd6ef9a13067c6a43137f910b6a44228');
+  '517ea3d0c962b4a3e57834b549498dda0110a894eccb68395f472c4ade652608','67fc8750dd6ef9a13067c6a43137f910b6a44228');
  return mapRoomReplayCohort.project(path,source);
 }
 

@@ -1,4 +1,5 @@
 import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
+import {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -199,8 +200,8 @@ test('Act1 current source enters the unchanged historical chain and rereads ever
   changed=undefined;reads=[];assert.equal(preRelicQuerySource(file,source,{readSource}),before);
   if(!admittedReads){
    // Keep the complete current trace and the ordered original contract.
-   assert.equal(reads.length,325);
-   assert.equal(createHash('sha256').update(JSON.stringify(reads)).digest('hex'),'cc3d177c9bda6e53ada3edfbbe946c9de901105119ee1f3a751c1084716b6b22');
+   assert.equal(reads.length,403);
+   assert.equal(createHash('sha256').update(JSON.stringify(reads)).digest('hex'),'6f35ecd12c3f1edbc8ee8e476324bdb4380725eeacf240cc6ec15cd106fc2e3f');
    let position=-1;
    for(const owner of priorReadOrder){
     position=reads.indexOf(owner,position+1);
@@ -209,9 +210,17 @@ test('Act1 current source enters the unchanged historical chain and rereads ever
    admittedReads=[...reads];
   }
   assert.deepEqual(reads,admittedReads);
-  for(const owner of owners)for(replacement of [read(owner)+'\n',null,undefined]){
+  for(const owner of owners.filter(owner=>owner!==retiredControllerPath))for(replacement of [read(owner)+'\n',null,undefined]){
    changed=owner;reads=[];assert.throws(()=>preRelicQuerySource(file,source,{readSource}),/combined linked owner identity/);
    assert.deepEqual(reads,admittedReads.slice(0,admittedReads.indexOf(owner)+1),'fresh reads stop at the actual bad owner: '+owner);
+  }
+  changed=retiredControllerPath;replacement=beforeInputRetirementReader(read)(changed);reads=[];
+  assert.throws(()=>preRelicQuerySource(file,source,{readSource}),/combined linked owner identity: src\/lua\/abyss_controller\.lua/);
+  assert.deepEqual(reads,admittedReads.slice(0,admittedReads.indexOf(changed)+1));
+  changed=pointerInputPath;
+  for(replacement of [read(changed)+'\n',null,undefined]){
+   reads=[];assert.throws(()=>preRelicQuerySource(file,source,{readSource}),/combined linked owner missing: src\/lua\/abyss_controller\.lua/);
+   assert.deepEqual(reads,admittedReads.slice(0,admittedReads.indexOf(changed)+1));
   }
   changed=file;replacement=before;reads=[];
   assert.throws(()=>preRelicQuerySource(file,source,{readSource}),/combined linked owner identity/,'original Act1 bytes cannot authorize a current raw owner');

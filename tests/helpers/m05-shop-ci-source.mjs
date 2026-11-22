@@ -55,14 +55,18 @@ const backflowTestHashes={
  js:'207c98d6243b318cac7bfccb2fe0822107e9ae57b3aa013c7fa10f87e3e5d43f',
  lua:'b7290fd614807fa585a8041b0cc2848a172188726308dbd812a7fa8212058d8b',
 };
+const pointerShopDismiss={
+ sha256:'0d992f850751d137a2d23817ccc1dd79852fea9469938c593fd583cefd5f6947',
+ gitBlob:'68f0ef3985931dc4cfd1b2ff40cf5d1b60fb2e3a',
+};
 export function beforeM05BackflowInventory(paths,kind,read=readFileSync){
  assert(Object.hasOwn(additions,kind),'known M05 inventory kind');
- const path=additions[kind],matches=paths.filter(candidate=>candidate===path);
- if(!matches.length)return paths;
- assert.equal(matches.length,1,'single M05 backflow '+kind+' test');
+ const path=additions[kind],entries=paths.filter(candidate=>candidate===path);
+ if(!entries.length)return paths;
+ assert.equal(entries.length,1,'single M05 backflow '+kind+' test');
  const source=read(path,'utf8');
- assert(typeof source==='string'&&!source.includes('\r\r\n')&&
-  hash(source.replaceAll('\r\n','\n'))===backflowTestHashes[kind],'fresh M05 backflow '+kind+' test: '+path);
+ const prior=typeof source==='string'&&!source.includes('\r\r\n')&&hash(source.replaceAll('\r\n','\n'))===backflowTestHashes[kind];
+ assert(prior||kind==='lua'&&matches(source,pointerShopDismiss),'fresh M05 backflow '+kind+' test: '+path);
  return paths.filter(candidate=>candidate!==path);
 }
 export function m05FrozenInventory(kind){

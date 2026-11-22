@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
+import {readRetiredInputTestReceipt} from './input-retirement-inventory.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const blob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
@@ -31,6 +32,8 @@ export function beforeCalibrationReplay(path,source){
 // A frozen receipt may read a registered old blob only after checking the
 // corresponding current file. Raw Full discovery and inputs use their normal readers.
 export function readCalibrationReceiptInput(path,digest,read,readCurrent=readFileSync){
+ const retired=readRetiredInputTestReceipt(path,digest,readCurrent);
+ if(retired!==undefined)return retired;
  if(!Object.hasOwn(packet.receipts,path))return read();
  const row=packet.receipts[path];
  if(!Object.hasOwn(row.before,digest))return read();

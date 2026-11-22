@@ -1,6 +1,7 @@
 import {developReleaseBackflowRead} from './helpers/develop-release-backflow-predecessors.mjs';
-import {actorFocusAdded,assertActorFocusInventory,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';
+import {actorFocusAdded,assertActorFocusInventory,deckPagesAdded,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';
 import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
+import {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 import {beforeAuthenticatedReleaseGuideSource,releaseGuideSourcePaths} from './helpers/release-guide-backflow-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -19,6 +20,10 @@ const neowFeedbackPath='src/lua/abyss_node_ui_feedback.lua';
 const readCurrentMenuPrior=liveEpoch.combinedReader(readLive,'v2RunMenuPrior');
 function readHistoricalMenu(path){
  if(path===neowFeedbackPath)return beforeCharacterPreparationSource(path,readLive(path),readLive);
+ if(path===retiredControllerPath){
+  const restored=beforeInputRetirementReader(readLive)(path);
+  return liveEpoch.preCombinedSource(path,restored,{target:'v2RunMenuPrior',readSource:readLive});
+ }
  return readCurrentMenuPrior(path);
 }
 test('Release guide backflow authenticates all changed develop owners before replay',()=>{
@@ -138,8 +143,15 @@ test('menu source continuation retains the complete release corpus and rejects n
  assertActorFocusInventory(luaPaths,readLive);
  const paths=Object.keys(sourceEpoch.proof.current).sort();
  assert.equal(paths.length,352);
- const later=['src/lua/abyss_power_membership.lua',...stasisUpgradeAddedPaths,...actorFocusAdded];
- assert.deepEqual(['config/architecture.json',...luaPaths].sort(),[...paths,...later].sort());
+ const later=['src/lua/abyss_power_membership.lua',...stasisUpgradeAddedPaths,...actorFocusAdded,...deckPagesAdded,pointerInputPath];
+ assert.deepEqual(['config/architecture.json',...luaPaths].sort(),[...paths.filter(path=>path!==retiredControllerPath),...later].sort());
+ assert.throws(()=>readLive(retiredControllerPath),{code:'ENOENT'});
+ const readCurrentInput=beforeInputRetirementReader(readLive);
+ assert.ok(readCurrentInput(retiredControllerPath));
+ for(const replacement of [null,readLive(pointerInputPath)+'\n']){
+  const invalid=beforeInputRetirementReader(path=>path===pointerInputPath?replacement:readLive(path));
+  assert.throws(()=>invalid(retiredControllerPath),{code:'ENOENT'});
+ }
  const power='src/lua/abyss_power_membership.lua';
  assert.equal(readLive(power).replaceAll('\r\n','\n'),liveEpoch.proof.current[power].source);
  const added=paths.filter(p=>!Object.hasOwn(releaseSourceEpoch.proof.current,p));

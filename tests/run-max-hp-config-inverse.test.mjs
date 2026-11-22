@@ -1,4 +1,5 @@
 import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
+import {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 import test,{after} from 'node:test';
 import {historicalTest,createHistoricalBaseline,historicalInputPath} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
@@ -188,8 +189,8 @@ test('current Run architecture admission uses its declared target and rereads ev
  // The exact current trace includes the nested Actor/Stasis and MapRoom
  // checks, plus the original direct and continuation reads in their order.
  const admittedReads=[...reads];
- assert.equal(admittedReads.length,337,'complete fresh raw closure size');
- assert.equal(hash(JSON.stringify(admittedReads)),'6da5000a34d697320e4e77e2f61c0b4031711d04ead62aaf86412b9ff6e7038c',
+ assert.equal(admittedReads.length,417,'complete fresh raw closure size');
+ assert.equal(hash(JSON.stringify(admittedReads)),'05131aa3de86e8f88d0e82bca23e667bba10e3921cf029de891ec4e8b06c3a67',
   'complete fresh raw closure in admission order on the current Develop sources');
  let retainedPosition=-1;
  const retainedReadPositions=priorReadOrder.map(owner=>{
@@ -203,15 +204,25 @@ test('current Run architecture admission uses its declared target and rereads ev
  for(const source of [raw,raw.replaceAll('\n','\r\n')]){
   reads=[];assert.equal(project(source),accepted);assert.deepEqual(reads,admittedReads,'warm calls still read the complete raw owner closure');
  }
+ assert.throws(()=>readFileSync(retiredControllerPath,'utf8'),{code:'ENOENT'});
+ changed=retiredControllerPath;
+ for(replacement of [null,undefined]){
+  reads=[];assert.equal(project(raw),accepted);assert.deepEqual(reads,admittedReads,'retired Controller still requires every pointer witness');
+ }
+ replacement=beforeInputRetirementReader(path=>readFileSync(path,'utf8'))(retiredControllerPath);
+ reads=[];assert.throws(()=>project(raw),/combined linked owner identity: src\/lua\/abyss_controller\.lua/,'present archived Controller cannot impersonate a retired file');
+ assert.deepEqual(reads,admittedReads.slice(0,admittedReads.indexOf(changed)+1));
  for(const [fault,observe] of [
   ['changed bytes',owner=>readFileSync(owner,'utf8')+'\n'],
   ['absent source',()=>null],
   ['read error',()=>new Error('missing current Run owner')],
  ]){
   for(const owner of new Set(admittedReads)){
+   if(owner===retiredControllerPath&&fault!=='read error')continue;
    changed=owner;replacement=observe(owner);
    reads=[];assert.throws(()=>project(raw),error=>{
-    const expected='combined linked owner '+(replacement instanceof Error?'missing: ':'identity: ')+owner;
+    const expected=owner===pointerInputPath?'combined linked owner missing: '+retiredControllerPath:
+     'combined linked owner '+(replacement instanceof Error?'missing: ':'identity: ')+owner;
     assert.ok(error.message.includes(expected),error.message);return true;
    });
    assert.deepEqual(reads,admittedReads.slice(0,admittedReads.indexOf(owner)+1),'first bad raw owner stops validation: '+owner);
@@ -222,13 +233,16 @@ test('current Run architecture admission uses its declared target and rereads ev
  }
 
  for(const [index,owner] of currentProductionRereads.entries()){
-  changed=owner;
-  const position=retainedReadPositions[owners.length+index];
-  mutationOccurrence=admittedReads.slice(0,position).filter(file=>file===owner).length;
-  replacement=readFileSync(owner,'utf8')+'\n';
+  const retired=owner===retiredControllerPath;
+  changed=retired?pointerInputPath:owner;
+  const position=retainedReadPositions[owners.length+index]+Number(retired);
+  assert.equal(admittedReads[position],changed);
+  mutationOccurrence=admittedReads.slice(0,position).filter(file=>file===changed).length;
+  replacement=readFileSync(changed,'utf8')+'\n';
   reads=[];
   assert.throws(()=>project(raw),error=>{
-   assert.ok(error.message.includes('combined linked owner identity: '+owner),error.message);return true;
+   const expected=(retired?'combined linked owner missing: ':'combined linked owner identity: ')+owner;
+   assert.ok(error.message.includes(expected),error.message);return true;
   });
   assert.deepEqual(reads,admittedReads.slice(0,position+1),'stop when revalidation detects drift: '+owner);
  }
