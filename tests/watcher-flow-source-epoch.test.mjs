@@ -1,3 +1,4 @@
+import {assertDevelopBackflowCurrent,authenticateDevelopBackflow} from './helpers/develop-release-backflow-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,mkdtempSync,rmSync} from 'node:fs';
@@ -11,7 +12,12 @@ const path='src/lua/abyss_watcher_flow_cards.lua',proof=sourceEpoch.proof,prior=
 const raw=p=>proof.current[p]?.source??null;
 test('Flow outer epoch preserves every prior binding and exact frozen production byte',()=>{
  assert.equal(watcherFlowEpoch.proof.currentCommit,'c24ef4e02173d2a160382f09d32f2dec82eed5fc');
- assert.equal(raw(path),readFileSync(path,'utf8').replaceAll('\r\n','\n'));
+ const read=file=>readFileSync(file,'utf8');
+ const live=read(path);
+ assertDevelopBackflowCurrent(path,live);
+ assert.equal(raw(path),authenticateDevelopBackflow(path,live,read).replaceAll('\r\n','\n'));
+ assert.throws(()=>authenticateDevelopBackflow(path,live,()=>live+'\n'),/linked owner identity/);
+ assert.equal(authenticateDevelopBackflow(path,live+'\n',()=>assert.fail('foreign bytes read live owner')),live+'\n');
  assert.deepEqual(watcherFlowEpoch.proof.targets.prior.files[path],prior.current[path]);
  assert.deepEqual(proof.targets.watcherFlowPrior.files,prior.current);
  for(const [name,target]of Object.entries(prior.targets))assert.deepEqual(proof.targets[name],target,name);

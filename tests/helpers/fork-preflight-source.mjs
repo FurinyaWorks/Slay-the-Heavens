@@ -1,4 +1,4 @@
-import {beforeDevelopBackflow} from './develop-release-backflow-source.mjs';
+import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,beforeDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
 import {beforeStsUiCloseoutSource} from './sts-ui-closeout-source.mjs';
 import {beforeStsFadeCi} from './sts-fade-ci-source.mjs';
 import {beforeIntegratedStsInventory} from './sts-selection-fade-source.mjs';
@@ -15,6 +15,9 @@ import {beforeV2UiEvidence,beforeV2UiPreTinyHouseSource,beforeFieldConfirmation,
 import {beforeCharacterPreparationCiSource} from './character-preparation-source.mjs';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
 import {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';
+export {exactReviewedBuildInput} from './rebased-release-source.mjs';
+export {beforeM05ShopCiSource} from './m05-shop-ci-source.mjs';
+export {assertDevelopBackflowCurrent,authenticateDevelopBackflow,developBackflowOwns};
 // Full-source continuation for historical contracts; no partial/foreign projection.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -118,16 +121,46 @@ function beforeIntegratedReleaseCopier(path,source){
  assert.equal(hash(prior),'42a2fae24acaca0ff0214e5e0e592b2ff4cfd7f1e506578ba36faf327d17ae87','exact frozen Release copy predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
-function beforeRefactorCopier(source){
- if(hash(source)!=='848eb163ddf267e67e4b8e209c3cc55657d0d71293acfcbb0623a798c87142c2')return source;
- const prior=source.replace(" 'tests/fixtures/develop-native-portrait-lifecycle-source.json.gz':'1e0d7cf24e2bd08938383e862161fe5d70c9a5ae29a216a8890c1768b8c57422',\n 'tests/helpers/develop-release-backflow-source.mjs':'fbbde3b26babf6205ec58313de8f88e9f5ead8eeca2ee15b40f921b414f9f94e',\n",
-  " 'tests/helpers/develop-release-backflow-source.mjs':'70df2b48d5d0573d959be2dd80cf7799722c7cafa5e7b09701eac0d15b644036',\n");
- assert.equal(hash(prior),'287ddbb54bfec7eadf72bceea09c77c8029410c8ef03465d88a0fba6b023413b','exact Develop refactor copier predecessor');
- return prior;
+function beforeDevelopMapRenderCopier(path,source){
+ if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ const digest=hash(lf);
+ const combined=digest==='5248e173fe16d34ff5cd10780616f300fc09977759c94b0a6be72b8806a80764';
+ if(!combined&&digest!=='b7b55d5f7456195f80c84b8afbcfd624d0b12bfd7da4f91357d7fab86f3937ea')return source;
+ const prior=lf.replace(/^const developMapRenderFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
+  .replace('Object.entries(developMapRenderFiles))',combined?'Object.entries(eventProjectionFiles))':'Object.entries(developBackflowFiles))');
+ assert.equal(hash(prior),combined?'232a614e663999eb858d1f351dffee89ac821ce75e47c60c33122e42972c3ee4':'287ddbb54bfec7eadf72bceea09c77c8029410c8ef03465d88a0fba6b023413b','exact Develop map render copier predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
+function beforeDevelopCardDisplayCopier(path,source){
+ if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(hash(lf)!=='59f327a993b6c55a04fe03df4be341bed7b7cd19c629f85da91542d9d7bf2861')return source;
+ const prior=lf.replace(/^const developCardDisplayFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
+  .replace('Object.entries(developCardDisplayFiles))','Object.entries(developMapRenderFiles))');
+ assert.equal(hash(prior),'5248e173fe16d34ff5cd10780616f300fc09977759c94b0a6be72b8806a80764','exact Develop cardDisplay copier predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
+function beforeDevelopPortraitLifecycleCopier(path,source){
+ if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(hash(lf)!=='b56f2396efb198ba05a6b28e404f47a303d8ef0f4f2e76c436ff206257ef5076')return source;
+ const prior=lf.replace(/^const developPortraitLifecycleFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
+  .replace('Object.entries(developPortraitLifecycleFiles))','Object.entries(developCardDisplayFiles))');
+ assert.equal(hash(prior),'59f327a993b6c55a04fe03df4be341bed7b7cd19c629f85da91542d9d7bf2861','exact Develop portraitLifecycle copier predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeDevelopBackflowCopier(path,source){
+ source=beforeDevelopPortraitLifecycleCopier(path,source);
+ source=beforeDevelopCardDisplayCopier(path,source);
+ source=beforeDevelopMapRenderCopier(path,source);
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
- const lf=beforeRefactorCopier(normalize(source));
+ let lf=normalize(source);
+ if(hash(lf)==='232a614e663999eb858d1f351dffee89ac821ce75e47c60c33122e42972c3ee4'){
+  lf=lf.replace(/^const eventProjectionFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
+   .replace('Object.entries(eventProjectionFiles))','Object.entries(developBackflowFiles))');
+  assert.equal(hash(lf),'287ddbb54bfec7eadf72bceea09c77c8029410c8ef03465d88a0fba6b023413b','exact event projection copier predecessor');
+ }
  if(hash(lf)!=='287ddbb54bfec7eadf72bceea09c77c8029410c8ef03465d88a0fba6b023413b')return source;
  const prior=lf.replace(/const developBackflowFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
    .replace('Object.entries(developBackflowFiles))','Object.entries(stsCloseoutFiles))');
@@ -291,7 +324,29 @@ function beforePowerMembershipConfig(path,source){
  assert.equal(hash(prior),'7d0b25ebcbd323e633fad7bcf8e618966450c60dde9671185226f1e6cef8fbd1','exact Power membership architecture predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+// Authenticate the live Lua inventory test before restoring its complete prior source.
+const luaInventoryTest="tests/sts-style-source-epoch.test.mjs";
+const luaInventoryTestSha='5b02801e4b9837497fa8f9f20388cff207afa78e7f2a7f358b9ac9332e7b1774';
+const luaInventoryTestBlob='b43000381568f9b167c528e5f96f870c9f144d7a';
+function beforeLuaInventoryTest(path,source){
+ if(path!==luaInventoryTest||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const current=normalize(source);
+ if(hash(current)!==luaInventoryTestSha||blob(current)!==luaInventoryTestBlob)return source;
+ const start=" assertCurrentJsInventory(rawJs,integratedCiProof.inventory);\n // These five tests remain in current Full discovery.",end=" const newTest=";
+ assert.equal(current.split(start).length,2,'exact live Lua test boundary');
+ assert.equal(current.split(end).length,2,'exact live Lua test boundary');
+ const opening=current.indexOf(start),closing=current.indexOf(end);
+ assert(closing>opening,'ordered live Lua test boundary');
+ const oldCheck=' assertCurrentJsInventory(rawJs,integratedCiProof.inventory);assert.deepEqual(rawLua,integratedCiProof.luaInventory);\n';
+ const prior=(current.slice(0,opening)+oldCheck+current.slice(closing))
+  .replace('assertCurrentJsInventory,beforeShopEntryInventory','assertCurrentJsInventory')
+  .replace("['lua',currentLua]","['lua',rawLua]");
+ assert.equal(hash(prior),'77c59b6dc0d91f8fe1becd5a5df83efa6bcf0b5967e5eb3d95caebd51706d187','exact Lua inventory test predecessor');
+ assert.equal(blob(prior),'dfc38c230b942012183773414d04d5e89ca37315','exact Lua inventory test predecessor blob');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function beforeCoopCiSource(path,source){
+ source=beforeLuaInventoryTest(path,source);
  source=beforeStsFadeCi(path,source);
  source=beforeReleaseUiBuildSource(path,beforeRebasedCi(path,beforeRebasedCopier(path,source)));
  source=beforePowerMembershipConfig(path,beforePowerMembershipHelper(path,source));
@@ -352,6 +407,16 @@ export function beforeShopEntryInventory(paths,kind,read=readFileSync){
 export function assertCurrentJsInventory(paths,preceding,read=readFileSync){
  paths=beforeRefinedReleaseJsInventory(beforeShopEntryInventory(paths,'js',read),[...preceding,coopLabTest],read,true);
  assertCoopJsInventory(paths,preceding,read);
+}
+export function assertCurrentLuaInventory(paths,preceding,read=readFileSync){
+ const additions=[...Object.keys(newerTests.lua),shopEntryTests.lua[0],'tests/lua/shop_dismiss.lua'];
+ assert.deepEqual([...paths].sort(),[...preceding,...additions].sort(),'complete current raw discovery inventory (Lua)');
+ const prior=beforeShopEntryInventory(paths,'lua',(path,encoding)=>{
+  const source=read(path,encoding);
+  if(developBackflowOwns(path))assertDevelopBackflowCurrent(path,source);
+  return source;
+ });
+ assert.deepEqual([...prior].sort(),preceding,'complete Release bootstrap raw discovery inventory');
 }
 export function beforeCoopJsInventory(paths,preceding,read=readFileSync){
  paths=beforeRefinedReleaseJsInventory(beforeShopEntryInventory(paths,'js',read),[...preceding,coopLabTest],read);
@@ -426,16 +491,23 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
- const releaseRead=(path,encoding)=>beforeRebasedRelease(path,read(path,encoding));
+ const readBackflow=(path,encoding)=>{
+  const source=read(path,encoding);
+  if(developBackflowOwns(path))assertDevelopBackflowCurrent(path,source);
+  return authenticateDevelopBackflow(path,source,owner=>read(owner,'utf8'));
+ };
+ const releaseRead=(path,encoding)=>beforeRebasedRelease(path,readBackflow(path,encoding));
  assertReleaseCapacityCohort(releaseRead);
  assertRefinedReleaseSourcesCurrent((path,encoding)=>beforeReleaseCapacitySource(path,shopEntryPreflightRead(releaseRead)(path,encoding)));
  for(const [path,row] of Object.entries(coopLabCi.files)){
-  const input=beforeRelicCrystal(path,beforeMapCiSource(path,beforeReleaseUiBuildSource(path,beforeRebasedCi(path,read(path,'utf8')))));
+  const raw=readBackflow(path,'utf8'),projected=beforeLuaInventoryTest(path,raw);
+  if(path===luaInventoryTest)assert.notEqual(projected,raw,'fresh complete integration source: '+path);
+  const input=beforeRelicCrystal(path,beforeMapCiSource(path,beforeReleaseUiBuildSource(path,beforeRebasedCi(path,projected))));
   const source=beforeV2UiEvidence(path,beforeTinyHouseIntegratedSource(path,beforeFieldConfirmation(path,beforeRewardScreenCiSource(path,beforeCardFeedbackCiSource(path,input)))));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha,'fresh complete integration source: '+path);
  }
  for(const [path,sha] of Object.entries(sourceSuccessors)){
-  const current=beforeNativeButtonRepairCopier(path,beforeNativeButtonRepair(path,beforeDevelopBackflow(path,read(path,'utf8'))));
+  const current=beforeNativeButtonRepairCopier(path,beforeNativeButtonRepair(path,readBackflow(path,'utf8')));
   const source=beforeV2UiAdmission(path,beforeCoopCiSource(path,beforeStsUiCloseoutSource(path,current)));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha,'fresh complete integration source: '+path);
  }

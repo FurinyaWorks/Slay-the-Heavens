@@ -64,11 +64,7 @@ local powers={
 }
 local powerIds={flame_barrier=true,evolve=true,fire_breathing=true}
 M.ops={limitBreak=true,exhaustNonAttacks=true,secondWind=true,fiendFire=true,gainStatusPower=true}
-function M.withCards(data)
- assert(type(data)=='table' and data.cards and data.cards.cards and data.statuses and data.statuses.statuses,'missing warrior status data')
- assert(not data.experimentalWarriorStatus,'warrior status data already prepared')
- local out,ids,statusIds=copy(data),{},{}
- for _,c in ipairs(out.cards.cards) do assert(not ids[c.id],'duplicate source card');ids[c.id]=c end
+local function installCards(out,ids)
  for _,c in ipairs(cards) do
   local existing=ids[c.id]
   if existing then
@@ -80,6 +76,8 @@ function M.withCards(data)
    for i,old in ipairs(out.cards.cards) do if old==existing then out.cards.cards[i]=d;break end end
   else out.cards.cards[#out.cards.cards+1]=d end
  end
+end
+local function installStatuses(out,ids)
  for _,c in ipairs(states) do
   local existing=ids[c.id]
   if existing then
@@ -93,7 +91,8 @@ function M.withCards(data)
    for i,old in ipairs(out.cards.cards) do if old==existing then out.cards.cards[i]=copy(c);break end end
   else out.cards.cards[#out.cards.cards+1]=copy(c) end
  end
- for _,d in ipairs(out.statuses.statuses) do assert(not statusIds[d.id],'duplicate source status');statusIds[d.id]=d end
+end
+local function installPowers(out,statusIds)
  for _,d in ipairs(powers) do
   local existing=statusIds[d.id]
   if existing then assert(existing.kind=='buff' and existing.stack=='intensity' and existing.decay=='none',
@@ -103,6 +102,16 @@ function M.withCards(data)
    for i,old in ipairs(out.statuses.statuses) do if old==existing then out.statuses.statuses[i]=c;break end end
   else out.statuses.statuses[#out.statuses.statuses+1]=c end
  end
+end
+function M.withCards(data)
+ assert(type(data)=='table' and data.cards and data.cards.cards and data.statuses and data.statuses.statuses,'missing warrior status data')
+ assert(not data.experimentalWarriorStatus,'warrior status data already prepared')
+ local out,ids,statusIds=copy(data),{},{}
+ for _,c in ipairs(out.cards.cards) do assert(not ids[c.id],'duplicate source card');ids[c.id]=c end
+ installCards(out,ids)
+ installStatuses(out,ids)
+ for _,d in ipairs(out.statuses.statuses) do assert(not statusIds[d.id],'duplicate source status');statusIds[d.id]=d end
+ installPowers(out,statusIds)
  out.experimentalWarriorStatus=true;return out
 end
 local function amount(s,id) local n=s.player.statuses[id] or 0;assert(integer(n),'invalid status Power amount');return n end
