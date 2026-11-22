@@ -10,7 +10,7 @@ GameUI.new = function(root, data, presentation, click, platform)
         if readyChecks == nil or intent.page ~= 'nodePanel' then return true end
         local room = root:GetChild('nodePanel')
         assert(room.active and room.visible, 'readiness queried before the room was mounted')
-        assert(room:GetChild('merchant').visible == (intent.nodeType == 'shop'), 'readiness queried before room paint')
+        assert(room:GetChild('shopRoom').visible == (intent.nodeType == 'shop'), 'readiness queried before room paint')
         readyChecks = readyChecks + 1
         if beforeReady then beforeReady(room) end
         return not loading and not failure, failure
@@ -25,6 +25,7 @@ end
 
 local F = dofile('tests/lua/support/game_ui_fixture.lua')
 local routes = dofile('tests/lua/support/map_routes.lua')
+local finishShelf = dofile('tests/lua/support/shop_timeline.lua')
 local cursor = {CursorDown='down', CursorUp='up'}
 local function tick(host)
     host:update(1/60)
@@ -99,7 +100,7 @@ for _, kind in ipairs({'shop', 'event', 'camp'}) do
         local freshTap = {touchId=2}
         pressAndRelease(hit, freshTap)
         assert(hit.click(freshTap), 'fresh touch did not open the shop')
-        host:update(.31)
+        finishShelf(host.nodeUI)
         assert(host.nodeUI.actions['shopView/card1'], 'opened shop did not paint the shelf')
     elseif kind == 'event' then
         assert(host.nodeUI.actions['eventView/option1'].enabled)

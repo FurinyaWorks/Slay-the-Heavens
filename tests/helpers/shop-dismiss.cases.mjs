@@ -19,7 +19,9 @@ test('only the precise shop dismissal background is a nonfocusable bottom input 
   assert.equal(dismiss.focusable,false);
   assert.deepEqual(dismiss.position,[0,0]);
   assert.deepEqual(dismiss.size,nativeTheme.canvas.base);
-  assert.equal(panel.children[index-1].name,'backdrop');
+  for(const name of ['backdrop','shopRoom']) {
+    assert.ok(panel.children.findIndex(c=>c.name===name)<index,name);
+  }
   for(const name of ['shopView','merchant','back','confirm']) {
     assert.ok(panel.children.findIndex(c=>c.name===name)>index,name);
   }

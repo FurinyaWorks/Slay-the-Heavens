@@ -587,6 +587,26 @@
       "source": "https://interfaceingame.com/screenshots/slay-the-spire-rewards/"
     },
     {
+      "codePath": "scripts/shop-room-layout.mjs",
+      "codePaths": [
+        "scripts/node-ui-layout.mjs",
+        "scripts/cinematic-ui-layout.mjs",
+        "scripts/v25-node-layout.mjs"
+      ],
+      "targetVersion": "v2.0.0",
+      "state": "shopRoom",
+      "revision": "issue-828",
+      "status": "APPROVED",
+      "backlogTask": "TASK-103.7",
+      "reference": {
+        "path": "docs/design/reference-assets/v2.0.0/shop-entry-828.md",
+        "sha256": "acc28bf7145d21f31693e0e2cdc7897538500a82bb775b54668830ee43a6fe76"
+      },
+      "supersedes": [],
+      "note": "按 Owner 提供的房间与购物参考重做原生图元。此处批准设计范围，官方客户端及设备仍待验。",
+      "source": "https://github.com/FurinyaWorks/Slay-the-Heavens/issues/828"
+    },
+    {
       "codePath": "scripts/v25-node-layout.mjs",
       "codePaths": [
         "scripts/node-ui-layout.mjs"

@@ -7,9 +7,9 @@ import {gunzipSync} from 'node:zlib';
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const blob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
 const archive=readFileSync(new URL('../fixtures/develop-release-backflow-source.json.gz',import.meta.url));
-assert.equal(hash(archive),'191a8008105686f3ea25227e688fdeaca5dd80cb8e37c870b83ff37815442511','exact Develop Release-backflow source archive');
+assert.equal(hash(archive),'fe4aed844371f506320d48f6851f0feaad9161c4cc5b10250ac3adfedee34364','exact Develop Release-backflow source archive');
 const {base,files}=JSON.parse(gunzipSync(archive));
-assert.equal(base,'82ba375397ffd7f8f8175a7a1fd18a973450ecc6');
+assert.equal(base,'742a540ffc999e91acdface3d8fc7f753731f0a8');
 for(const {before,after} of Object.values(files)){
  assert.equal(hash(before.source),before.sha256);
  assert.equal(blob(before.source),before.gitBlob);
