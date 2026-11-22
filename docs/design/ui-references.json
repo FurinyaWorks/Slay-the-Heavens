@@ -129,7 +129,7 @@
       "backlogTask": "TASK-103.3",
       "reference": {
         "path": "docs/design/reference-assets/v2.0.0/sts1-character-backing-20261122.md",
-        "sha256": "18eb9b18811d124cf65a7a8b8578977b65afbc2823e95eb67807dfb6991f982f"
+        "sha256": "222fd819f90183b377e1d1fd51b849f48c622b1380b4bee9d6b4125d158026c7"
       },
       "supersedes": [
         "sts1-open-copy-20261119"
@@ -209,7 +209,7 @@
       "backlogTask": "TASK-103.3",
       "reference": {
         "path": "docs/design/reference-assets/v2.0.0/sts1-character-backing-20261122.md",
-        "sha256": "18eb9b18811d124cf65a7a8b8578977b65afbc2823e95eb67807dfb6991f982f"
+        "sha256": "222fd819f90183b377e1d1fd51b849f48c622b1380b4bee9d6b4125d158026c7"
       },
       "supersedes": [
         "develop",
@@ -223,7 +223,7 @@
         "image.officialBackdrops.title"
       ],
       "source": "https://interfaceingame.com/screenshots/slay-the-spire-choose-your-character/",
-      "note": "基线为 Release 09d6cc17。按用户确认使用近黑纯色底板；沿用正式角色槽、按钮及已选中时的原生角色画面。"
+      "note": "起始核对基线为 Release 09d6cc17。按用户确认使用近黑纯色底板；沿用正式角色槽、按钮及已选中时的原生角色画面。"
     },
     {
       "codePath": "scripts/character-selection-composition.mjs",
