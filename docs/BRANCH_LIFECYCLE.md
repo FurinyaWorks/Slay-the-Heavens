@@ -20,9 +20,10 @@
 | --- | --- | --- |
 | master | 已发行生产历史；只接正式 release 或 hotfix | 长期保护 |
 | release/v2.0.0 | 冻结的旧集成来源，供取证及接续 | 保留分支与精确提交，见 [2.0 重建交接](versions/V2-RELEASE-HANDOFF.md) |
-| fix/*（v2.0.0 缺陷） | 从最新 develop 起；PR 目标 develop | 经本版验收、合入后核对并删 head |
+| fix/*（v2.0.0 缺陷） | 从最新 develop 起，默认在 Fork 开发 | 成熟候选提 develop PR，验收后清理临时 ref |
 | develop | v2.0.0 重建及后续工作主线 | 长期保护 |
-| feat/*、docs/*（非本版） | 从 develop 起；PR 目标 develop | 经合入/验收清理 |
+| feature/*、feat/*、refactor/*、experiment/*、spike/* | 从最新 develop 起，在 Fork 开发 | 成熟切片提 develop PR，实验按实际出口保留证据 |
+| test/*、perf/*、docs/* | 从最新 develop 起，默认在 Fork 开发 | 经合入和验收清理 |
 | archive/*、冻结实验 | 有明确用途、来源 SHA、负责人和复核点 | 不因年龄自动删除；不用长期占用日常活跃 WIP |
 | gh-readonly-queue/*、handoff/* | 临时测试/交接引用 | 先确认对应 PR/作业结束、无后续引用再清理 |
 | 关闭未合并 PR 的来源 | 保留至 Backlog 和继承者记录完整 | 不等于“已交付”或“可以直接删” |
@@ -49,6 +50,8 @@
 4. **只选一种出口**：`DELIVERED_VERIFIED`（已交付且已核对）；`SUPERSEDED`（继任来源及未接续内容明确）；`FROZEN`（有后续目标和复核触发条件的实验/HOLD）；`DISCARDED`（确认不需要且保留足够恢复/审计证据）。等待依赖、CI 或审批时保持 `ACTIVE/BLOCKED/DELIVERY_PENDING`，**不算关闭**。
 5. **安全清理**：确认不是 master/develop/release/受保护分支；远端 HEAD 仍等于复核时固定 SHA；没有开放 PR 将它作为 head 或 base；无在途 Agent、依赖/工作树/未提交文件/唯一证据；交付或弃用的证明成立。Squash 改写 SHA，所以 `ahead_by=0`、`git branch --merged` 或 diff 看起来为空都不能独立替代交付证据。满足才删除远端引用和自己的**干净**工作树；有疑点保留并标 `NEEDS_REVIEW`。
 6. **核实关闭**：读回远端 branch 已不存在（或标注为什么保留）；原 PR/Backlog 状态、继承者和版本无误，再领取下一个独立任务。GitHub 自动删 head 只是一项辅助。
+
+主仓正式 PR 的自动删分支只作用于主仓 head。负责人核对各 Fork 上使用的开发和预检 ref，确认所测内容已交付或可从固定证据恢复，而且没有后续提交、在途 PR 或仍需保留的验证。用核对过的 SHA 做租约保护清理，逐个读回主仓和 Fork 的结果。仍在进行的工作在原 Backlog 留下仓库、ref、HEAD/BASE、验证结果、接续人及下一步。
 
 **最小留痕（写在既有 PR / Backlog 交接备注，不为每个分支另建文件/Issue）**：
 
