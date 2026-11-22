@@ -7,6 +7,7 @@ import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {beforeTinyHouseCiSource,beforeV2UiEvidence as beforePriorEvidence} from './v2-ui-admission-ci-source.mjs';
+import {beforeRelicDetail} from './relic-detail-source.mjs';
 
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 const {project:beforeReleaseControlsGuideRemovalCi}=releaseUiRestoreArchive(
@@ -72,6 +73,7 @@ export function beforeRelicCrystal(path,source){
 }
 
 export function beforeV2UiPreTinyHouseSource(path, source) {
+  source = beforeRelicDetail(path,source);
   source = beforeRecordingUi(path,beforeRelicCrystal(path,source));
   source = beforeReleaseForgeGridUi(path,beforeRefinedReleaseCiSource(path,source));
   source = beforeReleaseSharedRelicCi(path,source);

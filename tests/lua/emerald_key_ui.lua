@@ -10,13 +10,9 @@ local function get(root,path)
  local c=root;for part in path:gmatch('[^/]+')do c=assert(c:GetChild(part),path)end;return c
 end
 local function fixture(surfaceCapacity)
- local focus
- local controller={events={Confirm='confirm',Cancel='cancel',Focus='focus'},directions={Left='left',Right='right'},
-  modes={Specified='specified',NearestControl='nearest'},isController=function()return true end,
-  getFocus=function()return focus end,setFocus=function(c)assert(c);focus=c end}
  local root=F.Viewport.apply(F.control({children=F.Layout}),1280,720)
  local host=F.GameUI.new(root,S.data(true),F.Presentation,'click',{
-  seed=42,prologue=false,campaign=true,imageSource='static',cursorEvents=cursor,controllerApi=controller,
+  seed=42,prologue=false,campaign=true,imageSource='static',cursorEvents=cursor,
   color=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end,
   readEndingHistory=function()return{version=1,wins={ironclad=true,silent=true,defect=true}}end})
  root.ui=host;assert(testStart(host));local run,map=host.run,host.map
@@ -44,7 +40,7 @@ local function control(root,name)
  return get(root,'battlePanel/'..(path and 'potionHelp/'or '')..name)
 end
 local function tap(c,id)
- assert(c.visible and c.interactable)
+ assert(c.visible and (c.kind=='cursorArea' and c.raycastTarget~=false or c.kind~='cursorArea' and c.interactable))
  c.listeners.down({touchId=id});c.listeners.up({touchId=id});c.listeners.click({touchId=id})
 end
 test(function()
@@ -52,26 +48,24 @@ test(function()
  local names={'goldReward','relicReward1','relicReward2','emeraldKeyReward','claimPotion','cardReward'}
  local previous
  for _,name in ipairs(names)do
-  local c=control(root,name);assert(c.visible and c.interactable and c.canControllerFocus)
+  local c=control(root,name);assert(c.visible and c.interactable)
   if previous then assert(previous.y-c.y>=64,'reward hit rows overlap')end;previous=c
  end
  local held=#run.relics;local gold=run.gold
  for i,name in ipairs(names)do
-  local c=control(root,name);host:update(0);assert(host.controller:focus(c));assert(c.canControllerFocus)
-  if i%2==0 then c.navigationListeners.confirm()else tap(c,100+i)end
+  local c=control(root,name);host:update(0);tap(c,100+i)
   if name=='cardReward'then
    host:update(0);tap(control(root,'skip'),200)
    assert(not run.rewards.cardResolved and host.battleUI.rewardScreen=='list','source Skip only closes the picker')
    tap(control(root,'cardReward'),201);host:update(0)
-   local card=get(root,'battlePanel/card1/hit');assert(host.controller:focus(card));card.navigationListeners.confirm()
+   local card=get(root,'battlePanel/card1/hit');tap(card,202)
   end
  end
  assert(run.keys.emerald and #run.relics==held+2 and run.gold>gold)
  assert(run.rewards.emeraldKey.claimed and run.rewards.relics[1].claimed and run.rewards.relics[2].claimed)
  assert(run.rewards.potion.resolved,'potion row did not resolve: '..tostring(host.battleUI.rewardNotice))
  assert(run.rewards.cardResolved,'card obtain did not resolve: '..tostring(host.battleUI.rewardScreen))
- host:update(0);local proceed=control(root,'continue');assert(host.controller:focus(proceed))
- proceed.navigationListeners.confirm();assert(run.phase=='map'and host.mode=='map')
+ host:update(0);local proceed=control(root,'continue');tap(proceed,203);assert(run.phase=='map'and host.mode=='map')
 end)
 test(function()
  local host,root,run=fixture();local key=control(root,'emeraldKeyReward')

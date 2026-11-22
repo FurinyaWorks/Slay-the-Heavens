@@ -8,11 +8,11 @@ import {resolve,join} from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {createRequire} from 'node:module';
 
-test('relic controller Confirm suppresses only its same-frame native Click across paging close and bar',()=>{
+test('relic pointer opens, pages, and closes without reopening on a stale close',()=>{
   buildLuaData();buildUI();
-  const result=runLua('tests/lua/relic_view_controller_click.lua');
+  const result=runLua('tests/lua/relic_view_input.lua');
   assert.equal(result.status,0,result.stderr+result.stdout);
-  assert.match(result.stdout,/RELIC_CONTROLLER_CLICK_PASS/);
+  assert.match(result.stdout,/RELIC_POINTER_PASS/);
 });
 
 test('official generated relic HUD shares geometry, hover and owned details across run pages',t=>{
@@ -25,7 +25,7 @@ test('official generated relic HUD shares geometry, hover and owned details acro
   const script=`local generated=${luaString(directory.replaceAll('\\','/'))}
 package.path=generated..'/?.lua;src/lua/?.lua'
 for _,name in ipairs(${toLua(modules)})do package.preload[name]=assert(loadfile(generated..'/'..name..'.lua'))end
-dofile('tests/lua/relic_view_controller_click.lua')`;
+dofile('tests/lua/relic_view_input.lua')`;
   const require=createRequire(import.meta.url);
   const result=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),'-e',script],{
     encoding:'utf8',timeout:30000,maxBuffer:2*1024*1024,env:{...process.env,LUA_INIT:'',LUA_INIT_5_3:''},

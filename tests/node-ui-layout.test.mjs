@@ -59,14 +59,14 @@ test('framed node buttons preserve direct paths and have hidden hover and presse
   assert.equal(nativeTheme.layout.nativeNode.buttonStates.pressedScale,0.96);
 });
 
-test('every interactive control is a full-size focusable touch target inside the safe area', () => {
+test('every interactive control is a full-size touch target inside the safe area', () => {
   const [w, h] = nativeTheme.canvas.base, safe = nativeTheme.canvas.safe;
   let count = 0;
   walk(panel, (control, origin) => {
     if (!clickable(control)) return;
     count += 1;
     const hit = control.children.find(c => c.kind === 'cursorArea');
-    assert.equal(hit.focusable, true, control.name);
+    assert.equal(hit.focusable, undefined, control.name);
     assert.deepEqual(hit.size, control.size, control.name);
     assert.ok(hit.size.every(value => value >= 44), control.name);
     const box = bounds(control, origin);

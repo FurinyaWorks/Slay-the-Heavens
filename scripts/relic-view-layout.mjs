@@ -30,15 +30,17 @@ export function relicTooltip(theme) {
 export function relicViewControls(theme = nativeTheme) {
   const { plate, text } = nativeControls(theme);
   const { color: c, font: f, layout: l, space: s } = theme, v = l.relicView;
+  const detail = v.detail;
   const left = (control) => ({ ...control, text: { ...control.text, align: 'left' } });
-  const top = (control) => ({ ...control, text: { ...control.text, valign: 'top' } });
   const right = (control) => ({ ...control, text: { ...control.text, align: 'right' } });
+  const detailDescription = left(text('description', detail.description, '', f.small, c.text));
+  Object.assign(detailDescription.text, { valign: 'top', minFontSize: f.minimum });
   const button = (name, frame, label) => {
     const size = frame.slice(2), variants = { normal: [c.panelRaised, c.goldBright, c.goldDim],
       hover: [c.panelRaised, c.goldBright, c.goldBright], pressed: [c.buttonPressedFill, c.text, c.goldBright],
       disabled: [c.panelSunken, c.textMuted, c.line] };
     return { name, kind: 'container', position: frame.slice(0, 2), size, children: [
-      { name: 'hit', kind: 'presetButton', size, focusable: true,
+      { name: 'hit', kind: 'presetButton', size,
         states: Object.fromEntries(Object.keys(variants).map(k => [k, k])),
         children: Object.entries(variants).map(([state, [fill, ink, border]]) => ({ name: state, kind: 'container', size, children: [
           plate('border', [0, 0, ...size], border), plate('plate', [0, 0, ...size.map(x => x - s.border * 2)], fill),
@@ -65,7 +67,7 @@ export function relicViewControls(theme = nativeTheme) {
     slot.children.find(part => part.name === 'icon').colour = theme.presentationProfile === 'official-assets-first' ? '#FFFFFF' : hud.ink;
     slot.children.push({ ...right(text('counter', [0, -10, 40, 36], '', f.small, '#FFFFFF')), visible: false });
     slot.children.push({ ...text('more', b.more, '', f.label, c.goldBright), visible: false });
-    slot.children.push({ name: 'hit', kind: 'cursorArea', size: [b.step, 44], focusable: true });
+    slot.children.push({ name: 'hit', kind: 'cursorArea', size: [b.step, 44] });
     return slot;
   })];
   const [rw, rh] = v.row, discX = -rw / 2 + s.m + v.disc / 2;
@@ -84,7 +86,7 @@ export function relicViewControls(theme = nativeTheme) {
   }));
   return [
     { name: 'relicBar', kind: 'container', size: [...theme.canvas.base], visible: false, children: bar },
-    { name: 'relicPanel', kind: 'container', size: [...theme.canvas.base], visible: false, isolateNavigation: true, children: [
+    { name: 'relicPanel', kind: 'container', size: [...theme.canvas.base], visible: false, children: [
       { ...plate('veil', [0, 0, ...theme.canvas.base], c.backdropVeil.slice(0, 7)),
         opacity: c.backdropVeil.length === 9 ? parseInt(c.backdropVeil.slice(7), 16) / 255 : 1 },
       { name: 'blocker', kind: 'cursorArea', size: [...theme.canvas.base], focusable: false },
@@ -94,13 +96,13 @@ export function relicViewControls(theme = nativeTheme) {
       { name: 'contentBlocker', kind: 'cursorArea', size: v.panel.slice(2), focusable: false },
       text('title', v.title, '持有遗物', f.heading, c.goldBright),
       ...rows,
-      { name: 'single', kind: 'container', size: v.panel.slice(2), visible: false, children: [
-        { name: 'icon', kind: 'image', position: [0, 144], size: [v.disc * 2, v.disc * 2],
+      { name: 'single', kind: 'container', size: detail.size, visible: false, children: [
+        { name: 'icon', kind: 'image', position: detail.icon.slice(0, 2), size: detail.icon.slice(2),
           image: theme.icon.node.treasure.id ?? theme.icon.node.treasure, colour: '#FFFFFF' },
-        text('name', [0, 42, v.row[0], 48], '', f.heading, c.goldBright),
-        text('rarity', [0, 0, v.row[0], 36], '', f.label, c.textDim),
-        top(text('description', [0, -102, v.row[0]-48, v.description[3]], '', theme.presentationProfile==='official-assets-first'?f.body:f.small, c.text)),
-        text('status', [0, -210, v.row[0], 36], '', f.label, c.goldBright),
+        left(text('name', detail.name, '', f.heading, c.goldBright)),
+        left(text('rarity', detail.rarity, '', f.small, c.textDim)),
+        detailDescription,
+        right(text('status', detail.status, '', f.small, c.goldBright)),
       ] },
       { ...text('placeholder', [0, 0, 600, 48], '本局尚未获得遗物。', f.body, c.textDim), visible: false },
       button('close', v.close, '关闭'),

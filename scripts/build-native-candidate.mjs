@@ -1,5 +1,6 @@
 import {prepareRefinedReleaseMonsterArt,refinedReleaseMonsterRegistry} from './refined-release-monsters.mjs';
 import {validateOfficialAssets,candidateAssetsArgs,matchesOfficialAssetFlags,officialAssetsProfile,refinedReleaseOfficialAssetsProfile,officialAssetFlagsFor} from './official-assets-profile.mjs';
+import {deckBrowserTemplateName,deckBrowserBindingModule,deckBrowserBindingSource,deckBrowserParts} from './deck-ui-layout.mjs';
 import {selectionHalfTemplate} from './lumine-selection-background.mjs';
 import {attachLowCostArt} from './lowcost-art.mjs';
 import {monsterSourceInputs,prepareMonsterArt,monsterActorTemplate,monsterActorTiers,monsterPowerTemplateName,monsterActorTemplateName,monsterActorBindingModule,bindMonsterActorTemplates,monsterActorInventory,monsterArtPayloadSource} from './monster-art.mjs';
@@ -33,6 +34,7 @@ import {loadNativeUiEncoder} from './native-ui-encoder.mjs';
 import {prepareComponentControlLayout,assertComponentControlOutput,componentBindingSource} from './native-component-profile.mjs';
 
 export const generatedRuntimeModules = {
+  [deckBrowserBindingModule]:'scripts/build-ui.mjs',
   abyss_component_binding:'scripts/build-ui.mjs',
   [v25CardModule]:'scripts/build-ui.mjs',
   [uiProfileModule]:'scripts/build-ui.mjs',
@@ -243,12 +245,14 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
     for(const source of modules.values())fileRecord(source);
     client??=await createClient(workspace);
     for(const uri of ['miliastra://workflow','miliastra://platform-rules'])writeExclusive(join(workspace,`${uri.split('//')[1]}.json`),await client.readResource({uri}));
-    const readyTemplates={},v25TemplateIndices={},maskTemplateIndices={},allTemplateIds=[],monsterTierResults={};let monsterTemplate,monsterPowerTemplate,cachedUi=refinedTiers?null:reusableUi(base,generated,{privateTemplates:!!(v25Cards||v25Masks||officialAssets&&flags.selectionAvatar),galleryImageTypes:toolchainIdentity?.galleryImageTypes});
+    const browserTemplateIndices={},readyTemplates={},v25TemplateIndices={},maskTemplateIndices={},allTemplateIds=[],monsterTierResults={};let deckTemplate,monsterTemplate,monsterPowerTemplate,cachedUi=refinedTiers?null:reusableUi(base,generated,{privateTemplates:!!(v25Cards||v25Masks||officialAssets&&flags.selectionAvatar),galleryImageTypes:toolchainIdentity?.galleryImageTypes});
     if(cachedUi){
       const cached=JSON.parse(readFileSync(cachedUi.receipt.path,'utf8')), actors=cached.monsterActors;
       if(!actors||![actors.templateIndex,actors.powerTemplateIndex,actors.containerTemplateIndex].every(n=>Number.isSafeInteger(n)&&n>0)
         ||new Set([actors.templateIndex,actors.powerTemplateIndex,actors.containerTemplateIndex]).size!==3
-        ||actors.containerTemplateIndex!==cachedUi.templateResults[readyArtGroupTemplate]?.templateIndex)cachedUi=null;
+        ||actors.containerTemplateIndex!==cachedUi.templateResults[readyArtGroupTemplate]?.templateIndex
+        ||(modules.has(deckBrowserBindingModule)&&(!cachedUi.templateResults[deckBrowserTemplateName]||
+          deckBrowserParts.some(part=>templates.some(t=>t.name===part.name)&&!cachedUi.templateResults[part.name]))))cachedUi=null;
       else {cachedUi.templateResults[monsterActorTemplateName]={templateIndex:actors.templateIndex};cachedUi.templateResults[monsterPowerTemplateName]={templateIndex:actors.powerTemplateIndex};}
     }
     if(cachedUi)receipt.reusedUi=cachedUi.receipt;
@@ -257,6 +261,8 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
       allTemplateIds.push(result.templateIndex);
       if(v25Masks&&template.name===v25UiMaskTemplate)maskTemplateIndices[template.name]=result.templateIndex;
       if(v25Cards?.templates.some(row=>row.name===template.name))v25TemplateIndices[template.name]=result.templateIndex;
+      if(template.name===deckBrowserTemplateName)deckTemplate=result;
+      if(deckBrowserParts.some(part=>part.name===template.name))browserTemplateIndices[template.name]=result.templateIndex;
       if(template.name===monsterActorTemplateName)monsterTemplate=result;
       if(refinedTiers&&template.name!==monsterActorTemplateName&&template.name.startsWith(monsterActorTemplateName))monsterTierResults[template.name]=result;
       if(template.name===monsterPowerTemplateName)monsterPowerTemplate=result;
@@ -267,6 +273,17 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
         if(!modules.has(backgroundModule))throw Error('Official background template has no runtime module');
         readyTemplates.background=result;
       }
+    }
+    if(modules.has(deckBrowserBindingModule)){
+      const index=deckTemplate?.templateIndex;
+      if(!Number.isSafeInteger(index)||index<=0||allTemplateIds.filter(id=>id===index).length!==1)
+        throw Error('Deck browser requires one candidate-local template index');
+      const parts=officialAssets&&nativePageLifecycle?deckBrowserParts.map(part=>({...part,templateIndex:browserTemplateIndices[part.name]})):[];
+      if(parts.some(part=>!Number.isSafeInteger(part.templateIndex)||part.templateIndex<=0||
+          allTemplateIds.filter(id=>id===part.templateIndex).length!==1))
+        throw Error('Deck browser chunks require distinct candidate-local template indices');
+      writeFileSync(join(generated,deckBrowserBindingModule+'.lua'),deckBrowserBindingSource(index,parts));
+      receipt.deckBrowser={templateIndex:index,maxFaces:10,parts};
     }
     if(refinedTiers&&Object.values(monsterTierResults).some(({templateIndex})=>
       !Number.isSafeInteger(templateIndex)||templateIndex<=0||allTemplateIds.filter(index=>index===templateIndex).length!==1))

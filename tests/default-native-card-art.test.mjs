@@ -45,7 +45,7 @@ test('explicit cards opt-in UI build keeps all75 assets lazy and all card contex
   const game=JSON.parse(readFileSync(join(directory,'game-ui.json'))),templates=JSON.parse(readFileSync(join(directory,'game-ui-templates.json')));
   visit(game);for(const template of templates)visit(template);
   assert.deepEqual([...readyCardHolderPaths(game),...templates.flatMap(readyCardHolderPaths)].sort(),
-    [...expectedReadyCardGameHosts,'AbyssDeckCard/face','AbyssForgeCard'].sort(),'retain every game face and both dormant recyclable card templates');
+    [...expectedReadyCardGameHosts,'AbyssDeckCard/face','AbyssBattlePileCard/face','AbyssForgeCard'].sort(),'retain every game face and both dormant recyclable card templates');
   for(const holder of holders)assert.deepEqual(holder.children,[]);
   assert.equal(existsSync(join(directory,'native-card-art-receipt.json')),false,'normal build must not silently select the legacy static pool');
 });

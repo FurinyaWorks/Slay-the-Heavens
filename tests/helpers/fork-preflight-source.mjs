@@ -188,14 +188,28 @@ function beforeDevelopActorFocusCopier(path,source){
 }
 function beforeDevelopSessionRelicCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
- const lf=normalize(source);
- if(hash(lf)!=='5130bc86b8e09a85aa7981393335cecec6d76a1b38f2ab2a80ac4810b22fa2d9')return source;
+ let lf=normalize(source);
+ const sessionRelicSha='5130bc86b8e09a85aa7981393335cecec6d76a1b38f2ab2a80ac4810b22fa2d9';
+ if(hash(lf)==='8f750c5899d830865b07c6802e292041388e1bf15d7a706b00d18da8a6903f32'){
+  lf=lf.replace(/^const relicDetailFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
+   .replace('Object.entries(relicDetailFiles))','Object.entries(developSessionRelicFiles))');
+  assert.equal(hash(lf),sessionRelicSha,'exact relic detail copier predecessor');
+ }
+ if(hash(lf)!==sessionRelicSha)return source;
  const prior=lf.replace(/^const developSessionRelicFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
   .replace('Object.entries(developSessionRelicFiles))','Object.entries(developActorFocusFiles))');
  assert.equal(hash(prior),'6d3bf93a3d1e020b69673d7864fe574ca8ed858945a02772cd662eb4b042a6ed','exact Develop sessionRelic copier predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeDevelopBackflowCopier(path,source){
+ if(path==='tests/helpers/copy-integration-source-closure.mjs'&&typeof source==='string'
+  &&hash(normalize(source))==='dbb15c5ae00750913e1c44c41c670181ab87bb7ee5cecade9fb2592c65c5556b'
+  &&(!source.includes('\r')||!/[\r\n]/.test(source.replaceAll('\r\n','')))){
+  const prior=normalize(source).replace(/^const mapRoomEntryFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
+   .replace('Object.entries(mapRoomEntryFiles))','Object.entries(relicDetailFiles))');
+  assert.equal(hash(prior),'8f750c5899d830865b07c6802e292041388e1bf15d7a706b00d18da8a6903f32','exact map-room copier predecessor');
+  source=source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+ }
  source=beforeDevelopSessionRelicCopier(path,source);
  source=beforeDevelopActorFocusCopier(path,source);
  source=beforeDevelopStasisUpgradeCopier(path,source);

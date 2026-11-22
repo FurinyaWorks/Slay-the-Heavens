@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
+import {authenticateInputRetirement,beforeInputRetirement,beforeInputRetirementReader,assertPointerInputSource,pointerInputPath,retiredControllerPath} from './input-retirement-source.mjs';
+import {authenticateRelicDetail,beforeRelicDetail,relicDetailOwns} from './relic-detail-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const blob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
@@ -110,7 +112,13 @@ assert(stasisUpgradeAddedPaths.every(path=>actorFocus.luaBefore.includes(path)),
 for(const path of actorFocusOwners.filter(path=>path!==architecturePath)){
  assert(!priorLayers.some(layer=>Object.hasOwn(layer,path))&&!Object.hasOwn(stasis.added,path),'distinct Develop Actor/Focus source owner: '+path);
 }
-const layers=[actorFocus.files,...priorLayers];
+const pileOpenArchive=readFileSync(new URL('../fixtures/develop-combat-pile-opening-source.json.gz',import.meta.url));
+assert.equal(hash(pileOpenArchive),'a9e96c6caa44e21e45493a63385bf315ba9eaaf9a30257533bc46ccf9e51f9e6','exact Develop combat pile opening predecessor archive');
+const pileOpen=JSON.parse(gunzipSync(pileOpenArchive));
+assert.equal(pileOpen.base,'19d4be4d9af4bf42635a224a118fc99898ea7898');
+assert.deepEqual(Object.keys(pileOpen.files),['src/lua/abyss_card_skin.lua',deckPath]);
+assert(matches(pileOpen.files[deckPath].before.source,rewardUi.files[deckPath].after),'combat pile opening follows the exact reward UI predecessor');
+const layers=[pileOpen.files,actorFocus.files,...priorLayers];
 const sessionRelicArchive=readFileSync(new URL('../fixtures/develop-session-relic-source.json.gz',import.meta.url));
 assert.equal(hash(sessionRelicArchive),'3597ea919d88cd07f5e4e8f2c8918c0558f613f6a3fd3d6fda3a08469276db05','exact Develop session relic predecessor archive');
 const sessionRelic=JSON.parse(gunzipSync(sessionRelicArchive));
@@ -149,20 +157,51 @@ for(const after of [...Object.values(stasis.added),...Object.values(actorFocus.a
 const priorCurrent=path=>layers.find(layer=>Object.hasOwn(layer,path))?.[path]??
  (Object.hasOwn(actorFocus.added,path)?actorFocus.added[path]:undefined);
 const current=path=>Object.hasOwn(sessionRelic.files,path)?sessionRelic.files[path]:priorCurrent(path);
-export const developBackflowOwns=path=>current(path)!==undefined;
+export const developBackflowOwns=path=>relicDetailOwns(path)||current(path)!==undefined;
+const roomEntryArchive=readFileSync(new URL('../fixtures/develop-map-room-entry-source.json.gz',import.meta.url));
+assert.equal(hash(roomEntryArchive),'bff89df36b2fbbf1bec727dae075c632dba48d50c6c8c75b8e3f271d7600c160','exact Develop map-room predecessor archive');
+const roomEntry=JSON.parse(gunzipSync(roomEntryArchive));
+assert.equal(roomEntry.base,'d7ae494a3136b2f4f707428fefeeae478c6e0495');
+for(const [path,{before,after}] of Object.entries(roomEntry.files)){
+ assert(developBackflowOwns(path)||/^src\/lua\/abyss_[a-z0-9_]+\.lua$/.test(path),'map-room replay owner: '+path);
+ assert(matches(before.source,before),'exact Develop map-room predecessor: '+path);
+ assert.match(after.sha256,/^[a-f0-9]{64}$/);
+ assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
+}
+const deckPagesArchive=readFileSync(new URL('../fixtures/develop-deck-pages-source.json.gz',import.meta.url));
+assert.equal(hash(deckPagesArchive),'d3a6b845870da64358c3ca36307062c02cc39d2e070e21eb875f9e2e42d02036','exact Develop deck-pages predecessor archive');
+const deckPages=JSON.parse(gunzipSync(deckPagesArchive));
+assert.equal(deckPages.base,'00229683d0d38660c98ced2f4a41e89d84fc5e4e');
+for(const [path,{before,after}] of Object.entries(deckPages.files)){
+ assert(matches(before.source,before),'exact deck-pages predecessor: '+path);
+ assert.match(after.sha256,/^[a-f0-9]{64}$/);
+ assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
+}
+export const deckPagesAdded=Object.keys(deckPages.added);
+function deckPagesPrior(path,source){return predecessor(deckPages.files,path,source);}
+export function beforeDeckPages(path,source,options){return deckPagesPrior(path,beforeInputRetirement(path,source,options));}
 function matches(source,expected){
  if(typeof source!=='string'||source.includes('\r\r\n'))return false;
  const lf=source.replaceAll('\r\n','\n');
  return hash(lf)===expected.sha256&&blob(lf)===expected.gitBlob;
 }
 export function assertDevelopBackflowCurrent(path,source){
+ source=roomEntryCurrent(path,beforeDeckPages(path,source));
+ if(relicDetailOwns(path)){
+  assert.notEqual(beforeRelicDetail(path,source),source,'fresh current production owner: '+path);
+  return;
+ }
  assert(matches(source,current(path).after),'fresh current production owner: '+path);
 }
 export function assertStasisUpgradeAdded(path,source){
  assert(Object.hasOwn(stasis.added,path)&&matches(source,stasis.added[path]),'fresh Stasis upgrade module: '+path);
 }
 export function assertActorFocusInventory(paths,read=path=>readFileSync(path,'utf8')){
- assert.deepEqual([...paths].sort(),[...actorFocus.luaBefore,...actorFocusAdded].sort(),'complete current Actor/Focus Lua module inventory');
+ const expected=[...actorFocus.luaBefore,...actorFocusAdded,...deckPagesAdded];
+ assert(expected.includes(retiredControllerPath),'exact controller predecessor in Actor/Focus Lua inventory');
+ assert.deepEqual([...paths].sort(),[...expected.filter(path=>path!==retiredControllerPath),pointerInputPath].sort(),'complete current Actor/Focus Lua module inventory');
+ assertPointerInputSource(read(pointerInputPath));
+ for(const path of deckPagesAdded)assert(matches(beforeInputRetirement(path,read(path)),deckPages.added[path]),'fresh deck browser module: '+path);
  for(const path of actorFocusOwners)assertDevelopBackflowCurrent(path,read(path));
  for(const path of stasisUpgradeAddedPaths)assertStasisUpgradeAdded(path,read(path));
 }
@@ -171,17 +210,29 @@ function predecessor(layer,path,source){
  const before=layer[path].before.source;
  return source.includes('\r\n')?before.replaceAll('\n','\r\n'):before;
 }
+function roomEntryCurrent(path,source){
+ if(!Object.hasOwn(roomEntry.files,path))return source;
+ assert(matches(source,roomEntry.files[path].after),'fresh current production owner: '+path);
+ return predecessor(roomEntry.files,path,source);
+}
+export function assertCurrentMapRoomOwner(path,source){
+ if(Object.hasOwn(roomEntry.files,path)){
+  assert(matches(beforeDeckPages(path,source),roomEntry.files[path].after),'combined linked owner identity: '+path+' during map-room validation');
+ }
+}
 function beforePriorDevelopBackflow(path,source){
  return layers.reduce((prior,layer)=>predecessor(layer,path,prior),source);
 }
 const forethoughtOwners=[deckPath,'scripts/deck-ui-layout.mjs'];
+const pileOpenOwners=[...forethoughtOwners,'src/lua/abyss_card_skin.lua'];
 function authenticatePriorDevelopBackflow(path,source,read){
  const prior=beforePriorDevelopBackflow(path,source);
  if(prior===source)return source;
  const row=layers.find(layer=>Object.hasOwn(layer,path)&&matches(source,layer[path].after))[path];
  const actorOwner=Object.hasOwn(actorFocus.files,path)&&row===actorFocus.files[path];
  const stasisOwner=Object.hasOwn(stasis.files,path)&&(row===stasis.files[path]||(actorOwner&&path===architecturePath));
- const owners=actorOwner?actorFocusOwners:forethoughtOwners.includes(path)?forethoughtOwners:[path];
+ const pileOwner=row===pileOpen.files[path];
+ const owners=actorOwner?actorFocusOwners:pileOwner?pileOpenOwners:forethoughtOwners.includes(path)?forethoughtOwners:[path];
  const linkedOwners=stasisOwner?new Set([...owners,...Object.keys(stasisCurrent)]):owners;
  for(const owner of linkedOwners){
   let live;
@@ -195,6 +246,7 @@ function authenticatePriorDevelopBackflow(path,source,read){
 export const configSourceTokens=source=>source.replace(/"(?:\\.|[^"\\])*"|[ \t\r\n]+/g,token=>token.startsWith('"')?token:'');
 export function isSessionRelicSuccessor(path,source,{allowConfigLayout=false}={}){
  if(!Object.hasOwn(sessionRelic.files,path))return false;
+ source=predecessor(roomEntry.files,path,beforeDeckPages(path,source,{allowConfigLayout}));
  const expected=sessionRelic.files[path].after;
  if(matches(source,expected))return true;
  if(!allowConfigLayout||!expected.tokensSha256||typeof source!=='string'||source.includes('\r\r\n'))return false;
@@ -207,12 +259,41 @@ function beforeSessionRelic(path,source,options){
  return source.includes('\r\n')?before.replaceAll('\n','\r\n'):before;
 }
 export function beforeDevelopBackflow(path,source,options){
+ source=predecessor(roomEntry.files,path,beforeDeckPages(path,source,options));
+ source=beforeRelicDetail(path,source);
  return beforePriorDevelopBackflow(path,beforeSessionRelic(path,source,options));
 }
 export function assertCurrentSessionRelicOwner(path,source){
- if(Object.hasOwn(sessionRelic.files,path))assert(matches(source,current(path).after),'combined linked owner identity: '+path);
+ if(Object.hasOwn(sessionRelic.files,path)){
+  assert(matches(predecessor(roomEntry.files,path,beforeInputRetirement(path,source)),current(path).after),'combined linked owner identity: '+path);
+ }
 }
 export function authenticateDevelopBackflow(path,source,read,options){
+ source=authenticateInputRetirement(path,source,read,options);
+ read=beforeInputRetirementReader(read);
+ const deckPrior=deckPagesPrior(path,source);
+ if(deckPrior!==source){
+  let live;
+  try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
+  assert(matches(live,deckPages.files[path].after),'combined linked owner identity: '+path+' during deck-pages validation');
+ }
+ source=deckPrior;
+ const readDeckPages=read;
+ read=owner=>deckPagesPrior(owner,readDeckPages(owner));
+ const roomPrior=predecessor(roomEntry.files,path,source);
+ if(roomPrior!==source){
+  let live;
+  try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
+  assert(matches(live,roomEntry.files[path].after),'combined linked owner identity: '+path+' during map-room validation');
+ }
+ const readLive=read;
+ read=owner=>{
+  const live=readLive(owner);
+  if(owner!==path)assertCurrentMapRoomOwner(owner,live);
+  return predecessor(roomEntry.files,owner,live);
+ };
+ source=roomPrior;
+ source=authenticateRelicDetail(path,source,read);
  const sessionPrior=beforeSessionRelic(path,source,options);
  const sessionSuccessor=sessionPrior!==source;
  if(sessionSuccessor){

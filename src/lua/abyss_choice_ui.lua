@@ -5,7 +5,7 @@ local PAGE_SIZE=Theme.layout.combatChoice.columns*Theme.layout.combatChoice.rows
 local CardDisplay=require("abyss_card_display")
 local CardSkin=require("abyss_card_skin")
 local M={}
-local Controller=require('abyss_controller')
+local Pointer = require('abyss_pointer_input')
 local types={attack="攻击",skill="技能",power="能力",status="状态",curse="诅咒"}
 local states={"normal","hover","pressed","disabled"}
 local fields={potion='pendingPotionChoice',discard="pendingDiscard",scry="pendingScry",hand="pendingHandChoice",pile='pendingPileChoice'}
@@ -256,8 +256,6 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
         return true,reason
     end
     local function bind(box,action)
-        Controller.bind(platform.controller,box:GetChild('hit'),'choice',action,function()return fresh()end,
-            box.name=='confirm' and 90 or 10)
         local hit=box:GetChild("hit")
         local held,released
         local function valid(token)
@@ -284,7 +282,7 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
             end
         end
         hit:AddCursorEventListener(clickEvent,function(event)
-            if Controller.pointerBlocked(platform.controller)then return false end
+            if Pointer.blocked(platform)then return false end
             if pointerObserved or cursor.CursorDown and cursor.CursorUp and touch(event)~=nil then
                 local token=released
                 if not token or token.touch~=touch(event) or not valid(token) then return false end

@@ -24,7 +24,7 @@ test('composed native tree has exactly one menu, battle, map and node panel', ()
     if (control.name !== 'readabilityVeil') assert.equal(control.visible, false);
   }
   const egg = layout.controls.find(control => control.name === 'victoryEasterEgg');
-  assert.equal(egg.isolateNavigation, true);
+  assert.equal(egg.isolateNavigation, undefined);
   const blocker = egg.children.find(control => control.name === 'blocker');
   assert.equal(blocker.kind, 'cursorArea');
   assert.deepEqual(blocker.size, nativeTheme.canvas.base);

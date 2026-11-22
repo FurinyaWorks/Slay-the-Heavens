@@ -13,7 +13,7 @@ test('five source bottle slots share an explicit effect card and retain hidden c
   const emerald = help.children.find(c => c.name === 'emeraldKeyReward');
   assert.ok(emerald, 'independent Emerald key reward must be discoverable');
   assert.equal(emerald.kind, 'presetButton');
-  assert.equal(emerald.focusable, true);
+  assert.equal(emerald.focusable, undefined);
   const original = help.children.filter(c => !/^relicReward[12]$|^emeraldKeyReward$|^potionCaption[1-5]$/.test(c.name));
   assert.equal(original.length, 9);
   assert.equal(help.children.length, 17);

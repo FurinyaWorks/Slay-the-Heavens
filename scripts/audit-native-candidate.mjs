@@ -7,6 +7,7 @@ import {prepareAuditV25CardInputs} from './v25-card-audit-inputs.mjs';
 import {prepareAuditV25UiMasks} from './v25-ui-mask-audit-inputs.mjs';
 import {loadNativeUiEncoder} from './native-ui-encoder.mjs';
 import {embeddedScripts} from './native-script-inventory.mjs';
+import {deckBrowserTemplateName,deckBrowserBindingModule,deckBrowserBindingSource,deckBrowserParts} from './deck-ui-layout.mjs';
 import {readyArtImageTemplate,readyArtGroupTemplate} from './art/ready-card-runtime.mjs';
 import {selectionHalfTemplate} from './lumine-selection-background.mjs';
 import {backgroundInputs, backgroundModule, backgroundTemplate} from './official-background.mjs';
@@ -139,7 +140,7 @@ export async function auditNativeCandidate(options) {
       ? save('background-template.json', getClientUi({mapPath,template:backgroundTemplate})) : undefined;
     const runtimeNames=[...(flags.cards||portraits||flags.menuBackground||buildReceipt?.v25CardAssets||buildReceipt?.v25UiMasks?[readyArtImageTemplate]:[]),readyArtGroupTemplate,monsterActorTemplateName,monsterPowerTemplateName,
       ...(artOptions.refinedReleaseMonsterArt?refinedMonsterTierNames(buildReceipt):[]),
-      ...(artOptions.officialAssets&&flags.selectionAvatar?[selectionHalfTemplate]:[]),...Object.keys(buildReceipt?.v25CardAssets?.templateIndices??{}),...Object.keys(buildReceipt?.v25UiMasks?.templateIndices??{})];
+      ...(artOptions.officialAssets&&flags.selectionAvatar?[selectionHalfTemplate]:[]),...Object.keys(buildReceipt?.v25CardAssets?.templateIndices??{}),...Object.keys(buildReceipt?.v25UiMasks?.templateIndices??{}),...(buildReceipt?.deckBrowser?[deckBrowserTemplateName,...deckBrowserParts.filter(part=>buildReceipt.deckBrowser.parts?.some(row=>row.name===part.name)).map(part=>part.name)]:[])];
     const runtimeTemplates=runtimeNames.map(name=>save(name+'.json',getClientUi({mapPath,template:name})));
     const inspected = save('inspect.json', inspectFile(mapPath));
     const checked = save('static-check.json', checkClientScripts({ mapPath }));
@@ -234,6 +235,20 @@ export async function auditNativeCandidate(options) {
           imageTemplateId:runtimeTemplates.find(row=>row.template?.name===readyArtImageTemplate)?.templateIndex,
           groupTemplateId:runtimeTemplates.find(row=>row.template?.name===readyArtGroupTemplate)?.templateIndex});
     }
+    const browserBinding=deployment.find(({name})=>name===deckBrowserBindingModule);
+    if(browserBinding){
+      const browser=runtimeTemplates.find(row=>row.template?.name===deckBrowserTemplateName);
+      if(buildReceipt?.deckBrowser?.maxFaces!==10||!Number.isSafeInteger(browser?.templateIndex)||
+        browser.templateIndex<=0||browser.templateIndex!==buildReceipt.deckBrowser.templateIndex)
+        throw Error('Deck browser template and candidate binding differ from native readback');
+      const expected=artOptions.officialAssets&&uiProfileFromReceipt(buildReceipt)?deckBrowserParts:[];
+      const parts=expected.map(part=>({...part,templateIndex:runtimeTemplates.find(row=>row.template?.name===part.name)?.templateIndex}));
+      if(JSON.stringify(buildReceipt.deckBrowser.parts)!==JSON.stringify(parts)||
+        parts.some(part=>!Number.isSafeInteger(part.templateIndex)||part.templateIndex<=0)||
+        new Set([browser.templateIndex,...parts.map(part=>part.templateIndex)]).size!==parts.length+1)
+        throw Error('Deck browser chunk identities differ from native readback');
+      writeFileSync(browserBinding.sourceFile,deckBrowserBindingSource(browser.templateIndex,parts));
+    }
     const modules = deployment.map(({ name, sourceFile }) => {
       const source = readFileSync(sourceFile, 'utf8');
       return { name, source: name === 'abyss_ui' ? candidateEntrySource(source, buildReceipt, before) : source };
@@ -242,7 +257,7 @@ export async function auditNativeCandidate(options) {
     const expectedTemplates = JSON.parse(readFileSync(join(snapshot, 'build/lua/game-ui-templates.json'), 'utf8'));
     const expectedTemplate = expectedTemplates.find(template => template.name === 'AbyssDeckCard');
     const expectedRuntimeTemplates=runtimeNames.map(name=>({
-      template:expectedTemplates.find(row=>row.name===name),templateIndex:buildReceipt?.v25CardAssets?.templateIndices[name]??buildReceipt?.v25UiMasks?.templateIndices[name]??(name===monsterPowerTemplateName?buildReceipt?.monsterActors?.powerTemplateIndex:
+      template:expectedTemplates.find(row=>row.name===name),templateIndex:name===deckBrowserTemplateName?buildReceipt.deckBrowser.templateIndex:buildReceipt?.deckBrowser?.parts?.find(part=>part.name===name)?.templateIndex??buildReceipt?.v25CardAssets?.templateIndices[name]??buildReceipt?.v25UiMasks?.templateIndices[name]??(name===monsterPowerTemplateName?buildReceipt?.monsterActors?.powerTemplateIndex:
         name===monsterActorTemplateName?buildReceipt?.monsterActors?.templateIndex:buildReceipt?.monsterActors?.tiers?.[name]?.templateIndex??(name===selectionHalfTemplate?
         buildReceipt?.officialPortraits?.selectionHalfImageTemplateIndex:name===readyArtImageTemplate?
         buildReceipt?.v25TextureRuntime?.imageTemplateIndex??sharedReceipt?.imageTemplateIndex:

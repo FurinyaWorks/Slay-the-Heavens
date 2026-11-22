@@ -1,3 +1,4 @@
+local advanceShop = dofile('tests/lua/support/shop_timeline.lua')
 -- Actual generated node controls + Run/Map/Nodes; input events only are emulated.
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local UI=require('abyss_node_ui')
@@ -16,7 +17,7 @@ local function find(list,name)
         if child then return child end
     end
 end
-local function setup(touch,withController)
+local function setup(touch)
     local run,map=Run.new(F.Data,42),Map.generate(F.Data,42)
     run.relicPool=require('abyss_relic_pool').new('2',run.data.relicSource)
     while not run.nodeFlow do
@@ -27,11 +28,9 @@ local function setup(touch,withController)
     run.gold=10000 -- funded scenario; production offers/prices and commands remain intact.
     local spec=assert(find(F.Layout,'nodePanel'))
     local root=F.control(spec)
-    local focus
-    local manager=withController and require('abyss_controller').new({events={Confirm='confirm',Cancel='cancel'},
-        getFocus=function()return focus end,setFocus=function(control)focus=control end,isController=function()return true end},root)
+    local blocked=false
     local ui=UI.new(root,run,map,F.Presentation,'click',nil,{cursorEvents=cursor,
-        controller=manager,color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end,touchScreen=function()return touch end})
+        pointerBlocked=function()return blocked end,color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end,touchScreen=function()return touch end})
     ui:setVisible(true)
     local function get(path)
         local control=root
@@ -44,8 +43,8 @@ local function setup(touch,withController)
     end
     local function tap(path,id)emit(path,'down',id);emit(path,'up',id);return emit(path,'click',id)end
     assert(tap('merchant/talk',900))
-    ui:update(.31)
-    return ui,get,emit,tap,spec,manager
+    advanceShop(ui)
+    return ui,get,emit,tap,spec,function(value)blocked=value end
 end
 local count=0
 local function test(name,fn)fn();count=count+1;print('ok shop dismiss - '..name)end
@@ -58,7 +57,7 @@ test('mobile blank tap closes only current detail, then supports another item, p
     assert(tap('shopView/potion1',3));assert(get('shopView/detail').visible)
     local price=ui.run.nodeFlow.potions[1].price;local gold=ui.run.gold
     assert(tap('confirm',4));assert(ui.run.gold==gold-price and Run.potionCount(ui.run)==1)
-    assert(tap('back',5));ui:update(.31);assert(ui.run.nodeFlow.complete,'leaving shop stopped working')
+    assert(tap('back',5));advanceShop(ui);assert(ui.run.nodeFlow.complete,'leaving shop stopped working')
 end)
 test('desktop hover and selected focus are both removed by outside dismissal',function()
     local ui,get,emit,tap=setup(false)
@@ -88,12 +87,12 @@ test('hidden page and pre-dismiss purchase callbacks cannot act on the next sele
     local ui,get,emit,tap=setup(true)
     assert(tap('shopView/relic3',1));local oldBuy=ui.actions.confirm.handler
     emit('shopDismiss','down',2);emit('shopDismiss','up',2)
-    ui:setVisible(false);ui:setVisible(true);ui:render();if not ui.shopOpen then assert(tap('merchant/talk',901));ui:update(.31)end
+    ui:setVisible(false);ui:setVisible(true);ui:render();if not ui.shopOpen then assert(tap('merchant/talk',901));advanceShop(ui)end
     assert(tap('shopView/potion1',3));local before=F.Combat.copy(ui.run)
     emit('shopDismiss','click',2);assert(get('shopView/detail').visible);same(before,ui.run)
     assert(tap('shopDismiss',4));assert(not oldBuy());same(before,ui.run)
 end)
-test('click-only outside input remains usable, controller/footer cancellation stays available',function()
+test('click-only outside input remains usable, footer cancellation stays available',function()
     local ui,get=setup(true)
     assert(get('shopView/relic3/hit').click());assert(get('shopView/detail').visible)
     assert(get('shopDismiss').click());assert(not get('shopView/detail').visible)
@@ -169,21 +168,18 @@ test('foreground anonymous Click and interleaved fingers cannot fall through to 
     emit('shopDismiss','click',2);assert(get('shopView/detail').visible);same(before,ui.run)
     assert(tap('shopDismiss',2));assert(not get('shopView/detail').visible)
 end)
-test('controller blocking consumes old releases and background never enters controller navigation',function()
-    local ui,get,emit,tap,spec,manager=setup(true,true)
+test('covered shop consumes old releases and allows fresh footer clicks',function()
+    local ui,get,emit,tap,_,block=setup(true)
     assert(tap('shopView/relic3',1));local before=F.Combat.copy(ui.run)
     emit('shopDismiss','down',2);emit('shopDismiss','up',2)
-    manager.blocked=function()return true end;emit('shopDismiss','click',2)
-    manager.blocked=nil;emit('shopDismiss','click',2)
-    assert(get('shopView/detail').visible,'controller-blocked release revived')
-    manager.blocked=function()return true end;emit('shopDismiss','down',3)
-    manager.blocked=nil;emit('shopDismiss','up',3);emit('shopDismiss','click',3)
-    assert(get('shopView/detail').visible,'blocked Down revived after controller release')
+    block(true);emit('shopDismiss','click',2)
+    block(false);emit('shopDismiss','click',2)
+    assert(get('shopView/detail').visible,'cover-blocked release revived')
+    block(true);emit('shopDismiss','down',3)
+    block(false);emit('shopDismiss','up',3);emit('shopDismiss','click',3)
+    assert(get('shopView/detail').visible,'blocked Down revived after cover release')
     assert(tap('shopDismiss',4));assert(not get('shopView/detail').visible);same(before,ui.run)
-    assert(ui:press('shopView/relic3'));manager:sync('node',function()return ui:press('back')end)
-    assert(not manager.byControl[get('shopDismiss')],'background entered navigation registry')
-    assert(get('shopDismiss').canControllerFocus==false)
-    local back=get('back/hit');assert(manager:focus(back));assert(back.navigationListeners.confirm())
+    assert(ui:press('shopView/relic3'));assert(tap('back',5))
     assert(not get('shopView/detail').visible);same(before,ui.run)
 end)
 test('all foreground terminal paths reject old background tokens and permit a fresh tap',function()
@@ -191,7 +187,7 @@ test('all foreground terminal paths reject old background tokens and permit a fr
         local ui,get,emit,tap=setup(true)
         assert(tap('shopView/relic3',1));local before=F.Combat.copy(ui.run)
         emit('shopDismiss','down',2);emit('shopView/potion1','down',2)
-        if kind=='hide' then ui:setVisible(false);ui:setVisible(true);ui:render();if not ui.shopOpen then assert(tap('merchant/talk',901));ui:update(.31)end;assert(tap('shopView/relic3',3))
+        if kind=='hide' then ui:setVisible(false);ui:setVisible(true);ui:render();if not ui.shopOpen then assert(tap('merchant/talk',901));advanceShop(ui)end;assert(tap('shopView/relic3',3))
         elseif kind=='render' then ui:render()
         elseif kind=='click' then emit('shopView/potion1','up',2);emit('shopView/potion1','click',2)
         else emit('shopView/potion1',kind,2) end
@@ -204,7 +200,7 @@ end)
 test('generated dismiss hit stays below item hits and the footer, without replacing item actions',function()
     local ui,get,emit,tap,spec=setup(true)
     local background=assert(find(spec.children,'shopDismiss'))
-    assert(background.focusable==false,'background must not enter controller focus')
+    assert(background.focusable==false,'background must remain a plain hit area')
     assert(get('shopDismiss').sizeDeltaX==F.Theme.canvas.base[1])
     assert(tap('shopView/relic3',1));assert(get('shopView/detail').visible,'item click fell through to dismissal')
     assert(tap('shopView/potion1',2));assert(get('shopView/detail').visible,'changing item was intercepted')

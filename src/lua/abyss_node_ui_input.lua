@@ -1,5 +1,5 @@
 local Theme = require("abyss_theme")
-local Controller = require('abyss_controller')
+local Pointer = require('abyss_pointer_input')
 local layout = Theme.layout.nativeNode
 local SHOP_PAGE, RELIC_PAGE, PICK_PAGE = #layout.shop.columns, #layout.shop.relics.columns, #layout.picker.columns
 local OPTIONS = #layout.event.options.rows
@@ -108,14 +108,10 @@ function M.install(ctx)
             end
         end
         local input
-        Controller.bind(ctx.options.controller,hit,'node',function()return ctx.self:press(name)end,function()
-            local entry=ctx.self.actions[name]
-            return ctx.self.visible and not ctx.self.busy and entry and entry.enabled
-        end,name=='confirm' and 90 or name=='back' and 100 or 10)
         hit:AddCursorEventListener(ctx.clickEvent, function(event)
             ctx.shopSelection.foregroundClick(event)
             if ctx.rewardDetail:consume(name,event)then return false,'inspected' end
-            if Controller.pointerBlocked(ctx.options.controller)then return false end
+            if Pointer.blocked(ctx.options)then return false end
             if ctx.swallow and (event == nil or event.touchId == nil or event.touchId == ctx.swallow.touch) then
                 ctx.swallow = nil
                 return false, "swiped"
@@ -290,7 +286,7 @@ function M.install(ctx)
         bindCardInspection()
 
     end
-    ctx.shopSelection:bindOutside(ctx.child('shopDismiss'),ctx.clickEvent,ctx.cursor,ctx.options.controller)
+    ctx.shopSelection:bindOutside(ctx.child('shopDismiss'),ctx.clickEvent,ctx.cursor,ctx.options)
     for _, key in ipairs(ctx.targets) do bindControl(key) end
 end
 return M

@@ -11,7 +11,7 @@ local IntentView = require("abyss_battle_intent_view")
 local UnitView = require("abyss_battle_unit_view")
 local InfoContent = require("abyss_battle_info_content")
 local InfoView = require("abyss_battle_info_view")
-local Controller = require("abyss_controller")
+local Pointer = require('abyss_pointer_input')
 local M = {}
 local C = Theme.color
 local reasons = { insufficient_energy = "能量不足", invalid_target = "请选择存活的敌人", card_content_unavailable = "此卡牌尚未实装，可选择其他卡牌或跳过。",
@@ -107,23 +107,23 @@ function M.new(root, data, presentation, clickEvent, platform, options)
     })))
     install(services, require("abyss_battle_action_bindings").install(self, ownership, host, ports(links, {
         "swallowed", "cardReady", "down", "point", "inPlayArea",
-        "child", "controllerReady", "actionReady", "consumeReleasedDragClick"
+        "child", "actionReady", "consumeReleasedDragClick"
     })))
     install(services, require("abyss_battle_potion_bindings").install(self, ownership, host, ports(links, {
         "potionBinding", "cancelPotionAim", "cancelCardInputs", "cancelActionInputs", "refresh",
-        "child", "controllerReady", "swallowed", "potionReady", "down", "consumeReleasedDragClick",
+        "child", "swallowed", "potionReady", "down", "consumeReleasedDragClick",
         "point", "beginPotionAim", "potionDragTarget"
     })))
     install(services, require("abyss_battle_card_bindings").install(self, ownership, host, ports(links, {
-        "point", "child", "controllerReady", "listen", "retireInterruptedPress",
+        "point", "child", "listen", "retireInterruptedPress",
         "down", "cancelPotionAim", "move", "release"
     })))
     install(services, require("abyss_battle_target_bindings").install(self, ownership, host, ports(links, {
-        "child", "enemyAt", "controllerReady", "swallowed", "discardEnemyPointer",
+        "child", "enemyAt", "swallowed", "discardEnemyPointer",
         "enemyReady", "down", "cancelPotionAim", "sameEnemySlot", "consumeReleasedDragClick"
     })))
     install(services, require("abyss_battle_detail_bindings").install(self, ownership, host, ports(links, {
-        "enemyAt", "listen", "child", "closeInfo", "controllerReady",
+        "enemyAt", "listen", "child", "closeInfo",
         "helpActorReady", "swallowed", "down", "consumeReleasedDragClick", "dragReady"
     })))
     connect(links, services)
@@ -162,7 +162,7 @@ function M.new(root, data, presentation, clickEvent, platform, options)
         local function cleanup(fn)local ok,why=pcall(fn);if not ok then failure=why end end
         cleanup(function()if host.monsterPowers then host.monsterPowers:release(box,engineDestroyed)end end)
         cleanup(function()if host.monsterIntentParticles then host.monsterIntentParticles:release(box,engineDestroyed)end end)
-        cleanup(function()services.unbindEnemyControl(slot,box,engineDestroyed)end)
+        cleanup(function()services.unbindEnemyControl(slot,box)end)
         cleanup(function()services.unbindEnemyDetailControls(slot,box,engineDestroyed)end)
         cleanup(function()if host.monsterArt and not engineDestroyed then host.monsterArt:release(box)end end)
         if failure then error(failure)end
@@ -238,7 +238,6 @@ function M.new(root, data, presentation, clickEvent, platform, options)
     end)
     -- An open detail panel owns the next pointer sequence: its Down closes the panel and
     -- the matching Click is swallowed, so no card, target or button acts underneath it.
-    host.controller=host.platform.controller
     services.bind("start", function() if not self.run or self.run.phase == "defeat" then self:start() end end)
     services.bind("endTurn", function() self:endTurn() end)
     services.bind("playArea", function()
@@ -247,7 +246,7 @@ function M.new(root, data, presentation, clickEvent, platform, options)
         if not battle or self.carry and self.carry.aiming then return end
         for _,instance in ipairs(battle.hand) do
             if instance.uid == self.selected then
-                if needsTarget(battle,instance) then return self:controllerBack() end
+                if needsTarget(battle,instance) then return self:cancelAim() end
                 return self:playSelected(nil)
             end
         end
@@ -337,6 +336,7 @@ function M.new(root, data, presentation, clickEvent, platform, options)
         text=function(item,battle)return potionText(item,battle,true):match("\n(.*)") or ''end,
         use=function(slot)return self:usePotion(slot)end,
         discard=function(slot)
+            if options.inputCovered and options.inputCovered()then return false,'panel_hidden' end
             local ok,reason=Run.discardPotion(self.run,slot)
             if ok then self.potionSlots[slot]=nil end
             services.notice(ok and '已丢弃药水。' or reasons[reason] or '当前不能丢弃此药水。')
@@ -360,10 +360,9 @@ function M.new(root, data, presentation, clickEvent, platform, options)
             return false
         end
         hit:AddCursorEventListener(host.clickEvent,function()
-            if Controller.pointerBlocked(host.controller)then return false end
+            if Pointer.blocked(host.platform)then return false end
             return openPile()
         end)
-        Controller.bind(host.controller,hit,'battle',openPile,available,80)
     end
     local keys = host.platform.keyEvents
     local keyRoot = host.platform.keyRoot or host.root

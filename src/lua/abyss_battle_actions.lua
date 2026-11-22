@@ -4,7 +4,6 @@ local Actors = require("abyss_actor")
 local Run = require("abyss_run")
 local Theme = require("abyss_theme")
 local Events = require("abyss_events")
-local Controller = require("abyss_controller")
 local RewardOwner = require("abyss_battle_reward_owner")
 local M = {}
 local L = Theme.layout
@@ -28,6 +27,11 @@ end
 -- Explicit ports preserve the approved implementation without a shared constructor closure.
 function M.install(owner, _ownership, host, dependencies)
     local R = L.rewardPick
+    local function inputCovered()return host.options.inputCovered and host.options.inputCovered()end
+    local function combatInputReady()
+        return owner.active and not owner.busy and not owner.gesture and not owner.suppressClick
+            and owner.run and owner.run.phase=='combat' and not inputCovered()
+    end
     local function reconcileSelection()
         if owner.run and owner.run.phase == "combat" then
             local battle, found = owner.run.combat, false
@@ -44,6 +48,7 @@ function M.install(owner, _ownership, host, dependencies)
         if changed and host.options.onChange then host.options.onChange(owner) end
     end
     local function perform(command, origin, clearPlayedSelection)
+        if inputCovered()then return false,'panel_hidden' end
         local battle = owner.run.combat
         local before, first = Events.frame(battle), #battle.events + 1
         owner.busy, owner.feedbackRun, owner.feedbackBattle = true, owner.run, battle
@@ -220,13 +225,13 @@ function M.install(owner, _ownership, host, dependencies)
     end
     function owner:playSlot(index)
         local run = self.run
-        if not self.active or not run or self.busy or self.gesture or self.suppressClick then return end
+        if inputCovered() or not self.active or not run or self.busy or self.gesture or self.suppressClick then return end
         if run.phase == "reward" then return claimCard(index, run)
         elseif run.phase == "combat" then return selectCombatCard(index, run) end
         refresh()
     end
     function owner:endTurn()
-        if not self.active or not self.run or self.busy or self.gesture or self.suppressClick or self.run.phase ~= "combat" or self.run.combat.phase ~= "player" then return end
+        if inputCovered() or not self.active or not self.run or self.busy or self.gesture or self.suppressClick or self.run.phase ~= "combat" or self.run.combat.phase ~= "player" then return end
         self.selected = nil
         perform(function() return Run.endTurn(self.run) end)
     end
@@ -246,14 +251,12 @@ function M.install(owner, _ownership, host, dependencies)
             slot=binding.slot,id=binding.id,actors={},living={}}
         for i, actor in ipairs(battle.enemies) do aim.actors[i],aim.living[i]=actor,Actors.isActive(actor) end
         owner.potionAim = aim
-        dependencies.notice(item.name .. (Controller.isController(host.platform.controller)
-            and " · 摇杆选择敌人 · 确认使用 · 返回取消"
-            or " · 对一名敌人：点击敌人使用；再点药水或空白取消；点说明查看效果。"))
+        dependencies.notice(item.name .. " · 对一名敌人：点击敌人使用；再点药水或空白取消；点说明查看效果。")
         refresh()
         return true
     end
     function owner:usePotion(index)
-        if not self.active or self.busy or self.gesture or self.suppressClick or not self.run or self.run.phase ~= "combat" then return false end
+        if not combatInputReady() then return false end
         local binding = potionBinding(index)
         if not binding then return false end
         local item = selectedPotionView(self.run,binding.slot)
@@ -269,7 +272,7 @@ function M.install(owner, _ownership, host, dependencies)
         return not target or aim and aim.slot == slot and dependencies.aimReady(aim)
     end
     function owner:commitPotion(slot, target)
-        if not self.active or self.busy or self.gesture or self.suppressClick or not self.run or self.run.phase ~= "combat" then return false end
+        if not combatInputReady() then return false end
         if not potionTargetReady(slot, target) then
             dependencies.cancelPotionAim("药水瞄准已失效，已取消。") refresh() return false
         end

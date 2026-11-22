@@ -50,7 +50,7 @@ test('exit entry does not cover deck controls, map navigation or the narrowed ga
   const controls = gameLayout().controls;
   const entry = child(named(controls, 'exitEntry'), 'open');
   for (const obstacle of [child(named(controls, 'deckEntry'), 'open'),
-    child(named(controls, 'deckPanel'), 'close'), descendant(named(controls, 'mapPanel'), 'next'),
+    child(named(controls, 'deckPanel'), 'close'), descendant(named(controls, 'mapPanel'), 'dragArea'),
     child(named(controls, 'battlePanel'), 'notice'), child(named(controls, 'nodePanel'), 'notice')]) {
     assert.ok(!overlaps(entry, obstacle), `exit overlaps ${obstacle.name}`);
   }

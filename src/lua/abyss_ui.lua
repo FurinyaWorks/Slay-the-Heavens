@@ -92,34 +92,47 @@ local function preparedArtOwners(page)
         if name=='portraits' or name=='cards' or name=='v25CardSurface' then return false,reason end
     end
     if componentBridge then
-        local state,reason=componentBridge:pageState(page)
+        local state,reason,_,cursor=componentBridge:pageState(page)
         if state=='failed' then return false,reason end
-        if state~='visible' then return false end
+        if state~='visible' then return false,nil,cursor end
     end
     return true
 end
 local function deckPending(intent)
-    if view and intent.page=='deckPanel' and view.deckUI.gridReady and not view.deckUI.pending and not view.deckUI.calibrating then view.deckUI.gridReady() end
-    return view and intent.page=='deckPanel' and (view.deckUI.pending or view.deckUI.calibrating or view.deckUI.pendingGrid)
+    local deck=view and intent.page=='deckPanel' and view.deckUI
+    if not deck then return false end
+    local painted=deck.preparedCards
+    if deck.gridReady and not deck.pending and not deck.calibrating then
+        local _,completed=deck.gridReady();painted=completed
+    end
+    return deck.pending or deck.calibrating or deck.pendingGrid,painted
 end
 local function presentationReady(intent)
-    local prepared,why=preparedArtOwners(intent.page)
-    if not prepared then return false,why end
+    local prepared,why,progress=preparedArtOwners(intent.page)
+    if not prepared then return false,why,'component:'..tostring(progress) end
     if portraits then
-        local ready,reason=portraits:readyForPage(intent.mode,intent.characterOpen,intent.character,intent.page)
-        if not ready then return false,reason end
+        local ready,reason,cursor=portraits:readyForPage(intent.mode,intent.characterOpen,intent.character,intent.page)
+        if not ready then return false,reason,'portrait:'..tostring(cursor) end
     end
-    if deckPending(intent)then return false end
+    local pendingDeck,painted=deckPending(intent)
+    if intent.page=='deckPanel' and view and view.deckUI.prepareError then
+        return false,view.deckUI.prepareError
+    end
     if background and intent.page=='menuPanel' then
         local state=background:status()
         if state.phase=='failed' then return false,state.reason end
-        if state.phase~='ready' and state.phase~='disabled' then return false end
+        if state.phase~='ready' and state.phase~='disabled' then
+            return false,nil,'background:'..state.phase..':'..tostring(state.owned or 0)
+        end
     end
     if v25Textures then
-        local ready,reason=v25Textures:presentationReady(intent.page)
-        if not ready then return false,reason end
+        local ready,reason,cursor=v25Textures:presentationReady(intent.page)
+        if not ready then return false,reason,'texture:'..tostring(cursor) end
     end
-    return require('abyss_card_art_runtime').presentationReady(intent.page)
+    local ready,reason,cursor=require('abyss_card_art_runtime').presentationReady(intent.page)
+    if not ready then return false,reason,'card:'..tostring(cursor) end
+    if pendingDeck then return false,nil,'deck:'..tostring(painted or 0) end
+    return true
 end
 local function presentationPage(page)
     require('abyss_card_art_runtime').setPresentationPage(page)
@@ -130,6 +143,10 @@ local function readNativePageLifecycle()
     assert(type(uiProfile)=='table' and uiProfile.schemaVersion==1 and type(uiProfile.nativePageLifecycle)=='boolean','invalid UI profile')
     for key in pairs(uiProfile)do assert(key=='schemaVersion' or key=='nativePageLifecycle','unknown UI profile field '..tostring(key))end
     return uiProfile.nativePageLifecycle
+end
+local function traceEntry(phase,requestId,detail)
+    print(string.format('ABYSS_ROOM_ENTRY phase=%s request=%s lua_clock_ms=%.3f detail=%s',
+        phase,tostring(requestId),os.clock()*1000,tostring(detail or '')))
 end
 function OnStart()
     if attempted then return end
@@ -220,11 +237,20 @@ function OnStart()
         local nativePageLifecycle=readNativePageLifecycle()
         local build = require('abyss_narrative').build
         local alpha = type(build)=='table' and build.workKey=='alpha-test'
+        local deckBinding=require('abyss_deck_browser_binding')
+        local deckTemplateIndex=deckBinding.templateIndex
+        local deckTemplateNames={[deckTemplateIndex]='AbyssBattlePileCard'}
+        if deckTemplateIndex>0 then
+            for _,part in ipairs(deckBinding.parts)do
+                deckTemplateNames[assert(part.templateIndex,'unbound deck browser chunk')]=part.name
+            end
+        end
         local actorBinding=require('abyss_monster_actor_binding')
         local actorInstantiate,actorDestroy=game.InstantiateClientUIControl,game.DestroyClientUIControl
         if componentBridge then
             actorInstantiate=function(index,parent)
-                local name=index==actorBinding.templateIndex and 'AbyssMonsterActor'
+                local name=deckTemplateNames[index]
+                    or index==actorBinding.templateIndex and 'AbyssMonsterActor'
                     or index==actorBinding.powerTemplateIndex and 'AbyssMonsterPower'
                     or index==actorBinding.containerTemplateIndex and 'AbyssReadyCardGroup'
                 assert(name,'unmapped component business template '..tostring(index))
@@ -235,23 +261,18 @@ function OnStart()
         view = GameUI.new(stage, Data, Presentation, Enum.CursorEventType.CursorClick,
             { background = background, portraits = portraits, cardArt = cardArt, music = music, prologue = true, campaign = true, campaignProfile = "competition-two-act",
               nativePageLifecycle = nativePageLifecycle,presentationReady=presentationReady,presentationPage=presentationPage,
+              entryTrace=isTest and testPlay==true and traceEntry or nil,
               -- Native OnUpdate timing has not been verified across mobile
               -- foreground/background transitions. Do not publish it as accurate
               -- elapsed time; retain the internal Host counter unchanged.
               runTimeUnavailable = true,
               createEasterEggArt=createEasterEggArt,
               characterProfile = (alpha or isTest and testPlay == true) and "competition-candidate" or "production",
-              controllerApi = {events=Enum.ControllerNavigationEventType,directions=Enum.ControllerNavigationDir,
-                  modes=Enum.ControllerNavigationMode,
-                  getFocus=function()
-                      local focus=game.GetControllerFocus()
-                      return componentBridge and componentBridge.wrap(focus) or focus
-                  end,
-                  setFocus=function(control)return game.SetControllerFocus(componentBridge and componentBridge.unwrap(control) or control)end,
-                  isController=function()
-                      local device=game.GetDevice()
-                      return device==Enum.Device.Controller or device==Enum.Device.MobileController
-                  end},
+              deckBrowser=deckTemplateIndex>0 and {
+                  parts=deckBinding.parts,
+                  create=function(parent,part)return actorInstantiate(part and part.templateIndex or deckTemplateIndex,parent)end,
+                  destroy=actorDestroy,
+              } or nil,
               monsterActors=setmetatable({instantiate=actorInstantiate,destroy=actorDestroy},{__index=actorBinding}),
               nativeMonsterArtEnabled=flags.monsters,
               color = Color, imageSource = Enum.ImageSource.StaticReference, cursorEvents = Enum.CursorEventType, keyEvents = Enum.KeyEventType,
@@ -264,7 +285,10 @@ function OnStart()
               imageFillRight = Enum.ImageFillHorizontalType and Enum.ImageFillHorizontalType.Right,
               textAlignments = {horizontal=Enum.TextHorizontalAlignment,vertical=Enum.TextVerticalAlignment},
               cursorPosition = function() return game.GetCursorUIPos() end,
-              touchScreen = function() return game.GetDevice() == Enum.Device.Mobile end,
+              touchScreen = function()
+                  local device=game.GetDevice()
+                  return device==Enum.Device.Mobile or device==Enum.Device.MobileController
+              end,
               sound = function(cue)
                 local id = Theme.sound[cue]
                 if id and game.PlayAudio2D then
@@ -284,6 +308,21 @@ function OnStart()
     end)
     if not ok then failed("startup", reason) end
 end
+local function paintReveal(gate)
+    gate:paint(not view.exitOpen or view.routeOpen)
+end
+local function refreshPreparedPage(gate,reveal)
+    local entry=gate and gate.entry
+    if not entry then view:refresh();return end
+    local ok,reason=pcall(view.refresh,view)
+    if not ok and gate.entry==entry then
+        if not gate:failProjection(entry,reveal.intent(view),reason) and gate.entry==entry then error(reason,0)end
+    end
+end
+local function applyRevealStep(gate,reveal,changed,repaint)
+    if changed and repaint~=false then refreshPreparedPage(gate,reveal) end
+    paintReveal(gate)
+end
 function OnUpdate(dt)
     if not view or view.disabled then return end
     local ok, reason = pcall(function()
@@ -293,19 +332,32 @@ function OnUpdate(dt)
             view:resize(width, height)
             canvasWidth, canvasHeight = width, height
         end
-        presentationPage(require('abyss_page_reveal').intent(view).page)
+        local reveal=require('abyss_page_reveal')
+        local gate=view.pageReveal
+        local intent=reveal.intent(view)
+        if gate then
+            local departing,changed,repaint=gate:advanceDeparture(intent,dt)
+            if departing then
+                applyRevealStep(gate,reveal,changed,repaint)
+                return -- Give this cover write its own scheduler turn before native preparation.
+            end
+            if not view.exitOpen and gate:takeProjectionRetry()then
+                refreshPreparedPage(gate,reveal)
+                paintReveal(gate)
+                return
+            end
+        end
+        presentationPage(intent.page)
         view:update(dt)
-        presentationPage(require('abyss_page_reveal').intent(view).page)
+        presentationPage(reveal.intent(view).page)
         if componentBridge then componentBridge:step()end
         if v25Textures then
             v25Textures:syncMask(nativeStage)
-            if v25Textures:update() then view:refresh()end
+            if v25Textures:update() then refreshPreparedPage(gate,reveal)end
         end
         if cardArt then cardArt.update() end
-        if view.pageReveal then
-            local gate=view.pageReveal
-            if gate:step(require('abyss_page_reveal').intent(view),dt) then view:refresh()end
-            gate:paint(not view.exitOpen or view.routeOpen)
+        if gate then
+            applyRevealStep(gate,reveal,gate:step(reveal.intent(view),dt))
         end
     end)
     if not ok then failed("update", reason) end

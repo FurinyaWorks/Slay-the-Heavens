@@ -1,5 +1,6 @@
 local number = require("abyss_numbers").integer
 local PageReveal=require('abyss_page_reveal')
+local Navigation=require('abyss_game_ui_navigation')
 local M = {}
 local function fastOverlaysBlocked(self)
     return self.mode~='menu' or self.characterOpen or self.exitOpen
@@ -102,6 +103,7 @@ function M.openExit(self,owner)
             owner.exitGeneration = owner.exitGeneration + 1
             self.potionUI:close()
             self.exitOpen, self.exitError = true, nil
+            Navigation.cancelNodeEntry(self)
             self.battleUI.selected = nil
             self:refresh()
             return true
@@ -114,6 +116,7 @@ function M.openMenu(self,owner)
             if self.disabled or self.easterEggOpen or self.exitOpen or self.settlementRequested or self.settlementBusy then return false end
             owner.exitGeneration = owner.exitGeneration + 1
             self.exitOpen, self.menuOpen, self.exitError = true, true, nil
+            Navigation.cancelNodeEntry(self)
             self:refresh()
             return true
         end
@@ -130,6 +133,7 @@ function M.closeExit(self,owner)
             self.exitOpen, self.menuOpen, self.exitError = false, false, nil
             self.battleUI.suppressClick = false
             self.navigationAction=nil
+            if self.pageReveal then self.pageReveal:retryPreparation()end
             self:refresh()
             return true
         end

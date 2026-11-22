@@ -46,16 +46,13 @@ V25.present(ctx,true)
 assert(not menu:GetChild('menuRuinsScene').visible,'result must hide menu scenery')
 -- Exercise the real menu binding and its pointer transaction, not direct calls
 -- to the presentation adapter alone. Quit only opens the existing exit flow.
-local Controller=require('abyss_controller')
-Controller.bind=function()end
-Controller.pointerBlocked=function()return false end
 local Input=require('abyss_game_ui_input')
 local root=control('stage');root.children.menuPanel=menu
 local cursor={CursorEnter='enter',CursorDown='down',CursorUp='up',CursorExit='exit',CursorEndDrag='endDrag'}
 owner.mode='menu';owner.deckUI={};owner.potionUI={}
 local exits=0
 function owner:openExit()exits=exits+1;self.exitOpen=true;return true end
-local binder=Input.bindCommand({cursorEvents=cursor},owner,function()return false end,{},'click',{})
+local binder=Input.bindCommand({cursorEvents=cursor},owner,function()return false end,'click',{})
 Input.installMenu(owner,function(key)return root:GetChild(key)end,'click',function()end,binder,start,menu:GetChild('settle'),root:GetChild('exitEntry'),root:GetChild('exitPanel'))
 local quit=menu:GetChild('titleQuit');local events=quit:GetChild('hit').listeners
 assert(events and events.enter and events.click,'official quit must receive the real bindings')

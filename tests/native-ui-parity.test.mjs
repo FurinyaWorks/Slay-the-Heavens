@@ -13,7 +13,7 @@ test('the generated game UI contains no controls guide or entry buttons', () => 
   assert.doesNotMatch(JSON.stringify(controls), /操作说明/);
 });
 
-test('real host isolates confirmation input, returns controller focus, and retains map navigation after input switching', () => {
+test('real host isolates exit actions and restores the same map for mouse and touch', () => {
   const result=runLua('tests/lua/native_ui_parity.lua');
   assert.equal(result.status,0,result.stdout+result.stderr);
   assert.match(result.stdout,/NATIVE_UI_PARITY_PASS/);

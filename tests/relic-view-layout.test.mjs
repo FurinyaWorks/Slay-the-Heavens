@@ -39,7 +39,7 @@ function assertBarGeometry(t) {
   for (const slot of slots) {
     frames.push(frame(slot));
     const hit = slot.children.find(c => c.name === 'hit');
-    assert.equal(hit.kind, 'cursorArea'); assert.equal(hit.focusable, true);
+    assert.equal(hit.kind, 'cursorArea'); assert.equal(hit.focusable, undefined);
     assert.deepEqual(hit.size, [t.layout.relicView.bar.step, 44]);
     const [x, y] = hit.position ?? [0, 0];
     assert.ok(Math.abs(x) + slot.size[0] / 2 <= hit.size[0] / 2 &&
@@ -86,7 +86,7 @@ test('owned relics use disc art slots in the top bar and detail rows', () => {
     assert.ok(slot.position[0] + v.disc / 2 < v.name[0] - v.name[2] / 2, 'name clears the art disc');
     assert.ok(Math.abs(row.position[0]) + v.row[0] / 2 <= v.panel[2] / 2);
   }
-  assert.equal(panel.isolateNavigation, true);
+  assert.equal(panel.isolateNavigation, undefined);
   const json = JSON.stringify(panel);
   assert.doesNotMatch(json.replace(/"(name|kind|image|align|valign|colour)":"[^"]*"/g, ''), /"content":"[A-Za-z]{3,}/);
 });
@@ -101,6 +101,17 @@ test('single relic content stays above its input shield and preserves original i
   assert.equal(single.visible, false);
   for (const name of ['icon', 'name', 'rarity', 'description', 'status']) assert.ok(single.children.some(c => c.name === name));
   assert.equal(single.children.find(c => c.name === 'icon').colour, '#FFFFFF');
+  const detail = theme.layout.relicView.detail;
+  const boxes = single.children.map(frame);
+  for (const name of ['close', 'previous', 'next']) {
+    const button = panel.children.find(c => c.name === name);
+    boxes.push([...detail[name], ...button.size]);
+  }
+  boxes.forEach(([x, y, w, h], i) => {
+    assert.ok(Math.abs(x) + w / 2 <= detail.size[0] / 2);
+    assert.ok(Math.abs(y) + h / 2 <= detail.size[1] / 2);
+    for (const other of boxes.slice(0, i)) assert.ok(clear(boxes[i], other));
+  });
   const legacyPanel = relicViewControls(theme)[1];
   const legacySingle = legacyPanel.children.find(c => c.name === 'single');
   for (const name of ['rarity', 'status']) {

@@ -5,6 +5,7 @@ import {historicalTest} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
 import {runLua} from '../scripts/test-lua.mjs';
 import {readFileSync} from 'node:fs';
+import {resolve} from 'node:path';
 import {createHash} from 'node:crypto';
 import {preRosterSource,rosterSourceBindings as proof} from './helpers/competition-roster-source-inverse.mjs';
 import {preRetirementSource} from './helpers/presentation-announcement-retirement.mjs';
@@ -40,6 +41,11 @@ for (const [name, marker] of [
   const result=runLua(`tests/lua/competition_roster_${name}.lua`);
   assert.equal(result.status,0,result.stdout+result.stderr);
   assert.ok(result.stdout.includes(marker),result.stdout);
+});
+test('current competition roster rejects stale touches across shared starter browsing and resize',()=>{
+  const result=runLua(resolve('tests/lua/competition_roster_ui.lua'));
+  assert.equal(result.status,0,result.stdout+result.stderr);
+  assert.match(result.stdout,/COMPETITION_ROSTER_UI_PASS native controls\/direct config\/touch\/stale confirm/);
 });
 test('native startup failure lifecycle covers competition Geo and retained full-source Watcher',()=>{
   const result=runLua('tests/lua/game_ui_classes_failure.lua');

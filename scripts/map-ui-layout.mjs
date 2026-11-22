@@ -36,8 +36,8 @@ export function mapLayout(theme = loadMapTheme()) {
   const image = (name, x, y, w, h, colour, picture = im.rect) => ({
     name, kind: 'image', position: [x, y], size: [w, h], image: picture, colour,
   });
-  const hit = (w, h) => ({ name: 'hit', kind: 'cursorArea', size: [w, h], focusable: true });
-  const visual = theme.layout.map.presentation, nav = visual.navigationSize;
+  const hit = (w, h) => ({ name: 'hit', kind: 'cursorArea', size: [w, h] });
+  const visual = theme.layout.map.presentation;
   // Map.dc.html retains TYPE explanations. Only the old STATE key was retired.
   const legend = visual.typeLegend;
   const typeLegend = { name: 'typeLegend', kind: 'container', position: legend.position, size: legend.size,
@@ -47,10 +47,6 @@ export function mapLayout(theme = loadMapTheme()) {
         return [image(`${kind}Icon`, legend.iconX, y, legend.iconSize, legend.iconSize, c.mapHeader.legendInk, theme.icon.node[kind]),
           text(`${kind}Label`, legend.labelX, y, legend.labelWidth, legend.textHeight, label, f.label, c.mapHeader.legendInk, 'left')];
       })] };
-  const button = (name, y, label) => ({ name, kind: 'container', position: [visual.navigationX, y], size: [nav, nav], visible: false, children: [
-    image('frame', 0, 0, nav, nav, c.goldDim, im.disc), image('body', 0, 0, nav - 4, nav - 4, c.panel, im.disc),
-    text('label', 0, 0, nav, nav, label, f.label), hit(nav, nav),
-  ] });
   const { left, right, bottom, top } = g.viewport;
   const header = visual.header;
   const controls = [
@@ -71,7 +67,6 @@ export function mapLayout(theme = loadMapTheme()) {
     // TASK-4.13: one parchment hierarchy — act title is the only heading-size ink in the bar.
     text('title', 0, 316, 380, 40, '', f.number, c.mapHeader.title),
     { ...text('notice', 0, -324, 1160, visual.noticeHeight, '', f.small, c.textDim), visible: false },
-    button('next', visual.navigationY[0], '↑'), button('previous', visual.navigationY[1], '↓'),
     typeLegend,
   ];
   // Runtime clips these line segments geometrically to the themed viewport.

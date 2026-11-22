@@ -63,7 +63,7 @@ export function gameLayout(theme = nativeTheme, options = {}) {
   };
   const resourceHints = (hp, gold) => ({ name: 'resourceHints', kind: 'container', size: [...theme.canvas.base], children:
     [['hp', hp], ['gold', gold]].map(([name, box]) => ({ name, kind: 'container', position: box.slice(0, 2), size: box.slice(2), children: [
-      { name: 'hit', kind: 'cursorArea', size: box.slice(2), focusable: true },
+      { name: 'hit', kind: 'cursorArea', size: box.slice(2) },
     ] })) });
   const b = theme.layout.topBar;
   battleControls.push(resourceHints(resourceBox([b.hpIcon[0], b.y, b.hpIcon[1], b.hpIcon[1]], [b.hp[0], b.y, b.hp[1], b.height]),
@@ -146,8 +146,6 @@ export function gameLayout(theme = nativeTheme, options = {}) {
       ] },
     ],
   };
-  const overlays = new Set(['deckPanel', 'relicPanel', 'potionPanel', 'choicePanel', 'characterPanel', 'exitPanel', 'runMenu', 'prologuePanel', 'pageReveal']);
-  for (const control of layoutTree.controls) if (overlays.has(control.name)) control.isolateNavigation = true;
   const menuPanel=layoutTree.controls.find(c=>c.name==='menuPanel');
   for(const name of ['vista','heroArt']){const old=menuPanel.children.find(c=>c.name===name);if(old)old.visible=false;}
   attachOfficialBackdrops(layoutTree,theme);

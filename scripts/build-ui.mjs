@@ -18,7 +18,7 @@ import { gameLayout } from './game-ui-layout.mjs';
 import { withViewport } from './viewport-layout.mjs';
 import { buildUiTheme } from './build-ui-theme.mjs';
 import { buildMapUI } from './map-ui-layout.mjs';
-import { deckCardTemplate, battlePileCardTemplate } from './deck-ui-layout.mjs';
+import { deckCardTemplate, battlePileCardTemplate, plainBrowserCardTemplate, deckBrowserBindingModule, deckBrowserBindingSource, deckBrowserParts, splitDeckBrowserCard } from './deck-ui-layout.mjs';
 import { contentFiles } from './validate-data.mjs';
 import { loadReleaseNotes, releaseInputPaths, releaseBuildArgs } from './release-notes.mjs';
 import { nativeCardArtArgs, prepareNativeCardArt, attachNativeCardArt, bindNativeArtPresentation, nativeArtReceipt } from './card-art-samples.mjs';
@@ -102,7 +102,7 @@ function rejectInputOutputAliases(outputDirectory, extraInputs = []) {
     stat: statSync(input, { bigint: true }) }));
   const outputs = ['abyss_theme.lua', 'map-ui.json', 'abyss_map_layout.lua', 'abyss_map_controls.lua',
     'abyss_narrative.lua', 'abyss_presentation.lua', 'battle-ui.json', 'game-ui.json', 'abyss_ui_layout.lua',
-    'game-ui-templates.json', 'abyss_ui_templates.lua', 'native-card-art-receipt.json', 'lightweight-2d.json', 'v25-theme.json', 'official-assets-theme.json', `${uiProfileModule}.lua`, `${backgroundModule}.lua`,
+    'game-ui-templates.json', 'abyss_ui_templates.lua', `${deckBrowserBindingModule}.lua`, 'native-card-art-receipt.json', 'lightweight-2d.json', 'v25-theme.json', 'official-assets-theme.json', `${uiProfileModule}.lua`, `${backgroundModule}.lua`,
     'abyss_ready_card_binding.lua','abyss_ready_card_assets.lua','abyss_traveler_portrait_assets.lua',`${artFeatureModule}.lua`,'abyss_monster_art_data.lua','abyss_monster_actor_binding.lua','abyss_component_binding.lua','art-performance.json','art-render-v2.json'];
   outputs.push(`${v25CardModule}.lua`);
   for (const file of outputs) {
@@ -202,6 +202,7 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
     applyV25RewardLayout(battle,theme);
     applyV25RewardLayout(layout,theme);
   }
+  if (!officialAssets) templates.push(plainBrowserCardTemplate(templates[0]));
   const child = (node, name) => (node.controls ?? node.children).find(control => control.name === name);
   const picker = child(child(child(layout, 'stage') ?? layout, 'nodePanel'), 'pickerView');
   const forgeCard = structuredClone(child(child(picker, 'forgeGrid'), 'card1'));
@@ -209,6 +210,8 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
   forgeCard.children = forgeCard.children.filter(control => control.name !== 'matchBack');
   templates.push(forgeCard);
   if (officialAssets) assertOfficialRunContracts([battle, layout, ...templates]);
+  const browserParts=officialAssets&&nativePageLifecycle?deckBrowserParts:[];
+  if(browserParts.length)templates.push(...splitDeckBrowserCard(templates.find(t=>t.name==='AbyssBattlePileCard')));
   for (const tree of [battle, layout, ...templates]) assertNativeUiCapacity(tree);
   const rendered = spawnSync(python, ['tools/render_traveler_cards.py', 'data/cards.json', 'data/presentation/traveler.zh-CN.json'],
     { encoding: 'utf8', timeout: 15000, maxBuffer: 1024 * 1024, env: { ...process.env, PYTHONUTF8: '1' } });
@@ -220,6 +223,7 @@ export function buildUI(outputDirectory = 'build/lua', python = process.env.ABYS
   mkdirSync(outputDirectory, { recursive: true });
   writeFileSync(join(outputDirectory,'abyss_component_binding.lua'),'-- Original-component comparison is opt-in.\nreturn {schemaVersion=1,enabled=false}\n');
   writeV25CardBinding(outputDirectory);
+  writeFileSync(join(outputDirectory, deckBrowserBindingModule+'.lua'), deckBrowserBindingSource(0,browserParts));
   writeFileSync(join(outputDirectory,uiProfileModule+'.lua'),uiProfileSource(nativePageLifecycle));
   if(options.lightweight2d===true)writeLightweightProfile(outputDirectory);
   else rmSync(join(outputDirectory,'lightweight-2d.json'),{force:true});

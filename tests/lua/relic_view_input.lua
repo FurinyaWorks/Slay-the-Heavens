@@ -1,9 +1,5 @@
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
-local focus
-local api={events={Confirm='confirm',Cancel='cancel',Focus='focus'},directions={Left='left',Right='right'},
-    modes={Specified='specified'},getFocus=function()return focus end,setFocus=function(value)focus=value end,
-    isController=function()return true end}
-local h,root=F.fixture(nil,nil,nil,nil,false,nil,nil,api)
+local h,root=F.fixture()
 assert(F.start(h))
 h.run.relics={}
 for i=1,42 do h.run.relics[i]='anchor' end
@@ -16,31 +12,26 @@ local Theme=require('abyss_theme')
 local collectionSlot=Theme.presentationProfile=='official-assets-first' and Theme.officialAssets.battleRelicBar.count or 1
 local bar=root:GetChild('relicBar'):GetChild('slot'..collectionSlot):GetChild('hit')
 local panel=root:GetChild('relicPanel')
-local function confirm(hit)
-    h:syncController();api.setFocus(hit)
-    assert(hit.navigationListeners.confirm())
-end
-confirm(bar)
+assert(bar.click())
 assert(opens==1 and h.relicUI.visible and h.relicUI.page==1)
-bar.click();assert(opens==1,'same-frame native Click repeated bar action')
-h:update(.01);bar.click();assert(opens==2,'fresh-frame bar Click was blocked')
 for _,case in ipairs({{'next',2,3},{'previous',2,1}})do
     local hit=panel:GetChild(case[1]):GetChild('hit')
-    confirm(hit);assert(h.relicUI.page==case[2])
-    hit.click();assert(h.relicUI.page==case[2],'same-frame Click double-turned '..case[1])
-    h:update(.01);assert(hit.click());assert(h.relicUI.page==case[3],'fresh Click lost '..case[1])
+    assert(hit.click() and h.relicUI.page==case[2])
+    assert(hit.click() and h.relicUI.page==case[3])
 end
 local closeHit=panel:GetChild('close'):GetChild('hit')
-confirm(closeHit)
+assert(closeHit.click())
 assert(closes==1 and not h.relicUI.visible and not h.deckUI.visible and h.mode=='map')
-closeHit.click();assert(closes==1,'same-frame close action repeated')
-h:update(.01);assert(bar.click());assert(h.relicUI.visible and opens==3)
+assert(h:openDeck())
+assert(not closeHit.click() and closes==1 and h.deckUI.visible,'stale relic close cannot reach the deck')
+assert(close(h))
+assert(bar.click() and h.relicUI.visible and opens==2)
 assert(closeHit.click());assert(closes==2 and not h.deckUI.visible and not h.relicUI.visible)
-print('RELIC_CONTROLLER_CLICK_PASS next previous close bar; same-frame blocked, next-frame live')
+print('RELIC_POINTER_PASS next previous close bar')
 
 -- Combat clicks select the exact owned identity; other pages keep the list.
 do
-    local h2,r2=F.fixture(nil,nil,nil,nil,false,nil,nil,api)
+    local h2,r2=F.fixture()
     assert(F.start(h2))
     assert(require('abyss_run').startCombat(h2.run,'cultist_solo'))
     h2.run.relics={'anchor','burning_blood','maw_bank'}
@@ -68,12 +59,11 @@ do
     assert(p:GetChild('blocker').click())
     assert(not h2.deckUI.visible and not h2.relicUI.visible)
     assert(not p:GetChild('blocker').click(),'retired outside click must not close another owner')
-    assert(h2:openRelics(1));h2:syncController()
+    assert(h2:openRelics(1))
     local close2=p:GetChild('close'):GetChild('hit')
-    api.setFocus(close2)
-    assert(close2.navigationListeners.cancel(),'existing deck Cancel must close single view')
+    assert(close2.click(),'close must close the single view')
     assert(not h2.deckUI.visible and not h2.relicUI.visible)
-    close2.click();assert(not h2.deckUI.visible,'same-frame native Click after Cancel stays consumed')
+    assert(not close2.click() and not h2.deckUI.visible,'stale close cannot reach combat')
     assert(run==h2.run and combat==run.combat and combat.turn==turn and combat.energy==energy and run.hp==hp and #combat.hand==hand)
     assert(run.relics[1]=='anchor' and run.relics[2]=='burning_blood' and run.relics[3]=='maw_bank')
 end

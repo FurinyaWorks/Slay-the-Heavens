@@ -195,7 +195,8 @@ test('same-table chapter advance terminates old animation and resets error gate 
     local run=Run.new(F.Data,'42',{experimental=true,campaign=true})
     local map=Map.generate(F.Data,'42')
     local ui,box=setup(map)
-    assert(box('next'):GetChild('hit').click());ui:update(.04);assert(ui.scroll>0)
+    assert(ui:scrollBy(Theme.layout.map.floorGap*3));local startScroll=ui.scroll
+    assert(ui:focusCurrent(true));ui:update(.04);assert(ui.scroll>0 and ui.scroll<startScroll)
     ui.entryError='old chapter error'
     advance(run,map,1)
     local before=Map.snapshot(map)
@@ -235,8 +236,7 @@ for i,corrupt in ipairs(corruptions) do
         corrupt(map)
         local before=Map.snapshot(map)
         ui:render();assert(not ui.navigationEnabled and next(ui.slots)==nil)
-        assert(not box(1).visible and not box('next'):GetChild('hit').visible
-            and not box('previous'):GetChild('hit').visible)
+        assert(not box(1).visible and not pcall(box,'next') and not pcall(box,'previous'))
         assert(not ui:setNavigationEnabled(true));assert(not ui:focusCurrent())
         local ok,reason=ui:choose(map.nodes[1].id)
         assert(not ok and reason=='invalid_map_context')
@@ -339,14 +339,14 @@ end)
 test('invalid context arriving during an animation shuts down all stale navigation',function()
     local map=Map.generate(F.Data,'42',2)
     local ui,box,emit,calls=setup(map)
-    assert(box('next'):GetChild('hit').click());ui:update(.04)
+    assert(ui:scrollBy(Theme.layout.map.floorGap*3));local startScroll=ui.scroll
+    assert(ui:focusCurrent(true));ui:update(.04);assert(ui.scroll<startScroll)
     map.version=3
     local before=Map.snapshot(map)
     assert(ui:update(.04));assert(not ui.navigationEnabled and next(ui.slots)==nil)
-    assert(not box(1).visible and not box('next'):GetChild('hit').visible
-            and not box('previous'):GetChild('hit').visible)
+    assert(not box(1).visible and not pcall(box,'next') and not pcall(box,'previous'))
     emit(1,'down',11);emit(1,'up',11);assert(not emit(1,'click',11))
-    assert(not box('next'):GetChild('hit').click())
+    local scrollOk,scrollReason=ui:scrollBy(100);assert(not scrollOk and scrollReason=='invalid_map_context')
     assert(ui:update(1));same(map,before);assert(#calls==0)
 end)
 
@@ -392,8 +392,7 @@ test('non-table map nodes fail closed without rendering or mutating owners',func
         map.nodes[1]=invalid
         local before=Map.snapshot(map)
         ui:render();assert(not ui.navigationEnabled and next(ui.slots)==nil)
-        assert(not box(1).visible and not box('next'):GetChild('hit').visible
-            and not box('previous'):GetChild('hit').visible)
+        assert(not box(1).visible and not pcall(box,'next') and not pcall(box,'previous'))
         assert(ui:update(.05));assert(not ui:setNavigationEnabled(true));assert(not ui:focusCurrent())
         local ok,reason=ui:choose('f18_l1');assert(ok==false and reason=='invalid_map_context')
         assert(not emit(1,'click',11));assert(not pcall(setup,map))
