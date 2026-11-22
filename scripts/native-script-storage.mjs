@@ -3,7 +3,8 @@ import {isDeepStrictEqual} from 'node:util';
 import {isUtf8} from 'node:buffer';
 
 const legacyProfile='lossless-lua-v1';
-export const nativeScriptStorageProfile='lossless-lua-v2';
+const losslessProfile='lossless-lua-v2';
+export const nativeScriptStorageProfile='competition-lua-v3';
 const options={luaVersion:'5.3',encodingMode:'pseudo-latin1',comments:false};
 const dataModules=new Set(['abyss_data','abyss_original_v4_data','abyss_theme','abyss_presentation','abyss_narrative']);
 const latin=source=>Buffer.from(source,'utf8').toString('latin1');
@@ -103,9 +104,13 @@ function compactLiteral(root,extended){
 }
 export function packNativeScript(name,source,profile){
  if(profile===undefined)return source;
- const extended=profile===nativeScriptStorageProfile;
+ const competition=profile===nativeScriptStorageProfile;
+ const extended=competition||profile===losslessProfile;
  if(!extended&&profile!==legacyProfile)throw Error('Unknown native script storage profile');
  if(name==='abyss_ui')return source; // Exact first-line build marker and bootstrap provenance.
+ // The native competition entry rejects all Original V4 identities before
+ // preparing their data. Keep a fail-closed loader at the same module name.
+ if(competition&&name==='abyss_original_v4_data')return 'error("Original V4 is unavailable in the competition campaign")\n';
  const generated=dataModules.has(name)||extended&&name==='abyss_traveler_portrait_assets';
  const ast=lua.parse(latin(source),options),compact=compactCode(source,extended&&generated);
  let result=compact;
