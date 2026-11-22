@@ -1,5 +1,6 @@
 import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,beforeDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
 import {beforeCalibrationReplay} from './calibration-replay-sources.mjs';
+import {beforeNativeHostReplay} from './native-host-replay-source.mjs';
 import {beforeMapRoomReplayCohort,beforeDevelopReplayMerge} from './develop-replay-merge-source.mjs';
 import {beforeStsUiCloseoutSource} from './sts-ui-closeout-source.mjs';
 import {beforeStsFadeCi} from './sts-fade-ci-source.mjs';
@@ -695,7 +696,7 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
   // The merged runtime helper was checked before its exact replay projection.
   if(path===epochReplayRuntimePath)return beforeDevelopBackflow(path,source);
   if(developBackflowOwns(path))assertDevelopBackflowCurrent(path,source);
-  return authenticateDevelopBackflow(path,source,owner=>readCurrent(owner,'utf8'));
+  return beforeNativeHostReplay(path,authenticateDevelopBackflow(path,source,owner=>readCurrent(owner,'utf8')));
  };
  const releaseRead=(path,encoding)=>beforeRebasedRelease(path,readBackflow(path,encoding));
  assertReleaseCapacityCohort(releaseRead);
@@ -721,6 +722,7 @@ export function beforePreflightSource(path,source,view='prior'){
  source=beforeReplayFingerprintSource(path,source);
  source=beforeDevelopEpochReplayRuntime(path,source);
  source=beforeDevelopBackflow(path,source);
+ source=beforeNativeHostReplay(path,source);
  source=beforeNativeButtonRepairCopier(path,beforeNativeButtonRepair(path,source));
  source=beforeStsUiCloseoutSource(path,source);
  source=beforeCharacterPreparationCiSource(path,beforeV2UiAdmission(path,beforeCoopCiSource(path,source)));

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
+import {beforeNativeHostReplay,nativeHostReplayOwns} from './native-host-replay-source.mjs';
 
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const normalize = source => source.replaceAll('\r\n', '\n');
@@ -16,7 +17,12 @@ export const relicDetailOwns = path => Object.hasOwn(files, path);
 
 function matches(path, source) {
   return relicDetailOwns(path) && typeof source === 'string' && !source.includes('\r\r\n')
-    && hash(normalize(source)) === files[path].afterSha;
+    && hash(normalize(beforeNativeHostReplay(path,source))) === files[path].afterSha;
+}
+
+export function assertRelicDetailCurrent(path,source) {
+  assert(matches(path,source) && (!nativeHostReplayOwns(path) || beforeNativeHostReplay(path,source) !== source),
+    'fresh current production owner: ' + path);
 }
 
 export function beforeRelicDetail(path, source) {
@@ -28,7 +34,9 @@ export function beforeRelicDetail(path, source) {
 export function authenticateRelicDetail(path, source, read) {
   const prior = beforeRelicDetail(path, source);
   if (prior !== source) {
-    assert(matches(path, read(path)), 'combined linked owner identity: ' + path + ' changed during relic detail validation');
+    const live=read(path);
+    assert(matches(path,live) && normalize(live) === normalize(source),
+      'combined linked owner identity: ' + path + ' changed during relic detail validation');
   }
   return prior;
 }

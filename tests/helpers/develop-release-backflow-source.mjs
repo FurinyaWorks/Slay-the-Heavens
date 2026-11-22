@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {exactSourceMatches as matches} from './source-fingerprint.mjs';
-import {authenticateRelicDetail,beforeRelicDetail,relicDetailOwns} from './relic-detail-source.mjs';
+import {assertRelicDetailCurrent,authenticateRelicDetail,beforeRelicDetail,relicDetailOwns} from './relic-detail-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const blob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
@@ -171,7 +171,7 @@ for(const [path,{before,after}] of Object.entries(roomEntry.files)){
 export function assertDevelopBackflowCurrent(path,source){
  source=roomEntryCurrent(path,source);
  if(relicDetailOwns(path)){
-  assert.notEqual(beforeRelicDetail(path,source),source,'fresh current production owner: '+path);
+  assertRelicDetailCurrent(path,source);
   return;
  }
  assert(matches(source,current(path).after),'fresh current production owner: '+path);
