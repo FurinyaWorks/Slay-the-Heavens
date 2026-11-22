@@ -1,6 +1,6 @@
 import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,beforeDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
 import {beforeCalibrationReplay} from './calibration-replay-sources.mjs';
-import {beforeCurrentDevelopReplayMerge,beforeDevelopReplayMerge} from './develop-replay-merge-source.mjs';
+import {beforeMapRoomReplayCohort,beforeDevelopReplayMerge} from './develop-replay-merge-source.mjs';
 import {beforeStsUiCloseoutSource} from './sts-ui-closeout-source.mjs';
 import {beforeStsFadeCi} from './sts-fade-ci-source.mjs';
 import {beforeIntegratedStsInventory} from './sts-selection-fade-source.mjs';
@@ -669,7 +669,7 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  const readCurrent=(path,encoding)=>{
   const raw=read(path,encoding),priorMerge=beforeDevelopReplayMerge(path,raw);
   if(path==='tests/helpers/copy-integration-source-closure.mjs'||path===epochReplayRuntimePath)
-   assert.notEqual(raw,beforeCurrentDevelopReplayMerge(path,raw),'fresh complete integration source: '+path);
+   assert.notEqual(raw,beforeMapRoomReplayCohort(path,raw),'fresh complete integration source: '+path);
   const priorFingerprint=beforeReplayFingerprintSource(path,priorMerge);
   const prior=beforeDevelopEpochReplayRuntime(path,priorFingerprint);
   if(path===epochReplayRuntimePath)assert(raw!==priorFingerprint&&prior!==priorFingerprint,'fresh complete integration source: '+path);

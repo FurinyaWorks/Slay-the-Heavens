@@ -36,6 +36,9 @@ test('all advertised historical targets restore Relic equip from LF and CRLF wit
 test('current facade retains exact config identity and rechecks all 48 owners after warm success',()=>{
  const file='config/architecture.json',source=raw(file),target='actor';
  let calls=0;assert.equal(sourceEpoch.preCombinedSource(file,source,{target,readSource:p=>{calls++;return raw(p);}}),proof.targets.actor.files[file].source);assert.equal(calls,48);
+ const mapOwner='src/lua/abyss_traveler_portraits.lua',currentMapOwner=readLive(mapOwner);
+ assert.notEqual(raw(mapOwner),currentMapOwner);
+ assert.throws(()=>sourceEpoch.preCombinedSource(file,source,{target,readSource:p=>p===mapOwner?currentMapOwner:raw(p)}),/map-room validation/);
  for(const owner of proof.owners){
   let bad=false;const readSource=p=>bad&&p===owner?raw(p)+'\n':raw(p);
   sourceEpoch.preCombinedSource(file,source,{target,readSource});bad=true;

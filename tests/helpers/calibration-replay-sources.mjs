@@ -1,3 +1,4 @@
+import {beforeMapRoomReplayCohort} from './develop-replay-merge-source.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
@@ -34,6 +35,14 @@ export function readCalibrationReceiptInput(path,digest,read,readCurrent=readFil
  const row=packet.receipts[path];
  if(!Object.hasOwn(row.before,digest))return read();
  if(row.current===null)assert.throws(()=>readCurrent(path,'utf8'),{code:'ENOENT'},'retired receipt input reappeared: '+path);
- else assert(matches(readCurrent(path,'utf8'),row.current),'current receipt input changed: '+path);
+ else{
+  const raw=readCurrent(path,'utf8');
+  let current=raw;
+  if(path==='tests/helpers/combined-epoch/source-epoch-runtime.mjs'||path==='tests/helpers/copy-integration-source-closure.mjs'){
+   current=beforeMapRoomReplayCohort(path,raw);
+   assert.notEqual(current,raw,'current receipt input changed: '+path);
+  }
+  assert(matches(current,row.current),'current receipt input changed: '+path);
+ }
  return row.before[digest].source;
 }

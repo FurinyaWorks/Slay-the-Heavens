@@ -120,6 +120,7 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  const readers=new WeakMap(),readLive=path=>{
   try{return readFileSync(resolve(root,path),'utf8');}catch(error){if(error.code==='ENOENT')return null;throw error;}
  };
+ const liveReaders=new WeakSet([readLive]);
  function requireTarget(target){assert(Object.hasOwn(proof.targets,target),'unknown source target');return proof.targets[target];}
  function rawReader(reader){return readers.get(reader)?.raw??reader;}
  function preCombinedSource(path,source,{target,readSource=readLive}={}){
@@ -140,7 +141,7 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
   const readRaw=rawReader(readSource);
   // An exact frozen input can be replayed against its owner cohort. Live
   // Develop successors and the default live reader require current owners.
-  const historicalOwners=readRaw!==readLive&&backflow===rawInput
+  const historicalOwners=!liveReaders.has(readRaw)&&backflow===rawInput
    &&(sourceHash(rawInput)===current.sha256||(path==='config/architecture.json'&&sameConfigLayout(rawInput)))?proof.current:undefined;
   const backflowReader=bindDevelopBackflow(readRaw,historicalOwners);
   backflowReader.authenticate(path,rawInput,{allowConfigLayout});
@@ -206,6 +207,7 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
    else observed.set(owner,value);
    return value;
   };
+  if(liveReaders.has(readRaw))liveReaders.add(readFresh);
   const options={target,readSource:readFresh};
   const projected=preCombinedSource(path,source,options);
   const readProjection=owner=>{

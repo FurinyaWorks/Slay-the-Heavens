@@ -203,8 +203,9 @@ function mapRoomOwnerReader(read,historicalOwners){
   const source=read(path);
   if(!Object.hasOwn(roomEntry.files,path))return source;
   const current=matches(source,roomEntry.files[path].after);
-  const historical=historicalOwners&&Object.hasOwn(historicalOwners,path)&&historicalOwners[path];
-  const exactHistorical=historical&&typeof source==='string'&&source.replaceAll('\r\n','\n')===historical.source;
+  const binding=historicalOwners&&Object.hasOwn(historicalOwners,path)?historicalOwners[path]:undefined;
+  const exactHistorical=binding===null?source==null:
+   binding&&typeof source==='string'&&source.replaceAll('\r\n','\n')===binding.source;
   const observed=current?'current':exactHistorical?'historical':undefined;
   assert(observed&&(!epoch||epoch===observed),mapRoomOwnerError(path));
   epoch=observed;

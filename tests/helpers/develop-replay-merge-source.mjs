@@ -18,9 +18,22 @@ const mapRoomMergedPaths=new Set([
  'tests/helpers/develop-release-backflow-source.mjs',
  'tests/sts-page-reveal.test.mjs',
 ]);
-let replay,mapRoomReplay;
+let replay,mapRoomReplay,mapRoomReplayCohort;
+
+const mapRoomCohortPaths=new Set([
+ 'tests/helpers/combined-epoch/source-epoch-runtime.mjs',
+ 'tests/helpers/copy-integration-source-closure.mjs',
+ 'tests/helpers/develop-release-backflow-source.mjs',
+]);
+export function beforeMapRoomReplayCohort(path,source){
+ if(!mapRoomCohortPaths.has(path))return source;
+ mapRoomReplayCohort??=releaseUiRestoreArchive(readFileSync(new URL('./map-room-replay-cohort-source.json.gz',import.meta.url)),
+  '5471deb483397884febd5f6af394bf41599e0670c2f76a8e14bf9f261f1cddb1','67fc8750dd6ef9a13067c6a43137f910b6a44228');
+ return mapRoomReplayCohort.project(path,source);
+}
 
 export function beforeCurrentDevelopReplayMerge(path,source){
+ source=beforeMapRoomReplayCohort(path,source);
  if(!mapRoomMergedPaths.has(path))return source;
  mapRoomReplay??=releaseUiRestoreArchive(readFileSync(new URL('./develop-map-room-replay-merge-source.json.gz',import.meta.url)),
   '859ef1f31ae5990213c98b3cb1db9ce8468f936579607d5718e825341225ebae','0044a5b7bef2f6ffbf14d5e41b4f79a9ae56daed');
