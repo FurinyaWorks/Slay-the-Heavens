@@ -290,6 +290,19 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         local item=choice.item
         return choice.multiple and choice.op=='colorless' and item and item.effect.kind=='forethought'
     end
+    local function pickChoice(control,binding,repaint)
+        local callback,token,uid=self.onPick,self.choiceToken,binding.uid
+        local choice=self.battle.pendingChoice
+        if callback and isForethoughtToggle(choice) then
+            local ok,reason=callback(token,uid)
+            if updateForethoughtChoice(choice,token) and control.alive~=false then
+                repaint(control,binding.instance,self.catalog)
+            end
+            return ok,reason
+        end
+        self:close()
+        if callback then callback(token,uid) end
+    end
     local function fill(control, instance, catalog)
         require('abyss_page_reveal').registerSource(platform,'deckPanel')
         local battle=(self.choiceToken or self.pileKind) and self.battle
@@ -343,15 +356,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
                 if not self.visible or not self.choiceToken or b.generation~=self.generation
                     or not self.run or self.run.combat~=self.battle
                     or not self.battle.pendingChoice or self.battle.pendingChoice.token~=self.choiceToken then return end
-                local callback,token,uid=self.onPick,self.choiceToken,b.uid
-                local choice=self.battle.pendingChoice
-                if callback and isForethoughtToggle(choice) then
-                    local ok,reason=callback(token,uid)
-                    if updateForethoughtChoice(choice,token) and control.alive~=false then fill(control,b.instance,self.catalog) end
-                    return ok,reason
-                end
-                self:close()
-                if callback then callback(token,uid) end
+                return pickChoice(control,b,fill)
             end
             hit:AddCursorEventListener(clickEvent,function(event)
                 if Controller.pointerBlocked(platform.controller) or Controller.pointerDragged(event, Theme.layout.cardDrag.threshold) then return false end
