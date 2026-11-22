@@ -1,3 +1,4 @@
+local advanceShop = dofile('tests/lua/support/shop_timeline.lua')
 local testStart=dofile('tests/lua/support/game_ui_fixture.lua').start
 package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
@@ -72,7 +73,7 @@ test('shop inventory admission and shared counter use actual five-slot capacity'
  for _,id in ipairs({'fire_potion','block_potion','regen_potion','energy_potion'})do assert(Run.obtainPotion(h.run,id))end
  local path=dofile('tests/lua/support/map_routes.lua').to(h.map,function(n)return n.type=='shop'end)
  for i=1,#path-1 do assert(Map.choose(h.map,path[i]))end
- assert(Nodes.enter(h.run,h.map,path[#path]));h.run.gold=1000;h:refresh();assert(F.click(r,'nodePanel','merchant/talk'));h:update(.31);counter(r,4,5)
+ assert(Nodes.enter(h.run,h.map,path[#path]));h.run.gold=1000;h:refresh();assert(F.click(r,'nodePanel','merchant/talk'));advanceShop(h);counter(r,4,5)
  local offer;for _,v in ipairs(h.run.nodeFlow.potions)do if not v.unavailable then offer=v;break end end;assert(offer)
  local gold=h.run.gold
  local tile=r:GetChild('nodePanel'):GetChild('shopView'):GetChild('potion'..offer.slot):GetChild('hit')

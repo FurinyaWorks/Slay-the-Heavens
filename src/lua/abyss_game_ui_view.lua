@@ -329,7 +329,7 @@ function M.refreshPageVisibility(menu,self,suspendBattle,child,refreshMapResourc
                 suspendBattle(run,deckOpen,potionOpen),self.mode=='battle' and deckOpen)
             child("battlePanel"):SetVisible(self.mode == "battle")
             refreshMapVisibility(run,deckOpen,potionOpen or blocked)
-            self.nodeUI:setVisible(self.mode == "node" and not deckOpen and not potionOpen and not blocked,self.mode == "node")
+            self.nodeUI:setVisible(self.mode == "node" and not deckOpen and not potionOpen and not blocked,self.mode == "node",true)
             child("nodePanel"):SetVisible(self.mode == "node")
         end
 end

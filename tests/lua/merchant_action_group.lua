@@ -1,3 +1,4 @@
+local advanceShop = dofile('tests/lua/support/shop_timeline.lua')
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Map=require('abyss_map')
 local Theme=require('abyss_theme')
@@ -17,7 +18,7 @@ for _,mobile in ipairs({false,true})do
  local node=root:GetChild('nodePanel')
  local back,confirm,merchant=node:GetChild('back'),node:GetChild('confirm'),node:GetChild('merchant')
  local function click(key)return F.click(root,'nodePanel',key)end
- assert(click('merchant/talk'));ui:update(.31)
+ assert(click('merchant/talk'));advanceShop(ui)
  local before=F.Combat.copy(ui.run)
  assert(click('shopView/card1'))
  assert(back.visible and back:GetChild('label').text=='取消选择')
@@ -26,11 +27,11 @@ for _,mobile in ipairs({false,true})do
  local buyLeft=confirm.x-Theme.layout.nativeNode.confirm[3]/2
  assert(buyLeft-(back.x+Theme.layout.nativeNode.back[3]/2)<=32,'dialogue separates purchase actions')
  same(before,ui.run)
- assert(not merchant:GetChild('portrait').visible and not merchant:GetChild('talk').visible)
+ assert(not node:GetChild('shopRoom').visible and not merchant:GetChild('talk').visible)
  same(before,ui.run)
  before=F.Combat.copy(ui.run)
  assert(click('back'));same(before,ui.run)
- assert(back.x==Theme.layout.nativeNode.back[1],'unselected footer anchor must restore')
+ assert(back.x==math.min(Theme.layout.nativeNode.back[1],-510),'unselected footer clears the lowest price')
  assert(back.visible and not confirm.visible and back:GetChild('label').text=='离开')
  local offer=ui.run.nodeFlow.cards[1];local gold,deck=ui.run.gold,#ui.run.deck
  assert(click('shopView/card1') and click('confirm'))

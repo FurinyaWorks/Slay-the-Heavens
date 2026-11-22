@@ -39,10 +39,7 @@ local function iconId(entry) return type(entry) == "table" and entry.id or entry
 
 local function merchantVisible(ctx, node, active)
     if not node or node.type ~= 'shop' or ctx.self.mode ~= 'main' or not (active or node.complete) then return false end
-    if not layout.shop.referenceBareGoods then return true end
-    if ctx.merchant.compact then return true end
-    local current = ctx.merchant.current
-    return current ~= nil and current.kind ~= 'encounter' and current.kind ~= 'greet' and current.kind ~= 'idle'
+    return true
 end
 
 function M.new(root, run, map, presentation, clickEvent, onChange, options)
@@ -166,12 +163,13 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         if screen ~= 'pickerView' or not ctx.enhancedForge(node) then
             ctx.campUI:hide(active and node.type == 'camp')
         end
-        for _, name in ipairs({ "shopView", "campView", "pickerView", "eventView", "treasureView" }) do ctx.show(ctx.child(name), name == screen) end
+        for _, name in ipairs({ "campView", "pickerView", "eventView", "treasureView" }) do ctx.show(ctx.child(name), name == screen) end
         -- Reset shared card faces before the ordinary picker/camp renderer writes them.
         local matchBoard = active and MatchUI.isBoard(node.event)
         if not matchBoard then ctx.resetMatch() end
         if matchBoard then hint=ctx.renderMatch(view,node)
-        elseif screen == "shopView" then hint = ctx.renderShop(view, node)
+        elseif screen == "shopView" then
+            hint = ctx.self.shopOpen and ctx.renderShop(view, node) or ''
         elseif screen == "campView" then hint, recallSource = ctx.renderCamp(view, node, result)
         elseif screen == "pickerView" then
             if ctx.eventCardsActive(node)then hint=ctx.renderEventCards(view,node)
@@ -236,7 +234,7 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
     end
 
     function ctx.bindFooter(back,confirm,backLabel,confirmLabel,confirmOk,skipRestReward)
-        local position = ctx.shopSelection.selected and layout.shop.cancel or layout.back
+        local position = ctx.shopSelection.selected and layout.shop.cancel or ctx.shopBackPosition()
         back:SetAnchoredPosition(position[1],position[2])
         local purchase = ctx.shopSelection.selected and layout.shop.confirm or layout.confirm
         confirm:SetAnchoredPosition(purchase[1],purchase[2])
@@ -260,6 +258,12 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
 
     function ctx.self:render()
         if not self.run then ctx.root:SetVisible(false);return false, "node_unbound" end
+        local done = ctx.shopNotification
+        if done and done.actions==self.actions and done.visible==self.visible
+            and self.renderRun==self.run and self.renderMap==self.map then
+            ctx.shopNotification=nil
+            return
+        end
         ctx.resetButtons();local previousArt=ctx.artFaces;ctx.artFaces={}
         ctx.inspectCards={}
         if ctx.renderRelicPending()then ctx.campUI:hide();ctx.clearUnusedNativeArt(previousArt);return true end

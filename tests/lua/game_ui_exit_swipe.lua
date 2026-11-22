@@ -1,3 +1,4 @@
+local advanceShop = dofile('tests/lua/support/shop_timeline.lua')
 local testStart=dofile('tests/lua/support/game_ui_fixture.lua').start
 package.path = "src/lua/?.lua;build/lua/?.lua;" .. package.path
 local cursor = {CursorEnter="enter", CursorExit="exit", CursorDown="down", CursorUp="up", CursorEndDrag="endDrag"}
@@ -22,7 +23,7 @@ local function setup(relicSeed)
     assert(host.mapUI:choose(destination.id))
     host.run.gold = 10000
     host:refresh()
-    assert(F.click(root,"nodePanel","merchant/talk"));host:update(.31)
+    assert(F.click(root,"nodePanel","merchant/talk"));advanceShop(host)
     local ui = host.nodeUI
     assert(ui.swipeEnabled and ui.pageCount == 1)
     assert(not ui:setPage(2))
