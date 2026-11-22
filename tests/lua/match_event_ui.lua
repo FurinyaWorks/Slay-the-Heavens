@@ -55,13 +55,18 @@ test('all twelve actual native card faces stay concealed until core reveal and u
   assert(get(path..'/matchBack').visible)
   local gridSpec;for _,spec in ipairs(Layout.children)do if spec.name=='forgeGrid'then gridSpec=spec end end
   for _,spec in ipairs(gridSpec.children[i].children)do
-   if spec.name~='hit'and spec.name~='matchBack'then eq(get(path..'/'..spec.name).visible,false)end
+   if spec.name~='hit'and spec.name~='matchBack'then
+    local facePath=path..'/'..spec.name
+    assert(not get(facePath).visible,'concealed Match card leaks '..facePath)
+   end
   end
   eq(get(path..'/name').visible,false);eq(get(path..'/name').text,'');eq(get(path..'/description').visible,false)
  end
  same(r,before);assert(ctx.self.actions['pickerView/forgeGrid/card1'].handler())
  local slot=H.view(r).match.slots[1];assert(get('pickerView/forgeGrid/card1/name').visible);assert(not get('pickerView/forgeGrid/card1/matchBack').visible)
  assert(get('pickerView/forgeGrid/card1/name').text:find(ctx.cardName(slot.cardId,false),1,true))
+ local referenceCost=get('pickerView/forgeGrid/card1'):GetChild('stsReferenceCost')
+ if referenceCost then assert(referenceCost.visible,'revealed Match card must restore its reference cost layer')end
  assert(get('pickerView/label').text:find('5',1,true));eq(ctx.self.actions['pickerView/forgeGrid/card1'].enabled,false)
 end)
 test('Match and camp use the shared card face without leaving card backs or stale ownership',function()
