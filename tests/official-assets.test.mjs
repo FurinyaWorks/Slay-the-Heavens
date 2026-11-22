@@ -7,6 +7,7 @@ import {mkdtempSync,mkdirSync,readFileSync,rmSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import {nativeTheme} from '../scripts/native-ui-theme.mjs';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
+import {experimentalCharacterControls} from '../scripts/character-ui-layout.mjs';
 import {deckCardTemplate} from '../scripts/deck-ui-layout.mjs';
 import {applyOfficialAssets,officialAssetsTheme} from '../scripts/official-assets-layout.mjs';
 import {officialAssetsProfile,officialAssetFlags,validateOfficialAssets,officialAssetsArgs,officialAssetsFromReceipt} from '../scripts/official-assets-profile.mjs';
@@ -90,6 +91,9 @@ test('approved pages keep live input identities while unrelated pages retain the
  const expectedMenuLayout=structuredClone(layout);
  applyOfficialNoncombatLayout(expectedMenuLayout,theme);
  const menuProjection=new Map(['menuPanel','exitPanel','runMenu','pageReveal'].flatMap(name=>paths(child(expectedMenuLayout,name),'/SlayTheAbyss')));
+ const expectedChoice=experimentalCharacterControls(theme).find(node=>node.name==='choicePanel');
+ const choiceProjection=new Map(paths(expectedChoice,'/SlayTheAbyss'));
+ const choicePath=path=>path.replace(/^(\/SlayTheAbyss\/choicePanel\/)card([12])(?=\/|$)/,'$1option$2');
  const semantic=nodes.filter(([,node])=>['text','cursorArea','presetButton'].includes(node.kind))
   .map(([path,node])=>[path,node,structuredClone(node)]);
  const containers=nodes.filter(([,node])=>node.kind==='container').map(([path,node])=>[path,node,{position:node.position,size:node.size,visible:node.visible,scale:node.scale,rotation:node.rotation}]);
@@ -109,7 +113,7 @@ test('approved pages keep live input identities while unrelated pages retain the
  const retiredStarterEntry=path=>/^\/SlayTheAbyss\/characterPanel\/details\/deck(?:Open|Title|Summary|Rule)(?:\/|$)/.test(path);
  const retiredOverlay=path=>/^\/SlayTheAbyss\/(?:prologuePanel(?:\/|$)|(?:exitPanel|runMenu)\/(?:help|guide)(?:\/|$)|potionPanel\/)/.test(path);
  const retiredPickerChild=path=>/^\/SlayTheAbyss\/nodePanel\/pickerView\/card[4-6]\//.test(path);
- const retiredChoice=path=>/^\/SlayTheAbyss\/choicePanel\/card(?:[3-9]|10)(?:\/|$)/.test(path);
+ const retiredChoice=path=>/^\/SlayTheAbyss\/choicePanel\/card\d+(?:\/|$)/.test(path)&&!choiceProjection.has(choicePath(path));
  const retiredDeck=child(child(layout,'characterPanel'),'deckView');
  assert.equal(retiredDeck.visible,false);assert.deepEqual(retiredDeck.children,[],
   'selection must use the shared deck browser instead of keeping twelve independent card slots');
@@ -139,7 +143,19 @@ test('approved pages keep live input identities while unrelated pages retain the
     }
     continue;
    }
-   assert.equal(current.get(path),node,path);
+   assert.equal(current.get(choicePath(path)),node,path);
+   if(choiceProjection.has(choicePath(path))){
+    const expected=choiceProjection.get(choicePath(path));
+    for(const key of ['kind','position','size','visible','states','focusable','interactable','raycastTarget']){
+     assert.deepEqual(node[key],expected[key],path+' choice '+key);
+    }
+    if(node.text){
+     const actual={...node.text},text={...expected.text};delete actual.colour;delete text.colour;
+     if(text.autoSize&&text.minFontSize*1.45+4>expected.size[1])text.minFontSize=nativeTheme.font.minimum;
+     assert.deepEqual(actual,text,path+' choice text');
+    }
+    continue;
+   }
    if(menuProjection.has(path)){
     const expected=menuProjection.get(path);
     assert.equal(node.kind,before.kind,path+' existing menu semantic control kind');
@@ -217,6 +233,11 @@ test('approved pages keep live input identities while unrelated pages retain the
     for(const key of Object.keys(before))assert.deepEqual(node[key],menuProjection.get(path)[key],path+' approved menu '+key);
     continue;
    }
+   if(choiceProjection.has(choicePath(path))){
+    assert.equal(current.get(choicePath(path)),node,path+' choice receiver identity');
+    for(const key of Object.keys(before))assert.deepEqual(node[key],choiceProjection.get(choicePath(path))[key],path+' choice '+key);
+    continue;
+   }
    if(restoredPagePath(path)||path.startsWith('/SlayTheAbyss/deckPanel/pileReturn'))continue;
    if(retiredCardDecorationPaths.has(path)){
     assert.equal(current.has(path),false,path+' retired independent card decoration must be removed');continue;
@@ -230,11 +251,6 @@ test('approved pages keep live input identities while unrelated pages retain the
     assert.deepEqual(node,merchant.get(path),path+' shared merchant projection');continue;
    }
    for(const key of Object.keys(before)){
-    const choiceSlot=/^\/SlayTheAbyss\/choicePanel\/card([12])$/.exec(path);
-    if(choiceSlot&&key==='position'){
-     const page=theme.layout.combatChoice,index=Number(choiceSlot[1])-1;
-     assert.deepEqual(node.position,[page.origin[0]+index%page.columns*page.step[0],page.origin[1]+Math.floor(index/page.columns)*page.step[1]],path+' two-card page position');continue;
-    }
     if(key==='scale'&&/^\/SlayTheAbyss\/potionEntry\/open\/hit\/(?:normal|hover|pressed|disabled)$/.test(path)){
      assert.deepEqual(node.scale,[1,1],path+' battle slot states already own their scale');continue;
     }
@@ -252,10 +268,16 @@ test('approved pages keep live input identities while unrelated pages retain the
  const retiredChoiceCards=nodes.filter(([path,node])=>retiredChoice(path)&&cardHosts.has(node)).map(([,node])=>node);
  assert.equal(retiredDeckCards.length,12,'the duplicated twelve-card selection modal is retired');
  assert.equal(retiredPickerCards.length,3,'only picker faces four through six are retired');
- assert.equal(retiredChoiceCards.length,8,'only choice faces three through ten are retired');
+ assert.equal(retiredChoiceCards.length,10,'every static choice card face is retired');
+ const choice=child(layout,'choicePanel');
+ assert.deepEqual(child(choice,'cards'),child(expectedChoice,'cards'),'reusable native choice scroller');
+ for(const name of ['confirm','before','after','option1','option2']){
+  const hit=child(child(choice,name),'hit');
+  for(const state of children(hit))assert.equal(child(state,'roundedButton').kind,'container');
+ }
  const retiredCards=[...retiredDeckCards,...retiredPickerCards,...retiredChoiceCards];
  assert.equal(result.cardHosts,cardHosts.size-retiredPickerCards.length-retiredChoiceCards.length,'composition authenticates all capacity-bounded hosts before retiring the duplicate modal');
- assert.equal(cards.length,cardHosts.size-retiredCards.length);assert.equal(cards.length,38);assert(result.removedControls>500);
+ assert.equal(cards.length,cardHosts.size-retiredCards.length);assert.equal(cards.length,37);assert(result.removedControls>500);
  for(const face of cardHosts)assert.equal(cards.includes(face),!retiredCards.includes(face),'retain every active original card host');
  assertOfficialRunContracts([layout,template]);
  for(const card of cards){
