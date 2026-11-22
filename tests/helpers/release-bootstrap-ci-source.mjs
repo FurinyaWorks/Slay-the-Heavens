@@ -1,4 +1,4 @@
-import {assertCurrentJsInventory,assertIntegrationSuccessorsCurrent,beforePreflightSource} from './fork-preflight-source.mjs';
+import {assertCurrentJsInventory,assertIntegrationSuccessorsCurrent,beforePreflightSource,beforeReleaseLuaInventory} from './fork-preflight-source.mjs';
 // CI-only complete bootstrap continuation. No gameplay source or production projector.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -106,7 +106,7 @@ export function releaseBootstrapWorkflowBefore(path,source){
 export function assertReleaseBootstrapRawInventory(paths,kind='js'){
  assert(['js','lua'].includes(kind));
  if(kind==='js')return assertCurrentJsInventory(paths,packet.currentInventory.js);
- assert.deepEqual([...paths].sort(),packet.currentInventory[kind],'complete Release bootstrap raw discovery inventory');
+ assert.deepEqual(beforeReleaseLuaInventory(paths).sort(),packet.currentInventory[kind],'complete Release bootstrap raw discovery inventory');
 }
 export function assertReleaseBootstrapCiCurrent(read=readFileSync){
  assertIntegrationSuccessorsCurrent(read);

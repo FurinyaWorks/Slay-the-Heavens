@@ -53,16 +53,21 @@ const releaseSuccessors=Object.freeze({
  "tests/sts-reward-row-runtime.test.mjs":"64adb18e85446d892a2cd4bd5e025ea9b1cdda64bc45956a2c47d1f28ecfd0fc",
  "tests/sts-reward-row.test.mjs":"433e516c4c968fb92149327a24d513e4b33c12e5e87eff83cf865d4b9d338b4a",
 });
+const releaseSuccessorAliases=Object.freeze({
+ "scripts/cinematic-ui-layout.mjs":"e6e8045a5037de59c451cb752b42b99020bbdb07b4b681e72715ce6403d81c9d",
+ "tests/lua/full_source_campaign_entry.lua":"81464e0e868a6d654767497fee3fd1c2cb69b089f0572196c0950cfff97e7c25",
+});
 function beforeReleaseSuccessor(path,source){
- if(!Object.hasOwn(releaseSuccessors,path)||typeof source!=='string'||source.includes('\r\r\n')
-  ||hash(norm(source))!==releaseSuccessors[path])return source;
+ if(!Object.hasOwn(releaseSuccessors,path)||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const digest=hash(norm(source));
+ if(digest!==releaseSuccessors[path]&&digest!==releaseSuccessorAliases[path])return source;
  return integratedCiProof.files[path].current.source;
 }
 export function integratedSource(path,source,target){
  assert(Object.hasOwn(integratedCiProof.sources,target),'known integration input');
  if(path.startsWith('src/')||path==='config/architecture.json')return beforePreflightSource(path,source);
  const row=Object.hasOwn(integratedCiProof.files,path)?integratedCiProof.files[path]:null;
- const predecessor=beforeReleaseSuccessor(path,source);
+ const predecessor=row?.views[target]?beforeReleaseSuccessor(path,source):source;
  source=releaseBootstrapCiSource(path,predecessor===source?beforePreflightSource(path,source):predecessor,row?.current);
  if(!row?.views[target]||typeof source!=='string'||source.includes('\r\r\n')||hash(norm(source))!==row.current.sha256)return source;
  if(row.views[target].sha256===row.current.sha256)return source;
