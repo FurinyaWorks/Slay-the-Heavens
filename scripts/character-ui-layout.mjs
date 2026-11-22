@@ -1,4 +1,5 @@
 import { cardFaceChildren } from './card-face.mjs';
+import { deckCardTemplate, fiveColumnCardGrid } from './deck-ui-layout.mjs';
 import { nativeControls, nativeTheme } from './native-ui-theme.mjs';
 
 export function experimentalCharacterControls(theme = nativeTheme) {
@@ -83,6 +84,23 @@ export function experimentalCharacterControls(theme = nativeTheme) {
     text('overflow', v.overflow, '', f.label, c.textDim),
     button('close', v.close, '返回', l),
   ] };
+  const choice = panel('choicePanel', q, '选择卡牌', '', [
+      ...Array.from({ length: q.viewport ? 2 : q.columns * q.rows }, (_, i) => {
+        const control = button(`card${i + 1}`,
+          [q.origin[0] + (i % q.columns) * q.step[0], q.origin[1] + Math.floor(i / q.columns) * q.step[1], ...q.cardSize], '', q, f.small);
+        if (q.viewport) return control;
+        // One shared face, not four copies inside the native button states.
+        control.children.unshift({ name: 'face', kind: 'container', size: [...theme.layout.card.size],
+          children: cardFaceChildren(theme, 'deck', false) });
+        control.children.push({ ...plate('orderPlate', q.orderBadge, c.panelSunken), visible: false },
+          { ...text('order', [...q.orderBadge.slice(0, 3), theme.layout.nativeText.lineHeight], '', f.label, c.goldBright), visible: false });
+        return control;
+      }),
+      text('status', q.status, '', f.label, c.textDim),
+      button('before', q.before, '上一页', q), button('after', q.after, '下一页', q),
+      button('confirm', q.confirm, '确认', q),
+  ]);
+  if (q.viewport) applyOfficialChoiceLayout(choice, theme);
   return [
     panel('characterPanel', l, '选择你的同行者', '查看初始信息，确认后开始冒险。', [
       themes,
@@ -117,20 +135,42 @@ export function experimentalCharacterControls(theme = nativeTheme) {
       button('confirm', l.confirm, '开始冒险', l, f.heading, true),
       deckView,
     ], c.backdrop, c.backdrop),
-    panel('choicePanel', q, '选择卡牌', '', [
-      ...Array.from({ length: q.columns * q.rows }, (_, i) => {
-        const control = button(`card${i + 1}`,
-          [q.origin[0] + (i % q.columns) * q.step[0], q.origin[1] + Math.floor(i / q.columns) * q.step[1], ...q.cardSize], '', q, f.small);
-        // One shared face, not four copies inside the native button states.
-        control.children.unshift({ name: 'face', kind: 'container', size: [...theme.layout.card.size],
-          children: cardFaceChildren(theme, 'deck', false) });
-        control.children.push({ ...plate('orderPlate', q.orderBadge, c.panelSunken), visible: false },
-          { ...text('order', [...q.orderBadge.slice(0, 3), theme.layout.nativeText.lineHeight], '', f.label, c.goldBright), visible: false });
-        return control;
-      }),
-      text('status', q.status, '', f.label, c.textDim),
-      button('before', q.before, '上一页', q), button('after', q.after, '下一页', q),
-      button('confirm', q.confirm, '确认', q),
-    ]),
+    choice,
   ];
+}
+
+export function applyOfficialChoiceLayout(choice, theme) {
+  const child = name => choice.children.find(control => control.name === name);
+  if (child('cards')) return;
+  const q = theme.layout.combatChoice, template = deckCardTemplate(theme);
+  const grid = fiveColumnCardGrid('cards', q.viewport, template.name);
+  Object.assign(grid.grid, { itemSize: [theme.layout.card.size[0], template.size[1]],
+    spacing: [27, 8], padding: [4, 4, 24, 24] });
+  grid.visible = false;
+  choice.children.splice(choice.children.indexOf(child('card1')), 0, grid);
+  choice.children = choice.children.filter(control => !['border', 'face'].includes(control.name)
+    && (!/^card\d+$/.test(control.name) || ['card1', 'card2'].includes(control.name)));
+  for (let i = 1; i <= 2; i++) {
+    const option = child(`card${i}`);
+    option.name = `option${i}`;
+    option.children = option.children.filter(control => control.name === 'hit');
+    option.position = [(i === 1 ? -1 : 1) * (q.optionSize[0] / 2 + theme.space.m), 0];
+    option.visible = false;
+  }
+  for (const name of ['title', 'hint', 'status', 'confirm', 'before', 'after', 'option1', 'option2']) {
+    const control = child(name), frame = q[name];
+    if (frame) control.position = frame.slice(0, 2);
+    const size = frame?.slice(2) ?? q.optionSize;
+    control.size = [...size];
+    const hit = control.children?.find(part => part.name === 'hit');
+    if (!hit) continue;
+    hit.size = [...size];
+    for (const state of hit.children) {
+      state.size = [...size];
+      const label = state.children.find(part => part.name === 'label');
+      label.size = size.map((value, i) => value - q.buttonInset[i]);
+      if (name === 'before' || name === 'after') label.text.content = name === 'before' ? '向上' : '向下';
+    }
+  }
+  child('before').visible = child('after').visible = false;
 }

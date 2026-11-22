@@ -46,6 +46,7 @@ end
 local function updatePrepared(self,platform,dt)
     PageReveal.registerSource(platform,'nodePanel');self.nodeUI:update(dt)
     PageReveal.registerSource(platform,'deckPanel');self.deckUI:update(dt)
+    if self.choiceUI then self.choiceUI:update()end
     PageReveal.registerSource(platform,'mapPanel');return self.mapUI:update(dt)
 end
 local function advancePreparation(self,platform,dt)
@@ -55,6 +56,7 @@ local function advancePreparation(self,platform,dt)
     PageReveal.registerSource(platform,page)
     if page=='nodePanel' then self.nodeUI:prepare(dt)
     elseif page=='deckPanel' then self.deckUI:update(dt)
+    elseif page=='choicePanel' and self.choiceUI then self.choiceUI:update()
     elseif page=='mapPanel' then self.mapUI:update(dt) end
     self:syncController();return true
 end

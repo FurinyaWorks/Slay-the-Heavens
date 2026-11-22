@@ -11,6 +11,7 @@ import {installStsReferenceCardChrome,stsReferenceRuntimeGeometry,geoCardReferen
 import {loadLowCostArt,attachLowCostArt} from './lowcost-art.mjs';
 import {preflightOfficialRoots,composeOfficialRun,finishOfficialComposition} from './official-run-layout.mjs';
 import {roundedButtonPalettes} from './native-rounded-button.mjs';
+import {applyOfficialChoiceLayout} from './character-ui-layout.mjs';
 const children=node=>node?.controls??node?.children??[];
 const child=(node,name)=>children(node).find(item=>item.name===name);
 const required=(node,name)=>{const value=child(node,name);if(!value)throw Error('Official assets missing '+name);return value;};
@@ -253,12 +254,8 @@ export function applyOfficialAssets(trees,theme){
  let cardHosts=0,removedControls=0;
   for(const tree of trees){
    const stage=child(tree,'stage')??tree;
-   const choice=child(stage,'choicePanel'),page=theme.layout.combatChoice;
-   if(choice){
-    choice.children=choice.children.filter(node=>!/^card\d+$/.test(node.name)||Number(node.name.slice(4))<=page.columns*page.rows);
-    for(let i=0;i<page.columns*page.rows;i++)required(choice,'card'+(i+1)).position=
-     [page.origin[0]+i%page.columns*page.step[0],page.origin[1]+Math.floor(i/page.columns)*page.step[1]];
-   }
+   const choice=child(stage,'choicePanel');
+   if(choice)applyOfficialChoiceLayout(choice,theme);
    const relicBar=child(stage,'relicBar');
    if(relicBar)for(let i=1;i<=theme.officialAssets.battleRelicBar.count;i++){
     if(!child(relicBar,'slot'+i)){

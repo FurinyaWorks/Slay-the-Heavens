@@ -114,7 +114,7 @@ test('official card hosts share the measured back/front frame, visible cost and 
  const battleCards=new Set(all(child(layout,'battlePanel')).filter(n=>child(n,'roundFrame')&&child(n,'costDisc')));
  assert.equal(battleCards.size,10);
  const cards=[...all(layout),...all(template)].filter(n=>child(n,'roundFrame')&&child(n,'costDisc'));
- assert.equal(cards.length,38,'current two-choice and three-picker profile plus the shared deck template');
+ assert.equal(cards.length,37,'choice shares the deck template without a serialized face');
  for(const card of cards)assertSharedCard(card,theme);
  const old=structuredClone(cards[0]);old.children=children(old).filter(n=>!['stsReferenceBack','stsReferenceChrome'].includes(n.name));
  assert.throws(()=>assertSharedCard(old,theme),/shared StS back and front/,'old card frame rollback must fail');
@@ -133,7 +133,7 @@ test('both official build orders retain exact choice and picker semantics and ev
   ...Array.from({length:3},(_,i)=>'/SlayTheAbyss/nodePanel/pickerView/card'+(i+1)),
   ...['before','after','target'].map(n=>'/SlayTheAbyss/nodePanel/pickerView/'+n),
   ...Array.from({length:12},(_,i)=>'/SlayTheAbyss/nodePanel/pickerView/forgeGrid/card'+(i+1)),
-  ...Array.from({length:2},(_,i)=>'/SlayTheAbyss/choicePanel/card'+(i+1)+'/face'),
+  '/SlayTheAbyss/deckPanel/cardFocus/face',
   '/AbyssDeckCard/face',
  ].sort();
  const paths=(node,prefix='')=>{
@@ -142,10 +142,12 @@ test('both official build orders retain exact choice and picker semantics and ev
  for(const themeFirst of [false,true]){
   const theme=officialAssetsTheme(nativeTheme),layout=gameLayout(themeFirst?theme:nativeTheme),template=deckCardTemplate();
   const picker=child(child(layout,'nodePanel'),'pickerView'),choice=child(layout,'choicePanel');
-  const retained=[...['card1','card2','card3'].map(n=>child(picker,n)),...['card1','card2'].map(n=>child(choice,n))];
+  const retained=['card1','card2','card3'].map(n=>child(picker,n));
   const hits=retained.map(n=>child(n,'hit'));
   const result=applyOfficialAssets([layout,template],theme);
-  assert.deepEqual(children(choice).filter(n=>/^card\d+$/.test(n.name)).map(n=>n.name),['card1','card2']);
+  assert.deepEqual(children(choice).filter(n=>/^card\d+$/.test(n.name)),[]);
+  assert.equal(child(choice,'cards').itemTemplate,template.name);
+  assert.ok(child(choice,'option1')&&child(choice,'option2'),'potion controls remain separate from card cells');
   assert.deepEqual(children(picker).filter(n=>/^card\d+$/.test(n.name)).map(n=>n.name),['card1','card2','card3','card4','card5','card6']);
   for(let i=1;i<=3;i++)assert(child(child(picker,'card'+i),'stsReferenceChrome'),'visible picker retains a full card face');
   for(let i=4;i<=6;i++){

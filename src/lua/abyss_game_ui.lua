@@ -53,7 +53,14 @@ function M.new(root, data, presentation, clickEvent, platform)
     platform.controller = controller
     if platform.presentationReady then
         local cover=assert(root:GetChild('pageReveal'),'missing shared page reveal cover')
-        self.pageReveal=PageReveal.new(cover,platform.presentationReady,function()
+        local function ready(intent)
+            if intent.page=='choicePanel' and self.choiceUI then
+                local painted,reason,count=self.choiceUI:presentationReady()
+                if not painted then return false,reason,'choice:'..tostring(count) end
+            end
+            return platform.presentationReady(intent)
+        end
+        self.pageReveal=PageReveal.new(cover,ready,function()
             owner.exitGeneration=owner.exitGeneration+1;owner.menuGeneration=owner.menuGeneration+1
         end,{full={0,0,Theme.canvas.base[1],Theme.canvas.base[2]},
             deckPanel=Theme.layout.deckView.viewport,deckBrowser=Theme.layout.deckView.pileViewport,

@@ -33,7 +33,16 @@
         "centreLight": "#898986"
       }
     },
-    "choicePage": {"columns": 2, "rows": 1, "origin": [-108, 0]},
+    "choicePage": {
+      "viewport": [0, -17, 960, 516],
+      "title": [0, 297, 1040, 44],
+      "hint": [0, 258, 1040, 36],
+      "status": [0, -338, 960, 32],
+      "confirm": [0, -300, 168, 48],
+      "before": [-400, -300, 128, 48],
+      "after": [400, -300, 128, 48],
+      "optionSize": [360, 126]
+    },
     "pickerPage": {"columns":[-246,0,246]},
     "neowGuide": {
       "scale":0.945,"origin":[739,61.5],

@@ -28,7 +28,7 @@ local function pageFor(owner)
 end
 local function overlayVersion(owner,page)
     if page=='deckPanel' then return owner.deckUI.openSession,owner.deckUI.cardDetail or owner.deckUI.detailPages,owner.deckUI.detailPage,owner.deckUI.contentRevision end
-    if page=='choicePanel' then return owner.choiceUI.context,nil,owner.choiceUI.page end
+    if page=='choicePanel' then return owner.choiceUI.context end
 end
 function M.intent(owner)
     local run=owner.run or {};local page=pageFor(owner)

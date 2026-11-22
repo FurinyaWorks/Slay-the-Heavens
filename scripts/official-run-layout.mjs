@@ -68,7 +68,7 @@ function roundRunActions(host,theme){
  const panels={
   deckPanel:{close:secondary,upgradePreview:secondary,previous:secondary,next:secondary},
   potionPanel:{cancel:secondary,use:primary,discard:secondary},
-  choicePanel:{confirm:primary},
+  choicePanel:{confirm:primary,before:secondary,after:secondary,option1:secondary,option2:secondary},
   relicPanel:{close:secondary,previous:secondary,next:secondary},
   runMenu:{resume:primary,map:secondary,abandon:cancel},
   exitPanel:{cancel:secondary,confirm:cancel},
