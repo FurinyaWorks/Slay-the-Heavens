@@ -1,3 +1,4 @@
+import {beforeStsSelectionFade} from './sts-selection-fade-source.mjs';
 // Exact full-file continuation for historical receipts; live product tests use current code.
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
@@ -53,15 +54,29 @@ assert(reveal:step(intent));host:refresh()`,"prepared=true;assert(not reveal:ste
     ],
   },
 };
+// Release 409da03b carries later UI changes around the same #787 edits.
+const releaseHashes={
+  'src/lua/abyss_game_ui.lua':{
+    after:'8ec5367dc26ea6dc4a916f873984629cba75b4d33b6ad6cbf0d0a0dc7f3f952f',
+    before:'b0d51fcb3dc7e07bd1d50e75397741df277dd5bf9734ffdb9bc7e3c76c33eef1',
+  },
+  'src/lua/abyss_game_ui_view.lua':{
+    after:'139eb5b671ede441215a09cd0a6cd1b44eb27703bc692db171d9b036383b41c1',
+    before:'9d5bdaf3ec9a6b3cf8d62b4c6d57128215a38ab20c3d240022af3ca333a1da63',
+  },
+};
 export function beforeLoadingRecoverySource(path,source){
+  source=beforeStsSelectionFade(path,source);
   const row=Object.hasOwn(sources,path)?sources[path]:null;
   if(!row||typeof source!=='string'||source.includes('\r\r\n'))return source;
   let prior=source.replaceAll('\r\n','\n');
-  if(hash(prior)!==row.after)return source;
+  const sourceHash=hash(prior);
+  const binding=releaseHashes[path]?.after===sourceHash?releaseHashes[path]:row;
+  if(sourceHash!==binding.after)return source;
   for(const [after,before]of row.edits){
     assert.equal(prior.split(after).length,2,'one exact loading recovery change: '+path);
     prior=prior.replace(after,before);
   }
-  assert.equal(hash(prior),row.before,'complete loading recovery predecessor: '+path);
+  assert.equal(hash(prior),binding.before,'complete loading recovery predecessor: '+path);
   return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }

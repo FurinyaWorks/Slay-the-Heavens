@@ -5,6 +5,7 @@ local Theme = require("abyss_theme")
 local EnemyView = require('abyss_battle_enemy_view')
 local DamageView = require('abyss_battle_damage_view')
 local PotionView = require("abyss_battle_potion_view")
+local Acts = require("abyss_acts")
 local IntentView = require("abyss_battle_intent_view")
 local RewardOwner = require("abyss_battle_reward_owner")
 local LowCostArt=require('abyss_lowcost_art')
@@ -13,6 +14,14 @@ local C, L, S = Theme.color, Theme.layout, Theme.space
 local number = require("abyss_numbers").integer
 local potionText = PotionView.potionText
 local intentView = IntentView.intentView
+local function continueCaption(frame, embedded)
+    if not frame.manual then return "再战一场" end
+    local run = frame.run
+    if embedded and run.nodeFlow and run.nodeFlow.type == 'boss' and Acts.get(run.act or 1).terminal == 'boss_treasure' then
+        return "前往首领宝箱"
+    end
+    return "前往地图"
+end
 -- Last successful geometry writer per native handle; tokens hold no view references.
 local intentSizes=setmetatable({},{__mode='k'})
 local intentPositions=setmetatable({},{__mode='k'})
@@ -74,6 +83,23 @@ local function paintEnemyArt(host,box,enemy,x,y,portrait,tone,dim)
     LowCostArt.dim(icon,dim and .4 or 1)
     LowCostArt.refresh(box,{r=tone.r,g=tone.g,b=tone.b,a=255})
 end
+local function intentTone(alpha,kind)
+    -- STS intent atlases are colour-coded (attack red, defend blue, buff gold,
+    -- debuff violet); white-tinted silhouettes read as one undifferentiated blob.
+    local ink=({attack=C.danger,defend=C.block,buff=C.buff,debuff=C.debuff,strong_debuff=C.debuff})[kind] or C.text
+    return {r=ink.r,g=ink.g,b=ink.b,a=255*(alpha or 1)}
+end
+local function renderIntentBadge(box,face,x,y,size,allowed,alpha,binding,picture,tint)
+    local badge=box:GetChild('intentBadge')
+    local visible=allowed~=false and face.sourceEnum=='DEFEND_BUFF'and face.worldVisible==true and face.badge=='buff'
+    intentVisible(badge,visible,binding)
+    if not visible then return end
+    local glyph=math.min(size,L.intent.size)
+    intentSize(badge,L.intent.badge,L.intent.badge,binding)
+    intentPosition(badge,x+glyph/2+S.xs+L.intent.badge/2,y,binding)
+    picture(badge,Theme.icon.intent.buff)
+    tint(badge,intentTone(alpha,'buff'))
+end
 -- Explicit ports preserve the approved implementation without a shared constructor closure.
 function M.install(owner, ownership, host, dependencies)
     -- A new view binding starts fresh; weak native keys cannot retain retired actors.
@@ -132,12 +158,6 @@ function M.install(owner, ownership, host, dependencies)
         if geometry then return geometry.intentX,geometry.intentY,geometry.intentWidth end
         return 0,portrait/2,128*Theme.canvas.base[1]/1920
     end
-    local function intentTone(alpha,kind)
-        -- STS intent atlases are colour-coded (attack red, defend blue, buff gold,
-        -- debuff violet); white-tinted silhouettes read as one undifferentiated blob.
-        local ink=({attack=C.danger,defend=C.block,buff=C.buff,debuff=C.debuff,strong_debuff=C.debuff})[kind] or C.text
-        return {r=ink.r,g=ink.g,b=ink.b,a=255*(alpha or 1)}
-    end
     local function renderIntentIcon(box,face,x,y,size,allowed,alpha)
         local kind=face.worldKind or face.kind
         local visible=allowed~=false and (face.sourceEnum and face.worldVisible or not face.sourceEnum)
@@ -170,7 +190,8 @@ function M.install(owner, ownership, host, dependencies)
     local function renderEnemyIntent(box,face,portrait,geometry,allowed,alpha)
         local x,y,size=intentGeometry(portrait,geometry)
         renderIntentIcon(box,face,x,y,size,allowed,alpha)
-        for _,name in ipairs({'intentBadge','intentExtra','intentLabel'})do intentVisible(box:GetChild(name),false,intentGeometryOwner)end
+        renderIntentBadge(box,face,x,y,size,allowed,alpha,intentGeometryOwner,intentPicture,dependencies.tint)
+        for _,name in ipairs({'intentExtra','intentLabel'})do intentVisible(box:GetChild(name),false,intentGeometryOwner)end
         renderIntentValue(box,face,x,y,allowed,alpha)
         local sx,sy=Theme.canvas.base[1]/1920,Theme.canvas.base[2]/1080
         local hit=box:GetChild('intentHit');intentVisible(hit,allowed~=false,intentGeometryOwner)
@@ -343,7 +364,7 @@ function M.install(owner, ownership, host, dependencies)
     local function renderContinue(frame)
         local run = frame.run
         dependencies.button("continue", owner.active and run and (frame.manual or run.phase == "map") and not owner.busy, true,
-            frame.manual and "前往地图" or "再战一场")
+            continueCaption(frame, host.options.embedded))
     end
     local function bindPotionSlots(frame)
         if frame.fighting and not owner.busy then

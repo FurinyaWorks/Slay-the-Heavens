@@ -1,3 +1,4 @@
+local advanceShop = dofile('tests/lua/support/shop_timeline.lua')
 package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local Run,Nodes,C,Map=require('abyss_run'),require('abyss_nodes'),require('abyss_combat'),require('abyss_map')
 local Data=require('abyss_data')
@@ -48,7 +49,7 @@ test('native purge pickers use the shared legal group in all four rooms',functio
   local ui=UI.new(root,r,map,F.Presentation,'click',nil,{color=function(...)return{...}end,imageSource='static'})
   eq(#ui.removeRows,1);eq(ui.removeRows[1].uid,2)
   local key=kind=='shop' and 'shopView/removal' or kind=='cleric' and 'eventView/option2' or 'eventView/option1'
-  ui:setVisible(true);assert(ui:press(key));eq(#ui.removeRows,1);eq(ui.removeRows[1].uid,2)
+  ui:setVisible(true);if kind=='shop' then assert(root:GetChild('merchant'):GetChild('talk'):GetChild('hit').click());advanceShop(ui) end;assert(ui:press(key));eq(#ui.removeRows,1);eq(ui.removeRows[1].uid,2)
   r.deck[2].inBottleTornado=true;ui:render();eq(#ui.removeRows,0)
  end
 end)

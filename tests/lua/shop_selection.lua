@@ -1,3 +1,4 @@
+local advanceShop = dofile('tests/lua/support/shop_timeline.lua')
 local NativeContract = dofile('tests/lua/support/native_ui_contract.lua')
 -- Real Run/Map/Nodes and generated native controls; no gameplay rules are mocked.
 package.path = "src/lua/?.lua;build/lua/?.lua;" .. package.path
@@ -49,6 +50,7 @@ local function setup(touchScreen)
     local root=control(assert(find(Layout)))
     local ui=UI.new(root,run,map,Presentation,"click",nil,{cursorEvents=cursor,color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end,touchScreen=function() return touchScreen==true end})
     ui:setVisible(true)
+    assert(root:GetChild("merchant"):GetChild("talk"):GetChild("hit").listeners.click());advanceShop(ui)
     local function get(key)
         local box=root for part in key:gmatch("[^/]+") do box=assert(box:GetChild(part),key) end
         return box
@@ -205,14 +207,14 @@ test('mobile card selection previews then confirms exactly one purchase',functio
  assert(tap('shopView/card1',1));assert(ui.run.gold==gold and #ui.run.deck==deck,'preview must not purchase')
  assert(get('confirm/label').text:find('购买'));assert(get('shopView/card1/glow').visible)
  assert(tap('confirm',2));assert(ui.run.gold==gold-price and #ui.run.deck==deck+1)
- assert(get('confirm/label').text=='离开商店')
+ assert(not get('confirm').visible and get('back/label').text=='离开')
 end)
 test('cancel and hide discard the mobile selection without a transaction',function()
  local ui,get,emit,tap=setup(true);local gold=ui.run.gold
  assert(tap('shopView/card6',1));assert(tap('back',2));assert(ui.run.gold==gold)
- assert(get('confirm/label').text=='离开商店')
+ assert(not get('confirm').visible and get('back/label').text=='离开')
  assert(tap('shopView/card2',3));ui:setVisible(false);ui:setVisible(true);ui:render()
- assert(get('confirm/label').text=='离开商店' and ui.run.gold==gold)
+ assert(not get('confirm').visible and get('back/label').text=='离开' and ui.run.gold==gold)
 end)
 test('a changed quote retires selection and an already pressed confirmation',function()
  local ui,get,emit,tap=setup(true);local gold=ui.run.gold
@@ -220,7 +222,7 @@ test('a changed quote retires selection and an already pressed confirmation',fun
  ui.run.nodeFlow.cards[1].price=ui.run.nodeFlow.cards[1].price+1
  ui:update(.02);emit('confirm','up',2);assert(not emit('confirm','click',2))
  assert(ui.run.gold==gold and not ui.run.nodeFlow.complete)
- assert(get('confirm/label').text=='离开商店')
+ assert(not get('confirm').visible and get('back/label').text=='离开')
 end)
 test('touch relic and potion previews show complete text and require confirmation',function()
  for _,key in ipairs({'relic3','potion1'}) do
@@ -260,5 +262,5 @@ test('touch can inspect stocked potions with full slots and still cannot buy the
  assert(get('confirm/label').text=='暂不可购买' and not ui.actions.confirm.enabled)
  assert(not tap('confirm',2));same(before,ui.run)
  ui:setVisible(false);ui:setVisible(true);ui:render()
- assert(not get('shopView/detail').visible and get('confirm/label').text=='离开商店');same(before,ui.run)
+ assert(not get('shopView/detail').visible and not get('confirm').visible and get('back/label').text=='离开');same(before,ui.run)
 end)

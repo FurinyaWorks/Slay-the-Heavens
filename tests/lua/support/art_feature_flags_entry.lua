@@ -42,7 +42,7 @@ dofile('src/lua/abyss_ui.lua');OnStart();GameUI.new=create
 assert(updates and host,'all-off native entry did not start')
 local function ready()
  for _=1,256 do
-  OnUpdate(0)
+  OnUpdate(.02)
   if not host.pageReveal:covered() then return end
  end
  error('native entry did not publish its prepared page')
@@ -76,6 +76,8 @@ assert(not menu:GetChild('result'):GetChild('viewEasterEgg').visible,'all-off en
 OnUpdate(.01);assert(F.click(root,'menuPanel','start'));ready()
 assert(root:GetChild('characterPanel').visible,'official selection remains interactive')
 local select=root:GetChild('characterPanel')
+assert(host:selectCharacter('traveler'),'the player explicitly chooses the available character')
+ready()
 assert(select:GetChild('details'):GetChild('deckOpen'):GetChild('hit').click(),'starter deck remains accessible with illustrations disabled')
 ready()
 local deck=root:GetChild('deckPanel');local grid=deck:GetChild(host.deckUI.browserShell and 'pileGrid' or 'grid')

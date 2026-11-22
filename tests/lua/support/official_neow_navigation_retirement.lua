@@ -42,6 +42,7 @@ for _,action in ipairs({'abandon','new'})do
   assert(not host.exitOpen and host.run==oldRun and host:openMenu())
   local back=assert(runMenu.keyListeners and runMenu.keyListeners.backspace,'missing native Backspace receiver')
   assert(runMenu.disableKeyEventPassthrough and back())
+  assert(not runMenu.visible and runMenu.disableKeyEventPassthrough==false,'hidden menu must release keyboard input')
   assert(not host.exitOpen and not back() and host.run==oldRun and signals()==0)
   assert(host:openMenu())
  end

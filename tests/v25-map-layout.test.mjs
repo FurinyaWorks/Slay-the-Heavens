@@ -37,12 +37,14 @@ test('paper and blue legend have layered native silhouettes, continuous light an
  assert.equal(paper.name,'v25MapPaper');assert(paper.children.length>10);
  assert(paper.children.some(c=>c.image===106095));assert(paper.children.some(c=>c.name.startsWith('paperEdge')));
  const legend=find(layout,'typeLegend'),chrome=legend.children[0];assert.equal(chrome.name,'v25LegendPaper');
- assert.deepEqual(legend.position,[486,22.5]);assert.deepEqual(legend.size,[266,333]);
+ assert.deepEqual(legend.position,[486,40]);assert.deepEqual(legend.size,[266,298]);
  assert(chrome.children.some(c=>c.name==='topRoll'));assert(chrome.children.some(c=>c.name==='bottomRoll'));
  assert.equal(find(legend,'title').text.content,'图例');
- assert.equal(find(legend,'eventLabel').text.content,'未知');assert.equal(find(legend,'shopLabel').text.content,'商人');
- assert.equal(find(legend,'bossIcon').visible,true);assert.equal(find(legend,'bossLabel').visible,true);
- assert.equal(find(legend,'bossLabel').text.content,'首领');
+ assert.deepEqual(legend.children.filter(c=>c.name.endsWith('Label')).map(c=>c.text.content),['未知','商人','宝箱','休息','敌人','精英']);
+ assert(!find(legend,'bossIcon')&&!find(legend,'bossLabel'));
+ const eliteBottom=find(legend,'eliteLabel').position[1]-20;
+ const bottomRoll=find(chrome,'bottomRoll');
+ assert(eliteBottom-(bottomRoll.position[1]+bottomRoll.size[1]/2)<24,'scroll must end immediately after elite');
  assert.equal(all(layout).filter(c=>c.kind==='cursorArea').length,hits);
  for(const node of all(paper).concat(all(chrome)))assert(!node.script&&!node.scripts&&!node.focusable);
 });
@@ -74,6 +76,60 @@ test('duplicate or malformed map refuses before changing input',()=>{
 test('map legend title retains source centre and font while fitting one native glyph line',()=>{
  const layout=mapLayout();applyV25MapLayout(layout,nativeTheme);
  const title=find(find(layout,'typeLegend'),'title');
- assert.deepEqual(title.position,[0,129]);assert.equal(title.text.fontSize,26);assert.equal(title.text.minFontSize,26);
+ assert.deepEqual(title.position,[0,111.5]);assert.equal(title.text.fontSize,26);assert.equal(title.text.minFontSize,26);
  assert.equal(title.text.content,'图例');assert.deepEqual(title.size,[230,52]);
+});
+
+import {mkdirSync,writeFileSync} from 'node:fs';
+import {battleLayout} from '../scripts/ui-layout.mjs';
+import {applyStsRewardRows} from '../scripts/sts-reward-row-layout.mjs';
+import {runLua} from '../scripts/test-lua.mjs';
+test('reward return uses the adopted low-control rounded character material in every state',()=>{
+ const layout=battleLayout();applyStsRewardRows(layout,structuredClone(nativeTheme));
+ const find=(n,k)=>n.name===k?n:(n.children??n.controls??[]).map(c=>find(c,k)).find(Boolean);
+ const button=find(layout,'continue');
+ for(const state of button.children){
+  const flag=find(state,'v25Flag');assert(flag);
+  assert(find(flag,'corner-1_-1'),'rounded disc corners replace stepped flag bands');
+  assert(!JSON.stringify(flag).includes('band0'));
+ }
+});
+test('curved route geometry is stable, bounded, endpoint preserving and independent of RNG',()=>{
+ mkdirSync('build',{recursive:true});
+ const path='build/recording-route-curve.lua';
+ writeFileSync(path,`local UI=require('abyss_map_ui')
+assert(type(UI.routePoint)=='function','missing curved route geometry')
+for seed=1,40 do
+ local lastY=-1000
+ for i=0,100 do
+  local t=i/100
+  local x,y=UI.routePoint(20,30,140,180,t,seed)
+  local xx,yy=UI.routePoint(20,30,140,180,t,seed)
+  assert(x==xx and y==yy,'unstable decoration')
+  assert(math.abs(x-(20+120*t))<=12 and y>=lastY,'curve escapes bounded corridor')
+  if i==0 then assert(x==20 and y==30)end
+  if i==100 then assert(math.abs(x-140)<.00001 and y==180)end
+  lastY=y
+ end
+ local x=UI.routePoint(20,30,140,180,.5,seed)
+ assert(math.abs(x-80)>1,'route remains straight')
+end
+print('ROUTE_CURVE_PASS')
+`);
+ const result=runLua(path);
+ assert.equal(result.status,0,result.stdout+result.stderr);
+});
+
+import {readFileSync} from 'node:fs';
+import {gunzipSync} from 'node:zlib';
+import {beforeAuthenticatedRecordingStage} from './helpers/release-ui-restore-source.mjs';
+test('recording historical continuation accepts exact owners and rejects stale, drifted or mixed reads',()=>{
+ const {files}=JSON.parse(gunzipSync(readFileSync('tests/helpers/recording-0401-source.json.gz')));
+ for(const [path,row] of Object.entries(files)){
+  const live=readFileSync(path,'utf8');
+  assert.equal(beforeAuthenticatedRecordingStage(path,live,readFileSync),row.before.source,path);
+  const drift=live+'\n-- unreviewed drift\n';
+  assert.equal(beforeAuthenticatedRecordingStage(path,drift,readFileSync),drift,'unknown bytes must remain unprojected');
+  assert.throws(()=>beforeAuthenticatedRecordingStage(path,live,owner=>owner===path?drift:readFileSync(owner,'utf8')),/linked owner (?:changed|identity)/);
+ }
 });

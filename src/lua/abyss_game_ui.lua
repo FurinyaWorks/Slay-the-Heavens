@@ -29,6 +29,12 @@ local Lifecycle = require('abyss_game_ui_lifecycle')
 local Input = require('abyss_game_ui_input')
 local PageReveal=require('abyss_page_reveal')
 
+local function revealMotion(platform)
+    if platform.prologue==true and platform.color then return {color=platform.color,duration=Theme.motion.slow}end
+end
+local function legacyPrologue(panel,platform,gate)
+    return panel and platform.prologue==true and platform.color and not gate
+end
 function M.new(root, data, presentation, clickEvent, platform)
     -- A seed is an explicit replay/test override. Normal runs sample at Start,
     -- never while constructing the title screen or refreshing the UI.
@@ -46,20 +52,23 @@ function M.new(root, data, presentation, clickEvent, platform)
         self.pageReveal=PageReveal.new(cover,platform.presentationReady,function()
             owner.exitGeneration=owner.exitGeneration+1;owner.menuGeneration=owner.menuGeneration+1
         end,{full={0,0,Theme.canvas.base[1],Theme.canvas.base[2]},
-            deckPanel=Theme.layout.deckView.viewport,
+            deckPanel=Theme.layout.deckView.viewport,deckBrowser=Theme.layout.deckView.pileViewport,
             nodePanel=Theme.layout.nativeNode.backdrop,battlePanel=Theme.layout.rewardPick.stage,
             potionPanel={0,0,Theme.layout.modal.size[1],Theme.layout.modal.size[2]},
-            choicePanel=Theme.layout.combatChoice.panel})
-        if controller then controller.blocked=function()return self.pageReveal:covered() and not self.exitOpen end end
+            choicePanel=Theme.layout.combatChoice.panel},revealMotion(platform))
+        if controller then controller.blocked=function()return self.pageReveal:covered() and (not self.exitOpen or self.routeOpen) end end
+        cover.disableCursorEventPassthrough=true
         cover:GetChild('blocker'):AddCursorEventListener(clickEvent,function()return true end)
         local cancel=cover:GetChild('cancel'):GetChild('hit')
-        local function canRecover()return self.pageReveal.state=='failed' and not self.exitOpen end
-        local function leave()
+        local function canRecover()return self.pageReveal.state=='failed' and (not self.exitOpen or self.routeOpen) end
+        function self.recoverPage(_)
             if not canRecover()then return false end
+            if self.routeOpen then return self:closeExit() end
             return self:openMenu()
         end
-        cancel:AddCursorEventListener(clickEvent,leave)
-        Controller.bind(controller,cancel,'pageReveal',leave,canRecover,1)
+        local function recover()return self:recoverPage()end
+        cancel:AddCursorEventListener(clickEvent,recover)
+        Controller.bind(controller,cancel,'pageReveal',recover,canRecover,1)
     end
     local newSeed = platform.newSeed or function() return require("abyss_new_run_seed").next() end
     local bgm = Bgm.new(platform.music)
@@ -84,13 +93,18 @@ function M.new(root, data, presentation, clickEvent, platform)
         return ok, reason
     end, clickEvent, { embedded = true, color = platform.color, imageSource = platform.imageSource,
         cursor = platform.cursorEvents, controller = controller,
-        available=function(map)return Nodes.available(self.run,map)end })
+        available=function(map)return Nodes.available(self.run,map)end,
+        bossName=function(map)
+            local run = self.run
+            local bosses = run and run.bossInitialization and run.bossInitialization.bossList
+            if self.map == map and type(bosses) == 'table' then return bosses[1] end
+        end })
     self.nodeUI = NodeUI.new(child("nodePanel"), nil, nil,
         presentation, clickEvent, changed, { color = platform.color, imageSource = platform.imageSource,
             imageTypes = platform.imageTypes,
             textAlignments = platform.textAlignments,
             cursorEvents = platform.cursorEvents, sound = platform.sound, controller = controller, touchScreen = platform.touchScreen,
-            enhancedRooms=true,
+            enhancedRooms=true,inputCovered=inputCovered,
             onInspectCard=function(definition,upgraded)
                 if not self.run or self.disabled or self.mode~='node' or self.exitOpen
                     or self.deckUI.visible or self.potionUI.visible or self.settlementRequested then return false end
@@ -117,7 +131,7 @@ function M.new(root, data, presentation, clickEvent, platform)
     self.closePotions = Overlays.closePotions(self)
     local prologuePanel = root:GetChild("prologuePanel")
     -- Native entry opts into the short interstitial; rule-only hosts stay immediate.
-    if prologuePanel and platform.prologue==true and platform.color then
+    if legacyPrologue(prologuePanel,platform,self.pageReveal)then
         self.prologue=require('abyss_prologue').new(prologuePanel,{color=platform.color,clickEvent=clickEvent,
             progress=View.openingProgress(self,child,platform),
             onPhase=function()self:refresh()end,onCancel=function()self.starting=false end})
@@ -134,7 +148,7 @@ function M.new(root, data, presentation, clickEvent, platform)
     self.openStarterDeck = Overlays.openStarterDeck(inputCovered,self,platform,owner)
     -- TASK-4.7 owned relics: icon-disc slots, not a text dump. Opening rides
     -- the deck gate so it stays read-only for battle, map, camp and chest.
-    self.openRelics = Overlays.openRelics(self)
+    self.openRelics = Overlays.openRelics(self,inputCovered,platform)
     self.closeDeck = Overlays.closeDeck(self)
 
     local menuView = MenuView.new(self,menu,data,platform)
@@ -195,13 +209,6 @@ function M.new(root, data, presentation, clickEvent, platform)
     self.update = Lifecycle.update(self,controller,platform,openingCovered,updateBossEntrance,bgm)
     self.disable = Lifecycle.disable(self,platform,controller,characterPanel,owner)
     Input.installUtilities(self,child,clickEvent,controller,inCombat,exitPanel,runMenu)
-    local backKey = platform.keyEvents and platform.keyEvents.KeyboardCraftspersonKey42Down
-    if Theme.presentationProfile=='official-assets-first' and backKey and runMenu.AddKeyEventListener then
-        runMenu.disableKeyEventPassthrough = true
-        runMenu:AddKeyEventListener(backKey,function()
-            return runMenu.visible and self.exitOpen and self.menuOpen and self:closeExit() or false
-        end)
-    end
     local bindCommand = Input.bindCommand(platform,self,canManagePotions,controller,clickEvent,owner)
     Input.installMenu(self,child,clickEvent,resourceHint,bindCommand,start,settlement,exitEntry,exitPanel)
     Input.installRunMenu(self,bindCommand,runMenu,canViewRoute,child,owner)

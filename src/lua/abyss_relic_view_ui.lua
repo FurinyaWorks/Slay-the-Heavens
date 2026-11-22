@@ -1,6 +1,5 @@
 -- TASK-4.7 owned-relic art slots: a top-bar disc row plus a read-only detail
 -- overlay. Each entry is icon disc + Chinese name + status chip + effect text.
--- Icons bind Theme.icon.relic[id]; placeholder ids are swapped by data only.
 local Theme=require('abyss_theme')
 local Controller=require('abyss_controller')
 local Hooks=require('abyss_relic_hooks')
@@ -10,14 +9,32 @@ local Art=require('abyss_lowcost_art')
 local rarityNames={starter='初始遗物',common='普通遗物',uncommon='罕见遗物',rare='稀有遗物',
     boss='首领遗物',shop='商店遗物',special='特殊遗物'}
 local function iconId(value)if type(value)=='table'then value=value.id end return type(value)=='number' and value or nil end
-function M.icon(id,battle)
-    local local_=Hooks.localId(id)
+local function iconKey(id,run)
+    local key=Hooks.localId(id)
+    if key and not Theme.icon.relic[key] and run and run.data and run.data.relics then
+        local definition=Rewards.definition(run,id)
+        if definition then return definition.id end
+    end
+    return key
+end
+local function atlasIcon(id,key,battle)
     if battle and Theme.presentationProfile=='official-assets-first' then
         local icons=Theme.officialAssets.battleRelicIcons
-        local override=icons and (iconId(icons[local_]) or iconId(icons[id]))
+        local override=icons and (iconId(icons[key]) or iconId(icons[id]))
         if override then return override end
     end
-    return iconId(Theme.icon.relic[local_]) or iconId(Theme.icon.relic[id]) or iconId(Theme.icon.node.treasure)
+    return iconId(Theme.icon.relic[key]) or iconId(Theme.icon.relic[id]) or iconId(Theme.icon.node.treasure)
+end
+function M.icon(id,battle)
+    return atlasIcon(id,iconKey(id),battle)
+end
+-- The same stable ID selects both the native artwork and its atlas fallback.
+function M.paint(control,id,size,platform,run,fallback)
+    local key=iconKey(id,run)
+    local image=key and atlasIcon(id,key,true) or iconId(fallback)
+    if platform.imageSource and image then control:SetImage(platform.imageSource,image) end
+    if key then Art.paint(control,'relic',key,size,platform)
+    else Art.hide(control) end
 end
 local function counterValue(run,id)
     local local_=Hooks.localId(id)
@@ -60,14 +77,16 @@ local function perPage()return #Theme.layout.relicView.rows*#Theme.layout.relicV
 function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
     local self={root=root,bar=bar,visible=false,page=1}
     local official=Theme.presentationProfile=='official-assets-first'
+    self.localPanel=official
     local baseBar=Theme.layout.relicView.bar
     local battleBar=official and assert(Theme.officialAssets.battleRelicBar,'missing official battle relic layout')
     local boundCount=official and battleBar.count or baseBar.count
+    local tooltip=bar:GetChild('tooltip')
     local function child(name)return assert(root:GetChild(name),'missing relic control '..name)end
-    local function picture(control,id)if platform.imageSource then control:SetImage(platform.imageSource,id)end end
     function self.resetBarHover(_)
         if self.hoverIndex then local icon=bar:GetChild('slot'..self.hoverIndex):GetChild('icon');icon:SetLocalScale(1,1,1);Art.scale(icon,1)end
         self.hoverIndex=nil
+        if tooltip and tooltip.visible then tooltip:SetVisible(false)end
     end
     local function paintCounter(slot,run,id,battle)
         local key,value
@@ -84,7 +103,7 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
         local id=run.relics[i]
         local definition=Rewards.definition(run,id)
         local description=definition and describe(run,definition.id) or ''
-        return {id=id,name=definition and definition.name or '未识别遗物',icon=M.icon(id,official),
+        return {id=id,name=definition and definition.name or '未识别遗物',icon=M.icon(definition and definition.id or id,official),
             rarity=definition and rarityNames[definition.rarity] or '遗物',
             status=M.status(run,id),description=description~='' and description or '效果说明待补充。'}
     end
@@ -96,34 +115,46 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
             child('frame').imageColor=single and platform.color(155,122,78,255) or platform.color(f.r,f.g,f.b,f.a or 255)
         end
     end
-    function self.render(_)
-        local run,n=self.run,perPage()
-        local single=self.selectedIndex~=nil
+    local function positionSingle(view,compact)
+        if not compact then return end
+        view:GetChild('icon'):SetAnchoredPosition(-177,8)
+        view:GetChild('icon'):SetSizeDelta(96,96)
+        for name,frame in pairs({name={55,91,350,40},rarity={55,53,350,32},
+            description={55,-30,350,126},status={55,-110,350,34}})do
+            local control=view:GetChild(name)
+            control:SetAnchoredPosition(frame[1],frame[2]);control:SetSizeDelta(frame[3],frame[4])
+        end
+    end
+    local function renderFrame(run,single,compact)
         child('single'):SetVisible(single)
-        local width=single and Theme.layout.relicView.row[1]+Theme.layout.relicView.disc*2 or Theme.layout.relicView.panel[3]
-        local height=Theme.layout.relicView.panel[4]
+        local width=compact and 560 or single and Theme.layout.relicView.row[1]+Theme.layout.relicView.disc*2 or Theme.layout.relicView.panel[3]
+        local height=compact and 342 or Theme.layout.relicView.panel[4]
         child('frame'):SetSizeDelta(width,height)
         child('plate'):SetSizeDelta(width-Theme.space.border*2,height-Theme.space.border*2)
         child('contentBlocker'):SetSizeDelta(width,height)
         paintFrame(single)
-        child('close'):SetAnchoredPosition(single and width/2-58 or Theme.layout.relicView.close[1],Theme.layout.relicView.close[2])
+        child('close'):SetAnchoredPosition(single and width/2-58 or Theme.layout.relicView.close[1],
+            compact and height/2-33 or Theme.layout.relicView.close[2])
+        child('title'):SetVisible(not compact)
         child('title').text=single and '遗物详情' or '持有遗物 · '..#run.relics..' 件'
-        if single then
-            local e=self:entry(run,self.selectedIndex);self.selected=e
-            local view=child('single')
-            picture(view:GetChild('icon'),e.icon)
-            Art.paint(view:GetChild('icon'),'relic',Hooks.localId(e.id),Theme.layout.relicView.disc*2,platform)
-            for _,name in ipairs({'name','rarity','description'})do view:GetChild(name).text=e[name]end
-            view:GetChild('status').text=e.status or ''
-        end
+        return width,height
+    end
+    local function renderSingle(run,compact)
+        local e=self:entry(run,self.selectedIndex);self.selected=e
+        local view=child('single')
+        positionSingle(view,compact)
+        M.paint(view:GetChild('icon'),e.id,compact and 96 or Theme.layout.relicView.disc*2,platform,run,e.icon)
+        for _,name in ipairs({'name','rarity','description'})do view:GetChild(name).text=e[name]end
+        view:GetChild('status').text=e.status or ''
+    end
+    local function renderRows(run,single,n)
         self.rows={}
         for slot=1,n do
             local row=child('row'..slot)
             local i=(self.page-1)*n+slot
             if not single and i<=#run.relics then
                 local e=self:entry(run,i);self.rows[slot]=e
-                picture(row:GetChild('slot'):GetChild('icon'),e.icon)
-                Art.paint(row:GetChild('slot'):GetChild('icon'),'relic',Hooks.localId(e.id),Theme.layout.relicView.icon,platform)
+                M.paint(row:GetChild('slot'):GetChild('icon'),e.id,Theme.layout.relicView.icon,platform,run)
                 row:GetChild('name').text=e.name
                 row:GetChild('description').text=e.description
                 row:GetChild('chip'):SetVisible(e.status~=nil)
@@ -131,16 +162,30 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
                 row:SetVisible(true)
             else row:SetVisible(false) end
         end
+    end
+    local function positionPageControls(single,compact,width,height)
+        for _,name in ipairs({'previous','next'})do
+            local frame=Theme.layout.relicView[name]
+            child(name):SetAnchoredPosition(single and (name=='previous' and -width/2+112 or width/2-112) or frame[1],compact and -height/2+26 or frame[2])
+        end
+    end
+    local function renderPageControls(run,single,compact,width,height)
         local many=self:pages()>1
         child('previous'):SetVisible(single and self.selectedIndex>1 or not single and many)
         child('next'):SetVisible(single and self.selectedIndex<#run.relics or not single and many)
-        for _,name in ipairs({'previous','next'})do
-            local frame=Theme.layout.relicView[name]
-            child(name):SetAnchoredPosition(single and (name=='previous' and -width/2+112 or width/2-112) or frame[1],frame[2])
-        end
+        positionPageControls(single,compact,width,height)
         child('pageHint'):SetVisible(not single and many)
         child('pageHint').text=not single and many and ('第 '..self.page..'/'..self:pages()..' 页') or ''
         child('placeholder'):SetVisible(#run.relics==0)
+    end
+    function self.render(_)
+        local run=self.run
+        local single=self.selectedIndex~=nil
+        local compact=single and official
+        local width,height=renderFrame(run,single,compact)
+        if single then renderSingle(run,compact)end
+        renderRows(run,single,perPage())
+        renderPageControls(run,single,compact,width,height)
     end
     function self.open(_,run,index)
         if self.visible or not run then return false end
@@ -171,31 +216,34 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
     local function hideEmptyArt(icon,cell,more)
         if not cell or more then Art.hide(icon)end
     end
+    local function paintBarCell(i,cell,relics,run,style)
+        local slot=bar:GetChild('slot'..i)
+        slot:SetVisible(cell~=false)
+        slot:SetAnchoredPosition(style.origin[1]+style.step*(i-1),style.origin[2])
+        local icon,hit=slot:GetChild('icon'),slot:GetChild('hit')
+        icon:SetSizeDelta(style.icon,style.icon)
+        hit:SetSizeDelta(style.hit or style.step,style.hit or 44)
+        for _,name in ipairs({'rim','face'})do slot:GetChild(name):SetVisible(not official)end
+        local more=type(cell)=='string'
+        hideEmptyArt(icon,cell,more)
+        icon:SetVisible(not more)
+        slot:GetChild('more'):SetVisible(more)
+        slot:GetChild('more').text=more and cell or ''
+        if cell and not more then M.paint(icon,relics[i],style.icon,platform,run)end
+        paintCounter(slot,run,cell and not more and relics[i] or nil,official)
+    end
     function self.refreshBar(_,run,visible)
         local relics=run and run.relics or {}
         local style=official and battleBar or baseBar
         self.barInteractive=official and visible and not self.visible or false
-        if not self.barInteractive then self:resetBarHover()end
+        if not self.barInteractive or self.barRun~=run or self.hoverIndex and relics[self.hoverIndex]~=self.hoverId then
+            self:resetBarHover()
+        end
+        self.barRun=run
         bar:SetVisible(visible and run~=nil)
         bar:GetChild('tray'):SetVisible(false) -- STS: discs float under the HP row, no tray capsule
         local cells=M.barCells(#relics,style.count)
-        for i=1,boundCount do
-            local cell=cells[i] or false
-            local slot=bar:GetChild('slot'..i)
-            slot:SetVisible(cell~=false)
-            slot:SetAnchoredPosition(style.origin[1]+style.step*(i-1),style.origin[2])
-            local icon,hit=slot:GetChild('icon'),slot:GetChild('hit')
-            icon:SetSizeDelta(style.icon,style.icon)
-            hit:SetSizeDelta(style.hit or style.step,style.hit or 44)
-            for _,name in ipairs({'rim','face'})do slot:GetChild(name):SetVisible(not official)end
-            local more=type(cell)=='string'
-            hideEmptyArt(icon,cell,more)
-            icon:SetVisible(not more)
-            slot:GetChild('more'):SetVisible(more)
-            slot:GetChild('more').text=more and cell or ''
-            if cell and not more then picture(icon,M.icon(relics[i],official));Art.paint(icon,'relic',Hooks.localId(relics[i]),style.icon,platform)end
-            paintCounter(slot,run,cell and not more and relics[i] or nil,official)
-        end
+        for i=1,boundCount do paintBarCell(i,cells[i] or false,relics,run,style)end
     end
     root.disableCursorEventPassthrough=true
     child('blocker'):AddCursorEventListener(clickEvent,function()
@@ -229,6 +277,15 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
                 self:resetBarHover();self.hoverIndex=i
                 slot:GetChild('icon'):SetLocalScale(1.25,1.25,1)
                 Art.scale(slot:GetChild('icon'),1.25)
+                if tooltip and self.barRun and self.barRun.relics[i] then
+                    local entry=self:entry(self.barRun,i)
+                    self.hoverId=entry.id
+                    tooltip:GetChild('name').text=entry.name
+                    tooltip:GetChild('effect').text=entry.description..(entry.status and '\n'..entry.status or '')
+                    local x=battleBar.origin[1]+battleBar.step*(i-1)
+                    tooltip:SetAnchoredPosition(math.max(-450,math.min(450,x+148)),battleBar.origin[2]-108)
+                    tooltip:SetVisible(true);tooltip:SetAsLastSibling()
+                end
                 return true
             end)
             hit:AddCursorEventListener(cursor.CursorExit,function()

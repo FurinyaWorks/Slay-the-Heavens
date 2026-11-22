@@ -230,6 +230,10 @@
     "project-ci-history-evidence": {
       "status": "Byte-identical project-generated CI and validation history. Existing repository and third-party rights remain unchanged; storage migration grants no new commercial or asset rights.",
       "evidence": "Original Git blobs at 9f2f44e4c79789fbcb64a515938765dbc240f830; config/ci-media-lfs.json archiveExtension; docs/evidence/pr-integration-cleanup-20261114.md"
+    },
+    "sts1-menu-session-reference": {
+      "status": "Session-generated derivative paintings, native geometric reconstruction and diagnostic screenshots based solely on the Owner-selected Slay the Spire 1 PC screenshot. Source game rights remain with Mega Crit; comparison use does not confer an asset sublicense or official device acceptance. No reference raster is loaded at runtime.",
+      "evidence": "docs/design/reference-assets/v2.0.0/sts1-main-menu-20261121/REFERENCE.md and docs/evidence/sts1-main-menu-20261121/README.md"
     }
   },
   "files": {
@@ -10048,6 +10052,122 @@
       "lfs": true,
       "storage": "ci-media-lfs-v1",
       "sourceCommit": "dfd45d6ce3f466592700aea94d224b4c660be960"
+    },
+    "docs/evidence/sts-selection-fade-20261121/after-selection.png": {
+      "sha256": "3f47445dbdf43362bb36e4b27467af3b0d0dc903a853912f538ed2c217d8a961",
+      "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/evidence/sts-selection-fade-20261121/before-selection.png": {
+      "sha256": "accb6e67e7e465125a319a30e48fabe195c43aa2c60c7b9a90f484218b4bf61d",
+      "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/evidence/sts-selection-fade-20261121/empty.png": {
+      "sha256": "2400ce67eb745bf76cb4e557eae1b6b0995be7c829e72f0868d083b4ac117a42",
+      "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/evidence/sts-selection-fade-20261121/fade-half.png": {
+      "sha256": "00e8532722618c57814222a50d33a7419b9f157816af116231a6031c713633e5",
+      "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/evidence/sts1-ui-closeout/comparison.png": {
+      "sha256": "133db554c1e469d0e6c3d3c614a15b326ffe42ef3eb938721e323f50e8f7eb53",
+      "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/evidence/sts1-ui-closeout/additional-states.png": {
+      "sha256": "de9d8afa9df385c32e9e3211894e6de09865c4a88e9e43714fa2ab0639fe9602",
+      "category": "v2-native-menu-layout-evidence"
+    },
+    "docs/evidence/pile-buttons/draw.png": {
+      "category": "platform-evidence",
+      "sha256": "d5673609eb40b89fc8ef3f7d72b7b8c2b861176df7185756f60f2cd8352db89e"
+    },
+    "docs/evidence/pile-buttons/event.png": {
+      "category": "platform-evidence",
+      "sha256": "9591687e29c4c8226cfb2002f74125ac4ce4e774d869ba0d37e71f5e9d82da4f"
+    },
+    "docs/evidence/pile-buttons/menu.png": {
+      "category": "platform-evidence",
+      "sha256": "2f35c3154b6035d4a426bb4c487950912c7042f1768d9de82370fa2efa9c322a"
+    },
+    "docs/evidence/pile-buttons/potion.png": {
+      "category": "platform-evidence",
+      "sha256": "8366044ed39de8539d1ed50c1f3f6fa83bf4b664cf06f33df98913b129a229b4"
+    },
+    "docs/evidence/pile-buttons/states.png": {
+      "category": "platform-evidence",
+      "sha256": "b31ecc409f7981f3261c28dfc4ea5506b366a41ca2f510f4f01e15e97a62700d"
+    },
+    "docs/design/reference-assets/v2.0.0/sts1-main-menu-20261121/design-hd.png": {
+      "sha256": "0228b36c13b805c1a31eb0cb13d960be2b3b1168d6707412fedee2c7a51c06aa",
+      "category": "sts1-menu-session-reference"
+    },
+    "docs/design/reference-assets/v2.0.0/sts1-main-menu-20261121/background-hd.png": {
+      "sha256": "780f7428b1389e7ac824a5c2bd086339af19ea284e394ace692a6a4011d57c8c",
+      "category": "sts1-menu-session-reference"
+    },
+    "docs/design/reference-assets/v2.0.0/sts1-main-menu-20261121/background-medium.png": {
+      "sha256": "7cc1f328257adbcabf47212d4cbe84713193d66f1412566a212c2ca1644bf14f",
+      "category": "sts1-menu-session-reference"
+    },
+    "docs/design/reference-assets/v2.0.0/sts1-main-menu-20261121/background-low.png": {
+      "sha256": "e66e29c1bcc05183c85ac46369c9e3770d858e2cb536f9d0e0fae2050ec3411e",
+      "category": "sts1-menu-session-reference"
+    },
+    "docs/evidence/sts1-main-menu-20261121/comparison.png": {
+      "sha256": "e676f2fb04d925b11c1c714b1a4e48b7286c6c670b251dc8fc1aa2f64d659972",
+      "category": "sts1-menu-session-reference"
+    },
+    "docs/evidence/sts1-main-menu-20261121/runtime-menu-normal.png": {
+      "sha256": "f526c8786753c6aa91b46e9486787a8fa97f909dde884f872b894577eae1a848",
+      "category": "sts1-menu-session-reference"
+    },
+    "docs/evidence/sts1-main-menu-20261121/runtime-menu-continue.png": {
+      "sha256": "963f272bf7451ff3c02c8c15155caf1548c37025cea41ecc8a9c1fed4c0007ff",
+      "category": "sts1-menu-session-reference"
+    },
+    "docs/evidence/sts1-main-menu-20261121/runtime-menu-hover.png": {
+      "sha256": "b2ddb497b910ca0629711a6fa8a955627631d4c15490e9d070f3ca5ac96ce8cd",
+      "category": "sts1-menu-session-reference"
+    },
+    "docs/evidence/sts1-main-menu-20261121/runtime-menu-disabled.png": {
+      "sha256": "a2b1f2ed131f17618c99b71797eee881c4a3611e588fcea00935b232675badd8",
+      "category": "sts1-menu-session-reference"
+    },
+    "docs/evidence/sts1-main-menu-20261121/menu-wide-projection-1560x720.png": {
+      "sha256": "848fea558f54edc6daffcb6425e358bba372feb9978217e3a86e2c5abf13f55f",
+      "category": "sts1-menu-session-reference"
+    },
+    "docs/evidence/sts1-main-menu-20261121/runtime-menu-before.png": {
+      "sha256": "5851bdc8f39093cc1693c5d2db38952a0b29122cfbfe6b7ac0b02135651c1c13",
+      "category": "sts1-menu-session-reference"
+    },
+    "docs/evidence/sts1-main-menu-20261121/runtime-menu-pressed.png": {
+      "sha256": "b401a81b8acd9f4f2589132341513344d0b8f1a33e13271781aa892c0de5eed9",
+      "category": "sts1-menu-session-reference"
+    },
+    "docs/evidence/sts1-main-menu-20261121/original-sts1-reference.jpg": {
+      "sha256": "07ba0a65572376c22c687436afba469993376184a58126578aca52ab00fcd39e",
+      "category": "sts1-menu-session-reference"
+    },
+    "docs/evidence/sts1-combat-reference-20261121/energy-comparison.png": {
+      "sha256": "52f577179f30a51b439ff8a997bb22e18645e65848293292ab7104619d0b027e",
+      "category": "platform-evidence"
+    },
+    "docs/evidence/sts1-combat-reference-20261121/exhaust-spike-still.png": {
+      "sha256": "041a7b20f91a8142a43a642510c31e36e747a35fdcbb7758db497c29e2516569",
+      "category": "platform-evidence"
+    },
+    "docs/evidence/sts1-combat-reference-20261121/flow-spike.gif": {
+      "sha256": "e948f55ae01adfad50e59cc71024b5dbe195966f34e0d782bd56ebf619b96dd4",
+      "category": "platform-evidence"
+    },
+    "docs/evidence/sts1-combat-reference-20261121/status-contact-sheet.png": {
+      "sha256": "d383f928822b551bdd1aebb425b3b4940f6292b083df7d459d80193589c61914",
+      "category": "platform-evidence"
+    },
+    "docs/evidence/sts1-combat-reference-20261121/strength-ritual.png": {
+      "sha256": "ca2edd2f41623bf6e4ccbad25102de6e23d0c2fc7ff3144422c747d51743ae53",
+      "category": "platform-evidence"
     }
   }
 }

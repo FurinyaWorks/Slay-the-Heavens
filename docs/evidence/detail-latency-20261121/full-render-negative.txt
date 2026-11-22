@@ -1,0 +1,37 @@
+✖ detail routes reuse controls while preserving fresh data and input isolation (12880.847686ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13716.971597
+
+✖ failing tests:
+
+test at tests/detail-latency.test.mjs:4:1
+✖ detail routes reuse controls while preserving fresh data and input isolation (12880.847686ms)
+  AssertionError [ERR_ASSERTION]: ABYSS_RUN seed=1 source=explicit
+  /workspace/detail-latency/tests/lua/detail_latency.lua:16: detail open repainted the battle
+  stack traceback:
+    [JS]: in function 'assert'
+    /workspace/detail-latency/tests/lua/detail_latency.lua:16: in main chunk
+    [JS]: in function 'dofile'
+    (command line):1: in main chunk
+
+
+  1 !== 0
+
+      at TestContext.<anonymous> (file:///workspace/detail-latency/tests/detail-latency.test.mjs:6:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

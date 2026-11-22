@@ -6,6 +6,12 @@ import {battlePileChrome,battlePileReturn} from './official-battle-pile-chrome.m
 const itemSize = theme => [theme.layout.deckView.itemSize[0], Math.max(theme.layout.deckView.itemSize[1],
   theme.layout.card.size[1] + theme.layout.nativeText.lineHeight)];
 
+export function fiveColumnCardGrid(name, viewport, itemTemplate, scrollbar = true) {
+  return { name, kind: 'grid', position: viewport.slice(0, 2), size: viewport.slice(2), itemTemplate,
+    grid: { columns: 5, horizontal: false, itemSize: [150, 210],
+      spacing: [27, 27], padding: [18, 45, 30, 30], scrollbar } };
+}
+
 export function deckCardTemplate(theme = nativeTheme) {
   const { text } = nativeControls(theme);
   const { color: c, font: f, layout: l } = theme;
@@ -69,6 +75,8 @@ export function deckControls(theme = nativeTheme) {
   // The 48px hit is separate from the scaled 66.667 x 34.667 visible surface.
   // The 遗物 entry reuses the same capsule (relic glyph + count) so the
   // top-right utilities read as one family instead of a boxy text button.
+  const closeFrame = [...l.deckView.close];
+  closeFrame[2] = Math.max(closeFrame[2], 4 * f.label + 2 * s.s);
   const visual = l.deckView.entryVisual;
   const capsule = (name, size, colour) => {
     const [w, h] = size, x = (w - h) / 2;
@@ -150,9 +158,7 @@ export function deckControls(theme = nativeTheme) {
       { name: 'grid', kind: 'grid', position: l.deckView.viewport.slice(0, 2), size: l.deckView.viewport.slice(2),
         itemTemplate: deckCardTemplate(theme).name, grid: { columns: l.deckView.columns, horizontal: false,
           itemSize: itemSize(theme), spacing: [...l.deckView.spacing], padding: [...l.deckView.padding], scrollbar: true } },
-      { name: 'pileGrid', kind: 'grid', visible: false, position: l.deckView.viewport.slice(0, 2), size: l.deckView.viewport.slice(2),
-        itemTemplate: deckCardTemplate(theme).name, grid: { columns: 5, horizontal: false,
-          itemSize: [150,210], spacing: [27,27], padding: [18,45,30,30], scrollbar: true } },
+      { ...fiveColumnCardGrid('pileGrid', l.deckView.viewport, deckCardTemplate(theme).name), visible: false },
       plate('header', [0, l.deckView.title[1], l.deckView.viewport[2],
         Math.max(l.deckView.title[3], l.deckView.close[3]) + s.s], c.panel),
       text('title', l.deckView.title, '', f.heading, c.goldBright),
@@ -168,12 +174,13 @@ export function deckControls(theme = nativeTheme) {
       { name: 'detailHit', kind: 'cursorArea', position: l.deckView.viewport.slice(0, 2),
         size: l.deckView.viewport.slice(2), focusable: true, visible: false },
       { ...button('upgradePreview', l.deckView.upgradePreview, '升级预览'), visible: false },
-      button('close', l.deckView.close, '关闭'),
-      {...battlePileReturn(button('pileReturn',[-550,-237,180,54],'返回'),true,undefined,theme.officialAssets.buttonInk),visible:false},
+      button('close', closeFrame, '关闭'),
+      {...battlePileReturn(button('pileReturn',[-550,-237,180,54],'返回'),theme.officialAssets.buttonInk),visible:false},
       {name:'pileTools',kind:'container',position:[0,241.5],size:[856,33],visible:false,children:[
         plate('plate',[0,0,856,33],'#76191B'),
         ...['original','type','cost','name'].map((mode,i)=>({name:mode,kind:'container',position:[(i-1.5)*150,0],size:[150,44],children:[
-          text('label',[0,0,150,40],['默认 ▴','类型 ▴','费用 ▴','名称 ▴'][i],18,'#E9E6DC'),
+          text('label',[-9,0,120,40],['默认','类型','费用','名称'][i],18,'#E9E6DC'),
+          {name:'direction',kind:'image',position:[46,0],size:[9,7],image:100003,colour:'#E9E6DC',raycastTarget:false},
           {name:'hit',kind:'cursorArea',size:[150,44],focusable:true},
         ]})),
       ]},

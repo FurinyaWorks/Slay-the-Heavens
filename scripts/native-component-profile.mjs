@@ -11,7 +11,7 @@ const semantic = node => ({name:node.name, kind:node.kind,
 const namesOf = node => new Set((node.children ?? []).map(c => c.name));
 const positivePair = value => Array.isArray(value) && value.length === 2 && value.every(v => Number.isFinite(v) && v > 0);
 function contentImagePath(node,path,rootName) {
-  if(/^mapPanel\/mapGroup\d+\/(edge\d+|node\d+\/(icon|ring|positionToken))$/.test(path))return true;
+  if(/^mapPanel\/mapGroup\d+\/(edge\d+|node\d+\/(icon|ring\/(outline|brush)))$/.test(path))return true;
   if(/^mapPanel\/mapGroup\d+\/typeLegend\/.+Icon$/.test(path))return true;
   if(/^(hpIcon|goldIcon|floorIcon|deckIcon|intentIcon|intentBadge|intentExtra|blockIcon|hpFill|hpGhost|hpTrack|shield|impact)$/.test(node.name))return true;
   if(/^(icon\d*|relicIcon|potionIcon)$/.test(node.name)&&!/(?:^|\/)(emblem|roleMark|skin)(?:\/|$)/.test(path))return true;

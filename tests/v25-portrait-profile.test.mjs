@@ -557,3 +557,25 @@ assert(LiveCount()==473 and #controls==473,'return to battle rebuilt its cache')
 assert(owner:release() and LiveCount()==0,'release failed to retire complete native cache')
 `,{officialAssets:true});
 });
+
+test('official constellation input owner suppresses legacy avatar and every fallback without disabling development portraits',()=>{
+ withPortraitVm(`
+local symbol=tree();symbol:SetVisible(true)
+stage.children.characterPanel.children.v25Roster=symbol
+local selectionHost=tree();stage.children.characterPanel.children.lumineSelectionBackground=selectionHost
+local frame=tree();rawset(frame,'sizeDeltaX',440)
+stage.children.characterPanel.children.details=tree({officialSelectionFigure=selectionHost,portraitFrame=frame,
+ portraits=tree({traveler_ironclad=tree()}),portraitNote=tree()})
+traveler:SetVisible(true)
+local a=Portraits.new(stage,nil,{selectionAvatar=true})
+assert(a:sync('menu',true,false,'ironclad'));a:tick()
+assert(a:status().avatar.owned==0 and not avatar.visible,'constellation allocated legacy avatar')
+for _,name in ipairs({'normal','hover','pressed','disabled'})do
+ assert(not traveler:GetChild('hit'):GetChild(name):GetChild('bust').visible,'constellation restored legacy fallback '..name)
+end
+symbol:SetVisible(false);assert(a:sync('menu',true,false,'ironclad'))
+for _=1,1000 do a:tick();if a:status().avatar.owned>0 then break end end
+assert(a:status().avatar.owned>0,'development avatar was suppressed with hidden constellation roster')
+assert(a:release()and LiveCount()==0)
+`,{runtimeV2:true,officialAssets:true});
+});

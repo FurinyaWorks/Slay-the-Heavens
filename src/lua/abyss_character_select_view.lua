@@ -65,7 +65,7 @@ end
 local function paintCharacterButtons(panel,state,platform,originalSts,open)
     for i,id in ipairs(Select.characters)do
         local box=panel:GetChild(i==5 and 'traveler' or 'character'..i)
-        local allowed=(originalSts or open>1) and state:allowsCharacter(id)
+        local allowed=(originalSts or open>1 or id=='traveler') and state:allowsCharacter(id)
         if box.visible~=allowed then box:SetVisible(allowed)end
         selected(box,state.character==id)
         local _,bust=largeSlot(id,id=='traveler' and (state.element or 'ironclad') or nil)
@@ -98,24 +98,37 @@ local function paintDetails(details,state,platform,originalSts,nativeV25,info)
     for _,r in ipairs(info.relics)do relics[#relics+1]=r.name;if r.text and r.text~='' then texts[#texts+1]=r.text end end
     details:GetChild('relic').text=#relics>0 and table.concat(relics,'、') or '无'
     details:GetChild('relicText').text=table.concat(texts,' ')
-    renderStarterDeck(details,info)
+    if details:GetChild('deckSummary') then renderStarterDeck(details,info) end
     local large,key,portraits=paintPortraits(details,state,platform)
     if originalSts then portraits:SetVisible(false)end
     paintPortraitNote(details,info,platform,large,key,portraits)
 end
-function M.render(panel,state,platform)
+local function countAllowed(ids,allows)
+    local count=0
+    for _,id in ipairs(ids)do if allows(id)then count=count+1 end end
+    return count
+end
+function M.render(panel,state,platform,published)
     local info=state.info
+    if published==false then info=nil end
     local originalSts=Theme.presentationProfile=='official-assets-first' and panel:GetChild('stsCharacter')~=nil
     local nativeV25=Theme.presentationProfile=='official-assets-first' and (originalSts or panel:GetChild('v25Roster')~=nil)
     panel:GetChild('hint').text=state.notice or (nativeV25 and '' or (info and '查看初始信息，确认后开始冒险。' or '点击下方角色查看详情，再确认出发。'))
     -- 只剩一个可选角色/元素时不摆假选择钮（Pan 2026-10-31：单角色发版）。
-    local open,elementsOpen=0,0
-    for _,id in ipairs(Select.characters)do if state:allowsCharacter(id)then open=open+1 end end
-    for _,id in ipairs(Select.elements)do if state:allowsElement(id)then elementsOpen=elementsOpen+1 end end
+    local open=countAllowed(Select.characters,function(id)return state:allowsCharacter(id)end)
+    local elementsOpen=countAllowed(Select.elements,function(id)return state:allowsElement(id)end)
     paintCharacterButtons(panel,state,platform,originalSts,open)
     paintThemesAndElements(panel,state,platform,elementsOpen)
     local details=panel:GetChild('details');details:SetVisible(info~=nil)
     panel:GetChild('deckView'):SetVisible(false)
+    local roster=panel:GetChild('v25Roster')
+    if nativeV25 and roster then
+        roster:SetVisible(open==1)
+        panel:GetChild('title'):SetVisible(info==nil)
+        roster:GetChild('selected'):GetChild('selection'):SetVisible(info~=nil)
+        panel:GetChild('traveler'):GetChild('selected'):SetVisible(false)
+    end
+    panel:GetChild('confirm'):SetVisible(info~=nil)
     local confirm=panel:GetChild('confirm'):GetChild('hit')
     confirm.interactable,confirm.raycastTarget=state:canConfirm(),state:canConfirm()
     if not info then return end

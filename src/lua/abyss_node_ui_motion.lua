@@ -93,6 +93,7 @@ function M.new(owner,child,options)
   self.active=a;owner.presentationBusy=true
   configureEffect(command,before)
   self:paint()
+  if command=='upgrade' then a.sounded=true;sound('forge') end
  end
  function state:update(dt)
   local a=self.active;if not a then return end
@@ -100,9 +101,13 @@ function M.new(owner,child,options)
   a.time=a.time+math.max(0,dt)
   local cueTime=a.kind=='openTreasure' and T.shakeDuration or a.duration*.3
   if not a.sounded and a.time>=cueTime then
-   a.sounded=true;sound(a.kind=='openTreasure' and 'treasure_open' or a.kind=='rest' and 'rest' or 'forge')
+   a.sounded=true;sound(a.kind=='openTreasure' and 'treasure_open' or 'rest')
   end
-  if a.time>=a.duration then self:cancel();owner:render();return end
+  if a.time>=a.duration then
+   self:cancel()
+   if a.kind~='upgrade' then owner:render() end
+   return
+  end
   self:paint()
  end
  return state

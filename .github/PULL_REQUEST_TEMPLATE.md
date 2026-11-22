@@ -44,6 +44,10 @@ flag owner/removal condition if applicable. For over-budget production that cann
 Slice-exception: atomic | why it must land together | verification command or evidence
 Other valid reasons: mechanical, generated, tests. The independent reviewer verifies the reason and evidence. -->
 
+<!-- For a key architecture change, link its REASONS spec and any ADR, state the
+verified invariants, and link current behavior, negative-control and fitness
+evidence. Confirm that spec, decision, tests and Backlog reflect the same change. -->
+
 ## How to test
 1.
 

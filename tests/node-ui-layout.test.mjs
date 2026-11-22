@@ -1,4 +1,5 @@
 import test from 'node:test';
+import './helpers/shop-dismiss.cases.mjs';
 import assert from 'node:assert/strict';
 import { nodeLayout } from '../scripts/node-ui-layout.mjs';
 import { nativeTheme } from '../scripts/native-ui-theme.mjs';
@@ -16,15 +17,15 @@ function walk(control, visit, origin = [0, 0]) {
 }
 const headerDecoration = ['headerShade', 'headerDivider', 'titleLineLeft', 'titleLineRight'];
 const clickable = c => c.kind === 'container' && (c.children ?? []).some(child => child.kind === 'cursorArea' && child.name !== 'shopDismiss');
-// What the player sees together: shared chrome plus one view. The merchant appears only with the shop.
-const screen = view => [...panel.children.filter(c => (c.visible !== false || c.name==='merchant' && view==='shopView') && !views.includes(c.name) && !['backdrop', 'shopDismiss', 'topBar', ...headerDecoration].includes(c.name)
-    && (c.name !== 'merchant' || view === 'shopView') && !(view==='shopView' && c.name==='back')),
-  ...find(panel.children, view).children.filter(c => c.visible !== false && (c.kind !== 'image' || !['glow', 'plate', 'plateBorder'].includes(c.name)))];
+// The room and shop shelf have separate phases. Room decoration has no input.
+const screen = view => [...panel.children.filter(c => c.visible !== false && !views.includes(c.name) && !['backdrop', 'shopDismiss', 'topBar', ...headerDecoration].includes(c.name)
+    && !(view==='shopView' && c.name==='back')),
+  ...find(panel.children, view).children.filter(c => c.visible !== false && c.name !== 'v25ShopCloth' && (c.kind !== 'image' || !['glow', 'plate', 'plateBorder'].includes(c.name)))];
 
 test('node panel composes one container per approved node screen within the MCP child limit', () => {
   assert.equal(panel.name, 'nodePanel');
   assert.deepEqual(panel.size, [1280, 720]);
-  for (const name of [...views, 'title', 'hp', 'gold', 'deck', 'relics', 'potions', 'notice', 'back', 'confirm']) {
+  for (const name of ['shopRoom', ...views, 'title', 'hp', 'gold', 'deck', 'relics', 'potions', 'notice', 'back', 'confirm']) {
     assert.ok(find(panel.children, name), name);
   }
   walk(panel, control => {
@@ -32,7 +33,7 @@ test('node panel composes one container per approved node screen within the MCP 
     const names = (control.children ?? []).map(c => c.name);
     assert.equal(new Set(names).size, names.length, `duplicate child in ${control.name}`);
   });
-  for (const view of views) assert.equal(find(panel.children, view).visible, false, view);
+  for (const view of ['shopRoom', ...views]) assert.equal(find(panel.children, view).visible, false, view);
 });
 
 test('framed node buttons preserve direct paths and have hidden hover and pressed face layers', () => {
@@ -182,25 +183,25 @@ test('camp, forge, event and treasure follow the approved composition', () => {
 });
 
 
-test('each enlarged shop card keeps every price, the merchant and mobile cancel readable',()=>{
+test('each enlarged shop card keeps prices, temporary feedback and mobile cancel readable',()=>{
  const l=nativeTheme.layout.nativeNode.shop;
  const shop=find(panel.children,'shopView').children;
  for(let focus=1;focus<=7;focus++) {
-  const items=shop.filter(c=>c.visible!==false && !['page','detail'].includes(c.name)).map(c=>structuredClone(c));
+  const items=shop.filter(c=>c.visible!==false && !['page','detail','v25ShopCloth'].includes(c.name)).map(c=>structuredClone(c));
   for(const c of items){
    const card=/^card(\d+)$/.exec(c.name),price=/^price(\d+)$/.exec(c.name);
    const i=Number((card||price)?.[1]);
    if(card && i===focus){c.size=c.size.map(v=>v*l.hoverScale);}
    if(price && i===focus){c.position[1]-=(l.hoverScale-1)*nativeTheme.layout.card.size[1]/2;}
   }
-  items.push(find(panel.children,'merchant'),find(panel.children,'notice'),find(panel.children,'confirm'),
+  items.push(find(find(panel.children,'merchant').children,'bubble'),find(panel.children,'notice'),find(panel.children,'confirm'),
    {name:'cancel',position:l.cancel.slice(0,2),size:l.cancel.slice(2)});
   for(let a=0;a<items.length;a++)for(let b=a+1;b<items.length;b++)
    assert.ok(!overlaps(bounds(items[a]),bounds(items[b])), 'focus '+focus+': '+items[a].name+' overlaps '+items[b].name);
   for(const c of items){const r=bounds(c);assert.ok(r.left>=-600 && r.right<=600 && r.bottom>=-340 && r.top<=340,c.name);}
  }
 });
-test('source reward rows and the twelve-card smithing grid fit without hiding neighboring content',()=>{
+test('reward rows, Match board and the scrolling forge fit without hiding neighboring content',()=>{
  const l=nativeTheme.layout.nativeNode;
  const items=l.rewardList.rows.map((y,i)=>({name:'reward'+i,position:[l.rewardList.x,y],size:l.rewardList.size}));
  for(const name of ['heading','note'])items.push({name,position:l.rewardList[name].slice(0,2),size:l.rewardList[name].slice(2)});
@@ -211,33 +212,39 @@ test('source reward rows and the twelve-card smithing grid fit without hiding ne
  for(let a=0;a<grid.length;a++)for(let b=a+1;b<grid.length;b++)assert.ok(!overlaps(bounds(grid[a]),bounds(grid[b])));
  for(const card of grid){const r=bounds(card);assert.ok(r.left>=-600 && r.right<=600 && r.bottom>=-340 && r.top<=242);}
  const picker=find(panel.children,'pickerView').children;
- for(const name of ['forgePrevious','forgeNext']){
-  const arrow=find(picker,name);
-  for(const c of [...grid,find(panel.children,'back'),find(panel.children,'confirm')])
-   assert.ok(!overlaps(bounds(arrow),bounds(c)),name+' overlaps '+c.name);
- }
+ const scrolling=find(picker,'forgeScroll'),fit=find(picker,'forgeFit');
+ assert.equal(scrolling.grid.columns,5);
+ assert.equal(scrolling.grid.horizontal,false);
+ assert.equal(scrolling.grid.scrollbar,true);
+ assert.equal(fit.grid.scrollbar,false);
+ assert.equal(scrolling.itemTemplate,fit.itemTemplate);
+ const prompt=find(find(picker,'forgePrompt').children,'label');
+ assert.equal(prompt.text.content,'选择一张卡牌升级');
+ for(const footer of [prompt,find(panel.children,'back'),find(panel.children,'confirm')])
+  assert.ok(!overlaps(bounds(scrolling),bounds(footer)),scrolling.name+' / '+footer.name);
+
 });
 
- test('merchant pages fit wrapped short text inside the head-relative bubble',()=>{
-  const m=nativeTheme.layout.merchant, merchant=find(panel.children,'merchant');
+ test('short transaction feedback fits inside its non-interactive plate',()=>{
+  const merchant=find(panel.children,'merchant');
   const line=find(merchant.children,'line'),box=find(merchant.children,'bubble');
   const columns=Math.floor(line.size[0]/line.text.fontSize);
   const rows=Math.floor(line.size[1]/(line.text.fontSize*1.4));
-  assert.ok(columns*rows>=m.pageCharacters,'every page must fit without clipping or shrinking');
+  assert.ok(columns*rows>='金币不够。'.length,'feedback must fit without clipping or shrinking');
   const a=bounds(line),b=bounds(box);
   assert.ok(a.left>=b.left && a.right<=b.right && a.bottom>=b.bottom && a.top<=b.top,'merchant text must remain inside the bubble');
-  for(const name of ['name','namePlate','panel','border','accent'])assert.equal(find(merchant.children,name).visible,false,'RPG bar must remain absent');
+  for(const name of ['bubble','line'])assert.equal(find(merchant.children,name).visible,false);
+  for(const name of ['name','namePlate'])assert.equal(find(merchant.children,name),undefined);
  });
 
 test('shop purchase and cancel form one adjacent action group outside merchant dialogue',()=>{
  const back=find(panel.children,'back'),confirm=find(panel.children,'confirm');
  const cancel={...back,position:nativeTheme.layout.nativeNode.shop.cancel.slice(0,2)};
  const purchase={...confirm,position:nativeTheme.layout.nativeNode.shop.confirm.slice(0,2)};
- const a=bounds(cancel),b=bounds(purchase),dialogue=bounds(find(panel.children,'merchant'));
+ const a=bounds(cancel),b=bounds(purchase),dialogue=bounds(find(find(panel.children,'merchant').children,'bubble'));
  assert.equal(cancel.position[1],purchase.position[1],'purchase actions share one row');
  assert.ok(b.left-a.right>=12 && b.left-a.right<=32,'cancel sits next to purchase with one small gap');
  assert.ok(!overlaps(a,dialogue) && !overlaps(b,dialogue),'dialogue does not occupy either action');
- assert.ok(dialogue.right<=a.left-8,'dialogue stays outside the grouped action span');
  const safe=nativeTheme.canvas.safe, [w,h]=nativeTheme.canvas.base;
  for(const box of [a,b,dialogue]) assert.ok(box.left>=-w/2+safe.x && box.right<=w/2-safe.x && box.bottom>=-h/2+safe.y && box.top<=h/2-safe.y,'selected shop footer respects canvas safe area');
  assert.deepEqual(find(back.children,'hit').size,back.size);

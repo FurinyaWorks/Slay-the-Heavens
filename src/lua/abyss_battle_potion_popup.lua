@@ -16,8 +16,16 @@ local function wrap(text,width)
     out[#out+1]=line
     return table.concat(out,'\n'),#out
 end
+local function sameSlot(run,token)
+    return token and run==token.run and run.potions==token.inventory and run.potions[token.slot]==token.id
+end
+local function anchor(slot)
+    local hud=Theme.presentationProfile=='official-assets-first' and Theme.officialAssets.battleHud
+    if hud then return hud.potionX+(slot-1)*hud.potionStep,hud.y-42 end
+    return L.battlePotions.origin[1]+(slot-1)*L.battlePotions.step[1],P.top
+end
 function M.new(root,owner,platform,clickEvent,actions)
-    local popup={generation=0}
+    local popup={generation=0,visible=false,localPanel=actions.allowed~=nil}
     local pointers,pointerSeen={},false
     local anonymous={}
     local function pointerKey(touch)return touch==nil and anonymous or touch end
@@ -28,14 +36,17 @@ function M.new(root,owner,platform,clickEvent,actions)
     local function child(name)return assert(root:GetChild(name),'missing potion popup '..name)end
     local function valid(token)
         local run=owner.run
-        return token and owner.active and not owner.busy and not owner.gesture
-            and run==token.run and run.phase=='combat' and run.combat==token.battle
+        if not sameSlot(run,token)then return false end
+        if actions.allowed then return actions.allowed(run) and run.phase==token.phase end
+        return owner.active and not owner.busy and not owner.gesture
+            and run.phase=='combat' and run.combat==token.battle
             and run.combat.phase=='player' and run.combat.turn==token.turn
-            and run.potions==token.inventory and run.potions[token.slot]==token.id
     end
     function popup.close(_)
         if not owner.potionMenu then return false end
         owner.potionMenu=nil;popup.generation=popup.generation+1
+        popup.visible,popup.run=false,nil
+        if popup.localPanel then owner.run=nil end
         resetPointers(true)
         root:SetVisible(false);return true
     end
@@ -57,8 +68,8 @@ function M.new(root,owner,platform,clickEvent,actions)
         local actionHeight=math.max(P.actionHeight,L.nativeText.lineHeight)
         local effectHeight=math.max(L.nativeText.lineHeight,lines*P.line+P.line)
         local h=math.max(P.minimumHeight,P.padding*2+header+effectHeight+P.gap+actionHeight)
-        local x=L.battlePotions.origin[1]+(token.slot-1)*L.battlePotions.step[1]
-        local y=P.top-h/2
+        local x,anchorY=anchor(token.slot)
+        local y=anchorY-h/2
         root:SetAnchoredPosition(x,y);root:SetSizeDelta(P.width,h)
         size('dismiss',-x,-y,Theme.canvas.base[1],Theme.canvas.base[2])
         for _,name in ipairs({'border','plate','hit'})do
@@ -80,10 +91,11 @@ function M.new(root,owner,platform,clickEvent,actions)
     end
     function popup.open(_,slot)
         local run=owner.run
-        local token=run and {run=run,battle=run.combat,turn=run.combat and run.combat.turn,
+        local token=run and {run=run,phase=run.phase,battle=run.combat,turn=run.combat and run.combat.turn,
             inventory=run.potions,slot=slot,id=run.potions[slot]}
         if not token or not token.id or not valid(token)then return false end
         if owner.potionMenu and owner.potionMenu.slot==slot then return popup:close() end
+        popup.visible,popup.run=true,run
         popup.generation=popup.generation+1;owner.potionMenu=token;resetPointers(true);popup:render();return true
     end
     local function act(name)
@@ -93,7 +105,7 @@ function M.new(root,owner,platform,clickEvent,actions)
         if name=='use' and not item.canUse or name=='discard' and item.canDiscard==false then return false end
         popup:close()
         if name=='dismiss'then actions.changed();return true end
-        return actions[name](token.slot)
+        return actions[name](token.slot,token.run)
     end
     local function forget(pointer)
         if pointer and pointers[pointerKey(pointer.touch)]==pointer then pointers[pointerKey(pointer.touch)]=nil end
@@ -160,7 +172,7 @@ function M.new(root,owner,platform,clickEvent,actions)
                 and (not token or token.selection==owner.potionMenu and token.generation==popup.generation
                     and pointers[pointerKey(token.touch)]==token)
         end
-        Controller.bind(platform.controller,control,'battlePotion',function()return act(name)end,function()return ready()end)
+        Controller.bind(platform.controller,control,popup.localPanel and 'potions' or 'battlePotion',function()return act(name)end,function()return ready()end)
         local cursor=platform.cursorEvents or {}
         if cursor.CursorDown and cursor.CursorUp then
             control:AddCursorEventListener(cursor.CursorDown,function(event)

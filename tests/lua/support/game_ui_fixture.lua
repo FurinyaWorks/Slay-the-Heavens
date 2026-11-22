@@ -1,3 +1,4 @@
+local advanceShop = dofile('tests/lua/support/shop_timeline.lua')
 local NativeContract = dofile('tests/lua/support/native_ui_contract.lua')
 local GameUI = require("abyss_game_ui")
 local Combat = require("abyss_combat")
@@ -198,6 +199,12 @@ local function actorControl(panel,name)
     return panel:GetChild(name)
 end
 local function click(root, panel, button)
+    -- Higher-level shop actions include the deliberate merchant entry gesture.
+    -- Raw listener suites separately verify the closed scene and transition lock.
+    if panel=='nodePanel' and button:match('^shopView/') and root.ui and not root.ui.nodeUI.shopOpen then
+        assert(root:GetChild(panel):GetChild('merchant'):GetChild('talk'):GetChild('hit').click())
+        advanceShop(root.ui)
+    end
     local box = panel == "mapPanel" and mapControl(root:GetChild(panel), button) or root:GetChild(panel)
     if panel ~= "mapPanel" then for part in button:gmatch("[^/]+") do box = assert(actorControl(box,part), button) end end
     local target = box.click and box or box:GetChild("hit")
@@ -252,6 +259,12 @@ local function confirmStart(ui,id)
     local elements={ironclad=true,silent=true,defect=true,watcher=true}
     assert(ui:selectCharacter((elements[id] or id=='traveler') and 'traveler' or id))
     if elements[id] then assert(ui:selectElement(id))end
+    -- Rule fixtures advance the real readiness scheduler before confirmation.
+    -- Native Fade entry tests drive OnUpdate explicitly and retain timed phases.
+    if ui.pageReveal and not ui.pageReveal:usesFade()then
+        local intent=require('abyss_page_reveal').intent(ui)
+        for _=1,2 do if ui.pageReveal:step(intent)then ui:refresh()end end
+    end
     return ui:confirmCharacter()
 end
 local function startRun(ui,id)

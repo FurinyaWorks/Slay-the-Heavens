@@ -1,3 +1,4 @@
+local advanceShop = dofile('tests/lua/support/shop_timeline.lua')
 local _,control=dofile('tests/lua/support/node_ui_cases.lua')(math.huge,math.huge)
 local UI,Run,Map,Nodes=require('abyss_node_ui'),require('abyss_run'),require('abyss_map'),require('abyss_nodes')
 local data,Layout=require('abyss_data'),require('abyss_ui_layout')
@@ -17,111 +18,31 @@ local function setup()
  ui:setVisible(true)
  return ui,root
 end
-local failures=0
-local function test(name,fn)local ok,err=pcall(fn);print((ok and 'ok 'or'FAIL ')..name);if not ok then print(err);failures=failures+1 end end
-test('hidden shop rejects delayed merchant tap and resumes same dialogue',function()
- local ui,root=setup();ui:update(.05)
- local merchant=ui.merchant;local old=merchant.current;local shown=old.shown
+
+for _,action in ipairs({'hide','resize','restart'})do
+ local ui,root=setup()
  local tap=root:GetChild('merchant'):GetChild('talk'):GetChild('hit').click
- ui:setVisible(false)
- assert(not tap(),'hidden shop consumed delayed dialogue tap')
- ui:update(1);assert(merchant.current==old and old.shown==shown,'hidden dialogue advanced')
- ui:setVisible(true);ui:update(.05)
- assert(merchant.current==old and old.shown>shown,'reopen must resume without restarting narration')
- assert(ui:press('shopView/card1'));assert(ui:press('confirm'),'dialogue must not block buying')
-end)
-test('new transaction replaces prior portrait gesture',function()
- local ui=setup()
- assert(ui:press('shopView/card1'));assert(ui:press('confirm'));ui:update(.05)
- assert(ui.merchant.nod~=nil)
- ui.run.gold=0;ui:render();assert(not ui:press('shopView/card2'))
- assert(ui.merchant.current.kind=='poor' and ui.merchant.shake~=nil)
- assert(ui.merchant.nod==nil,'refusal still nods for previous purchase')
- ui.run.gold=10000;ui:render();assert(ui:press('shopView/card2'));assert(ui:press('confirm'))
- assert(ui.merchant.current.kind=='buy' and ui.merchant.nod~=nil and ui.merchant.shake==nil,'purchase still shakes for previous refusal')
-end)
-test('reaction bubble closes without hiding the figure or preventing a second sale',function()
- local ui,root=setup();local merchant=ui.merchant;local box=root:GetChild('merchant')
+ advanceShop(ui) -- Stage the concealed shelf before testing interruption of its visible slide.
+ assert(ui.merchant.current==nil and tap())
+ ui:update(.1);assert(ui.shopBusy)
+ if action=='hide' then ui:setVisible(false);assert(not tap());ui:update(5);ui:setVisible(true)
+ elseif action=='resize' then ui:resize(1920,1080)
+ else
+  local replacement=setup();ui.run,ui.map=replacement.run,replacement.map;ui:render()
+  assert(not ui.shopOpen and not root:GetChild('shopView').visible)
+  assert(tap());advanceShop(ui)
+ end
+ assert(not ui.shopBusy,'cancelled entry retained input lock')
  assert(ui:press('shopView/card1') and ui:press('confirm'))
- assert(merchant:tap(),'tap must still accelerate typing')
- assert(box:GetChild('line').text=='「'..Narrative.merchant.purchaseSuccess..'」')
- ui:update(Theme.layout.merchant.hold+.01)
- local bubble=box:GetChild('bubble');assert(bubble and not bubble.visible,'completed reaction remains a permanent dialogue panel')
- assert(box.visible and box:GetChild('portrait').visible,'closing dialogue must retain the independent figure')
- assert(not box:GetChild('line').visible and not box:GetChild('next').visible)
- ui:render();assert(not bubble.visible,'unrelated render resurrected the expired reaction')
- assert(merchant:tap() and bubble.visible,'clicking the figure must reopen the complete reaction')
- assert(ui:press('shopView/card2') and ui:press('confirm'),'bubble must never gate a consecutive sale')
- assert(merchant.current.kind=='buy' and bubble.visible and merchant.current.shown==0)
- local deckSize=#ui.run.deck
- ui.run.gold=0;ui:render();assert(not ui:press('shopView/card3'))
- assert(merchant.current.kind=='poor' and bubble.visible and merchant.shake~=nil)
- assert(merchant:tap() and box:GetChild('line').text=='「还差点钱。」','show the exact reviewed refusal')
- assert(ui.run.gold==0 and #ui.run.deck==deckSize,'refused purchase must not mutate gold or cards')
-end)
-test('all encounter pages remain readable and idle waits for the long text to finish',function()
- local ui,root=setup();local merchant=ui.merchant;local pages={};local original=merchant.current
- while true do
-  assert(merchant:tap());pages[#pages+1]=root:GetChild('merchant'):GetChild('line').text
-  assert(utf8.len(pages[#pages])<=Theme.layout.merchant.pageCharacters)
-  local last=original.ends[original.page]>=#original.chars
-  if last then break end
-  assert(merchant:tap())
- end
- assert(table.concat(pages)==Narrative.merchant.encounter,'long narration was truncated')
- assert(merchant:tap() and merchant.current.kind=='greet','greeting must remain queued after the full narration')
- for _=1,400 do ui:update(.1) end
- assert(merchant.current.kind=='idle' and merchant.idleUsed,'idle remark should occur once after dialogue has settled')
- local current=merchant.current
- for _=1,400 do ui:update(.1) end
- assert(merchant.current==current and not root:GetChild('merchant'):GetChild('bubble').visible,'idle repeated or stayed open')
- assert(ui:press('confirm') and ui:holding());assert(merchant.current.kind=='leave')
- assert(merchant:tap());ui:update(.1)
- assert(ui:press('confirm') and not ui:holding(),'farewell must not delay leaving')
-end)
-test('automatic encounter pagination is not cut short by the idle deadline',function()
- local ui=setup();local merchant=ui.merchant
- for _=1,150 do ui:update(.1) end
- assert(merchant.current.kind=='encounter' and not merchant.idleUsed,'idle interrupted the complete encounter narration')
- for _=1,500 do ui:update(.1) end
- assert(merchant.current.kind=='idle' and merchant.idleUsed,'automatic pages never reached greeting and idle')
-end)
-test('a hidden or map-covered shop pauses its bubble timer and pose follows the head',function()
- local ui,root=setup();local merchant=ui.merchant;local box=root:GetChild('merchant')
- merchant:react('buy');merchant:tap();ui:update(.1)
- local current,hold=merchant.current,merchant.current.hold
- ui:setVisible(false);ui:update(100)
- local tap=box:GetChild('talk'):GetChild('hit').click
- assert(current.hold==hold and not tap(),'hidden page consumed time or tap')
- ui:setVisible(true);assert(merchant.current==current and box:GetChild('bubble').visible,'return must resume the same bubble')
- local p,b=box:GetChild('portrait'),box:GetChild('bubble');local m=Theme.layout.merchant
- assert(math.abs((b.y-p.y)-(m.box[2]-m.portrait[2]))<.0001,'bubble detached from nodding head')
- assert(math.abs((b.x-p.x)-(m.box[1]-m.portrait[1]))<.0001,'bubble detached from shaking head')
-end)
-test('production merchant uses semantic pages in both existing budgets',function()
- local budget=Theme.layout.merchant.pageCharacters
- for _,limit in ipairs({9,12})do
-  Theme.layout.merchant.pageCharacters=limit
-  local ui,root=setup();assert(ui.merchant:tap())
-  assert(root:GetChild('merchant'):GetChild('line').text=='转过一道石廊，','production entry still uses fixed offsets')
-  ui.merchant:react('buy');assert(ui.merchant:tap())
-  assert(root:GetChild('merchant'):GetChild('line').text=='「眼光不错。」')
- end
- Theme.layout.merchant.pageCharacters=budget
-end)
-test('manual and automatic sentence boundaries agree without losing characters',function()
- local function read(auto)
-  local ui,root=setup();local merchant=ui.merchant;local current=merchant.current;local result={}
-  while true do
-   if auto then ui:update(1) else assert(merchant:tap()) end
-   assert(current.shown==current.ends[current.page])
-   result[#result+1]=root:GetChild('merchant'):GetChild('line').text
-   if current.ends[current.page]==#current.chars then break end
-   if auto then ui:update(Theme.layout.merchant.hold+.01) else assert(merchant:tap()) end
-  end
-  assert(table.concat(result)==Narrative.merchant.encounter)
-  return table.concat(result,'|')
- end
- assert(read(false)==read(true))
-end)
-assert(failures==0,tostring(failures)..' merchant lifecycle failures')
+ assert(ui.merchant.current.kind=='buy' and root:GetChild('merchant'):GetChild('bubble').visible)
+ local current=ui.merchant.current
+ ui:setVisible(false);ui:update(10);assert(current.hold==0)
+ ui:setVisible(true);ui:update(2)
+ assert(not root:GetChild('merchant'):GetChild('bubble').visible)
+ ui:render();ui:update(30);assert(ui.merchant.current==current)
+ assert(not root:GetChild('shopRoom').visible)
+ assert(ui:press('back'));ui:update(.1);ui:setVisible(false);ui:setVisible(true)
+ assert(not ui.shopBusy and not ui.run.nodeFlow.complete,'cancelled exit committed in background')
+ assert(ui:press('back'));ui:update(.31);assert(ui.run.nodeFlow.complete)
+ print('ok merchant lifecycle '..action)
+end

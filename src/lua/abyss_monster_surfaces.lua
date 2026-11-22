@@ -9,6 +9,10 @@ function M.new(stage,platform,onCreate,onRetire)
  assert(api.enabled and api.templateIndex>0 and api.containerTemplateIndex>0,'monster actor template is not bound')
  assert(type(api.instantiate)=='function' and type(api.destroy)=='function','monster actor creation API unavailable')
  local self={records={},slots={},pages={},retained={},generation=0}
+ local function actorTemplate(entry)
+  local indices=platform.nativeMonsterArtEnabled~=false and api.templateIndexByDefinition
+  return indices and indices[entry.actor.definitionId] or api.templateIndex
+ end
  local function call(control,name,...)
   assert(not self.engineDestroyed,'monster engine destroyed')
   assert(control[name](control,...)~=false,'monster surface '..name..' rejected')
@@ -102,6 +106,10 @@ function M.new(stage,platform,onCreate,onRetire)
   end
   return parent,path
  end
+ local function needsReplacement(record,index,depth,entry)
+  return record and record.box
+   and (record.path~=pagePath(index,depth) or record.templateIndex~=actorTemplate(entry))
+ end
  local function selectRows(rows,battle)
   if self.battle~=battle then self:clear();self.battle=battle end
   local depth=1;while #rows>60^depth do depth=depth+1 end
@@ -116,7 +124,7 @@ function M.new(stage,platform,onCreate,onRetire)
   -- a source reorder can transiently create child61 in a currently full page.
   for index,entry in ipairs(rows)do
    local record=self.records[entry.id]
-   if record and record.box and record.path~=pagePath(index,depth)then retire(record)end
+   if needsReplacement(record,index,depth,entry)then retire(record)end
   end
   for index,entry in ipairs(rows)do
    local parent,path=page(index,depth,generation)
@@ -128,7 +136,9 @@ function M.new(stage,platform,onCreate,onRetire)
    if record.path~=path and record.box then retire(record)end
    record.entry,record.path=entry,path
    if not record.box then
-    local box=allocate(api.templateIndex,parent,function(created)record.box=created end)
+    local templateIndex=actorTemplate(entry)
+    local box=allocate(templateIndex,parent,function(created)record.box=created end)
+    record.templateIndex=templateIndex
     record.box=box -- Own the returned handle before any re-entrant setter.
     if generation~=self.generation then retire(record);error('monster actor allocation cancelled')end
     call(box,'SetVisible',false)

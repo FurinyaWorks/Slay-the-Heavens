@@ -1,3 +1,4 @@
+local advanceShop = dofile('tests/lua/support/shop_timeline.lua')
 local testStart=dofile('tests/lua/support/game_ui_fixture.lua').start
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Run,Map=require('abyss_run'),require('abyss_map')
@@ -31,7 +32,9 @@ local function setup(kind)
     ui:refresh()
     local function hit(path,panel)
         local c=root:GetChild(panel or 'nodePanel')
-        for name in path:gmatch('[^/]+')do c=assert(c:GetChild(name),path)end
+        for name in path:gmatch('[^/]+')do
+            c=assert(c.items and c.items[tonumber(name)] or c:GetChild(name),path)
+        end
         return c:GetChild('hit') or c
     end
     local function press(path,panel,event)
@@ -44,19 +47,20 @@ end
 local ui,root,press,hit=setup('camp')
 assert(ui.mode=='node')
 press('campView/forge');assert(ui.nodeUI.mode=='picker')
-press('pickerView/forgeGrid/card1');press('back');press('back');assert(ui.nodeUI.mode=='main')
+press('pickerView/forgeFit/0');press('back');press('back');assert(ui.nodeUI.mode=='main')
 press('campView/rest');assert(ui.run.hp>30)
 ui:update(require('abyss_theme').layout.nativeNode.roomMotion.restDuration+.01)
 press('confirm');assert(ui.mode=='map');ui:disable()
 print('controller rooms: camp, upgrade picker cancel and continue passed')
 ui,root,press,hit=setup('shop')
 local before=#ui.run.deck
+press('merchant/talk');advanceShop(ui)
 press('shopView/card1');assert(#ui.run.deck==before and ui.run.gold==999)
 press('confirm');assert(#ui.run.deck==before+1 and ui.run.gold<999)
 assert(not hit('shopView/card1').canControllerFocus,'sold item cannot keep gamepad focus')
 press('shopView/removal');press('pickerView/card1');press('confirm')
 assert(#ui.run.deck==before,'remove must commit through the existing room command')
-press('confirm');press('confirm');assert(ui.mode=='map');ui:disable()
+press('back');ui:update(.31);press('confirm');assert(ui.mode=='map');ui:disable()
 print('controller rooms: shop buy, sold item, remove and leave passed')
 ui,root,press,hit=setup('treasure')
 assert(press('treasureView/chest'))

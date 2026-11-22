@@ -1,3 +1,4 @@
+local advanceShop = dofile('tests/lua/support/shop_timeline.lua')
 local testStart=dofile('tests/lua/support/game_ui_fixture.lua').start
 local testStartButton=dofile('tests/lua/support/game_ui_fixture.lua').startButton
 package.path = "src/lua/?.lua;build/lua/?.lua;" .. package.path
@@ -11,7 +12,7 @@ local function reachShop(ui,root)
         for _,node in ipairs(choices) do if node.type=="shop" then next=node break end end
         assert(ui.mapUI:choose(next.id))
         next.type=ui.run.nodeFlow.type
-        if next.type=="shop" then return ui,root end
+        if next.type=="shop" then F.click(root,"nodePanel","merchant/talk");advanceShop(ui);return ui,root end
         if ui.mode=="battle" then
             F.win(ui,root); F.click(root,"battlePanel","cardReward"); F.click(root,"battlePanel","skip")
             if ui.run.phase=="reward" and ui.run.rewards.manualContinue then
@@ -88,7 +89,7 @@ end
 test("old shop card cannot buy in a restarted run",function()
     local ui,root=setup(); local h=hit(root,"shopView/card1")
     emit(h,"down",11)
-    F.click(root,"nodePanel","confirm")
+    F.click(root,"nodePanel","back");ui:update(.31)
     local Run=require("abyss_run")
     assert(Run.startCombat(ui.run,"cultist_solo")); ui:refresh()
     ui.run.combat.player.hp=1 -- isolate defeat routing, not combat balance

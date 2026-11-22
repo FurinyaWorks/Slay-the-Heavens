@@ -1,3 +1,4 @@
+local advanceShop = dofile('tests/lua/support/shop_timeline.lua')
 local testStart=dofile('tests/lua/support/game_ui_fixture.lua').start
 package.path = "src/lua/?.lua;build/lua/?.lua;" .. package.path
 local cursor = {CursorEnter="enter", CursorExit="exit", CursorDown="down", CursorUp="up", CursorEndDrag="endDrag"}
@@ -22,6 +23,7 @@ local function setup(relicSeed)
     assert(host.mapUI:choose(destination.id))
     host.run.gold = 10000
     host:refresh()
+    assert(F.click(root,"nodePanel","merchant/talk"));advanceShop(host)
     local ui = host.nodeUI
     assert(ui.swipeEnabled and ui.pageCount == 1)
     assert(not ui:setPage(2))
@@ -84,12 +86,12 @@ end)
 
 test("old leave hold cannot execute after exit cancel and fresh input works", function()
     local host, ui, emit, tap = setup()
-    emit("confirm", "down", 11)
+    emit("back", "down", 11)
     assert(host:openExit() and host:closeExit())
-    emit("confirm", "up", 11)
-    assert(not emit("confirm", "click", 11))
+    emit("back", "up", 11)
+    assert(not emit("back", "click", 11))
     assert(not host.run.nodeFlow.complete and ui.page == 1)
-    assert(tap("confirm", 22) and host.run.nodeFlow.complete)
+    assert(tap("back", 22));host:update(.31);assert(host.run.nodeFlow.complete)
 end)
 
 test("old relic hold cannot buy after exit cancel and fresh input works", function()

@@ -111,7 +111,7 @@ local function referenceState(box,root)
         local key=bodyKinds[part.name];state.bodyMaterials[key]=state.bodyMaterials[key]or{};collect(part,state.bodyMaterials[key])
     end
     for _,part in ipairs(root:GetChild('banner'):GetChildren())do collect(part,state.banner[part.name=='front'and'front'or'fold'])end
-    state.cost=root:GetChild('costMaterial')
+    state.cost=box:GetChild('stsReferenceCost'):GetChild('costMaterial')
     referenceStates[box]=state;return state
 end
 local function referenceBody(state,definition,tint)
@@ -365,18 +365,34 @@ surfaceDecorations=function(box,ready)
     surfaceVisibility[box]=ready
 end
 local function placeReferencePart(part,shape)
-    part:SetVisible(shape~=nil)
-    part:SetAnchoredPosition(shape and shape.position[1]or 0,shape and shape.position[2]or 0)
-    part:SetSizeDelta(shape and shape.size[1]or 1,shape and shape.size[2]or 1)
-    part:SetLocalScale(shape and shape.scale[1]or 1,shape and shape.scale[2]or 1,1)
-    part:SetLocalRotation(0,0,shape and shape.rotation or 0)
+    if not shape then
+        part:SetVisible(false)
+        part:SetAnchoredPosition(0,0)
+        part:SetSizeDelta(1,1)
+        part:SetLocalScale(1,1,1)
+        part:SetLocalRotation(0,0,0)
+        return
+    end
+    part:SetAnchoredPosition(shape.position[1],shape.position[2])
+    part:SetSizeDelta(shape.size[1],shape.size[2])
+    part:SetLocalScale(shape.scale[1],shape.scale[2],1)
+    part:SetLocalRotation(0,0,shape.rotation)
+    part:SetVisible(true)
 end
-local function referenceKind(state,definition)
+local function referenceKind(state,definition,templateKind)
     local kind=state.groups[definition.type]and definition.type or'skill'
-    if state.kind==kind then return end
+    local previous=state.kind
+    if not state.kindPainted then
+        -- The generated official pile template starts with the attack contour.
+        previous=templateKind;state.kindPainted=true
+    end
+    if previous==kind then state.kind=kind;return end
+    state.kind=nil
     for name,group in pairs(state.groups)do group:SetVisible(name==kind)end
-    local geometry=Theme.officialAssets.stsCardReference.geometry.frameProfiles[kind]
-    for i,part in ipairs(state.frameParts)do placeReferencePart(part,geometry[i])end
+    local profiles=Theme.officialAssets.stsCardReference.geometry.frameProfiles
+    local geometry=profiles[kind]
+    local count=previous and math.max(#profiles[previous],#geometry) or #state.frameParts
+    for i=1,count do placeReferencePart(state.frameParts[i],geometry[i])end
     state.kind=kind
 end
 local function referenceInk(box,platform)
@@ -388,7 +404,7 @@ local function referenceInk(box,platform)
 end
 local function applyReference(box,definition,platform,look,accent,tint,reference)
     local state=referenceBanner(box,definition,tint,reference)
-    referenceKind(state,definition)
+    referenceKind(state,definition,look.templateKind)
     referenceBody(state,definition,tint)
     referencePortrait(state,definition,tint)
     costs(box,definition,look,accent,platform,tint,false)

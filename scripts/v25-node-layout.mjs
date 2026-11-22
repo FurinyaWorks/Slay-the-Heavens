@@ -1,4 +1,6 @@
+import {roundedFramedButton} from './native-rounded-button.mjs';
 import {merchantControl} from './cinematic-ui-layout.mjs';
+import {proceedFlag} from './sts-reward-row-layout.mjs';
 // Independently authored native geometry from the frozen V25 room composition.
 // No private raster, SVG path, sample transactions or random data is embedded.
 export const v25NodeSource=Object.freeze({
@@ -80,12 +82,18 @@ function curvedPolygon(name,start,segments,colour){
  return polygon(name,points,colour);
 }
 
-function shopCloth(){return group('v25ShopCloth',[
- rect('shadow',0,-7,1128,660,'#2E392F'),rounded('hem',1128,660,12,'#8D9D7D'),
- rect('cloth',0,3,1116,654,'#52644A'),fade('clothLight',0,3,1116,654,'#69805C',{rotation:180,opacity:.12}),
- rect('leftHem',-560,0,5,660,'#8D9D7D'),rect('rightHem',560,0,5,660,'#8D9D7D'),
- rect('lowerHem',0,-327,1100,5,'#7F9073'),
- ],[0,-18]);}
+export function shopCloth(){return group('v25ShopCloth',[
+ rect('perimeter',0,-21.5,1280,677,'#162320'),
+ rect('shadow',5,-28,1196,659,'#162D29'),
+ rect('hem',0,-20,1194,663,'#A39066'),
+ rect('cloth',0,-20,1186,655,'#435953'),
+ fade('clothLight',0,-20,1186,655,'#71866A',{rotation:180,opacity:.28}),
+ ...[-1,1].flatMap(side=>[
+  rect('selvedge'+side,side*587,-20,1,652,'#CCB77C',{opacity:.65}),
+  ...[278,146,14,-118,-250].map((y,i)=>image('stitch'+side+'_'+i,side*578,y,10,10,100004,'#BAA475',{opacity:.68})),
+ ]),
+ rect('lowerHem',0,-341,1174,2,'#A3916C'),
+ ]);}
 
 function campScene(theme){
  const logs=group('logs',[-18,18,-65,65].map((rotation,i)=>{const n=rounded('log'+i,350,42,20,'#271A13');n.position=[350,-326-i*4];n.rotation=rotation;
@@ -126,7 +134,6 @@ function framedSkin(box,kind='teal'){
 }
 
 function styleShop(panel,theme){
- panel.children.unshift(shopCloth());
  const l=theme.layout.nativeNode.shop;
  for(let i=1;i<=7;i++){
   const card=must(panel,'card'+i);card.position=[l.columns[i-1],l.cardRows[i-1]];
@@ -170,6 +177,20 @@ function styleCamp(panel,theme){
  setRect(must(result,'description'),[0,90,600,120]);type(must(result,'description'),26,'#F0ECDB');
 }
 
+function styleLegacyEventOption(n){
+ framedSkin(n);
+  // Anchored corner covers follow the original Neow/ordinary option resizing.
+  // Clip the complete decorative chrome before live text and input are drawn.
+  // All colours/states still come from the original Image feedback targets.
+  let cornerAt=n.children.indexOf(must(n,'v25StateChrome'))+1;
+  for(const side of [0,1])for(const top of [0,1])n.children.splice(cornerAt++,0,image('v25Corner'+side+'_'+top,0,0,42,22,100003,'#020504',{
+   pivot:[.5,0],anchor:{min:[side,top],max:[side,top]},scale:[side?-1:1,top?-1:1],fill:{shape:'horizontal',from:'right',amount:.5}}));
+  must(n,'border').opacity=1;must(n,'border').colour='#406166';
+  for(const state of ['normal','hover','pressed','disabled','selected']){must(n,state).image=100001;must(n,state).size=[696,40];}
+  must(n,'v25StateChrome').children.find(c=>c.name==='lowerRim').opacity=0;
+  must(n,'v25StateChrome').children.find(c=>c.name==='faceDepth').opacity=0;
+}
+
 export function styleEvent(panel,theme){
  // plateBorder is visibility-only in the real event writer, including Neow.
  // Keep its identity and path, adding children only after making it a container.
@@ -193,18 +214,13 @@ export function styleEvent(panel,theme){
  const name=must(panel,'name');setRect(name,theme.layout.nativeNode.event.name);type(name,27,'#F0CF60');
  setRect(must(panel,'body'),theme.layout.nativeNode.event.body);type(must(panel,'body'),21,'#EDEEDF',{align:'left',valign:'top'});
  const o=theme.layout.nativeNode.event.options;
- for(let i=1;i<=4;i++){const n=must(panel,'option'+i);setRect(n,[o.x,o.rows[i-1],...o.size]);must(n,'hit').size=[...o.size];framedSkin(n);
-  // Anchored corner covers follow the original Neow/ordinary option resizing.
-  // Clip the complete decorative chrome before live text and input are drawn.
-  // All colours/states still come from the original Image feedback targets.
-  let cornerAt=n.children.indexOf(must(n,'v25StateChrome'))+1;
-  for(const side of [0,1])for(const top of [0,1])n.children.splice(cornerAt++,0,image('v25Corner'+side+'_'+top,0,0,42,22,100003,'#020504',{
-   pivot:[.5,0],anchor:{min:[side,top],max:[side,top]},scale:[side?-1:1,top?-1:1],fill:{shape:'horizontal',from:'right',amount:.5}}));
-  must(n,'border').opacity=1;must(n,'border').colour='#406166';
-  for(const state of ['normal','hover','pressed','disabled','selected']){must(n,state).image=100001;must(n,state).size=[696,40];}
-  must(n,'v25StateChrome').children.find(c=>c.name==='lowerRim').opacity=0;
-  must(n,'v25StateChrome').children.find(c=>c.name==='faceDepth').opacity=0;
-  setRect(must(n,'title'),o.title);type(must(n,'title'),18,'#EDEEDF',{align:'left'});setRect(must(n,'description'),o.description);type(must(n,'description'),18,'#EDEEDF',{align:'left'});}
+ for(let i=1;i<=4;i++){
+  const n=must(panel,'option'+i);setRect(n,[o.x,o.rows[i-1],...o.size]);must(n,'hit').size=[...o.size];
+  if(theme.presentationProfile==='official-assets-first')roundedFramedButton(n,theme,{stretch:true});
+  else styleLegacyEventOption(n);
+  setRect(must(n,'title'),o.title);type(must(n,'title'),18,'#EDEEDF',{align:'left'});
+  setRect(must(n,'description'),o.description);type(must(n,'description'),18,'#EDEEDF',{align:'left'});
+ }
 }
 
 export function styleTreasure(panel,theme,{skinButtons=true}={}){
@@ -231,10 +247,7 @@ export function styleTreasure(panel,theme,{skinButtons=true}={}){
 }
 
 export function styleMerchant(panel,theme){
- if(theme.layout.merchant.bubble){
-  // Project the complete component, retaining existing objects and live text.
-  // Build starts from the unprojected theme; partial old-bar positioning would
-  // otherwise leave the bubble, line and input target in different geometries.
+  // Project the compact response while preserving existing objects and live text.
   const project=(live,spec)=>{
    const children=live.children,content=live.text?.content;
    Object.assign(live,spec);
@@ -245,15 +258,7 @@ export function styleMerchant(panel,theme){
     project(prior,next);return prior;
    });
   };
-  project(panel,merchantControl(theme));return;
- }
- const m=theme.layout.merchant,relative=v=>[v[0]-m.frame[0],v[1]-m.frame[1],...v.slice(2)];setRect(panel,m.frame);
- setRect(must(panel,'panel'),relative(m.box));setRect(must(panel,'border'),relative([m.box[0],m.box[1],m.box[2]+4,m.box[3]+4]));
- const portrait=must(panel,'portrait'),ratio=m.portrait[2]/portrait.size[0];setRect(portrait,relative(m.portrait));portrait.scale=[ratio,ratio];
- for(const name of ['namePlate','name'])setRect(must(panel,name),relative(m.name));
- type(must(panel,'name'),14,'#E5DBBC');setRect(must(panel,'line'),relative(m.line));type(must(panel,'line'),16,'#EFE8D6');
- setRect(must(panel,'next'),relative(m.next));const talk=must(panel,'talk');setRect(talk,relative(m.box));must(talk,'hit').size=m.box.slice(2);
- setRect(must(panel,'accent'),[m.box[0]-m.frame[0],m.box[1]-m.frame[1]+m.box[3]/2-2,m.box[2]-8,2]);
+  project(panel,merchantControl(theme));
 }
 
 function stylePreset(button){
@@ -290,9 +295,9 @@ function nodeCardChrome(face,theme){
  for(const child of parts(face))nodeCardChrome(child,theme);
 }
 
-function rewardHost(stage,title){
- must(stage,'border').opacity=0;must(stage,'plate').opacity=0;
- stage.children.unshift(group('v25RewardField',[rect('dark',0,-22,1280,676,'#070B0B')],[0,-stage.position[1]]));
+function rewardHost(stage,title,veil){
+ stage.children.unshift(group('v25RewardField',[rect('dark',0,-22,1280,676,veil.slice(0,7),
+  {opacity:parseInt(veil.slice(7),16)/255})],[0,-stage.position[1]]));
  const paper=group('v25RewardPaper',[polygon('banner',[[365,170],[409,164],[425,153],[563,151],[859,153],[877,165],[915,171],[893,205],[855,202],[849,211],[431,211],[420,202],[387,205]],'#A79E80'),
   // A continuous native centre closes antialias seams between the silhouette's
   // triangles without changing its authored outline or adding an atlas plate.
@@ -303,13 +308,31 @@ function rewardHost(stage,title){
 }
 function styleRewards(battle,theme){
  const stage=must(battle,'rewardStage'),r=theme.layout.rewardPick;setRect(stage,r.stage);
- rewardHost(stage,r.title);
+ const hero=must(battle,'hero');battle.children.splice(battle.children.indexOf(hero),1);
+ battle.children.splice(battle.children.indexOf(stage),0,hero);
+ for(const name of ['border','plate'])must(stage,name).opacity=0;
+ const relative=box=>[box[0]-stage.position[0],box[1]-stage.position[1],...box.slice(2)];
+ const veil=theme.officialAssets.backdropVeil;
+ rewardHost(stage,relative(r.title),veil);
  const list=must(battle,'rewardList'),base=theme.layout.battleRewards;
- rewardHost(list,[base.title[0]-base.stage[0],base.title[1]-base.stage[1],...base.title.slice(2)]);
- must(list,'title').text.colour='#EFE8D4';must(list,'subtitle').text.colour='#D6D5C5';
- setRect(must(stage,'title'),r.title);type(must(stage,'title'),29,'#EFE8D4');
- setRect(must(stage,'subtitle'),r.subtitle);type(must(stage,'subtitle'),16,'#D6D5C5');
- const skip=must(battle,'skip');setRect(skip,r.skip);for(const state of parts(skip))state.size=r.skip.slice(2);stylePreset(skip);
+ rewardHost(list,[base.title[0]-base.stage[0],base.title[1]-base.stage[1],...base.title.slice(2)],veil);
+ if(theme.presentationProfile==='official-assets-first'){
+  for(const name of ['border','plate'])must(list,name).opacity=0;
+ }else{
+  const plate=must(list,'plate');plate.colour=theme.officialAssets.rewardRows.panel;
+  for(const [name,y] of [['upperRoll',1],['lowerRoll',0]]){
+   const roll=rect(name,0,0,theme.space.l,theme.space.s,theme.officialAssets.rewardRows.normal,
+    {anchor:{min:[0,y],max:[1,y]}});
+   list.children.splice(2,0,roll);
+  }
+  proceedFlag(must(battle,'continue'),theme);
+ }
+ must(list,'title').text.colour=theme.color.text;must(list,'subtitle').text.colour='#D6D5C5';
+ setRect(must(stage,'title'),relative(r.title));setRect(must(stage,'subtitle'),relative(r.subtitle));
+ if(theme.presentationProfile){
+  type(must(stage,'title'),29,'#EFE8D4');type(must(stage,'subtitle'),16,'#D6D5C5');
+  const skip=must(battle,'skip');setRect(skip,r.skip);for(const state of parts(skip))state.size=r.skip.slice(2);stylePreset(skip);
+ }
 }
 
 function preflight(root){

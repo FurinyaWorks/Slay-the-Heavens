@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,mkdirSync,readdirSync,rmSync} from 'node:fs';
+import {mkdtempSync,mkdirSync,readFileSync,readdirSync,rmSync} from 'node:fs';
 import {resolve,join} from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {createRequire} from 'node:module';
@@ -57,6 +57,28 @@ for _,operation in ipairs({'lookup','visibility'})do
  assert(not nested:request({page='menuPanel',run={}}),'superseded request advanced after recovery '..operation)
  assert(nested.intent==replacement and #events==1 and events[1]==nested.epoch,'stale recovery request notified the newer epoch')
 end
+-- A failed in-place deck paint can be superseded while it hides recovery.
+local oldRun={};local oldDeck={page='deckPanel',mode='map',run=oldRun,overlayContent=1}
+local nextDeck={page='deckPanel',mode='map',run=oldRun,overlayContent=2}
+local newMap={page='mapPanel',mode='map',run={}}
+local handoff,triggerRecoveryWrite,failDeck
+local armedRecovery={SetVisible=function()
+ if not triggerRecoveryWrite then return end
+ triggerRecoveryWrite=false
+ assert(handoff:request(newMap))
+end}
+local reentrantCover={SetVisible=function()end,SetAsLastSibling=function()end,
+ GetChild=function(_,name)if name=='cancel'then return armedRecovery end end}
+handoff=Gate.new(reentrantCover,function()
+ if failDeck then return false,'old deck failed' end
+ return true
+end)
+assert(not handoff:step(oldDeck) and handoff:step(oldDeck))
+assert(handoff:begin(nextDeck))
+failDeck=true;triggerRecoveryWrite=true
+assert(not handoff:finish(nextDeck))
+assert(handoff.intent==newMap and handoff.state=='preparing' and handoff.error==nil,'obsolete deck paint marked the new map as failed')
+
 print('PAGE_REVEAL_PASS')`);
 });
 test('ready combat choice cannot publish through a synchronous paint or on its first ready turn',()=>{
@@ -262,8 +284,66 @@ print('PAGE_REVEAL_PASS')`);
 test('new battle still gates input while settlement and reward cards stay on the ready scene',t=>{
  const base=resolve('.artifacts/test-tmp');mkdirSync(base,{recursive:true});const out=mkdtempSync(join(base,'pc13-cover-'));t.after(()=>rmSync(out,{recursive:true,force:true}));
  buildLuaData('data',join(out,'abyss_data.lua'));buildUI(out);
- lua(`package.path=${luaString(out.replaceAll('\\','/')+'/?.lua;src/lua/?.lua;')}..package.path
+ const source=`package.path=${luaString(out.replaceAll('\\','/')+'/?.lua;src/lua/?.lua;')}..package.path`;
+ lua(`${source}
 dofile('tests/lua/support/pc13_reward_cover.lua')
 dofile('tests/lua/support/modal_cover_setters.lua')
 print('PAGE_REVEAL_PASS')`);
+ lua(`${source}
+dofile('tests/lua/support/pc13_reward_feedback_tail.lua')
+print('PAGE_REVEAL_PASS')`);
+});
+
+test('official Host paints a destination room once, gates pending assets and retains page fade',t=>{
+ const base=resolve('.artifacts/test-tmp');mkdirSync(base,{recursive:true});
+ const output=mkdtempSync(join(base,'develop-map-room-'));
+ t.after(()=>rmSync(output,{recursive:true,force:true}));
+ buildLuaData('data',join(output,'abyss_data.lua'));
+ buildUI(output,undefined,{officialAssets:true});
+ const paths=luaString(output.replaceAll('\\','/')+'/?.lua;src/lua/?.lua;');
+ lua(`package.path=${paths}..package.path
+dofile('tests/lua/support/map_room_reveal.lua')
+print('PAGE_REVEAL_PASS')`);
+});
+
+for (const officialAssets of [false, true]) {
+  test(`${officialAssets ? 'official' : 'default'} Forethought stays open on selection and confirms once`, t => {
+    const base=resolve('.artifacts/test-tmp');mkdirSync(base,{recursive:true});
+    const out = mkdtempSync(join(base, 'forethought-host-'));
+    t.after(() => rmSync(out, { recursive: true, force: true }));
+    buildLuaData('data', join(out, 'abyss_data.lua'));
+    buildUI(out, undefined, { officialAssets });
+    const layout = JSON.parse(readFileSync(join(out, 'game-ui.json'), 'utf8'));
+    const child = (node, name) => (node.children ?? node.controls).find(value => value.name === name);
+    const close = child(child(child(child(layout, 'stage'), 'deckPanel'), 'close'), 'hit');
+    for (const state of close.children) {
+      const label = child(state, 'label');
+      assert.ok(label.size[0] >= 4 * label.text.minFontSize, `${state.name} must fit 确认选择`);
+    }
+    const preloads = readdirSync(out).filter(name => name.endsWith('.lua')).map(name =>
+      `package.preload[${luaString(name.slice(0, -4))}]=assert(loadfile(${luaString(join(out,name).replaceAll('\\','/'))}))`);
+    const script = ["package.path='src/lua/?.lua;'..package.path", ...preloads,
+      "dofile('tests/lua/support/forethought_selection.lua')"].join('\n');
+    const result = spawnSync(process.execPath, [require.resolve('fengari-node-cli/src/lua-cli.js'), '-e', script], {
+      encoding: 'utf8', timeout: 90000, maxBuffer: 2 * 1024 * 1024,
+      env: { ...process.env, LUA_INIT: '', LUA_INIT_5_3: '' },
+    });
+    assert.equal(result.status, 0, result.stdout + result.stderr + String(result.error ?? ''));
+    assert.match(result.stdout, /FORETHOUGHT_SELECTION_HOST_PASS/);
+  });
+}
+
+test('Forethought authenticates its complete Lua and layout owners',async()=>{
+ const {beforeDevelopBackflow,authenticateDevelopBackflow}=await import('./helpers/develop-release-backflow-source.mjs');
+ const lua='src/lua/abyss_deck_ui.lua',layout='scripts/deck-ui-layout.mjs';
+ const read=path=>readFileSync(path,'utf8');
+ const crlf=source=>source.replaceAll('\n','\r\n');
+ const priorLua=beforeDevelopBackflow(lua,read(lua));
+ const priorLayout=beforeDevelopBackflow(layout,read(layout));
+ assert.notEqual(priorLua,read(lua));
+ assert.notEqual(priorLayout,read(layout));
+ assert.equal(authenticateDevelopBackflow(lua,crlf(read(lua)),path=>crlf(read(path))),crlf(priorLua));
+ assert.throws(()=>authenticateDevelopBackflow(lua,read(lua),path=>path===layout?priorLayout:read(path)),/linked owner identity/);
+ const foreign=read(lua)+'\n';
+ assert.equal(authenticateDevelopBackflow(lua,foreign,()=>assert.fail('foreign source read')),foreign);
 });

@@ -1,7 +1,10 @@
 import { nativeControls, nativeTheme } from './native-ui-theme.mjs';
 import { cardFaceChildren } from './card-face.mjs';
 import { merchantControl } from './cinematic-ui-layout.mjs';
+import { shopRoom } from './shop-room-layout.mjs';
+import { shopCloth } from './v25-node-layout.mjs';
 import { augmentMatchEventPicker } from './match-event-layout.mjs';
+import { fiveColumnCardGrid } from './deck-ui-layout.mjs';
 
 // Approved PR19 node screens (shop, camp/forge, event, treasure) as one native
 // tree. Every view is its own container so no control exceeds the MCP child limit.
@@ -52,6 +55,7 @@ export function nodeLayout(theme = nativeTheme) {
   const bar = layout.topBar;
   const controls = [
     plate('backdrop', layout.backdrop, color.backdrop),
+    shopRoom(theme),
     // Below every shelf/footer; unlike a button this background is not focusable.
     {name:'shopDismiss',kind:'cursorArea',position:[0,0],size:[...theme.canvas.base],focusable:false},
     // TopPanel reuse: same dark band, copper hairline and title wings as the map header
@@ -75,7 +79,7 @@ export function nodeLayout(theme = nativeTheme) {
     text('name', frame([0, 14], [shop.removal[2], lineHeight]), '移除一张牌', font.small, color.text),
     text('description', frame([0, -34], [shop.removal[2] - space.s, 64]), '', font.small, color.textDim),
   ] });
-  const shopControls = [hidden(arrow('previous', shop.previous, icon.back)), hidden(arrow('next', shop.next, icon.next)),
+  const shopControls = [shopCloth(), hidden(arrow('previous', shop.previous, icon.back)), hidden(arrow('next', shop.next, icon.next)),
     hidden(text('page', shop.page, '', font.small, color.textDim)), removal, price('removalPrice', shop.removal[0], shop.removalPriceY)];
   shop.columns.forEach((x, i) => shopControls.push(card(`card${i + 1}`, [x, shop.cardRows[i]]), price(`price${i + 1}`, x, shop.priceRows[i])));
   relic.columns.forEach((x, i) => {
@@ -122,7 +126,15 @@ export function nodeLayout(theme = nativeTheme) {
     text('label', picker.label, '', font.label, color.textDim), text('hint', picker.hint, '', font.small, color.textDim),
     text('empty', picker.empty, '', font.body, color.textMuted)];
   const forge = layout.forge;
-  pickerControls.push(hidden(arrow('forgePrevious',forge.previous,icon.back)),hidden(arrow('forgeNext',forge.next,icon.next)));
+  pickerControls.unshift(
+    hidden(plate('forgeShade', [0, -22, 1280, 676], '#000000E6')),
+    hidden(fiveColumnCardGrid('forgeFit', forge.viewport, 'AbyssForgeCard', false)),
+    hidden(fiveColumnCardGrid('forgeScroll', forge.viewport, 'AbyssForgeCard')),
+    hidden(group('forgePrompt', [
+      plate('plate', forge.prompt, '#000000B3'),
+      text('label', forge.prompt, '选择一张卡牌升级', font.heading, color.text),
+    ])),
+  );
   pickerControls.push(hidden(group('forgeGrid',forge.rows.flatMap((y,row)=>forge.columns.map((x,col)=>
     card(`card${row*forge.columns.length+col+1}`,[x,y]))))));
 
@@ -208,7 +220,9 @@ export function nodeLayout(theme = nativeTheme) {
     hidden(readable(text('relatedDescription',[0,-126,rd[2]-40,144],'',20,color.text))),
   ]}));
 
-  controls.push(group('shopView', shopControls), group('campView', campControls), augmentMatchEventPicker(group('pickerView', pickerControls),theme),
+  // The shelf and its dismiss surface paint below the shared HUD even while the shelf moves.
+  controls.splice(controls.findIndex(control => control.name === 'shopDismiss') + 1, 0, group('shopView', shopControls));
+  controls.push(group('campView', campControls), augmentMatchEventPicker(group('pickerView', pickerControls),theme),
     group('eventView', eventControls), group('treasureView', treasureControls), merchantControl(theme),
     framed('back', layout.back, '返回'), framed('confirm', layout.confirm, '确认', { primary: true, fontSize: font.heading }),
     hidden(group('roomEffect',[

@@ -1,3 +1,4 @@
+local advanceShop = dofile('tests/lua/support/shop_timeline.lua')
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Run,Map,Nodes=require('abyss_run'),require('abyss_map'),require('abyss_nodes')
 local UI=require('abyss_node_ui')
@@ -28,6 +29,7 @@ local function setup(kind)
 end
 
 local ui,get,run=setup('shop')
+assert(ui:press('merchant/talk'));advanceShop(ui)
 local original={};for i,card in ipairs(run.deck)do original[i]=card.uid end
 assert(#original==10 and ui:press('shopView/removal'))
 local rows=ui.removeRows;assert(#rows==10 and ui.pageCount==4)
@@ -55,13 +57,12 @@ assert(ui:setPage(1) and ui.selected==chosen)
 assert(ui:press('confirm'));assert(#run.deck==9)
 for _,card in ipairs(run.deck)do assert(card.uid~=chosen)end
 
--- The camp still uses all twelve rich forge faces, while hiding the six
--- ordinary semantic parents (including the three retired payloads).
+-- Camp uses the native grid while hiding all six semantic picker parents.
 local camp,cget=setup('camp')
 assert(camp:press('campView/forge'))
 for i=1,6 do assert(not cget('pickerView/card'..i).visible)end
-for i=1,12 do assert(cget('pickerView/forgeGrid/card'..i):GetChild('hit'))end
-assert(camp:press('pickerView/forgeGrid/card1'))
+assert(cget('pickerView/forgeFit').itemCount==10 and not cget('confirm').visible)
+assert(camp:press('pickerView/forgeScroll/card1'))
 assert(camp:press('confirm'))
 
 local H=dofile('tests/helpers/act2_choice_events.lua')

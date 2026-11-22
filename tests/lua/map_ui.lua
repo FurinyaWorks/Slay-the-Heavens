@@ -108,7 +108,7 @@ test("initial controls show legal starts, shared icons and four states across al
     assert(not mapControl(panel(root), "previous").visible and not mapControl(panel(root), "next").visible)
     assert(not mapControl(panel(root), "previous"):GetChild("hit").visible)
     local seen, types = {}, {}
-    for offset = 0, Layout.maxScroll + 60, 60 do
+    for offset = 0, Layout.bossTreasureMaxScroll + 60, 60 do
         assert(ui:setScroll(offset))
         for _, node in ipairs(Map.view(map).nodes) do
             local box = boxFor(root, map, node.id)
@@ -117,7 +117,7 @@ test("initial controls show legal starts, shared icons and four states across al
                 local palette = Theme.color.mapCanvas
                 assert(sameColor(box:GetChild("icon").imageColor,
                     MapUI.roomInk(node, node.floor == 1 and "available" or "locked", map.floor)))
-                assert(not box:GetChild("positionToken").visible)
+                assert(not box:GetChild("ring").visible)
                 assert(box:GetChild("icon").image == Theme.icon.node[node.type])
                 assert(box:GetChild("hit").visible == (node.floor == 1))
             end
@@ -125,7 +125,7 @@ test("initial controls show legal starts, shared icons and four states across al
         visibleBounds(root, map)
     end
     for _, node in ipairs(Map.view(map).nodes) do
-        assert(seen[node.id] == true)
+        assert((seen[node.id] == true) == (node.roomKind ~= "boss_treasure"))
     end
     for kind in pairs(Theme.icon.node) do assert(types[kind], "all seven real node types displayed") end
     local boss = boxFor(root, map, "f16_l4")
@@ -146,15 +146,15 @@ test("actual control clicks advance once, notify copied node and block reentrant
     assert(clickNode(root, map, first.id) and callbackBlocked)
     assert(map.floor == 1 and #map.path == 1 and not ui.navigationEnabled)
     assert(received.id == map.currentNodeId and map.nodes[1].nextIds[1] ~= "tamper")
-    assert(boxFor(root, map, first.id):GetChild("positionToken").visible)
+    assert(boxFor(root, map, first.id):GetChild("ring").visible)
     assert(not ui:choose(Map.available(map)[1].id) and map.floor == 1)
     ui:setNavigationEnabled(true)
     local nextNode = Map.available(map)[1]
     assert(clickNode(root, map, nextNode.id) and map.floor == 2)
     assert(sameColor(boxFor(root, map, first.id):GetChild("icon").imageColor,Theme.color.mapCanvas.visited))
     assert(mapControl(panel(root), "edge1").imageColor.r == Theme.color.node.pathTaken.r)
-    assert(boxFor(root,map,nextNode.id):GetChild("positionToken").visible)
-    assert(not boxFor(root,map,first.id):GetChild("positionToken").visible)
+    assert(boxFor(root,map,nextNode.id):GetChild("ring").visible)
+    assert(boxFor(root,map,first.id):GetChild("ring").visible)
 end)
 
 test("invalid, locked, backward, disconnected, culled and hidden clicks never mutate map", function()
@@ -185,10 +185,10 @@ test("invalid, locked, backward, disconnected, culled and hidden clicks never mu
     assert(not ui:choose(first)); assert(map.floor == 1 and callbacks == 1)
     for _, bad in ipairs({false, "2", 0/0, math.huge, -math.huge}) do assert(not ui:setScroll(bad)) end
     assert(ui:setScroll(-100) and ui.scroll == 0)
-    assert(ui:setScroll(10000) and ui.scroll == Layout.maxScroll)
+    assert(ui:setScroll(10000) and ui.scroll == Layout.bossTreasureMaxScroll)
 end)
 
-test("scroll follows Boss16 and exposes the independent legal treasure17 entry", function()
+test("scroll ends at Boss16 while the legal treasure17 entry stays off-map", function()
     local callbacks = 0
     local root, map, ui
     root, map, ui = fixture(313, function(node) callbacks = callbacks + 1 return Map.choose(map, node.id) end)
@@ -197,19 +197,20 @@ test("scroll follows Boss16 and exposes the independent legal treasure17 entry",
         local selected = Map.available(map)[1]
         assert(clickNode(root, map, selected.id))
         assert(map.currentNodeId == selected.id and callbacks == floor)
-        assert(boxFor(root, map, selected.id):GetChild("positionToken").visible)
+        assert(boxFor(root, map, selected.id):GetChild("ring").visible)
         visibleBounds(root, map)
     end
     ui:setNavigationEnabled(true)
     assert(not ui:choose("f16_l4") and callbacks == 16 and #map.path == 16)
-    assert(mapControl(panel(root), "notice").text == "首领奖励已处理 · 请选择首领宝箱")
-    assert(boxFor(root, map, "f17_l4").visible)
-    assert(ui.scroll == Layout.maxScroll)
+    assert(mapControl(panel(root), "notice").text == "首领奖励已处理 · 即将前往宝箱")
+    assert(not boxFor(root, map, "f17_l4").visible)
+    assert(ui.scroll == Layout.bossTreasureMaxScroll)
     assert(click(root, "previous")); ui:update(Theme.motion.base)
-    assert(ui.scroll < Layout.maxScroll)
-    ui:setVisible(false); ui:setVisible(true); assert(ui.scroll == Layout.maxScroll)
-    assert(clickNode(root, map, "f17_l4") and callbacks == 17 and #map.path == 17)
-    assert(not ui:choose("f17_l4") and callbacks == 17)
+    assert(ui.scroll < Layout.bossTreasureMaxScroll)
+    ui:setVisible(false); ui:setVisible(true); assert(ui.scroll == Layout.bossTreasureMaxScroll)
+    local _, chestSlot = boxFor(root, map, "f17_l4")
+    assert(not click(root, "node" .. chestSlot) and not ui:choose("f17_l4"))
+    assert(callbacks == 16 and #map.path == 16 and Map.available(map)[1].id == "f17_l4")
 end)
 
 test("restored maps start locked and reopening focuses actual current floor", function()
@@ -274,7 +275,7 @@ test("phone, PC, console and ultrawide fit stage uniformly and fill background o
         assert(ui:resize(canvas[1], canvas[2]))
         assert(ui.stage.localScaleX == canvas[3] and ui.stage.localScaleY == canvas[3])
         assert(root:GetChild("mapBackdrop").w == canvas[1] and root:GetChild("mapBackdrop").h == canvas[2])
-        for offset = 0, Layout.maxScroll + 120, 120 do ui:setScroll(offset); visibleBounds(root, map) end
+        for offset = 0, Layout.bossTreasureMaxScroll + 120, 120 do ui:setScroll(offset); visibleBounds(root, map) end
     end
     for _, bad in ipairs({0, -1, 0/0, math.huge, "1280"}) do assert(not ui:resize(bad, 720)) end
 end)
@@ -286,34 +287,37 @@ test("displayed edges match real topology and chosen path colours after scrollin
     local current, index, taken = Map.view(map), {}, {}
     for _, node in ipairs(current.nodes) do index[node.id] = node end
     for i = 1, #current.path - 1 do taken[current.path[i] .. ":" .. current.path[i + 1]] = true end
-    for offset = 0, Layout.maxScroll, 60 do
+    for offset = 0, Layout.bossTreasureMaxScroll, 60 do
         ui:setScroll(offset)
         local n = 0
         for _, node in ipairs(current.nodes) do for _, id in ipairs(node.nextIds) do
-            n = n + 1
-            local edge = mapControl(panel(root), "edge" .. n)
-            local y1 = Layout.firstY + (node.floor - 1) * Theme.layout.map.floorGap - ui.scroll
-            local y2 = Layout.firstY + (index[id].floor - 1) * Theme.layout.map.floorGap - ui.scroll
-            -- STS MapEdge: ICON_SRC_RADIUS at the source room, ICON_DST_RADIUS (boss 164) at the destination.
-            local target = index[id]
-            local r1 = Theme.layout.map.node * Layout.sts.srcRadius
-            local r2 = target.type == "boss" and Theme.layout.map.bossNode * Layout.sts.bossRadius or Theme.layout.map.node * Layout.sts.dstRadius
-            local dx = (target.lane - node.lane) * Theme.layout.map.columnGap
-            local len = math.sqrt(dx * dx + (y2 - y1) ^ 2)
-            y1, y2 = y1 + (y2 - y1) / len * r1, y2 - (y2 - y1) / len * r2
-            local w = MapUI.pathWidth(taken[node.id .. ":" .. id], node.id == map.currentNodeId and index[id].available)
-            local expected = y2 > Layout.viewport.bottom + w / 2 and y1 < Layout.viewport.top - w / 2
-            assert(edge.visible == expected)
-            if expected then
-                local reachable = node.id == map.currentNodeId and index[id].available
-                local ink = taken[node.id .. ":" .. id] and Theme.color.node.pathTaken
-                    or reachable and Theme.color.node.reachable or Theme.color.node.path
-                assert(edge.imageColor.r == ink.r and edge.imageColor.g == ink.g and edge.imageColor.b == ink.b)
-                local visual = Theme.layout.map.presentation
-                local opacity = taken[node.id .. ":" .. id] and visual.takenOpacity or
-                    reachable and visual.nextOpacity or
-                    (MapUI.isFar(index[id].floor, map.floor) and visual.farFutureOpacity or visual.futureOpacity)
-                assert(edge.imageColor.a == math.floor(ink.a * opacity))
+            if index[id].roomKind ~= "boss_treasure" then
+                n = n + 1
+                local edge = mapControl(panel(root), "edge" .. n)
+                local y1 = Layout.firstY + (node.floor - 1) * Theme.layout.map.floorGap - ui.scroll
+                local y2 = Layout.firstY + (index[id].floor - 1) * Theme.layout.map.floorGap - ui.scroll
+                if index[id].type == "boss" then y2 = y2 + Theme.layout.map.bossFloorLift end
+                -- STS MapEdge: ICON_SRC_RADIUS at the source room, ICON_DST_RADIUS (boss 164) at the destination.
+                local target = index[id]
+                local r1 = Theme.layout.map.node * Layout.sts.srcRadius
+                local r2 = target.type == "boss" and Theme.layout.map.bossNode * Layout.sts.bossRadius or Theme.layout.map.node * Layout.sts.dstRadius
+                local dx = (target.lane - node.lane) * Theme.layout.map.columnGap
+                local len = math.sqrt(dx * dx + (y2 - y1) ^ 2)
+                y1, y2 = y1 + (y2 - y1) / len * r1, y2 - (y2 - y1) / len * r2
+                local w = MapUI.pathWidth(taken[node.id .. ":" .. id], node.id == map.currentNodeId and index[id].available)
+                local expected = y2 > Layout.viewport.bottom + w / 2 and y1 < Layout.viewport.top - w / 2
+                assert(edge.visible == expected)
+                if expected then
+                    local reachable = node.id == map.currentNodeId and index[id].available
+                    local ink = taken[node.id .. ":" .. id] and Theme.color.node.pathTaken
+                        or reachable and Theme.color.node.reachable or Theme.color.node.path
+                    assert(edge.imageColor.r == ink.r and edge.imageColor.g == ink.g and edge.imageColor.b == ink.b)
+                    local visual = Theme.layout.map.presentation
+                    local opacity = taken[node.id .. ":" .. id] and visual.takenOpacity or
+                        reachable and visual.nextOpacity or
+                        (MapUI.isFar(index[id].floor, map.floor) and visual.farFutureOpacity or visual.futureOpacity)
+                    assert(edge.imageColor.a == math.floor(ink.a * opacity))
+                end
             end
         end end
         for i = n + 1, Layout.maxEdges do assert(not mapControl(panel(root), "edge" .. i).visible) end
@@ -336,7 +340,7 @@ test("reachable node breath is bounded, reduced motion stops it and stale view c
     assert(Map.choose(map, node.id))
     assert(not click(root, "node1") and #map.path == 1)
     ui:render()
-    assert(box:GetChild("positionToken").visible and not box:GetChild("hit").visible)
+    assert(box:GetChild("ring").visible and not box:GetChild("hit").visible)
     for _, bad in ipairs({-1, 0/0, math.huge}) do assert(not ui:update(bad)) end
 end)
 
@@ -410,12 +414,12 @@ end)
 test("replacement maps reset scroll and locks even when floor and node ids match", function()
     local host, map = mock(), Map.generate(data, 42)
     local ui = makeUI(panel(host), map, function() return false end, true)
-    ui:setNavigationEnabled(false); ui:setScroll(Layout.maxScroll)
+    ui:setNavigationEnabled(false); ui:setScroll(Layout.bossTreasureMaxScroll)
     local restarted = Map.generate(data, 42)
     ui.map = restarted; ui:setVisible(true)
     assert(ui.navigationEnabled and ui.scroll == 0 and ui.observedMap == restarted)
     assert(Map.choose(restarted, Map.available(restarted)[1].id)); ui:render()
-    ui:setNavigationEnabled(true); ui:setScroll(Layout.maxScroll)
+    ui:setNavigationEnabled(true); ui:setScroll(Layout.bossTreasureMaxScroll)
     local restored = assert(Map.restore(data, Map.snapshot(restarted)))
     ui.map = restored; ui:render()
     assert(not ui.navigationEnabled and ui.scroll == 0 and ui.observedMap == restored)
@@ -523,6 +527,24 @@ local function motionFixture()
     return root, map, ui, pointer, function() return chosen end
 end
 
+test("mouse hover and touch press repaint the glyph before another frame", function()
+    local root, map, ui, pointer, chosen = motionFixture()
+    local node = Map.available(map)[1]
+    local box = boxFor(root, map, node.id)
+    local hit, icon = box:GetChild("hit"), box:GetChild("icon")
+    local rest = icon.w
+    hit.listeners.enter(pointer(240))
+    assert(icon.w > rest and hit.w == Theme.layout.map.node)
+    hit.listeners.exit(pointer(240))
+    assert(icon.w == rest)
+    hit.listeners.down(pointer(240, 17))
+    assert(icon.w < rest and hit.w == Theme.layout.map.node and chosen() == 0)
+    hit.listeners.up(pointer(240, 17))
+    assert(icon.w == rest and chosen() == 0)
+    assert(hit.click(pointer(240, 17)) and map.floor == 1 and chosen() == 1)
+    assert(not hit.click(pointer(240, 17)) and chosen() == 1)
+end)
+
 test("controller hints stay hidden for pointer input and preserve scroll boundaries", function()
     local root, _, ui = fixture()
     local previous, nextButton = mapControl(panel(root), "previous"), mapControl(panel(root), "next")
@@ -530,10 +552,10 @@ test("controller hints stay hidden for pointer input and preserve scroll boundar
     assert(not previous:GetChild("hit").visible and not previous:GetChild("hit").canControllerFocus)
     assert(sameColor(previous:GetChild("label").fontColor, Theme.color.textMuted))
     assert(not click(root,"previous") and ui.scroll == 0)
-    ui:setScroll(Layout.maxScroll)
+    ui:setScroll(Layout.bossTreasureMaxScroll)
     assert(not previous.visible and not nextButton.visible and not previous:GetChild("hit").visible and not previous:GetChild("hit").canControllerFocus)
     assert(not nextButton:GetChild("hit").visible and not nextButton:GetChild("hit").canControllerFocus)
-    assert(not click(root,"next") and ui.scroll == Layout.maxScroll)
+    assert(not click(root,"next") and ui.scroll == Layout.bossTreasureMaxScroll)
 end)
 
 test("button scroll eases over the shared base duration without an initial jump", function()
@@ -569,7 +591,7 @@ test("rapid clicks accumulate bounded targets and reversing retargets without sn
     assert(ui.scroll == math.max(0,queued - Layout.scrollStep))
     for _ = 1, 20 do click(root,"next") end
     ui:update(Theme.motion.base)
-    assert(ui.scroll == Layout.maxScroll and not click(root,"next"))
+    assert(ui.scroll == Layout.bossTreasureMaxScroll and not click(root,"next"))
     for _ = 1, 20 do click(root,"previous") end
     ui:update(Theme.motion.base)
     assert(ui.scroll == 0 and not click(root,"previous"))
@@ -579,7 +601,7 @@ test("reopening the map focuses the exact current floor without a recenter butto
     local root, map, ui = fixture()
     for _ = 1, 5 do assert(Map.choose(map,Map.available(map)[1].id)) end
     ui:render(); ui:setScroll(0)
-    local target = math.max(0, math.min(Layout.maxScroll,
+    local target = math.max(0, math.min(Layout.bossTreasureMaxScroll,
         Layout.firstY + (map.floor - 1) * Theme.layout.map.floorGap - Layout.focusY))
     assert(ui.scroll == 0)
     ui:setVisible(false); ui:setVisible(true); assert(ui.scroll == target)

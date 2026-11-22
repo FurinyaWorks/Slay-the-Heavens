@@ -5,6 +5,7 @@ local M={}
 local rowFaces=setmetatable({},{__mode='k'})
 local names={'goldReward','stolenGold','relicReward1','relicReward2','emeraldKeyReward','claimPotion','cardReward'}
 local rowNames={};for _,name in ipairs(names)do rowNames[name]=true end
+local relicRows={relicReward1=1,relicReward2=2}
 local function iconId(value)return type(value)=='table'and value.id or value end
 local function rewardIcon(name,run)
  if name=='goldReward'or name=='stolenGold'then return iconId(Theme.icon.gold)end
@@ -12,18 +13,31 @@ local function rewardIcon(name,run)
  if name=='emeraldKeyReward'then return iconId(Theme.icon.lock)end
  local rewards=run and run.rewards
  if name=='claimPotion'then return Theme.icon.potion[rewards and rewards.potion and rewards.potion.id]or Theme.icon.potion.empty end
- local index=tonumber(name:match('^relicReward(%d)$'))
- local item=rewards and rewards.relics and rewards.relics[index]
- return item and RelicView.icon(item.sourceId or item.id,true)or iconId(Theme.icon.node.treasure)
 end
-local function paintIcon(cached,name,run,platform)
+local function paintRelic(cached,index,run,platform,size)
+ local rewards=run and run.rewards
+ local item=rewards and rewards.relics and rewards.relics[index]
+ local id=item and (item.id or item.sourceId) or false
+ if cached.relic==id then return end
+ RelicView.paint(cached.icon,id or nil,size,platform,run,Theme.icon.node.treasure)
+ cached.relic=id
+end
+local function paintIcon(cached,name,run,platform,size)
+ local index=relicRows[name]
+ if index then return paintRelic(cached,index,run,platform,size)end
  local id=rewardIcon(name,run)
  if platform.imageSource and cached.id~=id then cached.icon:SetImage(platform.imageSource,id);cached.id=id end
 end
+local function paintProceed(part,state,ink)
+ if not part:GetChild('v25Flag')then return false end
+ local art=Theme.officialAssets
+ ink(part:GetChild('label'),state=='disabled'and Theme.color.textMuted or art.rewardRows.ink or art.flagButton.fallbackInk)
+ return true
+end
 function M.paintButton(name,part,state,run,platform,tint,ink)
+ if name=='continue'then return paintProceed(part,state,ink)end
  local token=Theme.officialAssets and Theme.officialAssets.rewardRows
  if Theme.presentationProfile~='official-assets-first'or not token then return false end
- if name=='continue'then ink(part:GetChild('label'),state=='disabled'and Theme.color.textMuted or token.ink);return true end
  if not rowNames[name]then return false end
  local cached=rowFaces[part]
  if not cached then
@@ -32,7 +46,7 @@ function M.paintButton(name,part,state,run,platform,tint,ink)
  local tone=token[state]or token.normal
  if cached.tone~=tone then for _,image in ipairs(cached.parts)do tint(image,tone)end;cached.tone=tone end
  ink(part:GetChild('label'),state=='disabled'and Theme.color.textMuted or token.ink)
- paintIcon(cached,name,run,platform)
+ paintIcon(cached,name,run,platform,token.iconSize)
  return true
 end
 -- Last successful size writer per native handle; owner tokens hold no view references.
@@ -65,9 +79,7 @@ local function visibleRewards(frame)
 end
 local function positionHost(box,layout)
  -- The shared approved reward host follows the existing ordinary/expanded
- -- layout; its opaque field stays below the battle bar in canvas coordinates.
- if Theme.presentationProfile~='v25-reference'
-  and Theme.presentationProfile~='official-assets-first' then return end
+ -- layout; the dimmer stays below the battle bar in canvas coordinates.
  local stage=layout.stage
  local field=box:GetChild('v25RewardField')
  if field then field:SetAnchoredPosition(-stage[1],-stage[2])end
@@ -109,5 +121,48 @@ function M.render(frame,child,sizeOwner)
  caption:SetVisible(frame.pendingPotion==true)
  caption:SetAnchoredPosition(position[1],position[2]);size(caption,position[3],position[4],sizeOwner)
  frame.rewardRows=count
+ frame.rewardLayout=layout
+end
+
+function M.banner(dependencies)
+ local battle,animation
+ local veil=Theme.officialAssets.backdropVeil
+ local function paint(view,progress)
+  local ease=1-(1-progress)^3
+  local y=view.y+(1-ease)*Theme.space.xl
+  local scale=.85+.15*ease
+  view.paper:SetAnchoredPosition(view.x,y)
+  view.title:SetAnchoredPosition(view.x,y)
+  view.title:SetLocalScale(scale,scale,1)
+  local colour=Theme.color.text
+  dependencies.ink(view.title,{r=colour.r,g=colour.g,b=colour.b,a=math.floor(colour.a*ease+.5)})
+  dependencies.tint(view.dim,{r=veil.r,g=veil.g,b=veil.b,a=math.floor(veil.a*(.5+.5*ease)+.5)})
+ end
+ local function show(frame,active)
+  if not frame.reward then battle=nil end
+  if not frame.listing or not active then
+   if animation then paint(animation,1);animation=nil end
+   return
+  end
+  if battle~=frame.run.combat then
+   battle=frame.run.combat
+   local box=dependencies.child('rewardList')
+   local paper=box:GetChild('v25RewardPaper')
+   animation=paper and {paper=paper,title=box:GetChild('title'),dim=box:GetChild('v25RewardField'):GetChild('dark'),age=0}
+  end
+  if animation then
+   local layout=frame.rewardLayout
+   animation.x,animation.y=layout.title[1]-layout.stage[1],layout.title[2]-layout.stage[2]
+   paint(animation,animation.age/Theme.motion.slow)
+  end
+ end
+ local function update(dt)
+  if not animation then return end
+  animation.age=animation.age+dt
+  local progress=math.min(1,animation.age/Theme.motion.slow)
+  paint(animation,progress)
+  if progress==1 then animation=nil end
+ end
+ return show,update
 end
 return M

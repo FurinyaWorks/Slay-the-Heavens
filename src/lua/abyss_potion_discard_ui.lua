@@ -21,6 +21,13 @@ local function refreshBottle(bottle,id,platform)
     local colour=(Theme.icon.potionTint or {})[id] or (id=='fire_potion' and Theme.color.potionShell.fire or Theme.color.potionShell.normal).ink
     bottle.imageColor=platform.color(colour.r,colour.g,colour.b,colour.a)
 end
+local function paintSlot(slot,id,selected,platform)
+    slot:GetChild('emptyShell'):SetVisible(id==nil)
+    slot:GetChild('filledShell'):SetVisible(id~=nil and id~='fire_potion')
+    slot:GetChild('fireShell'):SetVisible(id=='fire_potion')
+    slot:GetChild('selectedShell'):SetVisible(selected)
+    refreshBottle(slot:GetChild('bottle'),id,platform)
+end
 function M.refreshEntry(hit,run,platform,mapSlots)
     local capacity=run and Run.potionCapacity(run) or 0
     for _,state in ipairs({'normal','hover','pressed','disabled'})do
@@ -36,15 +43,45 @@ function M.refreshEntry(hit,run,platform,mapSlots)
                 local step=official and Theme.officialAssets.battleHud.potionStep or 42
                 slot:SetAnchoredPosition((i-(capacity+1)/2)*step,0)
             end
-            slot:GetChild('emptyShell'):SetVisible(id==nil)
-            slot:GetChild('filledShell'):SetVisible(id~=nil and id~='fire_potion')
-            slot:GetChild('fireShell'):SetVisible(id=='fire_potion')
-            slot:GetChild('selectedShell'):SetVisible(false)
-            refreshBottle(slot:GetChild('bottle'),id,platform)
+            paintSlot(slot,id,false,platform)
         end
     end
 end
+local function popupText(run,item)
+    local text=require('abyss_potion_text')
+    local definition=find(run.data.potions.potions,item.id)
+    local effect=text.special(item,run,true) or text.describe(run,item.id)
+    if effect=='' and definition then effect=definition.description or '' end
+    if item.reason=='potion_event_restricted' then
+        return effect..'\n此事件中不能使用或丢弃药水。'
+    end
+    return effect
+end
+local function localPopup(root,clickEvent,platform,allowed,onChange)
+    local state={}
+    local function command(action)
+        return function(slot,run)
+            local ok,reason=action(run,slot)
+            onChange()
+            return ok,reason
+        end
+    end
+    local popup=require('abyss_battle_potion_popup').new(root,state,platform,clickEvent,{
+        allowed=function(run)return allowed(run) and run.phase~='combat'end,
+        item=function(slot)return Run.potionSlotView(state.run,slot)end,
+        text=function(item)return popupText(state.run,item)end,
+        use=command(Run.usePotion),discard=command(Run.discardPotion),changed=onChange,
+    })
+    local open=popup.open
+    function popup:open(run,slot)
+        if not allowed(run) or run.phase=='combat' or type(slot)~='number' then return false end
+        state.run=run
+        return open(self,slot)
+    end
+    return popup
+end
 function M.new(root,clickEvent,platform,allowed,onChange,onClose)
+    if root:GetChild('dismiss') then return localPopup(root,clickEvent,platform,allowed,onChange) end
     local self={root=root,visible=false,generation=0}
     local function child(name)return assert(root:GetChild(name),'missing potion control '..name)end
     local function caption(name,value)
@@ -74,18 +111,7 @@ function M.new(root,clickEvent,platform,allowed,onChange,onClose)
         end
         return table.concat(result,'；')
     end
-    function self:render()
-        if not self.visible then return end
-        self.generation=self.generation+1
-        if not currentSelection()then self.selected=nil end
-        local capacity=Run.potionCapacity(self.run)
-        for slot=1,Theme.layout.battlePotions.count do
-            local id=self.run.potions[slot]
-            local definition=id and find(self.run.data.potions.potions,id)
-            child('slot'..slot):SetVisible(slot<=capacity)
-            caption('slot'..slot,'槽 '..slot..'\n'..(definition and definition.name or '空槽'))
-            local hit=child('slot'..slot):GetChild('hit');hit.interactable=slot<=capacity and definition~=nil;hit.raycastTarget=hit.interactable
-        end
+    local function renderActions()
         local selected=self.selected
         child('detail').text=selected and detail(find(self.run.data.potions.potions,selected.id)) or '尚未选择药水。'
         local view=selected and Run.potionView(self.run)[selected.slot]
@@ -95,12 +121,33 @@ function M.new(root,clickEvent,platform,allowed,onChange,onClose)
             child('detail').text=child('detail').text..'\n此事件中不能使用或丢弃药水。'
         end
     end
-    function self:open(run)
+    function self.render(_)
+        if not self.visible then return end
+        self.generation=self.generation+1
+        if not currentSelection()then self.selected=nil end
+        local capacity=Run.potionCapacity(self.run)
+        for slot=1,Theme.layout.battlePotions.count do
+            local id=self.run.potions[slot]
+            local definition=id and find(self.run.data.potions.potions,id)
+            child('slot'..slot):SetVisible(slot<=capacity)
+            caption('slot'..slot,'槽 '..slot..'\n'..(definition and definition.name or '空槽'))
+            local control=child('slot'..slot)
+            control:SetAnchoredPosition((slot-(capacity+1)/2)*92,120)
+            local hit=control:GetChild('hit')
+            local selected=self.selected~=nil and self.selected.slot==slot
+            for _,state in ipairs({'normal','hover','pressed','disabled'})do
+                paintSlot(hit:GetChild(state),id,selected,platform)
+            end
+            hit.interactable=slot<=capacity and definition~=nil;hit.raycastTarget=hit.interactable
+        end
+        renderActions()
+    end
+    function self.open(_,run)
         if self.visible or not allowed(run)then return false end
         self.visible,self.run,self.selected=true,run,nil
         root:SetVisible(true);root:SetAsLastSibling();self:render();return true
     end
-    function self:close()
+    function self.close(_)
         if not self.visible then return false end
         self.visible,self.run,self.selected=false,nil,nil
         self.generation=self.generation+1;root:SetVisible(false);return true

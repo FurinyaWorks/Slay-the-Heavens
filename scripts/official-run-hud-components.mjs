@@ -10,7 +10,7 @@ export function prepareOfficialRunHud(root,theme){
   const node=child(root,name);node.position=hud[key].slice(0,2);node.size=hud[key].slice(2);
   if(font&&node.text)Object.assign(node.text,{fontSize:font,minFontSize:14,align:'left'});
  }
- for(const name of ['floorIcon','floor'])child(root,name).visible=false;
+ child(root,'floor').visible=false;
  const heading=clone(child(root,'player'));heading.name='officialHeroHeading';
  heading.position=hud.heading.slice(0,2);heading.position[1]-=hud.y;heading.size=hud.heading.slice(2);
  Object.assign(heading.text,{content:hud.headingText,fontSize:hud.headingSize,colour:hud.headingColour});
@@ -71,15 +71,18 @@ export function mountOfficialResourceHints(root,theme){
 export function finishOfficialPotionFace(variant){
  const empty=child(variant,'emptyShell');if(!empty)return;
  child(empty,'face').visible=false;
- child(empty,'dashes').children=Array.from({length:12},(_,i)=>{
-  const angle=i*Math.PI/6;
-  return {name:'dash'+i,kind:'image',image:100001,size:[7,2],position:[21*Math.sin(angle),21*Math.cos(angle)],rotation:-i*30,colour:'#9C8C70',opacity:.8};
- });
+ // Empty slots use the very same native bottle and frame as an owned one.
+ // Multiplying by black suppresses source RGB and retains its native alpha;
+ // no drawn jar/test tube, extra atlas or imported bitmap is needed.
+ const bottle=child(variant,'bottle'),shadow=child(empty,'dashes');
+ shadow.children=[{name:'bottleShadow',kind:'image',image:bottle.image,
+  position:[...bottle.position],size:[...bottle.size],colour:'#000000',opacity:.5}];
+ for(const name of ['filledShell','fireShell'])for(const node of parts(child(variant,name)))node.visible=false;
 }
 
 export function officialRunHudComponent(battle){
  const bar=clone(child(battle,'topBar'));bar.name='officialRunBar';
- bar.children=bar.children.filter(part=>part.name!=='battleRoute');
+ bar.children=bar.children.filter(part=>!['battleRoute','floorIcon'].includes(part.name));
  const resources=Object.fromEntries([['hpIcon','hpIcon'],['hp','player'],['goldIcon','goldIcon'],['gold','piles']]
   .map(([role,name])=>[role,clone(child(battle,name))]));
  const title=clone(child(battle,'title'));

@@ -9,6 +9,7 @@ local Theme = require("abyss_theme")
 local M = {}
 local CardDisplay = require('abyss_card_display')
 local EndingUI=require('abyss_node_ui_ending')
+local RelicView=require('abyss_relic_view_ui')
 local MatchUI=require('abyss_match_event_ui')
 local number = require("abyss_numbers").integer
 local C = Theme.color
@@ -38,9 +39,7 @@ local function iconId(entry) return type(entry) == "table" and entry.id or entry
 
 local function merchantVisible(ctx, node, active)
     if not node or node.type ~= 'shop' or ctx.self.mode ~= 'main' or not (active or node.complete) then return false end
-    if not layout.shop.referenceBareGoods then return true end
-    local current = ctx.merchant.current
-    return current ~= nil and current.kind ~= 'encounter' and current.kind ~= 'greet' and current.kind ~= 'idle'
+    return true
 end
 
 function M.new(root, run, map, presentation, clickEvent, onChange, options)
@@ -73,12 +72,8 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
     function ctx.picture(control, id)
         if ctx.options.imageSource and id then control:SetImage(ctx.options.imageSource, iconId(id)) end
     end
-    function ctx.relicPicture(control,id,size)
-        local art=require('abyss_lowcost_art')
-        if id then
-            ctx.picture(control,require('abyss_relic_view_ui').icon(id,Theme.presentationProfile=='official-assets-first'))
-            art.paint(control,'relic',id,size,ctx.options)
-        else art.hide(control)end
+    function ctx.relicPicture(control,id,size,fallback)
+        RelicView.paint(control,id,size,ctx.options,ctx.self.run,fallback)
     end
 
     require("abyss_node_ui_feedback").install(ctx)
@@ -165,10 +160,14 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
     function ctx.renderNodePage(view,node,result,active)
         local screen,hint=ctx.nodeScreen(view,node,result,active)
         local recallSource,treasureSource
-        for _, name in ipairs({ "shopView", "campView", "pickerView", "eventView", "treasureView" }) do ctx.show(ctx.child(name), name == screen) end
+        if screen ~= 'pickerView' or not ctx.enhancedForge(node) then
+            ctx.campUI:hide(active and node.type == 'camp')
+        end
+        for _, name in ipairs({ "campView", "pickerView", "eventView", "treasureView" }) do ctx.show(ctx.child(name), name == screen) end
         -- Reset shared card faces before the ordinary picker/camp renderer writes them.
-        if not (active and MatchUI.isBoard(node.event)) then ctx.resetMatch() end
-        if active and MatchUI.isBoard(node.event) then hint=ctx.renderMatch(view,node)
+        local matchBoard = active and MatchUI.isBoard(node.event)
+        if not matchBoard then ctx.resetMatch() end
+        if matchBoard then hint=ctx.renderMatch(view,node)
         elseif screen == "shopView" then hint = ctx.renderShop(view, node)
         elseif screen == "campView" then hint, recallSource = ctx.renderCamp(view, node, result)
         elseif screen == "pickerView" then
@@ -234,7 +233,7 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
     end
 
     function ctx.bindFooter(back,confirm,backLabel,confirmLabel,confirmOk,skipRestReward)
-        local position = ctx.shopSelection.selected and layout.shop.cancel or layout.back
+        local position = ctx.shopSelection.selected and layout.shop.cancel or ctx.shopBackPosition()
         back:SetAnchoredPosition(position[1],position[2])
         local purchase = ctx.shopSelection.selected and layout.shop.confirm or layout.confirm
         confirm:SetAnchoredPosition(purchase[1],purchase[2])
@@ -242,6 +241,7 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         if backLabel then back:GetChild("label").text = backLabel ctx.state(back, true) end
         if confirmLabel then confirm:GetChild("label").text = confirmLabel ctx.state(confirm, confirmOk, false, true) end
         ctx.action("back", backLabel ~= nil, function()
+            if ctx.self.view.node and ctx.self.view.node.type=='shop' and ctx.self.mode=='main' and not ctx.shopSelection.selected then return ctx.closeShop() end
             if ctx.shopSelection:cancel() then return true end
             if ctx.options.enhancedRooms and ctx.self.picker=='upgrade' and ctx.self.selected then
                 ctx.self.selected=nil;ctx.self:render();return true
@@ -255,18 +255,33 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         for box in pairs(previous)do if not ctx.artFaces[box]then CardDisplay.clearNativeArt(box)end end
     end
 
+    local function reuseShopRender(self)
+        local done = ctx.shopNotification
+        if not done or done.actions ~= self.actions or done.visible ~= self.visible
+            or self.renderRun ~= self.run or self.renderMap ~= self.map then return false end
+        ctx.shopNotification = nil
+        return true
+    end
+
+    local function activeNode(view)
+        local node = view.node
+        return node and kinds[node.type] and not node.complete and view.phase == "node"
+    end
+
     function ctx.self:render()
         if not self.run then ctx.root:SetVisible(false);return false, "node_unbound" end
+        if reuseShopRender(self) then return end
         ctx.resetButtons();local previousArt=ctx.artFaces;ctx.artFaces={}
         ctx.inspectCards={}
-        if ctx.renderRelicPending()then ctx.clearUnusedNativeArt(previousArt);return true end
+        if ctx.renderRelicPending()then ctx.campUI:hide();ctx.clearUnusedNativeArt(previousArt);return true end
         local view = Nodes.view(self.run, self.map)
         local node = view.node
         ctx.syncNodeIdentity(node)
+        ctx.syncShop()
         self.renderRun, self.renderMap, self.nodeId = self.run, self.map, node and node.id
         self.view, self.actions = view, {}
         local result = self:holding() and self.result or nil
-        local active = node and kinds[node.type] and not node.complete and view.phase == "node"
+        local active = activeNode(view)
         if active then self.removeRows=snapshotDeck(node.purgeCards) end
         ctx.syncNodePicker(node,active)
         ctx.syncEventCards(node,active)
@@ -283,6 +298,7 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         ctx.bindStagedEventActions(node);ctx.clearUnusedNativeArt(previousArt)
         self.failed = false
         ctx.roomMotion:paint()
+        ctx.paintShop()
     end
 
     require('abyss_relic_pending_ui').install(ctx)

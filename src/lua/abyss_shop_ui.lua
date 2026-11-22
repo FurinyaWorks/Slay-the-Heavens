@@ -116,7 +116,8 @@ function M.new(controller, ui)
         if not offer then return end
         local availability = offerState(offer)
         fillCard(box, offer.id, offer.upgraded==true, { dim = offer.sold or availability.poor or offer.unavailable,
-            veil = offer.sold, stamp = cardStamp(offer), reason = cardStamp(offer) or availability.poor and '金币不足' or nil, selected = selection:isSelected('shopView/card' .. i) })
+            veil = offer.sold, stamp = cardStamp(offer), reason = cardStamp(offer) or availability.poor and '金币不足' or nil,
+            selected = selection:isSelected('shopView/card' .. i), templateKind = 'attack' })
         if offer.unavailable then writeMissingCard(box, offer) end
         fillPrice(price, offer.price, availability.price)
         if offer.sale and not offer.sold and not offer.unavailable then
@@ -128,11 +129,7 @@ function M.new(controller, ui)
         bindCard(view, flow, shelf, i, offer, availability)
     end
 
-    local function renderCards(shop, view, offers)
-        local flow, shelf = self.run.nodeFlow, self.run.nodeFlow.cards
-        for i = 1, SHOP_PAGE do
-            renderCardSlot(shop, view, offers, i, flow, shelf)
-        end
+    local function cardFooter(shop)
         pageArrows(shop, "", self.page, self.pageCount)
         action("shopView/previous", self.page > 1, function() return self:setPage(self.page - 1) end)
         action("shopView/next", self.page < self.pageCount, function() return self:setPage(self.page + 1) end)
@@ -179,8 +176,9 @@ function M.new(controller, ui)
 
     local function writeRelic(tile, offer, availability)
         state(tile, availability.enabled or selection:inspectable('relics',offer))
-        picture(tile:GetChild("icon"), Theme.icon.relic[offer.id])
-        if ui.relicPicture then ui.relicPicture(tile:GetChild('icon'),offer.id,Theme.layout.nativeNode.shop.relics.disc)end
+        local icon=tile:GetChild('icon')
+        if ui.relicPicture then ui.relicPicture(icon,offer.id,Theme.layout.nativeNode.shop.relics.disc,Theme.icon.node.treasure)
+        else picture(icon,Theme.icon.relic[offer.id])end
         tile:GetChild("name").text = relicTitle(offer)
         tile:GetChild("description").text = offer.unavailable and '此稀有度暂无可售内容' or relicText(offer.id)
         ink(tile:GetChild("name"), (offer.sold or availability.poor) and C.textMuted or C.text)
@@ -257,17 +255,40 @@ function M.new(controller, ui)
         for i, offer in ipairs(offers) do renderPotionSlot(shop, i, offer) end
     end
 
-    return function(view, node)
-        local shop = ui.child("shopView")
+    local shop = ui.child('shopView')
+    local function begin()
         selection:begin()
         self.pageCount, self.page, self.relicPage = 1, 1, 1
-        renderCards(shop, view, node.cards or {})
+    end
+
+    local function finish(node)
+        cardFooter(shop)
         renderRemoval(shop, node)
         renderRelics(shop, node.relics or {})
         renderPotions(shop, node.potions or {})
         selection:paint(0)
         return ''
     end
+
+    local function card(view, node, i)
+        local flow = self.run.nodeFlow
+        renderCardSlot(shop, view, node.cards or {}, i, flow, flow.cards)
+    end
+
+    local function render(view, node)
+        if not self.shopOpen then return '' end
+        begin()
+        for i = 1, SHOP_PAGE do card(view, node, i) end
+        return finish(node)
+    end
+
+    local function prepare(view, step)
+        if step == 1 then begin() end
+        if step <= SHOP_PAGE then card(view, view.node, step);return false end
+        finish(view.node)
+        return true
+    end
+    return render, prepare
 end
 
 return M

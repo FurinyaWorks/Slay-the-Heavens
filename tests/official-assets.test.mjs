@@ -1,3 +1,4 @@
+import './sts1-menu-native.cases.mjs';
 import {nativeAudioBuildArgs,buildNativeAudioGame} from '../scripts/build-native-audio-game.mjs';
 import test from 'node:test';
 import {cardFaceChildren} from '../scripts/card-face.mjs';
@@ -43,12 +44,13 @@ test('official art is opt-in and preserves both legacy CLI presets and strict ca
  assert.equal(validateOfficialAssets({officialAssets:true}),true);
  assert.deepEqual(officialAssetsArgs(['map.gil','--official-assets']),{args:['map.gil'],officialAssets:true});
  for(const args of [['--official-assets=false'],['--official-assets','--official-assets']])assert.throws(()=>officialAssetsArgs(args));
- for(const patch of [{officialAssets:1},{releaseCandidate:true},{lightweight2d:true},{v25BattleChrome:true},{v25CardAssets:'private'},{v25UiMasks:'private'},
+ assert.equal(validateOfficialAssets({officialAssets:true,releaseCandidate:true}),true);
+ for(const patch of [{officialAssets:1},{lightweight2d:true},{v25BattleChrome:true},{v25CardAssets:'private'},{v25UiMasks:'private'},
   {nativeCardArt:{count:0}},{performanceArt:true},{readyCardArt:true},{componentWidgets:{}},{prepare(){}},{artFeatures:{cards:true}},
   {artFeatures:{selectionAvatar:false}},{artFeatures:{battlePortrait:false}},{artFeatures:{menuBackground:true}}]){
   assert.throws(()=>validateOfficialAssets({officialAssets:true,...patch}));
  }
- await assert.rejects(buildNativeCandidate({officialAssets:true,prepare(){}}),/separate non-release/);
+ await assert.rejects(buildNativeCandidate({officialAssets:true,prepare(){}}),/separate candidate/);
  assert.deepEqual(gameBuildArgs(['base.gil','--art-version=official']),['base.gil','--official-assets','--native-page-lifecycle']);
  for(const version of ['legacy','enhanced'])assert(!gameBuildArgs(['base.gil','--art-version='+version]).includes('--official-assets'));
 });
@@ -87,7 +89,7 @@ test('approved pages keep live input identities while unrelated pages retain the
  // geometry/input field to that projection while retaining unrelated pages.
  const expectedMenuLayout=structuredClone(layout);
  applyOfficialNoncombatLayout(expectedMenuLayout,theme);
- const menuProjection=new Map(['menuPanel','runMenu','pageReveal'].flatMap(name=>paths(child(expectedMenuLayout,name),'/SlayTheAbyss')));
+ const menuProjection=new Map(['menuPanel','exitPanel','runMenu','pageReveal'].flatMap(name=>paths(child(expectedMenuLayout,name),'/SlayTheAbyss')));
  const semantic=nodes.filter(([,node])=>['text','cursorArea','presetButton'].includes(node.kind))
   .map(([path,node])=>[path,node,structuredClone(node)]);
  const containers=nodes.filter(([,node])=>node.kind==='container').map(([path,node])=>[path,node,{position:node.position,size:node.size,visible:node.visible,scale:node.scale,rotation:node.rotation}]);
@@ -104,7 +106,8 @@ test('approved pages keep live input identities while unrelated pages retain the
  const result=applyOfficialAssets([layout,template],theme);
  const current=new Map([...paths(layout),...paths(template)]);
  const retiredDeckPrefix='/SlayTheAbyss/characterPanel/deckView/';
- const retiredStarterEntry=path=>/^\/SlayTheAbyss\/characterPanel\/details\/deckOpen(?:\/|$)/.test(path);
+ const retiredStarterEntry=path=>/^\/SlayTheAbyss\/characterPanel\/details\/deck(?:Open|Title|Summary|Rule)(?:\/|$)/.test(path);
+ const retiredOverlay=path=>/^\/SlayTheAbyss\/(?:prologuePanel(?:\/|$)|(?:exitPanel|runMenu)\/(?:help|guide)(?:\/|$)|potionPanel\/)/.test(path);
  const retiredPickerChild=path=>/^\/SlayTheAbyss\/nodePanel\/pickerView\/card[4-6]\//.test(path);
  const retiredChoice=path=>/^\/SlayTheAbyss\/choicePanel\/card(?:[3-9]|10)(?:\/|$)/.test(path);
  const retiredDeck=child(child(layout,'characterPanel'),'deckView');
@@ -115,14 +118,24 @@ test('approved pages keep live input identities while unrelated pages retain the
    if(retiredPickerChild(path)||retiredChoice(path)){
     assert.equal(current.has(path),false,path+' exact unused capacity face is retired');continue;
    }
+   if(retiredOverlay(path)){
+    // Shared popup reuses action names but takes its own hit controls below.
+    if(path.startsWith('/SlayTheAbyss/potionPanel/'))assert.notStrictEqual(current.get(path),node);
+    else assert.equal(current.has(path),false,path);
+    continue;
+   }
    if(path.startsWith(retiredDeckPrefix)||retiredStarterEntry(path)){
     assert.equal(current.has(path),false,path+' retired selection browser control must be removed');continue;
    }
    if(path.startsWith('/SlayTheAbyss/deckPanel/pileReturn/')){
-    // The approved pile return uses permanent artwork plus one native receiver.
+    // The rounded face is visible independently of the native input receiver.
     if(path.endsWith('/hit')){
      const hit=current.get(path);assert.equal(hit.kind,'cursorArea');
      assert.deepEqual(hit.size,before.size);assert.equal(hit.focusable,true);
+     const art=current.get(path.replace(/\/hit$/,'/art'));
+     assert.notEqual(art.visible,false);
+     assert.equal(child(art,'roundedButton').kind,'container');
+     assert.equal(child(art,'label').text.content,'返回');
     }
     continue;
    }
@@ -155,8 +168,7 @@ test('approved pages keep live input identities while unrelated pages retain the
     continue;
    }
    if(restoredPagePath(path)){
-    // Battle geometry is intentionally restored to the approved V25 tokens.
-    // The existing event-bearing objects and input/state contracts still survive.
+    // Retain the input/state contracts on pages with adopted geometry.
     for(const key of ['kind','states','focusable','interactable','raycastTarget'])assert.deepEqual(node[key],before[key],path+' '+key);
     continue;
    }
@@ -176,6 +188,12 @@ test('approved pages keep live input identities while unrelated pages retain the
  }
   const canonical=child(child(layout,'battlePanel'),'card1');
   for(const [path,node,before]of containers){
+   if(path==='/SlayTheAbyss/potionPanel'){
+    const popup=current.get(path);
+    const battlePopup=current.get('/SlayTheAbyss/battlePanel/potionHelp/potionPopup');
+    assert.deepEqual(popup,{...battlePopup,name:'potionPanel',isolateNavigation:true});
+    continue;
+   }
    if(retiredPickerChild(path)||retiredChoice(path)){
     assert.equal(current.has(path),false,path+' exact unused capacity face is retired');continue;
    }
@@ -183,6 +201,12 @@ test('approved pages keep live input identities while unrelated pages retain the
     assert.strictEqual(current.get(path),node,path+' semantic parent identity is retained');
     assert.deepEqual(children(node),[],path+' unused parent contains no face payload');
     for(const key of Object.keys(before))assert.deepEqual(node[key],key==='visible'?false:key==='size'?theme.layout.card.size:before[key],path+' semantic parent '+key);
+    continue;
+   }
+   if(retiredOverlay(path)){
+    // Shared popup reuses action names but takes its own hit controls below.
+    if(path.startsWith('/SlayTheAbyss/potionPanel/'))assert.notStrictEqual(current.get(path),node);
+    else assert.equal(current.has(path),false,path);
     continue;
    }
    if(path.startsWith(retiredDeckPrefix)||retiredStarterEntry(path)){
@@ -292,7 +316,8 @@ test('approved pages keep live input identities while unrelated pages retain the
     assert.equal(field.text.fontSize,Math.max(14,theme.font.minimum,tokens.typography[key]));
    }
    assert.deepEqual(child(card,'stsReferenceBack').children,material.children.filter(n=>['body','portraits'].includes(n.name)));
-   assert.deepEqual(child(card,'stsReferenceChrome').children,material.children.filter(n=>!['body','portraits'].includes(n.name)));
+   assert.deepEqual(child(card,'stsReferenceChrome').children,material.children.filter(n=>!['body','portraits','costMaterial'].includes(n.name)));
+   assert.deepEqual(child(card,'stsReferenceCost').children,material.children.filter(n=>n.name==='costMaterial'));
    assert.deepEqual(child(card,'roundBody').children,[],'retired square paper must not leak through reference corners');
    assert.equal(child(card,'nameBand').visible,false);
    for(const role of ['nativeRibbon','nativeCostOrb','skin']){
@@ -358,7 +383,7 @@ test('official selection keeps its approved 1600 background while battle and opt
  assert(child(child(battle,'card1'),'stsReferenceChrome'),'official battle card must mount the shared reference chrome');
  assert(child(child(battle,'hero'),'officialFigure'));
  const portrait=readFileSync(join(dir,'abyss_traveler_portrait_assets.lua'),'utf8');
- assert.match(portrait,/battle133=/);assert.match(portrait,/avatar96=/);
+ assert.doesNotMatch(portrait,/battle133=/,'official build excludes the unused fallback battle portrait');assert.match(portrait,/avatar96=/);
  assert.match(portrait,/battlePixel=/);
  const inventory=portraitInventory(officialAssetFlags,{officialAssets:true});
  assert.equal(inventory.assets.some(a=>a.asset==='temporary-pixel-traveler'),false);
@@ -397,7 +422,8 @@ test('official selection leaves the portrait unobscured and exit retains the liv
  const hit=child(child(child(layout,'runMenu'),'mainMenu'),'hit');
  applyOfficialNoncombatLayout(layout,theme);
  assert.equal(child(details,'informationBoard'),undefined,'the left copy must not shade the portrait');
- for(const name of ['name','stats','gold','v25Story','relic','relicText','deckTitle','deckSummary']){
+ for(const name of ['deckTitle','deckSummary','deckOpen'])assert.equal(child(details,name),undefined);
+ for(const name of ['name','stats','gold','v25Story','relic','relicText']){
   const control=child(details,name);
   assert.equal(control.text.align,'left',name);
   assert.equal(control.text.outline,true,name);
@@ -408,6 +434,12 @@ test('official selection leaves the portrait unobscured and exit retains the liv
  assert.equal(hit.kind,'presetButton');
  assert.deepEqual(Object.keys(hit.states),['normal','hover','pressed','disabled']);
  const back=child(child(panel,'cancel'),'hit');
+ const confirm=child(child(panel,'confirm'),'hit');
+ for(const button of [hit,back,confirm])for(const state of children(button)){
+  const legacy=children(state).filter(part=>['officialButtonBacking','border','plate'].includes(part.name));
+  assert(legacy.length>0,'official composition must exercise the existing backing');
+  assert(legacy.every(part=>part.visible===false),'legacy backing is visible through the rounded corners');
+ }
  for(const state of children(hit)){
   assert.deepEqual(child(state,'v25Flag'),child(child(back,state.name),'v25Flag'));
   assert.equal(child(state,'label').text.content,'退出游戏');
@@ -432,29 +464,26 @@ test('official run pages use one three-step floor marker just after the potion s
  assert.deepEqual(child(node,'title').position,child(battle,'title').position);
 });
 
-test('ordinary readiness overlay uses the same Liyue crest and seven elements',()=>{
+test('ordinary fade keeps the original input barrier and retires the cinematic artwork',()=>{
  const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme);
  const cover=child(layout,'pageReveal'),blocker=child(cover,'blocker'),cancel=child(cover,'cancel');
- const scene=child(child(layout,'prologuePanel'),'scene');
+ assert(child(child(child(layout,'prologuePanel'),'scene'),'seal'),'legacy fixture still retains its reference');
  applyOfficialNoncombatLayout(layout,theme);
- assert.deepEqual(child(cover,'seal'),child(scene,'seal'));
- for(let i=1;i<=7;i++){
-  const name='element'+i,lit=child(cover,name);
-  assert.deepEqual(lit,{...child(scene,name),colour:theme.layout.prologue.ink});
- }
+ assert.equal(child(layout,'prologuePanel'),undefined);
+ assert.deepEqual(children(cover).map(node=>node.name),['veil','blocker','message','cancel']);
+ assert.equal(child(cover,'veil').colour,'#000000');
+ assert.equal(child(cover,'message').visible,false);
  assert.strictEqual(child(cover,'blocker'),blocker);
  assert.strictEqual(child(cover,'cancel'),cancel);
- assert.equal(child(cover,'message').text.content,'正在准备画面…');
 });
 test('approved native title and button artwork preserve the official menu hit surfaces',()=>{
   const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme),menu=child(layout,'menuPanel');
   const receiver=child(child(menu,'start'),'hit');
   applyOfficialNoncombatLayout(layout,theme);
   assert.strictEqual(child(child(menu,'start'),'hit'),receiver);
-  const logo=child(child(menu,'v25MainMenu'),'approvedTitleLogo');
-  assert(logo && child(logo,'subtitlePlate'));
-  assert(children(logo).filter(part=>part.name.startsWith('lettering')).every(part=>
-    children(part).length>0 && children(part).length<=48));
+  const logo=child(child(menu,'v25MainMenu'),'sts1TitleLogo');
+  assert(logo && children(logo).length>0);
+  assert(children(logo).every(part=>children(part).length>0 && children(part).length<=60));
   for(const [name,frame,text] of [
     ['start',theme.menuPresentation.start,'开始游戏'],
     ['titleQuit',theme.menuPresentation.quit,'退出游戏'],
@@ -463,12 +492,13 @@ test('approved native title and button artwork preserve the official menu hit su
     assert.deepEqual(button.position,frame.slice(0,2));
     assert.deepEqual(hit.size,frame.slice(2));
     assert.equal(hit.kind,'cursorArea');
-    assert.equal(child(button,'label').text.align,'centre');
+    assert.equal(child(button,'label').text.align,'left');
     assert.equal(child(button,'label').text.content,text);
     const faces=children(child(button,'v25MenuFace'));
     assert.deepEqual(faces.map(part=>part.name),['normal','hover','pressed','disabled']);
-    assert(faces.every(face=>children(child(face,'rim')).length===2 && children(child(face,'fill')).length===2));
-    assert.notDeepEqual(child(faces[0],'fill'),child(faces[1],'fill'));
+    assert.equal(children(faces[0]).length,0,'STS1 resting text has no plate');
+    assert(faces.slice(1).every(face=>children(face).length===24));
+    assert.notDeepEqual(children(faces[1]),children(faces[2]));
     assert.equal(child(button,'menuAccent'),undefined);
   }
 });

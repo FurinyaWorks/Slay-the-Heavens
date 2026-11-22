@@ -1,0 +1,4 @@
+ABYSS_RUN seed=1 source=explicit
+DETAIL_BENCH relic n=50 cpu_median_ms=6.091 cpu_p95_ms=17.672 wall_median_ms=8.952 wall_p95_ms=49.455 native_calls=157050 host_refreshes=150 retained_KiB=183.181 next50_KiB=0.062
+DETAIL_BENCH card n=50 cpu_median_ms=1.495 cpu_p95_ms=1.949 wall_median_ms=1.498 wall_p95_ms=1.954 native_calls=43600 host_refreshes=0 retained_KiB=14.402 next50_KiB=0.062
+DETAIL_BENCH status n=50 cpu_median_ms=1.283 cpu_p95_ms=1.784 wall_median_ms=1.286 wall_p95_ms=3.562 native_calls=42850 host_refreshes=0 retained_KiB=3.061 next50_KiB=0.062

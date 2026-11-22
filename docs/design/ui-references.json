@@ -4,9 +4,55 @@
       "codePath": "scripts/v25-menu-layout.mjs",
       "targetVersion": "v2.0.0",
       "state": "menuPanel",
-      "revision": "2026-11-19",
-      "acceptanceScreen": "menu",
+      "revision": "sts1-pc-20261121",
       "status": "APPROVED",
+      "backlogTask": "TASK-103.5",
+      "reference": {
+        "path": "docs/design/reference-assets/v2.0.0/sts1-main-menu-20261121/REFERENCE.md",
+        "sha256": "63c5d252d65b6ce01b22e08c82c75cd21d0be7eb8d7cb74bdf104e9196914ac7"
+      },
+      "supersedes": [
+        "2026-11-19"
+      ],
+      "codePaths": [
+        "scripts/native-menu-approved-layout.mjs",
+        "scripts/menu-red-scene.mjs",
+        "scripts/official-assets-layout.mjs",
+        "data/presentation/native-menu-sts1.json",
+        "data/presentation/native-menu-sts1-logo.json"
+      ],
+      "source": "https://interfaceingame.com/screenshots/slay-the-spire-main-menu/",
+      "note": "Owner 本轮明确指定的唯一标准：初代 PC 主菜单。批准设计方向与范围；绘画成图/官方设备验收另记。",
+      "acceptanceScreen": "menu"
+    },
+    {
+      "codePath": "scripts/v25-menu-layout.mjs",
+      "targetVersion": "v2.0.0",
+      "state": "menuPanel",
+      "revision": "sts1-painting-20261121",
+      "status": "CURRENT_IMPLEMENTATION",
+      "backlogTask": "TASK-103.5",
+      "reference": {
+        "path": "docs/design/reference-assets/v2.0.0/sts1-main-menu-20261121/design-hd.png",
+        "sha256": "0228b36c13b805c1a31eb0cb13d960be2b3b1168d6707412fedee2c7a51c06aa"
+      },
+      "supersedes": [],
+      "codePaths": [
+        "scripts/native-menu-approved-layout.mjs",
+        "scripts/menu-red-scene.mjs",
+        "scripts/official-assets-layout.mjs",
+        "data/presentation/native-menu-sts1.json",
+        "data/presentation/native-menu-sts1-logo.json"
+      ],
+      "source": "https://interfaceingame.com/screenshots/slay-the-spire-main-menu/",
+      "note": "正式新绘画稿及原生实现的对照源；具体画质与官方设备仍待确认。"
+    },
+    {
+      "codePath": "scripts/v25-menu-layout.mjs",
+      "targetVersion": "v2.0.0",
+      "state": "menuPanel",
+      "revision": "2026-11-19",
+      "status": "SUPERSEDED",
       "backlogTask": "TASK-103.5",
       "reference": {
         "path": "docs/design/reference-assets/v2.0.0/main-menu-approved-20261119.png",
@@ -200,7 +246,9 @@
       "codePaths": [
         "scripts/character-selection-composition.mjs",
         "scripts/noncombat-v25-layout.mjs",
-        "src/lua/abyss_game_ui_navigation_view.lua"
+        "src/lua/abyss_game_ui_navigation_view.lua",
+        "scripts/native-rounded-button.mjs",
+        "scripts/official-run-layout.mjs"
       ],
       "themeKeys": [
         "layout.runMenu"
@@ -472,6 +520,9 @@
       },
       "supersedes": [],
       "note": "首战手牌、战斗操作和共享顶栏。静态投影省略专用贴图。 1280×720 离线投影，官方候选待验。",
+      "codePaths": [
+        "scripts/ui-layout.mjs"
+      ],
       "source": "https://playcraft.space/gallery/slay-the-spire/combat-ten-card-hand/"
     },
     {
@@ -486,7 +537,10 @@
         "sha256": "0bc1c0cf7041dba7a030f47f18da06af80b7f1a0a441cf7437c360fe9ce92fab"
       },
       "supersedes": [],
-      "note": "卡组及抽、弃、消耗三堆的当前布局。并查验实例详情和返回。 1280×720 离线投影，官方候选待验。"
+      "note": "卡组及抽、弃、消耗三堆的当前布局。并查验实例详情和返回。 1280×720 离线投影，官方候选待验。",
+      "codePaths": [
+        "scripts/official-battle-pile-chrome.mjs"
+      ]
     },
     {
       "codePath": "scripts/relic-view-layout.mjs",
@@ -518,6 +572,7 @@
     },
     {
       "codePath": "scripts/sts-reward-row-layout.mjs",
+      "codePaths": ["scripts/v25-node-layout.mjs"],
       "targetVersion": "v2.0.0",
       "state": "rewardList",
       "revision": "develop",
@@ -530,6 +585,26 @@
       "supersedes": [],
       "note": "首战真实获胜后显示的紧凑奖励行。 1280×720 离线投影，官方候选待验。",
       "source": "https://interfaceingame.com/screenshots/slay-the-spire-rewards/"
+    },
+    {
+      "codePath": "scripts/shop-room-layout.mjs",
+      "codePaths": [
+        "scripts/node-ui-layout.mjs",
+        "scripts/cinematic-ui-layout.mjs",
+        "scripts/v25-node-layout.mjs"
+      ],
+      "targetVersion": "v2.0.0",
+      "state": "shopRoom",
+      "revision": "issue-828",
+      "status": "APPROVED",
+      "backlogTask": "TASK-103.7",
+      "reference": {
+        "path": "docs/design/reference-assets/v2.0.0/shop-entry-828.md",
+        "sha256": "acc28bf7145d21f31693e0e2cdc7897538500a82bb775b54668830ee43a6fe76"
+      },
+      "supersedes": [],
+      "note": "按 Owner 提供的房间与购物参考重做原生图元。此处批准设计范围，官方客户端及设备仍待验。",
+      "source": "https://github.com/FurinyaWorks/Slay-the-Heavens/issues/828"
     },
     {
       "codePath": "scripts/v25-node-layout.mjs",
