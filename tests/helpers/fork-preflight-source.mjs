@@ -180,7 +180,7 @@ function beforeDevelopStasisUpgradeCopier(path,source){
 function beforeDevelopActorFocusCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=normalize(source);
- if(hash(lf)!=='bac44d4703e62b9e3bd9a60649581f55fcbc885968d4e4d5d031ab60f4388190')return source;
+ if(hash(lf)!=='6d3bf93a3d1e020b69673d7864fe574ca8ed858945a02772cd662eb4b042a6ed')return source;
  const prior=lf.replace(/^const developActorFocusFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
   .replace('Object.entries(developActorFocusFiles))','Object.entries(developStasisUpgradeFiles))');
  assert.equal(hash(prior),'a943bd62f8ef5232548a9e415724e7aaf9518bf365686ec3d09e79d83fd54754','exact Develop actorFocus copier predecessor');

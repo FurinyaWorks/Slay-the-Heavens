@@ -230,7 +230,7 @@ const developStasisUpgradeFiles=Object.freeze({
 });
 const developActorFocusFiles=Object.freeze({
  ...developStasisUpgradeFiles,
- 'tests/helpers/develop-release-backflow-source.mjs':'d1f518b6106d5ce5ffae5cf363e0cf04e96f52b61aeb08cc7eed96317dd0c5ac',
+ 'tests/helpers/develop-release-backflow-source.mjs':'60077930e44d7faf8c8c645c981720e7a8b0755b1955ab62bdaf182fa7e23328',
  'tests/fixtures/develop-actor-focus-source.json.gz':'2dd9f47a776d59d6cfc4ce544f8e0783f133cfda4f78f489b25b983b53315688',
 });
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};

@@ -45,14 +45,23 @@ test('Actor and Focus replay exact predecessor bytes and reject changed linked o
       }),/linked owner missing/);
     }
   }
+  const stasisConfig=archive.files[config].before.source;
+  for(const format of [source=>source,crlf]){
+    const previous=format(stasisConfig);
+    const before=format(stasis.files[config].before.source);
+    const live=path=>format(read(path));
+    assert.equal(beforeDevelopBackflow(config,previous),before);
+    assert.equal(authenticateDevelopBackflow(config,previous,path=>path===config?previous:live(path)),before);
+    assert.throws(()=>authenticateDevelopBackflow(config,previous,live),/linked owner identity: config\/architecture\.json/);
+  }
   const stasisOwners=[...Object.keys(stasis.files),...Object.keys(stasis.added)];
   for(const owner of stasisOwners){
-    const stale=owner===config?archive.files[config].before.source:read(owner)+'\n';
+    const stale=owner===config?stasisConfig:read(owner)+'\n';
     assert.throws(()=>authenticateDevelopBackflow(config,read(config),path=>path===owner?stale:read(path)),/linked owner identity/);
   }
   const stasisPath='src/lua/abyss_act2_stasis.lua';
   assert.equal(authenticateDevelopBackflow(stasisPath,read(stasisPath),read),stasis.files[stasisPath].before.source);
-  assert.throws(()=>authenticateDevelopBackflow(stasisPath,read(stasisPath),path=>path===config?archive.files[config].before.source:read(path)),/linked owner identity/);
+  assert.throws(()=>authenticateDevelopBackflow(stasisPath,read(stasisPath),path=>path===config?stasisConfig:read(path)),/linked owner identity/);
 });
 test('a Bias tick ignores the legacy optional turn API and consumes one Artifact',()=>{
   const directory=mkdtempSync(join(tmpdir(),'actor-focus-bias-'));

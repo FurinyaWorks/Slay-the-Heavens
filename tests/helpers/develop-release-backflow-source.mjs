@@ -160,7 +160,7 @@ export function authenticateDevelopBackflow(path,source,read){
  for(const owner of linkedOwners){
   let live;
   try{live=read(owner);}catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
-  const expected=stasisOwner?(current(owner)?.after??stasisCurrent[owner]):(owner===path?row:current(owner)).after;
+  const expected=owner===path?row.after:stasisOwner?(current(owner)?.after??stasisCurrent[owner]):current(owner).after;
   assert(matches(live,expected),'combined linked owner identity: '+owner+' changed during Develop backflow validation');
  }
  return prior;
