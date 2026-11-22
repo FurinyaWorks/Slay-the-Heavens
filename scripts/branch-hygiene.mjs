@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Read-only branch lifecycle audit. Never deletes branches or changes PRs.
-import { mkdir, writeFile, appendFile } from 'node:fs/promises';
+import { mkdir, writeFile, appendFile, readFile } from 'node:fs/promises';
 import { readBacklogRecords } from './backlog-closeout.mjs';
 import { auditHistory } from './branch-hygiene-history.mjs';
 const token = process.env.GITHUB_TOKEN;
@@ -18,25 +18,18 @@ async function api(path) {
   if (!res.ok) throw new Error('GitHub ' + res.status + ': ' + path);
   return res.json();
 }
-async function paged(path) {
+async function paged(path, updatedSince) {
   const all = [];
   for (let page = 1; page <= 30; page++) {
     const data = await api(path + (path.includes('?') ? '&' : '?') +
       'per_page=100&page=' + page);
     if (!Array.isArray(data)) throw new Error('Expected paginated array');
-    all.push(...data);
-    if (data.length < 100) return all;
+    const recent = updatedSince ? data.filter(row => row.updated_at >= updatedSince) : data;
+    all.push(...recent);
+    if (data.length < 100 || recent.length < data.length) return all;
   }
   throw new Error('GitHub API pagination exceeded 30 pages: ' + path);
 }
-const [branches, prs, comments] = await Promise.all([
-  paged('/branches'), paged('/pulls?state=all&sort=updated&direction=desc'), paged('/issues/comments')
-]);
-const developSha = branches.find(branch => branch.name === 'develop')?.commit.sha;
-if (!developSha) throw new Error('Missing develop inventory snapshot');
-const { tree, truncated } = await api('/git/trees/' + developSha + '?recursive=1');
-const developTree = truncated ? null : new Map(tree.filter(row => row.type !== 'tree').map(row => [row.path, row.sha]));
-
 // Keep file-page requests bounded and share each result across source PRs.
 let inFlight = 0;
 const waiting = [];
@@ -51,6 +44,71 @@ async function loadFiles(number) {
     else inFlight--;
   }
 }
+
+async function releaseBackflow() {
+  let prs;
+  if (process.env.GITHUB_EVENT_NAME === 'pull_request_target') {
+    const event = JSON.parse(await readFile(process.env.GITHUB_EVENT_PATH, 'utf8'));
+    const source = event.pull_request;
+    if (event.action !== 'closed' || source?.merged !== true ||
+        !Number.isSafeInteger(source.number) || source.number < 1 ||
+        !source.base?.ref?.startsWith('release/') || !/^[a-f0-9]{40}$/.test(source.merge_commit_sha ?? '')) {
+      throw new Error('Expected a merged Release pull request');
+    }
+    const pr = await api('/pulls/' + source.number);
+    if (pr.number !== source.number || !pr.merged_at || pr.merge_commit_sha !== source.merge_commit_sha ||
+        pr.base.ref !== source.base.ref || pr.base.repo.full_name !== repo) throw new Error('Release merge identity changed');
+    prs = [pr];
+  } else {
+    // Scheduled runs come from the default branch, including when a frozen
+    // Release branch still has the older workflow with no close-event trigger.
+    const since = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
+    const closed = await paged('/pulls?state=closed&sort=updated&direction=desc', since);
+    prs = closed.filter(pr => pr.merged_at >= since && pr.base.ref.startsWith('release/'));
+  }
+
+  const develop = await api('/branches/develop');
+  const developSha = develop.commit.sha;
+  const [open, { tree, truncated }] = prs.length ? await Promise.all([
+    paged('/pulls?state=open&base=develop'), api('/git/trees/' + developSha + '?recursive=1')
+  ]) : [[], {tree: []}];
+  const developTree = truncated ? null : new Map(tree.filter(row => row.type !== 'tree').map(row => [row.path, row.sha]));
+  const results = await auditHistory({ repo, branches: [], prs: [...prs, ...open], comments: [],
+    tasks: [], developTree, loadFiles });
+  const releases = results.map(({pr, base, release_merge, production_paths, different_develop_paths,
+    linked_develop_prs, review, errors}) => ({pr, base, release_merge, production_paths, different_develop_paths,
+    linked_develop_prs, review, errors}));
+  const report = { develop_sha: developSha, releases };
+  const link = number => '[#' + number + '](https://github.com/' + repo + '/pull/' + number + ')';
+  const markdown = ['# Release 回流核对', '', 'Develop 比较 SHA `' + developSha + '`', '',
+    ...results.flatMap(result => {
+      const pending = result.review.includes('release-backflow-review') || result.review.includes('file-comparison-unavailable');
+      if (pending) console.warn('::warning title=Release backflow needs review::Merged Release PR #' + result.pr);
+      return ['## Release ' + link(result.pr) + ' · 合入 SHA `' + result.release_merge + '`', '',
+        '已关联开放的 develop PR：' + (result.linked_develop_prs.map(row => link(row.pr)).join('、') || '无'),
+        '待核对生产路径：' + (result.different_develop_paths?.length ?? '未知'),
+        pending ? '请本轮接续小修复，并在 develop PR 正文注明 Release 来源。其余路径登记未接续原因。'
+          : '本次 Release 生产路径与 develop 当前内容相同。', ''];
+    }), ...(results.length ? [] : ['过去 48 小时没有 Release PR 合入。', ''])].join('\n');
+
+  await mkdir('build', { recursive: true });
+  await writeFile('build/branch-hygiene.json', JSON.stringify(report, null, 2) + '\n');
+  await writeFile('build/branch-hygiene.md', markdown);
+  if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, markdown);
+}
+
+if (['pull_request_target', 'schedule'].includes(process.env.GITHUB_EVENT_NAME)) {
+  await releaseBackflow();
+  process.exit(0);
+}
+
+const [branches, prs, comments] = await Promise.all([
+  paged('/branches'), paged('/pulls?state=all&sort=updated&direction=desc'), paged('/issues/comments')
+]);
+const developSha = branches.find(branch => branch.name === 'develop')?.commit.sha;
+if (!developSha) throw new Error('Missing develop inventory snapshot');
+const { tree, truncated } = await api('/git/trees/' + developSha + '?recursive=1');
+const developTree = truncated ? null : new Map(tree.filter(row => row.type !== 'tree').map(row => [row.path, row.sha]));
 
 const history = auditHistory({ repo, branches, prs, comments, tasks: readBacklogRecords(process.cwd()), developTree, loadFiles });
 const byHead = new Map();

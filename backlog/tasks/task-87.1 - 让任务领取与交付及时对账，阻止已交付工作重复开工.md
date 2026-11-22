@@ -4,8 +4,8 @@ title: 让任务领取与交付及时对账，阻止已交付工作重复开工
 status: In Progress
 assignee:
   - '@Furinya'
-created_date: '2026-11-14 06:09'
-updated_date: '2026-11-20 06:58'
+created_date: '2026-11-14T06:09:00Z'
+updated_date: '2026-11-21T16:47:22Z'
 labels: []
 dependencies: []
 references:
@@ -57,4 +57,6 @@ ordinal: 174000
 本轮统一接续659/660/662至661：保留状态对账与M7迁移、105容量依赖，转场采用108；100.1/88.1仍有待验项保持进行中。独审发现并修复ready缺口、隐藏头像等待及牌组入口重叠，旧共享idle选角整套合同保留隔离重放，当前新构图另验。证据docs/evidence/pr-integration-cleanup-20261114.md；未宣称Hosted或产品设备通过。
 
 2026-11-20 develop 9e3b22dc 接续现有交付对账：补齐只读分支巡检对已关闭来源、部分继任和 Release 修复回流的线索，关联既有 Backlog 任务，保留验收状态及原合并门禁。验收用交付回归与主仓只读库存核对。
+
+2026-11-22：Release→develop 小修复采用同轮独立回流 PR。现有 Branch hygiene 增加 Release 合入核对与默认分支补扫，比较固定 develop SHA 并显示关联 PR。保留正常门禁及原验收状态，待远端合后验证。
 <!-- SECTION:NOTES:END -->
