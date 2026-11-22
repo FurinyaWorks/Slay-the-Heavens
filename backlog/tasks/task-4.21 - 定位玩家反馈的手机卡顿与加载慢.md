@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-31T23:38:00Z'
-updated_date: '2026-11-22T00:43:28Z'
+updated_date: '2026-11-22 06:59'
 labels:
   - 待验
   - delivery-verify
@@ -16,6 +16,7 @@ references:
   - docs/evidence/mobile-readability-20261101/
   - docs/evidence/m4-deck-controller-lifecycle-20261102/
   - docs/plans/2026-11-03-m9-engineering-foundation.md
+  - docs/plans/2026-11-22-map-room-entry.md
 parent_task_id: TASK-4
 priority: medium
 type: bug
@@ -54,6 +55,8 @@ ordinal: 136000
 地图顶栏卡组延迟切片由本轮明确指定回移 release/v2.0.0。用正式资源 Host 复现地图重复重绘与卡组网格首开重复绘制，保留真实可见槽就绪和输入门禁，验证关闭后地图与滚动恢复。设备延迟继续待验。
 
 Release 热修：测量地图进入商店、事件和营地；消除隐藏地图与新房间的重复绘制；验证就绪、回退和房间操作后提应急 PR，设备证据继续待验。
+
+地图进入房间切片以 release/v2.0.0@ae8343ef 为基线。用正式布局真实地图按钮先测营地、商店和相邻房间，再修正反馈时序及已测重复地图重建。复用 TASK-103.6 的 PageReveal 门禁，验证慢等待、恢复和跨房间；目标测试为 tests/sts-page-reveal.test.mjs 与地图、原生生命周期相关回归。Release 验证后回流 develop，PC 和手机证据单独追踪。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes

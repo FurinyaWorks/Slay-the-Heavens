@@ -109,11 +109,17 @@ local function chapterFor(map)
     end
     return chapter
 end
+local contextKeys = {"act", "version", "firstFloor", "terminalFloor", "sourceSignature", "seed", "runSeed", "mapSeed"}
 local function sameContext(a, b)
-    for _, key in ipairs({"act", "version", "firstFloor", "terminalFloor", "sourceSignature", "seed", "runSeed", "mapSeed"}) do
+    for _, key in ipairs(contextKeys) do
         if a[key] ~= b[key] then return false end
     end
     return true
+end
+local function entryContext(map)
+    local context = {map=map,floor=map.floor,currentNodeId=map.currentNodeId,path=map.path,pathLength=#map.path}
+    for _,key in ipairs(contextKeys) do context[key]=map[key] end
+    return context
 end
 local function localFloor(map, floor) return floor - (map.firstFloor or 1) + 1 end
 -- ===== Port of STS MapRoomNode update/render state (aeubanks/sts@319009d map/MapRoomNode.java) =====
@@ -188,6 +194,7 @@ function M.new(root, map, onChoose, clickEvent, options)
         for _,node in ipairs(v.nodes)do node.available=enabled[node.id]==true end
         return v
     end
+    local function inputCovered()return options.inputCovered and options.inputCovered()end
     local colour = options.color or Color
     local imageSource = options.imageSource or (Enum and Enum.ImageSource.StaticReference)
     -- Platform Color has static methods and can be a callable table/userdata.
@@ -258,7 +265,7 @@ function M.new(root, map, onChoose, clickEvent, options)
     local function bind(name, fn)
         local hit=child(at(name),"hit")
         hit:AddCursorEventListener(clickEvent,function(event)
-            if Controller.pointerBlocked(options.controller)then return false end
+            if inputCovered() or Controller.pointerBlocked(options.controller)then return false end
             return fn(event)
         end)
         Controller.bind(options.controller,hit,"map",function()
@@ -571,7 +578,7 @@ function M.new(root, map, onChoose, clickEvent, options)
     function self.focusCurrent(_, animated)
         if not self.map then return false, "map_unbound" end
         if not chapterFor(self.map) then self:render() return false,"invalid_map_context" end
-        local current = mapView(self.map)
+        local current = entryContext(self.map)
         observeMap(current)
         local target = Layout.firstY + (math.max(1,localFloor(current,current.floor)) - 1) * Theme.layout.map.floorGap - Layout.focusY
         if animated then return animateScrollTo(target) end
@@ -588,7 +595,7 @@ function M.new(root, map, onChoose, clickEvent, options)
         end
         -- An explicit coordinator grant acknowledges any external map advance.
         if not chapterFor(self.map) then self:render() return false,"invalid_map_context" end
-        local current = mapView(self.map)
+        local current = entryContext(self.map)
         observeMap(current)
         self.observedNodeId, self.observedFloor = current.currentNodeId, current.floor
         self.navigationEnabled = enabled self:render()
@@ -605,25 +612,42 @@ function M.new(root, map, onChoose, clickEvent, options)
         self.visible = visible root:SetVisible(visible or retainPage==true)
         if visible and not (retainPosition and atPaintedPosition()) then self:focusCurrent() end
     end
+    function self.matchesEntryContext(_,context)
+        local current = self.map
+        return current==context.map and sameContext(current,context) and current.floor==context.floor
+            and current.currentNodeId==context.currentNodeId and current.path==context.path and #current.path==context.pathLength
+    end
+    function self.showEntryFailure(_,failure)
+        local messages={event_pool_exhausted='受限事件池已用尽，或剩余事件条件不足；请选择其他路线或重新启程。',
+            event_not_implemented='此事件尚未实现；请选择其他路线。',combat_unavailable='此层没有可用遭遇；请选择其他路线。'}
+        self.entryError=messages[failure] or '暂时无法进入，请完成当前操作后重试。'
+        self:render()
+    end
     function self.choose(_, nodeId)
+        if inputCovered() then return false, "navigation_disabled" end
         if not self.map then return false, "map_unbound" end
         if not chapterFor(self.map) then self:render() return false,"invalid_map_context" end
         local beforeMap = self.map
-        local before = mapView(beforeMap)
+        local before = entryContext(beforeMap)
         if observeMap(before) then self:render() end
         if not self.visible or not self.navigationEnabled or self.choosing then return false, "navigation_disabled" end
-        if before.complete then return false, "map_complete" end
+        if before.floor == (before.terminalFloor or 17) then return false, "map_complete" end
         if type(nodeId) ~= "string" then return false, "invalid_node" end
         local selected
-        for _, node in ipairs(available(self.map)) do if node.id == nodeId then selected = node break end end
+        for _, node in ipairs(available(beforeMap)) do if node.id == nodeId then selected = node break end end
         if not selected then
-            for _, node in ipairs(before.nodes) do if node.id == nodeId then return false, "node_unavailable" end end
+            for _, node in ipairs(beforeMap.nodes) do if node.id == nodeId then return false, "node_unavailable" end end
             return false, "invalid_node"
         end
         local expectedFloor = selected.floor
         self.choosing = true
-        local called, accepted, reason = pcall(onChoose, selected)
+        local called, accepted, reason = pcall(onChoose, selected, before)
         self.choosing = false
+        if called and accepted=='selection_pending' and inputCovered() then
+            self.entryError=nil
+            cancelDrag()
+            return true,accepted,reason
+        end
         if not chapterFor(self.map) then self:render() return false,"invalid_map_context" end
         local after = self.map
         local sameMap = after == beforeMap and sameContext(after,before)
@@ -631,18 +655,15 @@ function M.new(root, map, onChoose, clickEvent, options)
         local committed = sameMap and after.currentNodeId == nodeId and after.floor == expectedFloor
         if called and accepted == true then self.entryError = nil end
         if changed or committed and called and accepted == true then
-            if self.visible and not sameMap then observeMap(mapView(after)) end
+            if self.visible and not sameMap then observeMap(entryContext(after)) end
             self.navigationEnabled = false
             -- Recenter when the Host shows the map again, or once now for a
             -- standalone map that stayed visible after the choice.
             if self.visible then self:focusCurrent() end
         end
         if not called or accepted~=true then
-            local messages={event_pool_exhausted='受限事件池已用尽，或剩余事件条件不足；请选择其他路线或重新启程。',
-                event_not_implemented='此事件尚未实现；请选择其他路线。',combat_unavailable='此层没有可用遭遇；请选择其他路线。'}
             local failure=called and (reason or 'choice_rejected') or 'choice_callback_error'
-            self.entryError=messages[failure] or '暂时无法进入，请完成当前操作后重试。'
-            self:render()
+            self:showEntryFailure(failure)
             return false,failure
         end
         if not committed then return false, "selection_not_committed" end
@@ -681,9 +702,9 @@ function M.new(root, map, onChoose, clickEvent, options)
         pointerObserved = true
         -- Down is idempotent until the owner releases or is cancelled. A repeated
         -- callback cannot rearm a selection that already exited or began scrolling.
-        if not self.visible or not self.map then return end
+        if inputCovered() or not self.visible or not self.map then return end
         if not chapterFor(self.map) then self:render() return end
-        if observeMap(mapView(self.map)) then self:render() end
+        if observeMap(entryContext(self.map)) then self:render() end
         if drag then
             -- A same-owner node Down can retire an abandoned background drag.
             -- Background has no node selection to steal; its delayed Up cannot

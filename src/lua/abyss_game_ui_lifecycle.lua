@@ -13,9 +13,15 @@ local function countRunTime(self,dt,openingCovered)
     return true
 end
 
+local function abandonReveal(self)
+    self.nodeEntry=nil
+    if self.pageReveal then self.pageReveal:abandon()end
+end
+
 function M.onEngineDestroy(self)
     return function(_)
             self.disabled=true
+            abandonReveal(self)
             local ok,why=pcall(self.battleUI.onEngineDestroy,self.battleUI)
             if self.easterEgg then self.easterEgg:onEngineDestroy()end
             assert(ok,why)
@@ -43,10 +49,13 @@ local function updatePrepared(self,platform,dt)
     PageReveal.registerSource(platform,'mapPanel');return self.mapUI:update(dt)
 end
 local function advancePreparation(self,platform,dt)
-    if not (self.pageReveal and self.pageReveal:covered()) then return false end
-    PageReveal.registerSource(platform,'nodePanel');self.nodeUI:prepare(dt)
-    PageReveal.registerSource(platform,'deckPanel');self.deckUI:update(dt)
-    PageReveal.registerSource(platform,'mapPanel');self.mapUI:update(dt)
+    local reveal=self.pageReveal
+    if not (reveal and reveal:covered()) then return false end
+    local page=reveal.intent and reveal.intent.page
+    PageReveal.registerSource(platform,page)
+    if page=='nodePanel' then self.nodeUI:prepare(dt)
+    elseif page=='deckPanel' then self.deckUI:update(dt)
+    elseif page=='mapPanel' then self.mapUI:update(dt) end
     self:syncController();return true
 end
 local function updateSuspended(self,dt)
@@ -93,6 +102,7 @@ function M.disable(self,platform,controller,characterPanel,owner)
     return function(_)
             local wasDisabled=self.disabled
             self.disabled=true
+            abandonReveal(self)
             local eggReleased,eggReason=true,nil
             if self.easterEgg then eggReleased,eggReason=pcall(self.easterEgg.release,self.easterEgg)end
             if wasDisabled then
