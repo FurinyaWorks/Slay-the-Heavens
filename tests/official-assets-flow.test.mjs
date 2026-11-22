@@ -128,6 +128,9 @@ assert(#F.Nodes.available(run,h.map)>0)
 test('official flow: independently routed shop previews, cancels, purchases and exits without duplicate spending',t=>{
  runOfficial(t,`
 local h,root=room('shop');local run=h.run;local gold,deck=run.gold,#run.deck
+assert(F.click(root,'nodePanel','merchant/talk'))
+dofile('tests/lua/support/shop_timeline.lua')(h.nodeUI)
+assert(h.nodeUI.shopOpen and not h.nodeUI.shopBusy,'the real shop shelf must finish preparing and sliding')
 local index
 for i=1,7 do local action=h.nodeUI.actions['shopView/card'..i];if action and action.enabled then index=i;break end end
 assert(index,'seed must offer an affordable real card')
