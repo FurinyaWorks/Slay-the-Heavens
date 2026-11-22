@@ -105,7 +105,10 @@ function M.install(owner, _ownership, host, dependencies)
         dependencies.show("rewardList", frame.listing)
         dependencies.show("notice", not frame.reward)
         if frame.listing then
-            dependencies.child("rewardList"):GetChild("subtitle").text = owner.rewardNotice ~= "" and owner.rewardNotice
+            local list = dependencies.child("rewardList")
+            local result = frame.run.lastResult
+            list:GetChild("title").text = result and result.allEnemiesEscaped and "敌人已逃跑" or "战斗胜利"
+            list:GetChild("subtitle").text = owner.rewardNotice ~= "" and owner.rewardNotice
                 or (frame.rewardRows == 0 and "奖励已领取" or "点击条目领取奖励")
         end
     end
