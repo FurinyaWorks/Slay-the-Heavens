@@ -1,4 +1,4 @@
--- Shop merchant figure and head-relative speech bubble. Presentation only: every line is the
+-- Merchant feedback and legacy dialogue. Presentation only: every line is the
 -- approved Lore v2 merchant copy, said in reaction to a transaction the node UI has
 -- already completed or refused. It never blocks, delays or replaces shop input.
 local Theme = require("abyss_theme")
@@ -20,7 +20,8 @@ local function pageEnd(current)return current.ends[current.page] end
 function M.new(box, options)
     options = options or {}
     local merchant = { compact = options.compact, visible = false, queue = {}, met = setmetatable({}, { __mode = "k" }) }
-    local portrait, line = box:GetChild("portrait"), box:GetChild("line")
+    local portrait = not options.compact and box:GetChild("portrait")
+    local line = box:GetChild("line")
     local bubble = L.bubble and box:GetChild("bubble")
     local function colour(c, alpha)
         return options.color(c.r, c.g, c.b, math.floor((c.a or 255) * clamp(alpha or 1) + 0.5))
@@ -76,9 +77,11 @@ function M.new(box, options)
         return true
     end
     function merchant:setVisible(value)
-        self.visible = value == true
-        box:SetVisible(self.visible)
-        if self.visible then self:pose() end
+        value = value == true
+        if self.visible == value then return end
+        self.visible = value
+        box:SetVisible(value)
+        if value and not self.compact then self:pose() end
     end
 
     local function paintSpeech(current)
@@ -96,11 +99,7 @@ function M.new(box, options)
     end
     function merchant:pose()
         local current = self.current
-        if self.compact then
-            box:GetChild('name'):SetVisible(false);box:GetChild('namePlate'):SetVisible(false);box:GetChild('next'):SetVisible(false)
-            return
-        end
-        if not self.visible or not current then return end
+        if self.compact or not self.visible or not current then return end
         local marker,more=paintSpeech(current)
         -- Nod on a sale, a short head shake when the purse is short; both settle back to rest.
         -- Theme frames are node-panel units; the portrait moves inside the merchant frame.

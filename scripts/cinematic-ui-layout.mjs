@@ -87,7 +87,7 @@ export const shopMerchantTarget = Object.freeze([195, -154, 220, 236]);
 export function merchantControl(theme = nativeTheme) {
   const { plate, text, hit } = helpers(theme);
   const [x, y, w, h] = shopMerchantTarget;
-  const feedback = [-480, 270, 146, 40];
+  const feedback = [505, 302, 146, 40];
   const hidden = control => ({ ...control, visible: false });
   const style = theme.layout.merchant.bubble;
   return { name: 'merchant', kind: 'container', position: [0, 0], size: [...theme.canvas.base], visible: false, children: [

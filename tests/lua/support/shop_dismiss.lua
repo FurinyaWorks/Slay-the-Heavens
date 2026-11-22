@@ -1,3 +1,4 @@
+local advanceShop = dofile('tests/lua/support/shop_timeline.lua')
 -- Actual generated node controls + Run/Map/Nodes; input events only are emulated.
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local UI=require('abyss_node_ui')
@@ -33,7 +34,7 @@ local function setup(touch,withController)
     local ui=UI.new(root,run,map,F.Presentation,'click',nil,{cursorEvents=cursor,
         controller=manager,color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end,touchScreen=function()return touch end})
     ui:setVisible(true)
-    assert(root:GetChild("merchant"):GetChild("talk"):GetChild("hit").click());ui:update(.31)
+    assert(root:GetChild("merchant"):GetChild("talk"):GetChild("hit").click());advanceShop(ui)
     local function get(path)
         local control=root
         for key in path:gmatch('[^/]+')do control=assert(control:GetChild(key),path)end

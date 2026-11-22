@@ -1,3 +1,4 @@
+local advanceShop = dofile('tests/lua/support/shop_timeline.lua')
 local testStart=dofile('tests/lua/support/game_ui_fixture.lua').start
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Run,Map=require('abyss_run'),require('abyss_map')
@@ -53,7 +54,7 @@ press('confirm');assert(ui.mode=='map');ui:disable()
 print('controller rooms: camp, upgrade picker cancel and continue passed')
 ui,root,press,hit=setup('shop')
 local before=#ui.run.deck
-press('merchant/talk');ui:update(.31)
+press('merchant/talk');advanceShop(ui)
 press('shopView/card1');assert(#ui.run.deck==before and ui.run.gold==999)
 press('confirm');assert(#ui.run.deck==before+1 and ui.run.gold<999)
 assert(not hit('shopView/card1').canControllerFocus,'sold item cannot keep gamepad focus')

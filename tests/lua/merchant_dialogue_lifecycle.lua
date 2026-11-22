@@ -1,3 +1,4 @@
+local advanceShop = dofile('tests/lua/support/shop_timeline.lua')
 local _,control=dofile('tests/lua/support/node_ui_cases.lua')(math.huge,math.huge)
 local UI,Run,Map,Nodes=require('abyss_node_ui'),require('abyss_run'),require('abyss_map'),require('abyss_nodes')
 local data,Layout=require('abyss_data'),require('abyss_ui_layout')
@@ -21,6 +22,7 @@ end
 for _,action in ipairs({'hide','resize','restart'})do
  local ui,root=setup()
  local tap=root:GetChild('merchant'):GetChild('talk'):GetChild('hit').click
+ advanceShop(ui) -- Stage the concealed shelf before testing interruption of its visible slide.
  assert(ui.merchant.current==nil and tap())
  ui:update(.1);assert(ui.shopBusy)
  if action=='hide' then ui:setVisible(false);assert(not tap());ui:update(5);ui:setVisible(true)
@@ -28,7 +30,7 @@ for _,action in ipairs({'hide','resize','restart'})do
  else
   local replacement=setup();ui.run,ui.map=replacement.run,replacement.map;ui:render()
   assert(not ui.shopOpen and not root:GetChild('shopView').visible)
-  assert(tap());ui:update(.31)
+  assert(tap());advanceShop(ui)
  end
  assert(not ui.shopBusy,'cancelled entry retained input lock')
  assert(ui:press('shopView/card1') and ui:press('confirm'))
@@ -38,7 +40,7 @@ for _,action in ipairs({'hide','resize','restart'})do
  ui:setVisible(true);ui:update(2)
  assert(not root:GetChild('merchant'):GetChild('bubble').visible)
  ui:render();ui:update(30);assert(ui.merchant.current==current)
- assert(not root:GetChild('merchant'):GetChild('portrait').visible)
+ assert(not root:GetChild('shopRoom').visible)
  assert(ui:press('back'));ui:update(.1);ui:setVisible(false);ui:setVisible(true)
  assert(not ui.shopBusy and not ui.run.nodeFlow.complete,'cancelled exit committed in background')
  assert(ui:press('back'));ui:update(.31);assert(ui.run.nodeFlow.complete)

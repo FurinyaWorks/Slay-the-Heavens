@@ -7,7 +7,8 @@ local M = {}
 function M.install(ctx)
     ctx.merchant = Merchant.new(ctx.child("merchant"), { color = ctx.options.color, sound = ctx.options.sound, compact = true })
 
-    local hit=ctx.child('merchant'):GetChild('talk'):GetChild('hit')
+    local talk = ctx.child('merchant'):GetChild('talk')
+    local hit = talk:GetChild('hit')
     local observed,held,released=false,nil,nil
     local function valid(token)
         return token and token.epoch==ctx.shopEpoch and token.run==ctx.self.run
@@ -44,31 +45,52 @@ function M.install(ctx)
         end)
     end
 
-    local panel, back = ctx.child('shopView'), ctx.child('back')
+    local panel, back, room = ctx.child('shopView'), ctx.child('back'), ctx.child('shopRoom')
+    local prompt = room:GetChild('shopPrompt')
+    local promptText = prompt.text
     local layout = require('abyss_theme').layout.nativeNode
+    local duration = .3
+    local shelfBack = { math.min(layout.back[1], -510), layout.back[2] }
+    local preparedView, preparedFlow, preparationStep, shelfReady, opening
     local function inShop()
         local node=ctx.self.run and ctx.self.run.nodeFlow
-        return node and node.type=='shop' and not node.complete
+        return node and node.type=='shop' and not node.complete and ctx.self.run.phase=='node'
     end
     function ctx.syncShop()
         local node=ctx.self.run and ctx.self.run.nodeFlow
-        if ctx.shopId~=(node and node.id) or ctx.shopRun~=ctx.self.run then
+        if ctx.shopId~=(node and node.id) or ctx.shopRun~=ctx.self.run or ctx.shopMap~=ctx.self.map then
             ctx.cancelShop(true)
-            ctx.shopId,ctx.shopRun=node and node.id,ctx.self.run
+            ctx.shopId,ctx.shopRun,ctx.shopMap=node and node.id,ctx.self.run,ctx.self.map
         end
     end
     function ctx.cancelShop(reset)
         ctx.shopEpoch=(ctx.shopEpoch or 0)+1;held=nil;released=nil
+        if ctx.shopTime then
+            panel:SetAnchoredPosition(0,0)
+            back:SetAnchoredPosition(shelfBack[1],shelfBack[2])
+        end
         ctx.shopTime=nil;ctx.shopClosing=false;ctx.self.shopBusy=nil
-        if reset then ctx.self.shopOpen=false end
-        panel:SetAnchoredPosition(0,0)
-        back:SetAnchoredPosition(layout.back[1],layout.back[2])
+        opening = false
+        if reset then
+            ctx.self.shopOpen=false
+            preparedView, shelfReady = nil, false
+        end
+    end
+    local function beginSlide()
+        opening = false
+        ctx.self.shopOpen, ctx.shopTime = true, 0
+        ctx.action('merchant/talk', false, ctx.openShop)
+        ctx.paintShop()
     end
     function ctx.openShop()
         if not ctx.current() or not inShop() or ctx.self.mode~='main'
             or ctx.self.shopOpen or ctx.self.shopBusy then return false end
-        ctx.self.shopOpen=true;ctx.self.shopBusy=true;ctx.shopTime=0;ctx.shopClosing=false
-        ctx.resetButtons();ctx.self:render();return true
+        opening, ctx.self.shopBusy = true, true
+        ctx.resetButtons()
+        if shelfReady and preparedView==ctx.self.view and preparedFlow==ctx.self.run.nodeFlow then
+            beginSlide()
+        else ctx.paintShop() end
+        return true
     end
     require('abyss_controller').bind(ctx.options.controller,hit,'node',ctx.openShop,function()
         return ctx.self.visible and inShop() and not ctx.self.shopOpen and not ctx.self.shopBusy
@@ -78,54 +100,73 @@ function M.install(ctx)
         ctx.shopSelection:clear();ctx.resetButtons()
         if not ctx.self.shopOpen then return ctx.commit('leaveShop',nil,function()return '',{}end) end
         ctx.self.shopBusy=true;ctx.shopTime=0;ctx.shopClosing=true
-        ctx.self:render();return true
+        ctx.paintShop();return true
     end
+
+    local function moveShelf()
+        local p = math.min(1, ctx.shopTime / duration)
+        local remaining = (1-p)^3
+        local hidden = ctx.shopClosing and 1-remaining or remaining
+        -- Native canvas units already follow the shared viewport transform.
+        local height = math.max(720, ctx.self.canvasHeight or 720)
+        local width = math.max(1280, ctx.self.canvasWidth or 1280)
+        panel:SetAnchoredPosition(0, hidden*height)
+        back:SetAnchoredPosition(shelfBack[1]-hidden*width, shelfBack[2])
+    end
+
+    function ctx.showShopRoom(visible, clickable)
+        if room.visible ~= visible then room:SetVisible(visible) end
+        if talk.visible ~= clickable then talk:SetVisible(clickable) end
+    end
+
     function ctx.paintShop()
-        if not inShop() then return end
-        local main=ctx.self.mode=='main'
-        panel:SetVisible(main and ctx.self.shopOpen==true)
-        if main then
-            local p=ctx.shopTime and math.min(1,ctx.shopTime/.3) or 1
-            local ease=1-(1-p)^3
-            local hidden=ctx.shopClosing and ease or 1-ease
-            -- Native canvas units already follow the shared viewport transform.
-            local height=math.max(720,ctx.self.canvasHeight or 720)
-            local width=math.max(1280,ctx.self.canvasWidth or 1280)
-            panel:SetAnchoredPosition(0,hidden*height)
-            if not ctx.shopSelection.selected then back:SetAnchoredPosition(layout.back[1]-hidden*width,layout.back[2]) end
-            local cloth=panel:GetChild('v25ShopCloth')
-            if cloth and ctx.options.color then
-                cloth:GetChild('cloth').imageColor=ctx.options.color(82,100,74,math.floor(255*(1-.15*hidden)))
-            end
-        end
-        local merchant=ctx.child('merchant')
-        merchant:SetAnchoredPosition(0,-80)
-        merchant:GetChild('portrait'):SetAnchoredPosition(0,0)
-        local size=require('abyss_theme').layout.merchant.portrait[3]
-        merchant:GetChild('portrait'):SetLocalScale(104/size,104/size,1)
-        hit:SetSizeDelta(128,128)
-        merchant:GetChild('portrait'):SetVisible(main and not ctx.self.shopOpen)
-        merchant:GetChild('talk'):SetVisible(main and not ctx.self.shopOpen)
-        merchant:GetChild('bubble'):SetAnchoredPosition(-530,260)
-        merchant:GetChild('line'):SetAnchoredPosition(-530,264)
+        local main = ctx.self.mode=='main' and inShop() == true
+        local entering = main and not ctx.self.shopOpen
+        local farewell = ctx.self:holding() and ctx.self.result.view=='farewell'
+        -- Keep the complete scene behind the shelf for the entire transition.
+        ctx.showShopRoom(entering or farewell or (main and ctx.shopTime ~= nil), entering and not opening)
+        local caption = opening and '正在展开' or promptText
+        if prompt.text~=caption then prompt.text=caption end
+        if main and ctx.shopTime then moveShelf() end
+        local showShelf = main and ctx.self.shopOpen == true
+        if panel.visible ~= showShelf then panel:SetVisible(showShelf) end
     end
+    local function prepareShelf()
+        local view = ctx.self.view
+        if not ctx.self.visible or not inShop() or ctx.self.shopOpen or ctx.self.mode~='main'
+            or not view or not view.node or view.node.type~='shop' then return end
+        if ctx.options.inputCovered and ctx.options.inputCovered() then return end
+        local flow = ctx.self.run.nodeFlow
+        if preparedView==view and preparedFlow~=flow then ctx.self:render();return end
+        if preparedView~=view then
+            preparedView, preparedFlow, preparationStep, shelfReady = view, flow, 1, false
+        end
+        -- Fill the pre-created shelf behind the room, one product at the target frame rate.
+        if not shelfReady then
+            shelfReady = ctx.prepareShop(view, preparationStep)
+            preparationStep = preparationStep + 1
+        end
+        if opening and shelfReady then beginSlide() end
+    end
+
     function ctx.updateShop(dt)
-        if not ctx.shopTime then return end
-        if not ctx.self.visible or not inShop() or ctx.shopId~=ctx.self.run.nodeFlow.id or ctx.shopRun~=ctx.self.run then ctx.cancelShop(true);return end
+        if not ctx.shopTime then prepareShelf();return end
+        if not ctx.self.visible or not inShop() or ctx.shopId~=ctx.self.run.nodeFlow.id
+            or ctx.shopRun~=ctx.self.run or ctx.shopMap~=ctx.self.map then ctx.cancelShop(true);return end
         ctx.shopTime=ctx.shopTime+math.max(0,dt)
-        if ctx.shopTime<.3 then ctx.paintShop();return end
+        if ctx.shopTime<duration then moveShelf();return end
         local closing=ctx.shopClosing
-        ctx.cancelShop(false);ctx.shopClosing=false
+        ctx.cancelShop(false)
         if closing then
             ctx.self.shopOpen=false
             ctx.commit('leaveShop',nil,function()return '',{}end)
-        else ctx.self:render() end
+        else ctx.showShopRoom(false, false) end
     end
 
     ctx.self.merchant = ctx.merchant
 
     ctx.shopSelection = ShopSelection.new(ctx.self, ctx.child('shopView'), ctx.options)
-    ctx.renderShop = ShopUI.new(ctx.self, {
+    ctx.renderShop, ctx.prepareShop = ShopUI.new(ctx.self, {
         selection = ctx.shopSelection,
         child = ctx.child, show = ctx.show, state = ctx.state, ink = ctx.ink, picture = ctx.picture,relicPicture=ctx.relicPicture,
         fillCard = ctx.fillCard, cardName = ctx.cardName, relicName = ctx.relicName, relicText = ctx.relicText,
@@ -136,6 +177,10 @@ function M.install(ctx)
         ctx.action('merchant/talk', not ctx.self.shopOpen and not ctx.self.shopBusy, ctx.openShop)
         if ctx.shopSelection.selected then return ctx.shopSelection:footer() end
         return '离开',nil,false,nil,nil,nil
+    end
+    function ctx.shopBackPosition()
+        if ctx.self.shopOpen and ctx.self.mode=='main' and inShop() then return shelfBack end
+        return layout.back
     end
 end
 return M

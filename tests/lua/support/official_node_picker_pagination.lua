@@ -1,3 +1,4 @@
+local advanceShop = dofile('tests/lua/support/shop_timeline.lua')
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Run,Map,Nodes=require('abyss_run'),require('abyss_map'),require('abyss_nodes')
 local UI=require('abyss_node_ui')
@@ -28,7 +29,7 @@ local function setup(kind)
 end
 
 local ui,get,run=setup('shop')
-assert(ui:press('merchant/talk'));ui:update(.31)
+assert(ui:press('merchant/talk'));advanceShop(ui)
 local original={};for i,card in ipairs(run.deck)do original[i]=card.uid end
 assert(#original==10 and ui:press('shopView/removal'))
 local rows=ui.removeRows;assert(#rows==10 and ui.pageCount==4)
