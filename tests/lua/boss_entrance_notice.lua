@@ -3,14 +3,13 @@ local host,root=F.fixture()
 assert(F.start(host));assert(require('abyss_run').startCombat(host.run,'cultist_solo'))
 local panel=root:GetChild('battlePanel')
 local notice=panel:GetChild('notice')
-local narrative=require('abyss_narrative').flow.bossEntrance.full
-local function boss()
- host.run.combat=F.Combat.new(F.Data,{enemies={'guardian'},deck={'strike'},seed=42})
- host:refresh();assert(notice.text==narrative,'new boss shows entrance once')
-end
-boss();host:update(1);assert(notice.text==narrative,'entrance remains readable initially')
-host:update(6);assert(notice.text=='','entrance must expire during idle battle')
-host:refresh();assert(notice.text=='','same boss refresh must not replay entrance')
-boss();notice.text='当前不能使用药水。';host:update(7)
-assert(notice.text=='当前不能使用药水。','expiry must not clear a newer action message')
+notice.text='上场战斗的提示。'
+host.run.combat=F.Combat.new(F.Data,{enemies={'guardian'},deck={'strike'},seed=42})
+host:refresh()
+assert(notice.text=='','new battle clears stale notices and does not show narrative')
+assert(not host.battleUI:commitPotion(1))
+local ordinary=notice.text
+assert(ordinary=='此药水已使用' or ordinary=='请选择有效药水','ordinary action feedback is missing')
+host:refresh();host:update(7)
+assert(notice.text==ordinary,'idle refresh and update must keep the current action notice')
 host:disable();print('BOSS_ENTRANCE_NOTICE_PASS')

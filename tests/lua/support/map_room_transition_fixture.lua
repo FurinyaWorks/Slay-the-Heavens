@@ -52,7 +52,9 @@ local function makeNativeHost(fast,device)
             sync=quiet, syncResult=quiet, battlePose=quiet,
             status=function() return {} end, release=quiet, onEngineDestroy=quiet,
             readyForPage=function(_,mode,_,_,page)
-                if mode=='node' and page=='nodePanel' then return assets.ready() end
+                if mode=='node' and page=='nodePanel' or mode=='battle' and page=='battlePanel' then
+                    return assets.ready()
+                end
                 return true
             end,
         }

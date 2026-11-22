@@ -178,8 +178,7 @@ test("node panels compose through Boss16, independent treasure17 then restart", 
         seen[node.type] = true
         if node.type == "boss" then
             local notice = root:GetChild("battlePanel"):GetChild("notice")
-            assert(notice.text == "石门缓缓开启。昔日的封印守卫仍在履行职责，只是漆黑的力量已令它分不清敌友。")
-            preview("boss", notice.text)
+            assert(notice.text == "", "boss narrative must stay out of the battle HUD")
             notice.text = "操作提示优先"
             ui:refresh()
             assert(notice.text == "操作提示优先", "entry copy must not overwrite interaction notices")

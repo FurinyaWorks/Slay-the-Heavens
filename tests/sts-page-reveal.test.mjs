@@ -273,7 +273,7 @@ local host={run=run,mode='node',nodeUI=node,deckUI={update=function()deckUpdates
  pageReveal={covered=function()return covered end,intent={page='nodePanel'}},paintArtLoading=function()end,animate=function()end,syncController=function()end}
 local original=node.update;node.update=function(self,dt)ruleCalls=ruleCalls+1;return original(self,dt)end
 local prepare=node.prepare;node.prepare=function(self,dt)preparations=preparations+1;return prepare(self,dt)end
-local update=require('abyss_game_ui_lifecycle').update(host,nil,{},function()return false end,function()end,{})
+local update=require('abyss_game_ui_lifecycle').update(host,nil,{},function()return false end,{})
 local before=H.snapshot(run)
 for i=1,3 do assert(update(host,2))end
 H.same(run,before);assert(ruleCalls==0 and battleCalls==0 and preparations==3 and deckUpdates==0,'covered update did not isolate preparation to the target owner')
@@ -310,7 +310,7 @@ test('official Host publishes painted map rooms immediately when ready and gates
  lua(`${source}
 dofile('tests/lua/support/map_room_reveal.lua')
 print('PAGE_REVEAL_PASS')`);
- for(const section of ['rooms','readiness','cancellation','fast']){
+ for(const section of ['rooms','readiness','cancellation','fast','boss']){
    lua(`${source}
 ABYSS_MAP_ROOM_SECTION=${luaString(section)}
 dofile('tests/lua/support/map_room_transition.lua')

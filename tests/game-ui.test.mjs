@@ -5,6 +5,7 @@ import { gameLayout, resultStats } from '../scripts/game-ui-layout.mjs';
 import { runLua } from '../scripts/test-lua.mjs';
 import { nativeTheme } from '../scripts/native-ui-theme.mjs';
 import { readFileSync, writeFileSync } from 'node:fs';
+import narrativeCopy from '../data/presentation/narrative.zh-CN.json' with { type: 'json' };
 
 test('composed native tree has exactly one menu, battle, map and node panel', () => {
   const layout = gameLayout();
@@ -98,12 +99,11 @@ test('generated Chinese display and native tree exercise the real game entry and
   }).join('\n');
   const previews = Object.fromEntries(output.split(/\r?\n/).filter(line => line.startsWith('LORE_PREVIEW\t'))
     .map(line => { const [, name, text] = line.split('\t'); return [name, text.replaceAll('\\n', '\n')]; }));
-  const { nativeMenu: menu, nativeBattle: battle, prologue } = nativeTheme.layout, { font: size } = nativeTheme;
+  const { nativeMenu: menu } = nativeTheme.layout, { font: size } = nativeTheme;
   // Each line is checked against the control that actually displays it.
   assert.equal(previews.menu, '', 'the start screen has no route or control instructions');
-  // The short interstitial carries no prose; result/notice copy retains its layout budget.
   const targets = { victory: [menu.subtitle, size.body], defeat: [menu.subtitle, size.body],
-    settlementError: [menu.status, size.small], boss: [battle.notice, size.body] };
+    settlementError: [menu.status, size.small] };
   for (const [name, [frame, font]] of Object.entries(targets)) {
     assert.ok(previews[name], `missing actual controller output for ${name}`);
     // Conservative local budget: one full font-size per codepoint, no auto-shrink.
@@ -134,6 +134,16 @@ test('cinematic and merchant controls stay inside the phone safe area and clear 
   const inside = ([cx, cy, cw, ch]) => Math.abs(cx) + cw / 2 <= w / 2 - x && Math.abs(cy) + ch / 2 <= h / 2 - y;
   for (const frame of [prologue.seal, prologue.title, prologue.line, merchant.frame, merchant.box, merchant.portrait, merchant.name, merchant.line])
     assert.ok(inside(frame), JSON.stringify(frame));
+  const reveal = gameLayout().controls.find(c => c.name === 'pageReveal');
+  const subtitle = reveal.children.find(c => c.name === 'subtitle');
+  assert.deepEqual(subtitle.position, [0, 0]);
+  assert.ok(inside([...subtitle.position, ...subtitle.size]));
+  assert.equal(subtitle.visible, false);
+  assert.equal(subtitle.raycastTarget, false);
+  assert.equal(subtitle.text.outline, false);
+  assert.equal(subtitle.text.align, 'centre');
+  assert.equal(subtitle.text.valign, 'middle');
+  assert.ok([...narrativeCopy.flow.bossEntrance.full].length * subtitle.text.fontSize <= subtitle.size[0]);
   // The compact dialogue sits below the goods. Check both axes: colorless
   // prices can share its vertical band while remaining to its left.
   const top = (f) => f[1] + f[3] / 2, bottom = (f) => f[1] - f[3] / 2;

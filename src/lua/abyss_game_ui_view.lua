@@ -1,6 +1,5 @@
 local Nodes = require("abyss_nodes")
 local PotionDiscardUI = require("abyss_potion_discard_ui")
-local Narrative = require("abyss_narrative")
 local Bgm = require("abyss_bgm")
 local CharacterView = require("abyss_character_select_view")
 local MenuView=require("abyss_game_ui_menu_view")
@@ -330,27 +329,7 @@ function M.renderBattlePage(self,child)
             self.battleUI:render(nil,self.deckUI.visible and self.deckUI.browserShell)
             if run.phase == "combat" and self.presentedBattle ~= run.combat then
                 self.presentedBattle = run.combat
-                local guardian = false
-                for _, enemy in ipairs(run.combat.enemies) do
-                    if enemy.definitionId == "guardian" then guardian = true end
-                end
-                child("battlePanel"):GetChild("notice").text = guardian
-                    and Narrative.flow.bossEntrance.full or ""
-                self.bossEntrance=guardian and {battle=run.combat,remaining=6} or nil
-            end
-        end
-end
-
-function M.updateBossEntrance(self,child)
-    return function(dt)
-            local entrance=self.bossEntrance
-            if not entrance then return end
-            local notice=child("battlePanel"):GetChild("notice")
-            entrance.remaining=entrance.remaining-dt
-            if not self.run or self.run.combat~=entrance.battle or self.run.phase~="combat"
-                or notice.text~=Narrative.flow.bossEntrance.full or entrance.remaining<=0 then
-                if notice.text==Narrative.flow.bossEntrance.full then notice.text="" end
-                self.bossEntrance=nil
+                child("battlePanel"):GetChild("notice").text = ""
             end
         end
 end

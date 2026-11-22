@@ -17,6 +17,8 @@ export const resultStats = ['floor', 'victories', 'time', 'deck'];
 export function gameLayout(theme = nativeTheme, options = {}) {
   const { text, plate, button, frame, centred } = nativeControls(theme);
   const layout = theme.layout.nativeMenu, { color, font, space, image } = theme;
+  const subtitle = text('subtitle', [0, 0, 1120, 96], '', font.reading, '#F6F2E9');
+  subtitle.text.outline = false;
   const battle = structuredClone(battleLayout());
   const battleControls = battle.controls.find(control => control.name === 'stage').children;
   const map = structuredClone(mapLayout(theme));
@@ -141,6 +143,7 @@ export function gameLayout(theme = nativeTheme, options = {}) {
       { name: 'pageReveal', kind: 'container', size: [...theme.canvas.base], visible: false, children: [
         plate('veil', [0, 0, ...theme.canvas.base], color.backdrop),
         { name: 'blocker', kind: 'cursorArea', size: [...theme.canvas.base], focusable: false },
+        { ...subtitle, visible: false, raycastTarget: false },
         text('message', [0, 24, 600, 56], '正在准备画面…', font.body, color.text),
         button('cancel', [0, -64, 180, 48], '打开菜单', { inset: [space.s, space.s], fontSize: font.label }),
       ] },

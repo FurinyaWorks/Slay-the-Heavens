@@ -18,6 +18,7 @@ local function same(a,b,except)
 end
 local function reject(gate,message)
     if gate.error~=message then print('ABYSS_PAGE_REVEAL failed page='..tostring(gate.intent.page)..' epoch='..gate.epoch..' reason='..message)end
+    if gate.entry then gate.entry.narration=nil end
     gate.error=message;gate.state='failed';gate.armed=nil;return false
 end
 local function pageFor(owner)
@@ -117,6 +118,16 @@ local function logVisible(intent,epoch)
 end
 local function delta(dt)
     return type(dt)=='number' and dt>=0 and dt<math.huge and dt or 0
+end
+local subtitleFade,subtitleHold=.4,3.6
+local subtitleEnd=subtitleFade*2+subtitleHold
+local function advanceNarration(entry,dt)
+    local narration=entry and entry.narration
+    if not narration then return false end
+    narration.elapsed=(narration.elapsed or 0)+delta(dt)
+    if narration.elapsed<subtitleEnd then return true end
+    entry.narration=nil
+    return false
 end
 local slowWait,stallTimeout,totalTimeout=.4,4,12
 local function resetWait(gate)
@@ -354,6 +365,7 @@ function M.new(cover,ready,onIntent,frames,motion)
         if not ticket then return false end
         if ticket.epoch~=self.epoch then return false end
         if needsRecovery(self)then self.painting=nil;return false end
+        if self.entry and self.entry.narration then self.painting=nil;return false end
         -- Entry may reset the previous room's picker/page during paint.
         -- Verify the room identity before checking its new leases.
         if ticket.roomEntry then
@@ -368,11 +380,36 @@ function M.new(cover,ready,onIntent,frames,motion)
         if not ticket.fast or not ticket.changed then self.painting=nil;return false end
         return finishLocalPage(self,intent,ticket)
     end
-    local function paintRecovery(self,failed,ticket)
+    local subtitle,subtitleAlpha
+    local function paintSubtitle(narration,ticket)
+        if not narration or not narration.elapsed then
+            if subtitle and subtitle.visible then subtitle:SetVisible(false) end
+            subtitleAlpha=nil
+            return gate.epoch==ticket
+        end
+        if not subtitle then subtitle=cover:GetChild('subtitle') end
+        if gate.epoch~=ticket then return false end
+        if not subtitle then gate.entry.narration=nil;return true end
+        local elapsed=narration.elapsed
+        local progress=math.min(1,elapsed/subtitleFade,(subtitleEnd-elapsed)/subtitleFade)
+        local opacity=math.floor(shade(progress)*255+.5)
+        if subtitle.text~=narration.text then subtitle.text=narration.text end
+        if gate.epoch~=ticket then return false end
+        if subtitleAlpha~=opacity then
+            local ink=motion.color(246,242,233,opacity)
+            if gate.epoch~=ticket then return false end
+            subtitle.fontColor=ink
+            if gate.epoch~=ticket then return false end
+            subtitleAlpha=opacity
+        end
+        if not subtitle.visible then subtitle:SetVisible(true) end
+        return gate.epoch==ticket
+    end
+    local function paintRecovery(self,failed,ticket,narration)
         local message=cover:GetChild('message')
         if self.epoch~=ticket then return false end
         if message then
-            local show=failed or self.state=='preparing' and self.wait>=slowWait
+            local show=failed or not narration and self.state=='preparing' and self.wait>=slowWait
             local text=failed and '画面暂未准备完成，可返回。' or '正在准备画面…'
             if message.visible~=show then message:SetVisible(show)end
             if self.epoch~=ticket then return false end
@@ -391,7 +428,8 @@ function M.new(cover,ready,onIntent,frames,motion)
         if self.epoch~=ticket then return false end
         if covered and raise then cover:SetAsLastSibling()end
         if self.epoch~=ticket then return false end
-        return paintRecovery(self,failed,ticket)
+        local narration=self.entry and self.entry.narration
+        return paintSubtitle(narration,ticket) and paintRecovery(self,failed,ticket,narration)
     end
     local function restoreDeparture(departure,reason)
         gate.epoch=gate.epoch+1
@@ -464,7 +502,7 @@ function M.new(cover,ready,onIntent,frames,motion)
         if ticket~=gate.epoch then return false end
         logVisible(intent,ticket);return enableEntry(intent)
     end
-    local function publishReadyPage(intent,ticket)
+    local function publishReadyPage(intent,ticket,narrating)
         -- New base pages confirm on another scheduler turn. A retained base's
         -- local work publishes as soon as this turn's real owners report ready.
         local localReady=(gate.localFrame or gate.localOnly) and not needsSchedulerConfirmation(intent)
@@ -472,6 +510,7 @@ function M.new(cover,ready,onIntent,frames,motion)
         if not localReady and not confirmed then
             gate.state='ready';gate.armed={epoch=ticket,tick=gate.tick};return false
         end
+        if narrating then return false end
         gate.state=gate.sceneDuration and 'fadingIn' or 'visible'
         gate.published=intent;gate.roomEntry=nil;gate.armed=nil;gate.error=nil
         readyEntry(intent)
@@ -495,11 +534,12 @@ function M.new(cover,ready,onIntent,frames,motion)
         if ticket~=self.epoch then return false end
         if reason then return reject(self,tostring(reason))end
         self.error=nil
+        local narrating=advanceNarration(self.entry,dt)
         if value~=true then
             self.state='preparing';self.armed=nil
             return waitForPreparation(self,dt,progress)
         end
-        return publishReadyPage(intent,ticket)
+        return publishReadyPage(intent,ticket,narrating)
     end
     return gate
 end

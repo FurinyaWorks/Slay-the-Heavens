@@ -1,5 +1,6 @@
 -- Session navigation keeps the live Run in memory; it is never a save file.
 local NeowHistory=require('abyss_neow_history')
+local Narrative=require('abyss_narrative')
 local Theme=require('abyss_theme')
 local Nodes=require('abyss_nodes')
 local PageReveal=require('abyss_page_reveal')
@@ -36,11 +37,17 @@ function M.requestNodeEntry(self,platform,changed)
         sequence=sequence+1
         local request={id=sequence,run=self.run,map=self.map,context=context,nodeId=node.id,epoch=gate.epoch,
             roomGeneration=self.run.roomGeneration,runFloor=self.run.floor}
+        local entry={id=request.id}
         local function commit()
             if not canEnterNode(self) or not sameEntry(self,request) then return false,'entry_context_changed' end
             trace('core_enter_start',request,request.nodeId)
             local ok,reason=Nodes.enter(request.run,request.map,request.nodeId)
-            if ok then request.committedGeneration=request.run.roomGeneration end
+            if ok then
+                request.committedGeneration=request.run.roomGeneration
+                if node.type=='boss' and request.run.encounterId=='boss_guardian' then
+                    entry.narration={text=Narrative.flow.bossEntrance.full}
+                end
+            end
             trace('core_enter_end',request,reason)
             return ok,reason
         end
@@ -53,7 +60,7 @@ function M.requestNodeEntry(self,platform,changed)
         end
         self.nodeEntry=request
         trace('input_received',request,request.nodeId)
-        local called,accepted=pcall(gate.depart,gate,commit,cancel,{id=request.id},PageReveal.roomDuration(self.fastMode))
+        local called,accepted=pcall(gate.depart,gate,commit,cancel,entry,PageReveal.roomDuration(self.fastMode))
         if not called or not accepted then
             cancel()
             local departure=gate.departure

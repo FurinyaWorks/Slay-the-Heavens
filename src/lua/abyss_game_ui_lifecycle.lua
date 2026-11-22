@@ -65,11 +65,10 @@ local function updateSuspended(self,dt)
     if self.sessionPaused then self:animate(dt);self:syncController();return true end
     return false
 end
-function M.update(self,controller,platform,openingCovered,updateBossEntrance,bgm)
+function M.update(self,controller,platform,openingCovered,bgm)
     local function advancePages(dt)
             PageReveal.registerSource(platform,'battlePanel')
             self.battleUI:update(dt)
-            updateBossEntrance(dt)
             if self.battleUI.busy and self.battleUI.feedback.deaths.player then bgm:update("defeat") end
             local updated=updatePrepared(self,platform,dt)
             self:syncController()
