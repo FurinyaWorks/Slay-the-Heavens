@@ -23,8 +23,8 @@ function beforeCompactPopupTest(path,source){
  assert.equal(hash(prior),'9f7805663713e1c0a036cfa19d1518750cf568c5c38335da33d17a4430832c9b','exact predecessor before the result plaque and subtitle assertions');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
-function beforeTest(path,source,record){
- if(path!=='tests/official-assets.test.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+function beforeTest(source,record){
+ if(!record||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=source.replaceAll('\r\n','\n');
  if(hash(lf)!==record.afterSha256)return source;
  const lines=lf.split('\n');
@@ -33,9 +33,13 @@ function beforeTest(path,source,record){
  assert.equal(hash(prior),record.beforeSha256,'exact predecessor of the official asset test');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+export function beforeCharacterSelectionSource(path,source){
+ return beforeTest(source,Object.hasOwn(selection,path)?selection[path]:null);
+}
 export function beforeSts1MenuCiSource(path,source){
- const beforeSelection=beforeTest(path,source,selection);
- source=beforeReleaseUiCloseoutSource(path,beforeTest(path,beforeCompactPopupTest(path,beforeSelection),choice));
+ source=beforeCharacterSelectionSource(path,source);
+ if(path==='tests/official-assets.test.mjs')source=beforeTest(beforeCompactPopupTest(path,source),choice);
+ source=beforeReleaseUiCloseoutSource(path,source);
  const row=Object.hasOwn(files,path)?files[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(source.replaceAll('\r\n','\n'))!==row.afterSha256)return source;
  return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;

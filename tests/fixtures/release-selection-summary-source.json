@@ -1,21 +1,1156 @@
 {
-  "beforeSha256": "fd03f10dfdc27835d113c8c3f7246a239dea551a73e82862282e73d98feeebe7",
-  "afterSha256": "1e11a5649339865d8a3ef21882da2da1711613b810eb4c4dfd9fa1d1745440f1",
-  "edits": [
-    [
-      446,
-      2,
+  "scripts/character-selection-composition.mjs": {
+    "beforeSha256": "c9b0efc1dd5c2fdc14b64656958d660746f90f52ccd4087d0ced50073dca6793",
+    "afterSha256": "b2dd7751d641a5275462023b1969a19807deeb4c8ff13531bb136ab884dce45b",
+    "edits": [
       [
-        " for(const name of ['deckTitle','deckSummary','deckOpen'])assert.equal(child(details,name),undefined);",
-        " for(const name of ['name','stats','gold','v25Story','relic','relicText']){"
-      ]
-    ],
-    [
-      112,
-      1,
+        44,
+        3,
+        [
+          " details.children=details.children.filter(n=>!['deckOpen','deckTitle','deckSummary','deckRule'].includes(n.name));"
+        ]
+      ],
       [
-        " const retiredStarterEntry=path=>/^\\/SlayTheAbyss\\/characterPanel\\/details\\/deck(?:Open|Title|Summary|Rule)(?:\\/|$)/.test(path);"
+        41,
+        2,
+        [
+          "  v25Story:[[115,326,475,48],17,'#F3EFDA'],relic:[[162,379,430,30],20,'#E7CA5A'],relicText:[[162,403,440,35],17,'#F3EFDA']};"
+        ]
       ]
     ]
-  ]
+  },
+  "scripts/character-ui-layout.mjs": {
+    "beforeSha256": "7224c361975b8d760ebc772c13bf1dd56e5b7772cde436561b79b8dc50d8cb51",
+    "afterSha256": "71371096b6bebed994b098aae265419d0bab76019e46faff3c5e12091e35fd63",
+    "edits": [
+      [
+        116,
+        2,
+        []
+      ]
+    ]
+  },
+  "src/lua/abyss_character_presentation.lua": {
+    "beforeSha256": "34213a464807a22ac6ca2ea463c0d5a92cdb859ee8f503145c1f1bef4dd6ea01",
+    "afterSha256": "97f4d762c4fc2df268ec757fda641ff0ee8686e9adc9b8bba4d1849ac9c32bc7",
+    "edits": [
+      [
+        135,
+        2,
+        []
+      ],
+      [
+        131,
+        1,
+        []
+      ],
+      [
+        126,
+        2,
+        [
+          "        local current=prepareDisplay(out,card,upgraded,out[card.id],nativeBundle)"
+        ]
+      ],
+      [
+        120,
+        1,
+        [
+          "    local out=copy(existing)"
+        ]
+      ],
+      [
+        118,
+        1,
+        [
+          "function M.prepare(existing,prepared)"
+        ]
+      ]
+    ]
+  },
+  "src/lua/abyss_character_select.lua": {
+    "beforeSha256": "53f84adc19b77af6157aa10ee9ac96b61fbd7809e588e845523779d333c9e2c1",
+    "afterSha256": "b5a0f2a6d2c9b7e8d191ad65303fa31f6c93110999944f29c91156470fd0a42f",
+    "edits": [
+      [
+        111,
+        4,
+        [
+          "        self.element=id;self.info=M.preview(source,presentation,id);return true"
+        ]
+      ],
+      [
+        100,
+        6,
+        [
+          "        self.character=id",
+          "        if id=='traveler' then self.element=self.element or 'ironclad' end",
+          "        self.info=M.preview(source,presentation,id=='traveler' and self.element or id)",
+          "        return true"
+        ]
+      ],
+      [
+        69,
+        8,
+        []
+      ],
+      [
+        49,
+        6,
+        [
+          "    for _,card in ipairs(order)do local shown=display[card]",
+          "        deck[#deck+1]={id=card,name=shown.name,count=counts[card],type=defs[card].type,cost=shown.cost or defs[card].cost,text=shown.text or defs[card].text,definition=defs[card],display=shown}end"
+        ]
+      ],
+      [
+        45,
+        1,
+        [
+          "    local display=require('abyss_character_presentation').prepare(presentation,{"
+        ]
+      ],
+      [
+        36,
+        1,
+        [
+          "        if id~='ironclad' then data,profile=require('abyss_run_card_catalog').prepareSelected(source,id)end"
+        ]
+      ],
+      [
+        34,
+        1,
+        [
+          "        data,profile=require('abyss_original_v4_profiles').prepare(source,id)"
+        ]
+      ],
+      [
+        3,
+        1,
+        []
+      ]
+    ]
+  },
+  "src/lua/abyss_character_select_view.lua": {
+    "beforeSha256": "b2e12bb1285b1ff8986968771e8a7932b9068a24a01ec1fea9ea6ee6dc216631",
+    "afterSha256": "c911c4e62184a9ee79b0a52af8e79a80a560fe68439439e63b0e87a250a40f2e",
+    "edits": [
+      [
+        142,
+        1,
+        [
+          "    paintDetails(details,state,platform,originalSts,nativeV25,info)"
+        ]
+      ],
+      [
+        138,
+        3,
+        [
+          "    confirm.interactable,confirm.raycastTarget=state:canConfirm(),state:canConfirm()"
+        ]
+      ],
+      [
+        136,
+        1,
+        [
+          "    panel:GetChild('confirm'):SetVisible(info~=nil)"
+        ]
+      ],
+      [
+        132,
+        3,
+        [
+          "        roster:SetVisible(open==1)",
+          "        panel:GetChild('title'):SetVisible(info==nil)",
+          "        roster:GetChild('selected'):GetChild('selection'):SetVisible(info~=nil)",
+          "        panel:GetChild('traveler'):GetChild('selected'):SetVisible(false)"
+        ]
+      ],
+      [
+        127,
+        4,
+        []
+      ],
+      [
+        126,
+        0,
+        [
+          "    paintCharacterButtons(panel,state,platform,originalSts,open)",
+          "    paintThemesAndElements(panel,state,platform,elementsOpen)",
+          "    local details=panel:GetChild('details');details:SetVisible(info~=nil)",
+          "    panel:GetChild('deckView'):SetVisible(false)"
+        ]
+      ],
+      [
+        122,
+        1,
+        [
+          "    panel:GetChild('hint').text=state.notice or (nativeV25 and '' or (info and '查看初始信息，确认后开始冒险。' or '点击下方角色查看详情，再确认出发。'))"
+        ]
+      ],
+      [
+        103,
+        8,
+        [
+          "    local large,key,portraits=paintPortraits(details,state,platform)",
+          "    if originalSts then portraits:SetVisible(false)end",
+          "    paintPortraitNote(details,info,platform,large,key,portraits)"
+        ]
+      ],
+      [
+        100,
+        2,
+        [
+          "    details:GetChild('relic').text=#relics>0 and table.concat(relics,'、') or '无'",
+          "    details:GetChild('relicText').text=table.concat(texts,' ')"
+        ]
+      ],
+      [
+        94,
+        4,
+        [
+          "local function paintDetails(details,state,platform,originalSts,nativeV25,info)",
+          "    details:GetChild('name').text=info.name",
+          "    details:GetChild('stats').text=(nativeV25 and '生命：' or '生命  ')..number(info.maxHp)..(nativeV25 and '/' or ' / ')..number(info.maxHp)",
+          "    details:GetChild('gold').text=(nativeV25 and '金币：' or '金币  ')..number(info.gold)"
+        ]
+      ],
+      [
+        91,
+        1,
+        [
+          "        paintBust(box,Theme.icon.heroSlots.bust.traveler[id],platform)"
+        ]
+      ],
+      [
+        89,
+        1,
+        [
+          "        if box.visible~=allowed then box:SetVisible(allowed)end"
+        ]
+      ],
+      [
+        87,
+        1,
+        [
+          "        local box=panel:GetChild('elements'):GetChild('element'..i)"
+        ]
+      ],
+      [
+        81,
+        5,
+        [
+          "    for _,layer in ipairs({'themes'})do",
+          "        local group=panel:GetChild(layer)",
+          "        for _,id in ipairs(Select.characters)do if id~='traveler' then group:GetChild(id):SetVisible(id==theme)end end",
+          "        for _,id in ipairs(Select.elements)do group:GetChild(id):SetVisible(id==theme)end",
+          "    end",
+          "    panel:GetChild('elements'):SetVisible(traveler and elementsOpen>1)"
+        ]
+      ],
+      [
+        74,
+        1,
+        [
+          "        if not originalSts or id~='traveler' then paintBust(box,bust,platform)end"
+        ]
+      ],
+      [
+        71,
+        2,
+        [
+          "        if box.visible~=allowed then box:SetVisible(allowed)end",
+          "        selected(box,state.character==id)"
+        ]
+      ],
+      [
+        67,
+        1,
+        [
+          "local function paintPortraitNote(details,info,platform,large,key,portraits)",
+          "    local note=info.name",
+          "    local native=platform.portraits and platform.portraits.status and platform.portraits:status().selection",
+          "    if key=='traveler_ironclad' and native then portraits:GetChild(key):SetVisible(false)end",
+          "    if (not large or large.status=='placeholder') and not native then note=note..' · 肖像待补' end",
+          "    if large and large.playable==false then note=note..' · 非本次正式角色' end",
+          "    details:GetChild('portraitNote').text=note",
+          "end",
+          "local function paintCharacterButtons(panel,state,platform,originalSts,open)"
+        ]
+      ],
+      [
+        64,
+        2,
+        [
+          "    if platform.imageSource and large then portraits:GetChild(key):SetImage(platform.imageSource,large.id) end",
+          "    return large,key,portraits"
+        ]
+      ],
+      [
+        62,
+        1,
+        [
+          "        else portraits:GetChild(id):SetVisible(id==key) end"
+        ]
+      ],
+      [
+        60,
+        1,
+        [
+          "                portraits:GetChild('traveler_'..element):SetVisible(key=='traveler_'..element)"
+        ]
+      ],
+      [
+        45,
+        1,
+        [
+          "        if bust then bust:SetImage(platform.imageSource,entry.id) end"
+        ]
+      ],
+      [
+        37,
+        1,
+        [
+          "    box:GetChild('selected'):SetVisible(value)"
+        ]
+      ],
+      [
+        33,
+        2,
+        [
+          "    details:GetChild('deckTitle').text='初始牌组 · '..number(info.deckSize)..' 张'",
+          "    details:GetChild('deckSummary').text=table.concat(parts,'  ')"
+        ]
+      ],
+      [
+        5,
+        11,
+        []
+      ]
+    ]
+  },
+  "src/lua/abyss_game_ui.lua": {
+    "beforeSha256": "15bfbbff1e67b4bcad18f8ff25434afb89a9e5419d026a9c8934f0a60f09431f",
+    "afterSha256": "247107fff955f9bf7bb50dd7d294a0ade6f322d63c600ee6e50f3186e7f95a3b",
+    "edits": [
+      [
+        202,
+        1,
+        [
+          "    local selectionChanged = RunFlow.selectionChanged(self,owner)"
+        ]
+      ],
+      [
+        173,
+        1,
+        [
+          "    local menuLoading,characterLoading,originalCharacterHint=false,false,nil",
+          "    self.paintArtLoading = View.paintArtLoading(platform,menu,self,menuLoading,characterPanel,characterLoading,originalCharacterHint)"
+        ]
+      ]
+    ]
+  },
+  "src/lua/abyss_game_ui_input.lua": {
+    "beforeSha256": "2adfe74fbe1934196531b36a47de69e775d94d15ba5208808ac3d311c82901bf",
+    "afterSha256": "59acc8d428ebefe03b8759142063f06e7d6366883dacc59b5363183b50d69f2f",
+    "edits": [
+      [
+        114,
+        1,
+        []
+      ]
+    ]
+  },
+  "src/lua/abyss_game_ui_run.lua": {
+    "beforeSha256": "44b249682c9fc1a57cd16dd0068d95da55459b43741918d19ffdb5d3b6a8a62a",
+    "afterSha256": "c2e6c019dab6b3a885038dc6ccdc9a53a1ca8ba2f78b5e70e7d0bfd2c91483ab",
+    "edits": [
+      [
+        65,
+        2,
+        [
+          "            local ok,reason=self.characterSelection:selectElement(id)",
+          "            if ok then selectionChanged()end"
+        ]
+      ],
+      [
+        56,
+        2,
+        [
+          "            local ok,reason=self.characterSelection:select(id)",
+          "            if ok then selectionChanged()end"
+        ]
+      ],
+      [
+        36,
+        2,
+        [
+          "            self:refresh()"
+        ]
+      ],
+      [
+        33,
+        2,
+        [
+          "function M.selectionChanged(self,owner)",
+          "    return function()"
+        ]
+      ]
+    ]
+  },
+  "src/lua/abyss_game_ui_view.lua": {
+    "beforeSha256": "21aaed83def99c1306b87f41d122f36e1bdae66569f0f58e9079e807f4e480c0",
+    "afterSha256": "557545135f8f18e4f7c3d77fbc3915332c1f5a7678127987196cf583668ceccb",
+    "edits": [
+      [
+        574,
+        29,
+        []
+      ],
+      [
+        36,
+        0,
+        [
+          "            local hint=characterPanel:GetChild('hint')",
+          "            if self.characterOpen and building(avatar) then",
+          "                if not characterLoading then originalCharacterHint=hint.text end",
+          "                hint.text='正在载入角色画面… '..percent(avatar)..'%';characterLoading=true",
+          "            elseif characterLoading then hint.text=originalCharacterHint or '查看初始信息，确认后开始冒险。';characterLoading=false end"
+        ]
+      ],
+      [
+        31,
+        0,
+        [
+          "            local portraits=platform.portraits and platform.portraits:status()",
+          "            local avatar=currentAvatar(portraits)"
+        ]
+      ],
+      [
+        26,
+        2,
+        [
+          "function M.paintArtLoading(platform,menu,self,menuLoading,characterPanel,characterLoading,originalCharacterHint)"
+        ]
+      ],
+      [
+        18,
+        0,
+        [
+          "local function currentAvatar(portraits)",
+          "    return portraits and (portraits.selection and portraits.selection.phase~='idle' and portraits.selection or portraits.avatar)",
+          "end",
+          ""
+        ]
+      ]
+    ]
+  },
+  "src/lua/abyss_original_v4_profiles.lua": {
+    "beforeSha256": "fb50790452127f2bae3821d4f8cc249cf71f9c7850e97906e65626dafc2cb9d4",
+    "afterSha256": "ebfb8db53a864c563b482719e845eb4ad4f8919f80e019d9649550065e21abc6",
+    "edits": [
+      [
+        83,
+        1,
+        [
+          "    return prepared,{id=color,role=role,color=color,originalV4=true,maxHp=spec.max_hp,starterDeck=copy(spec.starter),startingRelic=relic}"
+        ]
+      ],
+      [
+        81,
+        1,
+        [
+          "    prepared.rules.player.startingRelics={relic}"
+        ]
+      ],
+      [
+        76,
+        1,
+        [
+          "    local relic='original_v4_'..role:lower()",
+          "    prepared.relics.relics[#prepared.relics.relics+1]={id=relic,name=spec.relic,rarity='starter',trigger='original_v4',effects={}}"
+        ]
+      ],
+      [
+        61,
+        1,
+        [
+          "        local frozenCard=copy(raw)",
+          "        local function version(up)",
+          "            local value=raw[up and 'upgrade' or 'base']",
+          "            return {cost=value.cost,effects={{op='originalV4',raw=frozenCard,upgraded=up}},exhaust=value.exhaust,originalV4Upgraded=up}",
+          "        end",
+          "        local card=version(false)",
+          "        card.id=raw.id;card.name=raw.name;card.color=color;card.rarity=assert(rarity[raw.rarity])",
+          "        card.type=(raw.category=='normal' or raw.category=='charged') and 'attack' or 'skill'",
+          "        card.category=raw.category;card.originalV4=frozenCard",
+          "        card.target=(hasTarget(raw.base.effects) or hasTarget(raw.upgrade.effects)) and 'ENEMY' or 'SELF'",
+          "        card.upgrade=version(true)"
+        ]
+      ],
+      [
+        37,
+        19,
+        [
+          "    local prepared=copy(data);local color=names[role]"
+        ]
+      ],
+      [
+        18,
+        15,
+        [
+          "function M.prepare(data,id)"
+        ]
+      ]
+    ]
+  },
+  "src/lua/abyss_page_reveal.lua": {
+    "beforeSha256": "844d4d299530b9bd32a05f2cfbc9b258b1a68f09c2e5a58bfdb93d8ca58f3641",
+    "afterSha256": "1d8883f625c98c0d5ae7c8f99ddd6db2c4b97b9a867493f01209d6e9257312de",
+    "edits": [
+      [
+        320,
+        1,
+        [
+          "            (self.state=='visible' and (canUpdate(intent,self.intent) or localChange)"
+        ]
+      ],
+      [
+        279,
+        2,
+        [
+          "        gate.localOnly=motion and gate.published and gate.published.page=='characterPanel' and intent.page=='characterPanel'"
+        ]
+      ],
+      [
+        116,
+        4,
+        []
+      ]
+    ]
+  },
+  "src/lua/abyss_run_card_catalog.lua": {
+    "beforeSha256": "e6a005a33e95fda500f6ecefecfe1591b9a8054270995975d4b53be1a1eafe3f",
+    "afterSha256": "3b863853b63650f142015b352c5a20a122aeba102c4c0b80fcf397a6aa4147e3",
+    "edits": [
+      [
+        200,
+        22,
+        []
+      ],
+      [
+        19,
+        6,
+        [
+          " return constantComponents"
+        ]
+      ],
+      [
+        11,
+        7,
+        [
+          "local constantComponents",
+          "local function components()",
+          " if not constantComponents then",
+          "  -- Compile only module-authored constants from an empty scaffold. Never read",
+          "  -- any caller here: rules/cards/statuses and extension graphs are read anew",
+          "  -- below. These private constants are never returned or installed by alias.",
+          "  local compiled={}",
+          "  for _,id in ipairs({'silent','defect','watcher'})do",
+          "   compiled[id]=Profiles.prepare({rules={player={}},cards={cards={}},",
+          "    statuses={statuses={}},relics={relics={}},potions={potions={}}},id)",
+          "  end",
+          "  constantComponents=compiled"
+        ]
+      ]
+    ]
+  },
+  "src/lua/abyss_traveler_portraits.lua": {
+    "beforeSha256": "ba9474f0b320a0ddebca687b47b6f0f5053d5ffd117c37c3b24020729a0058d2",
+    "afterSha256": "6c68b50943eeeae6fb2f343502c21cd34497c65d347e9d55037d0f3b6a53403e",
+    "edits": [
+      [
+        771,
+        1,
+        [
+          "        epoch=epoch+1;destroyed=true;for _,row in ipairs(rows)do row.active=false;row.adapter:destroy()end"
+        ]
+      ],
+      [
+        763,
+        6,
+        [
+          "        epoch=epoch+1;local old=busy;busy=true;local ok=true",
+          "        for _,row in ipairs(rows)do row.active=false;if not row.adapter:release()then ok=false end end",
+          "        paint();busy=old;return ok"
+        ]
+      ],
+      [
+        759,
+        1,
+        [
+          "        busy=true;battle:pose(x,y,sx,sy,dt,motionState);paint();busy=false"
+        ]
+      ],
+      [
+        754,
+        2,
+        [
+          "        paint();busy=false"
+        ]
+      ],
+      [
+        752,
+        1,
+        [
+          "            if not progressed or kind=='reveal' or timeBudget and i%8==0 and os.clock()-start>=.008 then break end"
+        ]
+      ],
+      [
+        748,
+        1,
+        [
+          "            for _,row in ipairs(buildOrder)do if row.active then"
+        ]
+      ],
+      [
+        744,
+        1,
+        []
+      ],
+      [
+        741,
+        1,
+        [
+          "    function self.tick(_)"
+        ]
+      ],
+      [
+        720,
+        2,
+        [
+          "        paint();busy=false;return not profile or epoch==token and not destroyed"
+        ]
+      ],
+      [
+        717,
+        2,
+        [
+          "            if profile and accepted==false then paint();busy=false;return false end"
+        ]
+      ],
+      [
+        697,
+        7,
+        [
+          "        if busy or destroyed then return false end"
+        ]
+      ],
+      [
+        678,
+        4,
+        [
+          "                elseif not wanted[row.name] and row.active then row.active=false;accepted=row.adapter:pause()end"
+        ]
+      ],
+      [
+        671,
+        1,
+        [
+          "        paint();busy=false;return accepted~=false and valid and epoch==token and not destroyed"
+        ]
+      ],
+      [
+        641,
+        6,
+        [
+          "            if row.name=='selection' and ready then",
+          "                local note=details:GetChild('portraitNote');note.text=note.text:gsub(' · 肖像待补','')"
+        ]
+      ],
+      [
+        629,
+        1,
+        [
+          "            local fallbackVisible=(row.name~='selection' or row.restoreOnPause) and row.fallbackVisible~=false"
+        ]
+      ],
+      [
+        604,
+        7,
+        []
+      ],
+      [
+        601,
+        2,
+        [
+          "    if #rows==0 then return nil end",
+          "    local timeBudget=selecting and Asset.avatar96.runtimeV2 or fighting and battleDrawing.runtimeV2 or carding or landing"
+        ]
+      ],
+      [
+        547,
+        9,
+        []
+      ],
+      [
+        545,
+        1,
+        []
+      ],
+      [
+        540,
+        2,
+        [
+          "            rows[#rows+1]={name='selection',adapter=selection,fallback=fallback,active=false,restoreOnPause=official}"
+        ]
+      ],
+      [
+        537,
+        2,
+        [
+          "            selection=controller(host,figure,display,Asset,profile and {position=profile.selectionPosition,",
+          "                nativeLifecycle=true,ownerEpoch=function()return epoch end})"
+        ]
+      ],
+      [
+        526,
+        1,
+        [
+          "        details=panel:GetChild('details')"
+        ]
+      ],
+      [
+        519,
+        1,
+        [
+          "    if selecting then"
+        ]
+      ],
+      [
+        505,
+        1,
+        [
+          "    local avatar,battle,selection,details,rows=nil,nil,nil,nil,{}"
+        ]
+      ],
+      [
+        449,
+        40,
+        []
+      ],
+      [
+        444,
+        2,
+        [
+          "    return official and {panel:GetChild('v25Background'),details:GetChild('portraits')}",
+          "        or {details:GetChild('portraits'):GetChild('traveler_ironclad')}"
+        ]
+      ],
+      [
+        351,
+        1,
+        [
+          "        -- Only the battle portrait opts into scene-boundary failure recovery.",
+          "        -- Other cached adapters retain their explicit-release retry policy."
+        ]
+      ],
+      [
+        239,
+        9,
+        []
+      ],
+      [
+        219,
+        10,
+        []
+      ],
+      [
+        202,
+        2,
+        [
+          "        check(token);assert(c,'portrait template unavailable');call(token,c,'SetVisible',false)"
+        ]
+      ],
+      [
+        90,
+        1,
+        []
+      ]
+    ]
+  },
+  "src/lua/abyss_ui.lua": {
+    "beforeSha256": "e6bffdaae1d6d4a9ff7632dc44b7aa54a3f76f736037a72525bf6b2ba04662b8",
+    "afterSha256": "a636f86d65b03da08011f55ff712a04cd59b281797d3ef00d959c8d9ed6c19b5",
+    "edits": [
+      [
+        113,
+        3,
+        [
+          "    if portraits then"
+        ]
+      ],
+      [
+        92,
+        1,
+        [
+          "        if name=='portraits' or name=='cards' or name=='v25CardSurface' then return false,reason end"
+        ]
+      ]
+    ]
+  },
+  "tests/helpers/character-preparation-source.mjs": {
+    "beforeSha256": "67c6ff9f7ea8b34cf0bf52e234f3f76010a701280d6fd3431e64e5a7e55eca53",
+    "afterSha256": "3067a98bd5e091fa8a4c40e09061bb3f8e6d8bcd4d645d5ad9f2b8a99ab1838c",
+    "edits": [
+      [
+        111,
+        3,
+        []
+      ],
+      [
+        36,
+        1,
+        [
+          "    const source = read(path);"
+        ]
+      ],
+      [
+        15,
+        1,
+        []
+      ]
+    ]
+  },
+  "tests/helpers/fork-preflight-source.mjs": {
+    "beforeSha256": "4fa1aaa601f6a6675739b5614b0b561d54ee87a2353137d245c586de94961520",
+    "afterSha256": "13a9f2d23d5c7a065cc575050ec127a1cef50ad6fac644e36a453ba55ae0f591",
+    "edits": [
+      [
+        503,
+        1,
+        []
+      ],
+      [
+        486,
+        2,
+        [
+          " read=releaseRewardDisplayPriorRead(read);"
+        ]
+      ],
+      [
+        320,
+        2,
+        [
+          " const read=shopEntryPreflightRead(owner=>beforeReleaseReplayCiSource(owner,readFileSync(owner,'utf8'),'early'));"
+        ]
+      ],
+      [
+        281,
+        1,
+        []
+      ],
+      [
+        4,
+        1,
+        [
+          "import {beforeSts1MenuCiSource} from './sts1-menu-ci-source.mjs';"
+        ]
+      ]
+    ]
+  },
+  "tests/helpers/integrated-ci-source.mjs": {
+    "beforeSha256": "36358794a6c2c160ee7469de3a3157e7c36329d9303a2d662aed4612358d51e8",
+    "afterSha256": "9517b42ca5d8db3b4f0522cb4c9105c9cb4a35b05811b4eb3ab45bc922887650",
+    "edits": [
+      [
+        91,
+        1,
+        [
+          "  const raw=readCurrent(path,'utf8'),predecessor=beforeReleaseSuccessor(path,raw);"
+        ]
+      ],
+      [
+        9,
+        1,
+        []
+      ]
+    ]
+  },
+  "tests/helpers/replay-reviewed-selection.mjs": {
+    "beforeSha256": "482b6db17a2ecfaf1db194f22f973ce2b19b4f42f26c8ef5d8c4296276e13a5b",
+    "afterSha256": "81f85906fa30e149b901952e7034bd05881fc7a3ad834e42c3739a29609a2939",
+    "edits": [
+      [
+        25,
+        1,
+        []
+      ],
+      [
+        12,
+        1,
+        []
+      ]
+    ]
+  },
+  "tests/helpers/sts1-menu-ci-source.mjs": {
+    "beforeSha256": "c3546ce4c1da4472d5a67e7468d53ff4960c6db3d511f712348bbdcb647f70c2",
+    "afterSha256": "a370b1c8a3d67472f1d748a7b812b98419a44077208f4fd44c11753f22a4dabe",
+    "edits": [
+      [
+        39,
+        3,
+        [
+          " source=beforeReleaseUiCloseoutSource(path,beforeChoiceTest(path,beforeCompactPopupTest(path,source)));"
+        ]
+      ],
+      [
+        35,
+        3,
+        []
+      ],
+      [
+        32,
+        1,
+        [
+          " assert.equal(hash(prior),choice.beforeSha256,'exact predecessor before the choice layout update');"
+        ]
+      ],
+      [
+        30,
+        1,
+        [
+          " for(const [index,count,previous]of choice.edits)lines.splice(index,count,...previous);"
+        ]
+      ],
+      [
+        28,
+        1,
+        [
+          " if(hash(lf)!==choice.afterSha256)return source;"
+        ]
+      ],
+      [
+        25,
+        2,
+        [
+          "function beforeChoiceTest(path,source){",
+          " if(path!=='tests/official-assets.test.mjs'||typeof source!=='string'||source.includes('\\r\\r\\n'))return source;"
+        ]
+      ],
+      [
+        12,
+        1,
+        []
+      ]
+    ]
+  },
+  "tests/lua/support/sts_ui_closeout.lua": {
+    "beforeSha256": "96b523c28743007d5be8b95f409fe01baa851bf546451bdacba9aafd1355b6cf",
+    "afterSha256": "6fc984f5365c616b4a5e1f8fbf1bf4764ae3ba89fc496fb09b1a627adc5391f1",
+    "edits": [
+      [
+        17,
+        2,
+        [
+          "    for _,name in ipairs({'deckTitle','deckSummary','deckOpen'})do assert(not details:GetChild(name),name)end"
+        ]
+      ]
+    ]
+  },
+  "tests/noncombat-v25-layout.test.mjs": {
+    "beforeSha256": "872d27a0575a36c14aedbb5ac3247e5f8a1b3c148cd9f6c94a0f043de37f9aea",
+    "afterSha256": "36c8145b86fde208712adbceee8967b5c880558cf51c2bd3f2c744ba865159c7",
+    "edits": [
+      [
+        228,
+        18,
+        []
+      ],
+      [
+        216,
+        2,
+        []
+      ],
+      [
+        210,
+        3,
+        []
+      ],
+      [
+        177,
+        2,
+        []
+      ]
+    ]
+  },
+  "tests/official-assets.test.mjs": {
+    "beforeSha256": "fd03f10dfdc27835d113c8c3f7246a239dea551a73e82862282e73d98feeebe7",
+    "afterSha256": "1e11a5649339865d8a3ef21882da2da1711613b810eb4c4dfd9fa1d1745440f1",
+    "edits": [
+      [
+        446,
+        2,
+        [
+          " for(const name of ['deckTitle','deckSummary','deckOpen'])assert.equal(child(details,name),undefined);",
+          " for(const name of ['name','stats','gold','v25Story','relic','relicText']){"
+        ]
+      ],
+      [
+        112,
+        1,
+        [
+          " const retiredStarterEntry=path=>/^\\/SlayTheAbyss\\/characterPanel\\/details\\/deck(?:Open|Title|Summary|Rule)(?:\\/|$)/.test(path);"
+        ]
+      ]
+    ]
+  },
+  "tests/run-catalog-responsibilities.test.mjs": {
+    "beforeSha256": "9e753f479da0fbcc2518f802366cf162faf4223116c4e77e1bf4ae622840e0fc",
+    "afterSha256": "0e6e9d3b44914febb8d4a62148a11543d6d2a10fba95768a839c1cce24006279",
+    "edits": [
+      [
+        44,
+        1,
+        [
+          " const module=measured.modules.find(m=>m.file===file);assert.equal(module.functions.length,35);assert(module.functions.every(f=>f.complexity<=15));"
+        ]
+      ]
+    ]
+  },
+  "tests/sts-character-browser.test.mjs": {
+    "beforeSha256": "5c6ef9dc8681e3e69fc756ace097d77da4ab85aecd39ed85cc9c4f9d2eb1b3a4",
+    "afterSha256": "f39cb1fdf280a33c04ceccd6af5f985f9ceaeef90c882e6731961c1d444c8d53",
+    "edits": [
+      [
+        186,
+        2,
+        [
+          "assert(not host:openStarterDeck(),'public covered input must stay blocked')",
+          "-- Arrange an asynchronous page replacement without completing its old owner.",
+          "-- The actual shared browser and actual entry readiness remain under test.",
+          "platform.presentationPage('deckPanel');assert(host.deckUI:openPreview(host.characterSelection.info))",
+          "host.characterSelection.deckOpen=true;host:refresh();assert(Gate.intent(host).page=='deckPanel')"
+        ]
+      ],
+      [
+        181,
+        4,
+        [
+          "assert(state.phase=='building' and not platform.presentationReady(Gate.intent(host)),'real selection must wait for its incomplete portrait')"
+        ]
+      ],
+      [
+        178,
+        2,
+        [
+          "assert(noPortraitDuringBuild and not host.pageReveal:covered());assert(host:start());assert(host.characterSelection.info)"
+        ]
+      ],
+      [
+        172,
+        2,
+        [
+          "  assert(index==801 or index==802,'unexpected source template');serial=serial+1",
+          "  local c=native(F.control({name='portrait'..serial,kind=index==801 and'image'or'container'},parent));parent.children[c.name]=c;return c"
+        ]
+      ],
+      [
+        161,
+        1,
+        [
+          "Enum={ImageSource={StaticReference='static'},ImageType={Basic='basic',Stretch='stretch'},CursorEventType={CursorClick='click'},"
+        ]
+      ],
+      [
+        144,
+        2,
+        [
+          "local Asset=require('abyss_traveler_portrait_assets');Asset.imagePrefabId=801;Asset.containerPrefabId=802"
+        ]
+      ],
+      [
+        106,
+        1,
+        [
+          "Display.writeNativeArt=write"
+        ]
+      ],
+      [
+        92,
+        1,
+        []
+      ],
+      [
+        85,
+        1,
+        [
+          "prepared=true;settle();assert(host.controller.scope=='deck' and not host.pageReveal:covered() and painted>0)"
+        ]
+      ],
+      [
+        81,
+        1,
+        [
+          "assert(host.controller.scope=='pageReveal' and require('abyss_controller').pointerBlocked(host.controller),'preparation must keep preview input covered')"
+        ]
+      ],
+      [
+        71,
+        2,
+        [
+          "local Display=require('abyss_card_display');local write=Display.writeNativeArt;local painted=0",
+          "Display.writeNativeArt=function(...)"
+        ]
+      ]
+    ]
+  },
+  "tests/sts-page-reveal.test.mjs": {
+    "beforeSha256": "626c0d696152515ea76b776cbf07ed72838c2c5bd0b08c03ca4dd564537d600f",
+    "afterSha256": "291e594bc25504b0a3307f48a5b608c9fc665604d4c8026f82558dcc238ba716",
+    "edits": [
+      [
+        161,
+        1,
+        []
+      ],
+      [
+        158,
+        2,
+        [
+          "assert(start.click()and host.characterOpen and reveal:covered(),'new page did not acquire a fresh cover')"
+        ]
+      ]
+    ]
+  },
+  "tests/v25-portrait-profile.test.mjs": {
+    "beforeSha256": "e7580b578eb1ca7f65b120e3e3aa416529101f6b76d2f6ef1d5c158df9048d5c",
+    "afterSha256": "63e1b271e270ba07c9db6aa381dcfc6f5eda0fce48ab66fb84377bb74b7ea755",
+    "edits": [
+      [
+        279,
+        5,
+        [
+          "local ok,reason=pcall(Portraits.new,stage,nil,{selectionAvatar=true})",
+          "assert(not ok and tostring(reason):find('approved background schema',1,true),'unmarked official source was accepted')",
+          "assert(LiveCount()==0)"
+        ]
+      ],
+      [
+        262,
+        5,
+        [
+          "local ok,reason=pcall(Portraits.new,stage,nil,{selectionAvatar=true})",
+          "assert(not ok and tostring(reason):find('approved 1600 background',1,true),",
+          " 'official selection silently fell back to 4315 primitives')",
+          "assert(LiveCount()==0)"
+        ]
+      ],
+      [
+        255,
+        1,
+        [
+          "test('official selection rejects missing shared pixel source instead of silently building the old full-body drawing',()=>{"
+        ]
+      ]
+    ]
+  }
 }

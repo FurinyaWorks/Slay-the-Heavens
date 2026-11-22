@@ -13,6 +13,7 @@ import {beforeSelectorSource,selectorSourcePair} from './character-selector-sour
 import {beforePotionTextSource,potionTextSourcePair} from './potion-text-source.mjs';
 import {beforeFatalBgmSource,fatalBgmPair} from './fatal-bgm-source-continuation.mjs';
 import {beforeEndingTerminalSource,endingTerminalSourcePath} from './ending-terminal-source.mjs';
+import {beforeCharacterSelectionSource} from './sts1-menu-ci-source.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
@@ -33,7 +34,7 @@ const readRaw = path => readFileSync(path, 'utf8');
 
 export function assertCharacterPreparationSources(read = readRaw) {
   for (const path of characterPreparationOwners) {
-    const source = read(path);
+    const source = beforeCharacterSelectionSource(path,read(path));
     assert(typeof source === 'string' && !source.includes('\r\r\n') &&
       digest(normalize(source)) === packet.production[path].after, 'fresh character preparation source: '+path);
   }
@@ -108,6 +109,9 @@ const currentContinuationOwners = new Set([
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
+ source=beforeCharacterSelectionSource(path,source);
+ const readCurrent=read;
+ read=owner=>beforeCharacterSelectionSource(owner,readCurrent(owner));
  source=beforeCurrentCompoundIntentSource(path,source,read);
  read=compoundIntentPriorRead(read);
  source=beforeTravelerStatusSource(path,source,read,true);

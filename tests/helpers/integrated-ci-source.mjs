@@ -7,6 +7,7 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
 import {releaseBootstrapCiSource,releaseBootstrapCiCheckedSource,assertReleaseBootstrapCiCurrent} from './release-bootstrap-ci-source.mjs';
+import {beforeCharacterSelectionSource} from './sts1-menu-ci-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const integratedCiProof=freeze(JSON.parse(gunzipSync(integratedCiBytes)));
@@ -88,7 +89,7 @@ export function assertIntegratedCurrent(read=readFileSync){
  const readCurrent=read;
  read=preflightPriorRead(read);
  for(const [path,row]of Object.entries(integratedCiProof.files)){
-  const raw=readCurrent(path,'utf8'),predecessor=beforeReleaseSuccessor(path,raw);
+  const raw=beforeCharacterSelectionSource(path,readCurrent(path,'utf8')),predecessor=beforeReleaseSuccessor(path,raw);
   const source=predecessor===raw?read(path,'utf8'):predecessor;
   assert.equal(hash(norm(releaseBootstrapCiCheckedSource(path,source,row.current))),row.current.sha256,'fresh complete integration source: '+path);
  }

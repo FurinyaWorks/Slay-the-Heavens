@@ -10,6 +10,7 @@ import {beforeCurrentProductionSource} from './character-preparation-source.mjs'
 import {historicalReleaseBuildInput} from './fork-preflight-source.mjs';
 import {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';
 import {stageReleaseReplayDependencies} from './release-selection-replay-dependencies.mjs';
+import {beforeCharacterSelectionSource} from './sts1-menu-ci-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const reviewedContracts=Object.freeze({
  'tests/sts-character-reference.test.mjs':5,
@@ -22,6 +23,7 @@ assert.equal(hash(releaseOwners),'6e98d1458c606172c0d7f9f9010189995b0db25573a5eb
 const {head,files:successors}=JSON.parse(releaseOwners);
 assert.equal(head,'dd7b9cdc1e86094965dbf50f89b92aebbe2c8381');
 function historicalSelectionOwner(path,source,row,read){
+ source=beforeCharacterSelectionSource(path,source);
  if(!Object.hasOwn(successors,path))return beforeCurrentProductionSource(path,source,read);
  const successor=successors[path];
  assert.equal(hash(norm(source)),successor.currentSha,'fresh Release selection owner: '+path);

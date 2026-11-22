@@ -2,7 +2,7 @@ import {beforeIllustrationTestSource,beforeReleaseReplayCiSource} from './releas
 import {releaseRewardDisplayPriorRead} from './release-ui-closeout-source.mjs';
 import {beforeReleaseShopEntry,releaseUiRestoreArchive,shopEntryPriorRead} from './release-ui-restore-source.mjs';
 import {beforeCombatVisualSource,combatVisualPriorRead} from './combat-visual-source.mjs';
-import {beforeSts1MenuCiSource} from './sts1-menu-ci-source.mjs';
+import {beforeCharacterSelectionSource,beforeSts1MenuCiSource} from './sts1-menu-ci-source.mjs';
 import {assertRefinedReleaseSourcesCurrent,beforeRefinedReleaseCiSource,beforeRefinedReleaseJsInventory,refinedReleaseHistoricalInput,beforeSelectionReplaySuccessor} from './refined-release-source.mjs';
 import {beforeV2UiAdmission} from './v2-ui-admission-ci-source.mjs';
 import {beforeV2UiEvidence,beforeV2UiPreTinyHouseSource} from './v2-p1-ci-source.mjs';
@@ -279,6 +279,7 @@ function beforeShopPurchaseRegression(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeReleaseUiBuildSource(path,source){
+ source=beforeCharacterSelectionSource(path,source);
  source=menuProofSuccessor.project(path,source);
  source=beforeSelectionReplaySuccessor(path,source);
  if(path==='docs/legal/assets.json'&&typeof source==='string'&&hash(normalize(source))==='1c3ea4f310aaf5dccdf177946728f65eaeb1ed882f70b5543bcae178774f0983'){
@@ -317,7 +318,8 @@ function beforeReleaseUiBuildSource(path,source){
  source=beforeShopRoomCiSource(path,beforeReleaseBackflowTest(path,beforeReleaseAssetInventory(path,source)));
  source=beforeTravelerStatusCiSource(path,source);
  source=beforeShopEntryCopier(path,beforeReleaseShopEntry(path,beforeLoadingRecoveryCopier(path,source)));
- const read=shopEntryPreflightRead(owner=>beforeReleaseReplayCiSource(owner,readFileSync(owner,'utf8'),'early'));
+ const read=shopEntryPreflightRead(owner=>beforeReleaseReplayCiSource(owner,
+  beforeCharacterSelectionSource(owner,readFileSync(owner,'utf8')),'early'));
  source=beforeCombatVisualSource(path,source,read);
  const prior=beforeReleaseReplayCiSource(path,source,'late');
  if(prior!==source){
@@ -482,7 +484,8 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
- read=releaseRewardDisplayPriorRead(read);
+ const prior=read;
+ read=releaseRewardDisplayPriorRead((path,...args)=>beforeCharacterSelectionSource(path,prior(path,...args)));
  const requireCurrent=assertCapacitySources(read);
  read=beforeCapacityRead(shopEntryPreflightRead(read),requireCurrent);
  assertRefinedReleaseSourcesCurrent(read);
@@ -498,6 +501,7 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
 }
 export function beforePreflightSource(path,source,view='prior'){
  if(Object.hasOwn(Object.prototype,path))return source;
+ source=beforeCharacterSelectionSource(path,source);
  source=beforeCharacterPreparationCiSource(path,beforeV2UiAdmission(path,beforeCoopCiSource(path,source)));
  source=beforeIntegrationSuccessor(path,source);
  // Only the exact flag-registry successor enters the earlier Release witness.
