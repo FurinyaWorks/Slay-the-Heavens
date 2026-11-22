@@ -1,4 +1,5 @@
 import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,beforeDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
+import {beforeCalibrationReplay} from './calibration-replay-sources.mjs';
 import {beforeStsUiCloseoutSource} from './sts-ui-closeout-source.mjs';
 import {beforeStsFadeCi} from './sts-fade-ci-source.mjs';
 import {beforeIntegratedStsInventory} from './sts-selection-fade-source.mjs';
@@ -6,7 +7,7 @@ import {beforeNativeButtonRepair,beforeRebasedCi,beforeRebasedRelease,historical
 import {beforeTinyHouseIntegratedSource} from './tiny-house-integrated-source.mjs';
 import {assertReleaseCapacityCohort,beforeReleaseCapacitySource} from './release-integration-source.mjs';
 import {beforeM05BackflowInventory} from './m05-shop-ci-source.mjs';
-import {beforeReleaseShopEntry,shopEntryPriorRead} from './release-ui-restore-source.mjs';
+import {beforeReleaseShopEntry,releaseUiRestoreArchive,shopEntryPriorRead} from './release-ui-restore-source.mjs';
 import {beforeCombatVisualSource,combatVisualPriorRead} from './combat-visual-source.mjs';
 import {beforeSts1MenuCiSource} from './sts1-menu-ci-source.mjs';
 import {assertRefinedReleaseSourcesCurrent,beforeRefinedReleaseCiSource,beforeRefinedReleaseJsInventory,refinedReleaseHistoricalInput} from './refined-release-source.mjs';
@@ -214,6 +215,17 @@ function beforeDevelopSessionRelicCopier(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeDevelopBackflowCopier(path,source){
+ source=beforeReplayFingerprintSource(path,source);
+ if(path==='tests/helpers/copy-integration-source-closure.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')){
+  const lf=normalize(source);
+  if(hash(lf)==='abc997d3fc2634171522a086ec687de62ffd6390021e264bb28dd6a03d56e831'&&blob(lf)==='e609e937efa62af330b8d0c57192e2be5f9dc83a'){
+   const prior=lf.replace(/^const developSourceEpochReplayFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
+    .replace('Object.entries(developSourceEpochReplayFiles))','Object.entries(developIntegrationReplayFiles))');
+   assert.equal(hash(prior),'0a378223063056063e2903ec3d36c323a55e25b8a1f5ad6ccba71c9e5b70d30a','exact Develop source epoch replay copier predecessor');
+   assert.equal(blob(prior),'fd462c9e87c8563efb8b343405cc8550e52c0f47');
+   source=source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+  }
+ }
  if(path==='tests/helpers/copy-integration-source-closure.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')){
   const lf=normalize(source);
   if(hash(lf)==='0a378223063056063e2903ec3d36c323a55e25b8a1f5ad6ccba71c9e5b70d30a'&&blob(lf)==='fd462c9e87c8563efb8b343405cc8550e52c0f47'){
@@ -595,6 +607,38 @@ function beforeIntegrationReplayTests(path,source){
  assert.equal(blob(prior.source),prior.gitBlob);
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
+const epochReplayRuntimePath='tests/helpers/combined-epoch/source-epoch-runtime.mjs';
+const fingerprintReplayPaths=new Set([epochReplayRuntimePath,'tests/helpers/copy-integration-source-closure.mjs',
+ 'tests/helpers/develop-release-backflow-source.mjs','tests/helpers/rebased-release-source.mjs','tests/helpers/round3-catalog-source-inverse.mjs']);
+let fingerprintReplay;
+function beforeReplayFingerprintSource(path,source){
+ if(!fingerprintReplayPaths.has(path))return source;
+ fingerprintReplay??=releaseUiRestoreArchive(readFileSync(new URL('./replay-fingerprint-predecessor.json.gz',import.meta.url)),
+  '805b120d44180797e8583edf7375a7b1d78250bfd8e9b59284aed534f36ae994','baaf67f273aa99f9d7b69812f7c5b2edd6815ab8');
+ return fingerprintReplay.project(path,source);
+}
+const epochReplayPaths=[epochReplayRuntimePath,'tests/helpers/character-preparation-source.mjs'];
+let epochReplaySources;
+function beforeDevelopEpochReplayRuntime(path,source){
+ if(!epochReplayPaths.includes(path)||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ if(!epochReplaySources){
+  const bytes=readFileSync(new URL('./epoch-replay-runtime-source.json.gz',import.meta.url));
+  assert.equal(hash(bytes),'cf8ad18c6099407d326129c39df4ca6ec33f1ab2559a4f5eae62eff5c9403e94','immutable Develop replay runtime predecessor archive');
+  const proof=JSON.parse(gunzipSync(bytes));
+  assert.equal(proof.schemaVersion,1);
+  assert.equal(proof.base,'796ed39e176f162170b2e19230a39fdb83013b00');
+  assert.deepEqual(Object.keys(proof.files),epochReplayPaths);
+  for(const {before,after} of Object.values(proof.files)){
+   assert.equal(hash(before.source),before.sha256);assert.equal(blob(before.source),before.gitBlob);
+   assert.match(after.sha256,/^[a-f0-9]{64}$/);assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
+  }
+  epochReplaySources=proof.files;
+ }
+ const {before,after}=epochReplaySources[path];
+ const current=normalize(source);
+ if(hash(current)!==after.sha256||blob(current)!==after.gitBlob)return source;
+ return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
+}
 function beforeIntegrationSuccessor(path,source){
  source=beforeIntegrationReplayTests(path,source);
  if(!Object.hasOwn(sourceSuccessors,path)||typeof source!=='string'||source.includes('\r\r\n')
@@ -604,10 +648,18 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
+ const liveRead=read;
+ read=(path,encoding)=>beforeCalibrationReplay(path,liveRead(path,encoding));
+ const readCurrent=(path,encoding)=>{
+  const raw=read(path,encoding),priorFingerprint=beforeReplayFingerprintSource(path,raw);
+  const prior=beforeDevelopEpochReplayRuntime(path,priorFingerprint);
+  if(path===epochReplayRuntimePath)assert(raw!==priorFingerprint&&prior!==priorFingerprint,'fresh complete integration source: '+path);
+  return beforeIntegrationReplayTests(path,beforeForkFirstCi(path,prior));
+ };
  const readBackflow=(path,encoding)=>{
-  const source=beforeIntegrationReplayTests(path,beforeForkFirstCi(path,read(path,encoding)));
+  const source=readCurrent(path,encoding);
   if(developBackflowOwns(path))assertDevelopBackflowCurrent(path,source);
-  return authenticateDevelopBackflow(path,source,owner=>read(owner,'utf8'));
+  return authenticateDevelopBackflow(path,source,owner=>readCurrent(owner,'utf8'));
  };
  const releaseRead=(path,encoding)=>beforeRebasedRelease(path,readBackflow(path,encoding));
  assertReleaseCapacityCohort(releaseRead);
@@ -626,7 +678,10 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  }
 }
 export function beforePreflightSource(path,source,view='prior'){
+ source=beforeCalibrationReplay(path,source);
  source=beforeForkFirstCi(path,source);
+ source=beforeReplayFingerprintSource(path,source);
+ source=beforeDevelopEpochReplayRuntime(path,source);
  source=beforeDevelopBackflow(path,source);
  source=beforeNativeButtonRepairCopier(path,beforeNativeButtonRepair(path,source));
  source=beforeStsUiCloseoutSource(path,source);

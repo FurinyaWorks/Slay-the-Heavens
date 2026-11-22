@@ -23,22 +23,22 @@ import {preparePotionCallbackRetirement} from './epochs/potion/tests/helpers/pot
 import {prepareActorPresenceRetirement} from './epochs/actor/tests/helpers/actor-presence-source-inverse.mjs';
 const hash=s=>createHash('sha256').update(s.replaceAll('\r\n','\n')).digest('hex');
 function projectRound3(path,source,{readSource=live}={}){
- source=sourceEpoch.preCombinedSource(path,source,{target:'develop',readSource});
- readSource=sourceEpoch.combinedReader(readSource,'develop');
- source=legacyIntegration(path,source,'base',{readSource});
- source=legacyMonster(path,source,{readSource});
- source=legacyComposition(path,source,'round3');
- const binding=round3CatalogProof.files[path];
- if(!binding||typeof source!=='string'||hash(source)!==binding.afterSha256)return source;
- const added='src/lua/abyss_combat_catalog.lua',linked=readSource(added);
- assert.equal(hash(linked),round3CatalogProof.files[added].afterSha256,'catalog linked module identity');
- if(path===added)return null;
- const lines=source.replaceAll('\r\n','\n').split('\n');
- for(const hunk of [...binding.hunks].reverse()){
-  assert.deepEqual(lines.slice(hunk.at,hunk.at+hunk.after.length),hunk.after,'exact catalog inverse hunk');
-  lines.splice(hunk.at,hunk.after.length,...hunk.before);
- }
- const previous=lines.join('\n');assert.equal(hash(previous),binding.beforeSha256,'complete pre-catalog identity');return previous;
+ return sourceEpoch.withCombinedProjection(path,source,{target:'develop',readSource},(projected,read)=>{
+  let candidate=legacyIntegration(path,projected,'base',{readSource:read});
+  candidate=legacyMonster(path,candidate,{readSource:read});
+  candidate=legacyComposition(path,candidate,'round3');
+  const binding=round3CatalogProof.files[path];
+  if(!binding||typeof candidate!=='string'||hash(candidate)!==binding.afterSha256)return candidate;
+  const added='src/lua/abyss_combat_catalog.lua',linked=read(added);
+  assert.equal(hash(linked),round3CatalogProof.files[added].afterSha256,'catalog linked module identity');
+  if(path===added)return null;
+  const lines=candidate.replaceAll('\r\n','\n').split('\n');
+  for(const hunk of [...binding.hunks].reverse()){
+   assert.deepEqual(lines.slice(hunk.at,hunk.at+hunk.after.length),hunk.after,'exact catalog inverse hunk');
+   lines.splice(hunk.at,hunk.after.length,...hunk.before);
+  }
+  const previous=lines.join('\n');assert.equal(hash(previous),binding.beforeSha256,'complete pre-catalog identity');return previous;
+ });
 }
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function prepareRound3CatalogModuleRetirement(directory,{sourceRoot=process.cwd()}={}){

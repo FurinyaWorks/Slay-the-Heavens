@@ -1,6 +1,6 @@
 import {beforeV2UiHudSource,v2UiHudSourcePaths} from './v2-ui-hud-source.mjs';
 import {beforeV2UiEvidence} from './v2-p1-ci-source.mjs';
-import {beforePreflightSource,preflightPriorRead} from './fork-preflight-source.mjs';
+import {authenticateDevelopBackflow,beforePreflightSource,preflightPriorRead} from './fork-preflight-source.mjs';
 // Exact named views for immutable receipts. Current Full uses raw discovery.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -24,15 +24,15 @@ for(const [id,source]of Object.entries(packed.records))assert.equal(hash(source)
 const freeze=value=>{if(value&&typeof value==='object'&&!Object.isFrozen(value)){Object.values(value).forEach(freeze);Object.freeze(value);}return value;};
 export const closeoutCiProof=freeze(packed);
 function target(name){assert(Object.hasOwn(packed.targets,name),'known closeout CI view');return packed.targets[name];}
+const productionSource=path=>path==='config/architecture.json'||path.startsWith('src/lua/');
 export function preCloseoutCiSource(path,source,view){
  const before=target(view);
  if(before.scope==='workflow-only'&&path!=='.github/workflows/quality.yml')return source;
+ // Runtime projections authenticate the current production closure together.
+ if(productionSource(path))return source;
  source=beforePreflightSource(path,source);
  if(path===capacityRoadmapBinding.path&&typeof source==='string'&&hash(source.replaceAll('\r\n','\n'))===capacityRoadmapBinding.current)return capacityRoadmapBinding.source;
  if(path===naming.path&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(source.replaceAll('\r\n','\n'))===naming.current)return naming.source;
- // Production sources belong to the complete freshly authenticated owner
- // closure; a CI receipt must never intercept them before that authorization.
- if(path==='config/architecture.json'||path.startsWith('src/lua/'))return source;
  source=preRunHudCiSource(path,source);
  const id=Object.hasOwn(packed.current,path)?packed.current[path]:null;
  if(!id||typeof source!=='string'||hash(source.replaceAll('\r\n','\n'))!==id)return source;
@@ -54,7 +54,7 @@ export function closeoutInventory(paths,view,readSource=readFileSync){
  }
  return [...before.inventory];
 }
-export function closeoutRead(view,read=readFileSync){
+export function closeoutRead(view,read=readFileSync,{readRuntime=read}={}){
  const before=target(view);
  if(before.scope!=='workflow-only'){
   const preflight=preflightPriorRead(read),readSource=path=>preflight(path,'utf8');
@@ -67,10 +67,14 @@ export function closeoutRead(view,read=readFileSync){
   };
  }
  return (path,encoding)=>{
-  const value=read(path,encoding),source=typeof value==='string'?value:value.toString('utf8');
+  const runtime=before.scope!=='workflow-only'&&productionSource(path);
+  const value=(runtime?readRuntime:read)(path,encoding),source=typeof value==='string'?value:value.toString('utf8');
   let prior=preCloseoutCiSource(path,source,view);
-  if(before.scope!=='workflow-only'&&prior===source&&(path==='config/architecture.json'||path.startsWith('src/lua/')))
-   prior=sourceSlice(path,source,view,p=>read(p,'utf8'));
+  if(runtime){
+   const readOwner=p=>readRuntime(p,'utf8');
+   const candidate=path==='config/architecture.json'?authenticateDevelopBackflow(path,source,readOwner):source;
+   prior=sourceSlice(path,candidate,view,readOwner);
+  }
   return typeof value==='string'?prior:prior===source?value:Buffer.from(prior);
  };
 }

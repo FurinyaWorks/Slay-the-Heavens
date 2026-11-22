@@ -243,11 +243,25 @@ const developIntegrationReplayFiles=Object.freeze({
  ...developSessionRelicFiles,
  'tests/helpers/round3-catalog-source-inverse.mjs':'876d284929930e1a5af54febd8db894519b5df96e1726cca3a8a5a9e35feeb96',
 });
+const developSourceEpochReplayFiles=Object.freeze({
+ ...developIntegrationReplayFiles,
+ 'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'374a8859981663781a20dae1cc4d3fd2032d6f74b09f7eaec9945a36e24ebac3',
+ 'tests/helpers/character-preparation-source.mjs':'076768299363a94357c64603a91243577238bdadccf6aa94d0159c8222457720',
+ 'tests/helpers/slime-split-source.mjs':'a0b689346b7912b21d5268fc77d3b76310f39085effb58540a32f5ac9ccaaf2b',
+});
+const developReplayFingerprintFiles=Object.freeze({
+ ...developSourceEpochReplayFiles,
+ 'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'de28a1d3cbef648c5dd12f1c69075d8917916772c85c8f103948392b80206cf4',
+ 'tests/helpers/develop-release-backflow-source.mjs':'5df32d98656b84986286a08ff35c3e20fab316fb8b8a19b2c94e1e832240034b',
+ 'tests/helpers/rebased-release-source.mjs':'187d921a65bee4bfb76f0b1083849139d2dbb4434dfb786df6c1407fda2c1f2d',
+ 'tests/helpers/round3-catalog-source-inverse.mjs':'6fc3ea3a193ac586187ab5749a8c61b3b9e3ec1a87f689b62b545c73ed64ec3e',
+ 'tests/helpers/source-fingerprint.mjs':'dfbee65636a24c4c4ffe755b27fd741e00ea2e81b044638c424a866b97309d8f',
+});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
- for(const [path,sha]of Object.entries(developIntegrationReplayFiles)){
+ for(const [path,sha]of Object.entries(developReplayFingerprintFiles)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});

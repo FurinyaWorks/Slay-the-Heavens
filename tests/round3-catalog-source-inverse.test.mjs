@@ -12,6 +12,7 @@ import {projectArtPerfSource,artPerfSourceComposition} from './helpers/art-perf-
 import {round3CatalogProof as proof,preRound3CatalogSource as prior,prepareRound3CatalogModuleRetirement as retire} from './helpers/epochs/develop/tests/helpers/round3-catalog-source-inverse.mjs';
 import {preRound3CatalogSource as currentProject,prepareRound3CatalogModuleRetirement as currentRetire} from './helpers/round3-catalog-source-inverse.mjs';
 import {sourceEpoch} from './helpers/combined-epoch/source-epoch.mjs';
+import {actorFocusAdded,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';
 import {gameUiExtractionProof} from './helpers/epochs/develop/tests/helpers/game-ui-extraction-source-inverse.mjs';
 import {coreLifecycleSourceProof} from './helpers/epochs/develop/tests/helpers/core-lifecycle-source-inverse.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex');
@@ -129,14 +130,17 @@ test('current catalog hosts retain authenticated intermediate epochs and freshly
   'config/architecture.json':gameUiExtractionProof.files['config/architecture.json'],
   'src/lua/abyss_combat.lua':coreLifecycleSourceProof.files['src/lua/abyss_combat.lua'],
  };
- const current=Object.fromEntries(Object.keys(sourceEpoch.proof.current).map(p=>[p,readLive(p)]));
+ const addedOwners=['scripts/deck-ui-layout.mjs',...stasisUpgradeAddedPaths,...actorFocusAdded];
+ const current=Object.fromEntries([...Object.keys(sourceEpoch.proof.current),...addedOwners].map(p=>[p,readLive(p)]));
+ const linkedOwners=[...new Set([...sourceEpoch.proof.owners,...addedOwners])];
  for(const [path,binding]of Object.entries(expected)){
   assert.equal(hash(binding.beforeSource),binding.beforeSha256);
   if(binding.beforeGitBlob)assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.beforeSource)}\0`).update(binding.beforeSource).digest('hex'),binding.beforeGitBlob);
   assert.notEqual(binding.beforeSha256,proof.files[path].beforeSha256,'current intermediate epoch is not old round-three history');
-  let bad=null,mode='good',seen=[];
+  let bad=null,mode='good',seen=[],lateRead=0;
   const raw=p=>{
    seen.push(p);
+   if(seen.length===lateRead)return current[p]+'\n';
    if(p===bad){
     if(mode==='throw')throw Error('current catalog reader sentinel');
     if(mode==='missing')return undefined;if(mode==='null')return null;
@@ -147,9 +151,13 @@ test('current catalog hosts retain authenticated intermediate epochs and freshly
   const wrapped=sourceEpoch.combinedReader(sourceEpoch.combinedReader(raw,'develop'),'develop');
   assert.equal(sourceEpoch.combinedReader(wrapped,'develop'),wrapped);
   const check=()=>assert.equal(currentProject(path,current[path],{readSource:wrapped}),binding.beforeSource);
-  check();const first=[...seen];for(const owner of sourceEpoch.proof.owners)assert(first.includes(owner),'fresh current catalog owner: '+owner);
+  check();const first=[...seen];for(const owner of linkedOwners)assert(first.includes(owner),'fresh current catalog owner: '+owner);
   seen=[];check();assert.deepEqual(seen,first,'warm calls repeat the full raw-read sequence');
-  for(bad of sourceEpoch.proof.owners){
+  const lateOwner='scripts/deck-ui-layout.mjs';
+  lateRead=first.lastIndexOf(lateOwner)+1;seen=[];
+  assert.throws(check,error=>error.message.includes(lateOwner)&&/changed during replay/.test(error.message));
+  lateRead=0;
+  for(bad of linkedOwners){
    for(mode of ['changed','missing','null','buffer','throw']){
     seen=[];assert.throws(check,error=>{
      assert.match(error.message,/linked owner/);assert(error.message.includes(bad));

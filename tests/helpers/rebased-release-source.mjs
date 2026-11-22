@@ -3,17 +3,13 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
+import {exactSourceMatches as matches} from './source-fingerprint.mjs';
 const hash=(s,algorithm='sha256')=>createHash(algorithm).update(s).digest('hex');
 const archive=readFileSync(new URL('./rebased-release-source.json.gz',import.meta.url));
 assert.equal(hash(archive),'9ae910d679bdc8386063c58043a43e496ee34b7c6f22fc1a27cbaeca7b27222d','exact reconciled source archive');
 const {develop,release,ci,production,releaseCopier,reviewedBuild,stsUi}=JSON.parse(gunzipSync(archive));
 assert.equal(develop,'aae948788d93012d11fe5b6da3281150bb9957c6');
 assert.equal(release,'930097995be43e5612e949a3b5fa0c1d5d305f49');
-function matches(source,binding){
- if(typeof source!=='string'||source.includes('\r\r\n'))return false;
- const lf=source.replaceAll('\r\n','\n');
- return hash(lf)===binding.sha256&&hash(`blob ${Buffer.byteLength(lf)}\0${lf}`,'sha1')===binding.gitBlob;
-}
 for(const rows of [ci,production,reviewedBuild.files,stsUi.files])for(const {before} of Object.values(rows))assert(matches(before.source,before));
 assert.equal(stsUi.source,'d667ad4dd4b7dc4ad5419aee8eba8a1548ea5769');
 assert.equal(reviewedBuild.source,'900527d931df941eed642a9667ccde92f76b73db');
