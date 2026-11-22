@@ -5,7 +5,7 @@ import {gunzipSync} from 'node:zlib';
 import {exactSourceMatches} from './source-fingerprint.mjs';
 
 const archive=readFileSync(new URL('./native-flow-fixture-source.json.gz',import.meta.url));
-assert.equal(createHash('sha256').update(archive).digest('hex'),'c68011f2022dcd055abdff79db1a29aba61a0f5fe9375da9306119e3ae3a3890','exact native flow fixture archive');
+assert.equal(createHash('sha256').update(archive).digest('hex'),'5709c250f1411a9edbdaa6669bf0d39bfecc824841684b7948eba3297d5aea35','exact native flow fixture archive');
 const {base,files}=JSON.parse(gunzipSync(archive));
 assert.equal(base,'0461bcd30dac18818318cbafa77ad72fad069e0a');
 assert.deepEqual(Object.keys(files),[
@@ -15,9 +15,11 @@ assert.deepEqual(Object.keys(files),[
  'tests/lua/formal_campaign_entry.lua',
  'tests/lua/full_source_campaign_entry.lua',
  'tests/lua/support/native_monster_only_entry.lua',
+ 'tests/official-assets-runtime.test.mjs',
  'tests/official-assets.test.mjs',
  'tests/official-battle-pile-layout.test.mjs',
  'tests/readable-unit-typography-inverse.test.mjs',
+ 'tests/sts-character-browser.test.mjs',
  'tests/sts-selection-fade.test.mjs',
 ]);
 for(const [path,{before,after}] of Object.entries(files)){

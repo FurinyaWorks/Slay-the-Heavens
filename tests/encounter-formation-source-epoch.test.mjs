@@ -1,3 +1,5 @@
+import {beforeDevelopUiBackflows,readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';
+import {beforeCharacterPreparationSource,beforeCurrentProductionSource} from './helpers/character-preparation-source.mjs';
 import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
 import {beforePc13ThenV2UiHudSource} from './helpers/pc13-reward-cover-source.mjs';
 import {preDefectActorSource} from './helpers/defect-actor-source-epoch.mjs';
@@ -19,7 +21,7 @@ import {componentUiSourceEpoch} from './helpers/component-ui-source-epoch.mjs';
 import {jointUiSourceAt} from './helpers/joint-ui-source-epoch.mjs';
 import {encounterFormationEpoch} from './helpers/encounter-formation-source-epoch.mjs';
 import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-closure.mjs';
-import {closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch} from './helpers/closeout-source-epoch.mjs';
+import {closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch,sourceEpoch as closeoutEpoch} from './helpers/closeout-source-epoch.mjs';
 const path='src/lua/abyss_encounter_formation.lua',proof=sourceEpoch.proof,prior=preEncounterFormationEpoch.proof;
 const raw=p=>proof.current[p]?.source??null;
 // The original 51-owner assertions describe the frozen Formation predecessor.
@@ -208,10 +210,20 @@ test('official repair adds exact complete-file identities without rewriting the 
  const fromNativeButtons=(file,encoding)=>{
   const source=diskReadFileSync(file,encoding);
   if(file!==pileChrome)return source;
-  assert(exactSourceMatches(source,pileChromeAfter),'fresh Native Buttons pile-chrome source');
+  assert(exactSourceMatches(beforeDevelopUiBackflows(file,source),pileChromeAfter),'fresh Native Buttons pile-chrome source');
   return closeoutCiProof.records[closeoutCiProof.current[file]];
  };
- const repairRead=closeoutRead('pr629',fromNativeButtons);
+ const readRuntime=file=>{
+  const frozen=closeoutEpoch.proof.current[file];
+  if(!frozen)return null;
+  const live=file===retiredControllerPath?readRetiredController(rawCurrent):null;
+  if(live)assert(live.restored,'exact pointer successor for the retired Controller');
+  const source=live?beforeCharacterPreparationSource(file,live.source,rawCurrent)
+   :beforeCurrentProductionSource(file,rawCurrent(file),rawCurrent);
+  assert.equal(source.replaceAll('\r\n','\n'),frozen.source,'fresh official repair replay owner: '+file);
+  return source;
+ };
+ const repairRead=closeoutRead('pr629',fromNativeButtons,{readRuntime});
  for(const [file,row]of Object.entries(files)){
   const actual=repairRead(file,'utf8').replaceAll('\r\n','\n');
   assert.equal(actual,row.current.source,'raw repair source: '+file);
@@ -288,10 +300,25 @@ test('current UI facade authenticates all 118 disk owners and their continuation
  }
  for(const crlf of [false,true]){
   const reads=[];let bad=null,missing=false;
-  const live=owner=>{reads.push(owner);if(owner===bad&&missing)return null;const bytes=diskReadFileSync(owner,'utf8').replaceAll('\r\n','\n');return owner===bad?bytes+'\n':crlf?bytes.replaceAll('\n','\r\n'):bytes;};
+  const live=owner=>{
+   reads.push(owner);
+   if(owner===bad&&missing)return null;
+   if(owner===retiredControllerPath)return owner===bad?current.current[owner].source:null;
+   const bytes=diskReadFileSync(owner,'utf8').replaceAll('\r\n','\n');
+   return owner===bad?bytes+'\n':crlf?bytes.replaceAll('\n','\r\n'):bytes;
+  };
   for(let repeat=0;repeat<2;repeat++){reads.length=0;assert.equal(currentSourceEpoch.preCombinedSource(file,input,{target,readSource:live}),expected);assert.deepEqual(reads,admittedReads);}
   for(const owner of current.owners){
-   for(const absent of [false,true]){bad=owner;missing=absent;reads.length=0;assert.throws(()=>currentSourceEpoch.preCombinedSource(file,input,{target,readSource:live}),/linked owner identity/,owner);assert.deepEqual(reads,admittedReads.slice(0,admittedReads.indexOf(owner)+1));}
+   for(const absent of [false,true]){
+    bad=owner;missing=absent;reads.length=0;
+    if(owner===retiredControllerPath&&absent){
+     assert.equal(currentSourceEpoch.preCombinedSource(file,input,{target,readSource:live}),expected);
+     assert.deepEqual(reads,admittedReads);
+    }else{
+     assert.throws(()=>currentSourceEpoch.preCombinedSource(file,input,{target,readSource:live}),/linked owner identity/,owner);
+     assert.deepEqual(reads,admittedReads.slice(0,admittedReads.indexOf(owner)+1));
+    }
+   }
    bad=null;reads.length=0;assert.equal(currentSourceEpoch.preCombinedSource(file,input,{target,readSource:live}),expected);assert.deepEqual(reads,admittedReads);
   }
   reads.length=0;assert.equal(currentSourceEpoch.preCombinedSource(file,'foreign source',{target,readSource:live}),'foreign source');assert.deepEqual(reads,[]);

@@ -5,7 +5,7 @@ import {authorizeSts1MapSource,beforeSts1MapSource} from './helpers/sts1-map-sou
 import {beforePc13RewardCover,beforePc13ThenV2UiHudSource,pc13RewardCoverSourcePaths} from './helpers/pc13-reward-cover-source.mjs';
 import {beforeAuthenticatedReleaseUiRestore,beforeReleaseControlsGuideRemoval,beforeReleaseUiRestore,releaseControlsGuideRemovalSourcePaths} from './helpers/release-ui-restore-source.mjs';
 import {assertCharacterPreparationSources,beforeCharacterPreparationSource,beforeCurrentProductionSource,characterPreparationOwners} from './helpers/character-preparation-source.mjs';
-import {authenticateInputRetirement,beforeInputRetirement,beforeInputRetirementReader,assertPointerInputSource,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
+import {authenticateInputRetirement,beforeDeckBrowserBackflow,beforePotionBackflow,beforeInputRetirement,beforeInputRetirementReader,assertPointerInputSource,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 import {actorFocusAdded,deckPagesAdded,assertDevelopBackflowCurrent,assertStasisUpgradeAdded,authenticateDevelopBackflow,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -200,6 +200,14 @@ test('combined epoch authenticates the complete current production tree',()=>{
  for(const path of recorded){
   const latest=read(path),previous=raw(path);
   assert.equal(beforeCurrentProductionSource(path,latest,read).replaceAll('\r\n','\n'),previous,path);
+  const beforePotion=beforePotionBackflow(path,latest);
+  const beforeBrowser=beforeDeckBrowserBackflow(path,beforePotion);
+  for(const checkpoint of new Set([beforePotion,beforeBrowser])){
+   if(checkpoint===latest)continue;
+   assert.throws(()=>beforeCurrentProductionSource(path,checkpoint,read),{message:'fresh current production owner: '+path});
+   assert.throws(()=>beforeCurrentProductionSource(path,latest,owner=>owner===path?checkpoint:read(owner)),
+    {message:'combined linked owner identity: '+path+' during deck/potion backflow validation'});
+  }
   if(latest.replaceAll('\r\n','\n')===previous)continue;
   for(const invalid of [previous,latest+'\n',null]){
    assert.throws(()=>beforeCurrentProductionSource(path,invalid,read),/fresh (?:current production owner|combat visual source|energy reference source)/);

@@ -1,4 +1,4 @@
-import {readRetiredController,retiredControllerPath} from './input-retirement-source.mjs';
+import {assertCurrentDevelopUiSource,readRetiredController,retiredControllerPath} from './input-retirement-source.mjs';
 import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
 import {beforeSlimeSplitReceipt,slimeSplitSourcePaths} from './slime-split-source.mjs';
 import {beforeStsSelectionFade,beforeAuthenticatedStsSelectionFade} from './sts-selection-fade-source.mjs';
@@ -138,6 +138,7 @@ const currentContinuationOwners = new Set([
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
+  assertCurrentDevelopUiSource(path,source,read);
   if(developBackflowOwns(path)){
     assertDevelopBackflowCurrent(path,source);
     return beforeCharacterPreparationSource(path,source,read);

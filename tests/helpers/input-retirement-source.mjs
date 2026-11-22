@@ -56,7 +56,7 @@ export function beforeCombatEvents(path,source){
 }
 
 const browserArchive=readFileSync(new URL('../fixtures/develop-deck-browser-backflow-source.json.gz',import.meta.url));
-assert.equal(hash(browserArchive),'be0dec7cc329c72890141c6eee4c385b69c15ebf1689b345a856cea82b1d0019','exact Develop deck browser archive');
+assert.equal(hash(browserArchive),'84b5198436d5858f1630db9d577a188d2033b4e7cb8ce2897e7ecd4378ebf49c','exact Develop deck browser archive');
 const browserBackflow=JSON.parse(gunzipSync(browserArchive));
 assert.equal(browserBackflow.base,'beba19bad25db7de71f96af521656c13b882909b');
 for(const [path,row] of Object.entries(browserBackflow.files)){
@@ -81,6 +81,15 @@ export function beforePotionBackflow(path,source){
  const row=Object.hasOwn(potionBackflow.files,path)&&potionBackflow.files[path];
  if(!row||!matches(source,row.after))return source;
  return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
+}
+
+export function assertCurrentDevelopUiSource(path,source,read){
+ const row=potionBackflow.files[path]??browserBackflow.files[path];
+ if(!row)return;
+ assert(matches(source,row.after),'fresh current production owner: '+path);
+ let live;
+ try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
+ assert(matches(live,row.after),'combined linked owner identity: '+path+' during deck/potion backflow validation');
 }
 
 export function beforeDevelopUiBackflows(path,source){

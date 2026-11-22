@@ -9,7 +9,7 @@ test('only the precise shop dismissal background is a nonfocusable bottom input 
   const index=panel.children.findIndex(c=>c.name==='shopDismiss');
   const dismiss=panel.children[index];
   assert.equal(dismiss.kind,'cursorArea');
-  assert.equal(dismiss.focusable,undefined);
+  assert.equal(dismiss.focusable,false);
   assert.deepEqual(dismiss.position,[0,0]);
   assert.deepEqual(dismiss.size,nativeTheme.canvas.base);
   assert.ok(panel.children.findIndex(c=>c.name==='backdrop')<index);

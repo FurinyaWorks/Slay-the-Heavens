@@ -52,7 +52,7 @@ const mapRoomCohortPaths=new Set([
 export function beforeMapRoomReplayCohort(path,source){
  if(!mapRoomCohortPaths.has(path))return source;
  mapRoomReplayCohort??=releaseUiRestoreArchive(readFileSync(new URL('./map-room-replay-cohort-source.json.gz',import.meta.url)),
-  '52be7a7ca8534a0d1f3afea171773b2ec7dd79f99e8bd832bc907497eb32b7cb','67fc8750dd6ef9a13067c6a43137f910b6a44228');
+  '2da4d388cd48b53666f8d86a50650f61ec5cc2a2830bb1be6762312ca66d3a73','67fc8750dd6ef9a13067c6a43137f910b6a44228');
  return mapRoomReplayCohort.project(path,source);
 }
 
