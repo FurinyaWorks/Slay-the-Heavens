@@ -74,7 +74,7 @@ const capacity=releaseUiRestoreArchive(readFileSync(new URL('./release-capacity-
 const capacitySuccessor=releaseUiRestoreArchive(readFileSync(new URL('./release-capacity-successor-source.json.gz',import.meta.url)),
  '82a4d72f5d4accce0cf01ac66871640454b62a788fae894384debb2059bb3373','013bdffb7d4767075d7ebcf0be9eacd275bfbe89');
 const menuProofSuccessor=releaseUiRestoreArchive(readFileSync(new URL('./release-menu-proof-successor-source.json.gz',import.meta.url)),
- '29303716d7edbe8fe38ee5f0b79700fe1f82eff0fd3e167b245edd1bba4ca428','ee9f461337e8ae4c84735f0b5461f2be643ef5cd');
+ 'd3f739fafbf65fab9015fef7bbf37b08aebd9669fa38df56b38d2bc00a4deb07','ee9f461337e8ae4c84735f0b5461f2be643ef5cd');
 const beforeCapacitySource=(path,source)=>capacity.project(path,capacitySuccessor.project(path,source));
 function assertCapacitySources(read){
  const inputs=Object.keys(capacity.files).map(path=>[path,read(path,'utf8')]);

@@ -54,6 +54,7 @@ const releaseSuccessors=Object.freeze({
  "tests/sts-reward-row.test.mjs":"433e516c4c968fb92149327a24d513e4b33c12e5e87eff83cf865d4b9d338b4a",
 });
 const releaseSuccessorAliases=Object.freeze({
+ "tests/official-assets-runtime.test.mjs":"c3a2d41c98153f669ef3ba0acc20a19c6a5a1d1dd400e6bb044bc0fa00ae4299",
  "scripts/cinematic-ui-layout.mjs":"e6e8045a5037de59c451cb752b42b99020bbdb07b4b681e72715ce6403d81c9d",
  "tests/lua/full_source_campaign_entry.lua":"81464e0e868a6d654767497fee3fd1c2cb69b089f0572196c0950cfff97e7c25",
 });
