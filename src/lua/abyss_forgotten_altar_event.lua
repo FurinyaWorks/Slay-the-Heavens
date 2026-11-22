@@ -1,5 +1,5 @@
 -- ForgottenAltar PC A0 at source 319009d5. Constructor caches rounded cost;
--- Shed Blood gains/heals maxHP BEFORE NORMAL damage. No unconditional Leave.
+-- The trial gains/heals maxHP BEFORE NORMAL damage. No unconditional Leave.
 local Run=require('abyss_run')
 local Random=require('abyss_sts_random')
 local Hooks=require('abyss_relic_hooks')
@@ -15,14 +15,14 @@ function M.prepare(run,event)
     local scaled=Random.float32(Random.float32(run.maxHp)*Random.float32(.25))
     event.hpLoss=math.floor(scaled+.5)
     event.hasIdol=owns(run,'golden_idol','Golden Idol')
-    event.stage,event.body='intro','一座被遗忘的祭坛仍等待着供奉。'
+    event.stage,event.body='intro','一处被遗忘的石台还留着元素机关。'
 end
 function M.options(_run,event)
     if event.stage=='result'then return {row('leave','离开','返回路线。')}end
     if event.stage~='intro'then return {}end
-    return {row('offer_idol','献上黄金神像','以黄金神像换取血色神像。',event.hasIdol),
-        row('shed_blood','献血','获得5点最大生命，然后受到 '..event.hpLoss..' 点普通伤害。'),
-        row('smash','砸毁祭坛','获得诅咒「腐朽」。')}
+    return {row('offer_idol','交换黄金神像','以黄金神像换取赤晶神像。',event.hasIdol),
+        row('shed_blood','接受试炼','获得5点最大生命，然后受到 '..event.hpLoss..' 点普通伤害。'),
+        row('smash','破坏机关','获得诅咒「腐朽」。')}
 end
 local function gainChalice(run,event)
     if not event.hasIdol or not owns(run,'golden_idol','Golden Idol')then return false,'event_condition_unmet'end
@@ -52,7 +52,7 @@ function M.choose(run,flow,choice,uid)
         if ok then event.obtainedCardUid=type(why)=='number'and why or nil;event.curseBlocked=why=='curse_blocked'end
     else return false,'invalid_event_choice'end
     if not ok then return false,why end
-    event.choice,event.stage=choice,'result';event.body='你完成了对祭坛的选择，准备离开。'
+    event.choice,event.stage=choice,'result';event.body='你离开了石台。'
     return true,'pending'
 end
 return M

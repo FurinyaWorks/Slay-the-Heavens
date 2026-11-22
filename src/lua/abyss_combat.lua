@@ -133,11 +133,11 @@ function M.retaliate(state, source, target, amount)
     return lost
 end
 
--- SuicideAction is not an attack or HP-loss action. Keep its death notification
+-- This enemy exit is neither an attack nor an HP-loss action. Keep its death notification
 -- in Combat, which already owns the optional character ledger boundary.
 function M.suicideExploder(state,enemy)
     assert(Actors.isActive(enemy) and enemy.ai and enemy.ai.kind=='act3' and enemy.ai.policy=='exploder',
-        'Exploder suicide only')
+        'Expected an Exploder exit')
     local before=enemy.hp;enemy.hp=0
     Events.emit(state,'enemy_suicide',{enemy=enemy.id})
     if state.originalV4 then require('abyss_original_v4').enemyDied(state,enemy,before)end
@@ -257,7 +257,7 @@ local function splitEnemy(state, parent)
         children[i].sourcePosition = EnemySetup.splitPosition(parent, i)
         state.nextEnemyId = state.nextEnemyId + 1
     end
-    -- Suicide(false): no damage, death Power, relic callback or extra reward.
+    -- Enemy exit without a death callback: no damage, death Power, relic callback or extra reward.
     -- Complete both spawns before checking outcome (source CannotLose/CanLose).
     parent.hp = 0
     for i, child in ipairs(children) do

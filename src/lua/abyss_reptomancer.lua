@@ -90,7 +90,7 @@ function M.summon(combat,state,leader)
 end
 function M.died(state,e,push)
  if not M.owns(e)or e.ai.policy~='reptomancer'then return end
- -- Reptomancer.die adds each Suicide(true) at TOP: reverse group order.
+ -- Reptomancer.die adds each summoned ally exit at TOP: reverse group order.
  -- Health-bar hiding is handled by the existing death presentation, not a kill.
  for _,ally in ipairs(state.enemies)do if ally~=e and ally.hp>0 and not ally.isDying then
   push(state,{op='reptomancerSuicide',targetId=ally.id},true)

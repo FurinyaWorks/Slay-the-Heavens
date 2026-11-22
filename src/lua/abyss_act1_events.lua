@@ -74,7 +74,7 @@ function M.options(run,event,upgradeCards)
         return {row('forge','锻造','升级一张卡牌。',#upgradeCards(run)>0),row('rummage','搜寻','获得扭曲之钳与诅咒「疼痛」。'),row('leave','离开','放弃锻造与搜寻。')}
     elseif id=='bonfire' then
         if not stage then return {row('approach','靠近','靠近篝火中的元素。')} end
-        return {row('offer','献祭','移除一张可移除卡牌，遗物绑定牌除外；按稀有度获得回报。')}
+        return {row('offer','交换卡牌','移除一张可移除卡牌，遗物绑定牌除外；按稀有度获得回报。')}
     elseif id=='transmogrifier' then
         if stage=='choose_card' then return {row('change','变换','必须选择一张卡牌变换。')} end
         return {row('change','变换','将一张可移除卡牌变换为随机新牌，遗物绑定牌除外。'),row('leave','离开','离开神龛。')}
@@ -225,7 +225,7 @@ function choiceHandlers.bonfire(run,event,choice,uid)
     if not event.stage and choice=='approach' then
         event.stage='choose';event.body='篝火中的元素等待一张卡牌。';return true,'pending'
     elseif event.stage=='choose' and choice=='offer' then
-        if #Purge.purgeCards(run)==0 then return result(run,'没有可献祭的卡牌。') end
+        if #Purge.purgeCards(run)==0 then return result(run,'没有可交换的卡牌。') end
         event.stage,event.choice='choose_card','offer';return true,'choose_card'
     elseif event.stage=='choose_card' and choice=='offer' then
         local instance=find(Purge.purgeCards(run),uid,'uid')
@@ -241,7 +241,7 @@ function choiceHandlers.bonfire(run,event,choice,uid)
             if not Run.removeCard then return false,'event_content_unavailable' end
             local ok,why=Run.removeCard(staged,uid);if not ok then return false,why end
             staged.nodeFlow.event.removedUid=uid;staged.nodeFlow.event.offeredRarity=rarity
-            return result(staged,'卡牌已献祭。生命 '..beforeHp..' → '..staged.hp..'；最大生命 '..beforeMax..' → '..staged.maxHp..'。'..
+            return result(staged,'卡牌已交付。生命 '..beforeHp..' → '..staged.hp..'；最大生命 '..beforeMax..' → '..staged.maxHp..'。'..
                 (rarity=='curse' and '获得精灵便便（已持有时改为圆环）。' or ''))
         end)
     end

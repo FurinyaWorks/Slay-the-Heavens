@@ -101,7 +101,7 @@ function M.dazedDraw(state,source)
  end
 end
 -- takeTurn queues RollMove before duringTurn queues these actions. DAMAGE
--- survives the SuicideAction even when that was the final live monster.
+-- survives the enemy exit even when that was the final live monster.
 function M.afterTurn(combat,state,enemy)
  if not enemy.ai or enemy.ai.kind~='act3'or enemy.ai.policy~='exploder'or enemy.hp<=0 then return end
  local amount=enemy.statuses.explosive or 0

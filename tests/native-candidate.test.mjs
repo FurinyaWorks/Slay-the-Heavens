@@ -102,6 +102,13 @@ test('identical embedded modules avoid writes while changed modules and entry ar
   assert.equal(f.calls.filter(c=>c.name==='scene_list_client_scripts'&&c.args.includeSource).length,2);
 });
 
+test('an unmounted Lua module with a flagged comment stops packaging',async t=>{
+  const f=await fixture(t);
+  writeFileSync(join(f.root,'src/lua/abyss_unmounted.lua'),'-- 邪教徒药水\nreturn {}');
+  await assert.rejects(f.run(),/candidate-source\/abyss_unmounted\.lua:1:4: .*邪教/);
+  assert.equal(f.calls.some(call=>call.name==='scene_set_client_script'),false);
+});
+
 test('batch transport writes all changes once and retains full final verification',async t=>{
   const f=await fixture(t);
   for(let i=0;i<280;i++)writeFileSync(join(f.root,`src/lua/abyss_part_${i}.lua`),`return ${i}`);

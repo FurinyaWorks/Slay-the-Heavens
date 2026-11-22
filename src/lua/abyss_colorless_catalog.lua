@@ -52,8 +52,8 @@ card('thinking_ahead','先思','Thinking Ahead','skill','rare',0,{fx('draw',2),f
 card('transmutation','转化','Transmutation','skill','rare',-1,{e('transmutation')},{effects={e('transmutation',1)}},{costMode='all_energy',exhaust=true})
 card('violence','猛袭','Violence','skill','rare',0,{e('violence',3)},{effects={e('violence',4)}},{exhaust=true})
 card('apparition','幻影','Ghostly','skill','special',1,{fx('gainStatus',1,'intangible')},{ethereal=false},{sts_name='Apparition',exhaust=true,ethereal=true})
-card('bite','噬咬','Bite','attack','special',1,{fx('damage',7),fx('heal',2)},{effects={fx('damage',8),fx('heal',3)}},{target='ENEMY',healing=true})
-card('jax','激素','J.A.X.','skill','special',0,{fx('loseHp',3),fx('gainStatus',2,'strength')},{effects={fx('loseHp',3),fx('gainStatus',3,'strength')}})
+card('bite','迅袭','Bite','attack','special',1,{fx('damage',7),fx('heal',2)},{effects={fx('damage',8),fx('heal',3)}},{target='ENEMY',healing=true})
+card('jax','元素增幅','J.A.X.','skill','special',0,{fx('loseHp',3),fx('gainStatus',2,'strength')},{effects={fx('loseHp',3),fx('gainStatus',3,'strength')}})
 card('ritual_dagger','仪式匕首','RitualDagger','attack','special',1,{e('ritual',3,{damage=15})},{effects={e('ritual',5,{damage=15})}},{target='ENEMY',exhaust=true})
 local raw='dark_shackles sadistic_nature panic_button trip dramatic_entrance impatience the_bomb blind bandage_up secret_technique deep_breath violence panache secret_weapon apotheosis mayhem hand_of_greed flash_of_steel forethought enlightenment purity panacea transmutation chrysalis discovery finesse magnetism master_of_strategy good_instincts swift_strike jack_of_all_trades metamorphosis mind_blast thinking_ahead madness'
 local src='madness thinking_ahead mind_blast metamorphosis jack_of_all_trades swift_strike good_instincts master_of_strategy magnetism finesse discovery chrysalis transmutation panacea purity enlightenment forethought flash_of_steel hand_of_greed mayhem apotheosis secret_weapon panache violence deep_breath secret_technique bandage_up blind the_bomb impatience dramatic_entrance trip panic_button sadistic_nature dark_shackles'

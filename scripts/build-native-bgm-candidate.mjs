@@ -10,6 +10,7 @@ import { nativeBgmGraphSource, nativeBgmSignals } from './native-bgm-graph.mjs';
 import { fileRecord } from './evidence-files.mjs';
 import { nativeUiVariables } from './native-candidate-scripts.mjs';
 import {embeddedScripts} from './native-script-inventory.mjs';
+import {assertClientScriptText} from './check-release-text.mjs';
 import {runNativeClientCheck} from './native-client-check.mjs';
 import {writeScriptBatch} from './native-script-batch.mjs';
 import {assertCandidateArtReceipt} from './candidate-art-policy.mjs';
@@ -90,6 +91,7 @@ try {
   if (compiled.failed || compiled.error || compiled.errors?.length || compiled.written?.length !== 1) throw new Error('BGM graph did not compile/write completely');
   const checked = await call('scene_check_client', { mapPath });
   if (!checked.ok || checked.errors) throw new Error('Candidate client check failed');
+  let scriptText;
   if (full) {
     const readback = await call('scene_list_client_scripts', { mapPath, includeSource: true });
     const expected = Object.keys(full.moduleDigests).sort();
@@ -97,6 +99,7 @@ try {
       || readback.scripts.some(row => typeof row.source !== 'string'
         || createHash('sha256').update(row.source).digest('hex') !== full.moduleDigests[row.name]))
       throw new Error('Final audio script readback differs from the full candidate');
+    scriptText = assertClientScriptText(readback.scripts, 'audio/candidate.gil');
   }
   const baseAfter = hash(baseMap);
   if (baseAfter !== baseSha256) throw new Error('Input map hash changed');
@@ -111,7 +114,7 @@ try {
       ...(full.officialPortraits ? {officialPortraits:full.officialPortraits} : {}),
     ...(full.readyCardArt ? {readyCardArt:full.readyCardArt} : {}),
     ...(full.officialBackground ? {officialBackground:full.officialBackground} : {}) } : {}),
-    baseMap, baseSha256, baseAfter, liveWriteEnabled: false, compiled, checked,
+    baseMap, baseSha256, baseAfter, liveWriteEnabled: false, compiled, checked, scriptText,
     officialImport: 'NOT_TESTED', playtest: 'NOT_TESTED', listening: 'NOT_TESTED' }, null, 2));
   console.log(`BGM candidate compiled and copy written: ${mapPath}`);
   console.log('Official import, playback and listening for this candidate are NOT TESTED.');

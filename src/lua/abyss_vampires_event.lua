@@ -17,14 +17,14 @@ function M.prepare(run,event)
     event.maxHpLoss=math.ceil(Random.float32(Random.float32(run.maxHp)*Random.float32(.3)))
     if event.maxHpLoss>=run.maxHp then event.maxHpLoss=run.maxHp-1 end
     event.hasVial=vial(run)~=nil
-    event.stage,event.body='intro','吸血鬼邀请你加入它们，用噬咬取代最初的打击。'
+    event.stage,event.body='intro','夜巡团邀请你学习他们的战技，用迅袭取代初始打击。'
 end
 function M.options(run,event)
     if event.stage=='result'then return {row('leave','离开','返回路线。')}end
     if event.stage~='intro'then return {}end
-    local rows={row('accept','接受','失去 '..event.maxHpLoss..' 点最大生命，移除所有初始打击，获得5张噬咬。')}
-    if event.hasVial then rows[#rows+1]=row('give_vial','交出血瓶','失去血瓶，移除所有初始打击，获得5张噬咬；不损失最大生命。')end
-    rows[#rows+1]=row('leave','拒绝','不成为吸血鬼。')
+    local rows={row('accept','接受','失去 '..event.maxHpLoss..' 点最大生命，移除所有初始打击，获得5张迅袭。')}
+    if event.hasVial then rows[#rows+1]=row('give_vial','交出回春瓶','失去回春瓶，移除所有初始打击，获得5张迅袭；不损失最大生命。')end
+    rows[#rows+1]=row('leave','拒绝','婉拒夜巡团的邀请。')
     if unresolved(run)then
         for _,option in ipairs(rows)do if option.choice~='leave'then option.enabled=false;option.description='当前原创职业的初始打击源标签映射尚未确认。'end end
     end
@@ -63,7 +63,7 @@ function M.choose(run,flow,choice,uid)
     if uid~=nil then return false,'invalid_event_choice'end
     if event.stage=='result'and choice=='leave'then return true,'complete'end
     if event.stage~='intro'then return false,'invalid_event_choice'end
-    if choice=='leave'then event.choice,event.stage,event.body=choice,'result','你拒绝了吸血鬼。';return true,'pending'end
+    if choice=='leave'then event.choice,event.stage,event.body=choice,'result','你婉拒了夜巡团的邀请。';return true,'pending'end
     if choice~='accept'and choice~='give_vial'then return false,'invalid_event_choice'end
     if unresolved(run)then return false,'starter_tags_unresolved'end
     if choice=='give_vial'then
@@ -75,7 +75,7 @@ function M.choose(run,flow,choice,uid)
         local ok,why=Run.decreaseMaxHp(run,event.maxHpLoss);if not ok then return false,why end
     end
     local ok,why=replaceAttacks(run,event);if not ok then return false,why end
-    event.choice,event.stage,event.body=choice,'result','你获得了5张噬咬，成为了吸血鬼。'
+    event.choice,event.stage,event.body=choice,'result','你习得了夜巡团的战技，获得5张迅袭。'
     return true,'pending'
 end
 return M

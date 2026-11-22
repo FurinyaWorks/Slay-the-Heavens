@@ -248,7 +248,7 @@ function M.install(ctx)
     function ctx.eventPickerLabel(living,act1)
         local confirmLabel
         if act1 then
-            confirmLabel=ctx.self.picker=='act1_forge' and '确认升级' or ctx.self.picker=='act1_change' and '确认变换' or ctx.self.picker=='act1_purge' and '确认移除' or '确认献祭'
+            confirmLabel=ctx.self.picker=='act1_forge' and '确认升级' or ctx.self.picker=='act1_change' and '确认变换' or ctx.self.picker=='act1_purge' and '确认移除' or '确认交换'
         elseif living then
             confirmLabel=ctx.self.picker=='living_grow' and '确认升级' or ctx.self.picker=='living_change' and '确认变换' or '确认移除'
         end
