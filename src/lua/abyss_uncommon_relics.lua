@@ -27,8 +27,8 @@ end
 function M.onEnterRoom(run,kind,phase)
  if phase~='entered'and kind=='camp'and M.owns(run,'eternal_feather')then heal(run,math.floor(#run.deck/5)*3)end
 end
-function M.battleEnd(run)
- if run.hp>0 and M.owns(run,'meat_on_the_bone')and run.hp<=run.maxHp/2 then require('abyss_run').heal(run,12)end
+function M.battleEnd(run,Run)
+ if run.hp>0 and M.owns(run,'meat_on_the_bone')and run.hp<=run.maxHp/2 then Run.heal(run,12)end
 end
 
 function M.singingBowl(run,api)

@@ -28,20 +28,7 @@ local function rewardCards(owner,key,cards,upgrades,rows,group,run)
  rows[#rows+1]={title=group and '跳过第'..group..'组卡牌' or '跳过卡牌',
   description='放弃本组卡牌奖励。',token={owner=owner,key=key,kind='card',index=group,choice=0}}
 end
-function M.view(run)
- local owner,key=M.owner(run);if not owner then return end
- local rows={};local view={owner=owner,key=key,title='遗物效果',body='请完成遗物带来的选择。',rows=rows}
- if key=='pendingBottledRelic'then
-  view.body='选择一张卡牌装入瓶中，每场战斗开始时将其放入手牌。'
-  cardRows(run,owner,key,owner.uids,rows)
- elseif key=='shopRelicChoice'then
-  view.body='选择一张永久牌组中的卡牌，获得它的复制。'
-  cardRows(run,owner,key,owner.uids,rows)
- elseif key=='pendingBossRelic'and owner.kind=='cards'then
-  view.body='还需选择'..(owner.total-#owner.selectedUids)..'张卡牌。'
-  local uids={};for uid in pairs(owner.selectionUids)do uids[#uids+1]=uid end
-  cardRows(run,owner,key,uids,rows)
- elseif key=='pendingBossRelic'then
+local function bossRewardRows(run,owner,key,rows)
   for i,item in ipairs(owner.relics or {})do if not item.claimed then
    rows[#rows+1]={relic=item.id or item.sourceId,token={owner=owner,key=key,kind='relic',choice=i}}
   end end
@@ -49,7 +36,8 @@ function M.view(run)
   if owner.potion and not owner.potion.claimed then rows[#rows+1]={potion=owner.potion.id,token={owner=owner,key=key,kind='potion'}}end
   if owner.cards and not owner.cardResolved then rewardCards(owner,key,owner.cards,owner.cardUpgrades,rows,nil,run)end
   rows[#rows+1]={title='继续',description='放弃尚未领取的奖励并返回。',token={owner=owner,key=key,kind='done'}}
- elseif key=='shopRelicRewards'then
+end
+local function shopRewardRows(run,owner,key,rows)
   for i,item in ipairs(owner.items)do if not item.claimed then
    if item.kind=='card'then rewardCards(owner,key,item.reward.cards,item.reward.cardUpgrades,rows,i,run)
    else
@@ -58,7 +46,8 @@ function M.view(run)
    end
   end end
   if #rows==0 then rows[1]={title='继续',description='所有奖励已处理。',token={owner=owner,key=key,kind='done'}}end
- elseif key=='pendingCardRewardSelection'then
+end
+local function cardRewardRows(run,owner,key,rows,view)
   view.title,view.body='卡牌奖励','每组奖励可以选择一张卡牌；持有颂钵时也可放弃该组卡牌，增加生命上限。'
   for i,group in ipairs(run.rewards.cardRewardGroups or {})do if not group.resolved then
    for j,id in ipairs(group.cards)do
@@ -72,13 +61,29 @@ function M.view(run)
   end end
   rows[#rows+1]={title='返回奖励列表',description='保留所有尚未领取的卡牌奖励，可以稍后重新查看。',
    token={owner=owner,key=key,kind='close'}}
+end
+function M.view(run)
+ local owner,key=M.owner(run);if not owner then return end
+ local rows={};local view={owner=owner,key=key,title='遗物效果',body='请完成遗物带来的选择。',rows=rows}
+ if key=='pendingBottledRelic'then
+  view.body='选择一张卡牌装入瓶中，每场战斗开始时将其放入手牌。'
+  cardRows(run,owner,key,owner.uids,rows)
+ elseif key=='shopRelicChoice'then
+  view.body='选择一张永久牌组中的卡牌，获得它的复制。'
+  cardRows(run,owner,key,owner.uids,rows)
+ elseif key=='pendingBossRelic'and owner.kind=='cards'then
+  view.body='还需选择'..(owner.total-#owner.selectedUids)..'张卡牌。'
+  local uids={};for uid in pairs(owner.selectionUids)do uids[#uids+1]=uid end
+  cardRows(run,owner,key,uids,rows)
+ elseif key=='pendingBossRelic'then bossRewardRows(run,owner,key,rows)
+ elseif key=='shopRelicRewards'then shopRewardRows(run,owner,key,rows)
+ elseif key=='pendingCardRewardSelection'then cardRewardRows(run,owner,key,rows,view)
  end
  for _,row in ipairs(rows)do row.token.screenToken=owner.token end
  return view
 end
-function M.resolve(run,token)
+function M.resolve(run,token,Run)
  if type(token)~='table'or M.owner(run)~=token.owner or run[token.key]~=token.owner then return false,'stale_relic_choice'end
- local Run=require('abyss_run')
  return Run.transaction(run,function(staged)
   local p=staged[token.key]
   if token.key=='pendingBottledRelic'then
@@ -86,20 +91,21 @@ function M.resolve(run,token)
    if not allowed then return false,'invalid_bottle_card'end
    local ok,why=require('abyss_uncommon_relics').equipBottle(staged,p.id,token.uid)
    if ok then staged.pendingBottledRelic=nil end;return ok,why
-  elseif token.key=='shopRelicChoice'then return require('abyss_relic_choices').chooseMirror(staged,token.uid)
+  elseif token.key=='shopRelicChoice'then
+   return require('abyss_relic_choices').chooseMirror(staged,token.uid,Run,require('abyss_shop_relics').chooseMirror)
   elseif token.key=='pendingBossRelic'then
-   if p.kind=='cards'then return require('abyss_boss_relics').select(staged,token.uid)end
-   return require('abyss_boss_relics').claim(staged,token.kind,token.choice)
+   if p.kind=='cards'then return require('abyss_boss_relics').select(staged,token.uid,Run)end
+   return require('abyss_boss_relics').claim(staged,token.kind,token.choice,Run)
   elseif token.key=='shopRelicRewards'then
    local Choices=require('abyss_relic_choices')
    if token.kind=='done'then return Choices.finish(staged,token.screenToken)end
-   return Choices.claim(staged,token.screenToken,token.index,token.choice)
+   return Choices.claim(staged,token.screenToken,token.index,token.choice,Run)
   elseif token.key=='pendingCardRewardSelection'then
    if p.rewardOwner~=staged.rewards then return false,'stale_card_reward'end
    local Cards=require('abyss_relic_card_rewards')
    if token.kind=='close'then return Cards.close(staged,token.screenToken)end
    if token.kind~='card'then return false,'invalid_card_reward'end
-   return Cards.claim(staged,token.index,token.choice)
+   return Cards.claim(staged,token.index,token.choice,Run)
   end
   return false,'invalid_relic_choice'
  end)

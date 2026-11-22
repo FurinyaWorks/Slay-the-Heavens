@@ -81,7 +81,7 @@ test('Run discard captures one exact parent and resumes the real continuation',f
  assert(Run.play(r,held(s,'defend_green').uid))
 end)
 test('real nonqueued discard retains standalone rollback and reuses only its exact owner',function()
- local r,s=fixture();assert(Discard.begin(s,1));eq(s.actionQueue,nil)
+ local r,s=fixture();assert(Discard.begin(s,1,require('abyss_combat')));eq(s.actionQueue,nil)
  local pending=s.pendingDiscard;local uid=held(s,'strike').uid;local restore,owner=S.capture(r,s)
  local calls=observe(function()assert(C.chooseDiscard(s,{uid},pending.token,nil,owner))end)
  eq(calls,0);eq(S.ownedRestore(owner,s),nil);eq(s.pendingDiscard,nil);restore()
