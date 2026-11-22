@@ -2,13 +2,13 @@
 
 ## 三仓库按需验证
 
-Fork 是可选诊断，主仓 PR 和正式 CI 无需 Fork 记录。调用和结果复用见 [Fork 预检](CI-PREFLIGHT.md)。旧 `release/v2.0.0` 冻结，表内旧路由保留供追溯，当前修复从 `develop` 接续。
+日常开发和预检在 Fork，主仓接收成熟候选并执行正式验收。按[任务执行](TASK_EXECUTION.md#fork-first-开发)选择开发远端和例外。Hosted 预检按风险分配，见 [Fork 预检](CI-PREFLIGHT.md)。旧 `release/v2.0.0` 冻结，当前版本修复从 `develop` 接续。
 
 | remote | 仓库 / 固定 ID | 分工 |
 | --- | --- | --- |
-| origin | FurinyaWorks/Slay-the-Heavens / 1429751262 | develop 承接 v2.0.0 重建与后续研发；旧 release/v2.0.0 冻结 |
-| fork-a | FurinyaDev/Slay-the-Heavens-Fork-A / 1460097312 | 优先使用既有 Quick feedback 的 Fast 诊断 |
-| fork-b | v5g95m7t8m-max/Slay-the-Heavens-Fork-B / 1460133275 | 优先使用既有 Quality 的 Full 诊断；有权限及资源时与 A 互援 |
+| origin | FurinyaWorks/Slay-the-Heavens / 1429751262 | 正式同仓 PR、Required Checks、Merge Queue 和发布 |
+| fork-a | FurinyaDev/Slay-the-Heavens-Fork-A / 1460097312 | 默认开发远端，优先运行既有 Quick feedback 的 Fast 预检 |
+| fork-b | v5g95m7t8m-max/Slay-the-Heavens-Fork-B / 1460133275 | 优先运行既有 Quality 的高风险 Full 预检，按需与 A 互援 |
 
 只同步本次需要的短分支。首次使用用 `gh api /repositories/<固定ID>` 解析当前名称，再用 `gh api repos/<当前仓库名>` 核对 ID、权限及默认分支，核对 `gh workflow list -R <repo>`；仓库改名时同步 remote，不改历史证据。Fork 有工作流文件却列表为空时，管理员可用官方 `PUT /repos/<当前仓库名>/actions/permissions` 设置 `enabled=true` 并保留已读回的 allowed_actions 策略；读回工作流已登记后才 dispatch。无写权限时记录阻塞，使用有权限的另一个 Fork 互援，不请求付费或削弱主仓库保护。
 
@@ -23,7 +23,7 @@ gh workflow run quality.yml -R v5g95m7t8m-max/Slay-the-Heavens-Fork-B --ref <tas
 
 Fork Quick 手动预检执行完整受影响 JS/Lua 和便宜治理检查，未知或空覆盖明确要求一次必要 Full；本地 fast/advisory 仍保留有界选测和延期报告。两者都不能称为双平台正式准入。Quality 的手动 dispatch 按现有路由执行 Full，仅在相关改动确实需要时分配一次；不以“互援”为由在两 Fork 同时重复跑同一验证。先查看同仓库、准确 HEAD/BASE 与模式的已有运行；保存 run URL、attempt、实际 checkout SHA、选测/延期和失败，不轮询守候。分支移动后旧成功只属于旧 SHA；跨仓库同 SHA 的诊断也不能代替正式目标组合。
 
-成熟切片由维护者接续到 origin 的短分支，重新核对目标基线、独立评审与原生准入；现有自动入口仍拒绝跨仓库 PR，不修改此信任边界。Fork 的绿色不能发布主仓库必需状态或替代 PR、队列组合及合后验证。重建只接回 develop 仍缺且属于本版的切片，在实际 develop 合并树验证；候选的 Full 与官方容量、导入、ready、PC/手机逐项验收。合并和清理遵循现有生命周期，未保存工作及有独立提交的分支保留。
+切片通过适用预检后，把所测 HEAD 同步到 origin 短分支。同步前复核实时目标基线和 Fork ref，正式 PR 正文记录 Fork 来源及验证结果。后续使用现有同仓 PR、独立 Review 和原生准入。主仓 Required Checks、队列组合及合后验证各自按实际提交执行。重建只接回 develop 仍缺且属于本版的切片，在实际合并树验证。候选的 Full 与官方容量、导入、ready、PC/手机逐项验收。合并后按既有生命周期核对和清理各仓临时 ref。
 
 算力分配复用已有 [Fast 选测](CI-FAST.md)、`scripts/ci-quality-shape.mjs` 的共享矩阵、`ci-shards.mjs` 的平台耗时权重、安全 Lua worker 与 Quality 原 `max-parallel`，不要在 Fork 另维护分片数或删测试。先分配互不重复的任务/准确提交，再让原矩阵自动铺开；以实际 job 排队和执行时间判断资源使用，保留失败成本。GitHub 并发上限按账号/组织套餐和 runner 可用性核对，不假定每个仓库天然拥有固定20/30槽位；沿用标准 hosted，不切付费 larger runner。[官方并发与矩阵说明](https://docs.github.com/en/actions/reference/limits)。
 

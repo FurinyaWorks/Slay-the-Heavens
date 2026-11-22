@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {mkdtempSync,mkdirSync,readFileSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {spawnSync} from 'node:child_process';
+import {execFileSync,spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {evaluateIntake,loadTask} from '../scripts/check-task-intake.mjs';
 
@@ -252,18 +252,62 @@ test('normalized target identity cannot bypass approval or duplicate and locatio
   assert.equal(loadTask('TASK-30',root),null,'completed is dependency-only, even if its status claims To Do');
 });
 
-test('short-branch start holds blocked dependencies even with a valid plan',t=>{
+function developmentFixture(root){
+  const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+  git('init','-q');
+  git('-c','user.name=Fixture','-c','user.email=fixture@example.com','commit','--allow-empty','-qm','Develop base');
+  const base=git('rev-parse','HEAD');
+  git('update-ref','refs/remotes/origin/develop',base);
+  git('remote','add','origin','https://github.com/FurinyaWorks/Slay-the-Heavens.git');
+  git('remote','add','fork-a','https://github.com/FurinyaDev/Slay-the-Heavens-Fork-A.git');
+  git('remote','add','fork-b','git@github.com:v5g95m7t8m-max/Slay-the-Heavens-Fork-B.git');
+  const script=fileURLToPath(new URL('../scripts/check-pr-slice.mjs',import.meta.url));
+  const run=(...route)=>spawnSync(process.execPath,[script,'--start','TASK-25',
+    '--slice','Update one caller','--verify','npm run test:related',...route],{cwd:root,encoding:'utf8'});
+  return {base,git,run};
+}
+
+test('short-branch start holds blocked dependencies even with a valid Fork plan',t=>{
   const root=fixture(t);
+  const {run}=developmentFixture(root);
   writeRawTask(root,'---\nid: TASK-25\nstatus: To Do\ndependencies: [TASK-26]\n---\n');
   writeTask(root,'TASK-26','Blocked');
-  const script=fileURLToPath(new URL('../scripts/check-pr-slice.mjs',import.meta.url));
-  const run=()=>spawnSync(process.execPath,[script,'--start','TASK-25','--slice','Update one caller','--verify','npm run test:related'],{cwd:root,encoding:'utf8'});
-  const held=run();
+  const held=run('--branch','refactor/one-caller');
   assert.equal(held.status,1,held.stdout+held.stderr);
   assert.match(held.stdout,/^HOLD TASK-25\n/);
   assert.match(held.stderr,/TASK-25 -> TASK-26: dependency not Done \(Blocked\)/);
   writeTask(root,'TASK-26','Done');
-  const allowed=run();
+  const allowed=run('--branch','refactor/one-caller');
   assert.equal(allowed.status,0,allowed.stdout+allowed.stderr);
   assert.match(allowed.stdout,/^ALLOW TASK-25\n/);
+});
+
+test('short-branch start routes routine work to verified Forks and limits main exceptions',t=>{
+  const root=fixture(t);
+  writeTask(root,'TASK-25','To Do');
+  const {base,git,run}=developmentFixture(root);
+  const code=(status,...args)=>{
+    const result=run(...args);
+    assert.equal(result.status,status,result.stdout+result.stderr);
+    return result.stdout+result.stderr;
+  };
+  for(const type of ['feature','feat','refactor','experiment','spike']){
+    const branch=type+'/one-caller';
+    assert.ok(code(0,'--branch',branch).includes('Development branch: fork-a/'+branch));
+    assert.match(code(1,'--branch',branch,'--remote','origin','--main-reason','External constraint'),/must start on a Fork/);
+  }
+  assert.ok(code(0,'--branch','fix/one-caller','--remote','fork-b').includes('Develop base: '+base));
+  assert.match(code(1,'--branch','fix/one-caller','--remote','origin'),/specific single-line --main-reason/);
+  assert.match(code(0,'--branch','fix/one-caller','--remote','origin','--main-reason','External integration constraint'),
+    /Fork-First-Exception: External integration constraint/);
+  assert.match(code(1,'--branch','hotfix/emergency','--remote','origin','--main-reason','Release incident'),/emergency Release Hotfix procedure/);
+  assert.match(code(1,'--branch','feature/bad..name'),/valid Git branch name/);
+  assert.match(code(1),/--branch/);
+  git('remote','set-url','--push','fork-a','https://github.com/FurinyaWorks/Slay-the-Heavens.git');
+  assert.match(code(1,'--branch','test/one-caller'),/exactly one push URL/);
+  git('remote','set-url','--push','fork-a','https://github.com/FurinyaDev/Slay-the-Heavens-Fork-A.git');
+  git('remote','set-url','--add','--push','fork-a','https://github.com/FurinyaWorks/Slay-the-Heavens.git');
+  assert.match(code(1,'--branch','docs/one-caller'),/exactly one push URL/);
+  git('update-ref','-d','refs/remotes/origin/develop');
+  assert.match(code(1,'--branch','perf/one-caller','--remote','fork-b'),/Fetch origin\/develop/);
 });
