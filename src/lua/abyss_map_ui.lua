@@ -647,11 +647,18 @@ function M.new(root, map, onChoose, clickEvent, options)
         local called, accepted, reason = pcall(onChoose, selected)
         self.choosing = false
         if not chapterFor(self.map) then self:render() return false,"invalid_map_context" end
-        local after = mapView(self.map)
-        observeMap(after)
-        local changed = self.map ~= beforeMap or not sameContext(after,before)
-            or after.floor ~= before.floor or after.currentNodeId ~= before.currentNodeId
-        if changed then self.navigationEnabled = false self:focusCurrent() end
+        local after = self.map
+        local sameMap = after == beforeMap and sameContext(after,before)
+        local changed = not sameMap or after.floor ~= before.floor or after.currentNodeId ~= before.currentNodeId
+        local committed = sameMap and after.currentNodeId == nodeId and after.floor == expectedFloor
+        if called and accepted == true then self.entryError = nil end
+        if changed or committed and called and accepted == true then
+            if self.visible and not sameMap then observeMap(mapView(after)) end
+            self.navigationEnabled = false
+            -- Recenter when the Host shows the map again, or once now for a
+            -- standalone map that stayed visible after the choice.
+            if self.visible then self:focusCurrent() end
+        end
         if not called or accepted~=true then
             local messages={event_pool_exhausted='受限事件池已用尽，或剩余事件条件不足；请选择其他路线或重新启程。',
                 event_not_implemented='此事件尚未实现；请选择其他路线。',combat_unavailable='此层没有可用遭遇；请选择其他路线。'}
@@ -660,9 +667,8 @@ function M.new(root, map, onChoose, clickEvent, options)
             self:render()
             return false,failure
         end
-        self.entryError=nil
-        if self.map ~= beforeMap or not sameContext(after,before) or after.currentNodeId ~= nodeId or after.floor ~= expectedFloor then return false, "selection_not_committed" end
-        self.navigationEnabled = false self:focusCurrent() return true
+        if not committed then return false, "selection_not_committed" end
+        return true
     end
     -- Dragging the route scrolls it with the finger. A press that moved past the
     -- threshold is a scroll, never a node choice, even if it ends on a node.

@@ -81,7 +81,7 @@ function M.install(ctx)
 
     end
 
-    function ctx.self:setVisible(value,retainPage)
+    function ctx.self:setVisible(value,retainPage,renderByHost)
         assert(type(value) == "boolean", "node visibility must be boolean")
         if value and not self.run then return false, "node_unbound" end
         if not value then
@@ -95,7 +95,7 @@ function M.install(ctx)
         if not value then self.pendingGeneration=(self.pendingGeneration or 0)+1 end
         -- Retaining the covered page must never keep its input controller live.
         self.visible = value ctx.root:SetVisible(value or retainPage==true)
-        if value and not wasVisible and require('abyss_relic_pending').owner(self.run)then self:render()end
+        if value and not wasVisible and not renderByHost and require('abyss_relic_pending').owner(self.run)then self:render()end
         -- Let Match's own visibility guard retire its clock, retaining a failed
         -- pair's explicit-retry state across modal hide/show.
         if not value then ctx.updateMatch(0) end
@@ -103,7 +103,7 @@ function M.install(ctx)
             local function stagedVisibleEvent() return self.view.node.type=='event' and stagedEvent(self.view.node.event.id) end
             if not value and self.view and self.view.node and stagedVisibleEvent() then
                 for _, entry in pairs(self.actions) do if entry.observe then entry.observe() end end
-            elseif value and not wasVisible and self.view and self.view.node and (ctx.options.enhancedRooms or self.view.node.type=='shop'
+            elseif value and not wasVisible and not renderByHost and self.view and self.view.node and (ctx.options.enhancedRooms or self.view.node.type=='shop'
                 or self.view.node.type=='event' and stagedEvent(self.view.node.event.id)) then
                 self:render()
             end
@@ -128,7 +128,7 @@ function M.install(ctx)
 
     function ctx.current()
         local self = ctx.self
-        if not self.visible then return false, "panel_hidden" end
+        if not self.visible or ctx.options.inputCovered and ctx.options.inputCovered() then return false, "panel_hidden" end
         if self.busy or self.presentationBusy or self.shopBusy then return false, "unavailable_action" end
         if self.pendingOwner then return currentPendingRelic(self) end
         if self.renderRun ~= self.run or self.renderMap ~= self.map then return false, "stale_action" end
