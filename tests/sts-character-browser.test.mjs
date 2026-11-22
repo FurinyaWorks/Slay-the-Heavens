@@ -136,7 +136,7 @@ end
 print('CHARACTER_BROWSER_PASS')`);
 });
 
-test('actual OnStart readiness reveals the preview while the hidden real selection portrait is still preparing',t=>{
+test('actual OnStart warms after title admission and pauses selection workers beneath deck preview',t=>{
  const out=temporary(t);buildLuaData('data',join(out,'abyss_data.lua'));buildUI(out,undefined,{officialAssets:true});
  const preloads=readdirSync(out).filter(n=>n.endsWith('.lua')).map(n=>
   `package.preload[${luaString(n.slice(0,-4))}]=assert(loadfile(${luaString(join(out,n).replaceAll('\\','/'))}))`).join('\n');
@@ -155,7 +155,7 @@ local actors=F.monsterActors()
 package.loaded.abyss_monster_actor_binding={enabled=true,templateIndex=actors.templateIndex,containerTemplateIndex=actors.containerTemplateIndex,powerTemplateIndex=actors.powerTemplateIndex}
 local function native(c)
  c.active=true;c.SetActive=function(self,value)self.active=value;F.setEngineActive(self,value)end
- for _,method in ipairs({'SetAnchorMin','SetAnchorMax','SetPivot','SetLocalRotation'})do c[method]=function()end end
+ for _,method in ipairs({'SetAnchorMin','SetAnchorMax','SetPivot','SetLocalRotation','SetFillHorizontal','SetFillUnused'})do c[method]=function()end end
  for _,child in ipairs(c:GetChildren())do native(child)end;return c
 end
 local canvas=native(F.control({children=F.Layout}));local serial=0;local enabled=false
@@ -181,8 +181,18 @@ game={GetUICanvasSize=function()return 1280,720 end,IsTestPlay=function()return 
  end,DestroyClientUIControl=function(c)c:SetActive(false)end}
 script={object=canvas,GetParam=function()return false end,EnableUpdate=function(_,value)enabled=value end}
 dofile('src/lua/abyss_ui.lua');OnStart();assert(enabled and host and portrait,'real OnStart did not create the production owners')
+local before=portrait:status().selection
+assert(before.owned==0,'starting the title allocated a selection portrait')
+os.clock=function()return 0 end
 for i=1,60 do OnUpdate(1/60);if not host.pageReveal:covered()then break end end
-assert(noPortraitDuringBuild and not host.pageReveal:covered());assert(host:start())
+assert(noPortraitDuringBuild and not host.pageReveal:covered())
+assert(portrait:status().selection.owned==0,'title admission shared the first playable frame with portrait work')
+local selectionPanel=host.root:GetChild('characterPanel');local art=selectionPanel:GetChild('lumineSelectionBackground')
+for i=1,4 do OnUpdate(1/60)end
+local warm=portrait:status().selection
+assert(warm.owned>0 and warm.owned<=4*24 and not art.visible and not art.active)
+assert(host:start())
+assert(not host.characterSelection.info and not art.visible)
 assert(host:selectCharacter('traveler') and host.characterSelection.info)
 local Gate=require('abyss_page_reveal');local state=portrait:status().selection
 assert(state.phase=='building' and platform.presentationReady(Gate.intent(host)),'decorative selection blocked real page readiness')
@@ -190,11 +200,14 @@ assert(not host.pageReveal:covered() and not host.root:GetChild('pageReveal').vi
 local details=host.root:GetChild('characterPanel'):GetChild('details')
 assert(details.visible and details:GetChild('name').text~='' and details:GetChild('deckSummary').text~='','click lost the real loadout')
 assert(not portrait:readyForPage('menu',false,'ironclad'),'negative control requires a real paused menu-scene dependency')
+OnUpdate(1/60)
+local progress=portrait:status().selection
+assert(art.visible and not selectionPanel:GetChild('v25Background').visible and progress.phase=='building')
 assert(host:openStarterDeck(),'incomplete artwork blocked public starter deck input')
 assert(Gate.intent(host).page=='deckPanel')
 for i=1,5 do OnUpdate(1/60)end
 state=portrait:status().selection
-assert(state.phase=='building' or state.phase=='revealing','negative control accidentally completed the old portrait')
+assert(state.phase=='building' and state.nextIndex==progress.nextIndex,'covered selection kept constructing portrait controls')
 assert(host.deckUI.visible and not host.deckUI.pending and not host.deckUI.calibrating)
 assert(platform.presentationReady(Gate.intent(host)) and not host.pageReveal:covered(),'hidden selection portrait blocked the actual preview entry readiness')
 assert(not host.root:GetChild('characterPanel').visible and host.root:GetChild('deckPanel').visible)

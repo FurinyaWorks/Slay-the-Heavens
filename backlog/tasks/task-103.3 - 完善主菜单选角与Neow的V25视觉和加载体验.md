@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-11T08:07:00Z'
-updated_date: '2026-11-22T07:53:54Z'
+updated_date: '2026-11-22T16:11:19Z'
 labels:
   - 待验
   - delivery-verify
@@ -41,6 +41,8 @@ ordinal: 171000
 6.按用户控制变量要求，官方选角直接复用战斗同一battlePixel57；原立绘保留不再优化，显式生成标记防旧候选误报。R7干净构建后重验完整黑盒与首次ready，来源证明和独审绑定最终生产提交。
 
 7.按用户拒收意见纠正原命之座与红青旗帜按钮；只保留角色57和背景暂缓例外。修复实际Hosted Full失败（Windows字节来源换行/历史reader层等），完整画面对照与黑盒重验，精确独审后按merge:auto送Merge Queue。
+
+本轮 Release 选角切片：首个可操作主菜单帧之后有界预热，保持空选角姿态，原序分组渐进亮相，复用缓存并验证生命周期；按实际官方设备、独立复审及 CI 证据标记验收。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes

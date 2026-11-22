@@ -37,15 +37,18 @@ try{
   for(let i=1;i<50;i++){const key=d.lua_getupvalue(L,-1,i);if(!key)break;if(Buffer.from(key).toString()===name){d.lua_setglobal(L,enc(target));found=true;break;}d.lua_pop(L,1);}d.lua_settop(L,top);assert(found,name+' observer unavailable');
  }
  bind('OnUpdate','view','__SELECTION_VIEW');bind('OnDestroy','portraits','__SELECTION_PORTRAITS');
- session.runtime.runChunk(L,`function __SELECTION_STATUS() local v=__SELECTION_VIEW;return {mode=v.mode,open=v.characterOpen,selected=v.characterSelection.info and v.characterSelection.info.id,portraits=__SELECTION_PORTRAITS:status()}end`,'SELECTION_OBSERVER');
+ session.runtime.runChunk(L,`function __SELECTION_STATUS() local v=__SELECTION_VIEW;return {mode=v.mode,open=v.characterOpen,covered=v.pageReveal:covered(),selected=v.characterSelection.info and v.characterSelection.info.id,portraits=__SELECTION_PORTRAITS:status()}end`,'SELECTION_OBSERVER');
  const state=()=>{const top=d.lua_gettop(L);d.lua_getglobal(L,enc('__SELECTION_STATUS'));assert.equal(d.lua_pcall(L,0,1,0),0);const value=luaValue(L,-1);d.lua_settop(L,top);return value;};
  const find=trail=>{let n=session.runtime.roots[0];for(const name of trail.split('/')){const found=n.children.filter(c=>c.name===name);assert.equal(found.length,1,trail);n=found[0];}return n;};
  const all=n=>[n,...(n.children??[]).flatMap(all)];
  const step=()=>{const t=performance.now();dn(session,1/60);report.steps.push(performance.now()-t);};
  const tap=trail=>{const node=find(trail);for(let n=node;n;n=n.parent)assert(n.active!==false&&n.visible!==false,'Hidden input '+trail);
   const boxes=wi(session),box=boxes.get(node.Id),matrix=pa(session,boxes).get(node.Id),point=Me(matrix,box.centerX,box.centerY),t=performance.now();
-  vi(session,'move',point.x,point.y);const hit=vi(session,'down',point.x,point.y);step();vi(session,'up',point.x,point.y);step();
-  assert.equal(hit?.Id,node.Id,'Actual hit mismatch '+trail);report.inputs.push({trail,wallMs:performance.now()-t});};
+  vi(session,'move',point.x,point.y);const hit=vi(session,'down',point.x,point.y);step();
+  const pressedAt=performance.now();vi(session,'up',point.x,point.y);step();
+  assert.equal(hit?.Id,node.Id,'Actual hit mismatch '+trail);report.inputs.push({trail,wallMs:performance.now()-t});
+  return pressedAt;
+ };
  async function render(name){
   const snapshot=ya(session,{view:true,paint:true,compact:true});
   for(const n of snapshot.paint??[]){
@@ -65,13 +68,32 @@ try{
   assert(node.enableMask&&node.enableFill&&node.fillType==='Horizontal'&&node.fillHorizontalType==='Right'
    &&node.fillAmount>0&&node.fillAmount<1,'Constellation uses an unsupported or missing arc mask; refuse handoff');
  }
- assert.equal(state().portraits.selection.owned,0,'Menu must not allocate hidden background');
+ const artTrail='stage/characterPanel/lumineSelectionBackground',roleTrail='stage/characterPanel/traveler/hit';
+ const selection=find('stage/characterPanel'),host=find(artTrail),backing=find('stage/characterPanel/v25Background');
+ for(let frames=0;state().covered&&frames<60;frames++)step();
+ assert(!state().covered&&state().portraits.selection.owned===0,'Title admission must precede selection warmup');
  await render('menu');
- const openAt=performance.now();tap('stage/menuPanel/start/hit');let frames=0;
+ function openBlank(){
+  tap('stage/menuPanel/start/hit');
+  for(let frames=0;state().covered&&frames<60;frames++)step();
+  assert(state().open&&!state().covered&&!state().selected&&selection.visible&&!host.visible&&backing.visible,'Expected blank selection');
+ }
+ function visibleFacets(){
+  if(!selection.visible||!host.visible||backing.visible||state().covered)return [];
+  const ids=new Set(all(host).filter(n=>n.kind==='image').map(n=>n.Id));
+  return ya(session,{view:true,paint:true,compact:true}).paint.filter(n=>ids.has(n.id));
+ }
+ openBlank();await render('selection-empty');
+ const openedAt=tap(roleTrail);let frames=1;
+ for(;frames<2000&&!visibleFacets().length;frames++)step();
+ assert(frames<2000&&state().selected==='ironclad',JSON.stringify(state()));
+ const firstFacets=visibleFacets().length;
+ report.firstSelectionModel={updates:frames,facets:firstFacets,wallMs:performance.now()-openedAt};
+ if(firstFacets<1600)await render('selection-in-progress');
  for(;frames<2000&&state().portraits.selection.phase!=='ready';frames++)step();
- assert(frames<2000,JSON.stringify(state()));report.firstSelectionMs=performance.now()-openAt;report.prepareFrames=frames;
+ assert(frames<2000,JSON.stringify(state()));report.completeSelectionUpdates=frames;
  report.firstState=state();
- const host=find('stage/characterPanel/lumineSelectionBackground'),facets=all(host).filter(n=>n.kind==='image');assert.equal(facets.length,1600);
+ const facets=all(host).filter(n=>n.kind==='image');assert.equal(facets.length,1600);
  report.halfTriangles=facets.filter(n=>n.enableMask).length;
  for(const n of facets)if(n.enableMask){assert.equal(n.enableFill,true);assert.equal(n.fillType,'Horizontal');assert.equal(n.fillAmount,.5);}
  const first=await render('selection');report.softwarePngMs=first.renderMs;
@@ -82,8 +104,9 @@ try{
  report.visualStatus='Simulator horizontal masks rendered; aesthetic review and official game screenshot remain separate';
  const count=session.runtime.controlsById.size;report.residentControls=count;
  for(let i=0;i<20;i++){
-  tap('stage/characterPanel/cancel/hit');assert(!state().open);const t=performance.now();
-  tap('stage/menuPanel/start/hit');assert(state().open&&state().portraits.selection.phase==='ready');
+  tap('stage/characterPanel/cancel/hit');assert(!state().open);openBlank();
+  const t=tap(roleTrail);
+  assert(state().selected==='ironclad'&&state().portraits.selection.phase==='ready'&&visibleFacets().length===1600);
   assert.equal(session.runtime.controlsById.size,count,'Roundtrip leaked controls');assert.deepEqual(all(symbol).map(n=>n.Id),symbolIds,'Constellation rebuilt');
   report.roundtrips.push({modelMs:performance.now()-t,controls:count});
  }

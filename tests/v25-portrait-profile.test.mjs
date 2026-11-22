@@ -138,7 +138,7 @@ a:onEngineDestroy();assert(not a:readyForPage('menu',true,'ironclad','characterP
 `,{runtimeV2:true,officialAssets:true});
 });
 
-test('official title uses on-demand selection while partial cancellation and ready cache remain intact',()=>{
+test('the legacy title hint does not start the official worker and partial cancel retains the cache',()=>{
  withPortraitVm(`
 Theme.presentationProfile='official-assets-first'
 local originalClock=os.clock;local tickClock=0;os.clock=function()tickClock=tickClock+.009;return tickClock end
@@ -178,6 +178,70 @@ os.clock=originalClock
 `,{runtimeV2:true,officialAssets:true});
 });
 
+test('one title worker warms the default across four role slots and switching never publishes an older role',()=>{
+ withPortraitVm(`
+local panel=stage.children.characterPanel
+local keys={'ironclad','hutao','arlecchino','watcher'}
+local hosts={}
+for i,id in ipairs(keys)do
+ local host=tree();host:SetVisible(false);hosts[id]=host
+ panel.children[i==1 and 'lumineSelectionBackground' or id]=host
+end
+local backing=tree();backing:SetVisible(true);panel.children.v25Background=backing
+panel.children.details=tree({})
+traveler:SetVisible(false)
+local rows={}
+for i=1,130 do rows[i]=Asset.lowpolyLumine.rows[i]end
+local drawing={rows=rows,count=#rows,width=1280,height=720,renderProfile='lowpoly-v1',
+ jsonSha256=Asset.lowpolyLumine.jsonSha256,runtimeV2=true,cache=true}
+Asset.selectionVariants={}
+for i=2,#keys do
+ local id=keys[i];Asset.selectionVariants[i-1]={id=id,host=id,drawing=drawing}
+end
+local a=Portraits.new(stage,nil,{selectionAvatar=true})
+local previousClock=os.clock;os.clock=function()return 0 end
+local function warm(eligible,dt,frameStarted)a:warmSelection(eligible,dt or 1/60,frameStarted or 0)end
+local function visible(role)
+ for id,host in pairs(hosts)do assert(host.visible==(id==role),id..' visibility')end
+ assert(backing.visible==(role==nil))
+end
+a:sync('menu',false,false,nil,true);warm(true)
+assert(LiveCount()==0)
+warm(true,.06);warm(true,1/60,-.01)
+assert(LiveCount()==0,'busy frames warmed a portrait')
+warm(true)
+assert(LiveCount()==24)
+for _=1,100 do warm(true)end
+assert(LiveCount()==1628 and not hosts.ironclad.active,'title warmed multiple roles or activated an offscreen host')
+visible(nil)
+a:sync('menu',true,false,nil);visible(nil)
+a:sync('menu',true,false,'ironclad');visible('ironclad')
+assert(LiveCount()==1628,'warm selection created new controls in the click')
+a:sync('menu',true,false,'hutao');a:tick(1/60,false)
+assert(a:status().selection.owned==0);visible(nil)
+a:tick(1/60);local b=a:status().selection.owned
+assert(b>0 and b<=64)
+a:sync('menu',true,false,'arlecchino');visible(nil)
+for _=1,4 do a:tick(1/60)end
+assert(a:status().selection.phase=='ready');visible('arlecchino')
+assert(LiveCount()==1628+b+134,'superseded B or speculative fourth role kept building')
+a:sync('battle',false,false,'ironclad');visible(nil)
+assert(not hosts.arlecchino.active);a:tick(1/60)
+local resident=LiveCount();a:sync('menu',true,false,'arlecchino');visible('arlecchino')
+a:sync('menu',true,false,'ironclad');visible('ironclad')
+assert(LiveCount()==resident)
+a:sync('menu',true,false,nil);visible(nil)
+local native=hosts.ironclad.SetVisible
+hosts.ironclad.SetVisible=function(self,value)
+ if value then assert(a:release())end
+ return native(self,value)
+end
+a:sync('menu',true,false,'ironclad')
+visible(nil);assert(LiveCount()==0 and not hosts.ironclad.active)
+os.clock=previousClock
+`,{runtimeV2:true,officialAssets:true});
+});
+
 test('official hidden roster does not build its avatar and visible roster can prepare cancel and resume',()=>{
  withPortraitVm(`
 Theme.presentationProfile='official-assets-first'
@@ -214,14 +278,14 @@ assert(a:release() and LiveCount()==0)
 `,{runtimeV2:true,officialAssets:true});
 });
 
-test('official selection retains its bounded cache while battle uses the approved native figure and full-body literals remain available',()=>{
+test('official selection retains its bounded cache beside the approved combat figure',()=>{
  withPortraitVm(`
 local selectionHost=tree();stage.children.characterPanel.children.lumineSelectionBackground=selectionHost;local frame=tree();rawset(frame,'sizeDeltaX',440)
 local note=tree();note.text=''
 stage.children.characterPanel.children.details=tree({officialSelectionFigure=selectionHost,portraitFrame=frame,
  portraits=tree({traveler_ironclad=tree()}),portraitNote=note})
 traveler:SetVisible(false)
-assert(Asset.battle133.count==4315 and #Asset.battle133.rows==4315,'full-source figure was replaced')
+assert(Asset.battle133==nil,'production loaded the separate legacy full-body source')
 assert(Asset.battlePixel.count==57 and #Asset.battlePixel.rows==57)
 local native=assert(Asset.battleApprovedNative)
 assert(native.renderProfile=='lowpoly-v1' and native.count==464 and #native.rows==464)
@@ -248,7 +312,6 @@ assert(a:sync('menu',true,false,'ironclad'));a:tick()
 assert(a:sync('battle',false,false,'ironclad'));a:tick()
 assert(a:status().battle.phase=='ready' and a:status().battle.generation==generation and LiveCount()==complete,'scene reentry rebuilt the approved cache')
 local resumed=Images();for i,image in ipairs(both)do assert(resumed[i]==image,'scene reentry replaced a cached image')end
-assert(Asset.battle133.count==4315 and #Asset.battle133.rows==4315)
 assert(a:release() and LiveCount()==0)
 `,{runtimeV2:true,officialAssets:true});
 });
@@ -519,7 +582,6 @@ test('approved Lumine official battle mounts the exact native drawing and retain
  assert.equal(data.rows.filter(r=>r[17]!==255).length,20);
  assert.equal(data.rows.filter(r=>r[18]||r[19]).length,448);
  withPortraitVm(`
-Asset.v25PortraitProfile=${toLua(v25PortraitRuntimeProfile(nativeTheme))}
 local data=assert(Asset.battleApprovedNative,'official battle module omitted approved native Lumine')
 local expected=${toLua(data.rows)}
 Equal(data.rows,expected)
@@ -532,8 +594,9 @@ end
 local q=owner:status().battle
 assert(q.phase=='ready' and q.owned==473 and LiveCount()==473,'battle did not mount exactly 464 images, 8 groups, 1 page: '..tostring(q.reason))
 local images=Images()
-Equal(figure.SetAnchoredPositionValue,Asset.v25PortraitProfile.battlePosition)
-Equal(figure.SetLocalScaleValue,{210/133,210/133,1})
+Equal(figure.SetAnchoredPositionValue,Theme.officialAssets.battlePortraitPosition)
+local scale=Theme.layout.player.portrait/133
+Equal(figure.SetLocalScaleValue,{scale,scale,1})
 assert(#images==464,'incorrect image count')
 for i,c in ipairs(images)do
  local r=expected[i]

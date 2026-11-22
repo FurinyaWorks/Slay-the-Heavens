@@ -92,6 +92,7 @@ test('production background preserves the exact approved experiment rows, includ
  // Independently frozen from lumine-native-v11/rows-1600.json, not this adapter.
  assert.equal(createHash('sha256').update(JSON.stringify(rows)).digest('hex'),'8feed38c818cfa0abda50d1955cfaa99f360ec60bf501544a7245aa4c779eee5');
  assert.equal(rows.length,1600);assert.equal(rows.filter(r=>r[15]===1).length,224);
+ assert.deepEqual(background.revealWithNext.flatMap((together,index)=>together?[index+1]:[]),[17]);
 });
 
 test('selection uses static exact-alpha geometry and reuses the selected frame without a glyph overlay',()=>{
@@ -187,7 +188,7 @@ test('official generated selection retires the legacy full-screen shade above it
  assert.deepEqual(readArtFeatures(directory),officialAssetFlags);
 });
 
-test('official native portrait ready, pause and reentry cannot restore the retired full-screen shade',t=>{
+test('official selection paints completed groups, hides stale art and reuses the native cache',t=>{
  const modules=readdirSync(directory).filter(n=>n.endsWith('.lua')).map(n=>n.slice(0,-4));
  const script=`
 local generated=${luaString(directory.replaceAll('\\','/'))}
@@ -212,7 +213,7 @@ function methods:SetActive(value)self.active=value end
 function methods:SetImage(source,id)self.imageId=id end
 for _,name in ipairs({'SetAnchorMin','SetAnchorMax','SetPivot','SetSizeDelta','SetLocalScale','SetLocalRotation','SetAnchoredPosition','SetAsLastSibling','SetFillHorizontal','SetFillUnused'})do methods[name]=function()end end
 local function install(control)
- control.SetActive=methods.SetActive
+ control.SetActive=methods.SetActive;control.active=true
  for _,c in pairs(control.children)do install(c)end
 end
 install(root)
@@ -220,7 +221,7 @@ local created,destroyed,rejectCreation=0,0,false
 game={InstantiateClientUIControl=function(index,parent)
  assert(index==41 or index==73 or index==99)
  if rejectCreation then return nil end
- created=created+1;return setmetatable({parent=parent,alive=true},{__index=methods})
+ created=created+1;return setmetatable({parent=parent,alive=true,active=true,visible=false},{__index=methods})
 end,DestroyClientUIControl=function()destroyed=destroyed+1 end}
 local portraits=require('abyss_traveler_portraits').new(root,nil,{selectionAvatar=true,battlePortrait=true})
 local covered={}
@@ -229,20 +230,34 @@ local function scope(label)
  assert(fill.visible)
  if legacy.visible then covered[#covered+1]=label end
 end
+local realClock=os.clock
+local clock=0
+os.clock=function()clock=clock+.005;return clock end
 portraits:sync('menu',true,false,'ironclad');scope('building')
 portraits:tick(.49);assert(not dots.visible and not fade.visible)
 portraits:tick(.02);assert(dots.visible and dots.text=='• · ·' and not art.visible)
 portraits:tick(.17);assert(dots.text=='· • ·')
-for _=1,600 do portraits:tick();if portraits:readyForPage('menu',true,'ironclad','characterPanel')then break end end
+portraits:tick(4.1)
+while not art.visible and created<160 do portraits:tick(1/60)end
+local first=portraits:status().selection
+assert(first.phase=='building' and first.nextIndex>=121 and first.nextIndex<125 and first.revealIndex==3
+ and art.visible and not fallback.visible and not dots.visible and not fade.visible,
+ 'the first two completed layers must be visible above the backing before the full portrait')
+scope('partial')
+os.clock=function()return 0 end
+for _=1,50 do portraits:tick(1/60)end
 assert(portraits:readyForPage('menu',true,'ironclad','characterPanel'))
 assert(portraits:status().selection.phase=='ready' and art.visible and not fallback.visible)
-assert(not dots.visible and fade.visible)
-portraits:tick(.17);assert(not fade.visible)
+assert(not dots.visible and not fade.visible,'cold completion replayed a matte fade')
 scope('ready')
 local total=created
-portraits:sync('menu',false,false,'ironclad');assert(not art.visible and fallback.visible);scope('paused')
-portraits:sync('menu',true,false,'ironclad');portraits:tick()
-assert(art.visible and not fallback.visible and created==total and destroyed==0);scope('reentry')
+portraits:sync('menu',false,false,'ironclad')
+assert(not art.visible and not art.active and fallback.visible);scope('paused')
+portraits:sync('menu',true,false,nil)
+assert(not art.visible and fallback.visible and created==total);scope('blank')
+portraits:sync('menu',true,false,'ironclad')
+assert(art.visible and not fallback.visible and fade.visible and created==total and destroyed==0);scope('reentry')
+portraits:tick(.17);assert(not fade.visible)
 assert(panel:GetChild('blocker').visible,'input barrier was removed with legacy paint')
 assert(portraits:release());rejectCreation=true
 portraits:sync('menu',true,false,'ironclad');portraits:tick()
@@ -251,11 +266,6 @@ scope('failed')
 rejectCreation=false
 portraits:sync('menu',false,false,'ironclad')
 portraits:sync('menu',true,false,'ironclad')
-local beforeSlowLoad=created
-portraits:tick(4.1)
-for _=1,10 do portraits:tick(1/60)end
-assert(created>beforeSlowLoad and fallback.visible and dots.visible and not art.visible,
- 'a slow native load must continue past the former deadline')
 local setVisible=art.SetVisible;local reentered=false
 art.SetVisible=function(self,value)
  setVisible(self,value)
@@ -263,12 +273,19 @@ art.SetVisible=function(self,value)
   reentered=true;portraits:sync('menu',true,false,'hutao')
  end
 end
-for _=1,600 do portraits:tick(1/60);if reentered then break end end
+for _=1,50 do portraits:tick(1/60);if reentered then break end end
 assert(reentered and not art.visible and fallback.visible and not fade.visible and not dots.visible,
  'late Geo art became visible after the next role was chosen')
+local partial=portraits:status().selection
+assert(partial.phase=='building')
+for _=1,10 do portraits:tick(1/60)end
+assert(portraits:status().selection.nextIndex==partial.nextIndex)
 portraits:sync('menu',true,false,'ironclad')
-assert(portraits:status().selection.phase=='ready' and art.visible and not fallback.visible,
- 'the slow load must finish and the authored art must survive reentry')
+assert(art.visible and not fallback.visible and portraits:status().selection.owned==partial.owned,
+ 'partially prepared artwork rebuilt its first layers on reentry')
+for _=1,50 do portraits:tick(1/60)end
+assert(portraits:status().selection.phase=='ready')
+os.clock=realClock
 portraits:onEngineDestroy();portraits:tick();scope('destroyed')
 assert(#covered==0,'inherited full-screen shade covers the approved selection art: '..table.concat(covered,','))
 print('SELECTION_OVERLAY_SCOPE_PASS created='..created)

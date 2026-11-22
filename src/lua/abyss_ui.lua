@@ -330,9 +330,18 @@ local function prepareRunDeck(gate)
         deck:prepareBrowser()
     end
 end
+local function prewarmSelection(gate,dt,frameStarted)
+    if not portraits then return end
+    local eligible=frameStarted and gate and not gate:covered() and view.mode=='menu' and not view.run
+        and not view.characterOpen and not view.disabled and not view.starting
+        and not view.exitOpen and not view.settlementRequested and not view.settlementBusy
+        and not view.sessionPaused and not view.easterEggOpen and not view.deckUI.visible
+    portraits:warmSelection(eligible==true,dt,frameStarted)
+end
 function OnUpdate(dt)
     if not view or view.disabled then return end
     local ok, reason = pcall(function()
+        local frameStarted=portraits and view.mode=='menu' and os.clock()
         local width, height = game.GetUICanvasSize()
         if width ~= canvasWidth or height ~= canvasHeight then
             Viewport.apply(script.object, width, height)
@@ -367,6 +376,7 @@ function OnUpdate(dt)
             applyRevealStep(gate,reveal,gate:step(reveal.intent(view),dt))
         end
         prepareRunDeck(gate)
+        prewarmSelection(gate,dt,frameStarted)
     end)
     if not ok then failed("update", reason) end
 end

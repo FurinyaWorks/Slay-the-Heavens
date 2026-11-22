@@ -66,6 +66,11 @@ local function updateSuspended(self,dt)
     if self.sessionPaused then self:animate(dt);return true end
     return false
 end
+local function selectionCanDraw(self)
+    return self.characterOpen and not self.deckUI.visible and not self.exitOpen
+        and not self.settlementBusy and not self.settlementRequested and not self.sessionPaused
+        and not (self.pageReveal and self.pageReveal:covered())
+end
 function M.update(self,platform,openingCovered,bgm)
     local function advancePages(dt)
             PageReveal.registerSource(platform,'battlePanel')
@@ -83,7 +88,7 @@ function M.update(self,platform,openingCovered,bgm)
                 self.easterEgg:tick();return true
             end
             if platform.background then platform.background:tick() end
-            if platform.portraits then platform.portraits:tick(dt) end
+            if platform.portraits then platform.portraits:tick(dt,selectionCanDraw(self)) end
             self:paintArtLoading()
             if self.exitOpen or self.settlementBusy then return true end
             if updateSuspended(self,dt) then return true end
