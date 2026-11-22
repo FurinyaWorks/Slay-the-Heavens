@@ -1,6 +1,7 @@
 package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Native=dofile('tests/lua/support/native_art_controls.lua')
+local advanceShop=dofile('tests/lua/support/shop_timeline.lua')
 local Run,Map,Nodes=require('abyss_run'),require('abyss_map'),require('abyss_nodes')
 local Display=require('abyss_card_display')
 local DeckUI,NodeUI=require('abyss_deck_ui'),require('abyss_node_ui')
@@ -73,8 +74,14 @@ for _=1,17 do
  if found then break end;assert(Map.choose(map,assert(choices[1]).id))
 end
 shop.nodeFlow.cards[1].id='cleave'
-local node=NodeUI.new(r:GetChild('nodePanel'),shop,map,F.Presentation,'click',function()end,platform)
-node:render();local offer=r:GetChild('nodePanel'):GetChild('shopView'):GetChild('card1');art(offer,true,true)
+local function openShop(panel,view)
+ assert(panel:GetChild('merchant'):GetChild('talk'):GetChild('hit').click())
+ advanceShop(view)
+end
+local panel=r:GetChild('nodePanel')
+local node=NodeUI.new(panel,shop,map,F.Presentation,'click',function()end,platform)
+node:render();openShop(panel,node)
+local offer=panel:GetChild('shopView'):GetChild('card1');art(offer,true,true)
 shop.nodeFlow.cards[1].id='heavy_blade';node:render();art(offer,true,true)
 shop.nodeFlow.cards[1].id='defend';node:render();art(offer,false,true)
 shop.nodeFlow.cards[1].id='cleave';node:render();art(offer,true,true)
@@ -92,5 +99,6 @@ local hostRoot=root()
 local host=GameUI.new(hostRoot,F.Data,F.Presentation,'click',platform)
 host.run,host.map,host.mode=shop,map,'node'
 host.nodeUI.run,host.nodeUI.map=shop,map;host:refresh()
+openShop(hostRoot:GetChild('nodePanel'),host)
 art(hostRoot:GetChild('nodePanel'):GetChild('shopView'):GetChild('card1'),true,true)
 print('NATIVE_CARD_ART_CONTEXTS_PASS battle/reward/deck/shop; four-live-texts/dynamic-preview/recycle/art_*')

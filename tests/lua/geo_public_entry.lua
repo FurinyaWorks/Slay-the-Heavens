@@ -62,7 +62,11 @@ local function native(workKey)
  F.click(root,'nodePanel','eventView/option1');finishOpening(host)
  assert(host.mode=='map' and host.mapUI.navigationEnabled and host.run==run)
  local first=F.Nodes.available(run,host.map)[1]
- assert(first and host.mapUI:choose(first.id))
+ assert(first)
+ local accepted,state=host.mapUI:choose(first.id)
+ assert(accepted and state=='selection_pending' and host.mode=='map' and run.phase=='map')
+ finishOpening(host)
+ assert(host.map.currentNodeId==first.id)
  assert(host.mode=='battle' and run.phase=='combat' and host.run==run)
  for _,held in ipairs(run.combat.hand)do assert(not held.cardId:match('^RD2%-'))end
 end
