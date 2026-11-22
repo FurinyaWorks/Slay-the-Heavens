@@ -14,12 +14,18 @@ assert(mutation==='none'||variant==='current');
 const hash=x=>createHash('sha256').update(x).digest('hex');
 const proof=JSON.parse(readFileSync('tests/helpers/reward-query-boundary-before.json','utf8'));
 assert.equal(proof.revision,'d8a57cae2a867200ca8e588abc0d368e6cdb3799');
+const session=JSON.parse(readFileSync('tests/helpers/session-reward-source.json','utf8'));
+assert.equal(session.base,'345ba08398b6ca8e1361a126f2ce1de85210e634');
 const sources={},sourceManifest={};
 for(const name of readdirSync('src/lua').filter(n=>n.endsWith('.lua')).sort()){
  const path='src/lua/'+name;let source=readFileSync(path,'utf8').replaceAll('\r\n','\n');
  const row=proof.files[path];
  if(row){
-  assert.equal(hash(source),row.afterSha256,path+' current full source');
+  const current=session.files[path];
+  assert.equal(current?.beforeSha256,row.afterSha256,path+' exact prior reward source');
+  assert.equal(hash(source),current.afterSha256,path+' current full source');
+  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(source)}\0`).update(source).digest('hex'),current.afterGitBlob);
+
   assert.equal(hash(row.beforeSource),row.beforeSha256,path+' historical full source');
   assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.beforeSource)}\0`).update(row.beforeSource).digest('hex'),row.beforeGitBlob);
   if(variant==='old')source=row.beforeSource;

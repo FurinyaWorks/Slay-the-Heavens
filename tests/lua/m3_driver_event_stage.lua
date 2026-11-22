@@ -69,7 +69,7 @@ print('PASS driver staged empty purge group completes without phantom UID')
 local run,map=fixture()
 assert(Run.obtainRelic(run,'Bottled Flame'))
 local Pending=require('abyss_relic_pending');local view=assert(Pending.view(run));local bottle=view.rows[1].token
-assert(Pending.resolve(run,bottle));local protected=bottle.uid
+assert(Pending.resolve(run,bottle,Run));local protected=bottle.uid
 local row=selectStage(run,map,'forget')
 local candidates=Nodes.view(run,map).node.event.purgeCards;assert(not has(candidates,protected))
 local selected=uid(run,map,row);assert(selected and selected~=protected and has(candidates,selected))

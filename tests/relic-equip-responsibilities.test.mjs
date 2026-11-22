@@ -14,7 +14,7 @@ test('onEquip freezes complete cbabad34 source and Git blob identity',()=>{
  assert.equal(current.slice(current.indexOf('function M.onUnequip(')),before.slice(before.indexOf('function M.onUnequip(')));
 });
 for(const group of ['ordinary','upgrades','dynamic','integration'])test(`onEquip independent full graph VM differential: ${group}`,t=>{
- const old=equipVm(before,group),actual=equipVm(current,group);
+ const old=equipVm(before,group,{historicalSession:true}),actual=equipVm(current,group);
  assert.equal(old.status,0,old.error);assert.equal(actual.status,0,actual.error);
  assert.ok(old.graphs.length>=9,'scenario matrix executed');assert.deepEqual(actual.graphs,old.graphs);
  assert.equal(actual.rawErrors.length,old.rawErrors.length);
@@ -28,5 +28,5 @@ const mutations=[
  ['upgrade-rng','upgrades',s=>s.replace('S.shuffle(run.miscRng,eligible)','-- removed shuffle'),'shuffle consumption'],
 ];
 for(const [version,source]of [['before',before],['current',current]])for(const [name,group,mutate,message]of mutations)test(`onEquip real semantic negative control ${version}/${name}`,()=>{
- const mutant=mutate(source);assert.notEqual(mutant,source);const result=equipVm(mutant,group);assert.notEqual(result.status,0);assert.ok(result.error.includes('[RELIC_EQUIP]')&&result.error.includes(message),result.error);
+ const mutant=mutate(source);assert.notEqual(mutant,source);const result=equipVm(mutant,group,{historicalSession:version==='before'});assert.notEqual(result.status,0);assert.ok(result.error.includes('[RELIC_EQUIP]')&&result.error.includes(message),result.error);
 });

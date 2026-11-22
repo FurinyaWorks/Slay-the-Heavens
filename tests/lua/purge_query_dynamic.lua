@@ -18,10 +18,10 @@ local after=R.snapshot(run.miscRng);eq(after.counter,before.counter);eq(table.co
 local nextRun=Run.new(D,'42');assert(Run.obtainRelic(nextRun,'empty_cage'))
 local uid=nextRun.deck[1].uid;local deck,pending=nextRun.deck,nextRun.pendingBossRelic
 Wall.purgeCards=function()calls=calls+1;return {}end
-local called,ok,why=pcall(Boss.select,nextRun,uid);Wall.purgeCards=original
+local called,ok,why=pcall(Boss.select,nextRun,uid,Run);Wall.purgeCards=original
 assert(called,ok);eq(ok,false);eq(why,'invalid_card');eq(nextRun.deck,deck,'selection refusal retains deck owner');eq(nextRun.pendingBossRelic,pending,'selection refusal retains pending owner');eq(#pending.selectedUids,0);eq(calls,3)
 -- A later restored replacement must be read again, rather than captured at load.
 Wall.purgeCards=function(run)calls=calls+1;return original(run)end
-local called,ok,why=pcall(Boss.select,nextRun,uid);Wall.purgeCards=original
+local called,ok,why=pcall(Boss.select,nextRun,uid,Run);Wall.purgeCards=original
 assert(called,ok);eq(ok,true,why);eq(calls,4);eq(#nextRun.pendingBossRelic.selectedUids,1)
 print('PURGE_QUERY_DYNAMIC_PASS choose,BossEquip,BossSelect,stagedOwner,nilRestore,errorIdentity,warmRead calls=4')

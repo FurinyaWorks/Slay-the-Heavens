@@ -368,14 +368,9 @@
   "dynamicExceptions": [],
   "deferredImports": [
     {
-      "from": "abyss_uncommon_relics",
-      "to": "abyss_run",
-      "reason": "Meat on the Bone delegates raw victory healing to the initialized Run health owner while the room is still in combat, preserving one shared Magic Flower/Bloom modifier pass."
-    },
-    {
-      "from": "abyss_relic_card_rewards",
-      "to": "abyss_run",
-      "reason": "Card reward commands invoke the initialized Run transaction and permanent inventory only when selecting or claiming; never during module initialization."
+      "from": "abyss_shop_relics",
+      "to": "abyss_relic_choices",
+      "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
     },
     {
       "from": "abyss_boss_relics",
@@ -394,11 +389,6 @@
     },
     {
       "from": "abyss_boss_relics",
-      "to": "abyss_run",
-      "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
-    },
-    {
-      "from": "abyss_boss_relics",
       "to": "abyss_potion_random",
       "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
     },
@@ -408,23 +398,8 @@
       "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
     },
     {
-      "from": "abyss_boss_relics",
-      "to": "abyss_relic_hooks",
-      "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
-    },
-    {
-      "from": "abyss_relic_choices",
-      "to": "abyss_run",
-      "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
-    },
-    {
       "from": "abyss_relic_choices",
       "to": "abyss_card_pool",
-      "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
-    },
-    {
-      "from": "abyss_relic_choices",
-      "to": "abyss_shop_relics",
       "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
     },
     {
@@ -449,11 +424,6 @@
     },
     {
       "from": "abyss_relic_pending",
-      "to": "abyss_run",
-      "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
-    },
-    {
-      "from": "abyss_relic_pending",
       "to": "abyss_uncommon_relics",
       "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
     },
@@ -465,11 +435,6 @@
     {
       "from": "abyss_relic_pending",
       "to": "abyss_boss_relics",
-      "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
-    },
-    {
-      "from": "abyss_shop_relics",
-      "to": "abyss_relic_choices",
       "reason": "Relic callbacks load the already initialized runtime only when an actual obtain, choice, damage or card action executes; no module initialization import."
     },
     {
@@ -1044,6 +1009,13 @@
         "abyss_relic_family_combat"
       ],
       "reason": "Targetability and encounter presence are read-only. AI decision, summon planning and discard-refund gates consume those predicates without importing Actor lifecycle execution. The full AST closure is guarded by actor-presence.test.mjs, including deferred edges."
+    },
+    {
+      "id": "session-command-consumers",
+      "from": ["abyss_boss_relics", "abyss_relic_card_rewards", "abyss_relic_choices",
+        "abyss_relic_pending", "abyss_uncommon_relics"],
+      "forbiddenTargets": ["abyss_run"],
+      "reason": "Session reward and relic commands accept the existing Run transaction and mutation capabilities from their callers."
     },
     {
       "id": "reward-query-consumer-boundary",

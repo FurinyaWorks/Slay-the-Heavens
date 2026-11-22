@@ -186,7 +186,17 @@ function beforeDevelopActorFocusCopier(path,source){
  assert.equal(hash(prior),'a943bd62f8ef5232548a9e415724e7aaf9518bf365686ec3d09e79d83fd54754','exact Develop actorFocus copier predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+function beforeDevelopSessionRelicCopier(path,source){
+ if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source);
+ if(hash(lf)!=='5130bc86b8e09a85aa7981393335cecec6d76a1b38f2ab2a80ac4810b22fa2d9')return source;
+ const prior=lf.replace(/^const developSessionRelicFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
+  .replace('Object.entries(developSessionRelicFiles))','Object.entries(developActorFocusFiles))');
+ assert.equal(hash(prior),'6d3bf93a3d1e020b69673d7864fe574ca8ed858945a02772cd662eb4b042a6ed','exact Develop sessionRelic copier predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function beforeDevelopBackflowCopier(path,source){
+ source=beforeDevelopSessionRelicCopier(path,source);
  source=beforeDevelopActorFocusCopier(path,source);
  source=beforeDevelopStasisUpgradeCopier(path,source);
  source=beforeDevelopBattleFeedbackCopier(path,source);
