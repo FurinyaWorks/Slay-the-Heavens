@@ -10,8 +10,14 @@ end
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Run=require('abyss_run')
 local Gate=require('abyss_page_reveal')
-local host,root=F.fixture(nil,function()return true end,nil,{CursorDown='down',CursorUp='up'})
+local victoryCues=0
+local function sound(cue)
+ if cue=='victory'then victoryCues=victoryCues+1 end
+end
+local host,root=F.fixture(nil,function()return true end,nil,{CursorDown='down',CursorUp='up'},nil,sound)
 local battle=root:GetChild('battlePanel')
+local bannerPlate=battle:GetChild('feedback'):GetChild('bannerPlate')
+local list=battle:GetChild('rewardList')
 local hit=battle:GetChild('card1'):GetChild('hit')
 local cover=root:GetChild('pageReveal')
 local veil=cover:GetChild('veil')
@@ -40,12 +46,32 @@ tick();assert(not cover.visible and not host.pageReveal:covered())
 run.combat=F.Combat.new(run.data,{enemies={'acid_slime_s'},deck={'bludgeon'}})
 host:refresh();settle();local lethalCombat=run.combat
 host.battleUI:playSlot(1);host.battleUI:playSelected(1)
-for _=1,400 do
+local monster=dofile('tests/lua/support/monster_control_fixture.lua')
+local enemyId=lethalCombat.enemies[1].id
+local lethalFrame,rewardFrame
+for frame=1,400 do
  assert(not cover.visible and not host.pageReveal:covered(),'lethal feedback/settlement flashed a cover')
  if not host.battleUI.busy then break end
- tick()
+ host:update(1/60)
+ if not lethalFrame and host.battleUI.feedback.deaths[enemyId] then
+  lethalFrame=frame
+  assert(monster(battle,'enemy1') and not list.visible,'lethal contact must be visible before rewards')
+ end
+ if list.visible then
+  rewardFrame=rewardFrame or frame
+  assert(not monster(battle,'enemy1') and not host.battleUI.busy,'enemy must retire before rewards are interactive')
+ end
+ assert(not bannerPlate.visible,'victory displayed a separate combat feedback plate')
+ if victoryCues>0 then assert(list.visible and not host.battleUI.busy,'victory cue did not hand off to rewards in the same frame')end
 end
 assert(host.run==run and run.combat==lethalCombat and run.phase=='reward')
+assert(victoryCues==1 and list.visible and list:GetChild('title').text=='战斗胜利')
+local rewardDelay=assert(rewardFrame)-assert(lethalFrame)
+print('REWARD_LETHAL_TO_LIST_FRAMES '..rewardDelay)
+assert(rewardDelay<=24,'lethal contact to reward list took '..rewardDelay..' frames at 60 Hz')
+local gold=run.gold
+battle:GetChild('goldReward').click()
+assert(run.rewards.goldClaimed and run.gold>gold,'the first reward frame must accept input')
 battle:GetChild('cardReward').click()
 assert(host.battleUI.rewardScreen=='cards' and not cover.visible)
 assert(host.battleUI:controllerBack() and not cover.visible)
