@@ -204,3 +204,9 @@ test('missing approved story and image bindings stay explicitly empty and repeat
  assert.equal(v25CharacterReference.cssSha256,'9a6d137a3297559f638e5323db424506ae394c7942cdf334551936ac0d74d17d');
  assert(v25CharacterReference.unverified.includes('full-resolution-portrait'));
 });
+test('published Traveler selection description matches owner-approved text',()=>{
+ const approved='失却星辉、与血亲失散的异乡旅人。她与磐岩共鸣，剑势在鏖战中愈发凌厉';
+ assert.equal(nativeTheme.v25Character.story,approved);
+ const layout=build();applyV25CharacterLayout(layout,nativeTheme);
+ assert.equal(child(child(panel(layout),'details'),'v25Story').text.content,approved);
+});
