@@ -1433,6 +1433,13 @@ docs/evidence/m9-ci-20261103/raw-ci.json.gz filter=lfs diff=lfs merge=lfs -text 
 docs/evidence/pr621-deck-sort-20261111/validation.tar.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
 tests/helpers/closeout-ci-source.json.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
 tests/helpers/release-source-epoch.json.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
+tests/fixtures/integration-ci-epochs.json.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
+tests/fixtures/pr323-historical-fixtures.json.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
+tests/helpers/closeout-source-epoch.json.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
+tests/helpers/component-ui-source-epoch.json.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
+tests/helpers/integrated-ci-source.json.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
+tests/helpers/rebased-release-source.json.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
+tests/helpers/sts-style-prior-runtime.json.gz filter=lfs diff=lfs merge=lfs -text ci-immutable-media
 
 # Original bytes of the v2 P1 screenshots used by the UI reference index.
 docs/evidence/v2-ui-20261119/p1/runtime-battle.png filter=lfs diff=lfs merge=lfs -text

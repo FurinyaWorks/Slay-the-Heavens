@@ -655,6 +655,20 @@ function beforeDevelopEpochReplayRuntime(path,source){
  if(hash(current)!==after.sha256||blob(current)!==after.gitBlob)return source;
  return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
 }
+const replayAssetLedger='docs/legal/assets.json';
+function beforeReplayArchiveStorage(path,source){
+ if(path!==replayAssetLedger||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const current=normalize(source);
+ if(hash(current)!=='3177b5d318db49ae78255bbcf6deae7413024d0f6c2781b31e633c549e173cc0'||
+    blob(current)!=='2d5d723f3a76e0563dda2e28d9f2dccedadf5b42')return source;
+ const start=current.indexOf('    "tests/fixtures/integration-ci-epochs.json.gz": {\n');
+ const end=current.indexOf('    "docs/evidence/sts-selection-fade-20261121/after-selection.png": {\n');
+ assert(start>=0&&end>start,'complete replay archive provenance records');
+ const prior=current.slice(0,start)+current.slice(end);
+ assert.equal(hash(prior),'28c8b76109df44c218fc25b226dfec494870b591d56c53fd66cb0b6eb06d0a3c','immutable replay archive ledger predecessor');
+ assert.equal(blob(prior),'719804fae3a3b3ddac4d41b6ee020f7fba03319c');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function beforeIntegrationSuccessor(path,source){
  source=beforeIntegrationReplayTests(path,source);
  if(!Object.hasOwn(sourceSuccessors,path)||typeof source!=='string'||source.includes('\r\r\n')
@@ -667,7 +681,8 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  const liveRead=read;
  read=(path,encoding)=>beforeCalibrationReplay(path,liveRead(path,encoding));
  const readCurrent=(path,encoding)=>{
-  const raw=read(path,encoding),priorMerge=beforeDevelopReplayMerge(path,raw);
+  const live=read(path,encoding),raw=beforeReplayArchiveStorage(path,live),priorMerge=beforeDevelopReplayMerge(path,raw);
+  if(path===replayAssetLedger)assert.notEqual(live,raw,'fresh complete integration source: '+path);
   if(path==='tests/helpers/copy-integration-source-closure.mjs'||path===epochReplayRuntimePath)
    assert.notEqual(raw,beforeMapRoomReplayCohort(path,raw),'fresh complete integration source: '+path);
   const priorFingerprint=beforeReplayFingerprintSource(path,priorMerge);
@@ -699,6 +714,7 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  }
 }
 export function beforePreflightSource(path,source,view='prior'){
+ source=beforeReplayArchiveStorage(path,source);
  source=beforeCalibrationReplay(path,source);
  source=beforeForkFirstCi(path,source);
  source=beforeDevelopReplayMerge(path,source);
