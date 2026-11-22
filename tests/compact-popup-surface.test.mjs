@@ -85,4 +85,12 @@ test('generated official UI uses the compact material at every item-detail path'
     assert.equal(plate.colour, theme.color.panelSunken, `${name} retains its authored material`);
     assert.equal(plate.opacity, 0);
   }
+  const choice = child(stage, 'choicePanel');
+  for (const option of ['option1', 'option2']) {
+    const hit = child(child(choice, option), 'hit');
+    for (const state of ['normal', 'hover', 'pressed', 'disabled']) {
+      assert.equal(child(child(hit, state), 'plate').image, theme.officialAssets.images.button,
+        `${option}/${state} keeps the choice button artwork`);
+    }
+  }
 });
