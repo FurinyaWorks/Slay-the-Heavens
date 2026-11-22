@@ -3,6 +3,10 @@
   "baseCommit": "4c75a31fafcd27c204b957cd7dbc75ac6d9f5ab0",
   "hashRule": "SHA256 raw binary bytes; Lua/JSON/SVG CRLF normalized to LF. Categories record provenance, not clearance. Update manually after rights review.",
   "categories": {
+    "sts1-combat-sdk-evidence": {
+      "status": "Project SDK captures and texture comparison sheets for Release battle diagnostics and an offline effects experiment. Platform texture and other game IP rights remain with their owners. Evidence only. No asset sublicense or commercial clearance.",
+      "evidence": "docs/evidence/sts1-combat-reference-20261121/README.md, make-media.py, capture-source-sha256.json and SDK receipts; included by PR #801 before the inventory entries."
+    },
     "opening-statue-simulator-evidence": {
       "status": "Project rendering of the owner-supplied opening statue design using native shape IDs. Simulator comparison evidence. Game and platform rights remain with their respective owners.",
       "evidence": "scripts/sts-neow-guide-layout.mjs and docs/evidence/neow-geo-statue-preview.png; BeyondSimulator 0.5.2 rendering of the native Lua opening UI fixture."
@@ -233,6 +237,56 @@
     }
   },
   "files": {
+    "docs/evidence/shop-828/after-click.png": {
+      "sha256": "d6639f6cedb18da1b32bcd6cdea34ae0d759ed8d0cf9a28257f02ac48c0abdab",
+      "category": "platform-evidence",
+      "evidence": "docs/evidence/shop-828/README.md; generated-layout Fengari control tree projected in Chromium, with atlas stand-ins"
+    },
+    "docs/evidence/shop-828/after-room.png": {
+      "sha256": "56b49e42f2071660f023959db2d94e7fd2164ae931b0400dd27aea3ce2376a50",
+      "category": "platform-evidence",
+      "evidence": "docs/evidence/shop-828/README.md; generated-layout Fengari control tree projected in Chromium, with atlas stand-ins"
+    },
+    "docs/evidence/shop-828/after-shelf.png": {
+      "sha256": "bd7fd6ff7c93d9450724241bac3031b7bf0b9426527d7aeeabd1115d27e21efd",
+      "category": "platform-evidence",
+      "evidence": "docs/evidence/shop-828/README.md; generated-layout Fengari control tree projected in Chromium, with atlas stand-ins"
+    },
+    "docs/evidence/shop-828/after-transition.png": {
+      "sha256": "94c0a78f1b14ad55d52b3576f8fdf494a626a65b219af8266e08e02b730caaf0",
+      "category": "platform-evidence",
+      "evidence": "docs/evidence/shop-828/README.md; generated-layout Fengari control tree projected in Chromium, with atlas stand-ins"
+    },
+    "docs/evidence/shop-828/before-room.png": {
+      "sha256": "64b3b2e1e8125133509325440baa4f19b97f19a4c1bd79a6be475260ce304f56",
+      "category": "platform-evidence",
+      "evidence": "docs/evidence/shop-828/README.md; generated-layout Fengari control tree projected in Chromium, with atlas stand-ins"
+    },
+    "docs/evidence/shop-828/before-shelf.png": {
+      "sha256": "27051c76c5364053909723834157beac35ef2a69d9b440e8bf18e8684bbfa06b",
+      "category": "platform-evidence",
+      "evidence": "docs/evidence/shop-828/README.md; generated-layout Fengari control tree projected in Chromium, with atlas stand-ins"
+    },
+    "docs/evidence/sts1-combat-reference-20261121/energy-comparison.png": {
+      "sha256": "52f577179f30a51b439ff8a997bb22e18645e65848293292ab7104619d0b027e",
+      "category": "sts1-combat-sdk-evidence"
+    },
+    "docs/evidence/sts1-combat-reference-20261121/exhaust-spike-still.png": {
+      "sha256": "041a7b20f91a8142a43a642510c31e36e747a35fdcbb7758db497c29e2516569",
+      "category": "sts1-combat-sdk-evidence"
+    },
+    "docs/evidence/sts1-combat-reference-20261121/flow-spike.gif": {
+      "sha256": "e948f55ae01adfad50e59cc71024b5dbe195966f34e0d782bd56ebf619b96dd4",
+      "category": "sts1-combat-sdk-evidence"
+    },
+    "docs/evidence/sts1-combat-reference-20261121/status-contact-sheet.png": {
+      "sha256": "d383f928822b551bdd1aebb425b3b4940f6292b083df7d459d80193589c61914",
+      "category": "sts1-combat-sdk-evidence"
+    },
+    "docs/evidence/sts1-combat-reference-20261121/strength-ritual.png": {
+      "sha256": "ca2edd2f41623bf6e4ccbad25102de6e23d0c2fc7ff3144422c747d51743ae53",
+      "category": "sts1-combat-sdk-evidence"
+    },
     "docs/evidence/neow-geo-statue-preview.png": {
       "sha256": "18cf82689b2a3185d51aaa90979acd0fc40e7150fd744bde5716db95d33aa92d",
       "category": "opening-statue-simulator-evidence"
@@ -10096,56 +10150,6 @@
     "docs/evidence/sts1-main-menu-20261121/original-sts1-reference.jpg": {
       "sha256": "07ba0a65572376c22c687436afba469993376184a58126578aca52ab00fcd39e",
       "category": "sts1-menu-session-reference"
-    },
-    "docs/evidence/shop-828/after-click.png": {
-      "sha256": "d6639f6cedb18da1b32bcd6cdea34ae0d759ed8d0cf9a28257f02ac48c0abdab",
-      "category": "platform-evidence",
-      "evidence": "docs/evidence/shop-828/README.md; generated-layout Fengari control tree projected in Chromium, with atlas stand-ins"
-    },
-    "docs/evidence/shop-828/after-room.png": {
-      "sha256": "56b49e42f2071660f023959db2d94e7fd2164ae931b0400dd27aea3ce2376a50",
-      "category": "platform-evidence",
-      "evidence": "docs/evidence/shop-828/README.md; generated-layout Fengari control tree projected in Chromium, with atlas stand-ins"
-    },
-    "docs/evidence/shop-828/after-shelf.png": {
-      "sha256": "bd7fd6ff7c93d9450724241bac3031b7bf0b9426527d7aeeabd1115d27e21efd",
-      "category": "platform-evidence",
-      "evidence": "docs/evidence/shop-828/README.md; generated-layout Fengari control tree projected in Chromium, with atlas stand-ins"
-    },
-    "docs/evidence/shop-828/after-transition.png": {
-      "sha256": "94c0a78f1b14ad55d52b3576f8fdf494a626a65b219af8266e08e02b730caaf0",
-      "category": "platform-evidence",
-      "evidence": "docs/evidence/shop-828/README.md; generated-layout Fengari control tree projected in Chromium, with atlas stand-ins"
-    },
-    "docs/evidence/shop-828/before-room.png": {
-      "sha256": "64b3b2e1e8125133509325440baa4f19b97f19a4c1bd79a6be475260ce304f56",
-      "category": "platform-evidence",
-      "evidence": "docs/evidence/shop-828/README.md; generated-layout Fengari control tree projected in Chromium, with atlas stand-ins"
-    },
-    "docs/evidence/shop-828/before-shelf.png": {
-      "sha256": "27051c76c5364053909723834157beac35ef2a69d9b440e8bf18e8684bbfa06b",
-      "category": "platform-evidence",
-      "evidence": "docs/evidence/shop-828/README.md; generated-layout Fengari control tree projected in Chromium, with atlas stand-ins"
-    },
-    "docs/evidence/sts1-combat-reference-20261121/energy-comparison.png": {
-      "sha256": "52f577179f30a51b439ff8a997bb22e18645e65848293292ab7104619d0b027e",
-      "category": "platform-evidence"
-    },
-    "docs/evidence/sts1-combat-reference-20261121/exhaust-spike-still.png": {
-      "sha256": "041a7b20f91a8142a43a642510c31e36e747a35fdcbb7758db497c29e2516569",
-      "category": "platform-evidence"
-    },
-    "docs/evidence/sts1-combat-reference-20261121/flow-spike.gif": {
-      "sha256": "e948f55ae01adfad50e59cc71024b5dbe195966f34e0d782bd56ebf619b96dd4",
-      "category": "platform-evidence"
-    },
-    "docs/evidence/sts1-combat-reference-20261121/status-contact-sheet.png": {
-      "sha256": "d383f928822b551bdd1aebb425b3b4940f6292b083df7d459d80193589c61914",
-      "category": "platform-evidence"
-    },
-    "docs/evidence/sts1-combat-reference-20261121/strength-ritual.png": {
-      "sha256": "ca2edd2f41623bf6e4ccbad25102de6e23d0c2fc7ff3144422c747d51743ae53",
-      "category": "platform-evidence"
     }
   }
 }
