@@ -1,6 +1,7 @@
 import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,beforeDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
 import {beforeCalibrationReplay} from './calibration-replay-sources.mjs';
 import {beforeNativeHostReplay} from './native-host-replay-source.mjs';
+import {beforeOfficialBackgroundFixture} from './official-background-fixture-source.mjs';
 import {beforeMapRoomReplayCohort,beforeDevelopReplayMerge} from './develop-replay-merge-source.mjs';
 import {beforeStsUiCloseoutSource} from './sts-ui-closeout-source.mjs';
 import {beforeStsFadeCi} from './sts-fade-ci-source.mjs';
@@ -743,6 +744,7 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  }
 }
 export function beforePreflightSource(path,source,view='prior'){
+ source=beforeOfficialBackgroundFixture(path,source);
  source=beforeReplayArchiveStorage(path,source);
  source=beforeCalibrationReplay(path,source);
  source=beforeForkFirstCi(path,source);
