@@ -32,19 +32,46 @@ local function playable(card)
         and Capability.isImplemented(card)
 end
 
-local function upgradeable(run, instance)
-    local definition = find(run.data.cards.cards, instance.cardId)
-    if instance.upgraded and not (definition and definition.repeatable) then return false end
+local function supportsUpgrade(definition, upgradedAlready)
+    if upgradedAlready and not (definition and definition.repeatable) then return false end
     if not definition or not definition.upgrade or not next(definition.upgrade) then return false end
-    local upgraded = Copy.copy(definition)
+    -- Capability checks only read the nested values from the upgraded definition.
+    local upgraded = {}
+    for key, value in pairs(definition) do upgraded[key] = value end
     for key, value in pairs(definition.upgrade) do upgraded[key] = value end
     return playable(upgraded)
 end
 
+local function upgradeable(run, instance)
+    return supportsUpgrade(find(run.data.cards.cards, instance.cardId), instance.upgraded)
+end
+
+local function upgradeDefinitions(cards)
+    local byId, cursor = {}, 1
+    return function(id)
+        if id == nil then return end
+        while not byId[id] and cards[cursor] do
+            local card = cards[cursor]
+            local key = card.id
+            if key ~= nil and not byId[key] then byId[key] = card end
+            cursor = cursor + 1
+        end
+        return byId[id]
+    end
+end
+
 local function upgradeCards(run)
-    local result = {}
+    local result, base, upgraded = {}, {}, {}
+    local definition = upgradeDefinitions(run.data.cards.cards)
     for _, instance in ipairs(run.deck) do
-        if upgradeable(run, instance) then result[#result + 1] = Copy.copy(instance) end
+        local id = instance.cardId
+        local eligibility = instance.upgraded and upgraded or base
+        local allowed = eligibility[id]
+        if allowed == nil then
+            allowed = not not supportsUpgrade(definition(id), instance.upgraded)
+            if id ~= nil then eligibility[id] = allowed end
+        end
+        if allowed then result[#result + 1] = Copy.copy(instance) end
     end
     return result
 end

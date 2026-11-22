@@ -88,6 +88,7 @@ function M.install(ctx)
     function ctx.enhancedForge(node)return ctx.options.enhancedRooms and node.type=='camp' and ctx.self.picker=='upgrade'end
 
     function ctx.bindCampChoices(node,rest,forge,restOpen,forgeable)
+        if ctx.options.enhancedRooms and forgeable then ctx.campUI:queue(node) end
         if node.canRest==false then rest:GetChild('description').text='咖啡滤杯：无法休息' end
         if node.canForge==false and #node.upgradeCards>0 then forge:GetChild('description').text='聚变之锤：无法锻造' end
         ctx.action("campView/rest", restOpen, function()
