@@ -309,13 +309,19 @@ local function controller(host, data, display, templates, options)
         if base then self:pose(0,0,1,1)end
         return true
     end
+    local function canBegin()
+        return not working and phase~='destroyed' and phase~='failed' and phase~='release_failed'
+    end
+    local function templatesBound()
+        return integer(Asset.imagePrefabId) and integer(Asset.containerPrefabId)
+            and Asset.imagePrefabId~=100001 and Asset.containerPrefabId~=100001
+    end
     function self.begin(_,foreground)
-        if working or phase=='destroyed' or phase=='failed' or phase=='release_failed'then return false end
+        if not canBegin() then return false end
         if host.alive==false then self:destroy();return false end
         idlePaused=false
         if phase=='building' or phase=='revealing' or phase=='ready'then return resume()end
-        if not integer(Asset.imagePrefabId) or not integer(Asset.containerPrefabId)
-            or Asset.imagePrefabId==100001 or Asset.containerPrefabId==100001 then fail('unbound portrait templateIndex');return false end
+        if not templatesBound() then fail('unbound portrait templateIndex');return false end
         generation=generation+1;phase='building';nextIndex=1;reason=nil;resetGroups()
         local token=generation;working=true
         local ok,err=pcall(function()
