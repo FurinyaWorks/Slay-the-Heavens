@@ -88,7 +88,8 @@ function beforeCapacityRead(read,requireCurrent=false){
 function beforeTravelerStatusCiSource(path,source){
  const copier=path==='tests/helpers/copy-integration-source-closure.mjs';
  const regression=path==='tests/integration-source-epoch.test.mjs';
- if((!copier&&!regression)||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const actorTemplate=path==='tests/native-monster-actor-template.test.mjs';
+ if((!copier&&!regression&&!actorTemplate)||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=normalize(source),sha=hash(lf);
  let prior,expected;
  if(copier&&sha==='2c468260f8ca242e3a9e2d3d683616b45cca8ac6ad962388d7e0c5c0ceb2f85a'){
@@ -99,6 +100,12 @@ function beforeTravelerStatusCiSource(path,source){
   prior=lf.replace("import {beforeTravelerStatusSource,travelerStatusSourcePaths} from './helpers/traveler-status-source.mjs';\n",'')
    .replace(/^test\('Traveler status continuation[^\n]*\n[\s\S]*?^\}\);\n\n/m,'');
   expected='db962d7fe34be9e68f12ee153be9ef6679135e0803d28fb0db0db8a3d3fba0f4';
+ }else if(actorTemplate&&sha==='d28f7e6ac4221f6424d9c4c9c36e23c79e5d7f88186f4ae288a8faa52e36ac6e'){
+  prior=lf.replace(" cursorArea: 'statusDismiss',\n",'')
+   .replace("image: 'hpIcon goldIcon energyRing","image: 'hpIcon goldIcon floorIcon energyRing")
+   .replace(" assert.equal(descendants(stage.children.find(n=>n.name==='topBar')).find(n=>n.name==='floorIcon').visible,false);\n",'')
+   .replace("for(const name of ['floor','actorLayer'","for(const name of ['floorIcon','floor','actorLayer'");
+  expected='ed025ce2aade0407368c7970aee5fd980ae3b865790397b30f7ca53ff5e2ada3';
  }else return source;
  assert.equal(hash(prior),expected,'exact Traveler status CI predecessor: '+path);
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
