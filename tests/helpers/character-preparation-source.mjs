@@ -1,4 +1,4 @@
-import {beforeDevelopBackflow,authenticateDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
+import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
 import {beforeStsSelectionFade,beforeAuthenticatedStsSelectionFade} from './sts-selection-fade-source.mjs';
 import {authorizeRebasedDevelop,beforeRebasedCi,rebasedDevelopOwns} from './rebased-release-source.mjs';
 import {authorizeCardFeedbackOwners,beforeCardFeedbackOwner,cardFeedbackOwnerPaths} from './card-feedback-owner-source.mjs';
@@ -171,7 +171,7 @@ const currentContinuationOwners = new Set([
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
   if(developBackflowOwns(path)){
-    assert.notEqual(beforeDevelopBackflow(path,source),source,'fresh current production owner: '+path);
+    assertDevelopBackflowCurrent(path,source);
     return beforeCharacterPreparationSource(path,source,read);
   }
   if(rebasedDevelopOwns(path)){
