@@ -1559,6 +1559,18 @@
       "perRow": 5,
       "rows": 2
     },
+    "powerTips": {
+      "rows": 48,
+      "width": 248,
+      "minWidth": 176,
+      "font": 18,
+      "minFont": 14,
+      "padding": 8,
+      "gap": 5,
+      "fill": "#20292D",
+      "border": "#71848B",
+      "title": "#F5D78A"
+    },
     "statusInfo": {
       "note": "状态/意图详情卡：左对齐信息层级（单位名 → 生命/格挡 → 增益/减益分组 → 名称与层数 + 右侧持续 → 效果 → 条件）。原生文本框低于 nativeText.lineHeight 整行不渲染，所以每个文本框都按 lineHeight 高，行距用 pitch 叠放（透明框可重叠）。一页最多 rows 项，超出按页翻，任何状态都能看到。",
       "width": 560,
