@@ -30,13 +30,35 @@ function matches(source,binding){
  const lf=normalize(source);
  return hash(lf)===binding.sha256&&blob(lf)===binding.gitBlob;
 }
+const successorBytes=readFileSync(new URL('./refined-release-successor-source.json.gz',import.meta.url));
+assert.equal(hash(successorBytes),'79e11bf3d78cecb730751c553f3411db0b3c1a0311966c6a00e882dc8c8812b9','exact refined Release successor archive');
+const successors=JSON.parse(gunzipSync(successorBytes));
+assert.equal(successors.base,'5d34dc3327a0ad1a4597e9e4f8e246a694334106');
+for(const {before} of Object.values(successors.files))assert(matches(before.source,before));
+export function beforeSelectionReplaySuccessor(path,source){
+ if(path!=='tests/helpers/replay-reviewed-selection.mjs'||typeof source!=='string'||source.includes('\r\r\n')||
+  hash(normalize(source))!=='626c19f3a4c62b6e371026443da4c4d48f5e68ef6fc29986a3a2fb9ce8688b69')return source;
+ const prior=normalize(source).replace(/^const releaseOwners=[^\n]*\n[\s\S]*?(?=^export function replayReviewedSelection)/m,'')
+  .replace("import {stageReleaseReplayDependencies} from './release-selection-replay-dependencies.mjs';\n",'')
+  .replace('  stageReleaseReplayDependencies(directory);\n','')
+  .replace("historicalSelectionOwner(path,readFileSync(path,'utf8'),row)","beforeCurrentProductionSource(path,readFileSync(path,'utf8'))");
+ assert.equal(hash(prior),'a6226f3a066101a8059198d167e1504d8dfa0f9ff22d90242eaec793423d3393','exact selection replay helper predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
+function beforeSuccessor(path,source){
+ source=beforeSelectionReplaySuccessor(path,source);
+ const row=Object.hasOwn(successors.files,path)?successors.files[path]:null;
+ if(!row||!matches(source,row.after))return source;
+ return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
+}
 function project(path,source){
  if(!Object.hasOwn(files,path)||!matches(source,files[path].after))return source;
  const prior=files[path].before.source;
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 export function beforeRefinedReleaseCiSource(path,source){
- return owners.includes(path)?source:project(path,beforeCombatVisualSource(path,source));
+ return owners.includes(path)?source:project(path,beforeCombatVisualSource(path,beforeSuccessor(path,source),
+  owner=>beforeSuccessor(owner,readFileSync(owner,'utf8'))));
 }
 export function beforeRefinedReleaseProduction(path,source){
  source=beforeCombatVisualSource(path,source);
@@ -53,14 +75,16 @@ export function authorizeRefinedReleaseProduction(samples,read){
  }
 }
 export function assertRefinedReleaseSourcesCurrent(read=readFileSync){
+ const prior=(path,encoding)=>beforeSuccessor(path,read(path,encoding));
  for(const path of paths){
-  const source=read(path,'utf8');
-  assertCombatVisualCurrent(path,source,owner=>read(owner,'utf8'));
-  assert(matches(beforeCombatVisualSource(path,source,owner=>read(owner,'utf8')),files[path].after),'fresh complete integration source: refined Release '+path);
+  const source=prior(path,'utf8');
+  assertCombatVisualCurrent(path,source,owner=>prior(owner,'utf8'));
+  assert(matches(beforeCombatVisualSource(path,source,owner=>prior(owner,'utf8')),files[path].after),'fresh complete integration source: refined Release '+path);
  }
 }
 export function refinedReleaseHistoricalInput(path,read){
- read=combatVisualPriorRead(read);
+ const current=read;
+ read=combatVisualPriorRead((owner,encoding)=>beforeSuccessor(owner,current(owner,encoding)));
  if(!Object.hasOwn(files,path)||owners.includes(path))return undefined;
  const source=read(path,'utf8');
  assert(matches(source,files[path].after),'fresh refined Release historical input: '+path);

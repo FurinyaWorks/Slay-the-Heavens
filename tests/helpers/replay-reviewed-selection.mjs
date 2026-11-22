@@ -9,6 +9,7 @@ import {integratedCiProof,assertIntegratedCurrent} from './integrated-ci-source.
 import {beforeCurrentProductionSource} from './character-preparation-source.mjs';
 import {historicalReleaseBuildInput} from './fork-preflight-source.mjs';
 import {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';
+import {stageReleaseReplayDependencies} from './release-selection-replay-dependencies.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const reviewedContracts=Object.freeze({
  'tests/sts-character-reference.test.mjs':5,
@@ -16,12 +17,23 @@ const reviewedContracts=Object.freeze({
  'tests/sts-card-reference.test.mjs':13,
  'tests/official-assets.test.mjs':6,
 });
+const releaseOwners=readFileSync(new URL('../fixtures/release-selection-replay-successors.json',import.meta.url));
+assert.equal(hash(releaseOwners),'2f5a062d5bdbf419dd1b085eb0cdbeb3eeb2f01c4c25d9447b9e9d680639e615','exact Release selection successor view');
+const {head,files:successors}=JSON.parse(releaseOwners);
+assert.equal(head,'5d34dc3327a0ad1a4597e9e4f8e246a694334106');
+function historicalSelectionOwner(path,source,row){
+ if(!Object.hasOwn(successors,path))return beforeCurrentProductionSource(path,source);
+ const successor=successors[path];
+ assert.equal(hash(norm(source)),successor.currentSha,'fresh Release selection owner: '+path);
+ assert.equal(row.sha256,successor.predecessorSha,'frozen predecessor identity: '+path);
+ return row.source;
+}
 export function replayReviewedSelection(script='tests/sts-character-reference.test.mjs'){
  assert(Object.hasOwn(reviewedContracts,script),'exact reviewed selection contract');
  const expected=reviewedContracts[script],root=process.cwd();
  assertIntegratedCurrent();
  for(const [path,row]of Object.entries(sourceEpoch.proof.current)){
-  const source=beforeCurrentProductionSource(path,readFileSync(path,'utf8'));
+  const source=historicalSelectionOwner(path,readFileSync(path,'utf8'),row);
   assert.equal(hash(norm(source)),row.sha256,'fresh current production owner: '+path);
  }
  assert.equal(integratedCiProof.sources.release,'900527d931df941eed642a9667ccde92f76b73db');
@@ -47,6 +59,7 @@ export function replayReviewedSelection(script='tests/sts-character-reference.te
   const savedControls=stsStylePriorRuntime.files[controls];
   assert.equal(hash(savedControls.source),'0dd26ffbe94d487478a961c1fd90c8ff348a3615347102a1478f3f7fa56a444f');
   writeFileSync(join(directory,controls),savedControls.source);
+  stageReleaseReplayDependencies(directory);
   for(const [path,row]of Object.entries(sourceEpoch.proof.targets.releaseReviewed.files)){
    if(!row)continue;const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});writeFileSync(target,row.source);
   }
