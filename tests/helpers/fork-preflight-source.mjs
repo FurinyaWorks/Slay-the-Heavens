@@ -69,9 +69,20 @@ for(const {before,after} of Object.values(releaseUiBuild.files)){
 // Authenticate the current copier before giving old CI receipts its exact predecessor.
 function beforeLoadingRecoveryCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
- const lf=normalize(source);
- if(!['92da908833bf36c0c924b5752c582c78302cd794b53f01eedb49fbb5956d3f4c',
-  'df389445dabfad2269f36d36404388fbaafd82eb4fed2067bacc64b426a3189b'].includes(hash(lf)))return source;
+ let lf=normalize(source);
+ if(hash(lf)==='dc459357af6ead00e0a54ce63f84fed8b01e7cd542c6377560b03165c1131439'){
+  lf=lf.replace(" 'tests/helpers/release-map-deck-source.mjs':'b122161ed4df0178b87aac9ba253e8fbe2e3827492da521884d94c823721c777',\n"," 'tests/helpers/release-map-deck-source.mjs':'c661e5dfa5035a09a47935bd7bfbc3e1f37b992d809bc7387d93e757c3df6fd5',\n")
+     .replace(" 'tests/helpers/release-ui-closeout-source.mjs':'93f250df0201809ac8718a8d83d25bd77247075a89e6e25def6484029369497f',\n","")
+     .replace(" 'tests/fixtures/release-ui-closeout-source.json.gz':'b275402f5f60c8a96989d3328dca7779afc9e9d8b1f51f7865a11b69da9e8021',\n","");
+  assert.equal(hash(lf),'eb6e433e3a66f62e4b5aece6f475322cbf3d6d68e6d5e85107676cdff98719ac','exact Release UI closeout helper copy predecessor');
+ }
+ if(hash(lf)==='eb6e433e3a66f62e4b5aece6f475322cbf3d6d68e6d5e85107676cdff98719ac'){
+  lf=lf.replace(" 'tests/helpers/energy-reference-source.mjs':'eda0da3e4206a76c9bfe2b48a040e24c217a9b2f1416a673b728c03c4da4a2b7',\n",
+   " 'tests/helpers/energy-reference-source.mjs':'a8db68450b733114e4b5cb9c345d6d7935b9309e150e4ce7717e9c833e4df0ad',\n")
+   .replace(" 'tests/fixtures/release-reward-frame-source.json.gz':'09f99aff296875fa9787a94bfd6be19c1a4d76dcb9a33fd6b1f31213d10cd8a5',\n",'');
+  assert.equal(hash(lf),'92da908833bf36c0c924b5752c582c78302cd794b53f01eedb49fbb5956d3f4c','exact reward frame helper copy predecessor');
+ }
+ if(hash(lf)!=='92da908833bf36c0c924b5752c582c78302cd794b53f01eedb49fbb5956d3f4c')return source;
  const prior=lf.replace(/const loadingRecoveryFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
   .replace('Object.entries(loadingRecoveryFiles))','Object.entries(refinedReleaseFiles))');
  assert.equal(hash(prior),'42a2fae24acaca0ff0214e5e0e592b2ff4cfd7f1e506578ba36faf327d17ae87','exact loading recovery helper copy predecessor');
@@ -97,7 +108,7 @@ function beforeShopEntryCopier(path,source){
 }
 function shopEntryPreflightRead(read){
  const prior=shopEntryPriorRead(read);
- return (path,...args)=>beforeShopEntryCopier(path,prior(path,...args));
+ return (path,...args)=>beforeShopEntryCopier(path,beforeLoadingRecoveryCopier(path,prior(path,...args)));
 }
 function beforeReleaseUiBuildSource(path,source){
  source=beforeShopEntryCopier(path,beforeReleaseShopEntry(path,beforeLoadingRecoveryCopier(path,source)));

@@ -95,7 +95,8 @@ function M.install(ctx)
         if not value then self.pendingGeneration=(self.pendingGeneration or 0)+1 end
         -- Retaining the covered page must never keep its input controller live.
         self.visible = value ctx.root:SetVisible(value or retainPage==true)
-        if value and not wasVisible and not renderByHost and require('abyss_relic_pending').owner(self.run)then self:render()end
+        local needsVisibilityRender = value and not wasVisible and not renderByHost
+        if needsVisibilityRender and require('abyss_relic_pending').owner(self.run)then self:render()end
         -- Let Match's own visibility guard retire its clock, retaining a failed
         -- pair's explicit-retry state across modal hide/show.
         if not value then ctx.updateMatch(0) end
@@ -103,7 +104,7 @@ function M.install(ctx)
             local function stagedVisibleEvent() return self.view.node.type=='event' and stagedEvent(self.view.node.event.id) end
             if not value and self.view and self.view.node and stagedVisibleEvent() then
                 for _, entry in pairs(self.actions) do if entry.observe then entry.observe() end end
-            elseif value and not wasVisible and not renderByHost and self.view and self.view.node and (ctx.options.enhancedRooms or self.view.node.type=='shop'
+            elseif needsVisibilityRender and self.view and self.view.node and (ctx.options.enhancedRooms or self.view.node.type=='shop'
                 or self.view.node.type=='event' and stagedEvent(self.view.node.event.id)) then
                 self:render()
             end
@@ -112,23 +113,33 @@ function M.install(ctx)
 
     end
 
+    local function currentCampView(self, flow)
+        -- Camp controls need the live node identity and phase, not a rebuilt map and eligible deck.
+        local view = self.view
+        if flow.id ~= self.nodeId or not view or not view.node or view.phase ~= self.run.phase
+            or view.node.complete ~= flow.complete then return false, "stale_action" end
+        return true, view
+    end
+
+    local function currentPendingView(self)
+        if self.renderRun~=self.run or self.renderMap~=self.map
+            or require('abyss_relic_pending').owner(self.run)~=self.pendingOwner then return false,'stale_action'end
+        return true,self.view
+    end
+
+    local function inputCovered()
+        return ctx.options.inputCovered and ctx.options.inputCovered()
+    end
+
     function ctx.current()
-        if not ctx.self.visible or ctx.options.inputCovered and ctx.options.inputCovered() then return false, "panel_hidden" end
-        if ctx.self.busy or ctx.self.presentationBusy or ctx.self.shopBusy then return false, "unavailable_action" end
-        if ctx.self.pendingOwner then
-            if ctx.self.renderRun~=ctx.self.run or ctx.self.renderMap~=ctx.self.map
-                or require('abyss_relic_pending').owner(ctx.self.run)~=ctx.self.pendingOwner then return false,'stale_action'end
-            return true,ctx.self.view
-        end
         local self = ctx.self
+        if not self.visible or inputCovered() then return false, "panel_hidden" end
+        if self.busy or self.presentationBusy or self.shopBusy then return false, "unavailable_action" end
+        if self.pendingOwner then return currentPendingView(self) end
         if self.renderRun ~= self.run or self.renderMap ~= self.map then return false, "stale_action" end
         local flow = self.run.nodeFlow
         if ctx.options.enhancedRooms and flow and flow.type == 'camp' and self.run.phase ~= 'ending_proceed' then
-            -- Camp controls need the live node identity and phase, not a rebuilt map and eligible deck.
-            local view = self.view
-            if flow.id ~= self.nodeId or not view or not view.node or view.phase ~= self.run.phase
-                or view.node.complete ~= flow.complete then return false, "stale_action" end
-            return true, view
+            return currentCampView(self, flow)
         end
         local view = Nodes.view(self.run, self.map)
         if not view.node or view.node.id ~= self.nodeId then return false, "stale_action" end
