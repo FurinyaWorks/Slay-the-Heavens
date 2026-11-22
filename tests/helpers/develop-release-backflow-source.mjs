@@ -250,7 +250,8 @@ function mapRoomOwnerError(path){
 function recentBackflowOwnerReader(read,historicalOwners){
  let epoch;
  return path=>{
-  const controller=path===retiredControllerPath&&!historicalOwners?readRetiredController(read):undefined;
+  // A frozen cohort must expose its original Controller identity or absence.
+  const controller=path===retiredControllerPath&&(!historicalOwners||epoch==='current')?readRetiredController(read):undefined;
   const source=controller?controller.source:read(path);
   if(!recentBackflowOwns(path))return source;
   const current=(!controller||controller.restored)&&currentRecentBackflowOwner(path,source);
