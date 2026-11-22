@@ -112,8 +112,8 @@ export function shopRoom(theme) {
     art('sealedJar', 324, -185, 40, 52, icon.potion.energy_potion, '#E8C887'),
     art('foldedCards', 373, -211, 36, 34, icon.deck.id ?? icon.deck, '#DDD3A8', { rotation: 14 }),
     seatedVendor(x, y),
-    rect('actionPlate', x, -252, 146, 31, '#243C39'),
-    rect('actionRule', x, -236, 146, 2, '#B99E65'),
-    text('shopPrompt', [x, -252, 140, 30], '查看商品', 17, '#F6E4B4'),
+    rect('actionPlate', x, -250, 146, 40, '#243C39'),
+    rect('actionRule', x, -230, 146, 2, '#B99E65'),
+    text('shopPrompt', [x, -250, 140, 40], '查看商品', 17, '#F6E4B4'),
   ]), visible: false };
 }

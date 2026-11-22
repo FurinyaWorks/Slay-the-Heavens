@@ -87,17 +87,14 @@ export const shopMerchantTarget = Object.freeze([195, -154, 220, 236]);
 export function merchantControl(theme = nativeTheme) {
   const { plate, text, hit } = helpers(theme);
   const [x, y, w, h] = shopMerchantTarget;
-  const feedback = [-480, 270, 146, 36];
+  const feedback = [-480, 270, 146, 40];
   const hidden = control => ({ ...control, visible: false });
   const style = theme.layout.merchant.bubble;
   return { name: 'merchant', kind: 'container', position: [0, 0], size: [...theme.canvas.base], visible: false, children: [
     hidden({ name: 'bubble', kind: 'container', position: feedback.slice(0, 2), size: feedback.slice(2), children: [
-      plate('trim', [0, 0, 146, 36], style.edge), plate('paper', [0, 0, 142, 32], style.fill),
+      plate('trim', [0, 0, 146, 40], style.edge), plate('paper', [0, 0, 142, 36], style.fill),
     ] }),
     hidden(text('line', feedback, '', 17, style.ink)),
-    hidden(plate('namePlate', [0, 0, 1, 1], style.fill)),
-    hidden(text('name', [0, 0, 1, 1], '旧路商人', theme.font.label, style.ink)),
-    hidden(plate('next', [0, 0, 1, 1], style.edge)),
     { name: 'talk', kind: 'container', position: [x, y], size: [w, h], children: [hit([w, h])] },
   ] };
 }

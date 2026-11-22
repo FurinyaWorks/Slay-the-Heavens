@@ -1,3 +1,4 @@
+import {merchantControl} from './cinematic-ui-layout.mjs';
 // Independently authored native geometry from the frozen V25 room composition.
 // No private raster, SVG path, sample transactions or random data is embedded.
 export const v25NodeSource=Object.freeze({
@@ -235,11 +236,18 @@ export function styleTreasure(panel,theme,{skinButtons=true}={}){
 }
 
 export function styleMerchant(panel,theme){
- // Keep the native receiver and response objects while applying shared colours.
- const bubble=must(panel,'bubble'),style=theme.layout.merchant.bubble;
- must(bubble,'trim').colour=style.edge;
- must(bubble,'paper').colour=style.fill;
- must(panel,'line').text.colour=style.ink;
+  // Project the compact response while preserving existing objects and live text.
+  const project=(live,spec)=>{
+   const children=live.children,content=live.text?.content;
+   Object.assign(live,spec);
+   if(content!==undefined)live.text={...spec.text,content};
+   if(children)live.children=spec.children.map(next=>{
+    const prior=children.find(node=>node.name===next.name);
+    if(!prior)return next;
+    project(prior,next);return prior;
+   });
+  };
+  project(panel,merchantControl(theme));
 }
 
 function stylePreset(button){
