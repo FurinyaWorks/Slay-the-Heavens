@@ -1,17 +1,17 @@
 -- Presentation state from ShopScreen's hover and touchscreen-confirm paths.
 -- Offers remain owned by the current run; this module never changes inventory.
 local Theme = require('abyss_theme')
-local Controller = require('abyss_controller')
+local Pointer = require('abyss_pointer_input')
 local L = Theme.layout.nativeNode.shop
 local M = {}
 local integer=require('abyss_numbers').integer
 
-local function bindOutside(state, owner, hit, clickEvent, cursor, controller, current)
+local function bindOutside(state, owner, hit, clickEvent, cursor, platform, current)
     local active,foreground,released,observed={},{},nil,false
     local noTouch={}
     local function key(event) return event and event.touchId or noTouch end
     local function ready(token)
-        return token and not owner.busy and not owner.presentationBusy and not owner.shopBusy and not Controller.pointerBlocked(controller)
+        return token and not owner.busy and not owner.presentationBusy and not owner.shopBusy and not Pointer.blocked(platform)
             and state.selected==token.selection and current(token.selection)
     end
     local function matches(token,event) return token and token.touch==(event and event.touchId) end
@@ -63,7 +63,7 @@ local function bindOutside(state, owner, hit, clickEvent, cursor, controller, cu
             if not token or touch~=nil and token.touch~=touch or touch==nil and next(active)~=nil then return true end
             released=nil
         else token={selection=state.selected} end
-        if Controller.pointerBlocked(controller) or foregroundActive() then return true end
+        if Pointer.blocked(platform) or foregroundActive() then return true end
         if ready(token) then state:cancel() end
         -- This surface never dispatches to purchase, leave, or another page.
         return true
@@ -86,8 +86,8 @@ function M.new(owner, root, options)
         if not current(q) then q.retired=true;return false end
         return true
     end
-    function state:bindOutside(hit,clickEvent,cursor,controller)
-        bindOutside(self,owner,hit,clickEvent,cursor,controller,current)
+    function state:bindOutside(hit,clickEvent,cursor,platform)
+        bindOutside(self,owner,hit,clickEvent,cursor,platform,current)
     end
     function state:clear()
         if self.resetOutside then self.resetOutside() end

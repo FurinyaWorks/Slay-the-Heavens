@@ -187,6 +187,23 @@ function M.release(box,fallback,pool)
     if #pending==0 and operationDepth==0 and intent and intents[box]==intent then reconcile(box)end
     return intent
 end
+-- The modal owns the lease budget while its page is visible. Background
+-- battle/shop writers use their existing fallback until the modal closes.
+local leasePage
+function M.setLeasePage(page)
+    if leasePage==page then return end
+    leasePage=page
+    if not page then return end
+    local hidden={}
+    for box,record in pairs(records)do
+        if record.page~=page then hidden[#hidden+1]=box end
+    end
+    for _,box in ipairs(hidden)do
+        if leasePage~=page then break end
+        local record=records[box]
+        if record and record.page~=page then M.release(box,record.fallback,record.pool) end
+    end
+end
 function M.clear()
     if clearing then return end
     clearing=true;generation=generation+1;records={}
@@ -203,7 +220,7 @@ end
 -- Engine teardown owns the entire UI subtree. Calling Destroy here is forbidden
 -- by the native lifecycle and must not be confused with an ordinary page close.
 function M.onEngineDestroy()
-    generation=generation+1;api=nil;records={};intents=setmetatable({},{__mode='k'})
+    generation=generation+1;api=nil;leasePage=nil;records={};intents=setmetatable({},{__mode='k'})
     for _,record in ipairs(order)do
         record.cancelled,record.removed,record.ready=true,true,false
         record.cleanupRequested=false;record.groups={};record.controls={};record.allocated=false
@@ -211,7 +228,7 @@ function M.onEngineDestroy()
     order={};createdLastUpdate=0
 end
 function M.configure(value)
-    presentationPage=nil
+    presentationPage=nil;leasePage=nil
     if value then
         assert(type(value.instantiate)=='function' and type(value.destroy)=='function','native art creation API missing')
         for _,key in ipairs({'imageTemplateIndex','containerTemplateIndex'})do
@@ -267,6 +284,7 @@ local function drawingSlot(data,index)
 end
 function M.request(box,pool,metadata,platform,fallback,identity,writeSlot)
     if clearing or not api then return false,'native art runtime not configured' end
+    if leasePage and presentationPage~=leasePage then return false,'native art scope covered' end
     local previous=records[box]
     if previous and previous.metadata==metadata and previous.pool==pool and previous.fallback==fallback then
         previous.page=presentationPage

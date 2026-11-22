@@ -1,3 +1,4 @@
+import {readRetiredController,retiredControllerPath} from './input-retirement-source.mjs';
 import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
 import {beforeSlimeSplitReceipt,slimeSplitSourcePaths} from './slime-split-source.mjs';
 import {beforeStsSelectionFade,beforeAuthenticatedStsSelectionFade} from './sts-selection-fade-source.mjs';
@@ -85,7 +86,8 @@ function beforeAdmissionReceipt(path,source,read){
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
   source=authenticateDevelopBackflow(path,source,read);
   const readBackflow=read;
-  read=owner=>authenticateDevelopBackflow(owner,readBackflow(owner),readBackflow);
+  read=owner=>authenticateDevelopBackflow(owner,
+    owner===retiredControllerPath?readRetiredController(readBackflow).source:readBackflow(owner),readBackflow);
   const rebound=beforeRebasedCi(path,source);
   if(rebound!==source)authorizeRebasedDevelop([[path,source]],read);
   source=rebound;

@@ -4,6 +4,7 @@ import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {exactSourceMatches as matches} from './source-fingerprint.mjs';
+import {authenticateInputRetirement,beforeInputRetirement,beforeInputRetirementReader,inputRetirementOwns,isCurrentInputRetirementSource,assertPointerInputSource,pointerInputPath,retiredControllerPath,readRetiredController} from './input-retirement-source.mjs';
 import {assertRelicDetailCurrent,authenticateRelicDetail,beforeRelicDetail,relicDetailOwns} from './relic-detail-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
@@ -163,18 +164,39 @@ assert.equal(hash(roomEntryArchive),'bff89df36b2fbbf1bec727dae075c632dba48d50c6c
 const roomEntry=JSON.parse(gunzipSync(roomEntryArchive));
 assert.equal(roomEntry.base,'d7ae494a3136b2f4f707428fefeeae478c6e0495');
 const mapRoomBackflowOwns=path=>Object.hasOwn(roomEntry.files,path);
-export const developBackflowOwns=path=>mapRoomBackflowOwns(path)||priorDevelopBackflowOwns(path);
 for(const [path,{before,after}] of Object.entries(roomEntry.files)){
  assert(priorDevelopBackflowOwns(path)||/^src\/lua\/abyss_[a-z0-9_]+\.lua$/.test(path),'map-room replay owner: '+path);
  assert(matches(before.source,before),'exact Develop map-room predecessor: '+path);
  assert.match(after.sha256,/^[a-f0-9]{64}$/);
  assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
 }
+const deckPagesArchive=readFileSync(new URL('../fixtures/develop-deck-pages-source.json.gz',import.meta.url));
+assert.equal(hash(deckPagesArchive),'d3a6b845870da64358c3ca36307062c02cc39d2e070e21eb875f9e2e42d02036','exact Develop deck-pages predecessor archive');
+const deckPages=JSON.parse(gunzipSync(deckPagesArchive));
+assert.equal(deckPages.base,'00229683d0d38660c98ced2f4a41e89d84fc5e4e');
+for(const [path,{before,after}] of Object.entries(deckPages.files)){
+ assert(matches(before.source,before),'exact deck-pages predecessor: '+path);
+ assert.match(after.sha256,/^[a-f0-9]{64}$/);
+ assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
+}
+export const deckPagesAdded=Object.freeze(Object.keys(deckPages.added));
+function deckPagesPrior(path,source){return predecessor(deckPages.files,path,source);}
+export function beforeDeckPages(path,source,options){return deckPagesPrior(path,beforeInputRetirement(path,source,options));}
+const deckPagesOwns=path=>Object.hasOwn(deckPages.files,path);
+const productionOwner=path=>path===architecturePath||path.startsWith('src/lua/');
+const recentBackflowOwns=path=>mapRoomBackflowOwns(path)||deckPagesOwns(path)||(productionOwner(path)&&inputRetirementOwns(path));
+export const developBackflowOwns=path=>recentBackflowOwns(path)||priorDevelopBackflowOwns(path);
+
+function currentRecentBackflowOwner(path,source){
+ if(inputRetirementOwns(path))return isCurrentInputRetirementSource(path,source);
+ if(deckPagesOwns(path))return matches(source,deckPages.files[path].after);
+ return matches(source,roomEntry.files[path].after);
+}
 export function assertDevelopBackflowCurrent(path,source){
- if(mapRoomBackflowOwns(path)){
-  assert(matches(source,roomEntry.files[path].after),'fresh current production owner: '+path);
+ if(recentBackflowOwns(path)){
+  assert(currentRecentBackflowOwner(path,source),'fresh current production owner: '+path);
   if(!priorDevelopBackflowOwns(path))return;
-  source=predecessor(roomEntry.files,path,source);
+  source=predecessor(roomEntry.files,path,beforeDeckPages(path,source));
  }
  if(relicDetailOwns(path)){
   assertRelicDetailCurrent(path,source);
@@ -186,7 +208,15 @@ export function assertStasisUpgradeAdded(path,source){
  assert(Object.hasOwn(stasis.added,path)&&matches(source,stasis.added[path]),'fresh Stasis upgrade module: '+path);
 }
 export function assertActorFocusInventory(paths,read=path=>readFileSync(path,'utf8')){
- assert.deepEqual([...paths].sort(),[...actorFocus.luaBefore,...actorFocusAdded].sort(),'complete current Actor/Focus Lua module inventory');
+ const expected=[...actorFocus.luaBefore,...actorFocusAdded,...deckPagesAdded];
+ assert(expected.includes(retiredControllerPath),'exact controller predecessor in Actor/Focus Lua inventory');
+ assert.deepEqual([...paths].sort(),[...expected.filter(path=>path!==retiredControllerPath),pointerInputPath].sort(),'complete current Actor/Focus Lua module inventory');
+ assertPointerInputSource(read(pointerInputPath));
+ for(const path of deckPagesAdded){
+  const source=read(path);
+  assertDevelopBackflowCurrent(path,source);
+  assert(matches(beforeInputRetirement(path,source),deckPages.added[path]),'fresh deck browser module: '+path);
+ }
  for(const path of actorFocusOwners)assertDevelopBackflowCurrent(path,read(path));
  for(const path of stasisUpgradeAddedPaths)assertStasisUpgradeAdded(path,read(path));
 }
@@ -198,23 +228,26 @@ function predecessor(layer,path,source){
 function mapRoomOwnerError(path){
  return 'combined linked owner identity: '+path+' changed during Develop backflow validation (map-room validation)';
 }
-function mapRoomOwnerReader(read,historicalOwners){
+function recentBackflowOwnerReader(read,historicalOwners){
  let epoch;
  return path=>{
-  const source=read(path);
-  if(!mapRoomBackflowOwns(path))return source;
-  const current=matches(source,roomEntry.files[path].after);
+  const controller=path===retiredControllerPath?readRetiredController(read):undefined;
+  const source=controller?controller.source:read(path);
+  if(!recentBackflowOwns(path))return source;
+  const current=(!controller||controller.restored)&&currentRecentBackflowOwner(path,source);
   const binding=historicalOwners&&Object.hasOwn(historicalOwners,path)?historicalOwners[path]:undefined;
   const exactHistorical=binding===null?source==null:
    binding&&typeof source==='string'&&source.replaceAll('\r\n','\n')===binding.source;
   const observed=current?'current':exactHistorical?'historical':undefined;
-  assert(observed&&(!epoch||epoch===observed),mapRoomOwnerError(path));
+  const stage=mapRoomBackflowOwns(path)?'map-room':deckPagesOwns(path)?'deck-pages':'input retirement';
+  assert(observed&&(!epoch||epoch===observed),
+   'combined linked owner identity: '+path+' changed during Develop backflow validation ('+stage+' validation)');
   epoch=observed;
   return source;
  };
 }
 export function bindDevelopBackflow(read,historicalOwners){
- const readOwner=mapRoomOwnerReader(read,historicalOwners);
+ const readOwner=recentBackflowOwnerReader(read,historicalOwners);
  return {
   readOwner,
   authenticate:(path,source,options)=>authenticateDevelopBackflowWithReaders(path,source,readOwner,readOwner,options),
@@ -246,7 +279,7 @@ function authenticatePriorDevelopBackflow(path,source,read){
 export const configSourceTokens=source=>source.replace(/"(?:\\.|[^"\\])*"|[ \t\r\n]+/g,token=>token.startsWith('"')?token:'');
 export function isSessionRelicSuccessor(path,source,{allowConfigLayout=false}={}){
  if(!Object.hasOwn(sessionRelic.files,path))return false;
- source=predecessor(roomEntry.files,path,source);
+ source=predecessor(roomEntry.files,path,beforeDeckPages(path,source,{allowConfigLayout}));
  const expected=sessionRelic.files[path].after;
  if(matches(source,expected))return true;
  if(!allowConfigLayout||!expected.tokensSha256||typeof source!=='string'||source.includes('\r\r\n'))return false;
@@ -259,26 +292,36 @@ function beforeSessionRelic(path,source,options){
  return source.includes('\r\n')?before.replaceAll('\n','\r\n'):before;
 }
 export function beforeDevelopBackflow(path,source,options){
- source=predecessor(roomEntry.files,path,source);
+ source=predecessor(roomEntry.files,path,beforeDeckPages(path,source,options));
  source=beforeRelicDetail(path,source);
  return beforePriorDevelopBackflow(path,beforeSessionRelic(path,source,options));
 }
 export function assertCurrentSessionRelicOwner(path,source){
  if(Object.hasOwn(sessionRelic.files,path)){
-  assert(matches(predecessor(roomEntry.files,path,source),current(path).after),'combined linked owner identity: '+path);
+  assert(matches(predecessor(roomEntry.files,path,beforeDeckPages(path,source)),current(path).after),'combined linked owner identity: '+path);
  }
 }
 export function authenticateDevelopBackflow(path,source,read,options){
- return authenticateDevelopBackflowWithReaders(path,source,read,mapRoomOwnerReader(read),options);
+ return authenticateDevelopBackflowWithReaders(path,source,read,recentBackflowOwnerReader(read),options);
 }
 function authenticateDevelopBackflowWithReaders(path,source,readLive,readLinked,options){
+ const retiredInput=authenticateInputRetirement(path,source,readLive,options);
+ const readInputLive=beforeInputRetirementReader(readLive),readInputLinked=beforeInputRetirementReader(readLinked);
+ const readDeckLive=owner=>deckPagesPrior(owner,readInputLive(owner));
+ const deckPrior=deckPagesPrior(path,retiredInput);
+ if(deckPrior!==retiredInput){
+  let live;
+  try{live=readInputLive(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
+  assert(matches(live,deckPages.files[path].after),'combined linked owner identity: '+path+' during deck-pages validation');
+ }
+ source=deckPrior;
  const roomPrior=predecessor(roomEntry.files,path,source);
  if(roomPrior!==source){
   let live;
-  try{live=readLive(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
+  try{live=readDeckLive(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
   assert(matches(live,roomEntry.files[path].after),mapRoomOwnerError(path));
  }
- const read=owner=>predecessor(roomEntry.files,owner,(owner===path?readLive:readLinked)(owner));
+ const read=owner=>predecessor(roomEntry.files,owner,owner===path?readDeckLive(owner):deckPagesPrior(owner,readInputLinked(owner)));
  source=roomPrior;
  source=authenticateRelicDetail(path,source,read);
  const sessionPrior=beforeSessionRelic(path,source,options);

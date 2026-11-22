@@ -4,9 +4,6 @@ local Theme=require('abyss_theme')
 local spec=require('session_menu_v25_layout')
 Theme.presentationProfile='v25-reference'
 Theme.layout.v25Menu=spec.frames
-local focus
-local api={events={Confirm='confirm',Cancel='cancel',Focus='focus'},directions={Left='left',Right='right'},modes={Specified='specified'},
- getFocus=function()return focus end,setFocus=function(c)focus=c end,isController=function()return true end}
 local canvas=F.control({children=spec.controls})
 local function place(control,definition)
  local p=definition.position or {0,0};control:SetAnchoredPosition(p[1],p[2])
@@ -14,14 +11,14 @@ local function place(control,definition)
 end
 place(canvas,{children=spec.controls})
 local root=F.Viewport.apply(canvas,1280,720)
-local h=F.GameUI.new(root,F.Data,F.Presentation,'click',{seed=1,prologue=false,controllerApi=api,imageSource='static',
+local h=F.GameUI.new(root,F.Data,F.Presentation,'click',{seed=1,prologue=false,imageSource='static',
  color=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end})
 root.ui=h
 local function press(panel,name)
- h:update(0);h:syncController()
+ h:update(0)
  local hit=root:GetChild(panel):GetChild(name):GetChild('hit')
- assert(hit.canControllerFocus,panel..'/'..name..' mode='..tostring(h.mode)..' exit='..tostring(h.exitOpen)..' menu='..tostring(h.menuOpen)..' covered='..tostring(h.pageReveal and h.pageReveal:covered()))
- focus=hit;return hit.navigationListeners.confirm()
+ assert(hit.click,panel..'/'..name..' mode='..tostring(h.mode)..' exit='..tostring(h.exitOpen)..' menu='..tostring(h.menuOpen)..' covered='..tostring(h.pageReveal and h.pageReveal:covered()))
+ return hit.click()
 end
 local function separated(panel,names)
  for i=1,#names do for j=i+1,#names do
@@ -42,10 +39,11 @@ assert(press('menuPanel','continueRun') and h.mode=='map')
 assert(press('exitEntry','open') and press('runMenu','abandon') and press('exitPanel','confirm'))
 assert(h.mode=='menu' and not menu:GetChild('continueRun').visible)
 assert(not root:GetChild('exitEntry').visible,'minimal title keeps the redundant menu entry hidden')
-h:update(0);h:syncController()
+h:update(0)
 local title=menu:GetChild('titleQuit'):GetChild('hit')
-assert(title.canControllerFocus);focus=title
-assert(title.navigationListeners.cancel())
+assert(title.click())
+assert(h.exitOpen and not h.menuOpen)
+assert(press('exitPanel','cancel'));assert(h:openMenu())
 separated(root:GetChild('runMenu'),{'resume','map','mainMenu','abandon','quit','dismissHint'})
 assert(not root:GetChild('runMenu'):GetChild('mainMenu').visible and not root:GetChild('runMenu'):GetChild('quit').visible)
 h:disable()

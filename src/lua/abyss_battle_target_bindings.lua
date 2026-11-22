@@ -1,7 +1,7 @@
 -- Read state, issue Run commands. No damage/energy/outcome rules live in this view.
 local Combat = require("abyss_combat")
 local Actors = require("abyss_actor")
-local Controller = require("abyss_controller")
+local Pointer = require('abyss_pointer_input')
 local M = {}
 local function needsTarget(state, instance)
     -- Ask the core to validate the same card with and without a target.
@@ -38,7 +38,7 @@ function M.install(owner, ownership, host, dependencies)
             ownership.enemyInputs[screenSlot] = input
             -- Preview ownership is separate from owner.target (which defaults to 1).
             -- Reuse the same selection/turn/actor checks as the eventual command.
-            local function previewEnemy(token, controller)
+            local function previewEnemy(token)
                 local entry=entryAt()
                 if not entry or not token.uid or token.aim or not dependencies.enemyReady(token) then return end
                 local selected
@@ -46,13 +46,10 @@ function M.install(owner, ownership, host, dependencies)
                 if not selected or not needsTarget(token.battle,selected) then return end
                 token.previewReady=function()
                     if owner.gesture or not entryAt() or not dependencies.enemyReady(token) then return false end
-                    if controller then
-                        return Controller.isController(host.controller) and host.controller.api.getFocus()==control
-                    end
                     return input.held==token or input.released==token
                 end
                 owner.cardAim=token
-                if not controller then owner:render() end
+                owner:render()
             end
             local function chooseEnemy()
             local entry=entryAt()
@@ -77,29 +74,9 @@ function M.install(owner, ownership, host, dependencies)
                 end
             end
             end
-            Controller.bind(host.controller,control,function()
-                local selected
-                if owner.run and owner.run.combat then
-                    for _,card in ipairs(owner.run.combat.hand)do if card.uid==owner.selected then selected=card end end
-                end
-                return (owner.potionAim or selected and needsTarget(owner.run.combat,selected)) and "aim" or "battle"
-            end,function()owner.suppressClick=false;return chooseEnemy()end,function()
-                local entry=entryAt()
-                return dependencies.controllerReady() and owner.run.phase=="combat" and entry and Actors.isActive(entry.actor)
-            end,screenSlot,"enemies",function()
-                local entry=entryAt()
-                if entry then
-                    owner.target=entry.index
-                    local battle=owner.run and owner.run.combat
-                    previewEnemy({slot=entry.index,screenSlot=screenSlot,actor=entry.actor,run=owner.run,
-                        battle=battle,turn=battle and battle.turn,uid=owner.selected,
-                        selectionEpoch=owner.selectionEpoch,aim=owner.potionAim},true)
-                    owner:render()
-                end
-            end)
             if not entryAt() then return end
             control:AddCursorEventListener(host.clickEvent, function(event)
-                if not entryAt() or Controller.pointerBlocked(host.controller)then return false end
+                if not entryAt() or Pointer.blocked(host.platform)then return false end
                 if dependencies.swallowed(event) then
                     -- Dismissal consumes this pointer too, but cannot consume a
                     -- newer token owned by a different touch on the same actor.
@@ -171,12 +148,11 @@ function M.install(owner, ownership, host, dependencies)
                 control:AddCursorEventListener(host.cursor.CursorEndDrag, function(event) releaseEnemy(event, true) end)
             end
     end
-    local function unbindEnemyControl(screenSlot,box,engineDestroyed)
+    local function unbindEnemyControl(screenSlot,box)
         local input=bound[box]
         if not input then return end
         input.retired=true;input.held=nil;input.released=nil
         if ownership.enemyInputs[screenSlot]==input then ownership.enemyInputs[screenSlot]=nil end
-        Controller.unbind(host.controller,input.control,engineDestroyed)
         bound[box]=nil
     end
     local function bindEnemyControls()

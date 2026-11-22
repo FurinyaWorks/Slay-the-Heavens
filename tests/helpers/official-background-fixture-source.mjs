@@ -5,7 +5,7 @@ import {gunzipSync} from 'node:zlib';
 import {exactSourceMatches} from './source-fingerprint.mjs';
 
 const archive=readFileSync(new URL('./official-background-fixture-source.json.gz',import.meta.url));
-assert.equal(createHash('sha256').update(archive).digest('hex'),'9ef9b57da8b0fcaa3b3e61a863272e9683b230149281616aa71dc799c7d669ad','exact official background fixture archive');
+assert.equal(createHash('sha256').update(archive).digest('hex'),'f32f1ff8ac118f3ea5d7dd988f71ebc35284c683ebc862b98c752e8bb4dd5c0f','exact official background fixture archive');
 const {schemaVersion,base,files}=JSON.parse(gunzipSync(archive));
 assert.equal(schemaVersion,1);
 assert.equal(base,'67fc8750dd6ef9a13067c6a43137f910b6a44228');

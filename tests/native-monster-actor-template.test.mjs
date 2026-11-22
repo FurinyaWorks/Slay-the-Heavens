@@ -28,7 +28,7 @@ function expectedResourceHints() {
   const icon=bar[name+'Icon'],value=bar[name];
   const left=Math.min(icon[0]-icon[1]/2,value[0]-value[1]/2),right=Math.max(icon[0]+icon[1]/2,value[0]+value[1]/2);
   const size=[Math.max(48,right-left),Math.max(48,bar.height)];
-  return {name,kind:'container',position:[(left+right)/2,bar.y],size,children:[{name:'hit',kind:'cursorArea',size:[...size],focusable:true}]};
+  return {name,kind:'container',position:[(left+right)/2,bar.y],size,children:[{name:'hit',kind:'cursorArea',size:[...size]}]};
  })};
 }
 function assertBattleStageContract(stage,{host=false}={}) {
@@ -69,7 +69,7 @@ test('battle stage identity contract rejects missing, duplicate, static-enemy an
   value=>{value.children.push({name:'extra',kind:'container'});},
   value=>{value.children.at(-1).children[0].name='energy';},
   value=>{value.children.at(-1).children[0].children.push({name:'buy',kind:'cursorArea'});},
-  value=>{value.children.at(-1).children[0].children[0].focusable=false;},
+  value=>{value.children.at(-1).children[0].children[0].focusable=true;},
   value=>{value.children.unshift(value.children.pop());},
  ]) {const value=hostStage();mutate(value);assert.throws(()=>assertBattleStageContract(value,{host:true}),/complete battle stage control identities|exact read-only HP\/gold hotspots/);}
  const clipped=hostStage();

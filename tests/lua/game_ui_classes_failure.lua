@@ -137,7 +137,7 @@ local function battle(ui,root,finishFeedback,competition)
     assert(slot);click(root,"battlePanel/card"..slot);click(root,"battlePanel/playArea")
     eq(ui.battleUI.busy,true)
     if competition then assert(ui.run.combat.pendingHandChoice)else assert(ui.run.combat.pendingScry)end
-    if finishFeedback then drain(ui);eq(ui.choiceUI.visible,true) end
+    if finishFeedback then drain(ui);finishReveal(ui);eq(ui.choiceUI.visible,true) end
     return ui.run.combat
 end
 local function noRevival(ui,root,expectedRun,message)

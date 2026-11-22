@@ -22,6 +22,7 @@ function M.onEngineDestroy(self)
     return function(_)
             self.disabled=true
             abandonReveal(self)
+            self.deckUI:onEngineDestroy()
             local ok,why=pcall(self.battleUI.onEngineDestroy,self.battleUI)
             if self.easterEgg then self.easterEgg:onEngineDestroy()end
             assert(ok,why)
@@ -56,21 +57,20 @@ local function advancePreparation(self,platform,dt)
     if page=='nodePanel' then self.nodeUI:prepare(dt)
     elseif page=='deckPanel' then self.deckUI:update(dt)
     elseif page=='mapPanel' then self.mapUI:update(dt) end
-    self:syncController();return true
+    return true
 end
 local function updateSuspended(self,dt)
     if self.settlementRequested then self:animate(dt);return true end
-    if self.sessionPaused then self:animate(dt);self:syncController();return true end
+    if self.sessionPaused then self:animate(dt);return true end
     return false
 end
-function M.update(self,controller,platform,openingCovered,updateBossEntrance,bgm)
+function M.update(self,platform,openingCovered,updateBossEntrance,bgm)
     local function advancePages(dt)
             PageReveal.registerSource(platform,'battlePanel')
             self.battleUI:update(dt)
             updateBossEntrance(dt)
             if self.battleUI.busy and self.battleUI.feedback.deaths.player then bgm:update("defeat") end
             local updated=updatePrepared(self,platform,dt)
-            self:syncController()
             return updated
     end
     return function(_, dt)
@@ -79,26 +79,25 @@ function M.update(self,controller,platform,openingCovered,updateBossEntrance,bgm
                 return false, "invalid_delta"
             end
             if self.easterEggOpen then
-                self.easterEgg:tick();if controller then controller:tick()end;self:syncController();return true
+                self.easterEgg:tick();return true
             end
             if platform.background then platform.background:tick() end
             if platform.portraits then platform.portraits:tick(dt) end
             self:paintArtLoading()
-            if controller then controller:tick() end
-            if self.exitOpen or self.settlementBusy then self:syncController();return true end
+            if self.exitOpen or self.settlementBusy then return true end
             if updateSuspended(self,dt) then return true end
             -- Count client update time within this run; menus/results never extend it.
             -- The terminal rule state can precede the last feedback animation.
             if not countRunTime(self,dt,openingCovered) then return false,"invalid_delta" end
             self:animate(dt)
             if self.prologue then self.prologue:update(dt) end
-            if openingCovered() then self:syncController();return true end
+            if openingCovered() then return true end
             if advancePreparation(self,platform,dt) then return true end
             return advancePages(dt)
         end
 end
 
-function M.disable(self,platform,controller,characterPanel,owner)
+function M.disable(self,platform,characterPanel,owner)
     return function(_)
             local wasDisabled=self.disabled
             self.disabled=true
@@ -114,7 +113,6 @@ function M.disable(self,platform,controller,characterPanel,owner)
             if platform.portraits then platform.portraits:release() end
             if platform.cardArt then platform.cardArt.clear() end
             if self.prologue then self.prologue:cancel() end
-            if controller then controller:disable() end
             owner.exitGeneration=owner.exitGeneration+1;owner.menuGeneration=owner.menuGeneration+1
             self.characterOpen=false
             if characterPanel then characterPanel:SetVisible(false) end
@@ -124,7 +122,7 @@ function M.disable(self,platform,controller,characterPanel,owner)
             self.mapUI:setVisible(false)
             self.nodeUI:setVisible(false)
             if self.choiceUI then self.choiceUI:close() end
-            self.potionUI:close();self.deckUI:close()
+            self.potionUI:close();self.deckUI:close();self.deckUI:releaseBrowser()
             self.battleUI.feedback:cancel()
             local released,reason=pcall(self.battleUI.releaseMonsterSurfaces,self.battleUI)
             self.monsterCleanupPending=not released or nil

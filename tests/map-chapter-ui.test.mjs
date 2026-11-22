@@ -58,6 +58,20 @@ test('chapter-local map geometry, real same-table transitions and stale gestures
     assert.equal(original.split(current).length,2,'one map presentation assertion migration');
     original=original.replace(current,prior);
   }
+  const deferredMapChanges=[
+    ["assert(ui:scrollBy(Theme.layout.map.floorGap*3));local startScroll=ui.scroll\n    assert(ui:focusCurrent(true));ui:update(.04);assert(ui.scroll>0 and ui.scroll<startScroll)",
+     "assert(box('next'):GetChild('hit').click());ui:update(.04);assert(ui.scroll>0)",1],
+    ["assert(ui:scrollBy(Theme.layout.map.floorGap*3));local startScroll=ui.scroll\n    assert(ui:focusCurrent(true));ui:update(.04);assert(ui.scroll<startScroll)",
+     "assert(box('next'):GetChild('hit').click());ui:update(.04)",1],
+    ["assert(not box(1).visible and not pcall(box,'next') and not pcall(box,'previous'))",
+     "assert(not box(1).visible and not box('next'):GetChild('hit').visible\n            and not box('previous'):GetChild('hit').visible)",3],
+    ["local scrollOk,scrollReason=ui:scrollBy(100);assert(not scrollOk and scrollReason=='invalid_map_context')",
+     "assert(not box('next'):GetChild('hit').click())",1],
+  ];
+  for(const [current,prior,count] of deferredMapChanges){
+    assert.equal(original.split(current).length,count+1,'exact retired map controls migration');
+    original=original.replaceAll(current,prior);
+  }
   // The removed recenter control has no hit area; both remaining paging hits
   // must fail closed. Reverse only these three reviewed assertion migrations.
   const pagingHidden="assert(not box(1).visible and not box('next'):GetChild('hit').visible\n            and not box('previous'):GetChild('hit').visible)";

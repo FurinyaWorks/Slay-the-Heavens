@@ -18,7 +18,7 @@ test('egg overlay uses existing theme, visible return action and full input bloc
  const layout={controls:[{name:'menuPanel',children:[result]}]};
  const panel=attachVictoryEasterEgg(layout,theme);
  assert.equal(result.children[0].name,'viewEasterEgg');assert.equal(result.children[0].visible,false);
- assert.equal(panel.visible,false);assert.equal(panel.isolateNavigation,true);
+ assert.equal(panel.visible,false);assert.equal(panel.isolateNavigation,undefined);
  assert.deepEqual(panel.children.find(c=>c.name==='blocker').size,theme.canvas.base);
  assert.equal(panel.children.find(c=>c.name==='thanks').text.content,'感谢您的游玩~！');
  assert.equal(panel.children.find(c=>c.name==='close').children.find(c=>c.name==='label').text.content,'返回结算');

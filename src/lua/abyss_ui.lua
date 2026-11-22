@@ -101,7 +101,7 @@ end
 local function deckPending(intent)
     local deck=view and intent.page=='deckPanel' and view.deckUI
     if not deck then return false end
-    local painted
+    local painted=deck.preparedCards
     if deck.gridReady and not deck.pending and not deck.calibrating then
         local _,completed=deck.gridReady();painted=completed
     end
@@ -115,6 +115,9 @@ local function presentationReady(intent)
         if not ready then return false,reason,'portrait:'..tostring(cursor) end
     end
     local pendingDeck,painted=deckPending(intent)
+    if intent.page=='deckPanel' and view and view.deckUI.prepareError then
+        return false,view.deckUI.prepareError
+    end
     if background and intent.page=='menuPanel' then
         local state=background:status()
         if state.phase=='failed' then return false,state.reason end
@@ -234,11 +237,20 @@ function OnStart()
         local nativePageLifecycle=readNativePageLifecycle()
         local build = require('abyss_narrative').build
         local alpha = type(build)=='table' and build.workKey=='alpha-test'
+        local deckBinding=require('abyss_deck_browser_binding')
+        local deckTemplateIndex=deckBinding.templateIndex
+        local deckTemplateNames={[deckTemplateIndex]='AbyssBattlePileCard'}
+        if deckTemplateIndex>0 then
+            for _,part in ipairs(deckBinding.parts)do
+                deckTemplateNames[assert(part.templateIndex,'unbound deck browser chunk')]=part.name
+            end
+        end
         local actorBinding=require('abyss_monster_actor_binding')
         local actorInstantiate,actorDestroy=game.InstantiateClientUIControl,game.DestroyClientUIControl
         if componentBridge then
             actorInstantiate=function(index,parent)
-                local name=index==actorBinding.templateIndex and 'AbyssMonsterActor'
+                local name=deckTemplateNames[index]
+                    or index==actorBinding.templateIndex and 'AbyssMonsterActor'
                     or index==actorBinding.powerTemplateIndex and 'AbyssMonsterPower'
                     or index==actorBinding.containerTemplateIndex and 'AbyssReadyCardGroup'
                 assert(name,'unmapped component business template '..tostring(index))
@@ -256,17 +268,11 @@ function OnStart()
               runTimeUnavailable = true,
               createEasterEggArt=createEasterEggArt,
               characterProfile = (alpha or isTest and testPlay == true) and "competition-candidate" or "production",
-              controllerApi = {events=Enum.ControllerNavigationEventType,directions=Enum.ControllerNavigationDir,
-                  modes=Enum.ControllerNavigationMode,
-                  getFocus=function()
-                      local focus=game.GetControllerFocus()
-                      return componentBridge and componentBridge.wrap(focus) or focus
-                  end,
-                  setFocus=function(control)return game.SetControllerFocus(componentBridge and componentBridge.unwrap(control) or control)end,
-                  isController=function()
-                      local device=game.GetDevice()
-                      return device==Enum.Device.Controller or device==Enum.Device.MobileController
-                  end},
+              deckBrowser=deckTemplateIndex>0 and {
+                  parts=deckBinding.parts,
+                  create=function(parent,part)return actorInstantiate(part and part.templateIndex or deckTemplateIndex,parent)end,
+                  destroy=actorDestroy,
+              } or nil,
               monsterActors=setmetatable({instantiate=actorInstantiate,destroy=actorDestroy},{__index=actorBinding}),
               nativeMonsterArtEnabled=flags.monsters,
               color = Color, imageSource = Enum.ImageSource.StaticReference, cursorEvents = Enum.CursorEventType, keyEvents = Enum.KeyEventType,
@@ -278,7 +284,10 @@ function OnStart()
               imageTypes = Enum.ImageType and {basic=Enum.ImageType.Basic,stretch=Enum.ImageType.Stretch},
               textAlignments = {horizontal=Enum.TextHorizontalAlignment,vertical=Enum.TextVerticalAlignment},
               cursorPosition = function() return game.GetCursorUIPos() end,
-              touchScreen = function() return game.GetDevice() == Enum.Device.Mobile end,
+              touchScreen = function()
+                  local device=game.GetDevice()
+                  return device==Enum.Device.Mobile or device==Enum.Device.MobileController
+              end,
               sound = function(cue)
                 local id = Theme.sound[cue]
                 if id and game.PlayAudio2D then
@@ -306,14 +315,11 @@ local function refreshPreparedPage(gate,reveal)
     if not entry then view:refresh();return end
     local ok,reason=pcall(view.refresh,view)
     if not ok and gate.entry==entry then
-        if gate:failProjection(entry,reveal.intent(view),reason)then view:syncController()
-        elseif gate.entry==entry then error(reason,0)end
+        if not gate:failProjection(entry,reveal.intent(view),reason) and gate.entry==entry then error(reason,0)end
     end
 end
 local function applyRevealStep(gate,reveal,changed,repaint)
-    if changed then
-        if repaint==false then view:syncController() else refreshPreparedPage(gate,reveal)end
-    end
+    if changed and repaint~=false then refreshPreparedPage(gate,reveal) end
     paintReveal(gate)
 end
 function OnUpdate(dt)

@@ -5,20 +5,6 @@ local function finish(ui,root,seconds,waitForResult)
  if waitForResult then waitForResult() end
  return F.statValue(root,'time')
 end
--- Merged opening/deck priority: the prologue blocks character Back, while a
--- visible character deck owns Back after that cover has finished.
-do
- local covered=true
- local owner={mode='menu',characterOpen=true,motion={},deckUI={visible=false},potionUI={visible=false}}
- local scope,back;local controller={sync=function(_,value,action)scope,back=value,action end}
- local deckBack,characterBack=0,0
- owner.deckUI.back=function()deckBack=deckBack+1;return true end
- owner.closeCharacters=function()characterBack=characterBack+1;return true end
- local sync=require('abyss_game_ui_view').syncController(owner,controller,function()return covered end)
- sync();assert(scope=='blocked' and not back() and characterBack==0)
- covered=false;owner.deckUI.visible=true;sync();assert(scope=='deck' and back() and deckBack==1 and characterBack==0)
- owner.deckUI.visible=false;sync();assert(scope=='characters' and back() and characterBack==1)
-end
 local ui,root=F.fixture()
 assert(F.start(ui))
 assert(finish(ui,root,0)=='00:00','zero is a valid recorded duration, not an unavailable sentinel')

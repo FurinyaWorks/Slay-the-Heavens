@@ -132,6 +132,7 @@ local function defeat()
     assert(F.statValue(root,'time')=='暂不可用','unverified native time must stay unavailable')
 end
 
+finishReveal()
 assert(tap('menuPanel','start',1) and confirmStart())
 OnUpdate(3600) -- resume-like input, not evidence about a device clock
 defeat()

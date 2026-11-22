@@ -1,10 +1,10 @@
--- Real map/controller on the generated native tree. Only the platform controls
--- are doubled; route permissions, state transitions and focus use production Lua.
-local Map, UI, Controller = require('abyss_map'), require('abyss_map_ui'), require('abyss_controller')
+-- Only the native controls are doubled. The map owns route permissions,
+-- visuals, gesture identity and state transitions.
+local Map, UI = require('abyss_map'), require('abyss_map_ui')
 local Theme, Layout = require('abyss_theme'), require('abyss_map_layout')
 local function control(spec, parent)
     local c = {spec=spec,parent=parent,children={},visible=spec.visible~=false,
-        image=spec.image,imageColor=spec.colour,listeners={},navigation={},
+        image=spec.image,imageColor=spec.colour,listeners={},
         localScaleX=1,localScaleY=1,raycastTarget=true}
     function c:GetChild(name) return self.children[name] end
     function c:SetVisible(v) self.visible=v end
@@ -13,7 +13,6 @@ local function control(spec, parent)
     function c:SetLocalScale(x,y) self.localScaleX,self.localScaleY=x,y end
     function c:SetImage(_,id) self.image=id end
     function c:AddCursorEventListener(event,fn) self.listeners[event]=fn end
-    function c:AddNavigationEventListener(event,fn) self.navigation[event]=fn end
     for _,child in ipairs(spec.children or {}) do c.children[child.name]=control(child,c) end
     return c
 end
@@ -22,13 +21,11 @@ local panel=root:GetChild('stage'):GetChild('mapPanel')
 local function box(index)
     for _,group in pairs(panel.children) do if group.children['node'..index] then return group.children['node'..index] end end
 end
-local focus
-local manager=Controller.new({events={Confirm='confirm',Cancel='cancel'},
-    getFocus=function()return focus end,setFocus=function(c)focus=c end,isController=function()return true end})
 local map=Map.generate(require('abyss_data'),42)
 local calls=0
 local ui=UI.new(root,map,function(node)calls=calls+1;return Map.choose(map,node.id)end,'click',{
-    controller=manager,imageSource='static',color=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end})
+    cursor={CursorDown='down',CursorUp='up',CursorEnter='enter',CursorExit='exit'},
+    imageSource='static',color=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end})
 local function equalColor(actual,want)
     for _,key in ipairs({'r','g','b'}) do assert(actual[key]==want[key],'node icon state colour '..key) end
     assert(actual.a<=want.a and actual.a>=math.floor(want.a*.66),'STS oscillateColor alpha range')
@@ -92,7 +89,7 @@ local function verify()
             end
             inside(icon);inside(b:GetChild('ring'),fx.angle);inside(hit)
             local enabled=state=='available' and ui.navigationEnabled
-            assert(hit.visible==enabled and hit.canControllerFocus==enabled,'only legal destinations are focusable')
+            assert(hit.visible==enabled and not hit.canControllerFocus,'only legal destinations are visible to the pointer')
         else
             assert(not b:GetChild('hit').visible and not b:GetChild('hit').canControllerFocus,'offscreen hits stay disabled')
         end
@@ -100,18 +97,33 @@ local function verify()
 end
 verify()
 for _=1,12 do ui:update(.09);verify()end
-manager:sync('map')
-assert(focus and focus.visible and focus.canControllerFocus)
-assert(focus.navigation.confirm())
+local function legalHit()
+    local id = Map.available(map)[1].id
+    for index, node in ipairs(map.nodes) do
+        if node.id == id then
+            local hit = box(index):GetChild('hit')
+            assert(hit.visible)
+            return hit
+        end
+    end
+    error('missing legal room target')
+end
+local function tap(hit, event)
+    hit.listeners.down(event)
+    hit.listeners.up(event)
+    return hit.listeners.click(event)
+end
+local first, mouse = legalHit(), {}
+assert(tap(first, mouse))
 assert(calls==1 and map.floor==1)
 verify()
 for _=1,12 do ui:update(.09);verify()end
 assert(box(1).visible and box(1):GetChild('ring').visible,
     'a temporarily culled current room must reappear after its ring settles')
-assert(not focus.navigation.confirm() and calls==1,'repeated confirmation must not advance again')
+assert(not first.listeners.click(mouse) and calls==1,'repeated mouse click must not advance again')
 ui:setNavigationEnabled(true)
-manager:tick();manager:sync('map')
-assert(focus.navigation.confirm())
+local second, touch = legalHit(), {touchId=7}
+assert(tap(second, touch))
 assert(calls==2 and map.floor==2)
 verify()
 ui:setNavigationEnabled(true)
@@ -135,11 +147,8 @@ for _,state in ipairs({'current','visited','available','locked'}) do assert(seen
 local function notice()
     for _,group in pairs(panel.children) do if group.children.notice then return group.children.notice end end
 end
--- Empty normal maps do not become tutorial billboards on pointer or controller.
 ui:setNavigationEnabled(true);ui:render()
-assert(notice().text=='' and not notice().visible,'normal route must have no permanent controller teaching')
-manager.api.isController=function()return false end
-ui:render();assert(notice().text=='' and not notice().visible,'normal route must have no permanent pointer teaching')
+assert(notice().text=='' and not notice().visible,'normal routes do not show permanent input instructions')
 ui.entryError='测试错误';ui:render()
 assert(notice().text=='测试错误' and notice().visible,'real entry errors must remain visible')
 ui.entryError=nil;ui:setNavigationEnabled(false)
@@ -152,5 +161,5 @@ assert(notice().text=='已抵达首领 · 请完成首领战斗与奖励' and no
 ui:setNavigationEnabled(true)
 assert(notice().text=='首领奖励已处理 · 即将前往宝箱' and notice().visible,'the coordinator owns the automatic transition')
 print('MAP_NOTICE_PASS no teaching; real errors, room locks and reward target retained')
-print('MAP_NODE_VISUALS_PASS 4 states, official icons, hit areas, controller and illegal routes')
-return {root=root,map=map,ui=ui,controller=manager}
+print('MAP_NODE_VISUALS_PASS 4 states, official icons, hit areas, pointers and illegal routes')
+return {root=root,map=map,ui=ui}

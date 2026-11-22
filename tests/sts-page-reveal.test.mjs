@@ -99,45 +99,35 @@ local rewards={page='battlePanel',mode='battle',phase='reward',run=run,battle=ba
 assert(gate:begin(rewards));assert(gate:finish(rewards) and not shown,'same-battle reward lost synchronous publication')
 print('PAGE_REVEAL_PASS')`);
 });
-test('real generated Host keeps preparation running behind cover, blocks old pointer and navigation actions, and exposes exit recovery',t=>{
+test('real generated Host keeps preparation running behind cover, blocks old pointer actions, and exposes exit recovery',t=>{
  const base=resolve('.artifacts/test-tmp');mkdirSync(base,{recursive:true});const out=mkdtempSync(join(base,'page-reveal-'));t.after(()=>rmSync(out,{recursive:true,force:true}));
  buildLuaData('data',join(out,'abyss_data.lua'));buildUI(out,undefined,{officialAssets:true});
  const modules=readdirSync(out).filter(n=>n.endsWith('.lua')).map(n=>n.slice(0,-4));
  const preloads=modules.map(n=>`package.preload[${luaString(n)}]=assert(loadfile(${luaString(join(out,n+'.lua').replaceAll('\\','/'))}))`).join('\n');
  lua(`package.path='src/lua/?.lua;tests/lua/?.lua;'..package.path
 ${preloads}
-local G=require('abyss_game_ui');local make=G.new;local prepared=false;local calls=0;local focus;local controllerMode=false
+local G=require('abyss_game_ui');local make=G.new;local prepared=false;local calls=0
 local extraReady,sourcePage,textureRuntime
 G.new=function(root,data,presentation,event,p)
  p.presentationReady=function(intent)calls=calls+1;if extraReady then return extraReady(intent)end;return prepared end
  p.presentationPage=function(page)sourcePage=page;require('abyss_card_art_runtime').setPresentationPage(page);if textureRuntime then textureRuntime:setPresentationPage(page)end end
- p.controllerApi={events={Confirm='navConfirm',Cancel='navCancel'},directions={Left='left',Right='right'},modes={Specified='specified'},isController=function()return controllerMode end,getFocus=function()return focus end,setFocus=function(v)focus=v end}
  return make(root,data,presentation,event,p)
 end
 local F=dofile('tests/lua/support/game_ui_fixture.lua');local host,root=F.fixture(nil,function()return true end)
 local reveal=host.pageReveal;local cover=root:GetChild('pageReveal');local start=root:GetChild('menuPanel'):GetChild('start'):GetChild('hit')
 local recovery=cover:GetChild('cancel');local cancel=recovery:GetChild('hit')
 assert(reveal and reveal:covered()and cover.visible)
-assert(require('abyss_controller').pointerBlocked(host.controller),'keyboard/mouse manager must honor preparation')
+assert(host.pointerBlocked(),'keyboard/mouse manager must honor preparation')
 assert(not start.click()and not host.characterOpen,'old page click reached rules during preparation')
 assert(not recovery.visible,'normal loading exposed the recovery menu button')
 assert(not cancel.click()and not host.exitOpen,'normal loading accepted a stale recovery click')
-controllerMode=true;host:syncController()
-assert(not cancel.canControllerFocus and not cancel.navigationListeners.navConfirm(),'normal loading focused or activated the recovery menu')
-assert(not host.controller.cancel()and not host.exitOpen,'controller Back opened a menu during normal loading')
-controllerMode=false;host.controller:tick()
 local intent=require('abyss_page_reveal').intent(host)
 extraReady=function()return false,'asset rejected'end
 assert(not reveal:step(intent)and reveal.state=='failed');host:refresh()
 assert(recovery.visible,'failed preparation lost its recovery entry')
 assert(cover:GetChild('cancel'):GetChild('hit').click()and host.exitOpen,'recovery menu inaccessible')
-assert(root:GetChild('runMenu').visible and host.controller.scope=='exit')
+assert(root:GetChild('runMenu').visible and not host.pointerBlocked())
 assert(root:GetChild('runMenu'):GetChild('resume'):GetChild('hit').click()and not host.exitOpen,'recovery menu cannot return')
-controllerMode=true;host:syncController()
-assert(focus==cancel and not start.navigationListeners.navConfirm(),'blocked controller action reached old page')
-assert(cancel.navigationListeners.navConfirm()and host.exitOpen,'controller cannot reach recovery menu')
-controllerMode=false;host.controller:tick()
-assert(root:GetChild('runMenu'):GetChild('resume'):GetChild('hit').click()and not host.exitOpen)
 extraReady=nil
 host:update(1/60);assert(not reveal:step(intent)and calls>0 and cover.visible)
 host:refresh();assert(not recovery.visible and not cancel.click()and not host.exitOpen,'recovered pending page retained its error menu')
@@ -145,7 +135,7 @@ assert(cover:GetChild('message').text=='正在准备画面…','pending page ret
 prepared=true;assert(not reveal:step(intent)and cover.visible);host:refresh()
 assert(not recovery.visible and not cancel.click(),'ready confirmation turn exposed recovery')
 assert(reveal:step(intent));host:refresh()
-assert(not cover.visible and not require('abyss_controller').pointerBlocked(host.controller))
+assert(not cover.visible and not host.pointerBlocked())
 local epoch=reveal.epoch
 for i=1,20 do host:update(1/60);reveal:step(require('abyss_page_reveal').intent(host));host:refresh();assert(not reveal:covered()and reveal.epoch==epoch,'idle frame restarted cover')end
 local updateBattle=host.battleUI.update;local ruleUpdates=0
@@ -264,10 +254,10 @@ local deck,attempts=#run.deck,run.nodeFlow.event.attemptsLeft
 local covered=true;local ruleCalls=0;local preparations=0;local battleCalls=0;local deckUpdates=0
 local host={run=run,mode='node',nodeUI=node,deckUI={update=function()deckUpdates=deckUpdates+1 end},mapUI={update=function()end},
  battleUI={update=function()battleCalls=battleCalls+1 end},
- pageReveal={covered=function()return covered end,intent={page='nodePanel'}},paintArtLoading=function()end,animate=function()end,syncController=function()end}
+ pageReveal={covered=function()return covered end,intent={page='nodePanel'}},paintArtLoading=function()end,animate=function()end}
 local original=node.update;node.update=function(self,dt)ruleCalls=ruleCalls+1;return original(self,dt)end
 local prepare=node.prepare;node.prepare=function(self,dt)preparations=preparations+1;return prepare(self,dt)end
-local update=require('abyss_game_ui_lifecycle').update(host,nil,{},function()return false end,function()end,{})
+local update=require('abyss_game_ui_lifecycle').update(host,{},function()return false end,function()end,{})
 local before=H.snapshot(run)
 for i=1,3 do assert(update(host,2))end
 H.same(run,before);assert(ruleCalls==0 and battleCalls==0 and preparations==3 and deckUpdates==0,'covered update did not isolate preparation to the target owner')

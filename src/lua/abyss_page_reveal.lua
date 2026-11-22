@@ -44,7 +44,8 @@ function M.intent(owner)
         nodePage=node.page,pickPage=node.pickPage,relicPage=node.relicPage,complete=flow.complete,
         rewards=run.phase=='reward' and battle.rewardScreen or nil,
         overlayRevision=revision,details=details,detailPage=detailPage,overlayContent=content,
-        deckBrowser=page=='deckPanel' and owner.deckUI.browserShell==true and not details}
+        deckBrowser=page=='deckPanel' and owner.deckUI.browserShell==true and not details,
+        deckPaged=page=='deckPanel' and owner.deckUI.paged==true and not details}
 end
 local function sameOwner(a,b,except)
     if not a or not b then return false end
@@ -184,9 +185,9 @@ function M.new(cover,ready,onIntent,frames,motion)
         if not supported(intent) or not supported(previous)then return end
         -- Browser chrome sits outside this viewport. Publish it immediately
         -- while the existing cover still guards unfinished card cells.
-        return intent.deckBrowser and frames.deckBrowser or frames[intent.page] or previous and frames[previous.page]
+        return intent.deckPaged and frames.deckPaged or intent.deckBrowser and frames.deckBrowser or frames[intent.page] or previous and frames[previous.page]
     end
-    local paintedFrame;local paintToken=0
+    local paintedFrame,paintedBlocker;local paintToken=0
     local function currentPaint(ticket,epoch,frame,veil)
         local alive=veil.alive~=false
         local sameVeil=cover:GetChild('veil')==veil
@@ -195,6 +196,16 @@ function M.new(cover,ready,onIntent,frames,motion)
     local function paintFrame()
         if not frames then return true end
         local frame=gate.localFrame or frames.size or frames.full
+        local limited=gate.intent and gate.intent.deckPaged and gate.localFrame and gate.state~='failed'
+        local blockerFrame=limited and frame or frames.size or frames.full
+        if blockerFrame~=paintedBlocker then
+            local ticket=gate.epoch
+            cover.disableCursorEventPassthrough=not limited
+            local blocker=cover:GetChild('blocker')
+            if blocker:SetAnchoredPosition(blockerFrame[1],blockerFrame[2])==false or gate.epoch~=ticket then return false end
+            if blocker:SetSizeDelta(blockerFrame[3],blockerFrame[4])==false or gate.epoch~=ticket then return false end
+            paintedBlocker=blockerFrame
+        end
         if frame==paintedFrame then return true end
         paintToken=paintToken+1;local ticket,epoch=paintToken,gate.epoch
         paintedFrame=nil -- a partial native write invalidates every old promise
@@ -213,7 +224,6 @@ function M.new(cover,ready,onIntent,frames,motion)
         local scale=math.min(width/frames.full[3],height/frames.full[4])
         -- Extend the veil and input hit over the letterboxing of the scaled stage.
         frames.size={0,0,width/scale,height/scale}
-        cover:GetChild('blocker'):SetSizeDelta(frames.size[3],frames.size[4])
         paintFrame()
     end
     function gate:covered()return self.state~='visible' end

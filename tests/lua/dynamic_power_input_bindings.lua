@@ -1,7 +1,6 @@
 local Combat=require('abyss_combat')
 local Data=require('abyss_data')
 local Actors=require('abyss_actor')
-local Controller=require('abyss_controller')
 local Target=require('abyss_battle_target_bindings')
 local Detail=require('abyss_battle_detail_bindings')
 local Native=dofile('tests/lua/support/native_ui_contract.lua')
@@ -13,12 +12,10 @@ local function registered()
  if failAt then registrations=registrations+1;if registrations==failAt then if reentrantRetire then reentrantRetire() else error('injected native registration failure') end end end
 end
 local function control(name,parent)
- local c={name=name,parent=parent,children={},listeners={},navigation={},visible=true,alive=true,raycastTarget=true}
+ local c={name=name,parent=parent,children={},listeners={},visible=true,alive=true,raycastTarget=true}
  function c:GetChild(n)return assert(self.children[n],self.name..' missing '..n)end
  function c:GetChildren()local a={};for _,v in pairs(self.children)do a[#a+1]=v end;return a end
  function c:AddCursorEventListener(e,f)Native.listener(e,f);assert(not self.listeners[e],self.name..' duplicate '..e);self.listeners[e]=f;registered() end
- function c:AddNavigationEventListener(e,f)Native.listener(e,f);assert(not self.navigation[e]);self.navigation[e]=f;registered() end
- function c:SetControllerNavigation(d,m,t)self['link'..d]=t end
  if parent then parent.children[name]=c end
  return c
 end
@@ -27,10 +24,6 @@ local function unit(name)
  for i=1,Theme.layout.statusIcon.perRow*Theme.layout.statusIcon.rows do control('hit'..i,row)end
  return c
 end
-local focus,usingController=nil,false
-local api={events={Confirm='confirm',Cancel='cancel',Focus='focus'},directions={Left='left',Right='right'},modes={Specified='specified'},
- getFocus=function()return focus end,setFocus=function(c)assert(c);focus=c end,isController=function()return usingController end}
-local ctl=Controller.new(api)
 local battle=Combat.new(Data,{deck={'strike','defend'},enemies={'acid_slime_m','acid_slime_m','acid_slime_m','acid_slime_m','acid_slime_m','acid_slime_m','acid_slime_m'},seed=42})
 local owner={run={phase='combat',combat=battle},active=true,busy=false,dragEnabled=true,selectionEpoch=0}
 local calls={status=0,help=0,down=0,swallowed=0,drag=0,render=0,potion=0,card=0,queue=0,close=0}
@@ -47,7 +40,7 @@ local surfaces={entries={},boxes={}}
 function surfaces:entry(slot)return self.entries[slot]end
 function surfaces:control(slot)return self.boxes[slot]end
 function surfaces:slotFor(box)for i,b in pairs(self.boxes)do if b==box then return i end end end
-local host={monsterSurfaces=surfaces,controller=ctl,clickEvent='click',cursor={CursorDown='down',CursorUp='up',CursorEndDrag='endDrag',CursorEnter='enter',CursorExit='exit'}}
+local host={monsterSurfaces=surfaces,platform={},clickEvent='click',cursor={CursorDown='down',CursorUp='up',CursorEndDrag='endDrag',CursorEnter='enter',CursorExit='exit'}}
 local ownership={enemyInputs={},enemyPointerObserved=false}
 local static={hero=unit('hero'),statusInfo=control('statusInfo')};control('hit',static.statusInfo);control('page',static.statusInfo)
 for i=1,10 do static['card'..i]=unit('card'..i)end
@@ -56,7 +49,6 @@ local deps={}
 function deps.child(name)return assert(static[name],'dynamic init must not request '..name)end
 function deps.enemyAt(slot)return surfaces:entry(slot)end
 function deps.sameEnemySlot(slot,actor)local e=surfaces:entry(slot);return e and e.actor==actor and e.id==actor.id end
-function deps.controllerReady()return owner.active and not owner.busy end
 function deps.swallowed()calls.swallowed=calls.swallowed+1;return false end
 function deps.down()calls.down=calls.down+1;return false end
 function deps.consumeReleasedDragClick()calls.drag=calls.drag+1;return false end
@@ -65,11 +57,10 @@ function deps.discardEnemyPointer(input)input.held=nil;input.released=nil end
 -- Deliberately permissive dependency: stale surface fencing must live in bindings themselves.
 function deps.enemyReady()return true end
 function deps.closeInfo()owner.info=nil;calls.close=calls.close+1;return true end
-function deps.listen(c,fn)c:AddCursorEventListener('click',fn);Controller.bind(ctl,c,'battle',fn)end
+function deps.listen(c,fn)c:AddCursorEventListener('click',fn)end
 local target=Target.install(owner,ownership,host,deps);deps.helpActorReady=target.helpActorReady
 local detail=Detail.install(owner,ownership,host,deps)
 target.bindEnemyControls();detail.bindDetailControls()
-local staticRecords=#ctl.records
 local function bind(slot,actor,index,box)
  box=box or unit('dynamic'..slot)
  surfaces.boxes[slot]=box;surfaces.entries[slot]={index=index,id=actor.id,actor=actor,controlSlot=slot}
@@ -82,7 +73,8 @@ local function click(c,touch)event(c,'down',touch);event(c,'up',touch);event(c,'
 -- No enemy statusRow or fixed chips: dynamic actor binding must only use intent.
 local actorBox=control('actor');control('hit',actorBox);control('intentHit',actorBox)
 bind(1,battle.enemies[1],1,actorBox)
-assert(#ctl.records==staticRecords+2,'enemy should bind only portrait and intent')
+assert(actorBox:GetChild('hit').listeners.click and actorBox:GetChild('intentHit').listeners.click,
+ 'enemy without a power row should still bind portrait and intent')
 local actor=battle.enemies[1];Actors.applyPower(battle,actor,'strength',3,actor);Actors.applyPower(battle,actor,'weak',2,battle.player)
 local pool={entries={},boxes={}}
 function pool:entry(slot)return self.entries[slot]end
@@ -93,14 +85,15 @@ local function chip(id,slot)
  return box
 end
 local function bindPower(box,slot)detail.bindEnemyPowerControl(1,slot,box,pool)end
-local function retire(box,slot)
+local function retire(box,slot,engineDestroyed)
  pool.entries[slot]=nil;pool.boxes[slot]=nil
- detail.unbindEnemyPowerControl(box)
+ detail.unbindEnemyPowerControl(box,engineDestroyed)
+ if engineDestroyed then box.alive=false end
 end
 local strength=chip('strength',1);bindPower(strength,1)
 local hit=strength:GetChild('hit');click(hit,101)
 assert(calls.spec.statusId=='strength' and calls.spec.index==1 and calls.spec.controlBox==actorBox)
-local count=#ctl.records;bindPower(strength,1);assert(#ctl.records==count,'power bind idempotence')
+local before=hit.listeners.click;bindPower(strength,1);assert(hit.listeners.click==before,'power bind idempotence')
 -- Source index moves, actor lifetime and power id stay constant.
 battle.enemies[1],battle.enemies[2]=battle.enemies[2],battle.enemies[1]
 surfaces.entries[1].index=2
@@ -112,31 +105,35 @@ Actors.applyPower(battle,actor,'strength',3,actor)
 local callbacks={}
 local function retain(box)
  for _,fn in pairs(box:GetChild('hit').listeners)do callbacks[#callbacks+1]=function()fn({touchId=104})end end
- for _,fn in pairs(box:GetChild('hit').navigation)do callbacks[#callbacks+1]=fn end
 end
-retain(strength);event(hit,'down',104);retire(strength,1)
+retain(strength);event(hit,'down',104);retire(strength,1,true)
 local weak=chip('weak',1);bindPower(weak,1)
 owner.help={source=static.card1:GetChild('hit')};owner.info={source=static.card1:GetChild('hit'),transient=true}
 local function total()local n=0;for k,v in pairs(calls)do if type(v)=='number' and k~='index' then n=n+v end end;return n end
-local baseline=total();usingController=true;focus=hit
-for _,fn in ipairs(callbacks)do ctl:tick();fn()end
+local baseline=total()
+for _,fn in ipairs(callbacks)do fn()end
 assert(total()==baseline and owner.help and owner.info,'retired power callbacks changed unrelated UI')
-usingController=false;ctl:tick();click(weak:GetChild('hit'),105);assert(calls.spec.statusId=='weak')
+click(weak:GetChild('hit'),105);assert(calls.spec.statusId=='weak')
 retire(weak,1)
-local preserved={};for c,r in pairs(ctl.byControl)do preserved[c]=r end
-local preservedCount=#ctl.records
+local preserved={}
+for _,control in ipairs({static.hero:GetChild('hit'),static.card1:GetChild('hit'),static.potion1,
+ actorBox:GetChild('hit'),(actorBox:GetChild('intentHit'))})do
+ local listeners={};for name,fn in pairs(control.listeners)do listeners[name]=fn end
+ preserved[control]=listeners
+end
 local function unchanged()
- assert(#ctl.records==preservedCount,'power binding leaked records')
- for c,r in pairs(ctl.byControl)do assert(preserved[c]==r,'power binding leaked byControl')end
- for c,r in pairs(preserved)do assert(ctl.byControl[c]==r,'power cleanup removed actor/hero/card record')end
+ for control,listeners in pairs(preserved)do
+  for name,fn in pairs(listeners)do assert(control.listeners[name]==fn,'power cleanup changed unrelated listener')end
+  for name,fn in pairs(control.listeners)do assert(listeners[name]==fn,'power cleanup added unrelated listener')end
+ end
 end
 failAt=100000;registrations=0
 local probe=chip('strength',1);bindPower(probe,1);local sites=registrations
-failAt=nil;retire(probe,1);unchanged();assert(sites>=8)
+failAt=nil;retire(probe,1);unchanged();assert(sites==6)
 for mode=1,2 do
  for n=1,sites do
   local box=chip('strength',1);registrations=0;failAt=n
-  if mode==2 then reentrantRetire=function()retire(box,1)end end
+  if mode==2 then reentrantRetire=function()retire(box,1,true)end end
   local ok,err=pcall(function()bindPower(box,1)end)
   failAt=nil;reentrantRetire=nil
   if mode==1 then assert(not ok and tostring(err):find('injected native registration failure',1,true))
@@ -144,10 +141,10 @@ for mode=1,2 do
   callbacks={};retain(box);retire(box,1);unchanged()
   local replacement=chip('weak',1);bindPower(replacement,1)
   owner.help={source=static.card1:GetChild('hit')};owner.info={source=static.card1:GetChild('hit'),transient=true}
-  baseline=total();usingController=true;focus=box:GetChild('hit')
-  for _,fn in ipairs(callbacks)do ctl:tick();fn()end
+  baseline=total()
+  for _,fn in ipairs(callbacks)do fn()end
   assert(total()==baseline and owner.help and owner.info,'failed/retired power callback affected replacement or card')
-  usingController=false;ctl:tick();retire(replacement,1);unchanged()
+  retire(replacement,1);unchanged()
  end
 end
 local last=chip('strength',1);bindPower(last,1);baseline=total()

@@ -5,7 +5,8 @@ import {authorizeSts1MapSource,beforeSts1MapSource} from './helpers/sts1-map-sou
 import {beforePc13RewardCover,beforePc13ThenV2UiHudSource,pc13RewardCoverSourcePaths} from './helpers/pc13-reward-cover-source.mjs';
 import {beforeAuthenticatedReleaseUiRestore,beforeReleaseControlsGuideRemoval,beforeReleaseUiRestore,releaseControlsGuideRemovalSourcePaths} from './helpers/release-ui-restore-source.mjs';
 import {assertCharacterPreparationSources,beforeCharacterPreparationSource,beforeCurrentProductionSource,characterPreparationOwners} from './helpers/character-preparation-source.mjs';
-import {actorFocusAdded,assertDevelopBackflowCurrent,assertStasisUpgradeAdded,authenticateDevelopBackflow,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';
+import {authenticateInputRetirement,beforeInputRetirement,beforeInputRetirementReader,assertPointerInputSource,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
+import {actorFocusAdded,deckPagesAdded,assertDevelopBackflowCurrent,assertStasisUpgradeAdded,authenticateDevelopBackflow,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,readdirSync,mkdtempSync,mkdirSync,writeFileSync,existsSync,linkSync,unlinkSync,rmSync} from 'node:fs';
@@ -23,6 +24,25 @@ function replayRebasedInput(path,read){
  if(prior!==current)authorizeRebasedDevelop([[path,current]],read);
  return prior;
 }
+
+test('input retirement preserves exact older bytes and rejects tampered successor witnesses',()=>{
+ const read=path=>readFileSync(path,'utf8');
+ const path='src/lua/abyss_map_ui.lua',source=read(path);
+ const prior=beforeInputRetirement(path,source);
+ assert.notEqual(prior,source);
+ assert.equal(authenticateInputRetirement(path,source,read),prior);
+ assert.equal(authenticateInputRetirement(path,source.replaceAll('\n','\r\n'),read),prior.replaceAll('\n','\r\n'));
+ assert.throws(()=>authenticateInputRetirement(path,source,()=>source+'\n'),/input retirement validation/);
+ assert.equal(authenticateInputRetirement(path,source+'\n',()=>assert.fail('foreign bytes authorized reads')),source+'\n');
+ const retired=beforeInputRetirementReader(read)(retiredControllerPath);
+ assert.match(retired,/function M\.new/);
+ assert.throws(()=>beforeInputRetirementReader(owner=>owner===pointerInputPath?read(owner)+'\n':read(owner))(retiredControllerPath),/ENOENT/);
+ assert.throws(()=>assertPointerInputSource(read(pointerInputPath)+'\n'),/fresh pointer input module/);
+ const config='config/architecture.json',configSource=read(config);
+ assert.throws(()=>sourceEpoch.preCombinedSource(config,configSource,{
+  target:'develop',readSource:p=>p===retiredControllerPath?retired:read(p),
+ }),/combined linked owner identity: src\/lua\/abyss_controller.lua/);
+});
 
 test('runtime helper copy continuation retains every old view and rejects stale predecessor identity',async()=>{
  const {integratedCiProof,extendIntegratedHelperClosure}=await import('./helpers/integrated-ci-source.mjs');
@@ -161,8 +181,13 @@ test('fresh authorization covers the complete changed-owner union without cachin
 });
 test('combined epoch authenticates the complete current production tree',()=>{
  const files=['config/architecture.json',...readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p)].sort();
- const recorded=Object.keys(proof.current).filter(p=>proof.current[p]!==null).sort();
- assert.deepEqual(files,[...recorded,...stasisUpgradeAddedPaths,...actorFocusAdded].sort());
+ const recorded=Object.keys(proof.current).filter(path=>path!==retiredControllerPath&&proof.current[path]!==null).sort();
+ assert.deepEqual(files,[...recorded,...stasisUpgradeAddedPaths,...actorFocusAdded,...deckPagesAdded,pointerInputPath].sort());
+ const readDisk=path=>readFileSync(path,'utf8');
+ assert.throws(()=>readDisk(retiredControllerPath),{code:'ENOENT'});
+ const retired=beforeInputRetirementReader(readDisk)(retiredControllerPath);
+ assert.equal(beforeCharacterPreparationSource(retiredControllerPath,retired,readDisk),raw(retiredControllerPath));
+ assertPointerInputSource(readDisk(pointerInputPath));
  for(const path of stasisUpgradeAddedPaths)assertStasisUpgradeAdded(path,readFileSync(path,'utf8'));
  for(const path of actorFocusAdded)assertDevelopBackflowCurrent(path,readFileSync(path,'utf8'));
  assertCharacterPreparationSources();
@@ -198,7 +223,8 @@ test('combined replay rejects a menu owner from before the controls guide remova
  }
 });
 test('current PC13 facade rejects every exact immediate predecessor before older views or reads',()=>{
- const read=path=>readFileSync(path,'utf8');
+ const live=path=>readFileSync(path,'utf8');
+ const read=beforeInputRetirementReader(live);
  assert.equal(pc13RewardCoverSourcePaths.length,5);
  for(const path of pc13RewardCoverSourcePaths){
   const successor=read(path),rebased=beforeRebasedCi(path,successor),mapPrior=beforeSts1MapSource(path,rebased);
@@ -206,7 +232,7 @@ test('current PC13 facade rejects every exact immediate predecessor before older
   const pc13=beforeAuthenticatedReleaseGuideSource(path,mapPrior,readMapPrior);
   const predecessor=beforePc13RewardCover(path,pc13);
   assert.notEqual(predecessor,pc13,path);
-  assert.equal(beforeCurrentProductionSource(path,successor,read).replaceAll('\r\n','\n'),raw(path),path);
+  assert.equal(beforeCurrentProductionSource(path,live(path),live).replaceAll('\r\n','\n'),raw(path),path);
   assert.equal(beforeCharacterPreparationSource(path,predecessor,read).replaceAll('\r\n','\n'),raw(path),'historical predecessor remains supported: '+path);
   assert.throws(()=>beforeCurrentProductionSource(path,predecessor,read),{message:'fresh current production owner: '+path});
   const forbidden=()=>{throw Error('must not read for an unrecognized current owner');};
@@ -216,11 +242,11 @@ test('current PC13 facade rejects every exact immediate predecessor before older
   if(pc13!==mapPrior)invalidSources.push(pc13);
   for(const invalid of invalidSources)
    assert.throws(()=>beforeCurrentProductionSource(path,invalid,forbidden),{message:'fresh current production owner: '+path});
-  assert.throws(()=>beforeCurrentProductionSource(path,successor,owner=>owner===path?predecessor:read(owner)),
+  assert.throws(()=>beforeCurrentProductionSource(path,live(path),owner=>owner===path?predecessor:live(owner)),
    /combined linked owner identity/,path);
  }
  const unrelated='src/lua/abyss_battle_ui.lua';
- assert.equal(beforeCurrentProductionSource(unrelated,read(unrelated),read).replaceAll('\r\n','\n'),raw(unrelated));
+ assert.equal(beforeCurrentProductionSource(unrelated,live(unrelated),live).replaceAll('\r\n','\n'),raw(unrelated));
 });
 const cases=[
  ['m7-core-final','preM7FinalSource','develop','abyss_original_v4'],

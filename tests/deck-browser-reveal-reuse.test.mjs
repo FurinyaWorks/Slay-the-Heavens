@@ -193,7 +193,7 @@ local function boot(amount,origin)
  game={GetUICanvasSize=function()return 1280,720 end,IsTestPlay=function()return true end,GetDevice=function()return'desktop'end,GetCursorUIPos=function()return 0,0 end,
   InstantiateClientUIControl=actors.instantiate,DestroyClientUIControl=actors.destroy}
  script={object=canvas,GetParam=function()return false end,EnableUpdate=function()end}
- G.new=function(root,data,presentation,event,platform)p=platform;host=create(root,data,presentation,event,platform);return host end
+ G.new=function(root,data,presentation,event,platform)F.legacyPileGrid(root:GetChild('deckPanel'));p=platform;host=create(root,data,presentation,event,platform);return host end
  dofile('src/lua/abyss_ui.lua');OnStart();G.new=create;local update=OnUpdate
  for i=1,60 do update(1/60)end;assert(host and not host.pageReveal:covered());assert(host:start())
  for i=1,60 do update(1/60)end;assert(F.confirmStart(host))

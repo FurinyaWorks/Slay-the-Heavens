@@ -671,6 +671,19 @@ function withoutArchiveRecords(current,first,after){
  assert(start>=0&&end>start,'complete replay archive records');
  return current.slice(0,start)+current.slice(end);
 }
+function beforeDeckBrowserAssetLedger(source){
+ if(typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const current=normalize(source);
+ if(hash(current)!=='1d33f53a8ae76990456e0829980be613201a8bde6502593013bb928768a9627c'||
+    blob(current)!=='23e19be19acbca290bdad08d71f2e111b1143f1e')return source;
+ const categories=withoutArchiveRecords(current,'    "deck-browser-host-evidence": {\n','    "opening-statue-simulator-evidence": {\n');
+ const prior=withoutArchiveRecords(categories,'    "docs/evidence/deck-pages-20261122/visual/develop-first-open.png": {\n',
+  '    "docs/evidence/neow-geo-statue-preview.png": {\n');
+ const [sha,id]=replayStorageSources[replayAssetLedger];
+ assert.equal(hash(prior),sha,'immutable deck-browser asset ledger predecessor');
+ assert.equal(blob(prior),id);
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function beforeReplayArchiveStorage(path,source){
  if(!Object.hasOwn(replayStorageSources,path)||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const current=normalize(source);
@@ -713,8 +726,15 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  assertNativeFixturesCurrent(liveRead);
  read=(path,encoding)=>beforeCalibrationReplay(path,liveRead(path,encoding));
  const readCurrent=(path,encoding)=>{
-  const live=read(path,encoding),raw=path===replayAssetLedger?beforeReplayArchiveStorage(path,live):live,priorMerge=beforeDevelopReplayMerge(path,raw);
-  if(path===replayAssetLedger)assert.notEqual(live,raw,'fresh complete integration source: '+path);
+  const live=read(path,encoding);
+  let raw=live;
+  if(path===replayAssetLedger){
+   const ledger=beforeDeckBrowserAssetLedger(live);
+   assert.notEqual(live,ledger,'fresh complete integration source: '+path);
+   raw=beforeReplayArchiveStorage(path,ledger);
+   assert.notEqual(ledger,raw,'fresh complete integration source: '+path);
+  }
+  const priorMerge=beforeDevelopReplayMerge(path,raw);
   if(path==='tests/helpers/copy-integration-source-closure.mjs'||path===epochReplayRuntimePath)
    assert.notEqual(raw,beforeMapRoomReplayCohort(path,raw),'fresh complete integration source: '+path);
   const priorFingerprint=beforeReplayFingerprintSource(path,priorMerge);
@@ -747,6 +767,7 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
 }
 export function beforePreflightSource(path,source,view='prior'){
  source=beforeOfficialBackgroundFixture(path,source);
+ if(path===replayAssetLedger)source=beforeDeckBrowserAssetLedger(source);
  source=beforeReplayArchiveStorage(path,source);
  source=beforeCalibrationReplay(path,source);
  source=beforeForkFirstCi(path,source);

@@ -106,12 +106,9 @@ if not STS_UI_BASELINE then
 end
 
 local fadeRoot=F.Viewport.apply(F.control({children=F.Layout}),1280,720)
-local recovering,waiting,focus
-local navigation={events={Confirm='confirm',Cancel='cancel',Focus='focus'},directions={Left='left',Right='right'},
-    modes={Specified='specified'},getFocus=function()return focus end,setFocus=function(value)focus=value end,
-    isController=function()return true end}
+local recovering,waiting
 local fade=F.GameUI.new(fadeRoot,F.Data,F.Presentation,'click',{
-    seed=1,imageSource='static',prologue=not STS_UI_BASELINE,controllerApi=navigation,
+    seed=1,imageSource='static',prologue=not STS_UI_BASELINE,
     color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end,
     presentationReady=function(intent)
         if recovering==intent.page then return false,'fixture readiness failure'end
@@ -144,10 +141,15 @@ if not STS_UI_BASELINE then
     assert(veil.imageColor.a>0 and veil.imageColor.a<255)
     shot('fade-out',fade,fadeRoot)
 end
-for _=1,12 do tick(.05)end
+for _=1,12 do
+    if not STS_UI_BASELINE and fade.pageReveal.state=='preparing' then break end
+    tick(.05)
+end
 assert(cover.visible and cover:GetChild('blocker').click())
 if not STS_UI_BASELINE then
-    assert(veil.imageColor.a==255 and not cover:GetChild('message').visible)
+    -- Capture the first fully opaque submission before subsequent wait steps
+    -- can publish the slow-preparation message.
+    assert(fade.pageReveal.state=='preparing' and veil.imageColor.a==255 and not cover:GetChild('message').visible)
 end
 shot('fade-black',fade,fadeRoot)
 waiting=nil
@@ -155,7 +157,7 @@ settle()
 if not STS_UI_BASELINE then
     fade:resize(1600,720)
     assert(veil.sizeDeltaX==1600 and cover:GetChild('blocker').sizeDeltaX==1600)
-    for _,input in ipairs({'click','cancel'})do
+    for _,input in ipairs({'mouse','touch'})do
         recovering='mapPanel'
         assert(fade:openMenu())
         fade.routeOpen=true
@@ -163,9 +165,8 @@ if not STS_UI_BASELINE then
         for _=1,16 do tick(.05)end
         assert(fade.pageReveal.state=='failed' and cover:GetChild('message').visible)
         local back=hit(cover:GetChild('cancel'))
-        focus=back
-        local recover=input=='click' and back.click or back.navigationListeners.cancel
-        assert(recover(),'failed route preview could not return to combat by '..input)
+        local event=input=='touch' and {touchId=45} or nil
+        assert(back.click(event),'failed route preview could not return to combat by '..input)
         recovering=nil
         settle()
         assert(not fade.routeOpen and fade.mode=='battle' and fade.battleUI.active)

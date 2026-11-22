@@ -12,7 +12,7 @@ test('generated Emerald controls use named map text, native capacity and six rea
   const key = find(battle.controls, 'emeraldKeyReward');
   assert.ok(key, 'missing real generated key button');
   assert.equal(key.kind, 'presetButton');
-  assert.equal(key.focusable, true);
+  assert.equal(key.focusable, undefined);
   assert.equal(key.size[1], 64);
   const badge = find(map.controls, 'emeraldLabel');
   assert.ok(badge && badge.text.content === '绿钥匙');
@@ -27,7 +27,7 @@ test('generated Emerald controls use named map text, native capacity and six rea
   assert.ok(dense.continue[1] - theme.layout.battleRewards.continue[3] / 2 >= safeBottom);
 });
 
-test('strict generated Host UI exposes source burning elite, independent six-row claims, focus and retired gestures', () => {
+test('strict generated Host UI exposes source burning elite, independent six-row claims and retired pointer gestures', () => {
   const result = runLua('tests/lua/emerald_key_ui.lua');
   assert.equal(result.status, 0, result.stdout + result.stderr);
   assert.match(result.stdout, /EMERALD_KEY_UI 3 groups; 0 failed; native\/natural NOT_RUN/);

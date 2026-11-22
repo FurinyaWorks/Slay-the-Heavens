@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
+import {gunzipSync} from 'node:zlib';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const bytes=readFileSync(new URL('../fixtures/sts-fade-ci-source.json',import.meta.url));
 assert.equal(hash(bytes),'be33c862d5b8d8d3f3d40a70228c9eba52c8391e0425b77df07a04297e8bfdb6');
@@ -18,8 +19,9 @@ function fromCloseout(path,source){
 // Current fixtures exercise the real shop preparation and Neow retirement.
 // Historical reads preserve the exact prior fixtures bound by their receipts.
 const gitBlob=s=>createHash('sha1').update(`blob ${Buffer.byteLength(s)}\0`).update(s).digest('hex');
+const officialRuntimePath='tests/official-assets-runtime.test.mjs';
 const officialFixtures=Object.freeze({
- 'tests/official-assets-runtime.test.mjs':{
+ [officialRuntimePath]:{
   after:'29402f4869984cad29c71ca9b0c37faa71c87d79d6d90cb4ca5183776e56f42d',afterBlob:'2518f69ff9c3d75cced1fbb718dd6545e7f2105e',
   before:'e3fad25452dce11cc8c13c6e3bec71afbb039db22bed45519ef77e35cf47d66a',beforeBlob:'d40bd556f7c3f50f7efb4d04b383b421ac28bb95',
   rewrites:[
@@ -43,8 +45,12 @@ const officialFixtures=Object.freeze({
   ],
  },
 });
-function beforeOfficialFixture(path,source){
- const row=Object.hasOwn(officialFixtures,path)?officialFixtures[path]:null;
+const composedRuntimeFixture=Object.freeze({
+ ...officialFixtures[officialRuntimePath],
+ after:'063a593922556462de522b62972cde9c113aac0e67a898bada1700736b750f06',afterBlob:'8469f0ca7bf20a6a56a17e6294f1b70d6dd31c1b',
+ before:'1ba0126359c0dbf655585c7248c5963b7d6d89572fb47c84403df7adf7c090ef',beforeBlob:'65d01cdbd3b32ff56ee99e113d47e6ff8854034d',
+});
+function beforeOfficialFixture(path,source,row=Object.hasOwn(officialFixtures,path)?officialFixtures[path]:null){
  if(!row||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=source.replaceAll('\r\n','\n');
  if(hash(lf)!==row.after||gitBlob(lf)!==row.afterBlob)return source;
@@ -57,7 +63,38 @@ function beforeOfficialFixture(path,source){
  assert.equal(gitBlob(prior),row.beforeBlob,'exact official fixture predecessor blob: '+path);
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+export function beforeCurrentOfficialRuntimeFixture(path,source){
+ if(path!==officialRuntimePath)return source;
+ const before=beforeOfficialFixture(path,source,composedRuntimeFixture);
+ assert.notEqual(before,source,'fresh composed official runtime fixture: '+path);
+ return before;
+}
+
+let runtimeBeforeInputRetirement;
+function beforeOfficialRuntimeInputRetirement(path,source){
+ if(path!==officialRuntimePath||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ source=beforeOfficialFixture(path,source,composedRuntimeFixture);
+ const lf=source.replaceAll('\r\n','\n');
+ if(hash(lf)!==composedRuntimeFixture.before||gitBlob(lf)!==composedRuntimeFixture.beforeBlob)return source;
+ if(runtimeBeforeInputRetirement===undefined){
+  const packed=readFileSync(new URL('../fixtures/develop-input-retirement-source.json.gz',import.meta.url));
+  assert.equal(hash(packed),'ed86f17b8f643d4392828e582582859d7b86d0a143de94b1fac4cfab9a5bf912','exact input retirement archive');
+  const {files,suite}=JSON.parse(gunzipSync(packed));
+  const input=files[path],deck=suite.deck.files[path],earlier=officialFixtures[path];
+  assert.equal(input.after.sha256,composedRuntimeFixture.before);
+  assert.equal(input.after.gitBlob,composedRuntimeFixture.beforeBlob);
+  assert.equal(input.before.sha256,deck.after.sha256);
+  assert.equal(input.before.gitBlob,deck.after.gitBlob);
+  assert.equal(hash(input.before.source),deck.after.sha256);
+  assert.equal(gitBlob(input.before.source),deck.after.gitBlob);
+  assert.equal(hash(deck.before.source),earlier.before);
+  assert.equal(gitBlob(deck.before.source),earlier.beforeBlob);
+  runtimeBeforeInputRetirement=deck.before.source;
+ }
+ return source.includes('\r\n')?runtimeBeforeInputRetirement.replaceAll('\n','\r\n'):runtimeBeforeInputRetirement;
+}
 export function beforeStsFadeCi(path,source){
+ source=beforeOfficialRuntimeInputRetirement(path,source);
  source=beforeOfficialFixture(path,source);
  source=fromCloseout(path,source);
  const row=Object.hasOwn(files,path)?files[path]:null;

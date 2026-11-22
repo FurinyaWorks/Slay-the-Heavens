@@ -2,7 +2,7 @@
 local Combat = require("abyss_combat")
 local Theme = require("abyss_theme")
 local RewardOwner = require("abyss_battle_reward_owner")
-local Controller = require("abyss_controller")
+local Pointer = require('abyss_pointer_input')
 local M = {}
 local L = Theme.layout
 local function needsTarget(state, instance)
@@ -14,17 +14,13 @@ end
 function M.install(owner, ownership, host, dependencies)
     local D = L.cardDrag
     local function listen(control, fn, input)
-        if host.controller and not input then
-            Controller.bind(host.controller,control,control.parent.name=="statusInfo" and "battleInfo" or "battle",fn,
-                function()return owner.active and not owner.busy end)
-        end
         control:AddCursorEventListener(host.clickEvent,function(event)
-            if Controller.pointerBlocked(host.controller)then return false end
+            if Pointer.blocked(host.platform)then return false end
             if dependencies.swallowed(event) then return end
             if input and ownership.pointerObserved then
                 local released = input.released
                 -- Never borrow a foreign or missing touch ID, nor fall back to
-                -- click-only after this controller has observed pointer input.
+                -- click-only after observing pointer input.
                 if not released or released.touch ~= (event and event.touchId) then return end
                 input.released = nil -- a valid matching click can be consumed only once
                 if not dependencies.cardReady(released) then return end
@@ -68,19 +64,8 @@ function M.install(owner, ownership, host, dependencies)
         end
         if name == "playArea" then control = control:GetChild("hit") end
         ownership.actionInputs[#ownership.actionInputs + 1] = input
-        Controller.bind(host.controller,control,name=="playArea" and "aim" or "battle",function()
-            owner.suppressClick=false;return fn()
-        end,function()
-            if not dependencies.controllerReady()then return false end
-            if name~="playArea"then return true end
-            if owner.potionAim or not owner.selected or owner.run.phase~="combat"then return false end
-            for _,card in ipairs(owner.run.combat.hand)do
-                if card.uid==owner.selected then return not needsTarget(owner.run.combat,card)end
-            end
-            return false
-        end,name=="endTurn" and 90 or 50)
         control:AddCursorEventListener(host.clickEvent, function(event)
-            if Controller.pointerBlocked(host.controller)then return false end
+            if Pointer.blocked(host.platform)then return false end
             if dismissPowerTip() or dependencies.swallowed(event) then return end
             if name == "playArea" and ownership.fieldPointerObserved or name ~= "playArea" and ownership.actionPointerObserved then
                 local released = input.released

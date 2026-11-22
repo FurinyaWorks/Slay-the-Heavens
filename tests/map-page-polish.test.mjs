@@ -8,7 +8,7 @@ const root=()=>({children:gameLayout().controls});
 test('shared menu entry matches the canvas round copper button while keeping four full native hit states',()=>{
   const menu=find(find(root(),'exitEntry'),'open'),hit=find(menu,'hit');
   assert.deepEqual(menu.size,[48,48]);
-  assert.deepEqual(hit.size,[48,48]);assert.equal(hit.focusable,true);
+  assert.deepEqual(hit.size,[48,48]);assert.equal(hit.focusable,undefined);
   for(const state of ['normal','hover','pressed','disabled']){
     const variant=find(hit,state),border=find(variant,'border'),plate=find(variant,'plate');
     assert.equal(border.image,theme.image.disc);assert.deepEqual(border.size,[36,36]);
@@ -47,7 +47,7 @@ test('map header and necessary return controls follow the canvas hierarchy rathe
     }
     assert.equal(find(action,'backIcon').image,theme.icon.back);
     assert.deepEqual(find(action,'hit').size,action.size);
-    assert.equal(find(action,'hit').focusable,true);
+    assert.equal(find(action,'hit').focusable,undefined);
     assert.equal(action.visible,false,'return is conditional, not a permanent map adornment');
   }
 });

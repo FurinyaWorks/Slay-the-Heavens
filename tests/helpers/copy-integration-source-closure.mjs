@@ -276,11 +276,33 @@ const mapRoomEntryFiles=Object.freeze({
  'tests/helpers/round3-catalog-source-inverse.mjs':'aa305d8d0185ffec57a7ab85065e9767bb607b2c973b23e035413168def86a03',
  'tests/fixtures/develop-map-room-entry-source.json.gz':'bff89df36b2fbbf1bec727dae075c632dba48d50c6c8c75b8e3f271d7600c160',
 });
+const deckPagesFiles=Object.freeze({
+ ...mapRoomEntryFiles,
+ 'tests/helpers/develop-release-backflow-source.mjs':'6907c5660f7585d9a58b122ff605bc76f69267af0ca4580cfeadbb133a02e50b',
+ 'tests/fixtures/develop-deck-pages-source.json.gz':'d3a6b845870da64358c3ca36307062c02cc39d2e070e21eb875f9e2e42d02036',
+});
+const inputRetirementFiles=Object.freeze({
+ ...deckPagesFiles,
+ 'tests/helpers/develop-release-backflow-source.mjs':'5926187fd89d24b3e9ec0e459cedba9cc15bbeaf7bae0f25a3d9b2d0de6bcbe1',
+ 'tests/helpers/input-retirement-source.mjs':'faeb991be95da53e5b61400b42f234df269b3ed8c32e00fa5d3d5ff2f7d010b1',
+ 'tests/helpers/character-preparation-source.mjs':'f4758613abd573df8543411e535a5644f952352f5ce5e67650c89ba2059cc771',
+ 'tests/helpers/rebased-release-source.mjs':'832e571d4bebb08ba405b88761c2d8c3150a7287aaf7bef0926a38d7dd0b5108',
+ 'tests/helpers/native-host-replay-source.mjs':'9a9adcd1ffd1f89db073f735335ccbb51d4112bf8a4ff83de9bf2338f81b19b7',
+ 'tests/helpers/native-host-replay-source.json.gz':'f6e9062262769766edcca6a82898acec6b66a0e7f3b30d26655c2b45eb511da5',
+ 'tests/helpers/native-fixture-replay-source.mjs':'56f0556782f85b0943a2676e4849f86c099872384be964bf456b9c84d68f3df0',
+ 'tests/helpers/native-fixture-replay-source.json.gz':'47bd373dbd725d8a5fec37b881d484e891b9788c696b6f5c22baefbacacdbd2c',
+ 'tests/fixtures/develop-input-retirement-source.json.gz':'ed86f17b8f643d4392828e582582859d7b86d0a143de94b1fac4cfab9a5bf912',
+ 'tests/fixtures/develop-combat-pile-opening-source.json.gz':'a9e96c6caa44e21e45493a63385bf315ba9eaaf9a30257533bc46ccf9e51f9e6',
+ 'tests/helpers/ending-terminal-source.mjs':'d97a3b655ac591e8b2a95dd4e8e856ce3b472ec5d5f6c34337d63e4899d4f6a6',
+ 'tests/helpers/character-preparation-source.json.gz':'a3d61ed1e47036e5288cc4bc673388065ee0ace71497cba74da5b669a0a16790',
+ 'tests/fixtures/architecture-admission-before.json.gz':'93c84b252594eb1362c2bdb5a46cf5c82b7c05129df6d0695dd9e7fd79f2ca42',
+ 'tests/helpers/sts-feedback-ci.json.gz':'c91fadf0cda8b9b3d8fbe562854aa6c59ae007c13f1b978c6c905448eaf06f59',
+});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
- for(const [path,sha]of Object.entries(mapRoomEntryFiles)){
+ for(const [path,sha]of Object.entries(inputRetirementFiles)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});

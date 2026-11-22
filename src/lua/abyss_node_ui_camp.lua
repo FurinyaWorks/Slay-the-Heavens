@@ -1,6 +1,6 @@
 -- Campfire selection uses the same native grid geometry as the deck browser.
 local Theme = require('abyss_theme')
-local Controller = require('abyss_controller')
+local Pointer = require('abyss_pointer_input')
 local CardDisplay = require('abyss_card_display')
 local copy = require('abyss_copy').copy
 local L = Theme.layout.nativeNode.forge
@@ -63,7 +63,6 @@ function M.new(ctx)
     end
 
     local function forget(box, binding)
-        Controller.unbind(ctx.options.controller, binding.hit, box.alive == false)
         if binding.art then CardDisplay.clearNativeArt(box) end
         ctx.skinFaces[box], bindings[box] = nil, nil
     end
@@ -166,11 +165,10 @@ function M.new(ctx)
             local limit = Theme.layout.cardDrag.threshold
             local moved = b.x and x and (x - b.x)^2 + (y - b.y)^2 >= limit^2
             b.press, b.x, b.y = nil, nil, nil
-            if b.observed and not samePress or moved or Controller.pointerDragged(event, limit)
-                or Controller.pointerBlocked(ctx.options.controller) then return false end
+            if b.observed and not samePress or moved or Pointer.dragged(event, limit)
+                or Pointer.blocked(ctx.options) then return false end
             return pick()
         end)
-        Controller.bind(ctx.options.controller, hit, 'node', pick, enabled, 10)
         return b
     end
 

@@ -4,7 +4,6 @@ local Actors = require("abyss_actor")
 local Run = require("abyss_run")
 local Theme = require("abyss_theme")
 local Events = require("abyss_events")
-local Controller = require("abyss_controller")
 local RewardOwner = require("abyss_battle_reward_owner")
 local M = {}
 local L = Theme.layout
@@ -252,9 +251,7 @@ function M.install(owner, _ownership, host, dependencies)
             slot=binding.slot,id=binding.id,actors={},living={}}
         for i, actor in ipairs(battle.enemies) do aim.actors[i],aim.living[i]=actor,Actors.isActive(actor) end
         owner.potionAim = aim
-        dependencies.notice(item.name .. (Controller.isController(host.platform.controller)
-            and " · 摇杆选择敌人 · 确认使用 · 返回取消"
-            or " · 对一名敌人：点击敌人使用；再点药水或空白取消；点说明查看效果。"))
+        dependencies.notice(item.name .. " · 对一名敌人：点击敌人使用；再点药水或空白取消；点说明查看效果。")
         refresh()
         return true
     end

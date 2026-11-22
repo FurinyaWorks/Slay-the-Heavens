@@ -27,7 +27,7 @@ export function nativeControls(theme = nativeTheme) {
       ? { colour: colour.slice(0, 7), opacity: parseInt(colour.slice(7), 16) / 255 }
       : { colour }),
   });
-  const hit = size => ({ name: 'hit', kind: 'cursorArea', size: [...size], focusable: true });
+  const hit = size => ({ name: 'hit', kind: 'cursorArea', size: [...size] });
   // `border` draws a frame behind the face, as on the approved primary/secondary result buttons.
   const button = (name, values, label = '', { inset, states = false, fontSize = theme.font.body,
     colour = theme.color.text, fill = theme.color.panelRaised, border } = {}) => {

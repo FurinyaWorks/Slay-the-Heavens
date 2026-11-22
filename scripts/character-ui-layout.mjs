@@ -20,7 +20,7 @@ export function experimentalCharacterControls(theme = nativeTheme) {
       ? [0, -size[1] / 2 + cb.labelBand / 2 + s.xs, size[0] - layout.buttonInset[0], cb.labelBand]
       : [0, 0, ...size.map((value, i) => value - layout.buttonInset[i])];
     return { name, kind: 'container', position: frame.slice(0, 2), size, children: [
-      { name: 'hit', kind: 'presetButton', size: [...size], focusable: true,
+      { name: 'hit', kind: 'presetButton', size: [...size],
         states: Object.fromEntries(Object.keys(variants).map(state => [state, state])),
         children: Object.entries(variants).map(([state, [fill, ink, border]]) => ({
           name: state, kind: 'container', size: [...size],

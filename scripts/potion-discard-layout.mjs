@@ -18,7 +18,7 @@ export function potionDiscardControls(theme = nativeTheme) {
     const size=frame.slice(2),variants={...tiers[tier],pressed:[c.buttonPressedFill,c.buttonPressedText,c.goldBright],
       disabled:[c.panelSunken,c.textDim,c.line]};
     return {name,kind:'container',position:frame.slice(0,2),size,children:[{
-      name:'hit',kind:'presetButton',size,focusable:true,
+      name:'hit',kind:'presetButton',size,
       states:Object.fromEntries(Object.keys(variants).map(state=>[state,state])),
       children:Object.entries(variants).map(([state,[fill,ink,border]])=>({name:state,kind:'container',size,
         scale:state==='pressed'?[l.exitMenu.pressedScale,l.exitMenu.pressedScale]:[1,1],children:[
