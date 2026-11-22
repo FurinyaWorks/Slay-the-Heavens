@@ -71,7 +71,7 @@ function beforeLoadingRecoveryCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=normalize(source);
  if(!['92da908833bf36c0c924b5752c582c78302cd794b53f01eedb49fbb5956d3f4c',
-  '9cba1f84217e1b5c619dc2eab8bb898c5f04ddfc3a9b416270beb64420730248'].includes(hash(lf)))return source;
+  'df389445dabfad2269f36d36404388fbaafd82eb4fed2067bacc64b426a3189b'].includes(hash(lf)))return source;
  const prior=lf.replace(/const loadingRecoveryFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
   .replace('Object.entries(loadingRecoveryFiles))','Object.entries(refinedReleaseFiles))');
  assert.equal(hash(prior),'42a2fae24acaca0ff0214e5e0e592b2ff4cfd7f1e506578ba36faf327d17ae87','exact loading recovery helper copy predecessor');

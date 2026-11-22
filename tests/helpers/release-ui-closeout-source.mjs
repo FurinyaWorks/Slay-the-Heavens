@@ -8,7 +8,7 @@ const hash=(source,algorithm='sha256')=>createHash(algorithm).update(source).dig
 const blob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
 const normalize=source=>source.replaceAll('\r\n','\n');
 const bytes=readFileSync(new URL('../fixtures/release-ui-closeout-source.json.gz',import.meta.url));
-assert.equal(hash(bytes),'fdc9d7f2fb20acfce5ac2f8973c6f48b877c48b8e0d8c05ec8e376433640727f','exact Release UI closeout archive');
+assert.equal(hash(bytes),'3b39bd81f02e36b66798671c198a13597b4bcfce6e7ffe9a1bd81b9dc869484c','exact Release UI closeout archive');
 const {base,files}=JSON.parse(gunzipSync(bytes));
 assert.equal(base,'1de7634d840c5db93ea29604ba6593007fff23e7');
 function matches(source,binding){

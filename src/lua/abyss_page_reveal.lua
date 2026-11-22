@@ -228,17 +228,7 @@ function M.new(cover,ready,onIntent,frames,motion)
         print('ABYSS_PAGE_REVEAL visible page='..tostring(intent.page)..' epoch='..self.epoch)
         return true
     end
-    function gate:finish(intent,roomPainted)
-        local ticket=self.painting
-        if not ticket then return false end
-        if ticket.epoch~=self.epoch then return false end
-        -- Entry may reset the previous room's picker/page during paint.
-        -- Verify the room identity before checking its new leases.
-        if roomPainted and ticket.roomEntry and sameOwner(ticket.intent,intent) and not intent.complete then
-            return finishMapRoom(self,intent,ticket)
-        end
-        if not same(ticket.intent,intent)then self:request(intent);return false end
-        if not ticket.fast or not ticket.changed then self.painting=nil;return false end
+    local function finishLocalPage(self,intent,ticket)
         -- Only the explicit post-paint caller can use readiness for new leases.
         local value,reason=readiness(ready,intent)
         if self.painting~=ticket or ticket.epoch~=self.epoch then return false end
@@ -254,14 +244,25 @@ function M.new(cover,ready,onIntent,frames,motion)
         print('ABYSS_PAGE_REVEAL updated page='..tostring(intent.page)..' epoch='..self.epoch)
         return true
     end
-    function gate:paint(raise)
-        local ticket=self.epoch
-        if not paintFrame()then return false end
-        local covered,failed=self:covered(),self.state=='failed'
-        if cover.visible~=covered then cover:SetVisible(covered)end
-        if self.epoch~=ticket then return false end
-        if covered and raise then cover:SetAsLastSibling()end
-        if self.epoch~=ticket then return false end
+    function gate:finish(intent,roomPainted)
+        local ticket=self.painting
+        if not ticket then return false end
+        if ticket.epoch~=self.epoch then return false end
+        -- Entry may reset the previous room's picker/page during paint.
+        -- Verify the room identity before checking its new leases.
+        if ticket.roomEntry then
+            if roomPainted and sameOwner(ticket.intent,intent) and not intent.complete then
+                return finishMapRoom(self,intent,ticket)
+            end
+            self.painting=nil
+            if not same(intent,self.intent) then self:request(intent,true) end
+            return false
+        end
+        if not same(ticket.intent,intent)then self:request(intent);return false end
+        if not ticket.fast or not ticket.changed then self.painting=nil;return false end
+        return finishLocalPage(self,intent,ticket)
+    end
+    local function paintRecovery(self,failed,ticket)
         local message=cover:GetChild('message')
         if self.epoch~=ticket then return false end
         if message then
@@ -273,6 +274,16 @@ function M.new(cover,ready,onIntent,frames,motion)
         local recovery=cover:GetChild('cancel')
         if self.epoch~=ticket then return false end
         if recovery and recovery.visible~=failed then recovery:SetVisible(failed)end
+    end
+    function gate:paint(raise)
+        local ticket=self.epoch
+        if not paintFrame()then return false end
+        local covered,failed=self:covered(),self.state=='failed'
+        if cover.visible~=covered then cover:SetVisible(covered)end
+        if self.epoch~=ticket then return false end
+        if covered and raise then cover:SetAsLastSibling()end
+        if self.epoch~=ticket then return false end
+        return paintRecovery(self,failed,ticket)
     end
     local function finishDeparture(dt)
         if not alpha(math.min(1,gate.alpha+(dt or 0)/motion.duration))then return false end
