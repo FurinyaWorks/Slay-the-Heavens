@@ -1,10 +1,10 @@
 # Fork 预检
 
-按风险选择是否使用 Fork 的 hosted 诊断，无需为提交主仓 PR 先运行 Fork。A/B 使用各自已有 runner，同一候选默认只在一处验证。
+开发候选先在 Fork 验证。按影响选择本地定向、A 的 hosted Fast 或 B 的 hosted Full。A/B 使用各自已有 runner，同一 HEAD/BASE 和模式的有效结果可复用。
 
 1. 读取目标分支准确 BASE，先用已有 `node scripts/test-affected.mjs --plan --base <BASE>` 查看影响。A 优先完整受影响 Quick；共享 CI、未知或零覆盖交给一个 Fork Full，B 优先、A 可互援。
-2. dispatch 前查看 A/B：相同 HEAD/BASE 已成功则复用；运行中则交接，不重复 dispatch。原生 rerun 成功同样有效，不必为获取预检资格再造一个提交。
-3. 原执行者按风险判断是否先在 Fork 验证。已有运行核对固定 Fork ID、准确 HEAD/BASE 和最新对应 attempt。候选成熟后把原提交推到主仓库，再创建或更新 PR。主仓 Quality/Licenses 独立执行正式检查，缺少 Fork 记录或跨仓读取故障不会触发重跑或阻断正式检查。
+2. dispatch 前查看 A/B 的运行。相同 HEAD/BASE、模式和覆盖已成功就复用，在途运行交接给现有负责人。核对固定 Fork ID、准确 HEAD/BASE 和对应 attempt，原生成功 rerun 也可复用。
+3. 涉及共享 CI、核心路径或影响未知时，使用适用的 Full 验证。覆盖明确的低风险切片可用定向验证，记录实际命令及结果。适用验证完成后按[任务执行](TASK_EXECUTION.md#fork-first-开发)同步精确候选。主仓 Quality/Licenses 独立执行正式检查。
 4. Fork HEAD 与 PR merge SHA、Merge Queue SHA 分别验收；Fork 成功不替代正式检查。发布冻结 Full 与日常 Release 验证分别见 [CI-FAST](CI-FAST.md)。
 
 ```sh
