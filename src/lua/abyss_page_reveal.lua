@@ -244,8 +244,7 @@ function M.new(cover,ready,onIntent,frames,motion)
         if self.painting~=ticket or ticket.epoch~=self.epoch then return false end
         self.painting=nil
         if reason or value~=true then
-            self:request(intent)
-            if reason then return reject(self,tostring(reason))end
+            if self:request(intent) and reason then return reject(self,tostring(reason))end
             return false
         end
         self.epoch=self.epoch+1;self.intent=intent;self.published=intent;self.armed=nil;self.error=nil
@@ -255,6 +254,7 @@ function M.new(cover,ready,onIntent,frames,motion)
         return true
     end
     function gate:paint(raise)
+        local ticket=self.epoch
         if not paintFrame()then return false end
         local covered,failed=self:covered(),self.state=='failed'
         if cover.visible~=covered then cover:SetVisible(covered)end
@@ -266,6 +266,7 @@ function M.new(cover,ready,onIntent,frames,motion)
             if message.text~=text then message.text=text end
         end
         local recovery=cover:GetChild('cancel')
+        if self.epoch~=ticket then return false end
         if recovery and recovery.visible~=failed then recovery:SetVisible(failed)end
     end
     local function finishDeparture(dt)

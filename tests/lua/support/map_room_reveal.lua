@@ -136,7 +136,7 @@ GameUI.new = make
 
 -- Native page motion keeps the black departure and arrival fades, while the
 -- actual room becomes eligible for fade-in on its first painted ready frame.
-local visible, readinessChecks, preparing = false, 0, false
+local visible, readinessChecks = false, 0
 local veil = {}
 local cover = {GetChild=function(_, name) return name=='veil' and veil or nil end,
     SetVisible=function(_, value) visible=value end, SetAsLastSibling=function() end}
@@ -145,7 +145,7 @@ local mapIntent = {page='mapPanel',mode='map',phase='map',run=run,act=1}
 local shopIntent = {page='nodePanel',mode='node',phase='node',run=run,act=1,nodeId='merchant',nodeType='shop'}
 local gate = Reveal.new(cover,function(intent)
     if intent==shopIntent then readinessChecks=readinessChecks+1 end
-    return not preparing
+    return true
 end,nil,nil,{duration=.25,color=function(_,_,_,a) return a end})
 assert(not gate:step(mapIntent,.25) and gate:step(mapIntent,.25) and gate:step(mapIntent,.25))
 assert(not gate:covered() and not visible)
