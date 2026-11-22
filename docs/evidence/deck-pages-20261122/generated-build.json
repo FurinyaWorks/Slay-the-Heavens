@@ -1,0 +1,49 @@
+{
+  "sourceCommit": "320da829651613feeb465c26173efdb5e17409e1",
+  "sourceTree": "5f4363bbe10c6cd072aebaddbd7b26b7a1081fea",
+  "profile": "official-assets-battle-v3",
+  "nativePageLifecycle": true,
+  "artFlags": {
+    "cards": false,
+    "menuBackground": false,
+    "selectionAvatar": true,
+    "battlePortrait": true,
+    "monsters": true
+  },
+  "artifacts": {
+    "build/formal/battle-ui.json": {
+      "sha256": "356b0b207322446fb4087420e62e490ca1496cfbe73a0942cf2014dd54d6f31d",
+      "bytes": 3786977
+    },
+    "build/formal/game-ui.json": {
+      "sha256": "d167b82ff5f1d8929350c12da78962ea0a3a9db60d350752e33862ef91c5f967",
+      "bytes": 18811941
+    },
+    "build/formal/game-ui-templates.json": {
+      "sha256": "7d9e2d4f0b9f0afbce5dcbf8f2b686df6813530ffc2d935e1370b316f656cdf7",
+      "bytes": 775504
+    },
+    "build/formal/abyss_art_features.lua": {
+      "sha256": "33b9b0fc7ae83eed3b77660cf055c01d3881f81e1c9cacb0f140270fcdd761b9",
+      "bytes": 199
+    },
+    "build/formal/abyss_deck_browser_binding.lua": {
+      "sha256": "297b9655a3e58537a7c1ca7da1591f443ea53e2bf5c2e8808f1b67aaa792adc8",
+      "bytes": 528
+    },
+    "build/formal/abyss_ui_profile.lua": {
+      "sha256": "18dca490638f500f0e97c6e1463310b4f2e88f59c1754de8faad49ac140d3e8a",
+      "bytes": 109
+    },
+    "build/lua/abyss_data.lua": {
+      "sha256": "478cd77900b73a0eae6b4966d8443d28180b6529e6e8655b1ef1d7d829d56f18",
+      "bytes": 212819
+    },
+    "build/lua/abyss_original_v4_data.lua": {
+      "sha256": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb",
+      "bytes": 577904
+    }
+  },
+  "gil": null,
+  "officialClient": "UNVERIFIED"
+}

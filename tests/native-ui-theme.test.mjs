@@ -24,7 +24,7 @@ function expectedResourceHints(theme, pairs) {
       const right=Math.max(icon[0]+icon[2]/2,value[0]+value[2]/2);
       const size=[Math.max(48,right-left),Math.max(48,value[3])];
       return {name,kind:'container',position:[(left+right)/2,value[1]],size,children:[
-        {name:'hit',kind:'cursorArea',size:[...size],focusable:true},
+        {name:'hit',kind:'cursorArea',size:[...size]},
       ]};
     }) };
 }
@@ -151,7 +151,7 @@ test('host preserves the approved battle and scrollable map while composing node
     assert.equal(find(action.children, 'label').text.content, '返回战利品');
     const hit = find(action.children, 'hit');
     assert.equal(hit.kind, 'cursorArea');
-    assert.equal(hit.focusable, true);
+    assert.equal(hit.focusable, undefined);
     assert.deepEqual(hit.size, action.size, 'touch region must match the compact action');
     const [width, height] = currentTheme.canvas.base, safe = currentTheme.canvas.safe;
     assert.ok(Math.abs(frame[0]) + frame[2] / 2 <= width / 2 - safe.x, 'return action horizontal safe area');

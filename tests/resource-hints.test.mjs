@@ -15,7 +15,7 @@ test('resource hint hit areas contain the displayed resources and avoid other to
    assert.ok(box.size[0]>=48&&box.size[1]>=48);
    assert.ok(Math.abs(box.position[0])+box.size[0]/2<=640);
    assert.ok(Math.abs(box.position[1])+box.size[1]/2<=360);
-   assert.equal(box.children[0].focusable,true);
+   assert.equal(box.children[0].focusable,undefined);
   }
   assert.ok(a.position[0]+a.size[0]/2<b.position[0]-b.size[0]/2,'health and gold targets overlap');
  }

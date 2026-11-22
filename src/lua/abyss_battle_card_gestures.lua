@@ -316,17 +316,7 @@ function M.install(owner, ownership, host, dependencies)
         if owner.gesture ~= g then return end
         finishCardRelease(g, event, ended)
     end
-    function owner.cancelControllerPointers(_)
-        local aim=owner.potionAim
-        if aim and aim.moving then ownership.releasedDragTouch=aim.touch end
-        dependencies.cancelCardInputs();dependencies.cancelActionInputs();dependencies.cancelPotionInputs()
-        for _,input in ipairs(ownership.enemyInputs)do input.held,input.released=nil,nil end
-    end
-    local function controllerReady()
-        return owner.active and not owner.busy and not owner.gesture and not owner.potionMenu and owner.run
-            and (owner.run.phase=="reward" or owner.run.phase=="combat" and owner.run.combat.phase=="player")
-    end
-    function owner.controllerBack(_)
+    function owner.cancelAim(_)
         if dependencies.closeInfo() then owner:render();return true end
         if owner.selected or owner.potionAim then
             local movingAim=owner.potionAim and owner.potionAim.moving and owner.potionAim
@@ -344,7 +334,7 @@ function M.install(owner, ownership, host, dependencies)
 
     return {
         point=point, retireInterruptedPress=retireInterruptedPress, down=down, swallowed=swallowed, move=move,
-        updateCarry=updateCarry, releaseCardTap=releaseCardTap, finishCardRelease=finishCardRelease, release=release, controllerReady=controllerReady
+        updateCarry=updateCarry, releaseCardTap=releaseCardTap, finishCardRelease=finishCardRelease, release=release
     }
 end
 return M

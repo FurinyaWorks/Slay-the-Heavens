@@ -1,7 +1,7 @@
 -- TASK-4.7 owned-relic art slots: a top-bar disc row plus a read-only detail
 -- overlay. Each entry is icon disc + Chinese name + status chip + effect text.
 local Theme=require('abyss_theme')
-local Controller=require('abyss_controller')
+local Pointer = require('abyss_pointer_input')
 local Hooks=require('abyss_relic_hooks')
 local Rewards=require('abyss_relic_rewards')
 local M={}
@@ -74,7 +74,7 @@ function M.barCells(total,count)
     return cells
 end
 local function perPage()return #Theme.layout.relicView.rows*#Theme.layout.relicView.columns end
-function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
+function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
     local self={root=root,bar=bar,visible=false,page=1}
     local official=Theme.presentationProfile=='official-assets-first'
     self.localPanel=official
@@ -232,7 +232,7 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
     end
     root.disableCursorEventPassthrough=true
     child('blocker'):AddCursorEventListener(clickEvent,function()
-        if not self.visible or Controller.pointerBlocked(platform.controller)then return false end
+        if not self.visible or Pointer.blocked(platform)then return false end
         if self.selectedIndex then onClose()end
         return true
     end)
@@ -241,10 +241,9 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
     for name,action in pairs(actions)do
         local hit=child(name):GetChild('hit')
         hit:AddCursorEventListener(clickEvent,function()
-            if Controller.pointerBlocked(platform.controller)then return false end
+            if not self.visible or Pointer.blocked(platform)then return false end
             return action()
         end)
-        Controller.bind(platform.controller,hit,'deck',action,function()return self.visible end)
     end
     local function openSlot(i)
         -- The overflow cell represents a collection, not the relic at its index.
@@ -256,7 +255,7 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
         local cursor=platform.cursorEvents
         if official and cursor and cursor.CursorEnter and cursor.CursorExit then
             hit:AddCursorEventListener(cursor.CursorEnter,function()
-                if not self.barInteractive or self.visible or Controller.pointerBlocked(platform.controller)then return false end
+                if not self.barInteractive or self.visible or Pointer.blocked(platform)then return false end
                 local slot=bar:GetChild('slot'..i)
                 if slot.visible==false or slot:GetChild('more').visible then return false end
                 self:resetBarHover();self.hoverIndex=i
@@ -279,10 +278,9 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot,barScope)
             end)
         end
         hit:AddCursorEventListener(clickEvent,function()
-            if Controller.pointerBlocked(platform.controller)then return false end
+            if Pointer.blocked(platform)then return false end
             return openSlot(i)
         end)
-        Controller.bind(platform.controller,hit,barScope,function()return openSlot(i)end)
     end
     return self
 end

@@ -1,3 +1,4 @@
+import {authenticateInputRetirement,beforeInputRetirementReader} from './input-retirement-source.mjs';
 import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
 import {beforeStsSelectionFade,beforeAuthenticatedStsSelectionFade} from './sts-selection-fade-source.mjs';
 import {authorizeRebasedDevelop,beforeRebasedCi,rebasedDevelopOwns} from './rebased-release-source.mjs';
@@ -118,7 +119,7 @@ function beforeAdmissionReceipt(path,source,read){
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
   source=authenticateDevelopBackflow(path,source,read);
-  const readBackflow=read;
+  const readBackflow=beforeInputRetirementReader(read);
   read=owner=>authenticateDevelopBackflow(owner,readBackflow(owner),readBackflow);
   const rebound=beforeRebasedCi(path,source);
   if(rebound!==source)authorizeRebasedDevelop([[path,source]],read);
@@ -170,6 +171,8 @@ const currentContinuationOwners = new Set([
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
+  source=authenticateInputRetirement(path,source,read);
+  read=beforeInputRetirementReader(read);
   if(developBackflowOwns(path)){
     assertDevelopBackflowCurrent(path,source);
     return beforeCharacterPreparationSource(path,source,read);

@@ -8,7 +8,7 @@ import { buildMapLayout } from '../scripts/map-ui-layout.mjs';
 import { runLua } from '../scripts/test-lua.mjs';
 import { assertDevelopBackflowCurrent, authenticateDevelopBackflow, beforeDevelopBackflow } from './helpers/develop-release-backflow-source.mjs';
 
-test('native ink circles preserve four states, official icons, full hits and legal controller choices after repaint', () => {
+test('native ink circles preserve four states, official icons, full hits and legal mouse and touch choices after repaint', () => {
   buildLuaData();
   buildUiTheme();
   buildMapLayout();
@@ -28,7 +28,7 @@ test('map rendering continues the frozen Develop source and rejects stale or cha
   assert.equal(authenticateDevelopBackflow(path, source, readOwner), previous);
   assert.equal(authenticateDevelopBackflow(path, source.replaceAll('\n', '\r\n'), readOwner), previous.replaceAll('\n', '\r\n'));
   assert.throws(() => assertDevelopBackflowCurrent(path, predecessor), /fresh current production owner/);
-  assert.throws(() => authenticateDevelopBackflow(path, source, () => predecessor), /changed during Develop backflow validation/);
+  assert.throws(() => authenticateDevelopBackflow(path, source, () => predecessor), /changed during Develop backflow validation|combined linked owner identity: src\/lua\/abyss_map_ui\.lua during input retirement validation/);
   const changed = source + '\n-- drift';
   assert.throws(() => assertDevelopBackflowCurrent(path, changed), /fresh current production owner/);
   assert.equal(beforeDevelopBackflow(path, changed), changed);

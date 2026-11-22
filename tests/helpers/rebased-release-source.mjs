@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
+import {authenticateInputRetirement,beforeInputRetirement} from './input-retirement-source.mjs';
 const hash=(s,algorithm='sha256')=>createHash(algorithm).update(s).digest('hex');
 const archive=readFileSync(new URL('./rebased-release-source.json.gz',import.meta.url));
 assert.equal(hash(archive),'9ae910d679bdc8386063c58043a43e496ee34b7c6f22fc1a27cbaeca7b27222d','exact reconciled source archive');
@@ -49,6 +50,7 @@ const nativeButtonRepair=Object.freeze({
  },
 });
 export function beforeNativeButtonRepair(path,source){
+ source=beforeInputRetirement(path,source);
  const row=Object.hasOwn(nativeButtonRepair,path)?nativeButtonRepair[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const current=source.replaceAll('\r\n','\n');
@@ -84,6 +86,7 @@ export function authorizeRebasedRelease(samples,read,sources=production){
   const {after}=sources[path],current=beforeNativeButtonRepair(path,source);
   if(!matches(current,after))continue;
   seen.add(path);
+  authenticateInputRetirement(path,source,read);
   const repaired=current!==source;
   const sameRevision=bytes=>{
    const before=beforeNativeButtonRepair(path,bytes);

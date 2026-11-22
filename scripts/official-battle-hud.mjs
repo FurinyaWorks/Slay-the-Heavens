@@ -43,12 +43,12 @@ export function officialRunChrome(tree,theme){
  if(potions)mountOfficialPotionEntry(potions,component,theme);
  const entry=child(stage,'potionEntry'),legacy=child(stage,'potionPanel');
  const popup=structuredClone(child(child(battle,'potionHelp'),'potionPopup'));
- Object.assign(popup,{name:legacy.name,isolateNavigation:true});
+ Object.assign(popup,{name:legacy.name});
  const roots=stage.children??stage.controls;roots.splice(roots.indexOf(legacy),1,popup);
  for(let i=1;i<=theme.layout.battlePotions.count;i++){
   const size=[hud.potionStep,44];
   entry.children.push({name:'slot'+i,kind:'container',size,position:[hud.potionX+(i-1)*hud.potionStep,hud.y],visible:false,
-   children:[{name:'hit',kind:'cursorArea',size,focusable:true}]});
+   children:[{name:'hit',kind:'cursorArea',size}]});
  }
  for(const name of ['mapPanel','nodePanel']){
   const page=child(stage,name);if(!page)continue;
@@ -107,7 +107,7 @@ export function officialBattleHud(root,theme){
  }
  bar.children.push({name:'battleRoute',kind:'container',position:[hud.route[0],hud.route[1]-hud.y],size:hud.route.slice(2),children:[
   text('label',[0,0],hud.route.slice(2),'地图',18,'#D6CBA5'),
-   {name:'hit',kind:'cursorArea',position:[0,-.5],size:hud.route.slice(2).map(value=>Math.max(44,value)),focusable:true},
+   {name:'hit',kind:'cursorArea',position:[0,-.5],size:hud.route.slice(2).map(value=>Math.max(44,value))},
  ]});
  for(const kind of ['draw','discard']){
   const pile=child(root,kind+'Icon'),draw=kind==='draw';

@@ -1,0 +1,32 @@
+[
+  {
+    "scene": "formal-detail",
+    "modeledDifferingPixels": 0,
+    "outOf": 921600,
+    "boundingBox": null
+  },
+  {
+    "scene": "formal-empty-filter",
+    "modeledDifferingPixels": 0,
+    "outOf": 921600,
+    "boundingBox": null
+  },
+  {
+    "scene": "formal-feedback",
+    "modeledDifferingPixels": 0,
+    "outOf": 921600,
+    "boundingBox": null
+  },
+  {
+    "scene": "formal-page1",
+    "modeledDifferingPixels": 0,
+    "outOf": 921600,
+    "boundingBox": null
+  },
+  {
+    "scene": "formal-page2",
+    "modeledDifferingPixels": 0,
+    "outOf": 921600,
+    "boundingBox": null
+  }
+]

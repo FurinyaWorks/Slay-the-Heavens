@@ -4,6 +4,7 @@ import {mkdtempSync,mkdirSync,readdirSync,rmSync,readFileSync,writeFileSync} fro
 import {resolve,join} from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {createRequire} from 'node:module';
+import {deckBrowserParts} from '../scripts/deck-ui-layout.mjs';
 import {buildUI} from '../scripts/build-ui.mjs';
 import {buildLuaData,luaString,toLua} from '../scripts/build-lua-data.mjs';
 
@@ -43,13 +44,24 @@ function runOfficial(t,body,marker,overrides={},official=true){
  if(official){
  const pileGrid=stage.children.find(c=>c.name==='deckPanel').children.find(c=>c.name==='pileGrid');
  const templates=JSON.parse(readFileSync(join(directory,'game-ui-templates.json'),'utf8'));
- const pile=templates.find(c=>c.name===pileGrid.itemTemplate);
+ assert.equal(pileGrid.kind,'container');
+ const pile=templates.find(c=>c.name==='AbyssBattlePileCard');
  assert.equal(pile.name,'AbyssBattlePileCard');
  const expected=structuredClone(face);
  Object.assign(expected,{name:'face',position:[0,0],scale:[1,1],rotation:0,visible:true});
  expected.children=expected.children.filter(c=>c.name!=='hit');
  for(const name of ['glow','nativePlayableRim','costHalo'])expected.children.find(c=>c.name===name).visible=false;
- assert.deepEqual(pile.children.find(c=>c.name==='face'),expected,'pile must reuse the final official hand face exactly');
+ const assembled=structuredClone(pile);
+ for(const {name,path} of deckBrowserParts){
+  const mount=path.reduce((parent,role)=>parent.children.find(child=>child.name===role),assembled);
+  assert.deepEqual(mount.children,[]);
+  const part=templates.find(t=>t.name===name);
+  assert.deepEqual(part.position,[0,0]);assert.deepEqual(part.size,mount.size);
+  mount.children=part.children;
+ }
+ const readOnly=structuredClone(expected);
+ readOnly.children.find(c=>c.name==='nativePlayableRim').children=[];
+ assert.deepEqual(assembled.children.find(c=>c.name==='face'),readOnly,'pile keeps authored geometry and every visible hand face layer');
  assert.deepEqual(pile.children.find(c=>c.name==='hit').size,[150,210]);
  const ordinary=structuredClone(templates.find(c=>c.name==='AbyssDeckCard').children.find(c=>c.name==='face'));
  ordinary.position=[0,0];
@@ -701,7 +713,7 @@ event(strike,'down',77);event(strike,'drag',77,0,50);event('dragLayer','up',77,0
 assert(u.carry and u.carry.aiming and not area.visible,'dragging into aim must retain desktop targeting')
 field('down',78,0,50);field('up',78,0,50);field('click',78,0,50)
 assert(u.carry and u.selected,'empty clicks must preserve established desktop aim')
-assert(u:controllerBack() and not u.selected and not u.carry,'explicit cancel must clear established aim')
+assert(u:cancelAim() and not u.selected and not u.carry,'explicit cancel must clear established aim')
 unchanged(b,before,'aim cancellation changed combat')
 tap(defend,75);tap('playArea',76);drain()
 assert(hit.sizeDeltaX==1200 and hit.sizeDeltaY==272,'restoring field confirmation must restore its original limits')
@@ -1022,7 +1034,7 @@ assert(hit.listeners.click({touchId=903})and not deck.visible,'fresh browser ret
 test('official 17-card shop permanent deck uses the approved dark five-column browser and returns to the same shop',t=>{
  runOfficial(t,`
 local F=H.F;local Map=require('abyss_map');local Nodes=require('abyss_nodes')
-local host,root=F.fixture();host.seed=42;assert(F.start(host))
+local host,root=F.fixture(nil,nil,nil,nil,nil,nil,nil,nil,F.deckBrowser());host.seed=42;assert(F.start(host))
 -- Controlled navigation to a real reachable shop, using its canonical node/stock.
 local shop
 while not shop do
@@ -1037,32 +1049,40 @@ for i=1,17 do host.run.deck[i]={uid=200+i,cardId=i%2==0 and 'defend' or 'bash',u
 host:refresh()
 local before,mapBefore=C.copy(host.run),C.copy(host.map)
 local panel=root:GetChild('deckPanel');local grid=panel:GetChild('pileGrid')
-assert(root:GetChild('deckEntry'):GetChild('open'):GetChild('hit').click());host:update(0)
-assert(grid.visible and grid.itemCount==17 and not panel:GetChild('grid').visible,
- '17-card shop permanent deck still uses the old six-column transparent browser')
-local spec
-local function find(entries)for _,entry in ipairs(entries)do
- if entry.name=='pileGrid'then spec=entry end;find(entry.children or {})
-end end
-find(F.Layout)
-assert(spec.grid.columns==5 and same(spec.grid.itemSize,{150,210}) and same(spec.grid.spacing,{27,27}))
-assert(grid.sizeDeltaX==918 and grid.sizeDeltaY==557 and same(spec.position,{0,-75.5}))
+local function settle()
+ for _=1,40 do host:update(0);if not host.deckUI.pendingGrid then assert(not host.deckUI.prepareError);return end end
+ error('browser did not reach ready')
+end
+local function visible()
+ local first,count=nil,0
+ for _,cell in ipairs(grid:GetChildren())do
+  if cell.visible then
+   count=count+1
+   if cell.x==-354 and cell.y==155.5 then first=cell end
+  end
+ end
+ return count,first
+end
+assert(root:GetChild('deckEntry'):GetChild('open'):GetChild('hit').click());settle()
+assert(grid.visible and visible()==10 and not panel:GetChild('grid').visible)
+assert(grid.kind=='container' and not grid.RefreshItems and grid.sizeDeltaX==918 and grid.sizeDeltaY==557)
 assert(panel:GetChild('pileVeil').visible and panel:GetChild('pileChrome').visible and not panel:GetChild('veil').visible)
 assert(not panel:GetChild('header').visible and not panel:GetChild('title').visible and not panel:GetChild('browseTitle').visible)
 assert(panel:GetChild('pileChrome'):GetChild('heading').text=='卡组 · 17 张')
 assert(panel:GetChild('pileTools').visible and panel:GetChild('pileReturn').visible and not panel:GetChild('close').visible)
-for _,name in ipairs({'All','Attack','Skill','Power','Status','Curse'})do assert(not panel:GetChild('filter'..name).visible)end
+for _,name in ipairs({'All','Attack','Skill','Power','Status','Curse'})do assert(panel:GetChild('filter'..name).visible)end
 assert(host.deckUI.pileKind==nil and host.deckUI.battle==nil and not host.deckUI.pileView,'visual reuse changed permanent data semantics')
 assert(root:GetChild('nodePanel').visible and not host.nodeUI.visible,'covered shop must retain its scene but reject transactions')
 assert(not host.nodeUI:press('shopView/card1') and not host.nodeUI:press('confirm'))
-grid.scrollProgress=.4
-local first=grid.items[0];local uid=host.deckUI.bindings[first].uid
-assert(first:GetChild('hit').click() and host.deckUI.cardDetail.instance.uid==uid)
-assert(panel:GetChild('pileReturn'):GetChild('hit').click());host:update(0)
-assert(grid.visible and grid.scrollProgress==.4 and not host.deckUI.detailPages and panel:GetChild('pileTools').visible)
+assert(panel:GetChild('next'):GetChild('hit').click());settle()
+local count,first=visible()
+assert(count==7 and host.deckUI.pageIndex==2)
+assert(first:GetChild('hit').click() and host.deckUI.cardDetail.instance.uid==211)
+assert(panel:GetChild('pileReturn'):GetChild('hit').click());settle()
+assert(grid.visible and host.deckUI.pageIndex==2 and visible()==7 and not host.deckUI.detailPages)
 assert(panel:GetChild('pileReturn'):GetChild('hit').click())
 assert(not host.deckUI.visible and host.mode=='node' and host.nodeUI.visible and host.run.nodeFlow.id==shop.id)
-assert(not grid.visible and grid.itemCount==0)
+assert(not grid.visible and visible()==0 and #grid:GetChildren()==10)
 unchanged(host.run,before,'shop deck inspection changed Run/stock/RNG')
 unchanged(host.map,mapBefore,'shop deck inspection changed the route')
 `, 'OFFICIAL_SHOP_PERMANENT_DECK_PASS');
@@ -1074,17 +1094,16 @@ local function find(entries)for _,entry in ipairs(entries)do
  if entry.name=='deckPanel'then panelSpec=entry end;find(entry.children or {})
 end end
 find(F.Layout)
-local panel,grid,deck;local controller=false
+local panel,grid,deck
 local function resetBrowser()
- panel=F.control(assert(panelSpec));grid=panel:GetChild('pileGrid')
+ panel=F.control(assert(panelSpec));grid=F.legacyPileGrid(panel)
  local ownedDeck
  ownedDeck=require('abyss_deck_ui').new(panel,F.Presentation,'click',{
-  imageSource='static',color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end,
-  controllerApi={isController=function()return controller end}},function()return ownedDeck:close()end)
+  imageSource='static',color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end},function()return ownedDeck:close()end)
  deck=ownedDeck
 end
 resetBrowser()
-local template=require('abyss_ui_templates').AbyssBattlePileCard
+local template=F.Templates.AbyssBattlePileCard
 for _,child in ipairs(template.children)do
  if child.name=='face' or child.name=='hit'then assert(same(child.position,{0,0}),'official template must centre the face and its hit')end
 end
@@ -1141,11 +1160,6 @@ for _,origin in ipairs({0,1})do
    assert(retired.alive==false and not deck.bindings[retired] and not oldHit.click())
    assert(deck.bindings[replacement].uid==206)
    grid.destroyOnRecycle=false
-   controller=true;deck:update()
-   assert(grid.itemCount==10 and panel:GetChild('next').visible,'C-mode must page two five-column rows')
-   assert(deck:controllerStep(1) and grid.itemCount==7 and deck.bindings[grid.items[0]].uid==211)
-   assert(deck:controllerStep(-1) and deck.bindings[grid.items[0]].uid==201)
-   controller=false;deck:update();assert(grid.itemCount==17,'pointer mode did not restore the entire list')
   end
  end
  local late=grid.refreshCallback;local old=grid.items[0]
@@ -1231,105 +1245,79 @@ Skin.apply=apply
 `, 'OFFICIAL_BROWSER_DATA_ISOLATION_PASS');
 });
 
-test('official pile faces reuse hand chrome across small rows, native recycling and C-mode pages',t=>{
+test('official pile faces keep hand chrome across bounded pages, sort and detail return',t=>{
  runOfficial(t,`
-local Theme=H.F.Theme
-local function instance(uid,id)return {uid=uid,cardId=id,upgraded=false}end
-local function checkDetailAndScroll(host,root,grid)
- local face=grid.items[0];local uid=host.deckUI.bindings[face].uid
- local hit=face:GetChild('hit')
- assert(hit.listeners.drag==nil and hit.listeners.endDrag==nil,'pile must retain native scroll ownership')
- grid.scrollProgress=.35
- assert(not hit.click({dragging=true}) and not host.deckUI.detailPages)
- assert(hit.click() and host.deckUI.cardDetail.instance.uid==uid)
- assert(root:GetChild('deckPanel'):GetChild('pileReturn'):GetChild('hit').click())
- host.deckUI:update()
- assert(not host.deckUI.detailPages and grid.visible and grid.scrollProgress==.35)
- assert(host.deckUI.bindings[grid.items[0]].uid==uid)
+local F=H.F
+local theme=F.Theme
+local host=H.setup()
+local panelSpec
+local function find(entries)
+ for _,entry in ipairs(entries)do
+  if entry.name=='deckPanel'then panelSpec=entry end
+  find(entry.children or {})
+ end
 end
-        local host=H.setup()
-        local spec,panelSpec
-        local function find(entries)
-            for _,entry in ipairs(entries)do
-                if entry.name=='pileGrid'then spec=entry end
-                if entry.name=='deckPanel'then panelSpec=entry end
-                find(entry.children or {})
-            end
-        end
-        find(H.F.Layout)
-        local panel=H.F.control(assert(panelSpec))
-        local root={GetChild=function(_,name)assert(name=='deckPanel');return panel end}
-        local grid=panel:GetChild('pileGrid')
-        local controller=false
-        local deck
-        deck=require('abyss_deck_ui').new(panel,H.F.Presentation,'click',{
-            imageSource='static',color=function(...)return {...}end,
-            controllerApi={isController=function()return controller end}},function()return deck:close()end)
-        host.deckUI=deck
-        for _,amount in ipairs({1,3,5,6,13})do
-            host.run.combat.discard={}
-            for i=1,amount do host.run.combat.discard[i]=instance(100+i,'defend')end
-            local before=C.copy(host.run)
-            assert(host.deckUI:openPile(host.run,'discard'));host.deckUI:update()
-            assert(grid.visible and grid.itemCount==amount and not panel:GetChild('grid').visible)
-            assert(panel:GetChild('pileVeil').visible and not panel:GetChild('header').visible)
-            assert(not panel:GetChild('title').visible and not panel:GetChild('browseTitle').visible)
-            assert(panel:GetChild('pileChrome').visible and panel:GetChild('pileChrome'):GetChild('heading').text:find('弃牌堆'))
-            assert(panel:GetChild('pileReturn').visible and not panel:GetChild('close').visible)
-            for _,name in ipairs({'All','Attack','Skill','Power','Status','Curse'})do
-                assert(not panel:GetChild('filter'..name).visible)
-            end
-            assert(not host.deckUI:setFilter('skill'),'hidden pile filters cannot alter the snapshot')
-            local columns=math.min(5,amount)
-            local width=columns*spec.grid.itemSize[1]+(columns-1)*spec.grid.spacing[1]
-                +spec.grid.padding[3]+spec.grid.padding[4]
-            assert(grid.sizeDeltaX==918 and same(spec.position,{0,-75.5}),'V25 keeps a fixed five-column list origin')
-            assert(grid.sizeDeltaY==557,'V25 scroll viewport remains fixed for every pile size')
-            local original={};for i,c in ipairs(host.deckUI.cards)do original[i]=c.uid end
-            assert(not host.deckUI:setSort('name'),'pile-only sort cannot enter permanent preference')
-            assert(host.deckUI:setPileSort('name'));assert(host.deckUI:setPileSort('cost'))
-            assert(host.deckUI:setPileSort('type'));assert(not host.deckUI:setPileSort('rarity'))
-            assert(host.deckUI:setPileSort('original'));if not host.deckUI.sortAscending then assert(host.deckUI:setPileSort('original'))end
-            for i,c in ipairs(host.deckUI.cards)do assert(c.uid==original[i],'default sort did not restore the displayed snapshot')end
-            host.deckUI:update()
-            local face=grid.items[0]:GetChild('face')
-            assert(not grid.items[0]:GetChild('uid').visible)
-            local shared=sharedFace(face)
-            assert(shared.front.visible~=false and shared.back.visible~=false and face:GetChild('stsReferenceCost'):GetChild('costMaterial').visible)
-            for _,name in ipairs({'nativePlayableRim','glow','costHalo'})do
-                assert(not face:GetChild(name).visible,'read-only piles cannot flash ready/cost halos')
-            end
-            sameColour(face:GetChild('name').fontColor,Theme.officialAssets.stsCardReference.rarity.common.ink,'shared title ink')
-            sameColour(face:GetChild('cost').fontColor,Theme.cardSkin.costText,'shared cost ink')
-            if amount==13 then
-                grid.destroyOnRecycle=true
-                local previous=grid.items[0]
-                grid:recycle(0,12);host.deckUI:update()
-                assert(previous.alive==false and not host.deckUI.bindings[previous])
-                assert(host.deckUI.bindings[grid.items[0]].uid==113,'recycled slot retains actual pile UID')
-                grid:recycle(0,0)
-                controller=true;deck:update()
-                assert(grid.itemCount==10,'official C-mode uses two five-column rows')
-                assert(deck:controllerStep(1) and grid.itemCount==3)
-                assert(deck.bindings[grid.items[0]].uid==111,'C-mode second page retains actual UID')
-                assert(deck:controllerStep(-1))
-                controller=false;deck:update()
-                assert(grid.itemCount==13,'pointer mode restores native scrolling for the full pile')
-            end
-            checkDetailAndScroll(host,root,grid)
-            assert(panel:GetChild('close'):GetChild('hit').click(),'pile close must consume the event')
-            assert(not grid.visible and grid.itemCount==0 and not panel:GetChild('pileVeil').visible)
-            assert(same(before,host.run),'official pile inspection changed state or RNG')
-        end
-        assert(host.deckUI:open(host.run));host.deckUI:update()
-        assert(not panel:GetChild('grid').visible and grid.visible and not panel:GetChild('filterAll').visible)
-        assert(not panel:GetChild('header').visible and not host.deckUI.pileView and not host.deckUI.pileKind)
-        assert(host.deckUI.sortMode=='original' and host.deckUI.sortAscending,
-            'pile sorting must not leak into permanent deck preferences')
-        assert(host.deckUI:setSort('name') and not host.deckUI:setPileSort('name'),
-            'shared name sorting must retain the permanent preference owner')
-        host.deckUI:close()
-
+find(F.Layout)
+local panel=F.control(assert(panelSpec))
+local grid=panel:GetChild('pileGrid')
+local deck
+deck=require('abyss_deck_ui').new(panel,F.Presentation,'click',{
+ imageSource='static',color=function(...)return {...}end,deckBrowser=F.deckBrowser()},function()return deck:close()end)
+local function settle()
+ for _=1,40 do deck:update(0);if not deck.pendingGrid then assert(not deck.prepareError,deck.prepareError);return end end
+ error('browser did not reach ready')
+end
+local function visible()
+ local first,count=nil,0
+ for _,cell in ipairs(grid:GetChildren())do
+  if cell.visible then
+   count=count+1
+   if cell.x==-354 and cell.y==155.5 then first=cell end
+  else assert(not cell:GetChild('hit').raycastTarget) end
+ end
+ return count,first
+end
+for _,amount in ipairs({1,3,5,6,13})do
+ host.run.combat.discard={}
+ for i=1,amount do host.run.combat.discard[i]={uid=100+i,cardId='defend',upgraded=false} end
+ local before=C.copy(host.run)
+ assert(deck:openPile(host.run,'discard'));settle()
+ assert(grid.visible and visible()==math.min(10,amount) and not panel:GetChild('grid').visible)
+ assert(panel:GetChild('pileVeil').visible and not panel:GetChild('header').visible)
+ assert(not panel:GetChild('title').visible and not panel:GetChild('browseTitle').visible)
+ assert(panel:GetChild('pileChrome').visible and panel:GetChild('pileChrome'):GetChild('heading').text:find('弃牌堆'))
+ assert(panel:GetChild('pileReturn').visible and not panel:GetChild('close').visible)
+ assert(not deck:setFilter('skill') and not deck:setSort('name'))
+ for _,sort in ipairs({'name','cost','type','original'})do assert(deck:setPileSort(sort));settle() end
+ assert(not deck:setPileSort('rarity') and deck.pageIndex==1 and #deck.cards==amount)
+ for i,card in ipairs(deck.cards)do assert(card.uid==100+i,'default sort lost the actual pile UID') end
+ local _,first=visible()
+ local face=first:GetChild('face')
+ local shared=sharedFace(face)
+ assert(shared.front.visible~=false and shared.back.visible~=false and face:GetChild('stsReferenceCost'):GetChild('costMaterial').visible)
+ for _,name in ipairs({'nativePlayableRim','glow','costHalo'})do assert(not face:GetChild(name).visible) end
+ sameColour(face:GetChild('name').fontColor,theme.officialAssets.stsCardReference.rarity.common.ink,'shared title ink')
+ sameColour(face:GetChild('cost').fontColor,theme.cardSkin.costText,'shared cost ink')
+ if amount==13 then
+  assert(deck:stepPage(1));settle()
+  assert(deck.pageIndex==2 and visible()==3 and not deck:stepPage(1))
+ end
+ local page=deck.pageIndex
+ local _,current=visible()
+ local hit=current:GetChild('hit')
+ assert(not hit.click({dragging=true}) and not deck.detailPages)
+ assert(hit.click() and deck.cardDetail.instance.uid==101+(page-1)*10)
+ assert(panel:GetChild('pileReturn'):GetChild('hit').click());settle()
+ assert(not deck.detailPages and grid.visible and deck.pageIndex==page)
+ assert(panel:GetChild('pileReturn'):GetChild('hit').click())
+ assert(not grid.visible and visible()==0 and not panel:GetChild('pileVeil').visible)
+ unchanged(host.run,before,'official pile inspection changed state or RNG')
+end
+assert(deck:open(host.run));settle()
+assert(not panel:GetChild('grid').visible and grid.visible and panel:GetChild('filterAll').visible)
+assert(not deck.pileView and not deck.pileKind and deck.sortMode=='original' and deck.sortAscending)
+assert(deck:setSort('name') and not deck:setPileSort('name'))
+assert(deck:close())
 `, 'OFFICIAL_PILE_FACE_PASS');
 });
 
@@ -1387,7 +1375,7 @@ event2('card1','enter',241);h2:update(.36)
 assert(u2.info and u2.info.transient)
 event2('card1','click',241)
 assert(not u2.info and u2.selected==uid2,'automatic hover swallowed the first click-only card selection')
-assert(u2:controllerBack());assert(not u2.selected)
+assert(u2:cancelAim());assert(not u2.selected)
 unchanged(b2,before2,'click-only hover selection/cancel changed combat resources')
 `, 'TRANSIENT_CARD_SIDE_HELP_PASS');
 });

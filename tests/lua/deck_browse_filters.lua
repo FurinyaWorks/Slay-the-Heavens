@@ -19,8 +19,7 @@ local function click(panel,name)
 end
 
 test('permanent card views filter and sort copies, retaining stable UIDs and run state',function()
-    local controller=false
-    local host,root=F.fixture(nil,nil,nil,nil,nil,nil,nil,{isController=function()return controller end})
+    local host,root=F.fixture()
     assert(F.start(host))
     host.run.deck={{uid=11,cardId='defend',upgraded=false},
         {uid=12,cardId='bash',upgraded=false},{uid=13,cardId='barricade',upgraded=false},
@@ -66,9 +65,6 @@ test('permanent card views filter and sort copies, retaining stable UIDs and run
     assert(host:openDeck());host:update(0)
     assert(ids(host.deckUI.cards)=='15,14,13,12,11','same-run reopen retains acquisition direction')
     assert(host.deckUI.typeFilter=='all' and host.deckUI.sortMode=='original' and not host.deckUI.sortAscending)
-    controller=true;host:update(0)
-    assert(panel:GetChild('pageHint').text=='摇杆导航 · 确认选择 · 返回关闭 · 1/1')
-    assert(not panel:GetChild('pageHint').visible,'single controller page keeps the original hidden hint')
     assert(host:closeDeck());assert(same(before,host.run))
 end)
 
@@ -152,8 +148,8 @@ test('combat pile filters preserve the existing hidden-order semantics and never
     host.deckUI:close();assert(same(before,host.run))
 end)
 
-test('character preview lists the starter deck by type without filters and never starts a run',function()
-    local host,root=F.fixture()
+test('character summary has no filters and the shared preview can sort every starter card without starting a run',function()
+    local host,root=F.fixture(nil,nil,nil,nil,nil,nil,nil,nil,F.deckBrowser())
     assert(host:start());assert(host:selectCharacter('traveler'))
     local detail=root:GetChild('characterPanel'):GetChild('details')
     local info=host.characterSelection.info
@@ -170,28 +166,34 @@ test('character preview lists the starter deck by type without filters and never
             'starter summary omitted '..card.name)
     end
     assert(detail:GetChild('deckOpen'):GetChild('hit').click())
-    local view=root:GetChild('characterPanel'):GetChild('deckView')
-    assert(view.visible and host.characterSelection.deckOpen and not host.run)
-    local last,listed=0,0
-    local counts={}
-    local i=1
-    while view:GetChild('deckCard'..i)do
-        local slot=view:GetChild('deckCard'..i)
+    local panel=root:GetChild('deckPanel')
+    local browser=host.deckUI
+    assert(browser:setSort('type'))
+    for _=1,50 do if not browser.pendingGrid then break end;host:update(0) end
+    assert(not browser.pendingGrid)
+    assert(panel.visible and browser.paged and host.characterSelection.deckOpen and not host.run)
+    local last,counts=0,{}
+    assert(#browser.cards==info.deckSize)
+    for _,instance in ipairs(browser.cards)do
+        local entry=assert(browser.catalog.cards[instance.cardId])
+        local order=rank[entry.type] or 9
+        assert(order>=last,'deck rows are not grouped by type');last=order
+        counts[instance.cardId]=(counts[instance.cardId] or 0)+1
+    end
+    for _,card in pairs(byName)do assert(counts[card.id]==card.count,'wrong starter count for '..card.name)end
+    local pool=panel:GetChild('pileGrid')
+    local painted=0
+    for _,slot in ipairs(pool:GetChildren())do
         if slot.visible then
             local face=slot:GetChild('face')
-            local text=face:GetChild('name').text
-            local card=assert(byName[text],'unexpected starter card '..text)
-            assert((rank[card.type] or 9)>=last,'deck rows are not grouped by type');last=rank[card.type] or 9
-            assert(face:GetChild('cost').text~='' and face:GetChild('label').text~='',
-                'starter card must show its cost and rules')
-            counts[text]=(counts[text] or 0)+1;listed=listed+1
+            assert(face:GetChild('name').text~='' and face:GetChild('cost').text~='' and face:GetChild('label').text~='',
+                'starter card must show its name, cost and rules')
+            painted=painted+1
         end
-        i=i+1
     end
-    assert(listed==info.deckSize and view:GetChild('overflow').text=='','every starter card is visible')
-    for name,card in pairs(byName)do assert(counts[name]==card.count,'wrong starter count for '..name)end
-    assert(view:GetChild('close'):GetChild('hit').click())
-    assert(not view.visible and not host.characterSelection.deckOpen and host.characterOpen)
+    assert(painted==math.min(10,info.deckSize))
+    assert(panel:GetChild('close'):GetChild('hit').click())
+    assert(not panel.visible and not host.characterSelection.deckOpen and host.characterOpen)
     assert(detail:GetChild('stats').text:find(tostring(info.maxHp),1,true))
     assert(detail:GetChild('gold').text:find(tostring(info.gold),1,true))
     assert(detail:GetChild('relic').text==info.relics[1].name and detail:GetChild('relicText').text~='')

@@ -76,7 +76,11 @@ function roundRunActions(host,theme){
  for(const [panel,actions] of Object.entries(panels))for(const [name,palette] of Object.entries(actions)){
   roundedPresetButton(required(required(required(host,panel),name),'hit'),theme,palette);
  }
- const grid=required(required(host,'deckPanel'),'pileGrid'),viewport=theme.layout.deckView.pileViewport;
+ const deck=required(host,'deckPanel');
+ for(const [i,filter] of ['All','Attack','Skill','Power','Status','Curse'].entries()){
+  required(deck,'filter'+filter).position=[209+i*59,282];
+ }
+ const grid=required(deck,'pileGrid'),viewport=theme.layout.deckView.pileViewport;
  grid.position=viewport.slice(0,2);grid.size=viewport.slice(2);
  const node=required(host,'nodePanel');
  for(const button of [required(node,'back'),required(node,'confirm'),required(required(node,'treasureView'),'take')]){

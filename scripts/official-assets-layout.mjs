@@ -294,7 +294,7 @@ export function applyOfficialAssets(trees,theme){
    // The installed Simulator cannot bind the normal child of a native preset.
    const preset=child(pileReturn,'hit'),art=child(preset,'normal');
    art.name='art';
-   pileReturn.children=[art,{name:'hit',kind:'cursorArea',size:[...preset.size],focusable:preset.focusable}];
+   pileReturn.children=[art,{name:'hit',kind:'cursorArea',size:[...preset.size]}];
   }
   const tools=child(deckPanel,'pileTools');
   if(tools)for(const control of children(tools)){

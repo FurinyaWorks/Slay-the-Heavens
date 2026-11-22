@@ -77,7 +77,38 @@ function M.referenceGeometry(box)
 end
 local referenceMaterials={frame='frame',frameRails='frame',frameShadow='frameShadow',frameHighlight='frameHighlight',
     plaqueOutline='frame',plaqueFace='plaque',well='portrait',joint0='frame',joint1='frame'}
-local function referenceState(box,root,templateKind)
+local function collectReferenceLeaves(node,list)
+    local children=node:GetChildren()
+    if #children==0 then list[#list+1]=node
+    else for _,child in ipairs(children)do collectReferenceLeaves(child,list)end end
+end
+local function discoverReferencePortraits(state,portraits)
+    for _,kind in ipairs({'attack','skill','power'})do
+        local group=portraits:GetChild(kind);state.groups[kind]=group
+        for _,part in ipairs(group:GetChildren())do
+            local key=referenceMaterials[part.name]or'frame'
+            if key=='portrait'then
+                state.wells[kind]={};collectReferenceLeaves(part,state.wells[kind])
+            else
+                state.materials[key]=state.materials[key]or{}
+                collectReferenceLeaves(part,state.materials[key])
+            end
+        end
+    end
+end
+local function discoverReferenceFrame(state,frame,parts)
+    local capacity=#Theme.officialAssets.stsCardReference.geometry.frameProfiles.power
+    state.materials.frame={}
+    for first=1,capacity,50 do
+        local index=math.floor((first-1)/50)
+        local batch=parts and parts['AbyssDeckBrowserFrame'..index] or frame:GetChild('batch'..index)
+        for i=first,math.min(capacity,first+49) do
+            local part=batch:GetChild('part'..i)
+            state.frameParts[i]=part;state.materials.frame[i]=part
+        end
+    end
+end
+local function referenceState(box,root,templateKind,parts)
     local state=referenceStates[box]
     if state then return state end
     state={root=root,groups={},materials={},wells={},banner={front={},fold={}},bodyMaterials={},frameParts={}}
@@ -85,36 +116,17 @@ local function referenceState(box,root,templateKind)
         -- Read-only browser faces start with the generated common Geo materials.
         state.rarity,state.bodyKind,state.wellKind='common','geo',templateKind
     end
-    -- One bounded discovery per face; type/rarity updates never walk the tree.
-    local function collect(node,list)
-        local children=node:GetChildren()
-        if #children==0 then list[#list+1]=node
-        else for _,child in ipairs(children)do collect(child,list)end end
-    end
-    local back=box:GetChild('stsReferenceBack')
-    local portraits=back:GetChild('portraits')
-    for _,kind in ipairs({'attack','skill','power'})do
-        local group=portraits:GetChild(kind);state.groups[kind]=group
-        for _,part in ipairs(group:GetChildren())do
-            local key=referenceMaterials[part.name]or'frame'
-            if key=='portrait'then
-                state.wells[kind]={};collect(part,state.wells[kind])
-            else state.materials[key]=state.materials[key]or{};collect(part,state.materials[key])end
-        end
-    end
-    local frame=root:GetChild('frame')
-    local capacity=#Theme.officialAssets.stsCardReference.geometry.frameProfiles.power
-    state.materials.frame={}
-    for i=1,capacity do
-        local part=frame:GetChild('batch'..math.floor((i-1)/50)):GetChild('part'..i)
-        state.frameParts[i]=part;state.materials.frame[i]=part
-    end
+    -- One discovery per face. Future types reuse the cached controls.
+    local back=parts and parts.AbyssDeckBrowserBack or box:GetChild('stsReferenceBack')
+    discoverReferencePortraits(state,back:GetChild('portraits'))
+    discoverReferenceFrame(state,root:GetChild('frame'),parts)
     local plaque=root:GetChild('plaqueFace');state.materials.plaque={plaque}
     local bodyKinds={bodyFit='outer',paperWell='body',topBevel='shade',leftBevel='shade',rightBevel='outer',bottomBevel='outer',innerLight='bevel',cornerBevel='bevel'}
     for _,part in ipairs(back:GetChild('body'):GetChildren())do
-        local key=bodyKinds[part.name];state.bodyMaterials[key]=state.bodyMaterials[key]or{};collect(part,state.bodyMaterials[key])
+        local key=bodyKinds[part.name];state.bodyMaterials[key]=state.bodyMaterials[key]or{};collectReferenceLeaves(part,state.bodyMaterials[key])
     end
-    for _,part in ipairs(root:GetChild('banner'):GetChildren())do collect(part,state.banner[part.name=='front'and'front'or'fold'])end
+    local banner=parts and parts.AbyssDeckBrowserBanner or root:GetChild('banner')
+    for _,part in ipairs(banner:GetChildren())do collectReferenceLeaves(part,state.banner[part.name=='front'and'front'or'fold'])end
     state.cost=box:GetChild('stsReferenceCost'):GetChild('costMaterial')
     referenceStates[box]=state;return state
 end
@@ -135,8 +147,8 @@ local function referencePortrait(state,definition,tint)
     for _,part in ipairs(state.wells[state.kind])do tint(part,colour)end
     state.wellKind=definition.type
 end
-local function referenceBanner(box,definition,tint,root,templateKind)
-    local state=referenceState(box,root,templateKind)
+local function referenceBanner(box,definition,tint,root,templateKind,browserParts)
+    local state=referenceState(box,root,templateKind,browserParts)
     local key=(definition.rarity=='basic'or definition.rarity=='curse')and'common'or definition.rarity or'common'
     if state.rarity==key then return state end
     local tokens=Theme.officialAssets.stsCardReference
@@ -317,8 +329,9 @@ local function costs(box,definition,look,accent,platform,tint,nativeSurface)
     if platform.color then box:GetChild('cost').fontColor=platform.color(numberTone.r,numberTone.g,numberTone.b,255)end
     local hasCost=definition.cost~=-2
     costVisibility(box,hasCost,nativeSurface)
-    activeHalos[box]=changed and hasCost
-    box:GetChild('costHalo'):SetVisible(changed and hasCost)
+    local halo=changed and hasCost and not look.staticCost
+    activeHalos[box]=halo
+    box:GetChild('costHalo'):SetVisible(halo)
     local direction=box:GetChild('costDirection');direction:SetVisible(changed and hasCost)
     direction.text=changed and (current<base and '↓' or '↑') or ''
     if platform.color then direction.fontColor=platform.color(tone.r,tone.g,tone.b,255)end
@@ -421,7 +434,7 @@ local function referenceInk(box,platform)
     box:GetChild('type').enableOutline=false
 end
 local function applyReference(box,definition,platform,look,accent,tint,reference)
-    local state=referenceBanner(box,definition,tint,reference,look.templateMaterials and look.templateKind)
+    local state=referenceBanner(box,definition,tint,reference,look.templateMaterials and look.templateKind,look.referenceParts)
     referenceKind(state,definition,look.templateKind,look.templateMaterials)
     referenceBody(state,definition,tint)
     referencePortrait(state,definition,tint)

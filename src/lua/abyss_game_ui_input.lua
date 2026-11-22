@@ -1,6 +1,6 @@
 local Run = require("abyss_run")
 local CharacterSelect = require("abyss_character_select")
-local Controller = require("abyss_controller")
+local Pointer = require('abyss_pointer_input')
 local Theme = require('abyss_theme')
 local V25View=require('abyss_v25_menu_view')
 local Navigation=require('abyss_game_ui_navigation')
@@ -44,9 +44,9 @@ local function sameMapReturn(self,token)
     return true
 end
 
-function M.dismissFromOutside(controller,self)
+function M.dismissFromOutside(platform,self)
     return function()
-            if Controller.pointerBlocked(controller) then return true end
+            if Pointer.blocked(platform) then return true end
             if self.settlementRequested or self.settlementBusy then return true end
             self:closeExit()
             return true
@@ -76,8 +76,8 @@ local function samePotionPointer(run,slot,held)
     return held and held.inventory==run.potions and held.id==run.potions[slot] and held.phase==run.phase
 end
 
-function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owner)
-    return function(box, kind, action, enabled, order, group, onFocus, potionSlot)
+function M.bindCommand(platform,self,canManagePotions,clickEvent,owner)
+    return function(box, kind, action, enabled, potionSlot)
             local hit = box:GetChild("hit")
             local held, released, observed
             local menuAction = menuKinds[kind]
@@ -160,13 +160,6 @@ function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owne
             end
             local function touch(event) return event and event.touchId end
             bindV25Hover(box,hit,cursor,available,kind=='routeClose')
-            if kind=='routeClose' and Theme.presentationProfile=='official-assets-first' and box:GetChild('v25Face') then
-                local previousFocus=onFocus
-                onFocus=function()
-                    V25View.pointer(box,'enter',available())
-                    if previousFocus then return previousFocus() end
-                end
-            end
             if cursor.CursorDown and cursor.CursorUp then
                 hit:AddCursorEventListener(cursor.CursorDown, function(event)
                     if held and not current(held) then held = nil end
@@ -196,15 +189,8 @@ function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owne
                     end) end
                 end
             end
-            Controller.bind(controller,hit,function()
-                if kind=='egg_close' then return 'easterEgg'end
-                if characterAction then return 'characters' end
-                if mapReturn then return self.routeOpen and 'exit' or 'map' end
-                if runMenuAction or kind=='routeClose' or kind=='cancel' or kind=='confirm' then return 'exit' end
-                return self.mode
-            end,action,available,order or (kind=='cancel' and 1 or kind=='open' and 200 or 100),group,onFocus)
             hit:AddCursorEventListener(clickEvent, function(event)
-                if Controller.pointerBlocked(controller)then return false end
+                if Pointer.blocked(platform)then return false end
                 if observed or cursor.CursorDown and cursor.CursorUp and touch(event) ~= nil then
                     local token = released
                     if not current(token) then
@@ -219,13 +205,9 @@ function M.bindCommand(platform,self,canManagePotions,controller,clickEvent,owne
         end
 end
 
-function M.installUtilities(self,child,clickEvent,controller,inCombat,exitPanel,runMenu)
+function M.installUtilities(self,child,clickEvent,platform,inCombat,exitPanel,runMenu)
     child("deckEntry"):GetChild("open"):GetChild("hit"):AddCursorEventListener(clickEvent, function() return self:openDeck() end)
     child("relicEntry"):GetChild("open"):GetChild("hit"):AddCursorEventListener(clickEvent, function() return self:openRelics() end)
-    Controller.bind(controller,child('relicEntry'):GetChild('open'):GetChild('hit'),function()return self.mode end,
-        function()return self:openRelics()end)
-    Controller.bind(controller,child('deckEntry'):GetChild('open'):GetChild('hit'),function()return self.mode end,
-        function()return self:openDeck()end)
     if not self.potionUI.localPanel then
         local potionHit=child('potionEntry'):GetChild('open'):GetChild('hit')
         local function openPotion()
@@ -233,13 +215,12 @@ function M.installUtilities(self,child,clickEvent,controller,inCombat,exitPanel,
             return self:openPotions()
         end
         potionHit:AddCursorEventListener(clickEvent,openPotion)
-        Controller.bind(controller,potionHit,function()return self.mode end,openPotion)
     end
     exitPanel.disableCursorEventPassthrough = true
     exitPanel:GetChild("blocker"):AddCursorEventListener(clickEvent, function() return true end)
     runMenu.disableCursorEventPassthrough = true
     -- 点击菜单外的空白继续游戏，并吞掉点击以避免穿透到战斗或地图。
-    local dismissFromOutside = M.dismissFromOutside(controller,self)
+    local dismissFromOutside = M.dismissFromOutside(platform,self)
     runMenu:GetChild('blocker'):AddCursorEventListener(clickEvent, function()
         if self.exitOpen and self.menuOpen and not self.routeOpen then return dismissFromOutside() end
         return true
@@ -252,7 +233,7 @@ function M.installMenu(self,child,clickEvent,resourceHint,bindCommand,start,sett
         local panel,mode=entry[1],entry[2]
         for _,kind in ipairs({'hp','gold'})do
             bindCommand(child(panel):GetChild('resourceHints'):GetChild(kind),'resource_'..kind,
-                function()return resourceHint(kind)end,function()return self.mode==mode end,20)
+                function()return resourceHint(kind)end,function()return self.mode==mode end)
         end
     end
     -- Source menu actions use the same pointer ownership as exit actions, and also
@@ -263,17 +244,17 @@ function M.installMenu(self,child,clickEvent,resourceHint,bindCommand,start,sett
         end
         return self:start()
     end)
-    bindCommand(child('menuPanel'):GetChild('continueRun'),'continueRun',function()return self:continueRun()end,nil,90)
+    bindCommand(child('menuPanel'):GetChild('continueRun'),'continueRun',function()return self:continueRun()end)
     local quit=child('menuPanel'):GetChild('titleQuit')
     if quit then
-        bindCommand(quit,'titleQuit',function()return self:openExit()end,nil,190)
+        bindCommand(quit,'titleQuit',function()return self:openExit()end)
     end
     if self.potionUI.localPanel then
         local entry=child('potionEntry')
         for i=1,Theme.layout.battlePotions.count do
             local box=entry:GetChild('slot'..i)
             bindCommand(box,'resource_potion',function()return self:openPotions(i)end,
-                function()return box.visible and self.run.phase~='combat' and self.run.potions[i]~=nil end,30+i,nil,nil,i)
+                function()return box.visible and self.run.phase~='combat' and self.run.potions[i]~=nil end,i)
         end
     end
     bindCommand(settlement, "settle", function() return self:settle() end)
@@ -330,29 +311,27 @@ function M.installRunMenu(self,bindCommand,runMenu,canViewRoute,child,owner)
     end)
 end
 
-function M.installCharacters(self,characterPanel,clickEvent,bindCommand,controller)
+function M.installCharacters(self,characterPanel,clickEvent,bindCommand)
     characterPanel.disableCursorEventPassthrough=true
     characterPanel:GetChild("blocker"):AddCursorEventListener(clickEvent,function()return true end)
-    bindCommand(characterPanel:GetChild("cancel"),"character_cancel",function() return self:closeCharacters() end,nil,90)
+    bindCommand(characterPanel:GetChild("cancel"),"character_cancel",function() return self:closeCharacters() end)
     bindCommand(characterPanel:GetChild('confirm'),'character_confirm',function()return self:confirmCharacter()end,
-        function()return self.characterSelection:canConfirm() and not self.characterSelection.deckOpen end,100)
+        function()return self.characterSelection:canConfirm() and not self.characterSelection.deckOpen end)
     local starterDeck=characterPanel:GetChild('details'):GetChild('deckOpen')
     if starterDeck then
         bindCommand(starterDeck,'character_deck',function()
             return self:openStarterDeck()
-        end,function()return self.characterSelection.info~=nil and not self.characterSelection.deckOpen end,95)
+        end,function()return self.characterSelection.info~=nil and not self.characterSelection.deckOpen end)
     end
     for i,id in ipairs(CharacterSelect.characters)do
         local box=characterPanel:GetChild(i==5 and 'traveler' or 'character'..i)
         bindCommand(box,'character_'..i,function()return self:selectCharacter(id)end,
-            function()return self.characterSelection:allowsCharacter(id)end,i,'characters',
-            function()if Controller.isController(controller)then return self:selectCharacter(id)end end)
+            function()return self.characterSelection:allowsCharacter(id)end)
     end
     for i,id in ipairs(CharacterSelect.elements)do
         bindCommand(characterPanel:GetChild('elements'):GetChild('element'..i),'character_element'..i,
             function()return self:selectElement(id)end,function()return self.characterSelection.character=='traveler'
-                and self.characterSelection:allowsElement(id)end,
-            10+i,'elements',function()if Controller.isController(controller)then return self:selectElement(id)end end)
+                and self.characterSelection:allowsElement(id)end)
     end
 end
 

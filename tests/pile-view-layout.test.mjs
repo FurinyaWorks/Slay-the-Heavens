@@ -14,7 +14,7 @@ test('pile view cursor areas cover their existing icons and counts within the sa
     assert.deepEqual(image.size, icon.size);
     const target = icon.children.find(c => c.name === 'hit');
     assert.equal(target.kind, 'cursorArea');
-    assert.equal(target.focusable, true);
+    assert.equal(target.focusable, undefined);
     const [x, y] = icon.position.map((value, axis) => value + target.position[axis]);
     const [tw, th] = target.size;
     assert.ok(tw >= theme.layout.topBar.height && th >= theme.layout.topBar.height, name);

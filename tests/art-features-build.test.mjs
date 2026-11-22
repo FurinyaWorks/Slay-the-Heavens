@@ -16,7 +16,7 @@ test('default official build emits no drawing hosts/templates or large optional 
  const dir=output(t);buildUI(dir);
  const layout=JSON.parse(readFileSync(join(dir,'game-ui.json'))),templates=JSON.parse(readFileSync(join(dir,'game-ui-templates.json')));
  assert.deepEqual(nodes(layout).filter(n=>['officialBackground','officialAvatar','officialFigure','artSamples','monsterArt'].includes(n.name)),[]);
- assert.deepEqual(templates.map(t=>t.name),['AbyssDeckCard','AbyssReadyCardGroup','AbyssMonsterActor','AbyssMonsterPower','AbyssForgeCard']);
+ assert.deepEqual(templates.map(t=>t.name),['AbyssDeckCard','AbyssReadyCardGroup','AbyssMonsterActor','AbyssMonsterPower','AbyssBattlePileCard','AbyssForgeCard']);
  for(const name of ['abyss_ready_card_assets','abyss_menu_background_asset','abyss_traveler_portrait_assets','abyss_monster_art_data'])assert(readFileSync(join(dir,name+'.lua')).length<256,name+' disabled stub');
  const module=readFileSync(join(dir,'abyss_art_features.lua'),'utf8');
  assert(module.includes('schemaVersion=2'),'five-category builds declare their incompatible schema explicitly');

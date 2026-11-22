@@ -39,7 +39,7 @@ export function applyV25MenuLayout(layout,theme){
  let quit=get(menu,'titleQuit');
  if(!quit){quit={name:'titleQuit',kind:'container',position:v25MenuRuntimeLayout.quit.slice(0,2),size:[292,44],children:[
   {name:'label',kind:'text',text:{content:'退出游戏',valign:'middle',autoSize:true}},
-  {name:'hit',kind:'cursorArea',size:[292,44],focusable:true},
+  {name:'hit',kind:'cursorArea',size:[292,44]},
  ]};menu.children.push(quit);}
  style(quit,theme);
  quit.position=theme.menuPresentation.quit.slice(0,2);

@@ -1,6 +1,6 @@
 -- Main's small effect/use/discard card. Inventory and effects remain in Run.
 local Theme=require('abyss_theme')
-local Controller=require('abyss_controller')
+local Pointer = require('abyss_pointer_input')
 local M={}
 local P,L=Theme.layout.potionPopup,Theme.layout
 local function wrap(text,width)
@@ -177,7 +177,6 @@ function M.new(root,owner,platform,clickEvent,actions)
                 and (not token or token.selection==owner.potionMenu and token.generation==popup.generation
                     and pointers[pointerKey(token.touch)]==token)
         end
-        Controller.bind(platform.controller,control,popup.localPanel and 'potions' or 'battlePotion',function()return act(name)end,function()return ready()end)
         local cursor=platform.cursorEvents or {}
         if cursor.CursorDown and cursor.CursorUp then
             control:AddCursorEventListener(cursor.CursorDown,function(event)
@@ -214,7 +213,7 @@ function M.new(root,owner,platform,clickEvent,actions)
             end
         end
         control:AddCursorEventListener(clickEvent,function(event)
-            if Controller.pointerBlocked(platform.controller)then resetPointers(false);held,released=nil,nil;return false end
+            if Pointer.blocked(platform)then resetPointers(false);held,released=nil,nil;return false end
             local token
             if observed or pointerSeen then
                 token=released

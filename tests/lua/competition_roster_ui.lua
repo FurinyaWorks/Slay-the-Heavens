@@ -1,41 +1,55 @@
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Select=require('abyss_character_select')
-local focus
-local api={events={Confirm='confirm',Cancel='cancel',Focus='focus'},directions={Left='left',Right='right'},
- modes={Specified='specified'},getFocus=function()return focus end,setFocus=function(c)focus=c end,isController=function()return true end}
 local canvas=F.control({children=F.Layout})
 local root=F.Viewport.apply(canvas,1280,720)
 local seeds=0
 local cursor={CursorDown='down',CursorUp='up',CursorExit='exit',CursorEndDrag='enddrag'}
 local ui=F.GameUI.new(root,F.Data,F.Presentation,'click',{campaign=true,campaignProfile='competition-two-act',
  imageSource='static',color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end,
- controllerApi=api,cursorEvents=cursor,newSeed=function()seeds=seeds+1;return 3 end})
+ cursorEvents=cursor,deckBrowser=F.deckBrowser(),newSeed=function()seeds=seeds+1;return 3 end})
 local function hit(name)return root:GetChild('characterPanel'):GetChild(name):GetChild('hit')end
 assert(ui:start()and not ui.run and not ui.map)
 local panel=root:GetChild('characterPanel')
 for i=1,4 do
  local control=hit('character'..i)
- assert(not panel:GetChild('character'..i).visible and not control.canControllerFocus)
- assert(not control.click()and not control.navigationListeners.confirm())
+ assert(not panel:GetChild('character'..i).visible and not control.click())
+ local finger={touchId=30+i}
+ control.listeners.down(finger);control.listeners.up(finger)
+ assert(not control.click(finger))
 end
--- Single-character release: no fake picker tile; the only role is preselected.
-assert(not panel:GetChild('character4').visible and not panel:GetChild('traveler').visible)
-assert(not hit('character4').canControllerFocus and not hit('traveler').canControllerFocus)
-assert(ui.characterSelection.info and ui.characterSelection.info.id=='ironclad')
+-- Default layout keeps the available Traveler target and hides the four unavailable tiles.
+assert(not panel:GetChild('character4').visible and panel:GetChild('traveler').visible)
+local traveler=hit('traveler')
+local selectGeo={touchId=40}
+traveler.listeners.down(selectGeo);traveler.listeners.up(selectGeo)
+assert(traveler.click(selectGeo) and ui.characterSelection.info.id=='ironclad')
 assert(not panel:GetChild('elements').visible)
 local deckOpen=panel:GetChild('details'):GetChild('deckOpen'):GetChild('hit')
-assert(deckOpen.click()and ui.characterSelection.deckOpen and panel:GetChild('deckView').visible)
-assert(panel:GetChild('deckView'):GetChild('deckCard10').visible and not panel:GetChild('deckView'):GetChild('deckCard11').visible)
--- 复用局内卡面：名字/费用/正文都由 CardDisplay 填好，不是空白卡框。
-for i=1,10 do local face=panel:GetChild('deckView'):GetChild('deckCard'..i):GetChild('face')
- assert(face:GetChild('name').text~='' and face:GetChild('cost').text~='' and face:GetChild('label').text~='','empty deck face '..i)end
+local deckPanel=root:GetChild('deckPanel')
+assert(deckOpen.click()and ui.characterSelection.deckOpen and deckPanel.visible)
+for _=1,60 do
+ if not ui.deckUI.pendingGrid then break end
+ ui:update(.016)
+end
+assert(not ui.deckUI.pendingGrid and not ui.deckUI.prepareError)
+-- The real shared browser fills the full starter deck and its live card text.
+local visibleCards=0
+for _,card in ipairs(deckPanel:GetChild('pileGrid'):GetChildren())do
+ if card.visible then
+  visibleCards=visibleCards+1
+  local face=card:GetChild('face')
+  assert(face:GetChild('name').text~='' and face:GetChild('cost').text~='' and face:GetChild('label').text~='',
+   'starter browser painted an empty face')
+ end
+end
+assert(visibleCards==10,'starter browser lost cards')
 assert(ui:closeCharacters()and not ui.characterSelection.deckOpen and ui.characterOpen)
 for _,id in ipairs({'hutao','arlecchino','furina','raiden'})do assert(not ui:selectCharacter(id))end
 assert(ui:selectCharacter('traveler')and ui.characterSelection.info.id=='ironclad')
 for i,id in ipairs(Select.elements)do
  local box=panel:GetChild('elements'):GetChild('element'..i)
  if i==1 then assert(not panel:GetChild('elements').visible)else
-  assert(not box.visible and not box:GetChild('hit').canControllerFocus)
+  assert(not box.visible)
   assert(not box:GetChild('hit').click()and not ui:selectElement(id))
  end
 end
@@ -48,7 +62,7 @@ ui.characterSelection.info=valid
 local confirm=hit('confirm')
 -- A touch started behind the read-only deck must not survive either return path.
 for i,close in ipairs({function()return ui:closeCharacters()end,
- function()return panel:GetChild('deckView'):GetChild('close'):GetChild('hit').click()end})do
+ function()return deckPanel:GetChild('close'):GetChild('hit').click()end})do
  confirm.listeners.down({touchId=20+i})
  assert(deckOpen.click()and ui.characterSelection.deckOpen)
  assert(not ui:confirmCharacter()and seeds==0 and not ui.run,'deck modal must reject direct confirmation')
@@ -62,8 +76,10 @@ confirm.listeners.down({touchId=2});ui:resize(1600,900)
 confirm.listeners.up({touchId=2});assert(not confirm.click({touchId=2})and seeds==0)
 assert(ui:closeCharacters()and ui.characterSelection.info==nil)
 assert(ui:start()and ui:selectCharacter('traveler'))
-assert(ui:confirmCharacter()and seeds==1 and not ui.run.characterProfile and ui.run.maxHp==80)
-assert(not ui:confirmCharacter()and seeds==1)
+local fresh={touchId=3}
+confirm.listeners.down(fresh);confirm.listeners.up(fresh)
+assert(confirm.click(fresh)and seeds==1 and not ui.run.characterProfile and ui.run.maxHp==80)
+assert(not confirm.click(fresh)and not ui:confirmCharacter()and seeds==1)
 -- Host configuration can carry a prepared identity even when the nominal
 -- selection is Geo. Refuse before sampling a seed, not by throwing from Run.
 local prepared=require('abyss_run_card_catalog').prepareSelected(F.Data,'silent')
@@ -90,4 +106,4 @@ local called,accepted,why=pcall(blocked.confirmCharacter,blocked)
 blocked.characterSelection.canConfirm=canConfirm
 assert(called and not accepted and why=='competition_character_unavailable'and samples==0 and not blocked.run,
  'configured-source denial sampled seed or escaped as a runtime error: '..tostring(samples)..'/'..tostring(accepted))
-print('COMPETITION_ROSTER_UI_PASS native controls/direct config/controller/stale confirm; native/natural NOT_RUN')
+print('COMPETITION_ROSTER_UI_PASS native controls/direct config/touch/stale confirm; native/natural NOT_RUN')

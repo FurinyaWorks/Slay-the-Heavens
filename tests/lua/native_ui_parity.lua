@@ -1,17 +1,22 @@
 local F = dofile('tests/lua/support/game_ui_fixture.lua')
-local focus, usingController = nil, true
-local api = {events={Confirm='confirm',Cancel='cancel'},directions={Left='left',Right='right'},modes={Specified='specified'},
-    getFocus=function()return focus end,setFocus=function(c)focus=c end,isController=function()return usingController end}
+local cursor={CursorDown='down',CursorUp='up',CursorDrag='drag'}
 local calls=0
-local ui,root=F.fixture(nil,function()calls=calls+1;return true end,nil,nil,false,nil,nil,api)
+local ui,root=F.fixture(nil,function()calls=calls+1;return true end,nil,cursor)
+local function pointer(id, y)
+    return {touchId=id,GetUIPos=function()return 640,y or 200 end}
+end
+local function tap(hit, id)
+    local event=pointer(id)
+    if hit.listeners.down then hit.listeners.down(event) end
+    if hit.listeners.up then hit.listeners.up(event) end
+    return hit.click(event)
+end
 local exit=root:GetChild('exitPanel')
 assert(ui:openExit())
 assert(exit.visible and not exit:GetChild('help') and not exit:GetChild('guide'))
 assert(not ui:start() and calls==0)
 assert(exit:GetChild('blocker').click() and ui.exitOpen)
-ui:syncController()
-assert(focus==exit:GetChild('cancel'):GetChild('hit'))
-assert(focus.navigationListeners.cancel())
+assert(tap(exit:GetChild('cancel'):GetChild('hit'),nil))
 assert(not ui.exitOpen and calls==0)
 assert(ui:start())
 if ui.characterOpen then
@@ -19,33 +24,31 @@ if ui.characterOpen then
     assert(not ui.run and ui:confirmCharacter())
     ui:update(1)
 end
-local function mapControl(name)
-    local panel=root:GetChild('mapPanel')
-    for _,group in pairs(panel.children)do if group.children[name]then return group.children[name]end end
+local panel=root:GetChild('mapPanel')
+for _, group in pairs(panel.children) do
+    assert(not group.children.previous and not group.children.next and not group.children.focus)
 end
-assert(mapControl('next').visible and mapControl('previous').visible)
-assert(mapControl('focus')==nil,'retired recenter must have no hidden hit area')
-usingController=false;ui:update(.01)
-assert(not mapControl('next').visible and not mapControl('previous').visible)
-assert(not mapControl('next'):GetChild('hit').visible and not mapControl('previous'):GetChild('hit').visible)
-local map, floor, node = assert(ui.map), ui.run.floor, ui.mapUI.map.currentNodeId
+local map, floor, node=assert(ui.map),ui.run.floor,ui.mapUI.map.currentNodeId
+local open=root:GetChild('exitEntry'):GetChild('open'):GetChild('hit')
+local resume=root:GetChild('runMenu'):GetChild('resume'):GetChild('hit')
 assert(ui.mapUI:scrollBy(200) and ui.mapUI.scroll>0)
-assert(root:GetChild('exitEntry'):GetChild('open'):GetChild('hit').click() and not ui.mapUI.visible)
-assert(root:GetChild('runMenu'):GetChild('resume'):GetChild('hit').click() and ui.mapUI.visible)
+assert(tap(open,nil) and not ui.mapUI.visible)
+assert(tap(resume,nil) and ui.mapUI.visible)
 ui:update(1)
-assert(ui.mapUI.scroll==0,'PC menu return must actually return to current position')
-assert(ui.map==map and ui.mapUI.map==map and ui.run.floor==floor and ui.mapUI.map.currentNodeId==node,
-    'PC menu return must not navigate to a room or advance the floor')
-usingController=true;ui:update(.01)
-assert(mapControl('next').visible)
-local nextHit=mapControl('next'):GetChild('hit')
-api.setFocus(nextHit);ui:syncController();assert(nextHit.navigationListeners.confirm())
-ui:update(1);assert(ui.mapUI.scroll>0)
-assert(root:GetChild('exitEntry'):GetChild('open'):GetChild('hit').click() and not ui.mapUI.visible)
-api.setFocus(root:GetChild('runMenu'):GetChild('resume'):GetChild('hit'));ui:syncController()
-assert(focus.navigationListeners.confirm());ui:update(1)
-assert(ui.mapUI.visible and ui.mapUI.scroll==0)
-assert(ui.map==map and ui.run.floor==floor and ui.mapUI.map.currentNodeId==node)
+assert(ui.mapUI.scroll==0,'mouse menu return must recenter the existing map')
+assert(ui.map==map and ui.mapUI.map==map and ui.run.floor==floor and ui.mapUI.map.currentNodeId==node)
+
+local drag=F.mapControl(panel,'dragArea')
+drag.listeners.down(pointer(7,400))
+drag.listeners.drag(pointer(7,250))
+assert(ui.mapUI.scroll==150)
+assert(tap(open,8) and not ui.mapUI.visible)
+assert(tap(resume,9) and ui.mapUI.visible)
+ui:update(1)
+drag.listeners.drag(pointer(7,100))
+drag.listeners.up(pointer(7,100))
+assert(ui.mapUI.scroll==0,'resuming must retire the old touch before recentering')
+assert(ui.map==map and ui.mapUI.map==map and ui.run.floor==floor and ui.mapUI.map.currentNodeId==node)
 assert(ui:openExit() and not ui.mapUI.navigationEnabled)
-assert(ui:closeExit() and ui.mapUI.navigationEnabled)
+assert(ui:closeExit() and ui.mapUI.navigationEnabled and calls==0)
 print('NATIVE_UI_PARITY_PASS')

@@ -40,7 +40,7 @@ export function relicViewControls(theme = nativeTheme) {
       hover: [c.panelRaised, c.goldBright, c.goldBright], pressed: [c.buttonPressedFill, c.text, c.goldBright],
       disabled: [c.panelSunken, c.textMuted, c.line] };
     return { name, kind: 'container', position: frame.slice(0, 2), size, children: [
-      { name: 'hit', kind: 'presetButton', size, focusable: true,
+      { name: 'hit', kind: 'presetButton', size,
         states: Object.fromEntries(Object.keys(variants).map(k => [k, k])),
         children: Object.entries(variants).map(([state, [fill, ink, border]]) => ({ name: state, kind: 'container', size, children: [
           plate('border', [0, 0, ...size], border), plate('plate', [0, 0, ...size.map(x => x - s.border * 2)], fill),
@@ -67,7 +67,7 @@ export function relicViewControls(theme = nativeTheme) {
     slot.children.find(part => part.name === 'icon').colour = theme.presentationProfile === 'official-assets-first' ? '#FFFFFF' : hud.ink;
     slot.children.push({ ...right(text('counter', [0, -10, 40, 36], '', f.small, '#FFFFFF')), visible: false });
     slot.children.push({ ...text('more', b.more, '', f.label, c.goldBright), visible: false });
-    slot.children.push({ name: 'hit', kind: 'cursorArea', size: [b.step, 44], focusable: true });
+    slot.children.push({ name: 'hit', kind: 'cursorArea', size: [b.step, 44] });
     return slot;
   })];
   const [rw, rh] = v.row, discX = -rw / 2 + s.m + v.disc / 2;
@@ -86,7 +86,7 @@ export function relicViewControls(theme = nativeTheme) {
   }));
   return [
     { name: 'relicBar', kind: 'container', size: [...theme.canvas.base], visible: false, children: bar },
-    { name: 'relicPanel', kind: 'container', size: [...theme.canvas.base], visible: false, isolateNavigation: true, children: [
+    { name: 'relicPanel', kind: 'container', size: [...theme.canvas.base], visible: false, children: [
       { ...plate('veil', [0, 0, ...theme.canvas.base], c.backdropVeil.slice(0, 7)),
         opacity: c.backdropVeil.length === 9 ? parseInt(c.backdropVeil.slice(7), 16) / 255 : 1 },
       { name: 'blocker', kind: 'cursorArea', size: [...theme.canvas.base], focusable: false },

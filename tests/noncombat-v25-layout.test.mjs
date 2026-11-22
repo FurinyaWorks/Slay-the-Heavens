@@ -114,6 +114,19 @@ test('selection uses static exact-alpha geometry and reuses the selected frame w
  assert.equal(parts(panel).filter(n=>n.name==='lumineSelectionBackground').length,1);
 });
 
+function restorePriorMenuNavigation(panel,focusPaths) {
+ const prior=structuredClone(panel);
+ function addAt(node,key,index) {
+  const entries=Object.entries(node);
+  entries.splice(index,0,[key,true]);
+  for (const name of Object.keys(node)) delete node[name];
+  Object.assign(node,Object.fromEntries(entries));
+ }
+ if (panel.name!=='menuPanel') addAt(prior,'isolateNavigation',5);
+ for (const path of focusPaths) addAt(path.reduce(child,prior),'focusable',3);
+ return prior;
+}
+
 test('official host uses direct inventory actions, read-only relic details and explicit run discard',async t=>{
  const {mkdtempSync,mkdirSync,readFileSync,rmSync}=await import('node:fs');
  const {join,resolve}=await import('node:path');
@@ -127,13 +140,21 @@ test('official host uses direct inventory actions, read-only relic details and e
  buildLuaData('data',join(directory,'abyss_data.lua'));
  buildUI(directory,undefined,{officialAssets:true,nativePageLifecycle:true});
  const stage=child(JSON.parse(readFileSync(join(directory,'game-ui.json'),'utf8')),'stage');
- for(const [name,sha] of [
-  ['menuPanel','9978170ae0f37c189e71a6dfbf6b5f24128230e576961e3be212e69804d70ab0'],
-  ['exitPanel','d60b5a107eab5c3bdb79a36c7359cb1be27c833a2e18a450a3b266856c7d98ce'],
-  ['runMenu','c3929906c03fea290fa77dff1428ef280b7441fe39299d56e80b7a28c65d2cd2'],
+ // Exact 74aa9a18 integrated layout, with only the old input fields
+ // reconstructed. That source already differed from #812's runMenu hash.
+ for(const [name,sha,focusPaths] of [
+  ['menuPanel','9978170ae0f37c189e71a6dfbf6b5f24128230e576961e3be212e69804d70ab0',
+   [['result','viewEasterEgg','hit'],...['start','continueRun','titleQuit','settle'].map(name=>[name,'hit'])]],
+  ['exitPanel','d60b5a107eab5c3bdb79a36c7359cb1be27c833a2e18a450a3b266856c7d98ce',
+   ['cancel','confirm'].map(name=>[name,'hit'])],
+  ['runMenu','a0c480ad85bfa3b3490d6ea6d3c6ae3561a700e60114ee0303810010d71a9b81',
+   ['resume','map','mainMenu','abandon','quit'].map(name=>[name,'hit'])],
  ]){
-  assert.equal(createHash('sha256').update(JSON.stringify(child(stage,name))).digest('hex'),sha,
-   'preserve the complete integrated pile and menu layout: '+name);
+  const panel=child(stage,name);
+  assert(all(panel).every(node=>node.focusable!==true&&node.isolateNavigation!==true),'retire authored navigation: '+name);
+  const prior=restorePriorMenuNavigation(panel,focusPaths);
+  assert.equal(createHash('sha256').update(JSON.stringify(prior)).digest('hex'),sha,
+   'preserve the complete integrated menu layout and remove only its navigation fields: '+name);
  }
  const script=`package.path=${luaString(directory.replaceAll('\\','/')+'/?.lua;src/lua/?.lua')}
 dofile('tests/lua/support/sts_ui_closeout.lua')`;

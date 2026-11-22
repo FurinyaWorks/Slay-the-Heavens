@@ -5,7 +5,7 @@ local Map = require("abyss_map")
 local Theme = require("abyss_theme")
 local Layout = require("abyss_map_layout")
 local Acts = require("abyss_acts")
-local Controller = require("abyss_controller")
+local Pointer = require('abyss_pointer_input')
 local M = {}
 -- MapRoomNode.render sizes: glyph 128*scale, MAP_CIRCLE_5 192*(scale*.95+.2).
 function M.drawScale(fx)
@@ -114,11 +114,17 @@ local function chapterFor(map)
     end
     return chapter
 end
+local contextKeys = {"act", "version", "firstFloor", "terminalFloor", "sourceSignature", "seed", "runSeed", "mapSeed"}
 local function sameContext(a, b)
-    for _, key in ipairs({"act", "version", "firstFloor", "terminalFloor", "sourceSignature", "seed", "runSeed", "mapSeed"}) do
+    for _, key in ipairs(contextKeys) do
         if a[key] ~= b[key] then return false end
     end
     return true
+end
+local function entryContext(map)
+    local context = {map=map,floor=map.floor,currentNodeId=map.currentNodeId,path=map.path,pathLength=#map.path}
+    for _,key in ipairs(contextKeys) do context[key]=map[key] end
+    return context
 end
 local function maxScroll(chapter)
     if chapter.terminal == 'boss_treasure' then return Layout.bossTreasureMaxScroll end
@@ -198,6 +204,7 @@ function M.new(root, map, onChoose, clickEvent, options)
         for _,node in ipairs(v.nodes)do node.available=enabled[node.id]==true end
         return v
     end
+    local function inputCovered()return options.inputCovered and options.inputCovered()end
     local colour = options.color or Color
     local imageSource = options.imageSource or (Enum and Enum.ImageSource.StaticReference)
     -- Platform Color has static methods and can be a callable table/userdata.
@@ -218,7 +225,6 @@ function M.new(root, map, onChoose, clickEvent, options)
         embedded = embedded, scale = 1, chapter = initialChapter, observedMap = map, observedContext = view,
         observedNodeId = view and view.currentNodeId, observedFloor = view and view.floor }
     local drag, released, pointerObserved, scrollAnimation
-    local buttonHover, buttonPress
     local function cancelSelection()
         if drag then drag.selection = nil end
         released = nil
@@ -227,7 +233,7 @@ function M.new(root, map, onChoose, clickEvent, options)
         if drag then self.dragged = true end
         cancelSelection()
         drag = nil
-        scrollAnimation, buttonHover, buttonPress = nil, nil, nil
+        scrollAnimation = nil
         for _,fx in ipairs(self.activeFx or {})do
             if fx.hovered or fx.pressed then
                 fx.hovered,fx.pressed=false,false
@@ -260,51 +266,12 @@ function M.new(root, map, onChoose, clickEvent, options)
         future = pathColour(Theme.color.node.path, visual.futureOpacity),
         far = pathColour(Theme.color.node.path, visual.farFutureOpacity),
     }
-    local function controllerContextReady()
-        return chapterFor(self.map) ~= nil and self.map == self.observedMap
-            and sameContext(self.map,self.observedContext)
-            and self.map.floor == self.observedFloor and self.map.currentNodeId == self.observedNodeId
-    end
     local function bind(name, fn)
         local hit=child(at(name),"hit")
         hit:AddCursorEventListener(clickEvent,function(event)
-            if Controller.pointerBlocked(options.controller)then return false end
+            if inputCovered() or Pointer.blocked(options)then return false end
             return fn(event)
         end)
-        Controller.bind(options.controller,hit,"map",function()
-            local slot=tonumber(name:match("^node(%d+)$"))
-            if slot then
-                if scrollAnimation then return false,"map_scrolling" end
-                cancelDrag()
-                return self.slots[slot] and self:choose(self.slots[slot])
-            end
-            return fn(nil,true)
-        end,controllerContextReady,name:match("^node") and tonumber(name:match("%d+")) or 100)
-    end
-    local function buttonEnabled(name)
-        return self.visible and chapterFor(self.map) ~= nil and (name == "previous" and self.scroll > 0
-            or name == "next" and self.scroll < maxScroll(self.chapter))
-    end
-    local function paintButton(name)
-        local box, enabled = at(name), buttonEnabled(name)
-        local pressed = enabled and buttonPress and buttonPress.name == name
-        local hover = enabled and buttonHover == name and not pressed
-        -- Source map uses scrolling and recenters when reopened; controller-only
-        -- paging remains a platform adapter, never a touch/mouse overlay.
-        local controllerVisible = Controller.isController(options.controller)
-        box:SetVisible(controllerVisible)
-        child(box,"hit"):SetVisible(enabled and controllerVisible)
-        child(box,"hit").canControllerFocus = enabled and controllerVisible
-        tint(child(box,"frame"), not enabled and Theme.color.line
-            or (pressed or hover) and Theme.color.goldBright or Theme.color.goldDim)
-        tint(child(box,"body"), pressed and Theme.color.buttonPressedFill
-            or hover and Theme.color.buttonHover or Theme.color.panel)
-        local ink = not enabled and Theme.color.textMuted
-            or pressed and Theme.color.buttonPressedText or Theme.color.text
-        child(box,"label").fontColor = colour(ink.r,ink.g,ink.b,ink.a)
-        local scale = pressed and Theme.layout.nativeNode.buttonStates.pressedScale
-            or Theme.layout.nativeNode.buttonStates.normalScale
-        box:SetLocalScale(scale,scale,1)
     end
     local function position(node)
         return (node.lane - (Layout.lanes + 1) / 2) * Theme.layout.map.columnGap,
@@ -381,7 +348,6 @@ function M.new(root, map, onChoose, clickEvent, options)
         at("notice"):SetVisible(true)
         for i = 1, Layout.maxNodes do at("node" .. i):SetVisible(false) end
         for i = 1, Layout.maxEdges do at("edge" .. i):SetVisible(false) end
-        for _, name in ipairs({"previous","next"}) do paintButton(name) end
     end
     local function terminalNotice(chapter, current)
         return chapter.terminal == 'boss_treasure' and "已抵达首领宝箱 · 请完成当前房间"
@@ -408,8 +374,6 @@ function M.new(root, map, onChoose, clickEvent, options)
             at('notice').text=prefix..'绿字节点为燃烧精英，胜利可另领绿钥匙'
         end
         at('notice'):SetVisible(at('notice').text~='')
-        buttonHover, buttonPress = nil, nil
-        for _, name in ipairs({"previous","next"}) do paintButton(name) end
     end
     local function paintMapEdges(current, nodes, taken)
         local edge = 0
@@ -454,7 +418,6 @@ function M.new(root, map, onChoose, clickEvent, options)
         local clickable = state == "available" and self.navigationEnabled
             and not self.choosing and not scrollAnimation
         hit:SetVisible(clickable)
-        hit.canControllerFocus = clickable
         self.slots[i] = node.id
         if clickable then self.breathing[#self.breathing + 1] = box end
     end
@@ -488,10 +451,7 @@ function M.new(root, map, onChoose, clickEvent, options)
         end
         if not visible then
             local hit = child(box, 'hit')
-            if node or hit.canControllerFocus then
-                hit:SetVisible(false)
-                hit.canControllerFocus = false
-            end
+            if node or hit.visible then hit:SetVisible(false) end
         end
         box:SetVisible(visible)
     end
@@ -523,7 +483,6 @@ function M.new(root, map, onChoose, clickEvent, options)
     function self.resize(_, width, height)
         if not finite(width) or not finite(height) or width <= 0 or height <= 0 then return false, "invalid_canvas" end
         cancelDrag()
-        for _, name in ipairs({"previous","next"}) do paintButton(name) end
         self.canvasWidth, self.canvasHeight = width, height
         if embedded then self.scale = 1 return true end
         local scale = math.min(width / Theme.canvas.base[1], height / Theme.canvas.base[2])
@@ -535,11 +494,6 @@ function M.new(root, map, onChoose, clickEvent, options)
     function self.update(_, dt)
         if not finite(dt) or dt < 0 then return false, "invalid_delta" end
         if not self.visible then return true end
-        local usingController = Controller.isController(options.controller)
-        if self.usingController ~= usingController then
-            self.usingController = usingController
-            for _, name in ipairs({"previous","next"}) do paintButton(name) end
-        end
         if not chapterFor(self.map) or self.map ~= self.observedMap or not sameContext(self.map,self.observedContext) then
             self:render()
             return true
@@ -612,7 +566,7 @@ function M.new(root, map, onChoose, clickEvent, options)
     function self.focusCurrent(_, animated)
         if not self.map then return false, "map_unbound" end
         if not chapterFor(self.map) then self:render() return false,"invalid_map_context" end
-        local current = mapView(self.map)
+        local current = entryContext(self.map)
         observeMap(current)
         local floor = current.floor
         if self.chapter.terminal == 'boss_treasure' then floor = math.min(floor, self.chapter.boss) end
@@ -631,7 +585,7 @@ function M.new(root, map, onChoose, clickEvent, options)
         end
         -- An explicit coordinator grant acknowledges any external map advance.
         if not chapterFor(self.map) then self:render() return false,"invalid_map_context" end
-        local current = mapView(self.map)
+        local current = entryContext(self.map)
         observeMap(current)
         self.observedNodeId, self.observedFloor = current.currentNodeId, current.floor
         self.navigationEnabled = enabled self:render()
@@ -648,26 +602,43 @@ function M.new(root, map, onChoose, clickEvent, options)
         self.visible = visible root:SetVisible(visible or retainPage==true)
         if visible and not (retainPosition and atPaintedPosition()) then self:focusCurrent() end
     end
+    function self.matchesEntryContext(_,context)
+        local current = self.map
+        return current==context.map and sameContext(current,context) and current.floor==context.floor
+            and current.currentNodeId==context.currentNodeId and current.path==context.path and #current.path==context.pathLength
+    end
+    function self.showEntryFailure(_,failure)
+        local messages={event_pool_exhausted='受限事件池已用尽，或剩余事件条件不足；请选择其他路线或重新启程。',
+            event_not_implemented='此事件尚未实现；请选择其他路线。',combat_unavailable='此层没有可用遭遇；请选择其他路线。'}
+        self.entryError=messages[failure] or '暂时无法进入，请完成当前操作后重试。'
+        self:render()
+    end
     function self.choose(_, nodeId)
+        if inputCovered() then return false, "navigation_disabled" end
         if not self.map then return false, "map_unbound" end
         if not chapterFor(self.map) then self:render() return false,"invalid_map_context" end
         local beforeMap = self.map
-        local before = mapView(beforeMap)
+        local before = entryContext(beforeMap)
         if observeMap(before) then self:render() end
         if not self.visible or not self.navigationEnabled or self.choosing then return false, "navigation_disabled" end
-        if before.complete then return false, "map_complete" end
+        if before.floor == (before.terminalFloor or 17) then return false, "map_complete" end
         if type(nodeId) ~= "string" then return false, "invalid_node" end
         local selected
-        for _, node in ipairs(available(self.map)) do if node.id == nodeId then selected = node break end end
+        for _, node in ipairs(available(beforeMap)) do if node.id == nodeId then selected = node break end end
         if not selected then
-            for _, node in ipairs(before.nodes) do if node.id == nodeId then return false, "node_unavailable" end end
+            for _, node in ipairs(beforeMap.nodes) do if node.id == nodeId then return false, "node_unavailable" end end
             return false, "invalid_node"
         end
         if selected.roomKind == 'boss_treasure' then return false, 'node_outside_viewport' end
         local expectedFloor = selected.floor
         self.choosing = true
-        local called, accepted, reason = pcall(onChoose, selected)
+        local called, accepted, reason = pcall(onChoose, selected, before)
         self.choosing = false
+        if called and accepted=='selection_pending' and inputCovered() then
+            self.entryError=nil
+            cancelDrag()
+            return true,accepted,reason
+        end
         if not chapterFor(self.map) then self:render() return false,"invalid_map_context" end
         local after = self.map
         local sameMap = after == beforeMap and sameContext(after,before)
@@ -675,18 +646,15 @@ function M.new(root, map, onChoose, clickEvent, options)
         local committed = sameMap and after.currentNodeId == nodeId and after.floor == expectedFloor
         if called and accepted == true then self.entryError = nil end
         if changed or committed and called and accepted == true then
-            if self.visible and not sameMap then observeMap(mapView(after)) end
+            if self.visible and not sameMap then observeMap(entryContext(after)) end
             self.navigationEnabled = false
             -- Recenter when the Host shows the map again, or once now for a
             -- standalone map that stayed visible after the choice.
             if self.visible then self:focusCurrent() end
         end
         if not called or accepted~=true then
-            local messages={event_pool_exhausted='受限事件池已用尽，或剩余事件条件不足；请选择其他路线或重新启程。',
-                event_not_implemented='此事件尚未实现；请选择其他路线。',combat_unavailable='此层没有可用遭遇；请选择其他路线。'}
             local failure=called and (reason or 'choice_rejected') or 'choice_callback_error'
-            self.entryError=messages[failure] or '暂时无法进入，请完成当前操作后重试。'
-            self:render()
+            self:showEntryFailure(failure)
             return false,failure
         end
         if not committed then return false, "selection_not_committed" end
@@ -725,9 +693,9 @@ function M.new(root, map, onChoose, clickEvent, options)
         pointerObserved = true
         -- Down is idempotent until the owner releases or is cancelled. A repeated
         -- callback cannot rearm a selection that already exited or began scrolling.
-        if not self.visible or not self.map then return end
+        if inputCovered() or not self.visible or not self.map then return end
         if not chapterFor(self.map) then self:render() return end
-        if observeMap(mapView(self.map)) then self:render() end
+        if observeMap(entryContext(self.map)) then self:render() end
         if drag then
             -- A same-owner node Down can retire an abandoned background drag.
             -- Background has no node selection to steal; its delayed Up cannot
@@ -825,39 +793,6 @@ function M.new(root, map, onChoose, clickEvent, options)
         if self.slots[slot] then return self:choose(self.slots[slot]) end
         return false, "node_outside_viewport"
     end) draggable(child(at("node" .. slot), "hit"), slot) end
-    local function step(name,delta)
-        if not buttonEnabled(name) then return false,self.visible and "scroll_boundary" or "map_hidden" end
-        -- Queue same-direction steps; an opposite click must reverse what is
-        -- actually displayed, even when many earlier clicks queued a far target.
-        local target = self.scroll
-        if scrollAnimation and (scrollAnimation.target - self.scroll) * delta > 0 then
-            target = scrollAnimation.target
-        end
-        return animateScrollTo(target + delta)
-    end
-    bind("previous", function() return step("previous",-Layout.scrollStep) end)
-    bind("next", function() return step("next",Layout.scrollStep) end)
-    -- Reuse existing faces and documented events; no extra controls or timers.
-    for _, key in ipairs({"previous","next"}) do
-        local name, hit = key, child(at(key),"hit")
-        local function listen(event,callback) if event then hit:AddCursorEventListener(event,callback) end end
-        local function clear(event,terminal)
-            if buttonPress and buttonPress.name == name and (terminal or touch(event) == buttonPress.touch) then buttonPress = nil end
-            if buttonHover == name then buttonHover = nil end
-            paintButton(name)
-        end
-        listen(cursor and cursor.CursorEnter,function(event)
-            if buttonEnabled(name) and touch(event) == nil then buttonHover = name paintButton(name) end
-        end)
-        listen(cursor and cursor.CursorDown,function(event)
-            if buttonEnabled(name) then buttonPress = {name=name,touch=touch(event)} paintButton(name) end
-        end)
-        listen(cursor and cursor.CursorUp,function(event)
-            clear(event)
-        end)
-        listen(cursor and cursor.CursorExit,function(event) clear(event,true) end)
-        listen(cursor and cursor.CursorEndDrag,function(event) clear(event,true) end)
-    end
     self:resize(Theme.canvas.base[1], Theme.canvas.base[2])
     if map then self:focusCurrent() else root:SetVisible(false) end
     return self

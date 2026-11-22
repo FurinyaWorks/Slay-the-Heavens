@@ -14,9 +14,10 @@ const entries=node=>Object.fromEntries(children(node).flatMap(c=>[[c.name,c],...
 
 test('paper chrome preserves every graph, edge, scrolling and node-input object and path',()=>{
  const layout=mapLayout(),paths=entries(layout),themeBefore=structuredClone(nativeTheme),geometry=mapGeometry();
- const protectedPaths=Object.entries(paths).filter(([path])=>/\/(?:node\d+|edge\d+|dragArea|next|previous)(?:\/|$)/.test('/'+path));
+ const protectedPaths=Object.entries(paths).filter(([path])=>/\/(?:node\d+|edge\d+|dragArea)(?:\/|$)/.test('/'+path));
  const snapshots=new Map(protectedPaths.map(([path,node])=>[path,structuredClone(node)]));
  applyV25MapLayout(layout,nativeTheme);const after=entries(layout);
+ assert(!all(layout).some(c=>['next','previous','focus'].includes(c.name)));
  for(const[path,node]of protectedPaths){
   assert.equal(after[path],node,path);
   if(/^edge\d+$/.test(node.name)){

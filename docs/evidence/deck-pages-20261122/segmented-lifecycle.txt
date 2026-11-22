@@ -1,0 +1,198 @@
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL updated page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL failed page=deckPanel epoch=5 reason=src/lua/abyss_deck_browser.lua:138: deck browser chunk creation failed
+ABYSS_PAGE_REVEAL updated page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=7
+PASS reject then retry segment 1 shell/part/destroy=11/50/1
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL updated page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL failed page=deckPanel epoch=5 reason=src/lua/abyss_deck_browser.lua:138: deck browser chunk creation failed
+ABYSS_PAGE_REVEAL updated page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=7
+PASS reject then retry segment 2 shell/part/destroy=11/51/1
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL updated page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL failed page=deckPanel epoch=5 reason=src/lua/abyss_deck_browser.lua:138: deck browser chunk creation failed
+ABYSS_PAGE_REVEAL updated page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=7
+PASS reject then retry segment 3 shell/part/destroy=11/52/1
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL updated page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL failed page=deckPanel epoch=5 reason=src/lua/abyss_deck_browser.lua:138: deck browser chunk creation failed
+ABYSS_PAGE_REVEAL updated page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=7
+PASS reject then retry segment 4 shell/part/destroy=11/53/1
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL updated page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL failed page=deckPanel epoch=5 reason=src/lua/abyss_deck_browser.lua:138: deck browser chunk creation failed
+ABYSS_PAGE_REVEAL updated page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=7
+PASS reject then retry segment 5 shell/part/destroy=11/54/1
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL updated page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL updated page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=7
+PASS close inside Instantiate shell/part/destroy=11/50/1
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL updated page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL updated page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=7
+PASS close inside Instantiate shell/part/destroy=10/50/0
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL updated page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL updated page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=7
+PASS close and same-turn reopen inside Instantiate shell/part/destroy=11/50/1
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL updated page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL updated page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=7
+PASS close and same-turn reopen inside Instantiate shell/part/destroy=10/50/0
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL updated page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=7
+PASS Run swap inside Instantiate old handles all dead, replacement shells=10 peak=10
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL updated page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=7
+PASS Run swap inside Instantiate old handles all dead, replacement shells=10 peak=10
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL updated page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+PASS OnDestroy inside Instantiate no Lua full root destroys and no stale callbacks
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL updated page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+PASS OnDestroy inside Instantiate no Lua full root destroys and no stale callbacks
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL updated page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL failed page=deckPanel epoch=5 reason=...kspace/scratch/work/lifecycle-review/segmented-repro.lua:169: test: native allocated a part before wrapper raised
+ABYSS_PAGE_REVEAL updated page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=7
+PASS failure after side-effecting segment allocation does not retain duplicate
+ABYSS_PAGE_REVEAL preparing page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL visible page=menuPanel epoch=1
+ABYSS_PAGE_REVEAL preparing page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL visible page=characterPanel epoch=2
+ABYSS_PAGE_REVEAL updated page=characterPanel epoch=3
+ABYSS_RUN seed=1 source=explicit
+ABYSS_PAGE_REVEAL preparing page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL visible page=mapPanel epoch=4
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=5
+ABYSS_PAGE_REVEAL failed page=deckPanel epoch=5 reason=...kspace/scratch/work/lifecycle-review/segmented-repro.lua:156: test: native allocated a shell before returning a handle
+ABYSS_PAGE_REVEAL updated page=mapPanel epoch=6
+ABYSS_PAGE_REVEAL preparing page=deckPanel epoch=7
+ABYSS_PAGE_REVEAL visible page=deckPanel epoch=7
+PASS failure after a side-effecting shell allocation does not exceed ten roots

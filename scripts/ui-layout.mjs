@@ -16,7 +16,7 @@ const picture = (name, x, y, w, h, image, colour = c.text) => ({ name, kind: 'im
     ? { colour: colour.slice(0, 7), opacity: parseInt(colour.slice(7), 16) / 255 } : { colour }),
 });
 const panel = (name, x, y, w, h, colour) => picture(name, x, y, w, h, im.rect, colour);
-const hit = (w, h) => ({ name: 'hit', kind: 'cursorArea', size: [w, h], focusable: true });
+const hit = (w, h) => ({ name: 'hit', kind: 'cursorArea', size: [w, h] });
 const clickableImage = (image, target) => {
   const { name, position, size } = image;
   return { name, kind: 'container', position, size, children: [
@@ -31,7 +31,7 @@ function button(name, position, size, label, primary = false, fontSize = f.headi
     hover: [primary ? c.goldBright : c.panelRaised, primary ? c.textOnLight : c.goldBright, c.goldBright],
     pressed: [c.buttonPressedFill, c.text, c.goldBright], disabled: [c.panelSunken, c.textMuted, c.line],
   };
-  return { name, kind: 'presetButton', position, size, focusable: true,
+  return { name, kind: 'presetButton', position, size,
     states: Object.fromEntries(Object.keys(variants).map(key => [key, key])),
     children: Object.entries(variants).map(([state, [bg, ink, border]]) => ({ name: state, kind: 'container', size,
       scale: state === 'pressed' ? [0.96, 0.96] : [1, 1], children: [
