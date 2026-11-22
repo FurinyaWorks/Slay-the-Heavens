@@ -10,6 +10,15 @@ assert.equal(hash(bytes),'b10cce10b072edcd45acc8204944ece9b604343699658543229999
 const files=JSON.parse(gunzipSync(bytes));
 for(const row of Object.values(files))assert.equal(hash(row.before),row.beforeSha256);
 const choice=JSON.parse(readFileSync(new URL('../fixtures/release-choice-test-source.json',import.meta.url),'utf8'));
+function beforeCompactPopupTest(path,source){
+ if(path!=='tests/official-assets.test.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=source.replaceAll('\r\n','\n');
+ if(hash(lf)!=='60a39ef560bc7392afb72a6e773e1ed20886eeaff7147f6dd25359e47d74284e')return source;
+ const prior=lf.replace("assert.equal(child(stat,'face').image,nativeTheme.image.rect);","assert.equal(child(stat,'face').image,107311);")
+  .replace("assert.equal(child(stat,'face').colour,nativeTheme.color.panel);","assert.equal(child(stat,'face').colour,'#FFFFFF');");
+ assert.equal(hash(prior),'9f7805663713e1c0a036cfa19d1518750cf568c5c38335da33d17a4430832c9b','exact predecessor before retiring the result plaque');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function beforeChoiceTest(path,source){
  if(path!=='tests/official-assets.test.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=source.replaceAll('\r\n','\n');
@@ -21,7 +30,7 @@ function beforeChoiceTest(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 export function beforeSts1MenuCiSource(path,source){
- source=beforeReleaseUiCloseoutSource(path,beforeChoiceTest(path,source));
+ source=beforeReleaseUiCloseoutSource(path,beforeChoiceTest(path,beforeCompactPopupTest(path,source)));
  const row=Object.hasOwn(files,path)?files[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(source.replaceAll('\r\n','\n'))!==row.afterSha256)return source;
  return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;
