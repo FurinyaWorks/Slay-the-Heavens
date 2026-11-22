@@ -93,6 +93,10 @@ function beforeTravelerStatusCiSource(path,source){
  const actorTemplate=path==='tests/native-monster-actor-template.test.mjs';
  if((!copier&&!regression&&!actorTemplate)||typeof source!=='string'||source.includes('\r\r\n'))return source;
  let lf=normalize(source);
+ if(copier&&hash(lf)==='03e69836be70d236cce38ad56a0a42589609bab3803fb9b72230abe8b9a60359'){
+  lf=lf.replace(" 'tests/helpers/release-ui-restore-source.mjs':'0a404f50a22153788baa3c8612588c266e4eecc3ac2b97a74ca7fa00a9c7f0a2',\n 'tests/fixtures/release-compound-intent-source.json.gz':'4d1d0ca90bc98c95fef49584283807598edd42f995d230357d28fa41efa14111',\n"," 'tests/helpers/release-ui-restore-source.mjs':'12525d81e0e26d39b823b398e4f438e3a005dd6e2a10f91f71eec00adf007586',\n");
+  assert.equal(hash(lf),'b72155ee1af41dfd1300b4f364a1c5de8de666173c95e37cc72fb14bec63afab','exact compound intent helper copy predecessor');
+ }
  if(copier&&hash(lf)==='b72155ee1af41dfd1300b4f364a1c5de8de666173c95e37cc72fb14bec63afab'){
   lf=lf.replace(" 'tests/helpers/release-ui-restore-source.mjs':'12525d81e0e26d39b823b398e4f438e3a005dd6e2a10f91f71eec00adf007586',\n"," 'tests/helpers/release-ui-restore-source.mjs':'f80f891d9f7bf72b098efa22b02b8cdcd83b02cd6be90cfb9003ac83cb9eeaed',\n")
    .replace(" 'tests/helpers/release-replay-continuations.mjs':'693477ca050c9f8eee0817fb308fc5d023bff4b020c4ab147d178b1ebf8fae23',\n"," 'tests/helpers/release-replay-continuations.mjs':'a01c34b0ae81fb75aa761577db7f05dbc3afd7c24ee4eab6c44c47ceef8fa264',\n")

@@ -75,7 +75,8 @@ const releaseUiFiles=Object.freeze({
 // Refined enemy art extends only the existing historical helper closure.
 const refinedReleaseFiles=Object.freeze({
  ...releaseUiFiles,
- 'tests/helpers/release-ui-restore-source.mjs':'12525d81e0e26d39b823b398e4f438e3a005dd6e2a10f91f71eec00adf007586',
+ 'tests/helpers/release-ui-restore-source.mjs':'0a404f50a22153788baa3c8612588c266e4eecc3ac2b97a74ca7fa00a9c7f0a2',
+ 'tests/fixtures/release-compound-intent-source.json.gz':'4d1d0ca90bc98c95fef49584283807598edd42f995d230357d28fa41efa14111',
  'tests/helpers/release-shop-entry-source.json.gz':'d3c114b39aa8affa1ae5c2b3ee54117640dcacce750efc24d78312792d8d2ff7',
  'tests/helpers/release-forge-source.json.gz':'8557c9daa0943c815ca11e0c135d081c08081f040bbef85b3cd799f7a586c564',
  'tests/helpers/refined-release-source.mjs':'154f5464849177b48426db7d816f4ddf87d9d26abd6bfcfb543162b4f26450d9',

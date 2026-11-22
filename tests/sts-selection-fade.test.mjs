@@ -18,7 +18,8 @@ ready=false;g:begin(b);g:finish(b)
 for i=1,10 do g:step(b,.1);assert(veil.imageColor.a==255 and g:covered())end
 ready=true;g:step(b,0);g:step(b,0);assert(g:covered());g:step(b,.1);assert(veil.imageColor.a>0 and veil.imageColor.a<255);g:step(b,.1);assert(not g:covered())
 local calls=0;assert(g:depart(function()calls=calls+1;g:begin(a);return true end));assert(not g:depart(function()calls=calls+1 end))
-g:step(b,.1);assert(calls==0);g:step(b,.1);assert(calls==1 and veil.imageColor.a==255)
+g:step(b,.1);assert(calls==0);g:step(b,.1);assert(calls==0 and veil.imageColor.a==255)
+g:step(b,0);assert(calls==1 and veil.imageColor.a==255)
 print('FADE_PASS')`;
  const r=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),'-e',body],{encoding:'utf8'});
  assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/FADE_PASS/);
@@ -134,13 +135,18 @@ test('Release UI closeout projection rejects drift and stale owner rereads',asyn
  const {readFileSync}=await import('node:fs');
  const {beforeReleaseUiCloseoutSource}=await import('./helpers/release-ui-closeout-source.mjs');
  const path='src/lua/abyss_page_reveal.lua';
- const read=file=>readFileSync(file,'utf8'),source=read(path);
+ // The inverse authenticates the exact #839 owner. #864 changed the live
+ // owner, while the historical predecessor and its rejection rules stayed fixed.
+ const source=readFileSync(new URL('./fixtures/page-reveal-pr839.lua',import.meta.url),'utf8');
+ const read=file=>{assert.equal(file,path);return source;};
  const previous=beforeReleaseUiCloseoutSource(path,source,read);
  assert.notEqual(previous,source);
  assert.throws(()=>beforeReleaseUiCloseoutSource(path,source,()=>previous),/Release UI closeout owner identity/);
  assert.equal(beforeReleaseUiCloseoutSource(path,source+'\n',()=>assert.fail('unknown bytes authorized a read')),source+'\n');
  const crlf=text=>text.replaceAll('\n','\r\n');
  assert.equal(beforeReleaseUiCloseoutSource(path,crlf(source),file=>crlf(read(file))),crlf(previous));
+ const live=readFileSync(path,'utf8');
+ if(live!==source)assert.equal(beforeReleaseUiCloseoutSource(path,live,()=>assert.fail('live owner authorized a historical read')),live);
 });
 
 
@@ -154,6 +160,8 @@ local a={page='characterPanel'};local b={page='mapPanel'}
 gate:begin(a);gate:step(a,0);gate:step(a,0);gate:step(a,.2)
 assert(gate:depart(function()assert(gate:request(b));return false end))
 gate:step(a,.2)
+assert(gate.intent==a and veil.imageColor.a==255,'opaque submission already executed the callback')
+gate:step(a,0)
 assert(gate.intent==b and gate.state=='preparing' and not gate.error,'stale departure rejected the replacement')
 gate:step(b,0);gate:step(b,0);gate:step(b,.2);assert(not gate:covered())
 print('DEPARTURE_EPOCH_PASS')`;

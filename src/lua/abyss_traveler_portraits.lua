@@ -244,7 +244,7 @@ local function controller(host, data, display, templates, options)
             known=ok and type(value)=='boolean'
             if known then nativeActive=value end
         end
-        return {phase=phase,generation=generation,nextIndex=nextIndex,total=#data.rows,owned=#created,
+        return {phase=phase,generation=generation,nextIndex=nextIndex,revealIndex=revealIndex,total=#data.rows,owned=#created,
             retained=phase=='release_failed' and #created or 0,reason=reason,cleanupFailures=cleanupFailures,
             nativeActive=nativeActive,nativeStateKnown=known,nativePaused=nativePaused}
     end
@@ -413,7 +413,9 @@ end
 local function portraitReadiness(row,mode,resultOutcome)
     local state=row.adapter:status()
     if state.phase=='failed' or state.phase=='release_failed' or state.phase=='destroyed' then return false,state.reason or state.phase end
-    if not row.active or state.phase~='ready' or row.name=='result' and resultOutcome~=mode then return false end
+    if not row.active or state.phase~='ready' or row.name=='result' and resultOutcome~=mode then
+        return false,nil,table.concat({row.name,state.phase,state.owned or 0,state.revealIndex or 0},':')
+    end
     return true
 end
 local function enabled(flags,key)
@@ -638,8 +640,8 @@ function M.new(stage,report,flags,cardTemplates)
         local wanted=presentationTargets(mode,characterOpen,false,character,false)
         for _,row in ipairs(rows)do
             if requiredPortrait(row,scope,wanted,mode) then
-                local ready,reason=portraitReadiness(row,mode,resultOutcome)
-                if not ready then return false,reason end
+                local ready,reason,progress=portraitReadiness(row,mode,resultOutcome)
+                if not ready then return false,reason,progress end
             end
         end
         return true

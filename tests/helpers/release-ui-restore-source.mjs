@@ -49,10 +49,37 @@ const recording=releaseUiRestoreArchive(readFileSync(new URL('./recording-0401-s
  '9af199338e44fb660599900c5474624853f02be24aa5590029f37cee2a551e24','d26c4dc59e639741471580a242718a284a67f758');
 const shopEntry=releaseUiRestoreArchive(readFileSync(new URL('./release-shop-entry-source.json.gz',import.meta.url)),
  'd3c114b39aa8affa1ae5c2b3ee54117640dcacce750efc24d78312792d8d2ff7','b0505f57def990f9d80d7cf917402d7616164f4f');
+const compoundIntent=releaseUiRestoreArchive(readFileSync(new URL('../fixtures/release-compound-intent-source.json.gz',import.meta.url)),
+ '4d1d0ca90bc98c95fef49584283807598edd42f995d230357d28fa41efa14111','5acff84e14816711fd9f7a86e1b994069b2c8af6');
 export const shopEntrySourcePaths=Object.freeze(Object.keys(shopEntry.files).filter(path=>path.startsWith('src/lua/')));
 export const beforeReleaseShopEntry=shopEntry.project;
 export function shopEntryPriorRead(read){
  return (path,...args)=>beforeReleaseShopEntry(path,read(path,...args));
+}
+export function compoundIntentPriorRead(read){
+ return (path,...args)=>{
+  const raw=read(path,...args);
+  if(!Object.hasOwn(compoundIntent.files,path))return raw;
+  if(typeof raw==='string')return compoundIntent.project(path,raw);
+  if(!Buffer.isBuffer(raw))return raw;
+  const source=raw.toString('utf8'),prior=compoundIntent.project(path,source);
+  return source===prior?raw:Buffer.from(prior);
+ };
+}
+function assertCompoundIntentOwners(samples,read){
+ for(const [owner,{after}] of Object.entries(compoundIntent.files)){
+  const message='combined linked owner identity: '+owner+' during compound intent validation';
+  assert(samples.every(([path,input])=>path!==owner||matches(input,after)),message);
+  let source;
+  try{source=read(owner,'utf8');}catch(error){assert.fail('combined linked owner missing: '+owner+': '+error.message);}
+  assert(matches(source,after),message);
+ }
+}
+export function beforeCurrentCompoundIntentSource(path,source,read){
+ if(!Object.hasOwn(compoundIntent.files,path))return source;
+ assert(matches(source,compoundIntent.files[path].after),'fresh current production owner: '+path);
+ assertCompoundIntentOwners([[path,source]],read);
+ return compoundIntent.project(path,source);
 }
 // #854 precedes #834. Older projectors and their readers see the same stage.
 function beforeShopProductionUi(path,source,read,eventRead){
@@ -67,7 +94,8 @@ function shopProductionPriorRead(eventRead){
   return prior===text?raw:Buffer.from(prior);
  };
 }
-const liveEventRead=eventArtPriorRead(readFileSync);
+const liveCompoundIntentRead=compoundIntentPriorRead(readFileSync);
+const liveEventRead=eventArtPriorRead(liveCompoundIntentRead);
 const liveShopRead=shopProductionPriorRead(liveEventRead);
 const liveShopEntryRead=shopEntryPriorRead(liveShopRead);
 export const beforeRecordingUi=(path,source,read)=>recording.project(path,beforeCombatVisualSource(path,source,read&&((owner)=>read(owner,'utf8'))));
@@ -86,7 +114,7 @@ export const releaseRightClickSourcePaths=Object.freeze(Object.keys(rightClick.f
 export const releaseUiRestoreSourcePaths=Object.freeze([...new Set([...Object.keys(files),...Object.keys(fieldCancel.files)])]);
 export const beforeReleaseRightClick=(path,source)=>rightClick.project(path,fieldCancel.project(path,source));
 export function beforeReleaseUiRestore(path,source){
- const shopSource=beforeShopProductionUi(path,source,readFileSync,liveEventRead);
+ const shopSource=beforeShopProductionUi(path,compoundIntent.project(path,source),liveCompoundIntentRead,liveEventRead);
  const recorded=beforeHistoricalRecordingUi(path,beforeReleaseShopEntry(path,shopSource),liveShopEntryRead);
  const refined=beforeRefinedReleaseProduction(path,recorded);
  const forge=beforeReleaseForgeGridUi(path,refined);
@@ -96,6 +124,9 @@ export function beforeReleaseUiRestore(path,source){
 const authorizationPaths=[...new Set([...releaseUiRestoreSourcePaths,...releaseRightClickSourcePaths,...releaseControlsGuideRemovalSourcePaths,...releaseSharedRelicSourcePaths,...releaseForgeSourcePaths])];
 
 export function authorizeReleaseUiRestore(samples,read){
+ if(samples.some(([path,input])=>matches(input,compoundIntent.files[path]?.after)))assertCompoundIntentOwners(samples,read);
+ samples=samples.map(([path,input])=>[path,compoundIntent.project(path,input)]);
+ read=compoundIntentPriorRead(read);
  const eventRead=eventArtPriorRead(read);
  samples=samples.map(([path,input])=>[path,beforeShopProductionUi(path,input,read,eventRead)]);
  read=shopProductionPriorRead(eventRead);

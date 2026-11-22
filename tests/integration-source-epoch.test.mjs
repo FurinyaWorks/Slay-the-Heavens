@@ -173,6 +173,28 @@ test('fresh authorization covers the complete changed-owner union without cachin
  const required=Object.keys(proof.current).filter(path=>Object.values(proof.targets).some(target=>target.files[path]?.sha256!==proof.current[path]?.sha256));
  assert.deepEqual([...proof.owners].sort(),required.sort());
 });
+test('compound intent owners replay the exact Release predecessor and reject a partial rollout',async()=>{
+ const {gunzipSync}=await import('node:zlib');
+ const {files}=JSON.parse(gunzipSync(readFileSync('tests/fixtures/release-compound-intent-source.json.gz')));
+ const read=path=>readFileSync(path,'utf8');
+ const readBase=path=>files[path]?.before.source??read(path);
+ for(const path of Object.keys(files)){
+  const latest=read(path),base=readBase(path);
+  const historical=beforeAuthenticatedReleaseUiRestore(path,base,readBase);
+  assert.notEqual(historical,base,path);
+  assert.equal(beforeAuthenticatedReleaseUiRestore(path,latest,read),historical,path);
+  assert.equal(beforeAuthenticatedReleaseUiRestore(path,latest.replaceAll('\n','\r\n'),read),historical.replaceAll('\n','\r\n'));
+  assert.equal(beforeCurrentProductionSource(path,latest,read),beforeCharacterPreparationSource(path,base,readBase));
+  assert.throws(()=>beforeCurrentProductionSource(path,base,read),/fresh current production owner/);
+  for(const owner of Object.keys(files)){
+   for(const invalid of [readBase(owner),read(owner)+'\n',null]){
+    const drift=key=>key===owner?invalid:read(key);
+    assert.throws(()=>beforeAuthenticatedReleaseUiRestore(path,latest,drift),/during compound intent validation/);
+    assert.throws(()=>beforeCurrentProductionSource(path,latest,drift),/during compound intent validation/);
+   }
+  }
+ }
+});
 test('combined epoch authenticates the complete current production tree',()=>{
  const files=['config/architecture.json',...readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p)].sort();
  assert.deepEqual(files,Object.keys(proof.current).filter(p=>proof.current[p]!==null).sort());
