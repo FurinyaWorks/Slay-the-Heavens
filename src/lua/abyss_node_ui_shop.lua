@@ -131,11 +131,17 @@ function M.install(ctx)
         local showShelf = main and ctx.self.shopOpen == true
         if panel.visible ~= showShelf then panel:SetVisible(showShelf) end
     end
-    local function prepareShelf()
-        local view = ctx.self.view
-        if not ctx.self.visible or not inShop() or ctx.self.shopOpen or ctx.self.mode~='main'
-            or not view or not view.node or view.node.type~='shop' then return end
+    local function shelfPreparationView()
+        local self = ctx.self
+        if not self.visible or not inShop() or self.shopOpen or self.mode ~= 'main' then return end
         if ctx.options.inputCovered and ctx.options.inputCovered() then return end
+        local view = self.view
+        if view and view.node and view.node.type == 'shop' then return view end
+    end
+
+    local function prepareShelf()
+        local view = shelfPreparationView()
+        if not view then return end
         local flow = ctx.self.run.nodeFlow
         if preparedView==view and preparedFlow~=flow then ctx.self:render();return end
         if preparedView~=view then

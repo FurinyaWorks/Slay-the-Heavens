@@ -81,6 +81,28 @@ function M.install(ctx)
 
     end
 
+    local function stagedVisibleEvent(node)
+        return node and node.type == 'event' and stagedEvent(node.event.id)
+    end
+
+    local function retireStagedActions(self)
+        if not self.view or not stagedVisibleEvent(self.view.node) then return end
+        for _, entry in pairs(self.actions) do
+            if entry.observe then entry.observe() end
+        end
+    end
+
+    local function refreshShownPage(self)
+        if require('abyss_relic_pending').owner(self.run) then self:render();return end
+        local node = self.view and self.view.node
+        if not node then return end
+        if ctx.options.enhancedRooms or stagedVisibleEvent(node) or node.type == 'shop' and self.shopOpen then
+            self:render()
+        elseif node.type == 'shop' then
+            ctx.paintShop()
+        end
+    end
+
     function ctx.self:setVisible(value,retainPage,renderByHost)
         assert(type(value) == "boolean", "node visibility must be boolean")
         if value and not self.run then return false, "node_unbound" end
@@ -95,26 +117,13 @@ function M.install(ctx)
         if not value then self.pendingGeneration=(self.pendingGeneration or 0)+1 end
         -- Retaining the covered page must never keep its input controller live.
         self.visible = value
-        -- Let Match's own visibility guard retire its clock, retaining a failed
-        -- pair's explicit-retry state across modal hide/show.
-        if not value then ctx.updateMatch(0) end
-        local function refreshVisibility()
-            if value and not wasVisible and not renderByHost and require('abyss_relic_pending').owner(self.run) then
-                self:render()
-                return
-            end
-            if not self.view or not self.view.node then return end
-            local function stagedVisibleEvent() return self.view.node.type=='event' and stagedEvent(self.view.node.event.id) end
-            if not value and stagedVisibleEvent() then
-                for _, entry in pairs(self.actions) do if entry.observe then entry.observe() end end
-            elseif value and not wasVisible and not renderByHost and (ctx.options.enhancedRooms or stagedVisibleEvent()
-                or self.view.node.type=='shop' and self.shopOpen) then
-                self:render()
-            elseif value and not wasVisible and not renderByHost and self.view.node.type=='shop' then
-                ctx.paintShop()
-            end
+        if not value then
+            -- Match retires its clock and keeps a failed pair available for retry.
+            ctx.updateMatch(0)
+            retireStagedActions(self)
+        elseif not wasVisible and not renderByHost then
+            refreshShownPage(self)
         end
-        refreshVisibility()
         ctx.root:SetVisible(value or retainPage==true)
     end
 
@@ -132,6 +141,11 @@ function M.install(ctx)
         return true, view
     end
 
+    local function usesRoomSnapshot(self, flow)
+        return flow and self.run.phase ~= 'ending_proceed'
+            and (flow.type == 'shop' or ctx.options.enhancedRooms and flow.type == 'camp')
+    end
+
     function ctx.current()
         local self = ctx.self
         if not self.visible or ctx.options.inputCovered and ctx.options.inputCovered() then return false, "panel_hidden" end
@@ -139,10 +153,7 @@ function M.install(ctx)
         if self.pendingOwner then return currentPendingRelic(self) end
         if self.renderRun ~= self.run or self.renderMap ~= self.map then return false, "stale_action" end
         local flow = self.run.nodeFlow
-        local useRenderedNode = flow and (flow.type=='shop' or ctx.options.enhancedRooms and flow.type=='camp')
-        if useRenderedNode and self.run.phase ~= 'ending_proceed' then
-            return currentRoomView(self, flow)
-        end
+        if usesRoomSnapshot(self, flow) then return currentRoomView(self, flow) end
         local view = Nodes.view(self.run, self.map)
         if not view.node or view.node.id ~= self.nodeId then return false, "stale_action" end
         return true, view
