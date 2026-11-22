@@ -4,7 +4,7 @@ import {mkdtempSync,mkdirSync,readdirSync,rmSync,readFileSync,writeFileSync} fro
 import {resolve,join} from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {createRequire} from 'node:module';
-import {buildUI} from '../scripts/build-ui.mjs';
+import {assertNativeUiCapacity,buildUI} from '../scripts/build-ui.mjs';
 import {buildLuaData,luaString,toLua} from '../scripts/build-lua-data.mjs';
 
 const require=createRequire(import.meta.url);
@@ -27,18 +27,29 @@ local function sameColour(actual,expected,label)
  end
 end
 `;
-function runOfficial(t,body,marker,overrides={},official=true){
+function runOfficial(t,body,marker,overrides={},official=true,refinedReleaseMonsterArt=false){
  const root=resolve('.artifacts/test-tmp');mkdirSync(root,{recursive:true});
  const directory=mkdtempSync(join(root,'official-runtime-'));
  t.after(()=>rmSync(directory,{recursive:true,force:true}));
  buildLuaData('data',join(directory,'abyss_data.lua'));
- buildUI(directory,undefined,{officialAssets:official,nativePageLifecycle:official});
+ buildUI(directory,undefined,{officialAssets:official,nativePageLifecycle:official,refinedReleaseMonsterArt});
  const modules=readdirSync(directory).filter(name=>name.endsWith('.lua')).map(name=>name.slice(0,-4));
  for(const name of ['abyss_data','abyss_ui_layout','abyss_ui_templates','abyss_theme','abyss_ui_profile'])assert(modules.includes(name));
  const layout=JSON.parse(readFileSync(join(directory,'game-ui.json'),'utf8'));
  const theme=JSON.parse(readFileSync(official?join(directory,'official-assets-theme.json'):'data/presentation/ui_theme.json','utf8'));
  const stage=layout.controls.find(c=>c.name==='stage');
  const battle=stage.children.find(c=>c.name==='battlePanel');
+ if(refinedReleaseMonsterArt){
+  const standalone=JSON.parse(readFileSync(join(directory,'battle-ui.json'),'utf8')).controls.find(c=>c.name==='stage');
+  assert.equal(standalone.children.length,59);
+  assert.equal(battle.children.length,60);
+  for(const panel of [standalone,battle]){
+   assertNativeUiCapacity(panel);
+   const pool=panel.children.find(c=>c.name==='statusInfo').children.find(c=>c.name==='powerTips');
+   assert.equal(pool.children.length,48);
+   assert(pool.children.every(tip=>tip.children.length===3 && tip.visible===false));
+  }
+ }
  const face=battle.children.find(c=>c.name==='card1');
  if(official){
  const pileGrid=stage.children.find(c=>c.name==='deckPanel').children.find(c=>c.name==='pileGrid');
@@ -1967,4 +1978,12 @@ assert(deck:close());assert(deck:open(host.run));deck:update(0)
 assert(panel:GetChild('pileTools'):GetChild('cost'):GetChild('direction').localRotationZ==(deck.sortAscending and 0 or 180))
 unchanged(host.run,before,'sorting changed run')
 `,'RECORDING_SORT_TRIANGLE_PASS');
+});
+
+
+test('refined release Host shares approved player and enemy power tips through five live enemy surfaces',t=>{
+ runOfficial(t,`
+assert(require('abyss_art_features').flags.monsters)
+dofile('tests/lua/traveler_power_tooltip.lua')
+`, 'COMBAT_ACTOR_DETAILS_PASS', {}, true, true);
 });

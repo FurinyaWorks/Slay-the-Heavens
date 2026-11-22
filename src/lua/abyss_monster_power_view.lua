@@ -70,7 +70,7 @@ function M.new(platform,picture,tint,ink,onCreate,onRetire)
   local layout=EnemyView.powerLayout(g,platform.touchScreen and platform.touchScreen())
   local capacity=layout.columns*layout.rows
   local overflow=#rows>capacity
-  if overflow then rows[#rows+1]={id='@more',status={overflow=true,amount=#rows-capacity+1}}end
+  if overflow then rows[#rows+1]={id='@more',status={overflow=true,amount=#rows-capacity+1,offset=capacity}}end
   pool:select(rows,actor.id)
   for index,row in ipairs(rows)do
    row.hidden=overflow and not row.status.overflow and index>=capacity

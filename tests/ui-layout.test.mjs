@@ -106,6 +106,7 @@ test('all dynamic battle numbers retain a native text line without intercepting 
     assert.equal(control?.kind, 'text', path);
     assert.notEqual(control.focusable, true, `${path} must not take pointer focus`);
     assert(control.text.minFontSize >= theme.font.minimum, path);
+    if (path.startsWith('hero/statusRow/')) assert(control.size[0] >= theme.layout.nativeText.lineHeight, path);
     if (control.size[1] < theme.layout.nativeText.lineHeight) tooShort.push(path);
   }
   assert.deepEqual(tooShort, [], 'dynamic numbers need a complete native text line');

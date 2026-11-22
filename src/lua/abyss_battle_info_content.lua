@@ -27,7 +27,9 @@ local function find(list, key, value)
 end
 
 local function selectedEntries(entries, info)
-    if info.statusId then
+    if info.position and not info.offset then
+        return {entries[info.position]}
+    elseif info.statusId then
         local selected = find(entries, "id", info.statusId)
         if not selected then return end
         return {selected}
@@ -269,8 +271,21 @@ function M.new(self, describe, lines)
         end
     end
 
+    local function powerRows(entries, battle, info, actor)
+        local rows = {}
+        for _, entry in ipairs(selectedEntries(entries, info) or {}) do
+            local row = statusRow(entry, battle, actor)
+            local body = row.text or ""
+            if row.tag and row.tag ~= "" and tonumber(row.tag) == nil then body = body .. "。 " .. row.tag end
+            if row.note and row.note ~= "" then body = body .. "。 " .. row.note end
+            rows[#rows + 1] = {name = row.name, body = body}
+        end
+        return #rows > 0 and rows or nil
+    end
+
     return function(data, presentation, battle, info, actor)
         local entries = Combat.statusView(actor)
+        if info.powerTips then return powerRows(entries, battle, info, actor) end
         local card = {title = actor.name or "旅行者", tag = "当前状态", accent = C.gold,
             hp = actor.hp, maxHp = actor.maxHp, block = actor.block, sections = {}}
         if info.kind == "intent" then return intentCard(card, battle, info) end

@@ -1,6 +1,7 @@
 local G = dofile("tests/lua/support/battle_gesture_fixture.lua")
 local Combat, Theme = G.F.Combat, G.F.Theme
 local L = Theme.layout
+local number = require("abyss_numbers").integer
 local enemyControl = dofile("tests/lua/support/monster_control_fixture.lua")
 local enemyPower = dofile("tests/lua/support/monster_power_control_fixture.lua")
 
@@ -25,6 +26,51 @@ local function setup(mobile)
     return host, ui, panel, battle, event, namedTap, drain
 end
 
+local function visibleTips(panel)
+    local detail = panel:GetChild("statusInfo")
+    local layer = detail:GetChild("powerTips")
+    local boxes = {}
+    if detail.visible and layer.visible then
+        for i = 1, L.powerTips.rows do
+            local box = layer:GetChild("tip" .. i)
+            if box.visible then boxes[#boxes + 1] = box end
+        end
+    end
+    return boxes
+end
+
+local function copy(box)
+    return box:GetChild("copy").text
+end
+
+local function checkBounds(box)
+    local halfWidth = box.sizeDeltaX * box.localScaleX / 2
+    local halfHeight = box.sizeDeltaY * box.localScaleY / 2
+    local edge = Theme.canvas.base[1] / 2 - Theme.canvas.safe.x
+    assert(box.x - halfWidth >= -edge - .01 and box.x + halfWidth <= edge + .01)
+    assert(box.y - halfHeight >= L.battleNotice.bandTop
+        and box.y + halfHeight <= L.battlePotions.origin[2] - L.battlePotions.size[2] / 2 - Theme.space.s + .01)
+end
+
+do
+    local host, ui, panel = G.setup({"defend"}, {"cultist"}, {touchScreen = function() return false end})
+    local actor = host.run.combat.player
+    Combat.addStatus(actor, "frail", 1)
+    Combat.addStatus(actor, "strength", 4)
+    ui:render()
+    local row = panel:GetChild("hero"):GetChild("statusRow")
+    local badges = row:GetChild("countBackplates")
+    for index, expected in ipairs({"1", "4"}) do
+        local count = row:GetChild("count" .. index)
+        local badge = badges:GetChild("badge" .. index)
+        assert(count.visible and count.text == expected and badge.visible)
+        assert(count.sizeDeltaX >= L.nativeText.lineHeight and count.sizeDeltaY >= L.nativeText.lineHeight,
+            "the native glyph must fit inside its transparent frame")
+        assert(count.x == badge.x and count.y == badge.y and badge.sizeDeltaX < count.sizeDeltaX,
+            "the expanded text does not move or enlarge the single-digit badge")
+    end
+end
+
 for _, mobile in ipairs({false, true}) do
     local _, ui, panel, battle = setup(mobile)
     local detail = panel:GetChild("statusInfo")
@@ -32,74 +78,102 @@ for _, mobile in ipairs({false, true}) do
     local player = panel:GetChild("hero")
     local monster = enemyControl(panel, "enemy1")
     local targets = {
-        {index = 0, portrait = player:GetChild("hit"), power = player:GetChild("statusRow"):GetChild("hit1"), amount = 3},
-        {index = 1, portrait = monster:GetChild("hit"), power = enemyPower(monster, "strength"):GetChild("hit"), amount = 2},
+        {index = 0, actor = battle.player, portrait = player:GetChild("hit"),
+            power = player:GetChild("statusRow"):GetChild("hit1"), x = player.x, amount = 3},
+        {index = 1, actor = battle.enemies[1], portrait = monster:GetChild("hit"),
+            power = enemyPower(monster, "strength"):GetChild("hit"), x = monster.x, amount = 2},
     }
 
-    local function opened(index, transient)
-        assert(detail.visible and ui.info.index == index and ui.info.transient == transient)
-        assert(not detail:GetChild("hit").visible and not detail.disableCursorEventPassthrough)
-        assert(detail:GetChild("page").visible == not transient and ground.visible == not transient)
-        assert(detail:GetChild("plate").sizeDeltaX == L.actorDetail.width)
-        local plate = detail:GetChild("plate")
-        assert(plate.x - plate.sizeDeltaX / 2 >= -Theme.canvas.base[1] / 2 + Theme.canvas.safe.x)
-        assert(plate.x + plate.sizeDeltaX / 2 <= Theme.canvas.base[1] / 2 - Theme.canvas.safe.x)
-        assert(plate.y - plate.sizeDeltaY / 2 >= -Theme.canvas.base[2] / 2 + Theme.canvas.safe.y)
-        assert(plate.y + plate.sizeDeltaY / 2 <= Theme.canvas.base[2] / 2 - L.topBar.height)
-        contains(detail:GetChild("summary").text, "生命")
-        contains(detail:GetChild("guard").text, "格挡")
-        return plate.x
+    local function opened(index, count)
+        local boxes = visibleTips(panel)
+        assert(#boxes == count and ui.info.index == index and ui.info.transient == not mobile)
+        assert(not detail:GetChild("hit").visible and not detail:GetChild("page").visible
+            and not detail.disableCursorEventPassthrough and ground.visible == mobile)
+        for _, name in ipairs({"title", "tag", "summary", "guard", "more", "plate"}) do
+            assert(not detail:GetChild(name).visible, name .. " must stay hidden")
+        end
+        return boxes
     end
 
+    local function inspect(hit)
+        if mobile then tap(hit, 7) else hit.listeners.enter() end
+    end
+
+    local visuals = {}
     local before = Combat.copy(battle)
     for _, target in ipairs(targets) do
-        local portrait, power = target.portrait, target.power
-        portrait.listeners.enter()
-        if mobile then assert(not detail.visible) else opened(target.index, true) end
-        tap(portrait, 7)
-        local x = opened(target.index, false)
-        assert(target.index == 0 and x > player.x or target.index == 1 and x < monster.x,
-            "the same card opens on the inward side of each portrait")
-        if target.index == 1 then contains(detail:GetChild("section1").text, "意图 · 尚未执行") end
-        portrait.listeners.exit()
-        opened(target.index, false)
-
-        -- A held chip can switch directly even when the previous reader suppressed its preview.
-        local function holdPower()
-            local held = {touchId = 7}
-            power.listeners.down(held)
-            ui:update(L.statusInfo.delay)
-            power.listeners.up(held)
-            power.listeners.click(held)
+        if mobile then
+            target.portrait.listeners.enter()
+            assert(not detail.visible, "touch enter cannot open a tip")
         end
-        holdPower()
-        opened(target.index, false)
+        inspect(target.portrait)
+        local first = opened(target.index, 1)[1]
+        assert((target.index == 0 and first.x > target.x) or (target.index == 1 and first.x < target.x))
+        assert(first.sizeDeltaX == L.powerTips.width)
+        assert(first:GetChild("copy").fontSize == L.powerTips.font)
+        contains(copy(first), "<color=#F5D78A>力量 " .. target.amount .. "</color>")
+        visuals[#visuals + 1] = {copy(first):gsub(tostring(target.amount), "N"), first.sizeDeltaX, first.sizeDeltaY,
+            first:GetChild("face").sizeDeltaX, first:GetChild("copy").fontSize}
+        checkBounds(first)
+
+        Combat.addStatus(target.actor, "weak", 2)
+        ui:render()
+        local entries, boxes = Combat.statusView(target.actor), opened(target.index, 2)
+        for i, entry in ipairs(entries) do contains(copy(boxes[i]), entry.name .. " " .. number(entry.amount)) end
+
+        inspect(target.power)
+        if not mobile then target.portrait.listeners.exit() end
         assert(ui.info.statusId == "strength")
-        contains(detail:GetChild("name1").text, "力量 " .. target.amount)
-        holdPower()
-        assert(not detail.visible and not ground.visible)
-        if not mobile then
-            power.listeners.enter()
-            opened(target.index, true)
-            power.listeners.exit()
-            assert(not detail.visible)
+        contains(copy(opened(target.index, 1)[1]), "力量 " .. target.amount)
+        if mobile then
+            tap(target.power, 7)
+            assert(not detail.visible and not ground.visible, "a second tap on the same chip closes it")
+            inspect(target.power)
+        end
+        target.actor.statuses.strength = nil
+        ui:render()
+        if target.index == 0 and not mobile then
+            contains(copy(opened(0, 1)[1]), "虚弱 2")
+        else
+            assert(not detail.visible and not ground.visible, "removing the selected status closes the tip")
+        end
+
+        target.actor.statuses.weak = nil
+        ui:render()
+        inspect(target.portrait)
+        assert(not detail.visible and not ground.visible, "a status-free actor displays nothing")
+        Combat.addStatus(target.actor, "strength", 2)
+        ui:render()
+        if mobile then assert(not detail.visible, "an empty tap cannot pin the next status")
+        else
+            opened(target.index, 1)
+            target.portrait.listeners.exit()
+            tap(target.portrait, 7)
+            assert(not detail.visible and not ground.visible, "PC clicks never pin status tips")
         end
     end
+    for index, value in ipairs(visuals[1]) do assert(value == visuals[2][index], "different actor tip style") end
 
-    -- The old portrait's exit must not dismiss the next actor's hover.
-    if not mobile then
-        targets[1].portrait.listeners.enter()
-        targets[2].portrait.listeners.enter()
-        targets[1].portrait.listeners.exit()
-        opened(1, true)
-        targets[2].portrait.listeners.exit()
-        assert(not detail.visible)
+    inspect(targets[1].portrait)
+    if mobile then
+        local row = player:GetChild("statusRow"):GetChild("hit")
+        inspect(row)
+        opened(0, 1)
+        inspect(row)
+        assert(not detail.visible, "only repeating the same hotspot closes its tip")
     end
-    tap(targets[1].portrait, 7)
-    tap(targets[2].portrait, 7)
-    opened(1, false)
-    ground.listeners.click({touchId = 7})
+    inspect(targets[2].portrait)
+    if not mobile then targets[1].portrait.listeners.exit() end
+    opened(1, 1)
+    if mobile then ground.listeners.click({touchId = 7})
+    else targets[2].portrait.listeners.exit() end
     assert(not detail.visible and not ground.visible)
+
+    local intent = monster:GetChild("intentHit")
+    if mobile then tap(intent, 8)
+    else intent.listeners.enter(); ui:update(L.statusInfo.delay) end
+    assert(detail.visible and ui.info.kind == "intent" and #visibleTips(panel) == 0)
+    contains(detail:GetChild("tag").text, "下一步行动")
     assert(battle.energy == before.energy and battle.turn == before.turn and #battle.hand == #before.hand
         and #battle.events == #before.events and battle.seed == before.seed)
 end
@@ -115,6 +189,7 @@ do
     for _, hit in ipairs({portrait, power, monster}) do
         local input = hit.listeners
         input.down(fresh)
+        input.down(foreign)
         input.exit(foreign)
         input.drag(foreign)
         input.endDrag(foreign)
@@ -190,7 +265,72 @@ do
     assert(not detail.visible, "a late tap must not follow a slot into the replacement battle")
     tap(hit, 43)
     assert(detail.visible)
-    contains(detail:GetChild("name1").text, "虚弱 2")
+    contains(copy(visibleTips(panel)[1]), "虚弱 2")
+end
+
+for _, mobile in ipairs({false, true}) do
+    local host, ui, panel = G.setup({"strike", "defend"},
+        {"mad_gremlin", "shield_gremlin", "fat_gremlin", "sneaky_gremlin", "wizard_gremlin"},
+        {touchScreen = function() return mobile end})
+    local battle = host.run.combat
+    local ids = {"strength", "dexterity", "vulnerable", "weak", "frail", "poison", "thorns", "regen",
+        "artifact", "barricade", "ritual", "enrage"}
+    for i, actor in ipairs(battle.enemies) do
+        actor.sourcePosition = {x = -790 + i * 200, y = (i - 1) * 12}
+        for _, id in ipairs(ids) do Combat.addStatus(actor, id, i) end
+    end
+    for _, status in ipairs(G.F.Data.statuses.statuses) do Combat.addStatus(battle.player, status.id, 1) end
+    ui:render()
+
+    local function inspect(hit)
+        if mobile then tap(hit, 91) else hit.listeners.enter() end
+    end
+    local hero = panel:GetChild("hero")
+    inspect(hero:GetChild("hit"))
+    local boxes = visibleTips(panel)
+    assert(#boxes == #Combat.statusView(battle.player), "the complete status catalog fits in the approved pool")
+    for _, box in ipairs(boxes) do checkBounds(box) end
+    local last = L.statusIcon.perRow * L.statusIcon.rows
+    inspect(hero:GetChild("statusRow"):GetChild("hit" .. last))
+    assert(#visibleTips(panel) == #Combat.statusView(battle.player) - last + 1)
+    if mobile then panel:GetChild("statusDismiss").listeners.click({touchId = 91}) end
+
+    for index, actor in ipairs(battle.enemies) do
+        local monster = enemyControl(panel, "enemy" .. index)
+        local hit = monster:GetChild("hit")
+        inspect(hit)
+        local entries = Combat.statusView(actor)
+        boxes = visibleTips(panel)
+        assert(ui.info.actor == actor and #boxes == #entries, "the live actor owns all its visible tips")
+        assert(boxes[#boxes].x < boxes[1].x, "enemy overflow columns grow inward")
+        for _, box in ipairs(boxes) do checkBounds(box) end
+        if Theme.presentationProfile == "official-assets-first" then
+            local more = enemyPower(monster, "@more"):GetChild("hit")
+            inspect(more)
+            boxes = visibleTips(panel)
+            assert(ui.info.offset > 1 and #boxes == #entries - ui.info.offset + 1)
+            for i, box in ipairs(boxes) do
+                local entry = entries[ui.info.offset + i - 1]
+                contains(copy(box), entry.name)
+                checkBounds(box)
+            end
+        end
+        if mobile then panel:GetChild("statusDismiss").listeners.click({touchId = 91}) end
+    end
+
+    local retired = enemyPower(enemyControl(panel, "enemy5"), "strength"):GetChild("hit")
+    local event = {touchId = 92}
+    if mobile then retired.listeners.down(event) else retired.listeners.enter() end
+    local replacement = G.Run.new(G.F.Data, 92)
+    assert(G.Run.startCombat(replacement, "cultist_solo"))
+    Combat.addStatus(replacement.combat.enemies[1], "strength", 42)
+    host.run, ui.run = replacement, replacement
+    host:refresh()
+    if mobile then retired.listeners.up(event); retired.listeners.click(event)
+    else retired.listeners.exit(); retired.listeners.enter() end
+    assert(#visibleTips(panel) == 0, "a retired enemy cannot open tips in a new battle")
+    inspect(enemyPower(enemyControl(panel, "enemy1"), "strength"):GetChild("hit"))
+    contains(copy(visibleTips(panel)[1]), "力量 42")
 end
 
 print("COMBAT_ACTOR_DETAILS_PASS")

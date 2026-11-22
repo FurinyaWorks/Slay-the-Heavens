@@ -66,8 +66,8 @@ function M.install(owner, ownership, host, dependencies)
         self:renderDetailsOnly()
         return true
     end
-    function owner:showStatus(index, source, transient)
-        return self:openHelp({index = index, toggle = not transient}, source, transient)
+    function owner:showStatus(index, source, transient, powerTips)
+        return self:openHelp({index = index, toggle = not transient and not powerTips, powerTips = powerTips}, source, transient)
     end
     local function actorDetailAvailable(transient)
         if owner.gesture or owner.carry or owner.potionMenu then return false end
@@ -78,7 +78,7 @@ function M.install(owner, ownership, host, dependencies)
         local info = owner.info
         if not info or transient or info.transient or info.actor ~= actor
             or info.battle ~= battle or info.turn ~= battle.turn then return false end
-        if info.statusId ~= spec.statusId or info.offset ~= spec.offset then return false end
+        if info.powerTips ~= spec.powerTips or info.statusId ~= spec.statusId or info.offset ~= spec.offset then return false end
         return spec.toggle or not spec.kind and source and source == info.source
     end
     local function helpContext(spec)
@@ -94,6 +94,7 @@ function M.install(owner, ownership, host, dependencies)
         local battle, actor, reward = helpContext(spec)
         if not actor then return false end
         if not spec.kind and not actorDetailAvailable(transient) then return false end
+        if spec.powerTips and self.potionAim then return false end
         local cancelled = dependencies.cancelPotionAim("已取消药水瞄准。")
         if repeatsDetail(spec, source, transient, battle, actor) then
             closeInfo()
@@ -104,8 +105,8 @@ function M.install(owner, ownership, host, dependencies)
             local help = self.help
             if help and source ~= help.source then self.help = nil end
         end
-        self.info={index=spec.index,id=actor.id,actor=actor,battle=battle,kind=spec.kind,statusId=spec.statusId,
-            offset=spec.offset,uid=spec.uid,source=source,transient=transient==true,turn=battle.turn,
+        self.info={index=spec.index,id=actor.id,actor=actor,battle=battle,kind=spec.kind,powerTips=spec.powerTips,statusId=spec.statusId,
+            offset=spec.offset,position=transient and spec.position or nil,uid=spec.uid,source=source,transient=transient==true,turn=battle.turn,
             slot=spec.slot,potionId=spec.potionId,inventory=spec.inventory,reward=reward and spec or nil}
         self:renderDetailsOnly(cancelled)
         return self.info ~= nil

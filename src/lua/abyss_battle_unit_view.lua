@@ -162,7 +162,8 @@ function M.new(picture, tint, ink, statusKind)
             tint(statusImage, C.text)
             local countX, countY = statusCount(count, entry, x, y, overflow, layout)
             local digits=math.max(L.statusIcon.size,utf8.len(count.text)*Theme.font.small+S.hairline*2)
-            count:SetSizeDelta(digits,L.nativeText.lineHeight)
+            -- Keep the transparent text frame wide enough for the native font's digits.
+            count:SetSizeDelta(math.max(digits,L.nativeText.lineHeight),L.nativeText.lineHeight)
             row:GetChild("countBackplates"):GetChild("badge"..i):SetSizeDelta(digits,L.statusIcon.size)
             statusPlates(row, i, entry, overflow, x, y, countX, countY)
         else

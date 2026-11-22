@@ -119,7 +119,8 @@ function statusRow(top) {
       { ...panel(`body${i + 1}`, x, y, si.size, si.size, c.panelSunken), visible: false });
     icons.push({ ...picture(`icon${i + 1}`, x, y, si.size, si.size, theme.icon.status.strength, c.text), visible: false });
     badges.push({ ...picture(`badge${i + 1}`, x, y, si.size, si.size, im.disc, c.panelSunken), visible: false });
-    counts.push({ ...text(`count${i + 1}`, x + si.size / 2, y - si.size / 2 + si.gap, si.size, l.nativeText.lineHeight, '', f.small, c.text), visible: false });
+    counts.push({ ...text(`count${i + 1}`, x + si.size / 2, y - si.size / 2 + si.gap,
+      Math.max(si.size, l.nativeText.lineHeight), l.nativeText.lineHeight, '', f.small, c.text), visible: false });
     targets.push({ ...hit(si.minimumTouch, si.minimumTouch), name: `hit${i + 1}`, position: [0, 0], visible: false });
   }
   return { name: 'statusRow', kind: 'container', position: [0, top - (si.rows - 1) * pitch / 2], size: [bw, height],
@@ -163,9 +164,22 @@ function statusInfo() {
     panel('rule', 0, 0, inner, s.hairline, c.line),
     ...sections,
     ...rows,
+    powerTips(),
     text('more', 0, 0, inner, line, '', f.small, c.textDim),
     { ...hit(si.width, si.width), name: 'page' },
   ] };
+}
+
+function powerTips() {
+  const tip = l.powerTips;
+  return { name: 'powerTips', kind: 'container', size: [...theme.canvas.base], visible: false,
+    children: Array.from({ length: tip.rows }, (_, i) => ({
+      name: `tip${i + 1}`, kind: 'container', size: [tip.width, l.nativeText.lineHeight], visible: false, children: [
+        panel('edge', 0, 0, tip.width, l.nativeText.lineHeight, tip.border),
+        panel('face', 0, 0, tip.width, l.nativeText.lineHeight, tip.fill),
+        aligned(text('copy', 0, 0, tip.width, l.nativeText.lineHeight, '', tip.font, c.text)),
+      ],
+    })) };
 }
 
 export function handPose(count, index, selected = false) {

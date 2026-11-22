@@ -54,7 +54,18 @@ function M.install(owner, ownership, host, dependencies)
                 owner.cardAim=token
                 if not controller then owner:render() end
             end
-            local function chooseEnemy()
+            local device = host.platform and host.platform.touchScreen
+            local function selectedCard()
+                local battle = owner.run and owner.run.combat
+                for _, instance in ipairs(battle and battle.hand or {}) do
+                    if instance.uid == owner.selected then return instance end
+                end
+            end
+            local function inspectEnemy(target, pointer)
+                if pointer and device and not device() then return false end
+                return owner:showStatus(target, control, false, device and true or nil)
+            end
+            local function chooseEnemy(pointer)
             local entry=entryAt()
             if not entry then return false end
             local target=entry.index
@@ -67,21 +78,13 @@ function M.install(owner, ownership, host, dependencies)
             end
             if owner.active and not owner.busy and owner.run.phase == "combat" and Actors.isActive(current) then
                 owner.target = target
-                local selected
-                for _, instance in ipairs(owner.run.combat.hand) do
-                    if instance.uid == owner.selected then selected = instance break end
-                end
+                local selected = selectedCard()
                 if selected and needsTarget(owner.run.combat, selected) then owner:playSelected(target)
-                else
-                    return owner:showStatus(target, control)
-                end
+                else return inspectEnemy(target, pointer) end
             end
             end
             Controller.bind(host.controller,control,function()
-                local selected
-                if owner.run and owner.run.combat then
-                    for _,card in ipairs(owner.run.combat.hand)do if card.uid==owner.selected then selected=card end end
-                end
+                local selected = selectedCard()
                 return (owner.potionAim or selected and needsTarget(owner.run.combat,selected)) and "aim" or "battle"
             end,function()owner.suppressClick=false;return chooseEnemy()end,function()
                 local entry=entryAt()
@@ -114,13 +117,15 @@ function M.install(owner, ownership, host, dependencies)
                     input.held, input.released = nil, nil
                     if not dependencies.enemyReady(released) then return end
                 end
-                if not dependencies.consumeReleasedDragClick(event) and not owner.suppressClick and not owner.gesture then return chooseEnemy() end
+                if not dependencies.consumeReleasedDragClick(event) and not owner.suppressClick and not owner.gesture then return chooseEnemy(true) end
             end)
             if not entryAt() then return end
             local function bindPointer()
                 control:AddCursorEventListener(host.cursor.CursorDown, function(event)
                     if not entryAt() then return false end
                     ownership.enemyPointerObserved = true
+                    local token = input.held or input.released
+                    if token and dependencies.enemyReady(token) and token.touch ~= (event and event.touchId) then return end
                     local dismissed = dependencies.down(event, true)
                     input.held, input.released = nil, nil
                     if dismissed then return end
@@ -155,12 +160,11 @@ function M.install(owner, ownership, host, dependencies)
                         retireAim(released)
                     end
                 end
-                local device = host.platform and host.platform.touchScreen
                 if device and host.cursor.CursorEnter and host.cursor.CursorExit then
                     control:AddCursorEventListener(host.cursor.CursorEnter,function()
                         if device() or Controller.isController(host.controller) or Controller.pointerBlocked(host.controller) or owner.selected then return end
                         local entry = entryAt()
-                        if entry then return owner:showStatus(entry.index, control, true) end
+                        if entry then return owner:showStatus(entry.index, control, true, true) end
                     end)
                 end
                 if not entryAt() then return end
