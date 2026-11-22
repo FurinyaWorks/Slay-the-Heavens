@@ -45,7 +45,8 @@ test('blessing, map and reward potion slots mount the same final battle faces in
 test('battle and noncombat potion popups share compact panel and action tokens',()=>{
  const tree=layout(),battle=child(tree,'battlePanel'),theme=officialAssetsTheme(nativeTheme);
  const popup=child(child(battle,'potionHelp'),'potionPopup');
- assert.deepEqual(child(tree,'potionPanel'),{...popup,name:'potionPanel',isolateNavigation:true});
+ assert.deepEqual(child(tree,'potionPanel'),{...popup,name:'potionPanel'});
+ assert.equal(popup.isolateNavigation,undefined);
  assert.equal(child(popup,'plate').image,theme.image.rect);
  assert.equal(child(popup,'plate').colour,theme.color.panel);
  assert.equal(child(popup,'border').colour,theme.color.goldDim);
