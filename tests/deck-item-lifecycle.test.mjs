@@ -54,7 +54,7 @@ local panel=root:GetChild('deckPanel');local grid=panel:GetChild('pileGrid');loc
 local hit=root:GetChild('deckEntry'):GetChild('open'):GetChild('hit')
 local oldRender=map.render;local renders=0
 map.render=function(...)renders=renders+1;return oldRender(...)end
-local layoutWrites,unusedWrites,probePaints=0,0,0
+local layoutWrites,geometryWrites,unusedWrites,probePaints=0,0,0,0
 local createCell=grid.recycle
 function grid:recycle(slot,index)
  if not self.items[slot] then
@@ -64,6 +64,13 @@ function grid:recycle(slot,index)
   art.SetImage=function(...)if self.itemCount==1 then probePaints=probePaints+1 end;return oldImage(...)end
   local frame=face:GetChild('stsReferenceChrome'):GetChild('frame')
   for _,batch in ipairs(frame:GetChildren())do for _,part in ipairs(batch:GetChildren())do
+   for _,method in ipairs({'SetSizeDelta','SetLocalScale','SetLocalRotation','SetVisible'})do
+    local original=part[method]
+    part[method]=function(...)
+     geometryWrites=geometryWrites+1
+     return original(...)
+    end
+   end
    local oldPosition=part.SetAnchoredPosition
    part.SetAnchoredPosition=function(...)
     layoutWrites=layoutWrites+1
@@ -85,7 +92,9 @@ local node=F.mapControl(root:GetChild('mapPanel'),'node'..assert(slot)):GetChild
 local event={touchId=7,GetUIPos=function()return 0,0 end}
 node.listeners.down(event)
 renders=0;assert(hit.click());local coldRenders=renders
-host:update(0);node.listeners.up(event)
+assert(grid.itemCount==80 and not deck.pending and not deck.calibrating,
+    'cold map deck waited for an update after synchronous native callbacks')
+node.listeners.up(event)
 assert(not node.click(event) and not map:choose(first.id));assert(not map:scrollBy(20))
 assert(grid.itemCount==80 and deck.bindings[grid.items[0]].uid==1001 and deck.bindings[grid.items[1]].uid==1002)
 local function framePart(slot,index)
@@ -93,18 +102,19 @@ local function framePart(slot,index)
 end
 assert(framePart(0,48).visible and not framePart(0,49).visible,'attack lost its authored silhouette')
 assert(framePart(1,68).visible and not framePart(1,69).visible,'skill lost its authored silhouette')
-local coldWrites,coldUnused,coldDefinitions=layoutWrites,unusedWrites,definitionCalls
+local coldWrites,coldGeometry,coldUnused,coldDefinitions=layoutWrites,geometryWrites,unusedWrites,definitionCalls
 assert(host:closeDeck());assert(not node.click(event),'closing revived the old map press')
 assert(map:scrollBy(130));local scroll=map.scroll
 renders=0;assert(hit.click());host:update(0)
 assert(deck:setSort('original'));assert(deck:setSort('original'));assert(deck.bindings[grid.items[0]].uid==1080)
 assert(framePart(0,68).visible and not framePart(1,49).visible,'recycled cells retained the previous silhouette')
 assert(host:closeDeck())
-print('map-deck renders='..coldRenders..' warm_round_trip='..renders..' probe_art='..probePaints..' frame_positions='..coldWrites..' unused_positions='..coldUnused..' definitions='..coldDefinitions)
+print('map-deck renders='..coldRenders..' warm_round_trip='..renders..' probe_art='..probePaints..' frame_positions='..coldWrites..' other_frame_writes='..coldGeometry..' unused_positions='..coldUnused..' definitions='..coldDefinitions)
 assert(map.visible and map.navigationEnabled and map.scroll==scroll,'return lost the existing map position')
 assert(host.run.deck==cards and cards[1].uid==1001)
 assert(coldRenders==0 and renders==1,'deck repainted the covered map or redrew it twice on return')
 assert(probePaints==0 and coldWrites<=6*68 and coldUnused==0,'cold grid repainted its probe, default attacks or unused frame shapes')
+assert(coldWrites+coldGeometry<=1464,'cold browser replayed unchanged template geometry')
 assert(coldDefinitions==12,'default sorting resolved definitions outside the requested native cells')
 print('DECK_REUSE_PASS')`);
  t.diagnostic(output.split('\n').find(line=>line.startsWith('map-deck ')));
