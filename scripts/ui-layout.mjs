@@ -163,9 +163,22 @@ function statusInfo() {
     panel('rule', 0, 0, inner, s.hairline, c.line),
     ...sections,
     ...rows,
+    powerTips(),
     text('more', 0, 0, inner, line, '', f.small, c.textDim),
     { ...hit(si.width, si.width), name: 'page' },
   ] };
+}
+
+function powerTips() {
+  const tip = l.powerTips;
+  return { name: 'powerTips', kind: 'container', size: [...theme.canvas.base], visible: false,
+    children: Array.from({ length: tip.rows }, (_, i) => ({
+      name: `tip${i + 1}`, kind: 'container', size: [tip.width, l.nativeText.lineHeight], visible: false, children: [
+        panel('edge', 0, 0, tip.width, l.nativeText.lineHeight, tip.border),
+        panel('face', 0, 0, tip.width, l.nativeText.lineHeight, tip.fill),
+        aligned(text('copy', 0, 0, tip.width, l.nativeText.lineHeight, '', tip.font, c.text)),
+      ],
+    })) };
 }
 
 export function handPose(count, index, selected = false) {
@@ -230,6 +243,9 @@ export function battleLayout() {
     ];
   };
   const controls = [
+    // Empty ground only. Actors, hand and combat actions are above this hit.
+    { ...hit(width - theme.canvas.safe.x * 2, height - bar.height - theme.canvas.safe.y), name: 'statusDismiss',
+      position: [0, (theme.canvas.safe.y - bar.height) / 2], focusable: false, visible: false },
     // Behind actors and hand: a distinct C-mode confirmation surface on open ground.
     { name: 'playArea', kind: 'container', position: l.cardDrag.playArea.slice(0, 2), size: l.cardDrag.playArea.slice(2), visible: false, children: [
       text('label', 0, -l.cardDrag.playArea[3] / 2 + s.xl, l.cardDrag.playArea[2], l.nativeText.lineHeight, '', f.body, c.goldBright),
@@ -239,6 +255,8 @@ export function battleLayout() {
       panel('steel',0,0,width,bar.height,c.panelSunken),
       panel('edge',0,-bar.height/2,width-80,1,c.goldDim),
       panel('leftRule',-156,0,32,1,c.gold), panel('rightRule',156,0,32,1,c.gold),
+      // The retired map pin remains hidden inside its HUD owner.
+      { ...glyph('floorIcon', bar.floorIcon, theme.icon.map, c.topPanelCream), position: [bar.floorIcon[0], 0], visible: false },
     ]},
     // Post-battle card pick: a framed stage that separates reward choosing from playing the hand.
     { name: 'rewardStage', kind: 'container', position: l.rewardPick.stage.slice(0, 2), size: l.rewardPick.stage.slice(2), visible: false, children: [
@@ -259,8 +277,7 @@ export function battleLayout() {
     // STS TopPanel.renderHP: SALMON cur/max; renderDungeonInfo: floor icon + CREAM floor number.
     glyph('hpIcon', bar.hpIcon, theme.icon.hp, c.hp), chip('player', bar.hp, c.topPanelHp),
     glyph('goldIcon', bar.goldIcon, theme.icon.gold, c.text), chip('piles', bar.gold, c.topPanelGold),
-    // Owner 2026-10-31: the white map-pin read as a stray non-potion slot beside the potion row; keep the node (contract) but never show it.
-    { ...glyph('floorIcon', bar.floorIcon, theme.icon.map, c.topPanelCream), visible: false }, chip('floor', bar.floor, c.topPanelCream),
+    chip('floor', bar.floor, c.topPanelCream),
     clickableImage(glyph('exhaustIcon', bar.exhaustIcon, theme.icon.exhaust, c.textDim),
       { ...hit(bar.exhaust[0] + bar.exhaust[1] / 2 - bar.exhaustIcon[0] + bar.exhaustIcon[1] / 2, Math.max(44,bar.height)),
         position: [(bar.exhaust[0] + bar.exhaust[1] / 2 - bar.exhaustIcon[0] - bar.exhaustIcon[1] / 2) / 2,
