@@ -1,4 +1,4 @@
-// Exact Develop predecessors for Release backflow. Live builds read current sources.
+// Exact Develop predecessors for historical replay. Live builds read current sources.
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
@@ -17,7 +17,16 @@ const traveler=JSON.parse(gunzipSync(travelerArchive));
 assert.equal(traveler.base,shopBase);
 assert.deepEqual(Object.keys(traveler.files),['src/lua/abyss_battle_detail_bindings.lua','tests/lua/traveler_power_tooltip.lua']);
 for(const path of Object.keys(traveler.files))assert(!Object.hasOwn(releaseFiles,path)&&!Object.hasOwn(shop,path),'distinct Develop backflow source owner: '+path);
-const files={...releaseFiles,...traveler.files};
+const eventArchive=readFileSync(new URL('../fixtures/event-projection-predecessors.json.gz',import.meta.url));
+assert.equal(hash(eventArchive),'87e8e3e410ad515264f668ca53abd8fee8bf8c57b7603c10d7c60882cb9339ea','exact event projection source archive');
+const eventProjection=JSON.parse(gunzipSync(eventArchive));
+assert.equal(eventProjection.base,'8a59d03c26ec54360c4e6953958522dc8d2e8d07');
+assert.deepEqual(Object.keys(eventProjection.files),[
+ 'src/lua/abyss_act2_events.lua','src/lua/abyss_act3_events.lua','src/lua/abyss_colorless_cards.lua',
+]);
+const backflowFiles={...releaseFiles,...traveler.files};
+for(const path of Object.keys(eventProjection.files))assert(!Object.hasOwn(backflowFiles,path)&&!Object.hasOwn(shop,path),'distinct event projection source owner: '+path);
+const files={...backflowFiles,...eventProjection.files};
 for(const {before,after} of [...Object.values(files),...Object.values(shop)]){
  assert.equal(hash(before.source),before.sha256);
  assert.equal(blob(before.source),before.gitBlob);

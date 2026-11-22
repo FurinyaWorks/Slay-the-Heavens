@@ -120,7 +120,12 @@ function beforeIntegratedReleaseCopier(path,source){
 }
 function beforeDevelopBackflowCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
- const lf=normalize(source);
+ let lf=normalize(source);
+ if(hash(lf)==='232a614e663999eb858d1f351dffee89ac821ce75e47c60c33122e42972c3ee4'){
+  lf=lf.replace(/^const eventProjectionFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
+   .replace('Object.entries(eventProjectionFiles))','Object.entries(developBackflowFiles))');
+  assert.equal(hash(lf),'287ddbb54bfec7eadf72bceea09c77c8029410c8ef03465d88a0fba6b023413b','exact event projection copier predecessor');
+ }
  if(hash(lf)!=='287ddbb54bfec7eadf72bceea09c77c8029410c8ef03465d88a0fba6b023413b')return source;
  const prior=lf.replace(/const developBackflowFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
    .replace('Object.entries(developBackflowFiles))','Object.entries(stsCloseoutFiles))');
