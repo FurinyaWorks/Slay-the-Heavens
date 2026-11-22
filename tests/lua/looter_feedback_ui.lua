@@ -8,7 +8,7 @@ test('gold HUD follows each displayed event frame, not committed final balance',
  for i=1,100 do h:update(.05);if u.feedback.current and u.feedback.current.kind=='gold_stolen' then saw=true;assert(p:GetChild('piles').text=='84');break end end
  assert(saw);d()
 end)
-test('escape is a separate three-second presentation, never death or target',function()
+test('final escape plays once and goes straight to rewards',function()
  local h,u,p,e,t,d=H.setup(nil,{'looter'});local escaped=false
  for turn=1,5 do
   if h.run.phase~='combat' then break end;t('endTurn',turn)
@@ -17,9 +17,13 @@ test('escape is a separate three-second presentation, never death or target',fun
    if u.feedback.current and u.feedback.current.kind=='enemy_escape' then
     local id=h.run.combat.enemies[1].id;assert(not u.feedback.deaths[id]);assert(monsterControl(p,'enemy1').visible)
     local list=p:GetChild('rewardList')
-    h:update(2.9)
-    assert(u.feedback.current.kind=='enemy_escape' and monsterControl(p,'enemy1').visible and not list.visible)
-    h:update(.11)
+    local frames=0
+    while not list.visible and frames<200 do
+     h:update(1/60);frames=frames+1
+     if frames==15 then assert(monsterControl(p,'enemy1').visible and not list.visible,'escape must be visible before rewards')end
+    end
+    print('REWARD_ESCAPE_TO_LIST_FRAMES '..frames)
+    assert(frames>=30 and frames<=33,'final escape to rewards took '..frames..' frames at 60 Hz')
     assert(not u.busy and not u.feedback.current and not monsterControl(p,'enemy1'))
     assert(list.visible and list:GetChild('title').text=='敌人已逃跑')
     escaped=true;break
