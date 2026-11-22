@@ -69,14 +69,6 @@ function M.new(self, describe, lines)
             name = entry.name .. (entry.stack == "none" and "" or " " .. number(entry.amount)) }
     end
 
-    local function intentCard(card, battle, info)
-        local view = projectedIntent(battle, info.index)
-        card.tag, card.accent, card.hp = "下一步行动", describe.intentColors[view.kind] or C.textDim, nil
-        card.subtitle = "尚未执行 · 敌方回合时发生"
-        card.sections[1] = { rows = view.rows }
-        return card
-    end
-
     local function potionRows(data, battle, info)
         if self.run.potions ~= info.inventory or self.run.potions[info.slot] ~= info.potionId then return end
         local definition = find(data.potions.potions, "id", info.potionId)
@@ -271,14 +263,28 @@ function M.new(self, describe, lines)
         end
     end
 
+    local function powerBody(row)
+        local body = row.text or ""
+        if row.tag and row.tag ~= "" and tonumber(row.tag) == nil then body = body .. "。 " .. row.tag end
+        if row.note and row.note ~= "" then body = body .. "。 " .. row.note end
+        return body
+    end
+
     local function powerRows(entries, battle, info, actor)
         local rows = {}
+        if info.index > 0 and not info.statusId and not info.offset then
+            local view = projectedIntent(battle, info.index)
+            local effects = {}
+            for _, row in ipairs(view.rows) do
+                effects[#effects + 1] = view.hidden and powerBody(row) or row.name .. "\n" .. powerBody(row)
+            end
+            if #effects > 0 then
+                rows[1] = {name = view.hidden and view.label or "下一步行动", body = table.concat(effects, "\n")}
+            end
+        end
         for _, entry in ipairs(selectedEntries(entries, info) or {}) do
             local row = statusRow(entry, battle, actor)
-            local body = row.text or ""
-            if row.tag and row.tag ~= "" and tonumber(row.tag) == nil then body = body .. "。 " .. row.tag end
-            if row.note and row.note ~= "" then body = body .. "。 " .. row.note end
-            rows[#rows + 1] = {name = row.name, body = body}
+            rows[#rows + 1] = {name = row.name, body = powerBody(row)}
         end
         return #rows > 0 and rows or nil
     end
@@ -288,7 +294,6 @@ function M.new(self, describe, lines)
         if info.powerTips then return powerRows(entries, battle, info, actor) end
         local card = {title = actor.name or "旅行者", tag = "当前状态", accent = C.gold,
             hp = actor.hp, maxHp = actor.maxHp, block = actor.block, sections = {}}
-        if info.kind == "intent" then return intentCard(card, battle, info) end
         if info.kind == "card" or info.kind == "potion" or info.kind=='rewardCard' then return keywordCard(card, data, presentation, battle, info, actor) end
         card.actorDetail = true
         entries = selectedEntries(entries, info)

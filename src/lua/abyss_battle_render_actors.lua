@@ -231,6 +231,10 @@ function M.install(owner, ownership, host, dependencies)
         local geometry=EnemyView.geometry(enemy)
         host.unit(box, enemy, portrait, enemyPortraitIcon(enemy), width, selected,step,geometry)
         host.monsterPowers:render(box,entry.controlSlot,enemy,geometry)
+        local hpHit = box:GetChild('hpHit')
+        hpHit:SetAnchoredPosition(geometry.healthX, geometry.healthY)
+        hpHit:SetSizeDelta(geometry.hitWidth + S.border * 2, geometry.healthHeight + S.border * 2)
+        hpHit:SetVisible(Actors.isPresent(enemy))
         box:GetChild('hit'):SetSizeDelta(geometry.hitWidth,geometry.hitHeight)
         box:GetChild('hit'):SetAnchoredPosition(geometry.hitX-x,geometry.hitY-y)
         local dim = (aim.pendingTarget or owner.potionAim ~= nil) and not selected
@@ -297,7 +301,7 @@ function M.install(owner, ownership, host, dependencies)
     end
     local function hideEscapingHud(box,id)
         if not owner.feedback.escaping[id] then return end
-        for _,name in ipairs({'hpBorder','hpTrack','hpGhost','hpFill','hp','blockEdge','blockIcon','block','name','statusRow','intentIcon','intentBadge','intentExtra','intent','intentHit'})do
+        for _,name in ipairs({'hpBorder','hpTrack','hpGhost','hpFill','hp','hpHit','blockEdge','blockIcon','block','name','statusRow','intentIcon','intentBadge','intentExtra','intent','intentHit'})do
             local control=box:GetChild(name)
             intentVisibilities[control]=nil
             local ok,why=pcall(control.SetVisible,control,false)

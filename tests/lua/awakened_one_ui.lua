@@ -1,3 +1,4 @@
+local readPowers=dofile('tests/lua/support/power_tip_fixture.lua')
 local monsterControl=dofile('tests/lua/support/monster_control_fixture.lua')
 -- Generated-control fixture with explicit boundary HP. Not a natural route,
 -- native candidate import, or live game/desktop evidence.
@@ -35,14 +36,14 @@ assert(not A.isActive(e)and A.isPresent(e))
 has(rebirth.text,'300');has(rebirth.text,'第二形态')
 click(monsterControl(panel,'enemy1'):GetChild('intentHit'),103)
 local info=panel:GetChild('statusInfo')
-assert(info.visible);has(info:GetChild('text1').text,'300');has(info:GetChild('text1').text,'第二形态')
-click(info:GetChild('hit'),104)
+assert(info.visible);has(readPowers(panel),'300');has(readPowers(panel),'第二形态')
+click(panel:GetChild('statusDismiss'),104)
 assert(not info.visible)
 click(monsterControl(panel,'enemy1'):GetChild('intentHit'),105)
--- This hit opens the next-action card, whose subtitle describes timing.
-assert(info.visible and ui.info.kind=='intent')
-has(info:GetChild('summary').text,'尚未执行');has(info:GetChild('text1').text,'300')
-click(info:GetChild('hit'),106)
+-- Both the intent and the half-dead body open the same next-action reader.
+assert(info.visible and ui.info.powerTips and not ui.info.kind)
+has(readPowers(panel),'下一步行动');has(readPowers(panel),'300')
+click(panel:GetChild('statusDismiss'),106)
 tap('endTurn',107);drain()
 assert(host.run.phase=='combat'and e.hp==300 and not e.halfDead)
 assert(monsterControl(panel,'enemy1').visible)
@@ -50,8 +51,8 @@ assert(monsterControl(panel,'enemy1'):GetChild('hp').text=='300/300')
 assert(monsterControl(panel,'enemy1'):GetChild('intent').text=='40')
 -- The revived actor is now eligible for its real body/status entry point.
 tap('enemy1',110)
-assert(info.visible and ui.info.kind==nil);has(info:GetChild('summary').text,'生命 300/300')
-click(info:GetChild('hit'),111)
+assert(info.visible and ui.info.powerTips);has(readPowers(panel),'40')
+click(panel:GetChild('statusDismiss'),111)
 assert(not info.visible and e.hp==300 and not e.halfDead)
 -- Project the source mixed intent without mutating it during preview.
 for i,intent in ipairs(e.intents)do if intent.id=='sludge'then e.intentIndex=i end end

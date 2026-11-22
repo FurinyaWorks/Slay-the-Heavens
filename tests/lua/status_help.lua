@@ -1,3 +1,4 @@
+local readPowers=dofile('tests/lua/support/power_tip_fixture.lua')
 local monsterControl=dofile('tests/lua/support/monster_control_fixture.lua')
 local H = dofile("tests/lua/support/battle_gesture_fixture.lua")
 local Combat = H.F.Combat
@@ -30,28 +31,20 @@ test("debuff intent is an upcoming action, not an existing status or a stack cou
     assert(require('abyss_battle_intent_view').intentView(s,1).label=='削弱')
     assert((s.player.statuses.frail or 0)==0 and (s.enemies[1].statuses.frail or 0)==0)
     emit(monsterControl(p,"enemy1"):GetChild("intentHit"),"click")
-    local info=p:GetChild("statusInfo")
-    assert(info.visible and info:GetChild("tag").text:find("下一步行动",1,true))
-    assert(info:GetChild("summary").text:find("尚未执行",1,true))
-    assert(info:GetChild("text1").text:find("使你获得 1 回合脆弱",1,true))
-    -- The row names the status and stack, says how long it would last and what it would do.
-    assert(info:GetChild("name1").text=="脆弱 1" and info:GetChild("tag1").text=="持续 1 回合")
-    assert(info:GetChild("note1").text:find("25%",1,true))
+    local copy = readPowers(p)
+    assert(copy:find("下一步行动",1,true) and copy:find("使你获得 1 回合脆弱",1,true))
+    assert(copy:find("脆弱 1",1,true) and copy:find("持续 1 回合",1,true) and copy:find("25%",1,true))
     assert((s.player.statuses.frail or 0)==0 and (s.enemies[1].statuses.frail or 0)==0)
 end)
 test("actual Vulnerable names its owner, name, stack and effect in visible text frames",function()
     local h,u,p,s,emit=setup()
     Combat.addStatus(s.enemies[1],"vulnerable",1); u:render()
     emit(dofile('tests/lua/support/monster_power_control_fixture.lua')(monsterControl(p,'enemy1'),'vulnerable'):GetChild('hit'),"click")
-    local info=p:GetChild("statusInfo")
-    assert(info:GetChild("name1").text=="易伤 1")
-    assert(info:GetChild("text1").text:find("50%",1,true))
-    for _,name in ipairs({"title","summary","name1","text1"}) do
-        assert(info:GetChild(name).sizeDeltaY>=H.F.Theme.layout.nativeText.lineHeight,name.." would clip on the native client")
-    end
-    local theme=H.F.Theme
-    local room=theme.canvas.base[2]-theme.layout.topBar.height-theme.space.s-theme.canvas.safe.y
-    assert(info:GetChild("plate").sizeDeltaY<=room,"detail panel must fit below the top bar")
+    local copy, rows = readPowers(p)
+    assert(#rows==1 and copy:find("易伤 1",1,true) and copy:find("50%",1,true))
+    local tip=p:GetChild("statusInfo"):GetChild("powerTips"):GetChild("tip1")
+    assert(tip:GetChild("copy").sizeDeltaY>=H.F.Theme.layout.nativeText.lineHeight)
+
 end)
 test("hover opens a read-only tooltip and exits without changing combat or target",function()
     local h,u,p,s,emit=setup()
@@ -66,7 +59,7 @@ test("hover opens a read-only tooltip and exits without changing combat or targe
     emit(hit,"exit");assert(not info.visible)
     assert(s.player.hp==before.player.hp and s.seed==before.seed and #s.events==#before.events and u.target==target)
 end)
-test("long press opens status help and its release cannot play a selected card",function()
+test("a held status tap is read-only when released",function()
     local h,u,p,s,emit=setup()
     Combat.addStatus(s.enemies[1],"vulnerable",2);u:render()
     local card
@@ -75,8 +68,8 @@ test("long press opens status help and its release cannot play a selected card",
     local hp,energy,hand=s.enemies[1].hp,s.energy,#s.hand
     local hit=dofile('tests/lua/support/monster_power_control_fixture.lua')(monsterControl(p,'enemy1'),'vulnerable'):GetChild('hit')
     emit(hit,"down",9);h:update(0.34);assert(not p:GetChild("statusInfo").visible)
-    h:update(0.02);assert(p:GetChild("statusInfo").visible)
-    emit(hit,"up",9);emit(hit,"click",9)
+    h:update(0.02);assert(not p:GetChild("statusInfo").visible)
+    emit(hit,"up",9);emit(hit,"click",9);assert(p:GetChild("statusInfo").visible)
     assert(s.enemies[1].hp==hp and s.energy==energy and #s.hand==hand and u.selected==card.uid)
 end)
 test("card keyword hover explains the keyword without granting its status",function()

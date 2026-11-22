@@ -1,3 +1,4 @@
+local readPowers=dofile('tests/lua/support/power_tip_fixture.lua')
 local monsterControl=dofile('tests/lua/support/monster_control_fixture.lua')
 local H = dofile('tests/lua/support/battle_gesture_fixture.lua')
 local Combat, Run = H.F.Combat, H.Run
@@ -53,7 +54,7 @@ test('S07 duration intent says turns before it is applied',function()
     -- Synthetic effect wording keeps a legal selected source move identity.
     s.enemies[1].intents={{id='cultist_2',kind='debuff',effects={{op='applyStatus',status='weak',value=2}}}}
     u:render();monsterControl(p,'enemy1'):GetChild('intentHit').click()
-    assert(p:GetChild('statusInfo'):GetChild('text1').text:find('2 回合虚弱',1,true),'duration must not be described as intensity')
+    assert(readPowers(p):find('2 回合虚弱',1,true),'duration must not be described as intensity')
     assert((s.player.statuses.weak or 0)==0)
 end)
 test('S08 current poison detail updates amount and next tick without a stale value',function()

@@ -1,3 +1,4 @@
+local readPowers=dofile('tests/lua/support/power_tip_fixture.lua')
 local monsterControl=dofile('tests/lua/support/monster_control_fixture.lua')
 -- Real generated per-instance controls at explicit boundary HP. Not live/native.
 local H=dofile('tests/lua/support/battle_action_fixture.lua')
@@ -15,9 +16,7 @@ local function has(text,part)assert(text:find(part,1,true),text..' missing '..pa
 local info=panel:GetChild('statusInfo')
 local function detail(box,touch,part)
  click(box:GetChild('intentHit'),touch);assert(info.visible)
- local found=false
- for i=1,4 do local row=info:GetChild('text'..i);if row and row.text and row.text:find(part,1,true)then found=true end end
- assert(found,'missing intent detail '..part);click(info:GetChild('hit'),touch+1)
+ has(readPowers(panel),part);click(panel:GetChild('statusDismiss'),touch+1)
 end
 assert(#Slots.slots(s)==3 and panel:GetChild('enemy1')==nil,'three real instances without fixed actor placeholders')
 for i,e in ipairs(s.enemies)do local box=monsterControl(panel,'enemy'..i)

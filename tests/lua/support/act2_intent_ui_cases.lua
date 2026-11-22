@@ -1,9 +1,11 @@
+local readPowers=dofile('tests/lua/support/power_tip_fixture.lua')
 local monsterControl=dofile('tests/lua/support/monster_control_fixture.lua')
 local H=dofile('tests/lua/support/battle_action_fixture.lua')
 local C=H.F.Combat
 local function details(ui,panel)
  local info,parts=panel:GetChild('statusInfo'),{}
  assert(info.visible and ui.info)
+ if ui.info.powerTips then return readPowers(panel) end
  for page=1,ui.info.pages do
   for i=1,H.F.Theme.layout.statusInfo.rows do
    for _,field in ipairs({'name','text','note','tag'})do

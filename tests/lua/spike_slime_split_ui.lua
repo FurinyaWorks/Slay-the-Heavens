@@ -92,7 +92,7 @@ statusCase('two touches cannot revive a status-dismissal target',function(hh,uu,
 end)
 for _,up in ipairs({true,false}) do
     statusCase('swallowed '..(up and 'released' or 'held')..' pointer is consumed',function(hh,uu,pp,ee,tt)
-        ee('enemy2','down',11);tt('hero',12)
+        ee('enemy2','down',11);statusTap(pp,2,12)
         assert(pp:GetChild('statusInfo').visible)
         if up then ee('enemy2','up',11) end
         ee('enemy2','click',11);assert(not pp:GetChild('statusInfo').visible)
@@ -100,9 +100,9 @@ for _,up in ipairs({true,false}) do
     end)
 end
 statusCase('opening details invalidates an older target even when another touch closes it',function(hh,uu,pp,ee,tt)
-    ee('enemy2','down',11);tt('hero',12)
+    ee('enemy2','down',11);statusTap(pp,2,12)
     assert(pp:GetChild('statusInfo').visible)
-    tt('hero',13);assert(not pp:GetChild('statusInfo').visible)
+    pp:GetChild('statusDismiss').click({touchId=13});assert(not pp:GetChild('statusInfo').visible)
     ee('enemy2','up',11);ee('enemy2','click',11)
 end)
 finish()

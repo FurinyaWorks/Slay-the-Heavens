@@ -104,12 +104,13 @@ function M.install(owner, ownership, host, dependencies)
     local function dismissForPointer(keepActor)
         if not (keepActor and owner.info and not owner.info.kind) then return dependencies.closeInfo() end
     end
-    local function prepareDown(event, keepActor)
+    local function prepareDown(event, keepActor, readOnly)
         -- The popup owns dismissal as well as Use/Discard. A lower native
         -- callback must not close it before its own action receives this Down.
         if owner.potionMenu then return true end
         if owner.potionAim and owner.potionAim.moving and owner.potionAim.touch~=(event and event.touchId) then return true end
-        retireInterruptedPress(event)
+        if readOnly and (owner.gesture or owner.carry or owner.potionAim and owner.potionAim.moving) then return true end
+        if not readOnly then retireInterruptedPress(event) end
         ownership.pointerObserved = true
         owner.help=nil
         reclaimPointer(event)
@@ -117,7 +118,7 @@ function M.install(owner, ownership, host, dependencies)
         if owner.gesture then return false end
         -- Retire a changed potion context before the target captures a token.
         -- This press only cancels; a refreshed actor must need a new Down.
-        if owner.active and not owner.busy and owner.potionAim and not dependencies.aimReady(owner.potionAim) then
+        if not readOnly and owner.active and not owner.busy and owner.potionAim and not dependencies.aimReady(owner.potionAim) then
             dependencies.cancelPotionAim("药水瞄准已失效，已取消；请重新选择药水。")
             owner.swallow = {touch = event and event.touchId}
             owner:render()

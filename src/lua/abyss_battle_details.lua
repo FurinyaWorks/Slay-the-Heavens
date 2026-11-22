@@ -53,7 +53,8 @@ function M.install(owner, ownership, host, dependencies)
         if host.potionPopup and host.potionPopup:close() then return true end
         if not owner.info then return false end
         local info = owner.info
-        local passThrough = not info.kind or info.transient and info.kind == "card"
+        local pinnedEnemy = info.powerTips and info.index > 0 and not info.transient
+        local passThrough = not info.kind and not pinnedEnemy or info.transient and info.kind == "card"
         owner.info = nil
         dependencies.child("statusInfo"):SetVisible(false)
         if not info.kind then dependencies.child("statusDismiss"):SetVisible(false) end
@@ -63,15 +64,15 @@ function M.install(owner, ownership, host, dependencies)
         local info = self.info
         if not info or info.kind or source and (info.source ~= source or not info.transient) then return false end
         closeInfo()
-        self:renderDetailsOnly()
+        if not (info.powerTips and info.index > 0) then self:renderDetailsOnly() end
         return true
     end
     function owner:showStatus(index, source, transient, powerTips)
         return self:openHelp({index = index, toggle = not transient and not powerTips, powerTips = powerTips}, source, transient)
     end
-    local function actorDetailAvailable(transient)
+    local function actorDetailAvailable(transient, enemyReader)
         if owner.gesture or owner.carry or owner.potionMenu then return false end
-        if owner.potionAim and (transient or owner.potionAim.moving) then return false end
+        if owner.potionAim and (owner.potionAim.moving or transient and not enemyReader) then return false end
         return not (transient and owner.info and not owner.info.transient)
     end
     local function repeatsDetail(spec, source, transient, battle, actor)
@@ -93,12 +94,13 @@ function M.install(owner, ownership, host, dependencies)
     function owner:openHelp(spec, source, transient)
         local battle, actor, reward = helpContext(spec)
         if not actor then return false end
-        if not spec.kind and not actorDetailAvailable(transient) then return false end
-        if spec.powerTips and self.potionAim then return false end
-        local cancelled = dependencies.cancelPotionAim("已取消药水瞄准。")
+        local enemyReader = spec.powerTips and spec.index > 0
+        if not spec.kind and not actorDetailAvailable(transient, enemyReader) then return false end
+        if spec.powerTips and not enemyReader and self.potionAim then return false end
+        local cancelled = not enemyReader and dependencies.cancelPotionAim("已取消药水瞄准。")
         if repeatsDetail(spec, source, transient, battle, actor) then
             closeInfo()
-            self:renderDetailsOnly(cancelled)
+            if not enemyReader then self:renderDetailsOnly(cancelled) end
             return true
         end
         if not spec.kind then
@@ -108,7 +110,13 @@ function M.install(owner, ownership, host, dependencies)
         self.info={index=spec.index,id=actor.id,actor=actor,battle=battle,kind=spec.kind,powerTips=spec.powerTips,statusId=spec.statusId,
             offset=spec.offset,position=transient and spec.position or nil,uid=spec.uid,source=source,transient=transient==true,turn=battle.turn,
             slot=spec.slot,potionId=spec.potionId,inventory=spec.inventory,reward=reward and spec or nil}
-        self:renderDetailsOnly(cancelled)
+        if enemyReader then
+            if not transient then
+                dependencies.cancelActionInputs()
+                for _, input in pairs(ownership.enemyInputs) do input.held, input.released = nil, nil end
+            end
+            host.renderInfo(battle)
+        else self:renderDetailsOnly(cancelled) end
         return self.info ~= nil
     end
     function owner.queueHelp(_,spec,source,held,touch,card)

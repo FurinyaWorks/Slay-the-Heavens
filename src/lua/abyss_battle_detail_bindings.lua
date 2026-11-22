@@ -18,6 +18,7 @@ local function closeSource(owner, closeInfo, control, silent)
     local info = owner.info
     if not info or info.source ~= control then return end
     if silent == true and info.powerTips then owner.info = nil
+    elseif info.powerTips and info.index > 0 then owner:dismissActorDetails(control)
     elseif info.transient then
         closeInfo()
         if silent ~= true then owner:renderDetailsOnly() end
@@ -52,6 +53,11 @@ function M.install(owner, _ownership, host, dependencies)
         local function current()return not guard or guard()end
         if not current() then return end
         local input={}
+        local enemyReader = actorControl == "enemy"
+        local function keepActor()
+            local info = owner.info
+            return actorControl and (enemyReader or not (info and info.powerTips and info.index > 0 and not info.transient))
+        end
         local function on(kind, callback) control:AddCursorEventListener(kind, callback) end
         local function show(spec, transient)
             if actorControl == "overview" then return owner:showStatus(spec.index, control, transient, spec.powerTips) end
@@ -99,7 +105,7 @@ function M.install(owner, _ownership, host, dependencies)
             return current() and token and owner.active and not owner.busy and not owner.gesture and not owner.carry and run==token.run
                 and run.phase=="combat" and run.combat==token.battle and run.combat.turn==token.turn
                 and dependencies.helpActorReady(token,run)
-                and (not token.spec.powerTips or not owner.potionAim)
+                and (not owner.potionAim or enemyReader and not owner.potionAim.moving or not token.spec.powerTips)
                 and potionCurrent(token.spec,run)
         end
         local function tappedSpec(touch)
@@ -113,12 +119,12 @@ function M.install(owner, _ownership, host, dependencies)
                 and spec.offset == token.spec.offset then return spec end
         end
         on(host.clickEvent,function(event)
-            if not current() or Controller.pointerBlocked(host.controller) then return false end
+            if not current() or Controller.pointerBlocked(host.controller) or enemyReader and event and event.dragging then return false end
             local touch = event and event.touchId
             if input.consumed and input.consumed.touch == touch then input.consumed = nil; return end
             if dependencies.consumeReleasedDragClick(event) or owner.suppressClick then return end
             local spec = tappedSpec(touch)
-            if spec and not hoverOnly(spec) and not dependencies.swallowed(event, actorControl) then return show(spec, false) end
+            if spec and not hoverOnly(spec) and not dependencies.swallowed(event, keepActor()) then return show(spec, false) end
         end)
         if not current() or not hasCursorPair("CursorDown","CursorUp") then return end
         local function bindPress()
@@ -137,7 +143,7 @@ function M.install(owner, _ownership, host, dependencies)
                 if actorControl and ready(token) and token.touch ~= (event and event.touchId) then return end
                 input.pointerObserved=true;input.held,input.released,input.consumed=nil,nil,nil
                 if hoverOnly(describe()) then return end
-                if dependencies.down(event, actorControl) then return end
+                if dependencies.down(event, keepActor(), enemyReader) then return end
                 capturePress(describe(), event)
             end)
             if not current() then return end
@@ -183,23 +189,30 @@ function M.install(owner, _ownership, host, dependencies)
         local overflow = position == slots and #entries >= slots
         local playerPosition = screenSlot == 0 and touchScreen and travelerCombat(owner.run) and position or nil
         local spec = {index = index, screenSlot = screenSlot > 0 and screenSlot or nil,
-            powerTips = touchScreen and true or nil, position = playerPosition}
+            powerTips = (screenSlot > 0 or touchScreen ~= nil) and true or nil, position = playerPosition}
         if overflow then spec.offset = position else spec.statusId = entries[position].id end
         return spec
     end
 
     local function bindActorHelp(screenSlot, box, entryAt, guard, cleanups)
-        if guard and not guard() then return end
-        if screenSlot > 0 then bindHelp(box:GetChild("intentHit"), function()
-            local entry = entryAt()
-            return entry and {kind = "intent", index = entry.index, screenSlot = screenSlot, controlBox = guard and box or nil}
-        end, true, nil, guard, cleanups) end
+        if screenSlot > 0 then
+            for _, name in ipairs({"intentHit", "hpHit"}) do
+                if guard and not guard() then return end
+                local control = box:GetChild(name)
+                local function describe()
+                    local entry = entryAt()
+                    if not entry or control.visible == false or not Actors.isPresent(entry.actor) then return end
+                    return {index = entry.index, screenSlot = screenSlot, controlBox = guard and box or nil, powerTips = true}
+                end
+                bindHelp(control, describe, true, nil, guard, cleanups, "enemy")
+            end
+        end
         if guard then return end
         for slot = 1, L.statusIcon.perRow * L.statusIcon.rows do
             local position = slot
             bindHelp(box:GetChild("statusRow"):GetChild("hit" .. slot), function()
                 return statusSpec(screenSlot, position)
-            end, true, nil, nil, nil, "status")
+            end, true, nil, nil, nil, screenSlot > 0 and "enemy" or "status")
         end
     end
 
@@ -227,8 +240,8 @@ function M.install(owner, _ownership, host, dependencies)
                 local control = dependencies.child("enemy"..slot):GetChild("statusRow"):GetChild("hit")
                 bindHelp(control, function()
                     local entry = dependencies.enemyAt(slot)
-                    return entry and {index = entry.index, screenSlot = slot, powerTips = touchScreen and true or nil}
-                end, true, nil, nil, nil, "overview")
+                    return entry and {index = entry.index, screenSlot = slot, powerTips = true}
+                end, true, nil, nil, nil, "enemy")
             end
         end
         dependencies.child("statusDismiss"):AddCursorEventListener(host.clickEvent,function(event)
@@ -334,9 +347,9 @@ function M.install(owner, _ownership, host, dependencies)
         local function describe()
             local entry, power, actor = livePower()
             if not entry then return end
-            local spec = {index=entry.index,screenSlot=actorSlot,controlBox=actorBox,powerTips=touchScreen and true or nil}
+            local spec = {index=entry.index,screenSlot=actorSlot,controlBox=actorBox,powerTips=true}
             if power.status and power.status.overflow then
-                spec.offset = touchScreen and power.status.offset or nil
+                spec.offset = power.status.offset
                 return spec
             end
             -- Resolve by power identity, never the row position or a feedback snapshot.
@@ -347,7 +360,7 @@ function M.install(owner, _ownership, host, dependencies)
                 end
             end
         end
-        bindHelp(powerBox:GetChild("hit"),describe,true,nil,function()return describe()~=nil end,binding.controls,"status")
+        bindHelp(powerBox:GetChild("hit"),describe,true,nil,function()return describe()~=nil end,binding.controls,"enemy")
     end
     local function unbindEnemyPowerControl(powerBox,engineDestroyed)
         local binding=powerBindings[powerBox]

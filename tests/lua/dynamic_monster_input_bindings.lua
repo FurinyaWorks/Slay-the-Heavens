@@ -23,7 +23,7 @@ local function control(name,parent)
  return c
 end
 local function unit(name)
- local c=control(name);control('hit',c);control('intentHit',c);local row=control('statusRow',c);control('hit',row)
+ local c=control(name);control('hit',c);control('intentHit',c);control('hpHit',c);local row=control('statusRow',c);control('hit',row)
  for i=1,Theme.layout.statusIcon.perRow*Theme.layout.statusIcon.rows do control('hit'..i,row)end
  return c
 end
@@ -71,7 +71,7 @@ local detail=Detail.install(owner,ownership,host,deps)
 target.bindEnemyControls();detail.bindDetailControls()
 local staticRecords=#ctl.records
 local function bind(slot,actor,index,box)
- if not box then box=control('dynamic'..slot);control('hit',box);control('intentHit',box) end
+ if not box then box=control('dynamic'..slot);control('hit',box);control('intentHit',box);control('hpHit',box) end
  surfaces.boxes[slot]=box;surfaces.entries[slot]={index=index,id=actor.id,actor=actor,controlSlot=slot}
  target.bindEnemyControl(slot,box);detail.bindEnemyDetailControls(slot,box)
  return box
@@ -79,7 +79,7 @@ end
 local function event(c,kind,touch)if c.listeners[kind]then return c.listeners[kind]({touchId=touch})end end
 local function click(c,touch)event(c,'down',touch);event(c,'up',touch);event(c,'click',touch)end
 local boxes={};for i,actor in ipairs(battle.enemies)do boxes[i]=bind(i,actor,i)end
-local perActor=2 -- Portrait targeting and intent only; powers have their own lifetime fixture.
+local perActor=3 -- Portrait targeting, intent and HP; powers have their own lifetime fixture.
 assert(#ctl.records==staticRecords+7*perActor,'all seven actors bind, no five limit')
 for i=1,7 do click(boxes[i]:GetChild('hit'),i);assert(calls.index==i)end
 -- A surface created from a feedback snapshot must remain usable after actual actor replaces it.
@@ -140,9 +140,9 @@ end
 failAt=100000;registrations=0
 local probe=bind(9,battle.enemies[2],2);local registrationCount=registrations
 failAt=nil;retireProbe(probe)
-assert(registrationCount==16,'expected eight target and eight intent registration sites')
+assert(registrationCount==24,'expected eight registrations each for target, intent and HP')
 for fail=1,registrationCount do
- local box=control('failed'..fail);control('hit',box);control('intentHit',box)
+ local box=control('failed'..fail);control('hit',box);control('intentHit',box);control('hpHit',box)
  registrations=0;failAt=fail
  local ok,err=pcall(function()bind(9,battle.enemies[2],2,box)end)
  failAt=nil
@@ -169,7 +169,7 @@ for fail=1,registrationCount do
  usingController=false;ctl:tick();retireProbe(fresh)
 end
 for fail=1,registrationCount do
- local box=control('retired'..fail);control('hit',box);control('intentHit',box)
+ local box=control('retired'..fail);control('hit',box);control('intentHit',box);control('hpHit',box)
  registrations=0;failAt=fail
  owner.help={source=cardHit};owner.info={source=cardHit,transient=true};ctl.memory.battle=kept
  reentrantRetire=function()retireProbe(box)end

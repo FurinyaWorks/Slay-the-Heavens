@@ -2,6 +2,7 @@ local view, Viewport, background, cardArt, portraits, v25Textures, nativeStage, 
 local artFailures={}
 local canvasWidth, canvasHeight
 local attempted = false
+local controllerEnabled = false
 local fatalMusic
 local function failed(phase, reason)
     -- The independent server music graph survives a disabled Lua UI. Retire
@@ -253,7 +254,7 @@ function OnStart()
               runTimeUnavailable = true,
               createEasterEggArt=createEasterEggArt,
               characterProfile = (alpha or isTest and testPlay == true) and "competition-candidate" or "production",
-              controllerApi = {events=Enum.ControllerNavigationEventType,directions=Enum.ControllerNavigationDir,
+              controllerApi = controllerEnabled and {events=Enum.ControllerNavigationEventType,directions=Enum.ControllerNavigationDir,
                   modes=Enum.ControllerNavigationMode,
                   getFocus=function()
                       local focus=game.GetControllerFocus()
@@ -276,7 +277,10 @@ function OnStart()
               imageFillRight = Enum.ImageFillHorizontalType and Enum.ImageFillHorizontalType.Right,
               textAlignments = {horizontal=Enum.TextHorizontalAlignment,vertical=Enum.TextVerticalAlignment},
               cursorPosition = function() return game.GetCursorUIPos() end,
-              touchScreen = function() return game.GetDevice() == Enum.Device.Mobile end,
+              touchScreen = function()
+                  local device = game.GetDevice()
+                  return device == Enum.Device.Mobile or not controllerEnabled and device == Enum.Device.MobileController
+              end,
               sound = function(cue)
                 local id = Theme.sound[cue]
                 if id and game.PlayAudio2D then

@@ -1,3 +1,4 @@
+local readPowers=dofile('tests/lua/support/power_tip_fixture.lua')
 local monsterControl=dofile('tests/lua/support/monster_control_fixture.lua')
 package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
@@ -9,23 +10,11 @@ local function fixture(ids)
  run.combat=assert(F.Combat.new(F.Data,{seed=42,enemies=ids,deck={}}));ui.run=run
  return ui,root,run.combat
 end
-local function allPages(ui,root)
- local panel=root:GetChild('statusInfo');assert(panel.visible)
- local text={}
- for _=1,ui.info.pages do
-  for i=1,F.Theme.layout.statusInfo.rows do
-   local name=panel:GetChild('name'..i)
-   if name.visible then text[#text+1]=name.text..' '..panel:GetChild('text'..i).text..' '..panel:GetChild('note'..i).text end
-  end
-  panel:GetChild('page').click()
- end
- return table.concat(text,' | ')
-end
 do
  local ui,root,s=fixture({'corrupt_heart'});ui:render()
  monsterControl(root,'enemy1'):GetChild('intentHit').click()
- assert(ui.info and ui.info.kind=='intent'and ui.info.pages>1)
- local text=allPages(ui,root)
+ assert(ui.info and ui.info.powerTips and not ui.info.kind)
+ local text=readPowers(root)
  for _,id in ipairs({'dazed','slimed','wound','burn','void'})do assert(text:find(s.catalog.cards[id].name,1,true))end
  assert(text:find('抽牌堆',1,true))
 end
@@ -36,7 +25,7 @@ do
  ui:render();dofile('tests/lua/support/intent_face_assertion.lua')(monsterControl(root,'enemy1'),require('abyss_battle_intent_view').intentView(s,1))
  assert(monsterControl(root,'enemy1'):GetChild('intent').text=='59','detached UI preview must preserve source back-attack identity')
  monsterControl(root,'enemy1'):GetChild('intentHit').click()
- local text=allPages(ui,root);assert(text:find('格挡',1,true)and text:find('58',1,true))
+ local text=readPowers(root);assert(text:find('格挡',1,true)and text:find('58',1,true))
 end
 do
  local ui,root,s=fixture({'corrupt_heart'});local e=s.enemies[1]
