@@ -3,13 +3,13 @@
 -- no keys or historical wins are granted. This is not a natural playthrough.
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Map,Run=require('abyss_map'),require('abyss_run')
-local function finishOpening(host)
+local function awaitNativePage(host)
     for _=1,80 do
         if not host.starting and not(host.prologue and host.prologue:covering())
             and not(host.pageReveal and host.pageReveal:covered())then assert(host.run and not host.disabled);return end
         OnUpdate(0.05)
     end
-    error('native opening did not finish')
+    error('native page did not become ready')
 end
 local function fixture(experimental,bgm,characterProfile)
     local canvas=F.control({children=F.Layout})
@@ -58,7 +58,7 @@ local function fixture(experimental,bgm,characterProfile)
     return host,host.root,signals
 end
 local function opening(host,root,bossCount)
-    finishOpening(host)
+    awaitNativePage(host)
     local run=host.run
     assert(run and run.campaignProfile=='competition-two-act' and host.map.floor==0)
     assert(not(host.prologue and host.prologue:covering()) and host.mode=='node' and not host.mapUI.navigationEnabled)
@@ -117,7 +117,7 @@ local function start(host,root,button,element)
     selectedGeo(host,root)
     assert(not host.run,'selection must not create a Run')
     F.click(root,'characterPanel','confirm')
-    finishOpening(host)
+    awaitNativePage(host)
     assert(not(host.prologue and host.prologue:covering()) and host.mode=='node','first confirmation completes the opening and opens the blessing')
     local baseMaxHp=opening(host,root,0)
     -- The real entry has no history provider. Never synthesize qualification
@@ -159,13 +159,16 @@ local function chest(host,bossFloor,nextAct)
     local run,map=host.run,host.map
     bossComplete(host,bossFloor)
     assert(host.mapUI:choose(Map.available(map)[1].id))
+    awaitNativePage(host)
     assert(host.nodeUI:press('treasureView/chest'))
     host.nodeUI:update(2)
+    awaitNativePage(host)
     assert(host.nodeUI:press('back'))
     assert(run.phase=='act_transition',
         'FORMAL_CAMPAIGN_STOPPED floor='..run.floor..' phase='..run.phase..'; Boss chest must continue the campaign')
     assert(host.mode=='node' and run.act==nextAct-1)
     local uid,gold=run.deck[1].uid,run.gold
+    awaitNativePage(host)
     assert(host.nodeUI:press('confirm'))
     assert(host.run==run and host.map==map and run.act==nextAct and host.mode=='map')
     assert(run.deck[1].uid==uid and run.gold==gold)
@@ -183,9 +186,15 @@ host.run.floor,host.run.phase=host.map.floor,'map'
 host.run.nodeFlow={id=host.map.currentNodeId,floor=host.map.floor,type='combat',complete=true,result='victory',
     mapSeed=host.map.seed,mapSignature=host.map.sourceSignature}
 host:refresh();assert(host.mapUI:choose(Map.available(host.map)[1].id))
+assert(host.pageReveal:covered(), 'treasure entry must retain its normal preparation gate')
+local early,reason=host.nodeUI:press('treasureView/chest')
+assert(not early and reason=='panel_hidden' and not host.run.nodeFlow.chest.opened,
+    'a treasure press during preparation must not change the room')
+awaitNativePage(host)
 assert(host.nodeUI:press('treasureView/chest'));host.nodeUI:update(2)
 assert(not host.run.nodeFlow.reward.sapphireKey)
 for _,item in ipairs(host.run.nodeFlow.reward.items)do assert(item.kind~='sapphire' and not item.linkedSlot)end
+awaitNativePage(host)
 local function noVisibleKeyPromise(control)
     if control.visible==false then return end
     assert(not (control.text and control.text:find('钥匙',1,true)),'competition chest advertised a key')
@@ -198,12 +207,14 @@ fight(host,root,18)
 bossComplete(host,33)
 assert(host.mapUI:choose(Map.available(host.map)[1].id))
 assert(host.run.floor==34 and host.run.phase=='node')
+awaitNativePage(host)
 assert(host.nodeUI:press('treasureView/chest'));host.nodeUI:update(2)
 local rewardKey
 for index,item in ipairs(host.run.nodeFlow.reward.items)do
     if item.available then rewardKey='treasureView/rewardItem'..index;break end
 end
 assert(rewardKey,'seed must offer an implemented boss relic')
+awaitNativePage(host)
 local stale=host.nodeUI.actions[rewardKey].handler
 assert(host.nodeUI:press(rewardKey))
 assert(host.run.floor==34 and host.map.floor==34 and host.run.phase=='victory' and host.mode=='victory')
@@ -219,7 +230,7 @@ local completed=host.run
 F.click(root,'menuPanel','start');selectedGeo(host,root)
 assert(host.run==completed,'selection preview cannot create a new run')
 F.click(root,'characterPanel','confirm')
-finishOpening(host)
+awaitNativePage(host)
 assert(host.run~=completed and host.run.act==1 and host.map.floor==0)
 assert(not(host.prologue and host.prologue:covering()),'new-run opening completed')
 opening(host,root,1)
@@ -240,6 +251,7 @@ print('PASS formal two-act route, claim endpoint, new run, defeat and settlement
 local skipped,skipRoot,skipSignals=fixture(false,false)
 start(skipped,skipRoot,'traveler');chest(skipped,16,2);bossComplete(skipped,33)
 assert(skipped.mapUI:choose(Map.available(skipped.map)[1].id))
+awaitNativePage(skipped)
 assert(skipped.nodeUI:press('back'))
 assert(skipped.run.phase=='victory' and skipped.run.ending=='two_act_complete' and skipped.run.floor==34)
 assert(F.statValue(skipRoot,'floor')=='34 / 34' and not skipped.run.pendingAct)

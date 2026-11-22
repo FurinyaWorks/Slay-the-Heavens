@@ -4,13 +4,13 @@
 -- no keys or historical wins are granted. This is not a natural playthrough.
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Map,Run=require('abyss_map'),require('abyss_run')
-local function finishOpening(host)
+local function awaitNativePage(host)
     for _=1,80 do
         if not host.starting and not(host.prologue and host.prologue:covering())
             and not(host.pageReveal and host.pageReveal:covered())then assert(host.run and not host.disabled);return end
         OnUpdate(0.05)
     end
-    error('native opening did not finish')
+    error('native page did not become ready')
 end
 local function fixture(experimental,bgm)
     local canvas=F.control({children=F.Layout})
@@ -55,7 +55,7 @@ local function start(host,root,button,element)
     if element then F.click(root,'characterPanel','elements/element'..element)end
     assert(not host.run,'selection must not create a Run')
     F.click(root,'characterPanel','confirm')
-    finishOpening(host)
+    awaitNativePage(host)
     assert(not(host.prologue and host.prologue:covering()) and host.mode=='map' and host.map.floor==0,
         'full-source reaches the map after the opening')
     assert(host.mapUI.navigationEnabled)
@@ -99,13 +99,16 @@ local function chest(host,bossFloor,nextAct)
     local run,map=host.run,host.map
     bossComplete(host,bossFloor)
     assert(host.mapUI:choose(Map.available(map)[1].id))
+    awaitNativePage(host)
     assert(host.nodeUI:press('treasureView/chest'))
     host.nodeUI:update(2)
+    awaitNativePage(host)
     assert(host.nodeUI:press('back'))
     assert(run.phase=='act_transition',
         'FORMAL_CAMPAIGN_STOPPED floor='..run.floor..' phase='..run.phase..'; Boss chest must continue the campaign')
     assert(host.mode=='node' and run.act==nextAct-1)
     local uid,gold=run.deck[1].uid,run.gold
+    awaitNativePage(host)
     assert(host.nodeUI:press('confirm'))
     assert(host.run==run and host.map==map and run.act==nextAct and host.mode=='map')
     assert(run.deck[1].uid==uid and run.gold==gold)
