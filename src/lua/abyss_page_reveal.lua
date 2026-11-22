@@ -275,7 +275,9 @@ function M.new(cover,ready,onIntent,frames,motion)
         gate.state='preparing'
         local commit=gate.departure;gate.departure=nil;gate.cancelDeparture=nil
         if commit then
+            local ticket=gate.epoch
             local ok,accepted=pcall(commit)
+            if gate.epoch~=ticket then return false end
             if not ok or accepted==false then return reject(gate,tostring(accepted))end
         end
         return true -- Destination refresh is permitted only behind opaque black.

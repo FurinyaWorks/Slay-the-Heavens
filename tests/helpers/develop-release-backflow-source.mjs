@@ -7,7 +7,7 @@ import {gunzipSync} from 'node:zlib';
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const blob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
 const archive=readFileSync(new URL('../fixtures/develop-release-backflow-source.json.gz',import.meta.url));
-assert.equal(hash(archive),'7d5c23a2892ec034dc1fb183bca19d8c074f834dc03ff037ee93a17a3da99943','exact Develop Release-backflow source archive');
+assert.equal(hash(archive),'d8f3ce17678915040073a36da68bae3d0452cc2163919e9587c0a86c7b39dbd9','exact Develop Release-backflow source archive');
 const {base,files:releaseFiles,shopBase,shop}=JSON.parse(gunzipSync(archive));
 assert.equal(base,'742a540ffc999e91acdface3d8fc7f753731f0a8');
 assert.equal(shopBase,'82ba375397ffd7f8f8175a7a1fd18a973450ecc6');

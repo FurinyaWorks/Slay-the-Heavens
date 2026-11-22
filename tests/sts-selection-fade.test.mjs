@@ -151,3 +151,20 @@ print('FULL_DEPARTURE_COVER_PASS')`;
  const r=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),'-e',body],{encoding:'utf8'});
  assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/FULL_DEPARTURE_COVER_PASS/);
 });
+
+test('a failed departure cannot reject a newer page requested by its callback',()=>{
+ const body=`package.path='src/lua/?.lua;'..package.path
+local Gate=require('abyss_page_reveal')
+local veil={}
+local cover={GetChild=function(_,name)if name=='veil'then return veil end end,SetVisible=function()end,SetAsLastSibling=function()end}
+local gate=Gate.new(cover,function()return true end,nil,nil,{duration=.2,color=function(r,g,b,a)return {a=a}end})
+local a={page='characterPanel'};local b={page='mapPanel'}
+gate:begin(a);gate:step(a,0);gate:step(a,0);gate:step(a,.2)
+assert(gate:depart(function()assert(gate:request(b));return false end))
+gate:step(a,.2)
+assert(gate.intent==b and gate.state=='preparing' and not gate.error,'stale departure rejected the replacement')
+gate:step(b,0);gate:step(b,0);gate:step(b,.2);assert(not gate:covered())
+print('DEPARTURE_EPOCH_PASS')`;
+ const result=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),'-e',body],{encoding:'utf8'});
+ assert.equal(result.status,0,result.stdout+result.stderr);assert.match(result.stdout,/DEPARTURE_EPOCH_PASS/);
+});

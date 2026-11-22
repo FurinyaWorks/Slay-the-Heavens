@@ -121,7 +121,7 @@ function beforeIntegratedReleaseCopier(path,source){
 function beforeDevelopBackflowCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const lf=normalize(source);
- if(hash(lf)!=='1074373ba0389197193c3a089a03dc722192b09c22922900247e4c1049d03402')return source;
+ if(hash(lf)!=='50c2fe24e710b25fb2bd72f7143cbddee758152dec18b0ac1bf4b5523cab6d93')return source;
  const prior=lf.replace(/const developBackflowFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
    .replace('Object.entries(developBackflowFiles))','Object.entries(stsCloseoutFiles))');
  assert.equal(hash(prior),'e519059be59df7fefda9b852a0b02aac9b03b819406a08e0a7a11c4aca4d2fbc','exact Develop backflow copier predecessor');
