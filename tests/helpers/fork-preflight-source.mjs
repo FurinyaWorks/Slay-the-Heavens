@@ -118,9 +118,16 @@ function beforeIntegratedReleaseCopier(path,source){
  assert.equal(hash(prior),'42a2fae24acaca0ff0214e5e0e592b2ff4cfd7f1e506578ba36faf327d17ae87','exact frozen Release copy predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+function beforeRefactorCopier(source){
+ if(hash(source)!=='848eb163ddf267e67e4b8e209c3cc55657d0d71293acfcbb0623a798c87142c2')return source;
+ const prior=source.replace(" 'tests/fixtures/develop-native-portrait-lifecycle-source.json.gz':'1e0d7cf24e2bd08938383e862161fe5d70c9a5ae29a216a8890c1768b8c57422',\n 'tests/helpers/develop-release-backflow-source.mjs':'fbbde3b26babf6205ec58313de8f88e9f5ead8eeca2ee15b40f921b414f9f94e',\n",
+  " 'tests/helpers/develop-release-backflow-source.mjs':'70df2b48d5d0573d959be2dd80cf7799722c7cafa5e7b09701eac0d15b644036',\n");
+ assert.equal(hash(prior),'287ddbb54bfec7eadf72bceea09c77c8029410c8ef03465d88a0fba6b023413b','exact Develop refactor copier predecessor');
+ return prior;
+}
 function beforeDevelopBackflowCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
- const lf=normalize(source);
+ const lf=beforeRefactorCopier(normalize(source));
  if(hash(lf)!=='287ddbb54bfec7eadf72bceea09c77c8029410c8ef03465d88a0fba6b023413b')return source;
  const prior=lf.replace(/const developBackflowFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
    .replace('Object.entries(developBackflowFiles))','Object.entries(stsCloseoutFiles))');
