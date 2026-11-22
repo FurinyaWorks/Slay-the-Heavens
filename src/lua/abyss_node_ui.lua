@@ -9,6 +9,7 @@ local Theme = require("abyss_theme")
 local M = {}
 local CardDisplay = require('abyss_card_display')
 local EndingUI=require('abyss_node_ui_ending')
+local EventUI=require('abyss_node_ui_events')
 local RelicView=require('abyss_relic_view_ui')
 local MatchUI=require('abyss_match_event_ui')
 local number = require("abyss_numbers").integer
@@ -121,7 +122,7 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
 
     require("abyss_node_ui_rewards").install(ctx)
 
-    require("abyss_node_ui_events").install(ctx)
+    EventUI.install(ctx)
 
     MatchUI.install(ctx)
 
@@ -178,7 +179,10 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
             if ctx.eventCardsActive(node)then hint=ctx.renderEventCards(view,node)
             else hint = ctx.renderPicker(view, node, result)end
         elseif screen == "eventView" then
-            if node.type=='ending_proceed' then hint=EndingUI.render(ctx.child('eventView'),OPTIONS)
+            if node.type=='ending_proceed' then
+                local event=ctx.child('eventView')
+                EventUI.resetArt(event)
+                hint=EndingUI.render(event,OPTIONS)
             else hint = ctx.renderEvent(view, node, result) end
         elseif screen == "treasureView" then hint, treasureSource = ctx.renderTreasure(view, node) end
         return screen,hint,recallSource,treasureSource

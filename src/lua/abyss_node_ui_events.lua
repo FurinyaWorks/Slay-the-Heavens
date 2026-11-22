@@ -3,6 +3,7 @@ local Narrative = require("abyss_narrative")
 local Act1Events = require('abyss_act1_events')
 local Act2Events = require('abyss_act2_events')
 local Act3Events = require('abyss_act3_events')
+local Art = require('abyss_lowcost_art')
 local number = require("abyss_numbers").integer
 local C = Theme.color
 local kinds = { camp = "营地", shop = "商店", event = "未知事件", treasure = "宝箱",ending_proceed='真结局' }
@@ -63,6 +64,8 @@ local M = {}
 -- STS NeowEvent staging (port): Neow stands right, InfiniteSpeechBubble carries name/body,
 -- LargeDialogOptionButtons stack on the left; the generic event plate/caption is not shown.
 local NEOW = layout.event.neow
+local eventArt = Theme.lowCostArt and Theme.lowCostArt.event
+local artOwners = setmetatable({}, {__mode='k'})
 local function place(control, rect)
     control:SetAnchoredPosition(rect[1], rect[2])
     if rect[3] then control:SetSizeDelta(rect[3], rect[4]) end
@@ -76,7 +79,7 @@ local function renderEventFigure(event, id, alignment)
     local neow = id == 'neow' and NEOW ~= nil
     local figure, art = event:GetChild('neowFigure'), event:GetChild('art')
     if figure then figure:SetVisible(neow) end
-    if art then art:SetVisible(not neow) end
+    if art and not eventArt then art:SetVisible(not neow) end
     for _, name in ipairs({ 'plate', 'plateBorder', 'glow', 'caption' }) do
         local c = event:GetChild(name)
         if c then c:SetVisible(not neow and (name ~= 'caption' or not layout.event.reference)) end
@@ -170,12 +173,38 @@ local function eventNotice(id, copy, result)
     return result and copy.name or (copy.name .. " · 选择一项，或直接离开")
 end
 
+function M.resetArt(event)
+    if not eventArt then return end
+    local owner = {}
+    artOwners[event] = owner
+    local icon = event:GetChild('art')
+    Art.hide(icon, false)
+    if artOwners[event] == owner then icon:SetVisible(false) end
+end
+
 local function renderEventArt(ctx, event, id)
     local reference = layout.event.reference
-    if not reference or id == 'neow' then return end
+    if not reference then return end
+    if id == 'neow' then M.resetArt(event);return end
+    local icon = event:GetChild('art')
     local illustrations=Theme.icon.eventArt or {}
-    ctx.picture(event:GetChild('art'), illustrations[id] or illustrations.default or reference.icon)
-    ctx.tint(event:GetChild('art'), reference.figureInk)
+    local picture = illustrations[id] or illustrations.default or reference.icon
+    local owner
+    if eventArt then
+        owner = {picture=picture}
+        artOwners[event] = owner
+    end
+    -- Prepare the current event's fallback before pooled native writes can fail.
+    ctx.picture(icon, picture)
+    local active = artOwners[event]
+    if eventArt and active ~= owner then
+        if active and active.picture and icon.visible ~= false then ctx.picture(icon, active.picture) end
+        return
+    end
+    ctx.tint(icon, reference.figureInk)
+    if eventArt and artOwners[event] == owner
+        and not Art.paint(icon, 'event', id, layout.event.art[3], ctx.options)
+        and artOwners[event] == owner then ctx.show(icon, true) end
 end
 
 local function optionDescription(ctx, selected)
@@ -260,6 +289,7 @@ end
 -- Neow changes visibility, geometry and text controls, not only their content.
 function M.renderChoices(ctx,event,id,rows)
     renderEventFigure(event,id,ctx.options.textAlignments)
+    if eventArt then renderEventArt(ctx, event, id) end
     ctx.ink(event:GetChild('body'),id=='neow' and C.panelSunken or C.text)
     if NEOW then placeOptions(event,id=='neow',rows) end
     for i=1,OPTIONS do

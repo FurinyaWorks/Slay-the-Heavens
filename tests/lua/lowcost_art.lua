@@ -103,3 +103,49 @@ local poseScale=figure.localScaleX;ui:render()
 assert(figure.x==11 and figure.y==8 and figure.localScaleX==poseScale,'ordinary render must preserve the latest feedback pose even with a cached tint')
 assert(figure:GetChild('shape0').imageColor.a==127,'ordinary render must preserve death fade alpha')
 print('LOWCOST_ART_PASS '..relics..' '..enemies)
+
+local eventRegistry=assert(Theme.lowCostArt.event)
+assert(eventRegistry.capacity==60 and eventRegistry.canvas==330)
+assert(#eventRegistry.unavailable==0)
+local eventView=root:GetChild('nodePanel'):GetChild('eventView')
+local eventIcon=eventView:GetChild('art')
+local eventPool=assert(eventView:GetChild('artArt'))
+local eventWrites=0
+Enum={ImageFillHorizontalType={Right=9}}
+for index=0,59 do
+ local shape=assert(eventPool:GetChild('shape'..index))
+ local setImage=shape.SetImage
+ function shape:SetImage(...)
+  eventWrites=eventWrites+1
+  return setImage(self,...)
+ end
+ function shape:SetFillUnused()self.filled=false end
+ function shape:SetFillHorizontal(side,amount)
+  assert(side==9 and amount==.5)
+  self.filled=true
+ end
+end
+local events, masks=0,0
+for id,asset in pairs(eventRegistry.assets)do
+ local before=eventWrites
+ assert(Art.paint(eventIcon,'event',id,330,platform),id)
+ assert(eventPool.visible and not eventIcon.visible,id)
+ assert(eventWrites==before+#asset.shapes,id)
+ for index=1,60 do
+  local shape=asset.shapes[index]
+  local control=eventPool:GetChild('shape'..(index-1))
+  assert(control.visible==(shape~=nil),id..' stale child '..index)
+  if shape then
+   assert(control.imageId==shape.image and control.filled==shape.halfMask,id)
+   for axis=1,3 do assert(control.rotation[axis]==shape.rotation[axis],id)end
+   if shape.halfMask then masks=masks+1 end
+  end
+ end
+ before=eventWrites
+ assert(Art.paint(eventIcon,'event',id,330,platform) and eventWrites==before,id)
+ events=events+1
+end
+assert(events==49 and masks==268)
+assert(not Art.paint(eventIcon,'event','missing',330,platform))
+assert(not eventPool.visible and eventIcon.visible)
+print('EVENT_ART_POOL_PASS '..events..' '..masks)
