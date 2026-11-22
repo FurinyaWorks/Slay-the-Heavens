@@ -38,9 +38,46 @@ export function assertCharacterPreparationSources(read = readRaw) {
   }
 }
 
+// Restore the exact pre-split Lua sources for historical receipts.
+const slimeSplitSources = {
+  'src/lua/abyss_combat.lua': {
+    beforeHash: '609e75ba6e83da7b2311629adfdc2fd101c8167d3d17dbb1cdc0748baa9b1d1c',
+    currentHash: 'e2722605fad6ba7c56526d878cd6e0d571ef61156a5c5c5e28ad0d6bbc034355',
+    current: '        children[i].sourcePosition = EnemySetup.splitPosition(parent, i)\n',
+    before: '        if ai.splitPositions then children[i].sourcePosition=copy(ai.splitPositions[i]) end\n',
+  },
+  'src/lua/abyss_combat_enemy_setup.lua': {
+    beforeHash: '76c8aa93a85a272b80ff4ae74645bc26fe33b7f6d18eb733d8c54d904b9331da',
+    currentHash: 'bd4875cf008fd05fa65f90eea11a29165b4b98733c5d30e2210e3f7545dcc725',
+    current: [
+      'function M.splitPosition(parent,childIndex)',
+      ' if parent.ai.splitPositions then return Copy(parent.ai.splitPositions[childIndex])end',
+      ' -- Large slime takeTurn places medium children +/-134 source pixels from the parent.',
+      ' local origin=parent.sourcePosition or {x=0,y=0}',
+      ' return {x=origin.x+(childIndex==1 and -134 or 134),y=origin.y}',
+      'end',
+      '',
+    ].join('\n'),
+    before: '',
+  },
+};
+
+function beforeSlimeSplitSource(path, source, read, currentOnly = false) {
+  if (!Object.hasOwn(slimeSplitSources, path)) return source;
+  const row = slimeSplitSources[path];
+  const isCurrent = value => typeof value === 'string' && !value.includes('\r\r\n')
+    && digest(normalize(value)) === row.currentHash;
+  if (!currentOnly && !isCurrent(source)) return source;
+  assert(isCurrent(source) && isCurrent(read(path)), 'fresh slime split source: '+path);
+  const prior = normalize(source).replace(row.current, () => row.before);
+  assert.equal(digest(prior), row.beforeHash, 'exact slime split predecessor: '+path);
+  return source.includes('\r\n') ? prior.replaceAll('\n','\r\n') : prior;
+}
+
 // The old timing/production receipts continue to replay their exact source view.
 // Unknown bytes are left visible and both current owners are checked on every projection.
 export function beforeCharacterPreparationSource(path, source, read = readRaw) {
+  source = beforeSlimeSplitSource(path, source, read);
   source = beforeMapDeckSource(path,source,read);
   read = mapDeckPriorRead(read);
   source = beforeAuthenticatedReleaseUiRestore(path,source,read);
@@ -70,6 +107,7 @@ const currentContinuationOwners = new Set([
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
+ source=beforeSlimeSplitSource(path,source,read,true);
  source=beforeMapDeckSource(path,source,read);
  read=mapDeckPriorRead(read);
  if(shopEntrySourcePaths.includes(path)){
