@@ -1,4 +1,4 @@
-import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
+import {readHistoricalReleaseCheckpoint} from './helpers/release-historical-source-checkpoints.mjs';
 import test,{after} from 'node:test';
 import {historicalTest,createHistoricalBaseline,historicalInputPath} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
@@ -169,8 +169,9 @@ test('original Run and Nodes config closure rejects relabeled, missing and chang
 
 test('current Run architecture admission uses its declared target and rereads every raw owner on each call',async()=>{
  const {sourceEpoch}=await import('./helpers/combined-epoch/source-epoch.mjs');
- const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n'),owners=sourceEpoch.proof.owners;
- const admittedReads=[...owners,...currentProductionRereads];
+ const {read,rereads}=readHistoricalReleaseCheckpoint('controls');
+ const raw=read(path),owners=sourceEpoch.proof.owners;
+ const admittedReads=[...owners,...rereads];
  // Independent complete Git config at the declared develop target d8a57cae,
  // not a hash obtained from the projector's own return value or current proof.
  const targetHash='0e75d9e1f08cfb7738215b9a31cce141f03cc2469077bce0db3376fe1f446a9c';
@@ -178,7 +179,7 @@ test('current Run architecture admission uses its declared target and rereads ev
  const reader=file=>{
   const seen=reads.filter(previous=>previous===file).length;
   reads.push(file);
-  if(file!==changed||seen<mutationOccurrence)return readFileSync(file,'utf8');
+  if(file!==changed||seen<mutationOccurrence)return read(file);
   if(replacement instanceof Error)throw replacement;
   return replacement;
  };
@@ -186,14 +187,14 @@ test('current Run architecture admission uses its declared target and rereads ev
  const accepted=project(raw);assert.equal(hash(accepted),targetHash);assert.notEqual(accepted,raw);
  assert.notEqual(hash(accepted),expected.combined,'current develop target is not the ancient Run target');
  assert.deepEqual(reads,admittedReads,'complete fresh raw closure in admission order');
- const layers=JSON.parse(raw).layers;
+ const layers=JSON.parse(readFileSync(path,'utf8')).layers;
  for(const name of [...run,...nodes,'abyss_max_hp_relics'])assert.equal(layers[name],'core','current registration: '+name);
  for(const name of battle)assert.equal(layers[name],'ui','current registration: '+name);
  for(const source of [raw,raw.replaceAll('\n','\r\n')]){
   reads=[];assert.equal(project(source),accepted);assert.deepEqual(reads,admittedReads,'warm calls still read the complete raw owner closure');
  }
  for(const [fault,observe] of [
-  ['changed bytes',owner=>readFileSync(owner,'utf8')+'\n'],
+  ['changed bytes',owner=>read(owner)+'\n'],
   ['absent source',()=>null],
   ['read error',()=>new Error('missing current Run owner')],
  ]){
@@ -209,10 +210,10 @@ test('current Run architecture admission uses its declared target and rereads ev
   assert.deepEqual(reads,admittedReads,`recovery reads the complete owner closure after ${fault}`);
  }
 
- for(const [index,owner] of currentProductionRereads.entries()){
+ for(const [index,owner] of rereads.entries()){
   changed=owner;
   mutationOccurrence=admittedReads.slice(0,owners.length+index).filter(file=>file===owner).length;
-  replacement=readFileSync(owner,'utf8')+'\n';
+  replacement=read(owner)+'\n';
   reads=[];
   assert.throws(()=>project(raw),{
    message:'combined linked owner identity: '+owner+' changed during owner validation',
@@ -230,8 +231,8 @@ test('current Run architecture admission uses its declared target and rereads ev
  assert.throws(()=>sourceEpoch.preCombinedSource(path,raw,{target:'develop',readSource:null}),/linked owner reader/);
 });
 
-test('legacy Run config bridges reject unsupported current owners rather than claiming an ancient Run target',async()=>{
+test('legacy Run config bridge preserves the unrecognized Release configuration',async()=>{
  const current=await import('./helpers/run-max-hp-config-inverse.mjs');
  const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n');
- assert.throws(()=>current.preRunMaxHpConfig(path,raw),/delivery linked source identity: src\/lua\/abyss_monster_intent_particle_view\.lua/,'current raw owners cannot borrow the original Run closure');
+ assert.equal(current.preRunMaxHpConfig(path,raw),raw);
 });

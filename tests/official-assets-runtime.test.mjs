@@ -728,15 +728,12 @@ tap('card1',205);expectReward(true,false)
 for _=1,4 do frame();expectReward(true,false)end
 assert(#host.run.deck==count+1 and host.run.rewards.cardResolved,'public pick must claim exactly one card')
 battle:GetChild('continue').click()
-local priorCover=cover.visible
-local coverRuns=priorCover and 1 or 0
-for _=1,8 do
- frame()
- if cover.visible and not priorCover then coverRuns=coverRuns+1 end
- priorCover=cover.visible
+local function expectLocalMapReturn()
+ assert(not cover.visible and not host.pageReveal:covered(),'a ready map return must avoid a fullscreen transition')
+ assert(host.run.phase=='map' and map.visible and not battle.visible and host.mapUI.navigationEnabled,
+  'the completed reward must return to a visible and interactive map')
 end
-assert(coverRuns==1 and not cover.visible and host.run.phase=='map' and map.visible and not battle.visible,
- 'a genuine map transition must cover once, then release')
+for _=1,8 do frame();expectLocalMapReturn()end
 `,'PC13_OFFICIAL_REWARD_FRAMES_PASS');
 });
 

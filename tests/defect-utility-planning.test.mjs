@@ -1,4 +1,4 @@
-import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
+import {readHistoricalReleaseCheckpoint} from './helpers/release-historical-source-checkpoints.mjs';
 import {preDefectActorSource,defectActorEpoch} from './helpers/defect-actor-source-epoch.mjs';
 import {currentDefectActorReader} from './helpers/m7-core-final-source-inverse.mjs';
 import {sourceEpoch as currentEpoch} from './helpers/closeout-source-epoch.mjs';
@@ -14,8 +14,9 @@ import {runStatic} from '../scripts/check-lua-static.mjs';
 import {measureSources} from '../scripts/lua-quality-metrics.mjs';
 const file='src/lua/abyss_defect_utility_cards.lua';
 const read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
-const actorRead=currentDefectActorReader(read);
-const actorSource=p=>preDefectActorSource(p,read(p),{readSource:actorRead});
+const {read:readCheckpoint,rereads}=readHistoricalReleaseCheckpoint('controls');
+const actorRead=currentDefectActorReader(readCheckpoint);
+const actorSource=path=>preDefectActorSource(path,read(path),{readSource:actorRead});
 const before=read('tests/fixtures/defect-utility-planning-before.lua');
 function replay(source,fixture='tests/lua/defect_utility_planning.lua'){
  const dir=mkdtempSync(join(tmpdir(),'defect-utility-'));
@@ -33,8 +34,8 @@ test('utility planner frozen complete source remains authenticated to develop d8
 
 test('the explicit historical reader requires current owners and rejects a stale configuration after warm success',()=>{
  const proof=currentEpoch.proof,config='config/architecture.json';
- const admittedReads=[...proof.owners,...currentProductionRereads];
- const actual=Object.fromEntries(proof.owners.map(p=>[p,read(p)]));let reads=[],changed,value;
+ const admittedReads=[...proof.owners,...rereads];
+ const actual=Object.fromEntries([...new Set(admittedReads)].map(p=>[p,readCheckpoint(p)]));let reads=[],changed,value;
  const reader=currentDefectActorReader(p=>{reads.push(p);if(p===changed){if(value instanceof Error)throw value;return value;}return actual[p];});
  for(let warm=0;warm<2;warm++){
   reads=[];assert.equal(reader(config),defectActorEpoch.proof.current[config].source);
