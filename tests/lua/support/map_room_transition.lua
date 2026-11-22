@@ -155,17 +155,50 @@ for _,kind in ipairs({'camp','shop','event','combat','elite','boss','treasure'})
         assert(host.mode=='map')
     elseif kind=='event' and host.mode=='node' then
         assert(host.run.nodeFlow.event.id=='big_fish')
+        local mapView, mapViews = Map.view, 0
+        Map.view=function(...)mapViews=mapViews+1;return mapView(...)end
+        mapPaints,roomPaints=0,0
+        local oldChoice=host.nodeUI.actions['eventView/option1'].handler
+        assert(host.nodeUI.actions['eventView/option2'].enabled)
+        assert(host.nodeUI.actions['eventView/option3'].enabled)
         assertLocal(host,cover,function()return F.click(root,'nodePanel','eventView/option1')end);settle()
         assert(host.run.nodeFlow.event.stage=='result')
+        assert(roomPaints==1 and mapViews==0,'event choice repainted the room or projected the map again')
+        assert(not oldChoice(),'the old choice survived the result render')
         assertLocal(host,cover,function()return F.click(root,'nodePanel','eventView/option1')end);settle()
         if host.mode=='node' then assertLocal(host,cover,function()return F.click(root,'nodePanel','confirm')end);settle()end
-        assert(host.mode=='map')
+        assert(host.mode=='map' and host.mapUI.navigationEnabled and host.map.currentNodeId==id)
+        assert(mapPaints==1 and mapViews==1 and roomPaints==1,'event return repainted a departed room or the map')
+        Map.view=mapView
     elseif host.mode=='battle' then
         finishBattle(host,root,settle,cover)
     end
     Nodes.enter=enter
     OnDestroy()
 end
+
+local host,root,_,settle=onMap('event')
+local eventFixture=dofile('tests/helpers/act2_event_ui.lua')
+local run,map=eventFixture.fixture('the_library')
+host.run,host.map=run,map
+host.nodeUI.run,host.nodeUI.map=run,map
+host.mapUI.map,host.battleUI.run=map,run
+host:refresh();settle()
+local roomRender, roomPaints=host.nodeUI.render,0
+host.nodeUI.render=function(...)roomPaints=roomPaints+1;return roomRender(...)end
+local read=root:GetChild('nodePanel'):GetChild('eventView'):GetChild('option1'):GetChild('hit')
+assert(tap(read,13))
+assert(run.nodeFlow.event.stage=='choose_offer' and host.nodeUI.picker=='library_offer')
+assert(#host.nodeUI.offerRows==20 and roomPaints==1 and not host.pageReveal:covered(),
+    'ready twenty-card event picker did not publish in a single render')
+local deckSize=#run.deck
+assert(F.click(root,'nodePanel','pickerView/card1'))
+roomPaints=0
+assert(F.click(root,'nodePanel','confirm'))
+assert(run.nodeFlow.event.stage=='result' and #run.deck==deckSize+1)
+assert(host.nodeUI.picker==nil and roomPaints==1 and not host.pageReveal:covered(),
+    'ready event result did not publish in a single render')
+OnDestroy()
 end
 
 if section=='fast' then

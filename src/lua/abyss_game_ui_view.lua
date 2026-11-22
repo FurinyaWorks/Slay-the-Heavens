@@ -303,7 +303,7 @@ function M.refreshPageVisibility(menu,self,suspendBattle,child,refreshMapResourc
         local onMap=self.mode=="map"
         local returningFromDeck=coveredMapRun~=nil and coveredMapRun==run
         coveredMapRun=onMap and deckOpen and run or nil
-        self.mapUI:setVisible(onMap and not deckOpen and not blocked,onMap,returningFromDeck)
+        self.mapUI:setVisible(onMap and not deckOpen and not blocked,onMap,returningFromDeck,true)
         if self.sessionPaused then self.mapUI:setNavigationEnabled(false) end
         child("mapPanel"):SetVisible(onMap)
         refreshMapResources(run)
@@ -337,7 +337,7 @@ end
 function M.renderMapPage(self)
     return function(run,deckOpen,potionOpen,blocked,covering)
             if deckOpen then return self.mapUI:setNavigationEnabled(false,true) end
-            -- The map controller also checks the publication gate before accepting a node.
+            -- Apply navigation and paint the position staged by refreshMapVisibility.
             self.mapUI:setNavigationEnabled(not potionOpen and not blocked and not covering and #Nodes.available(run, self.map) > 0)
             if run.neowStatus=='unavailable' and self.map.floor==0 and not self.mapUI.entryError then
                 self.mapUI.entryError='开局恩赐暂不可用：未取得上一局历史；本次保持原开局资源。'
@@ -487,7 +487,7 @@ function M.refreshForeground(characterPanel,self,platform,exitEntry,exitEntryVis
             routeCaption(back)
             if self.routeOpen then
                 self.mapUI.map = self.map
-                self.mapUI:setVisible(true)
+                self.mapUI:setVisible(true,false,false,true)
                 self.mapUI:setNavigationEnabled(false)
                 child('mapPanel'):SetAsLastSibling()
             end

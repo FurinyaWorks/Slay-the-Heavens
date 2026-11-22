@@ -142,6 +142,7 @@ function M.install(ctx)
     end
 
     local function usesRoomSnapshot(self, flow)
+        if ctx.hostRendersEvent(flow) then return true end
         return flow and self.run.phase ~= 'ending_proceed'
             and (flow.type == 'shop' or ctx.options.enhancedRooms and flow.type == 'camp')
     end
@@ -170,6 +171,19 @@ function M.install(ctx)
             ctx.shopNotification=nil
         end
         return ok, reason
+    end
+
+    local function publishCommit(node, command, before, accepted, reason)
+        -- The game host paints events inside its presentation frame or switches
+        -- directly to the destination when the event completes.
+        if not ctx.hostRendersEvent(node) then
+            ctx.self:render()
+            if accepted then ctx.roomMotion:start(command,before) end
+            ctx.self.failed = false
+        end
+        local ok, detail = ctx.notify(accepted, reason)
+        ctx.self.failed = false
+        return ok, detail
     end
 
     ctx.commit = function(command, argument, describe, choice)
@@ -235,10 +249,7 @@ function M.install(ctx)
         else
             ctx.self.notice, ctx.self.failed = reasons[reason] or "操作未完成，请重新选择", true
         end
-        ctx.self:render()
-        if accepted then ctx.roomMotion:start(command,before) end
-        ctx.self.failed = false
-        return ctx.notify(accepted, reason)
+        return publishCommit(node, command, before, accepted, reason)
     end
 
     function ctx.self:press(key)
