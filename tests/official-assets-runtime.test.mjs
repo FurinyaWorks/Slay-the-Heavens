@@ -1101,7 +1101,7 @@ grid.scrollProgress=.4
 local first=grid.items[0];local uid=host.deckUI.bindings[first].uid
 assert(first:GetChild('hit').click() and host.deckUI.cardDetail.instance.uid==uid)
 assert(panel:GetChild('pileReturn'):GetChild('hit').click());host:update(0)
-assert(grid.visible and grid.scrollProgress==.4 and not host.deckUI.detailPages and panel:GetChild('pileTools').visible)
+assert(grid.visible and grid.scrollProgress==.4 and not host.deckUI.cardDetail and panel:GetChild('pileTools').visible)
 assert(panel:GetChild('pileReturn'):GetChild('hit').click())
 assert(not host.deckUI.visible and host.mode=='node' and host.nodeUI.visible and host.run.nodeFlow.id==shop.id)
 assert(not grid.visible and grid.itemCount==0)
@@ -1163,16 +1163,16 @@ for _,origin in ipairs({0,1})do
   local late=grid.refreshCallback;local hit=first:GetChild('hit')
   grid.scrollProgress=.45
   assert(hit.listeners.drag==nil and hit.listeners.endDrag==nil)
-  assert(not hit.click({dragging=true}) and not deck.detailPages and grid.scrollProgress==.45)
+  assert(not hit.click({dragging=true}) and not deck.cardDetail and grid.scrollProgress==.45)
   assert(hit.click() and deck.cardDetail.instance.uid==uid and not grid.visible)
   assert(not panel:GetChild('pileTools').visible and not tool('cost'),'detail cannot sort the hidden list')
-  assert(panel:GetChild('details').text:find('左下角返回',1,true))
+  assert(panel:GetChild('cardFocus').visible and panel:GetChild('pileReturn').visible)
+  assert(not hit.click(),'hidden list receiver replaced the active detail')
   assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update();grid:flush()
-  assert(not deck.detailPages and grid.visible and grid.scrollProgress==.45)
-  local fresh=grid.items[0];local freshUid=deck.bindings[fresh].uid
-  late(fresh,origin+amount-1)
-  assert(deck.bindings[fresh].uid==freshUid,'late list callback rebound the returned detail list')
-  assert(first.alive==false and not deck.bindings[first] and not hit.click(),'retired detail receiver remained live')
+  assert(not deck.cardDetail and grid.visible and grid.scrollProgress==.45)
+  local fresh=grid.items[0]
+  assert(first==fresh and fresh.alive and deck.bindings[fresh].uid==uid and grid.refreshCallback==late,
+      'detail return must retain the warmed native cells and callbacks')
   if amount==17 then
    grid.deferRefresh,grid.destroyOnRefresh=false,false
    local reused=grid:recycle(0,origin+16)
@@ -1226,7 +1226,7 @@ local function permanent()
 end
 assert(deck:open(host.run));deck:update();permanent()
 assert(grid.items[3]:GetChild('hit').click())
-assert(not deck.cardDetail.combat and not panel:GetChild('details').text:find('131',1,true))
+assert(not deck.cardDetail.combat and not panel:GetChild('cardFocus'):GetChild('face'):GetChild('label').text:find('131',1,true))
 assert(deck:toggleUpgradePreview() and deck.cardDetail.preview and not deck.cardDetail.combat)
 assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update();permanent()
 assert(tool('name'));deck:update()
@@ -1244,7 +1244,7 @@ assert(face:GetChild('cost').text=='0' and scopes[face]=='battle','pile lost tra
 assert(plain(grid.items[2]:GetChild('face'):GetChild('label').text):find('131',1,true),'pile lost temporary Rampage growth')
 stale(grid.items[0],3);assert(deck.bindings[grid.items[0]].uid==uid,'permanent callback rebound a combat pile')
 assert(grid.items[2]:GetChild('hit').click() and deck.cardDetail.combat)
-assert(panel:GetChild('details').text:find('131',1,true),'pile detail lost its current combat instance')
+assert(panel:GetChild('cardFocus'):GetChild('face'):GetChild('label').text:find('131',1,true),'pile detail lost its current combat instance')
 assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update()
 assert(tool('cost'));deck:update();assert(tool('type'));deck:update()
 local pileLate=grid.refreshCallback
@@ -1282,11 +1282,11 @@ local function checkDetailAndScroll(host,root,grid)
  local hit=face:GetChild('hit')
  assert(hit.listeners.drag==nil and hit.listeners.endDrag==nil,'pile must retain native scroll ownership')
  grid.scrollProgress=.35
- assert(not hit.click({dragging=true}) and not host.deckUI.detailPages)
+ assert(not hit.click({dragging=true}) and not host.deckUI.cardDetail)
  assert(hit.click() and host.deckUI.cardDetail.instance.uid==uid)
  assert(root:GetChild('deckPanel'):GetChild('pileReturn'):GetChild('hit').click())
  host.deckUI:update()
- assert(not host.deckUI.detailPages and grid.visible and grid.scrollProgress==.35)
+ assert(not host.deckUI.cardDetail and grid.visible and grid.scrollProgress==.35)
  assert(host.deckUI.bindings[grid.items[0]].uid==uid)
 end
         local host=H.setup()

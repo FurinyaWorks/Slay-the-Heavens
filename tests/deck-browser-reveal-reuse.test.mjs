@@ -95,6 +95,23 @@ assert(deck.indexBase==0 and #sizes==1 and sizes[1]==3 and created>0,'known base
 local count,removed=created,destroyed;local shown=0;local cover=root:GetChild('pageReveal');local visibility=cover.SetVisible
 cover.SetVisible=function(self,v)if v then shown=shown+1 end;return visibility(self,v)end
 local before=F.Combat.copy(run.combat.draw);local initialSession=deck.openSession;local back=panel:GetChild('pileReturn'):GetChild('hit')
+local focus=panel:GetChild('cardFocus');local focusFace=focus:GetChild('face')
+focusFace.children.artSamples=F.control({name='artSamples',kind='container',size={144,64}},focusFace)
+local sameGridRefresh=pile.refreshCallback
+assert(pile.items[0]:GetChild('hit').click() and focus.visible and not pile.visible)
+local toggle=panel:GetChild('upgradePreview'):GetChild('hit')
+assert(toggle.click() and deck.cardDetail.preview and toggle.click() and not deck.cardDetail.preview)
+assert(not host.pageReveal:covered(),'single-card preview must publish without a cover when ready')
+back.listeners.down({touchId=42});back.listeners.up({touchId=42})
+assert(back.click({touchId=42}) and pile.visible and not focus.visible and not host.pageReveal:covered())
+back.listeners.down({touchId=43})
+assert(pile.items[0]:GetChild('hit').click() and deck:back())
+back.listeners.up({touchId=43})
+assert(not back.click({touchId=43}) and deck.visible,'a return press cannot survive a round trip through detail')
+Art.update()
+assert(pile.refreshCallback==sameGridRefresh and created==count and destroyed==removed and shown==0,
+    'viewing, toggling and returning must retain ready cells and their artwork')
+
 back.listeners.down({touchId=44});sizes={}
 local battleRenders=0;local renderBattle=host.battleUI.render
 host.battleUI.render=function(self,...)battleRenders=battleRenders+1;return renderBattle(self,...)end
