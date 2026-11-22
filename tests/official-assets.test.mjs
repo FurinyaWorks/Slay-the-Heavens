@@ -263,7 +263,11 @@ test('approved pages keep live input identities while unrelated pages retain the
      const bar=theme.officialAssets.battleRelicBar;
      assert.deepEqual(node.position,[bar.origin[0]+bar.step*(Number(relicSlot[1])-1),bar.origin[1]],path+' canonical position');continue;
     }
-    assert.deepEqual(node[key],key==='size'&&cardHosts.has(node)?theme.layout.card.size:before[key],path+' '+key);
+    const footer=/^\/SlayTheAbyss\/deckPanel\/(browserDescription|rarityTip|previous|next|pageHint)$/.exec(path);
+    const viewport=path==='/SlayTheAbyss/deckPanel/pileGrid'?theme.layout.deckView.pileViewport
+     :footer&&theme.layout.deckView.browser.footer[footer[1]];
+    const expected=viewport&&key==='position'?viewport.slice(0,2):viewport&&key==='size'?viewport.slice(2):before[key];
+    assert.deepEqual(node[key],key==='size'&&cardHosts.has(node)?theme.layout.card.size:expected,path+' '+key);
    }
   }
  const cards=[...all(layout),...all(template)].filter(node=>child(node,'roundFrame')&&child(node,'costDisc'));

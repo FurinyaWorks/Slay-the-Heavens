@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
+import {beforeActionButtons} from './action-buttons-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const gitBlob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
@@ -41,7 +42,23 @@ function configLayoutMatches(source,expected,{allowConfigLayout=false}={}){
  try{JSON.parse(source);return true;}catch{return false;}
 }
 
+const browserArchive=readFileSync(new URL('../fixtures/develop-deck-browser-backflow-source.json.gz',import.meta.url));
+assert.equal(hash(browserArchive),'9f62aef27e5bc61741311bb2507fa75a58b67544d33136ccbc6a5978edd9f284','exact Develop deck browser archive');
+const browserBackflow=JSON.parse(gunzipSync(browserArchive));
+assert.equal(browserBackflow.base,'beba19bad25db7de71f96af521656c13b882909b');
+for(const [path,row] of Object.entries(browserBackflow.files)){
+ assert(matches(row.before.source,row.before),'exact deck browser predecessor: '+path);
+ assert.match(row.after.sha256,/^[a-f0-9]{64}$/);assert.match(row.after.gitBlob,/^[a-f0-9]{40}$/);
+}
+export function beforeDeckBrowserBackflow(path,source){
+ const row=Object.hasOwn(browserBackflow.files,path)&&browserBackflow.files[path];
+ if(!row||!matches(source,row.after))return source;
+ return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
+}
+
 export function beforeInputRetirement(path,source,options){
+ const browserPrior=beforeDeckBrowserBackflow(path,source);
+ if(browserPrior!==source)source=beforeActionButtons(path,browserPrior);
  if(!Object.hasOwn(files,path))return source;
  const row=files[path];
  if(!matches(source,row.after)&&!configLayoutMatches(source,row.after,options))return source;
@@ -73,7 +90,9 @@ export function authenticateInputRetirement(path,source,read,options){
  if(prior===source)return source;
  let live;
  try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
- assert(matches(live,files[path].after),'combined linked owner identity: '+path+' during input retirement validation');
+ const browserOwner=beforeDeckBrowserBackflow(path,source)!==source;
+ const identity=browserOwner?browserBackflow.files[path].after:files[path].after;
+ assert(matches(live,identity),'combined linked owner identity: '+path+' during input retirement validation');
  return prior;
 }
 
@@ -119,7 +138,7 @@ export function beforeInputRetirementStsSuite(paths,read,trustSuccessors){
   }
   if(![files,suite.deck.files,suite.earlier].some(layer=>Object.hasOwn(layer,path)))return raw;
   const bytes=typeof raw==='string'?raw:raw.toString('utf8');
-  const source=suitePredecessor(path,suitePredecessor(path,suitePredecessor(path,bytes,files),suite.deck.files),suite.earlier);
+  const source=suitePredecessor(path,suitePredecessor(path,suitePredecessor(path,beforeActionButtons(path,beforeDeckBrowserBackflow(path,bytes)),files),suite.deck.files),suite.earlier);
   return typeof raw==='string'?source:Buffer.from(source);
  }};
 }

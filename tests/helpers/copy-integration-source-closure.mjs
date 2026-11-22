@@ -259,8 +259,9 @@ const deckPagesFiles=Object.freeze({
 const inputRetirementFiles=Object.freeze({
  ...deckPagesFiles,
  'tests/helpers/develop-release-backflow-source.mjs':'c98ed483a6f206491e3647109f4d2f78511faada0c124df2b8ec8399a682e6e2',
- 'tests/helpers/input-retirement-source.mjs':'d1d3222246ac29175ceea5a119bb99598e7265efb5863e9918f4e90713578924',
- 'tests/helpers/character-preparation-source.mjs':'c33aaa686a55d39650ee65920db03df9023dd1551680f4cae8436f6403f97833',
+ 'tests/helpers/input-retirement-source.mjs':'9f8862703616ccfdb17098aa39599cd8ba3efd1d92e0370910c7bcb930761a27',
+ 'tests/fixtures/develop-deck-browser-backflow-source.json.gz':'9f62aef27e5bc61741311bb2507fa75a58b67544d33136ccbc6a5978edd9f284',
+ 'tests/helpers/character-preparation-source.mjs':'5dc24d8a40a10ed95ac7b8208e06eb963ba3eb20da68aff583febb78229d7f93',
  'tests/helpers/rebased-release-source.mjs':'faa43fceaf4e6e51c71e950213eefe15432428245f1a1df412f22e99c6c614cd',
  'tests/fixtures/develop-input-retirement-source.json.gz':'ed86f17b8f643d4392828e582582859d7b86d0a143de94b1fac4cfab9a5bf912',
  'tests/fixtures/develop-combat-pile-opening-source.json.gz':'a9e96c6caa44e21e45493a63385bf315ba9eaaf9a30257533bc46ccf9e51f9e6',
@@ -271,7 +272,7 @@ const inputRetirementFiles=Object.freeze({
 });
 const actionButtonFiles=Object.freeze({
  ...inputRetirementFiles,
- 'tests/helpers/develop-release-backflow-source.mjs':'ef51cd698c391f8b14b66bd4968d6d81717646578a75e908d00b9ec7906362a3',
+ 'tests/helpers/develop-release-backflow-source.mjs':'e1d5b13ddc58c7ef6c5632bc49e9db5c36e8b31c39b35f10f883f5498b7d67a9',
  'tests/helpers/action-buttons-source.mjs':'fdb6c73f52cf92fededa3d48fded11f05e21356ec66864a43c54bdf51781d4cd',
  'tests/fixtures/action-buttons-source.json.gz':'86634a756c4085906261d4d318118bb1f7692a642479651526c1ace0fefe4487',
 });
