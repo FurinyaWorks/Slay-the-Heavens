@@ -66,6 +66,26 @@ for(const {before,after} of Object.values(releaseUiBuild.files)){
  assert.match(after.sha256,/^[a-f0-9]{64}$/);
  assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
 }
+// Preserve the exact historical copier and regression source after Traveler status coverage.
+function beforeTravelerStatusCiSource(path,source){
+ const copier=path==='tests/helpers/copy-integration-source-closure.mjs';
+ const regression=path==='tests/integration-source-epoch.test.mjs';
+ if((!copier&&!regression)||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const lf=normalize(source),sha=hash(lf);
+ let prior,expected;
+ if(copier&&sha==='2c468260f8ca242e3a9e2d3d683616b45cca8ac6ad962388d7e0c5c0ceb2f85a'){
+  prior=lf.replace(/const travelerStatusFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
+   .replace('Object.entries(travelerStatusFiles))','Object.entries(loadingRecoveryFiles))');
+  expected='eb6e433e3a66f62e4b5aece6f475322cbf3d6d68e6d5e85107676cdff98719ac';
+ }else if(regression&&sha==='e411b5d46c2bde12ef10d0615abaeacee3bc83d6c72221aa212cb3e708494089'){
+  prior=lf.replace("import {beforeTravelerStatusSource,travelerStatusSourcePaths} from './helpers/traveler-status-source.mjs';\n",'')
+   .replace(/^test\('Traveler status continuation[^\n]*\n[\s\S]*?^\}\);\n\n/m,'');
+  expected='db962d7fe34be9e68f12ee153be9ef6679135e0803d28fb0db0db8a3d3fba0f4';
+ }else return source;
+ assert.equal(hash(prior),expected,'exact Traveler status CI predecessor: '+path);
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
+
 // Authenticate the current copier before giving old CI receipts its exact predecessor.
 function beforeLoadingRecoveryCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
@@ -102,9 +122,10 @@ function beforeShopEntryCopier(path,source){
 }
 function shopEntryPreflightRead(read){
  const prior=shopEntryPriorRead(read);
- return (path,...args)=>beforeShopEntryCopier(path,beforeLoadingRecoveryCopier(path,prior(path,...args)));
+ return (path,...args)=>beforeShopEntryCopier(path,beforeLoadingRecoveryCopier(path,beforeTravelerStatusCiSource(path,prior(path,...args))));
 }
 function beforeReleaseUiBuildSource(path,source){
+ source=beforeTravelerStatusCiSource(path,source);
  source=beforeShopEntryCopier(path,beforeReleaseShopEntry(path,beforeLoadingRecoveryCopier(path,source)));
  source=beforeCombatVisualSource(path,source,shopEntryPreflightRead(owner=>readFileSync(owner,'utf8')));
  source=beforeSts1MenuCiSource(path,source);
@@ -147,14 +168,17 @@ const shopEntryTests={
  js:['tests/shop-entry.test.mjs','3b687d1afb6ee83dc7103bc4c074e990a748a96ef55c4cba326498a5ed2d1919'],
  lua:['tests/lua/shop_entry.lua','85547fda98f035ff78a0cebdf56e91ba43899f0579d706c4cb045e13a55f6259'],
 };
-export function beforeShopEntryInventory(paths,kind,read=readFileSync){
- const [path,sha]=shopEntryTests[kind];
+function beforeAddedTest(paths,[path,sha],read){
  const position=paths.indexOf(path);
  if(position===-1)return paths;
  assert.equal(paths.lastIndexOf(path),position,'duplicate inventory source: '+path);
  const source=read(path,'utf8');
  assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha,'fresh added inventory source: '+path);
  return paths.filter(test=>test!==path);
+}
+export function beforeShopEntryInventory(paths,kind,read=readFileSync){
+ if(kind==='lua')paths=beforeAddedTest(paths,['tests/lua/traveler_power_tooltip.lua','35363665f69113883246aa33984d4ab17eba727a87476256a617dc0f42dd45f7'],read);
+ return beforeAddedTest(paths,shopEntryTests[kind],read);
 }
 export function assertCurrentJsInventory(paths,preceding,read=readFileSync){
  paths=beforeRefinedReleaseJsInventory(beforeShopEntryInventory(paths,'js',read),[...preceding,coopLabTest],read,true);
