@@ -32,8 +32,7 @@ local PageReveal=require('abyss_page_reveal')
 
 local function revealMotion(platform)
     if platform.prologue==true and platform.color then
-        return {color=platform.color,duration=Theme.motion.slow,entryDuration=Theme.motion.fast/2,
-            entryTrace=platform.entryTrace}
+        return {color=platform.color,duration=Theme.motion.slow,entryTrace=platform.entryTrace}
     end
 end
 local function legacyPrologue(panel,platform,gate)
@@ -66,7 +65,7 @@ function M.new(root, data, presentation, clickEvent, platform)
             deckPanel=Theme.layout.deckView.viewport,deckBrowser=Theme.layout.deckView.pileViewport,
             nodePanel=Theme.layout.nativeNode.backdrop,battlePanel=Theme.layout.rewardPick.stage,
             potionPanel={0,0,Theme.layout.modal.size[1],Theme.layout.modal.size[2]},
-            choicePanel=Theme.layout.combatChoice.panel},revealMotion(platform))
+            choicePanel=Theme.layout.combatChoice.viewport or Theme.layout.combatChoice.panel},revealMotion(platform))
         if controller then controller.blocked=function()return self.pageReveal:covered() and (not self.exitOpen or self.routeOpen) end end
         cover.disableCursorEventPassthrough=true
         cover:GetChild('blocker'):AddCursorEventListener(clickEvent,function()return true end)

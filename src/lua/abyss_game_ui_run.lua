@@ -6,6 +6,8 @@ local RunSeed = require("abyss_run_seed")
 local NeowHistory=require('abyss_neow_history')
 local EndingHistory=require('abyss_ending_history')
 local Acts=require('abyss_acts')
+local PageReveal=require('abyss_page_reveal')
+local PendingRelic=require('abyss_relic_pending')
 local M = {}
 local function startBlocked(self)
     return self.exitOpen or self.deckUI.visible or self.settlementRequested or self.settlementBusy
@@ -176,21 +178,32 @@ function M.confirmCharacter(self,beginRun)
 end
 
 function M.advanceAct(self)
+    local function advance(run,map)
+        local ok, reason = Nodes.advanceAct(run,map)
+        if ok then
+            self.nodeUI.result, self.nodeUI.notice = nil, ''
+            self.battleUI.selected, self.battleUI.target = nil, 1
+            self.presentedBattle = nil
+            if self.choiceUI then self.choiceUI:close() end
+        else
+            self.nodeUI.notice = '暂时无法前往下一幕，请重试。'
+        end
+        self:refresh()
+        return ok, reason
+    end
     return function()
             if self.disabled or not self.run or self.run.phase ~= 'act_transition' then return false,'act_transition_unavailable' end
             if self.exitOpen or self.deckUI.visible or self.potionUI.visible or self.battleUI.busy
                 or self.settlementRequested or self.settlementBusy then return false,'ui_busy' end
-            local ok, reason = Nodes.advanceAct(self.run, self.map)
-            if ok then
-                self.nodeUI.result, self.nodeUI.notice = nil, ''
-                self.battleUI.selected, self.battleUI.target = nil, 1
-                self.presentedBattle = nil
-                if self.choiceUI then self.choiceUI:close() end
-            else
-                self.nodeUI.notice = '暂时无法前往下一幕，请重试。'
+            local run,map,gate=self.run,self.map,self.pageReveal
+            if PendingRelic.owner(run) then return false,'relic_choice_pending' end
+            if gate and gate:usesFade() then
+                return gate:depart(function()
+                    if self.run==run and self.map==map and not self.exitOpen then advance(run,map) end
+                    return true -- A refused rule transaction reveals the same room for retry.
+                end,nil,nil,PageReveal.roomDuration(self.fastMode),PageReveal.intent(self))
             end
-            self:refresh()
-            return ok, reason
+            return advance(run,map)
         end
 end
 

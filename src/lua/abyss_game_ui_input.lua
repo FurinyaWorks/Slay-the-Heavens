@@ -296,7 +296,7 @@ end
 function M.installRunMenu(self,bindCommand,runMenu,canViewRoute,child,owner)
     local bar=Theme.presentationProfile=='official-assets-first' and child('battlePanel'):GetChild('topBar')
     local function openRoute()
-        -- The first refresh can start a page fade, so publish the route state together.
+        -- Publish the route and its modal ownership together before refreshing.
         owner.exitGeneration=owner.exitGeneration+1
         self.exitOpen,self.menuOpen,self.routeOpen,self.exitError=true,false,true,nil
         self:refresh()

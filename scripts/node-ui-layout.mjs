@@ -127,7 +127,7 @@ export function nodeLayout(theme = nativeTheme) {
     text('empty', picker.empty, '', font.body, color.textMuted)];
   const forge = layout.forge;
   pickerControls.unshift(
-    hidden(plate('forgeShade', [0, -22, 1280, 676], '#000000E6')),
+    hidden(plate('forgeShade', [0, -22, 1280, 676], '#000000BF')),
     hidden(fiveColumnCardGrid('forgeFit', forge.viewport, 'AbyssForgeCard', false)),
     hidden(fiveColumnCardGrid('forgeScroll', forge.viewport, 'AbyssForgeCard')),
     hidden(group('forgePrompt', [

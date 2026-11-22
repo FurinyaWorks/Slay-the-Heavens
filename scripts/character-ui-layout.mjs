@@ -100,6 +100,7 @@ export function experimentalCharacterControls(theme = nativeTheme) {
       button('before', q.before, '上一页', q), button('after', q.after, '下一页', q),
       button('confirm', q.confirm, '确认', q),
   ]);
+  Object.assign(choice.children[0], { colour: '#000000', opacity: .75 });
   if (q.viewport) applyOfficialChoiceLayout(choice, theme);
   return [
     panel('characterPanel', l, '选择你的同行者', '查看初始信息，确认后开始冒险。', [

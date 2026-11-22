@@ -7,7 +7,7 @@ local enter=Nodes.enter
 local section=assert(ABYSS_MAP_ROOM_SECTION,'map room transition test section required')
 
 local function observeCore(host,root)
-    local trace={calls=0,opaqueFrame=false}
+    local trace={calls=0,opaqueFrame=false,alphaStarts=0,frames=0}
     local cover=root:GetChild('pageReveal')
     local veil=cover:GetChild('veil')
     Nodes.enter=function(...)
@@ -16,18 +16,30 @@ local function observeCore(host,root)
         return enter(...)
     end
     function trace.tick(dt)
+        local prior=cover.visible and veil.imageColor.a or 0
         OnUpdate(dt or frame)
+        trace.frames=trace.frames+1
         assert(script.updating and not host.disabled,'unexpected fatal UI fallback')
+        local alpha=cover.visible and veil.imageColor.a or 0
+        if prior==0 and alpha>0 then trace.alphaStarts=trace.alphaStarts+1 end
+        if trace.calls>0 and cover.visible then
+            assert(alpha<=prior,'room entry darkened a second time')
+        end
         if cover.visible and veil.imageColor.a==255 then trace.opaqueFrame=true end
     end
     function trace.settle(count)
-        for _=1,count or 60 do
+        for _=1,count or 120 do
             if not host.pageReveal:covered() then return end
             trace.tick()
         end
         assert(not host.pageReveal:covered(),'page did not become interactive')
     end
     return trace,cover,veil
+end
+local function assertLocal(host,cover,action)
+    assert(action())
+    assert(host.pageReveal.state~='fadingOut' and host.pageReveal.state~='fadingIn')
+    assert(not cover.visible or host.pageReveal.localFrame,'ready UI showed a fullscreen loading cover')
 end
 
 local function same(a,b,seen)
@@ -41,11 +53,12 @@ local function same(a,b,seen)
     return true
 end
 
-local function finishBattle(host,root,settle)
+local function finishBattle(host,root,settle,cover)
     -- Terminal combat setup follows scripts/runtime-baseline/host.lua.
     for _,enemy in ipairs(host.run.combat.enemies)do enemy.hp=0 end
-    assert(Run.finishCombat(host.run));host:refresh();settle()
-    F.click(root,'battlePanel','continue');settle()
+    assert(Run.finishCombat(host.run))
+    assertLocal(host,cover,function()host:refresh();return true end);settle()
+    assertLocal(host,cover,function()F.click(root,'battlePanel','continue');return true end);settle()
     assert(host.mode=='map' and host.mapUI.navigationEnabled)
 end
 
@@ -86,6 +99,7 @@ for _,kind in ipairs({'camp','shop','event','combat','elite','boss','treasure'})
         assert(not tap(endTurn,4) and battle.turn==turn,'covered battle accepted a direct end-turn listener')
     end
     trace.settle()
+    assert(trace.alphaStarts==1 and trace.frames>=96 and trace.frames<=102,'normal entry must show one .8 s fade in each direction')
     assert(trace.calls==1 and map.currentNodeId==id and run.roomGeneration==oldGeneration+1 and run.nodeFlow.type==expectedType)
     assert(same(map,expectedMap) and same(run,expectedRun),'UI departure changed rule/RNG outputs')
     local phases={'input_received','feedback_submitted','core_enter_start','core_enter_end','native_preparation_start',
@@ -101,25 +115,77 @@ for _,kind in ipairs({'camp','shop','event','combat','elite','boss','treasure'})
     end
     if kind=='camp' then
         local panel=root:GetChild('nodePanel')
-        assert(F.click(root,'nodePanel','campView/forge'));settle()
+        assertLocal(host,cover,function()return F.click(root,'nodePanel','campView/forge') end);settle()
         assert(host.nodeUI.mode=='picker')
-        assert(F.click(root,'nodePanel','back'));settle()
-        assert(F.click(root,'nodePanel','campView/rest'));settle()
-        OnUpdate(2)
-        assert(F.click(root,'nodePanel','confirm'));settle()
+        assertLocal(host,cover,function()return F.click(root,'nodePanel','back') end);settle()
+        assertLocal(host,cover,function()return F.click(root,'nodePanel','campView/rest') end);settle()
+        assertLocal(host,cover,function()OnUpdate(2);return true end)
+        assertLocal(host,cover,function()return F.click(root,'nodePanel','confirm') end);settle()
         assert(host.mode=='map' and host.mapUI.navigationEnabled and not panel.active)
     elseif kind=='shop' then
         assert(not host.nodeUI.actions['shopView/card1'],'entry drew the hidden shelf')
         local talk=root:GetChild('nodePanel'):GetChild('merchant'):GetChild('talk'):GetChild('hit')
-        assert(tap(talk,5))
+        assertLocal(host,cover,function()return tap(talk,5)end)
         dofile('tests/lua/support/shop_timeline.lua')(host)
         assert(host.nodeUI.actions['shopView/card1'],'accepted merchant tap did not populate shelf')
+        assertLocal(host,cover,function()return F.click(root,'nodePanel','shopView/card1')end)
+        assertLocal(host,cover,function()return F.click(root,'nodePanel','back')end)
+        assertLocal(host,cover,function()return F.click(root,'nodePanel','back')end)
+        assertLocal(host,cover,function()OnUpdate(2);return true end);settle()
+        if host.mode=='node' then assertLocal(host,cover,function()return F.click(root,'nodePanel','confirm')end);settle()end
+        assert(host.mode=='map')
+    elseif kind=='treasure' then
+        assertLocal(host,cover,function()return F.click(root,'nodePanel','treasureView/chest')end)
+        OnUpdate(2);settle()
+        assertLocal(host,cover,function()return F.click(root,'nodePanel','back')end);settle()
+        if host.mode=='node' then assertLocal(host,cover,function()return F.click(root,'nodePanel','confirm')end);settle()end
+        assert(host.mode=='map')
+    elseif kind=='event' and host.mode=='node' then
+        assert(host.run.nodeFlow.event.id=='big_fish')
+        assertLocal(host,cover,function()return F.click(root,'nodePanel','eventView/option1')end);settle()
+        assert(host.run.nodeFlow.event.stage=='result')
+        assertLocal(host,cover,function()return F.click(root,'nodePanel','eventView/option1')end);settle()
+        if host.mode=='node' then assertLocal(host,cover,function()return F.click(root,'nodePanel','confirm')end);settle()end
+        assert(host.mode=='map')
     elseif host.mode=='battle' then
-        finishBattle(host,root,settle)
+        finishBattle(host,root,settle,cover)
     end
     Nodes.enter=enter
     OnDestroy()
 end
+end
+
+if section=='fast' then
+    local host,root,_,_,resize,id,hit=onMap('combat',true,'pc')
+    resize(1600)
+    local trace,cover,veil=observeCore(host,root)
+    assert(tap(hit,15) and trace.calls==0)
+    trace.tick()
+    assert(trace.calls==0 and cover.visible and veil.imageColor.a==255)
+    trace.settle(6)
+    assert(trace.calls==1 and trace.alphaStarts==1 and host.map.currentNodeId==id)
+    finishBattle(host,root,function()trace.settle()end,cover)
+    Nodes.enter=enter
+    local nextNode=assert(Nodes.available(host.run,host.map)[1])
+    local again=observeCore(host,root)
+    assert(tap(hitFor(host,root,nextNode.id),16))
+    again.settle(8)
+    assert(again.calls==1 and again.alphaStarts==1 and host.map.currentNodeId==nextNode.id)
+    Nodes.enter=enter
+    OnDestroy()
+
+    local camp,campRoot,_,settle,_,_,campHit=onMap('camp',true,'pc')
+    local forge,shade=observeCore(camp,campRoot)
+    assert(tap(campHit,17))
+    forge.settle(6)
+    assertLocal(camp,shade,function()return F.click(campRoot,'nodePanel','campView/forge')end);settle()
+    assertLocal(camp,shade,function()return camp.nodeUI:press('pickerView/forgeScroll/card1')end);settle()
+    assertLocal(camp,shade,function()return F.click(campRoot,'nodePanel','confirm')end);settle()
+    assertLocal(camp,shade,function()OnUpdate(2);return true end)
+    assertLocal(camp,shade,function()return F.click(campRoot,'nodePanel','confirm')end)
+    assert(camp.mode=='map')
+    Nodes.enter=enter
+    OnDestroy()
 end
 
 if section=='readiness' then

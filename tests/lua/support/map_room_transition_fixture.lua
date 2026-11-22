@@ -17,7 +17,7 @@ local function untilState(condition, label, maxFrames)
     assert(condition(), label)
 end
 
-local function makeNativeHost()
+local function makeNativeHost(fast,device)
     local canvas = F.control({children=F.Layout})
     local stage = canvas:GetChild('stage')
     for _, name in ipairs({'nodePanel', 'choicePanel'}) do
@@ -75,7 +75,7 @@ local function makeNativeHost()
             actors.destroy(...)
             assets.destroyed=assets.destroyed+1
         end,
-        GetDevice=function()return 'mobile' end,GetCursorUIPos=function()return 0,0 end}
+        GetDevice=function()return device or 'mobile' end,GetCursorUIPos=function()return 0,0 end}
     dofile('src/lua/abyss_ui.lua')
     OnStart()
     GameUI.new,Portraits.new=make,makePortraits
@@ -86,6 +86,7 @@ local function makeNativeHost()
         assert(script.updating and not host.disabled)
     end
     settled()
+    if fast then assert(host:setFastMode(true)) end
     assert(host:start());settled()
     assert(host:selectCharacter('traveler'));settled()
     assert(host:confirmCharacter());settled()
@@ -115,8 +116,8 @@ local function tap(hit, id)
     return hit.click(event)
 end
 
-local function onMap(kind)
-    local host,root,assets,settle,resize=makeNativeHost()
+local function onMap(kind,fast,device)
+    local host,root,assets,settle,resize=makeNativeHost(fast,device)
     if kind=='camp' then host.run.hp=host.run.maxHp-10 end
     local path=Routes.to(host.map,function(node)return node.type==kind end)
     -- Project a route checkpoint through real edges. The regression starts

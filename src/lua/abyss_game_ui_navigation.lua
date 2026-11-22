@@ -2,6 +2,7 @@
 local NeowHistory=require('abyss_neow_history')
 local Theme=require('abyss_theme')
 local Nodes=require('abyss_nodes')
+local PageReveal=require('abyss_page_reveal')
 local M={}
 
 local function canEnterNode(self)
@@ -52,7 +53,7 @@ function M.requestNodeEntry(self,platform,changed)
         end
         self.nodeEntry=request
         trace('input_received',request,request.nodeId)
-        local called,accepted=pcall(gate.depart,gate,commit,cancel,true,request.id)
+        local called,accepted=pcall(gate.depart,gate,commit,cancel,{id=request.id},PageReveal.roomDuration(self.fastMode))
         if not called or not accepted then
             cancel()
             local departure=gate.departure

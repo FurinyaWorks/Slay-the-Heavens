@@ -310,7 +310,7 @@ test('official Host publishes painted map rooms immediately when ready and gates
  lua(`${source}
 dofile('tests/lua/support/map_room_reveal.lua')
 print('PAGE_REVEAL_PASS')`);
- for(const section of ['rooms','readiness','cancellation']){
+ for(const section of ['rooms','readiness','cancellation','fast']){
    lua(`${source}
 ABYSS_MAP_ROOM_SECTION=${luaString(section)}
 dofile('tests/lua/support/map_room_transition.lua')

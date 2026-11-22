@@ -11,15 +11,16 @@ local cover={GetChild=function(_,n)if n=='veil'then return veil elseif n=='cance
 local ready=true;local g=Gate.new(cover,function()return ready end,nil,nil,{duration=.2,color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end})
 local a={page='menuPanel'};local b={page='characterPanel'}
 g:begin(a);g:step(a,0);g:step(a,0);g:step(a,.2);assert(not g:covered())
-assert(not g:begin(b),'new page rendered before fade out');assert(g:covered()and veil.imageColor.a==0)
-assert(not g:step(b,.1));assert(veil.imageColor.a>0 and veil.imageColor.a<255)
-assert(g:step(b,.1)and veil.imageColor.a==255,'opaque frame must request destination paint')
-ready=false;g:begin(b);g:finish(b)
+local calls=0
+assert(g:depart(function()calls=calls+1;g:begin(b);return true end))
+assert(not g:depart(function()calls=calls+1 end))
+assert(not g:begin(b) and g:covered() and veil.imageColor.a==0)
+assert(not g:step(a,.1));assert(veil.imageColor.a>0 and veil.imageColor.a<255)
+assert(not g:step(a,.1) and calls==0 and veil.imageColor.a==255)
+ready=false;g:step(a,0);assert(calls==1 and veil.imageColor.a==255)
 for i=1,10 do g:step(b,.1);assert(veil.imageColor.a==255 and g:covered())end
 ready=true;g:step(b,0);g:step(b,0);assert(g:covered());g:step(b,.1);assert(veil.imageColor.a>0 and veil.imageColor.a<255);g:step(b,.1);assert(not g:covered())
-local calls=0;assert(g:depart(function()calls=calls+1;g:begin(a);return true end));assert(not g:depart(function()calls=calls+1 end))
-g:step(b,.1);assert(calls==0);g:step(b,.1);assert(calls==0 and veil.imageColor.a==255)
-g:step(b,0);assert(calls==1 and veil.imageColor.a==255)
+assert(calls==1)
 print('FADE_PASS')`;
  const r=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),'-e',body],{encoding:'utf8'});
  assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/FADE_PASS/);
@@ -44,7 +45,7 @@ local F=dofile('tests/lua/support/game_ui_fixture.lua');local host,root=F.fixtur
 local Gate=require('abyss_page_reveal');local panel=root:GetChild('characterPanel');local veil=root:GetChild('pageReveal'):GetChild('veil')
 local function tick()host:update(.05);if host.pageReveal:step(Gate.intent(host),.05)then host:refresh()end;host.pageReveal:paint(true)end
 local function settle()for i=1,20 do tick()end;assert(not host.pageReveal:covered())end
-settle();assert(host:start());assert(not panel.visible,'destination was painted before fade');settle()
+settle();assert(host:start());assert(host.pageReveal.state~='fadingOut','opening selection started a scene fade');settle()
 assert(host.characterSelection.info==nil and panel:GetChild('title').visible)
 assert(not panel:GetChild('officialBackdropVeil').visible,'approved #785 selection veil removal was lost')
 assert(not panel:GetChild('details').visible and not panel:GetChild('confirm').visible)
@@ -73,7 +74,8 @@ local cover={GetChild=function(_,n)if n=='veil'then return veil end end,SetVisib
 gate=Gate.new(cover,function()if callback then local f=callback;callback=nil;f()end;return true end,nil,nil,{duration=.2,color=function(r,g,b,a)return {a=a}end})
 local a={page='menuPanel'};local b={page='characterPanel'};local c={page='mapPanel'}
 gate:begin(a);gate:step(a,0);gate:step(a,0);gate:step(a,.2)
-gate:begin(b);gate:step(b,.2);gate:begin(b);gate:step(b,0);gate:step(b,0)
+assert(gate:depart(function()return gate:begin(b)end))
+gate:step(a,.2);gate:step(a,0);gate:step(b,0);gate:step(b,0)
 assert(gate.state=='fadingIn')
 callback=function()gate:request(c)end;gate:step(b,.2)
 assert(gate.intent==c and gate:covered()and shown and veil.imageColor.a==255,'stale readiness uncovered replacement')
@@ -99,16 +101,16 @@ print('CANCEL_REENTRY_PASS')`;
  assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/CANCEL_REENTRY_PASS/);
 });
 
-test('a new base owner on the same panel fades out before destination paint',()=>{
+test('a new base owner guards readiness without implicitly scheduling a scene fade',()=>{
  const body=`package.path='src/lua/?.lua;'..package.path
 local G=require('abyss_page_reveal');local veil={}
 local cover={GetChild=function(_,n)if n=='veil'then return veil end end,SetVisible=function()end,SetAsLastSibling=function()end}
 local gate=G.new(cover,function()return true end,nil,nil,{duration=.2,color=function(r,g,b,a)return {a=a}end})
 local a={page='battlePanel',mode='battle',run={},battle={}};local b={page='battlePanel',mode='battle',run={},battle={}}
 gate:begin(a);gate:step(a,0);gate:step(a,0);gate:step(a,.2)
-assert(not gate:begin(b),'new battle owner on the same panel skipped fade-out')
-assert(veil.imageColor.a==0 and gate:covered());assert(not gate:step(b,.1));assert(veil.imageColor.a>0 and veil.imageColor.a<255)
-assert(gate:step(b,.1)and veil.imageColor.a==255);assert(gate:begin(b),'opaque new base cannot paint')
+assert(gate:begin(b) and gate.state=='preparing','implicit change scheduled a scene fade')
+assert(veil.imageColor.a==255 and gate:covered());assert(not gate:step(b,.1))
+assert(gate:step(b,.1) and not gate:covered(),'loading cover did not clear once ready')
 print('SAME_PANEL_NEW_BASE_PASS')`;
  const r=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),'-e',body],{encoding:'utf8'});
  assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/SAME_PANEL_NEW_BASE_PASS/);
@@ -129,6 +131,32 @@ assert(veil.size[1]==1280 and veil.size[2]==720 and veil.imageColor.a==0,'depart
 print('FULL_DEPARTURE_COVER_PASS')`;
  const r=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),'-e',body],{encoding:'utf8'});
  assert.equal(r.status,0,r.stdout+r.stderr);assert.match(r.stdout,/FULL_DEPARTURE_COVER_PASS/);
+});
+
+test('a reverting local intent cannot end a room fade or skip input publication',()=>{
+ const body=`package.path='src/lua/?.lua;'..package.path
+local Gate=require('abyss_page_reveal')
+local veil={SetAnchoredPosition=function()end,SetSizeDelta=function()end}
+local cover={GetChild=function(_,n)if n=='veil'then return veil end end,SetVisible=function()end,SetAsLastSibling=function()end}
+local frames={full={0,0,1280,720},nodePanel={0,0,1240,680}}
+local enabled=0
+local gate=Gate.new(cover,function()return true end,nil,frames,{duration=.2,color=function(r,g,b,a)return {a=a}end,
+ entryTrace=function(phase)if phase=='input_enabled'then enabled=enabled+1 end end})
+local a={page='mapPanel',mode='map',phase='map',run={},act=1}
+local b={page='nodePanel',mode='node',phase='node',run=a.run,act=1,nodeId='room',nodeType='camp',nodePage=1}
+gate:begin(a);gate:step(a,0);gate:step(a,0)
+assert(gate:depart(function()return gate:begin(b)end,nil,{id=1}))
+gate:step(a,.2);gate:step(a,0);gate:step(b,0);gate:step(b,0);gate:step(b,.1)
+assert(gate.state=='fadingIn' and veil.imageColor.a>0 and veil.imageColor.a<255)
+local c={};for k,v in pairs(b)do c[k]=v end;c.nodePage=2
+assert(gate:request(c));assert(gate:begin(b))
+assert(not gate:finish(b) and gate:covered() and gate.entry and enabled==0)
+gate:step(b,0);gate:step(b,0);gate:step(b,.2)
+assert(not gate:covered() and not gate.entry and enabled==1)
+print('SCENE_REENTRY_PASS')`;
+ const result=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),'-e',body],{encoding:'utf8'});
+ assert.equal(result.status,0,result.stdout+result.stderr);
+ assert.match(result.stdout,/SCENE_REENTRY_PASS/);
 });
 
 test('Release UI closeout projection rejects drift and stale owner rereads',async()=>{

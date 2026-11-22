@@ -144,7 +144,7 @@ if not STS_UI_BASELINE then
     assert(veil.imageColor.a>0 and veil.imageColor.a<255)
     shot('fade-out',fade,fadeRoot)
 end
-for _=1,12 do tick(.05)end
+for _=1,16 do tick(.05)end
 assert(cover.visible and cover:GetChild('blocker').click())
 if not STS_UI_BASELINE then
     assert(veil.imageColor.a==255 and not cover:GetChild('message').visible)

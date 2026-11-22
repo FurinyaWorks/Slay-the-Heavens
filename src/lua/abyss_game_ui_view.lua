@@ -358,7 +358,7 @@ end
 function M.renderMapPage(self)
     return function(run,deckOpen,potionOpen,blocked,covering)
             if deckOpen then return self.mapUI:setNavigationEnabled(false,true) end
-            -- While the cinematic's last fade uncovers the map, the map is visible but inert.
+            -- The map controller also checks the publication gate before accepting a node.
             self.mapUI:setNavigationEnabled(not potionOpen and not blocked and not covering and #Nodes.available(run, self.map) > 0)
             if run.neowStatus=='unavailable' and self.map.floor==0 and not self.mapUI.entryError then
                 self.mapUI.entryError='开局恩赐暂不可用：未取得上一局历史；本次保持原开局资源。'

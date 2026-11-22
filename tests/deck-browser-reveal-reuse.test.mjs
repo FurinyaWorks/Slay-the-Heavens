@@ -267,6 +267,9 @@ local function boot(amount,origin,deferred)
   for _,choice in ipairs({'continue','reward_1','leave'})do assert(F.Nodes.chooseEvent(host.run,choice))end
   host:refresh()
   for _=1,60 do if not host.pageReveal:covered()then break end;update(.05)end
+  -- An already-ready route now publishes in its click turn. Drive the idle
+  -- native update that owns hidden grid warmup before assuming it has run.
+  update(1/60)
  end
  local original=C.copy(host.run.deck);host.run.deck={}
  for i=1,amount do local card=C.copy(original[(i-1)%#original+1]);card.uid=1000+i;host.run.deck[i]=card end

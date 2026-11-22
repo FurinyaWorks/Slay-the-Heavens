@@ -18,7 +18,7 @@ function rounded(name,w,h,r,colour){
 }
 
 function paper(theme){
- const items=[plate('darkField',0,0,1280,720,'#030504'),
+ const items=[plate('darkField',0,0,1280,720,'#000000',{opacity:.85}),
   image('fieldHaze',38,20,1150,720,theme.image.glowWide,'#15201F',{opacity:.72}),
   plate('parchment',.5,-22,838,676,'#929286'),
   image('paperAge',-20,-15,840,900,theme.image.glowWide,'#8C8B7F',{opacity:.18}),
