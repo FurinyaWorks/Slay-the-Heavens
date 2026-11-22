@@ -118,9 +118,16 @@ function beforeIntegratedReleaseCopier(path,source){
  assert.equal(hash(prior),'42a2fae24acaca0ff0214e5e0e592b2ff4cfd7f1e506578ba36faf327d17ae87','exact frozen Release copy predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+function beforeRefactorCopier(source){
+ if(hash(source)!=='8811045e5e3c7b56795fef9c23e5ab434f9ea9c3cb7ab9f4ffaa8e665cb3ab00')return source;
+ const prior=source.replace(" 'tests/fixtures/develop-card-display-responsibilities-source.json.gz':'fafb7ec975e6ae3fa1f0629a7366a0f673bbad64668afede85267e7af0d0871c',\n 'tests/helpers/develop-release-backflow-source.mjs':'697fc3b432beb23e5624eae3022ac5e7db758f84c6e1972c5222793a86f75845',\n",
+  " 'tests/helpers/develop-release-backflow-source.mjs':'70df2b48d5d0573d959be2dd80cf7799722c7cafa5e7b09701eac0d15b644036',\n");
+ assert.equal(hash(prior),'287ddbb54bfec7eadf72bceea09c77c8029410c8ef03465d88a0fba6b023413b','exact Develop refactor copier predecessor');
+ return prior;
+}
 function beforeDevelopBackflowCopier(path,source){
  if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
- const lf=normalize(source);
+ const lf=beforeRefactorCopier(normalize(source));
  if(hash(lf)!=='287ddbb54bfec7eadf72bceea09c77c8029410c8ef03465d88a0fba6b023413b')return source;
  const prior=lf.replace(/const developBackflowFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
    .replace('Object.entries(developBackflowFiles))','Object.entries(stsCloseoutFiles))');
