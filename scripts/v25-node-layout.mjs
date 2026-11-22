@@ -1,4 +1,3 @@
-import {merchantControl} from './cinematic-ui-layout.mjs';
 // Independently authored native geometry from the frozen V25 room composition.
 // No private raster, SVG path, sample transactions or random data is embedded.
 export const v25NodeSource=Object.freeze({
@@ -80,12 +79,18 @@ function curvedPolygon(name,start,segments,colour){
  return polygon(name,points,colour);
 }
 
-function shopCloth(){return group('v25ShopCloth',[
- rect('shadow',0,-7,1128,660,'#2E392F'),rounded('hem',1128,660,12,'#8D9D7D'),
- rect('cloth',0,3,1116,654,'#52644A'),fade('clothLight',0,3,1116,654,'#69805C',{rotation:180,opacity:.12}),
- rect('leftHem',-560,0,5,660,'#8D9D7D'),rect('rightHem',560,0,5,660,'#8D9D7D'),
- rect('lowerHem',0,-327,1100,5,'#7F9073'),
- ],[0,-18]);}
+export function shopCloth(){return group('v25ShopCloth',[
+ rect('perimeter',0,-21.5,1280,677,'#162320'),
+ rect('shadow',5,-28,1146,659,'#162D29'),
+ rect('hem',0,-20,1144,663,'#A39066'),
+ rect('cloth',0,-20,1136,655,'#435953'),
+ fade('clothLight',0,-20,1136,655,'#71866A',{rotation:180,opacity:.28}),
+ ...[-1,1].flatMap(side=>[
+  rect('selvedge'+side,side*557,-20,1,652,'#CCB77C',{opacity:.65}),
+  ...[278,146,14,-118,-250].map((y,i)=>image('stitch'+side+'_'+i,side*548,y,10,10,100004,'#BAA475',{opacity:.68})),
+ ]),
+ rect('lowerHem',0,-341,1116,2,'#A3916C'),
+ ]);}
 
 function campScene(theme){
  const logs=group('logs',[-18,18,-65,65].map((rotation,i)=>{const n=rounded('log'+i,350,42,20,'#271A13');n.position=[350,-326-i*4];n.rotation=rotation;
@@ -126,7 +131,6 @@ function framedSkin(box,kind='teal'){
 }
 
 function styleShop(panel,theme){
- panel.children.unshift(shopCloth());
  const l=theme.layout.nativeNode.shop;
  for(let i=1;i<=7;i++){
   const card=must(panel,'card'+i);card.position=[l.columns[i-1],l.cardRows[i-1]];
@@ -231,29 +235,11 @@ export function styleTreasure(panel,theme,{skinButtons=true}={}){
 }
 
 export function styleMerchant(panel,theme){
- if(theme.layout.merchant.bubble){
-  // Project the complete component, retaining existing objects and live text.
-  // Build starts from the unprojected theme; partial old-bar positioning would
-  // otherwise leave the bubble, line and input target in different geometries.
-  const project=(live,spec)=>{
-   const children=live.children,content=live.text?.content;
-   Object.assign(live,spec);
-   if(content!==undefined)live.text={...spec.text,content};
-   if(children)live.children=spec.children.map(next=>{
-    const prior=children.find(node=>node.name===next.name);
-    if(!prior)return next;
-    project(prior,next);return prior;
-   });
-  };
-  project(panel,merchantControl(theme));return;
- }
- const m=theme.layout.merchant,relative=v=>[v[0]-m.frame[0],v[1]-m.frame[1],...v.slice(2)];setRect(panel,m.frame);
- setRect(must(panel,'panel'),relative(m.box));setRect(must(panel,'border'),relative([m.box[0],m.box[1],m.box[2]+4,m.box[3]+4]));
- const portrait=must(panel,'portrait'),ratio=m.portrait[2]/portrait.size[0];setRect(portrait,relative(m.portrait));portrait.scale=[ratio,ratio];
- for(const name of ['namePlate','name'])setRect(must(panel,name),relative(m.name));
- type(must(panel,'name'),14,'#E5DBBC');setRect(must(panel,'line'),relative(m.line));type(must(panel,'line'),16,'#EFE8D6');
- setRect(must(panel,'next'),relative(m.next));const talk=must(panel,'talk');setRect(talk,relative(m.box));must(talk,'hit').size=m.box.slice(2);
- setRect(must(panel,'accent'),[m.box[0]-m.frame[0],m.box[1]-m.frame[1]+m.box[3]/2-2,m.box[2]-8,2]);
+ // Keep the native receiver and response objects while applying shared colours.
+ const bubble=must(panel,'bubble'),style=theme.layout.merchant.bubble;
+ must(bubble,'trim').colour=style.edge;
+ must(bubble,'paper').colour=style.fill;
+ must(panel,'line').text.colour=style.ink;
 }
 
 function stylePreset(button){
