@@ -26,14 +26,32 @@ for(const [path,row]of Object.entries(reward.files)){
  assert.match(row.after.sha256,/^[a-f0-9]{64}$/);assert.match(row.after.gitBlob,/^[a-f0-9]{40}$/);
  rewardContinuations.set(path,exactSourceContinuation(row));
 }
+const rewardEntryBytes=readFileSync(new URL('../fixtures/release-reward-entry-source.json.gz',import.meta.url));
+assert.equal(hash(rewardEntryBytes),'1ebaf2212130772f299fc9dca4a0664dbdf768a75bd3c5899a52d2efd38b7b1b');
+const rewardEntry=JSON.parse(gunzipSync(rewardEntryBytes));
+assert.equal(rewardEntry.base,'b0475c90b1ed304375b465e88e8590ec97c957b2');
+assert.equal(rewardEntry.path,'src/lua/abyss_feedback.lua');
+const priorFeedback=reward.files[rewardEntry.path].after;
+assert.equal(hash(rewardEntry.before.source),priorFeedback.sha256);
+assert.equal(rewardEntry.before.sha256,priorFeedback.sha256);
+assert.equal(rewardEntry.before.gitBlob,priorFeedback.gitBlob);
+assert.match(rewardEntry.after.sha256,/^[a-f0-9]{64}$/);
+assert.match(rewardEntry.after.gitBlob,/^[a-f0-9]{40}$/);
+const rewardEntryContinuation=exactSourceContinuation(rewardEntry);
 function beforeReward(path,source,read=p=>readFileSync(p,'utf8')){
- return rewardContinuations.get(path)?.predecessor(path,source,read)??source;
+ const prior=rewardEntryContinuation.predecessor(path,source,read);
+ const priorRead=owner=>rewardEntryContinuation.predecessor(owner,read(owner),read);
+ return rewardContinuations.get(path)?.predecessor(path,prior,priorRead)??prior;
 }
 export function beforeEnergyReferenceSource(path,source,read=p=>readFileSync(p,'utf8')){
  const prior=beforeReward(path,source,read);
  return continuations.get(path)?.predecessor(path,prior,owner=>beforeReward(owner,read(owner),read))??prior;
 }
-export function assertEnergyReferenceCurrent(path,source,read){
+export function assertEnergyReferenceCurrent(path,source,read=p=>readFileSync(p,'utf8')){
+ if(path===rewardEntry.path){
+  const prior=rewardEntryContinuation.predecessor(path,source,read);
+  assert.notEqual(prior,source,'fresh energy reference source: '+path);
+ }
  if(continuations.has(path)||rewardContinuations.has(path)){
   const prior=rewardContinuations.has(path)?beforeReward(path,source,read):beforeEnergyReferenceSource(path,source,read);
   assert.notEqual(prior,source,'fresh energy reference source: '+path);
