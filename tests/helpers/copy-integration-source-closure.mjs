@@ -183,8 +183,9 @@ const stsCloseoutFiles=Object.freeze({
 });
 const developBackflowFiles=Object.freeze({
  ...stsCloseoutFiles,
+ 'tests/fixtures/develop-traveler-touch-source.json.gz':'58bed3fd2bfe7a20e5e9d2b9760b5f7dd165bde92201dd49fa90e36bb17168c9',
  'tests/helpers/release-map-deck-source.mjs':'87a1f219bfca2f4ae049896248efd8217c76e90010aee0a1567e51b0e6fc0aa1',
- 'tests/helpers/develop-release-backflow-source.mjs':'746506919ebea92ffc0aa98ee7611a597988ce6356570cc0cc001fdf0e4c3927',
+ 'tests/helpers/develop-release-backflow-source.mjs':'c530874d8c4147b9318290c6900d3c96254bf896d12f4a253cf0baa4e5528beb',
  'tests/fixtures/develop-release-backflow-source.json.gz':'7d5c23a2892ec034dc1fb183bca19d8c074f834dc03ff037ee93a17a3da99943',
  'tests/helpers/character-preparation-source.mjs':'1adaca46c085f2daaf7450e8421ec4f38bb6b0e30e726f92cc716abef0330fdb',
  'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'4e615ebe00db432f4454613cebc88c3ade5ca1053e6a1bc7ac80fe3c067a5ee3',

@@ -8,9 +8,16 @@ const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).diges
 const blob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
 const archive=readFileSync(new URL('../fixtures/develop-release-backflow-source.json.gz',import.meta.url));
 assert.equal(hash(archive),'7d5c23a2892ec034dc1fb183bca19d8c074f834dc03ff037ee93a17a3da99943','exact Develop Release-backflow source archive');
-const {base,files,shopBase,shop}=JSON.parse(gunzipSync(archive));
+const {base,files:releaseFiles,shopBase,shop}=JSON.parse(gunzipSync(archive));
 assert.equal(base,'742a540ffc999e91acdface3d8fc7f753731f0a8');
 assert.equal(shopBase,'82ba375397ffd7f8f8175a7a1fd18a973450ecc6');
+const travelerArchive=readFileSync(new URL('../fixtures/develop-traveler-touch-source.json.gz',import.meta.url));
+assert.equal(hash(travelerArchive),'58bed3fd2bfe7a20e5e9d2b9760b5f7dd165bde92201dd49fa90e36bb17168c9','exact Develop Traveler touch source archive');
+const traveler=JSON.parse(gunzipSync(travelerArchive));
+assert.equal(traveler.base,shopBase);
+assert.deepEqual(Object.keys(traveler.files),['src/lua/abyss_battle_detail_bindings.lua','tests/lua/traveler_power_tooltip.lua']);
+for(const path of Object.keys(traveler.files))assert(!Object.hasOwn(releaseFiles,path)&&!Object.hasOwn(shop,path),'distinct Develop backflow source owner: '+path);
+const files={...releaseFiles,...traveler.files};
 for(const {before,after} of [...Object.values(files),...Object.values(shop)]){
  assert.equal(hash(before.source),before.sha256);
  assert.equal(blob(before.source),before.gitBlob);
