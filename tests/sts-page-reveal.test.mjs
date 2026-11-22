@@ -360,3 +360,15 @@ test('Forethought authenticates its complete Lua and layout owners',async()=>{
  const foreign=read(lua)+'\n';
  assert.equal(authenticateDevelopBackflow(lua,foreign,()=>assert.fail('foreign source read')),foreign);
 });
+
+test('current StS source replay requires the live map-room artwork owner',async()=>{
+ const {sourceEpoch,ciRepairSourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
+ const {gunzipSync}=await import('node:zlib');
+ const config='config/architecture.json',art='src/lua/abyss_card_art_runtime.lua';
+ const archive=readFileSync(new URL('./fixtures/develop-map-room-entry-source.json.gz',import.meta.url));
+ const predecessor=JSON.parse(gunzipSync(archive)).files[art].before.source;
+ const readSource=path=>readFileSync(path,'utf8');
+ const project=read=>sourceEpoch.preCombinedSource(config,readSource(config),{target:'stsStylePrior',readSource:read});
+ assert.equal(project(readSource),ciRepairSourceEpoch.proof.current[config].source);
+ assert.throws(()=>project(path=>path===art?predecessor:readSource(path)),/combined linked owner identity: src\/lua\/abyss_card_art_runtime\.lua/);
+});

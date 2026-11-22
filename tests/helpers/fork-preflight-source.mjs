@@ -203,7 +203,7 @@ function beforeDevelopSessionRelicCopier(path,source){
 }
 function beforeDevelopBackflowCopier(path,source){
  if(path==='tests/helpers/copy-integration-source-closure.mjs'&&typeof source==='string'
-  &&hash(normalize(source))==='a63c13772858f86507915f46cef9f9e555c954b23ef76b9b2e1cd81c82406f7f'
+  &&hash(normalize(source))==='dbb15c5ae00750913e1c44c41c670181ab87bb7ee5cecade9fb2592c65c5556b'
   &&(!source.includes('\r')||!/[\r\n]/.test(source.replaceAll('\r\n','')))){
   const prior=normalize(source).replace(/^const mapRoomEntryFiles=Object\.freeze\(\{[\s\S]*?^\}\);\n/m,'')
    .replace('Object.entries(mapRoomEntryFiles))','Object.entries(relicDetailFiles))');
