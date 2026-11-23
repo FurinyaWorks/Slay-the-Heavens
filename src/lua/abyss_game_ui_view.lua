@@ -277,10 +277,13 @@ function M.refreshPageVisibility(menu,self,suspendBattle,child,refreshMapResourc
         if not self.pageReveal or not battle or run.phase~='combat' or self.battleUI.busy then return end
         local events,epoch=battle.events,self.pageReveal.epoch
         local eventCount=#events
+        -- Inventory and the health cap can change without a combat event.
+        local potionInventory,maxHp=battle.potionInventory,run.maxHp
         return function()
             return visibilityPass==pass and self.run==run and run.phase=='combat' and run.combat==battle
                 and self.deckUI.visible and not self.battleUI.active and not self.battleUI.busy
                 and self.pageReveal.epoch==epoch and battle.events==events and #events==eventCount
+                and battle.potionInventory==potionInventory and run.maxHp==maxHp
         end
     end
     local function refreshBattleVisibility(run,deckOpen,potionOpen,blocked,pass)
