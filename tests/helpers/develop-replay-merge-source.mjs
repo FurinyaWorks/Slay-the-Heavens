@@ -50,7 +50,7 @@ const mapRoomCohortPaths=new Set([
  'tests/sts-page-reveal.test.mjs',
 ]);
 const audioReplayCohort=releaseUiRestoreArchive(readFileSync(new URL('./act2-audio-replay-cohort-source.json.gz',import.meta.url)),
- '8789840857e25b02d5277a154a325d3ce5c9b0e2954fb9b23140186fb5946e0a','73c21489efaab409d4c0c46bee517d410d3427fc');
+ '6bd726d519fb91d412d5f1baa0e436f963f3f4e14138da695a019c0d9742979f','73c21489efaab409d4c0c46bee517d410d3427fc');
 export function beforeMapRoomReplayCohort(path,source){
  source=audioReplayCohort.project(path,source);
  if(!mapRoomCohortPaths.has(path))return source;

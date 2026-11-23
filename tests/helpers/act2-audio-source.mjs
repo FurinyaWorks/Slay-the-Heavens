@@ -17,15 +17,15 @@ for(const [path,row] of Object.entries(files)){
   assert.match(row.after.gitBlob,/^[a-f0-9]{40}$/);
 }
 
-const owns = path => Object.hasOwn(files,path);
+export const ownsAudioPresentation = path => Object.hasOwn(files,path);
 export function beforeAudioPresentation(path,source){
-  if(!owns(path)||!matches(source,files[path].after))return source;
+  if(!ownsAudioPresentation(path)||!matches(source,files[path].after))return source;
   const before = files[path].before.source;
   return source.includes('\r\n') ? before.replaceAll('\n','\r\n') : before;
 }
 
 export function authenticateAudioPresentation(path,source,read,{current=false}={}){
-  if(!owns(path))return source;
+  if(!ownsAudioPresentation(path))return source;
   const prior = beforeAudioPresentation(path,source);
   if(current)assert(prior!==source,'fresh current production owner: '+path);
   if(prior===source)return source;
@@ -38,7 +38,7 @@ export function authenticateAudioPresentation(path,source,read,{current=false}={
 export function beforeAudioPresentationReader(read,{current=false}={}){
   return (path,...args)=>{
     const raw=read(path,...args);
-    if(!owns(path))return raw;
+    if(!ownsAudioPresentation(path))return raw;
     const binary=Buffer.isBuffer(raw), source=binary?raw.toString('utf8'):raw;
     const prior=beforeAudioPresentation(path,source);
     if(current)assert(prior!==source,'combined linked owner identity: '+path+' during Act 2 audio validation');

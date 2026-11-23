@@ -290,7 +290,7 @@ const inputRetirementFiles=Object.freeze({
  'tests/fixtures/develop-deck-browser-backflow-source.json.gz':'84b5198436d5858f1630db9d577a188d2033b4e7cb8ce2897e7ecd4378ebf49c',
  'tests/fixtures/develop-potion-popup-source.json.gz':'d7e6b6a7b6d603cec23424eedb0ed25fbef3c7fdeae2a4d1ee6fe208ca693690',
  'tests/fixtures/develop-combat-events-source.json.gz':'6a25140a8a86554e7c072e94cad465082d5930d20ffb7c4b0837bf0f6aa1b87d',
- 'tests/helpers/character-preparation-source.mjs':'93c12b5f904b83652340ea05fcb4a0fc0e134bf0628c5775da7dc9ec9930329f',
+ 'tests/helpers/character-preparation-source.mjs':'660e672c193f8353b2833f00d8b0e3b122cdd4747cb1561af9bfc22bbfa0d6bb',
  'tests/helpers/rebased-release-source.mjs':'09cd53484024ec226c747686da16d05ee229b763b41f55533d92d2d1a6cd35a5',
  'tests/helpers/native-host-replay-source.mjs':'9a9adcd1ffd1f89db073f735335ccbb51d4112bf8a4ff83de9bf2338f81b19b7',
  'tests/helpers/native-host-replay-source.json.gz':'f6e9062262769766edcca6a82898acec6b66a0e7f3b30d26655c2b45eb511da5',
@@ -310,10 +310,10 @@ const inputRetirementFiles=Object.freeze({
 });
 const actionButtonFiles=Object.freeze({
  ...inputRetirementFiles,
- 'tests/helpers/act2-audio-source.mjs':'a6391ed894e3d04c165279ca22ac0ba5087ea71bd0dc29d7c45abeb0927531aa',
+ 'tests/helpers/act2-audio-source.mjs':'f55cdb630b4673505db22de0f8501ef717f44f237ee9e03e2401f91e2c374314',
  'tests/fixtures/act2-audio-source.json.gz':'16b96dd2b16d2e3bf233554a67983d78fd5cb44e1104c411a9de0e07919a2293',
  'tests/helpers/potion-pointer-source.mjs':'bf8d0faad70927ee572ccd0f748e22e3b7b64346f4b2e3290e00d464caa1ddf3',
- 'tests/helpers/develop-release-backflow-source.mjs':'0b94dc40162bd992de8ecff48bbdd5d3d3d391a27bd59268eac309d714bf0752',
+ 'tests/helpers/develop-release-backflow-source.mjs':'abebaa0cb098f7b1d11401c8aee6cc2cb45a2577317a3437694bd00f113098db',
  'tests/helpers/action-buttons-source.mjs':'fdb6c73f52cf92fededa3d48fded11f05e21356ec66864a43c54bdf51781d4cd',
  'tests/fixtures/action-buttons-source.json.gz':'86634a756c4085906261d4d318118bb1f7692a642479651526c1ace0fefe4487',
 });
