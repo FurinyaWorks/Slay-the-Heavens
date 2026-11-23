@@ -19,7 +19,7 @@ git push fork-a <task-branch>:refs/heads/<task-branch>       # A：自动 Quick
 git push fork-b <task-branch>:refs/heads/ci/full/<task-name>  # B：仅风险要求 Full 时使用
 ```
 
-Fork A 的 Quick Push 对受影响 JS/Lua、廉价治理及现有质量棘轮进行检查；纯 Markdown 推送不运行。Fork B 的特殊 `ci/full/**` 分支 Push 自动运行完整 hosted Quality，常规任务不推 B，也不默认重复 Full。两者在运行时固定主仓 develop 比较 BASE 与 HEAD；主仓基线若已推进，Fork 结果只作为诊断，不可冒充开发起点或正式主仓准入。已有有效运行按 HEAD/BASE、模式、覆盖和 attempt 复用，新的同分支 Push 自动取消过期运行，不轮询守候。对仍不包含新工作流的旧候选，允许正常主仓 PR 自动 CI，不强改提交历史；手动 dispatch 仅作为回退。
+Fork A 的 Quick Push 对受影响 JS/Lua、廉价治理及现有质量棘轮进行检查；纯 Markdown 推送不运行。Fork B 的特殊 `ci/full/**` 分支 Push 自动运行完整 hosted Quality，常规任务不推 B，也不默认重复 Full。两者在运行时固定主仓 develop 比较 BASE 与 HEAD；A 的预检收据保存选测 BASE，B 的比较 BASE 保存在 impact 摘要，Full Push 收据仍保留原 `event.before` 合同；主仓基线若已推进，Fork 结果只作为诊断，不可冒充开发起点或正式主仓准入。已有有效运行按 HEAD/BASE、模式、覆盖和 attempt 复用，新的同分支 Push 自动取消过期运行，不轮询守候。对仍不包含新工作流的旧候选，允许正常主仓 PR 自动 CI，不强改提交历史；手动 dispatch 仅作为回退。
 
 切片通过适用预检后，把所测 HEAD 同步到 origin 短分支。同步前复核实时目标基线和 Fork ref，正式 PR 正文记录 Fork 来源及验证结果。后续使用现有同仓 PR、独立 Review 和原生准入。主仓 Required Checks、队列组合及合后验证各自按实际提交执行。重建只接回 develop 仍缺且属于本版的切片，在实际合并树验证。候选的 Full 与官方容量、导入、ready、PC/手机逐项验收。合并后按既有生命周期核对和清理各仓临时 ref。
 

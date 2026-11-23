@@ -153,14 +153,15 @@ test('checkout writer binds BASE to the event and ignores an empty preflight env
   git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixture');
   const head=git('rev-parse','HEAD'),before='a'.repeat(40),dispatch='b'.repeat(40),foreign='c'.repeat(40);
   writeFileSync(join(root,'writer.mjs'),readFileSync(new URL('../scripts/write-ci-receipt.mjs',import.meta.url)));
-  for(const [eventName,event,envBase,expected] of [
+  for(const [eventName,event,envBase,expected,preflight] of [
     ['push',{before},'',before],['push',{before},foreign,before],
+    ['push',{before:'0'.repeat(40)},dispatch,dispatch,true],
     ['workflow_dispatch',{before},dispatch,dispatch],
     ['pull_request',{before,pull_request:{number:12,head:{sha:head},base:{sha:before}}},foreign,before],
     ['merge_group',{before,merge_group:{head_sha:head,base_sha:before}},foreign,before],
   ]){
     const eventPath=join(root,'event.json');writeFileSync(eventPath,JSON.stringify(event));
-    const r=spawnSync(process.execPath,['writer.mjs'],{cwd:root,encoding:'utf8',env:{...process.env,
+    const r=spawnSync(process.execPath,['writer.mjs',...(preflight?['--preflight']:[])],{cwd:root,encoding:'utf8',env:{...process.env,
       GITHUB_EVENT_PATH:eventPath,GITHUB_EVENT_NAME:eventName,GITHUB_SHA:head,
       GITHUB_RUN_ID:'12',GITHUB_RUN_ATTEMPT:'1',PREFLIGHT_BASE_SHA:envBase}});
     assert.equal(r.status,0,r.stderr);
@@ -1437,4 +1438,21 @@ test('a partial native Licenses rerun inherits actual old auxiliary skips while 
   x=>x.jobs.push({...x.jobs[2],id:802,run_attempt:2,conclusion:'success'}),
   x=>x.jobs[1].run_attempt=3,x=>x.jobs[2].head_sha=sha('f')
  ]){const bad=structuredClone(e);mutate(bad.queueFull.licenses);assert.equal(verifyMergedDelivery(bad).state,'merged_pending',String(mutate));}
+});
+
+test('Fork push routing skips every Quality runner outside Fork B Full and preserves formal events',()=>{
+  const quality=readFileSync(new URL('../.github/workflows/quality.yml',import.meta.url),'utf8');
+  const quick=readFileSync(new URL('../.github/workflows/quick-feedback.yml',import.meta.url),'utf8');
+  const condition=(text,job)=>text.match(new RegExp('^  '+job+':[\\s\\S]*?^    if: \\$\\{\\{ (.*?) \\}\\}', 'm'))[1];
+  const evaluate=(expression,github)=>Function('github','cancelled','startsWith','return '+expression)(github,()=>false,(s,p)=>s.startsWith(p));
+  for(const repositoryId of [1429751262,1460097312,1460133275])for(const ref of ['refs/heads/ci/full/probe','refs/heads/fix/probe','refs/heads/develop','refs/heads/master']){
+    const github={event_name:'push',ref,event:{repository:{id:repositoryId}}};
+    const full=['refs/heads/develop','refs/heads/master'].includes(ref)||(repositoryId===1460133275&&ref==='refs/heads/ci/full/probe');
+    for(const job of ['impact','check','engineering-posix'])assert.equal(evaluate(condition(quality,job),github),full,job+' '+repositoryId+' '+ref);
+    assert.equal(evaluate(condition(quick,'related'),github),repositoryId===1460097312&&!ref.startsWith('refs/heads/ci/full/'));
+  }
+  for(const eventName of ['pull_request','merge_group','workflow_dispatch']){
+    const github={event_name:eventName,ref:'refs/pull/1/merge',event:{pull_request:{draft:false},repository:{id:1429751262}}};
+    for(const job of ['impact','check','engineering-posix'])assert.equal(evaluate(condition(quality,job),github),true,job+' '+eventName);
+  }
 });

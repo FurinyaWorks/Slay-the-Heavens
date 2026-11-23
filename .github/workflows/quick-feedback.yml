@@ -87,7 +87,7 @@ jobs:
           ABYSS_PYTHON: python3
         run: node scripts/test-affected.mjs --preflight --base "$BASE_SHA"
       - name: Record exact tested checkout
-        run: node scripts/write-ci-receipt.mjs
+        run: node scripts/write-ci-receipt.mjs --preflight
         env:
           PREFLIGHT_BASE_SHA: ${{ steps.comparison.outputs.sha }}
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

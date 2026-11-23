@@ -449,7 +449,7 @@ jobs:
     # Preserve the required check name. A skipped/cancelled/missing shard must
     # never turn the aggregate green; fail-fast=false collects all shard results.
     needs: [impact, rules, fast, presentation, engineering-posix]
-    if: ${{ !cancelled() && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
+    if: ${{ !cancelled() && (github.event_name != 'push' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' || (github.event.repository.id == 1460133275 && startsWith(github.ref, 'refs/heads/ci/full/'))) && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     permissions:
@@ -607,7 +607,7 @@ jobs:
   engineering-posix:
     # Preserve the required check name and reject every non-success outcome.
     needs: [impact, engineering-posix-shards, fast]
-    if: ${{ !cancelled() && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
+    if: ${{ !cancelled() && (github.event_name != 'push' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' || (github.event.repository.id == 1460133275 && startsWith(github.ref, 'refs/heads/ci/full/'))) && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:

@@ -91,6 +91,16 @@ for(const [path,row] of Object.entries(transport.files)){
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.before)}\0`).update(row.before).digest('hex'),row.gitBlob,path);
 }
 const normalize=s=>s.replaceAll('\r\n','\n');
+// Exact complete successor bytes preserve the existing immutable historical CI views.
+const forkPushBytes=readFileSync(new URL('../fixtures/fork-push-ci-source.json.gz',import.meta.url));
+assert.equal(hash(forkPushBytes),'3761f61c17654acb196d13c730d85a78905d0afbdc77477faefe904ee317ae5d','complete Fork push CI continuation');
+const forkPushPacket=JSON.parse(gunzipSync(forkPushBytes));
+assert.equal(forkPushPacket.baseCommit,'73c21489efaab409d4c0c46bee517d410d3427fc');
+for(const row of Object.values(forkPushPacket.files))assert.equal(hash(row.before),row.beforeSha256);
+export function beforeForkPush(path,source){
+ const row=forkPushPacket.files[path];
+ return row&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha256?(source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before):source;
+}
 const rewardScreenBytes=readFileSync(new URL('./reward-screen-ci-source.json.gz',import.meta.url));
 assert.equal(hash(rewardScreenBytes),'04094f1942139397d7e267131fe819c49a5045b7027a4663157ccac985c5cd82');
 const rewardScreenCi=JSON.parse(gunzipSync(rewardScreenBytes));
@@ -748,6 +758,7 @@ function beforeReplayArchiveStorage(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 export function beforeReviewedBuildInput(path,source,read){
+ source=beforeForkPush(path,source);
  const live=owner=>read(owner,'utf8');
  const production=authenticateDevelopBackflow(path,source,live);
  const deck=beforeDeckPagesSuiteSource(path,production);
@@ -763,7 +774,8 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
- const liveRead=read;
+ const rawRead=read;
+ const liveRead=(path,encoding)=>beforeForkPush(path,rawRead(path,encoding));
  assertNativeFixturesCurrent(liveRead);
  assertNativeFlowFixturesCurrent(liveRead);
  read=(path,encoding)=>beforeCalibrationReplay(path,liveRead(path,encoding));
@@ -813,6 +825,7 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  }
 }
 export function beforePreflightSource(path,source,view='prior'){
+ source=beforeForkPush(path,source);
  source=beforeNativeFlowFixture(path,source);
  source=beforeOfficialBackgroundFixture(path,source);
  if(path===replayAssetLedger)source=beforeDeckBrowserAssetLedger(source);
