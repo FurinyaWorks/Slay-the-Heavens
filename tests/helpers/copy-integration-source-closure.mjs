@@ -336,7 +336,7 @@ const currentReplayFiles=Object.freeze({
  'tests/helpers/potion-pointer-source.mjs':'0eee6e133a69f776e08576c0f5c981c1601ec45a371c1d641ec647f998734c76',
  'tests/helpers/input-retirement-source.mjs':'50ed8e5e59062cc3c0f59dff740b550a17fddfaf817d2dd53b0d09c125ab5222',
  'tests/helpers/release-ui-restore-source.mjs':'de6835c2a44271c50a20ea39cb18c68f3d5c84b04ce8959171c013b34efc4664',
- 'tests/helpers/current-replay-fix-sources.mjs':'dfa38cd621beea73ce102732af2b0a311146a12ee0e1b126d89f7ce7dadb339c',
+ 'tests/helpers/current-replay-fix-sources.mjs':'d3b857a51e38e57140003e9756c2c8df2abc62c59f4c2a8a2b928df3cf593842',
  'tests/helpers/exact-fixture-hunks.mjs':'83f9cb15d9d745c86c555a77875b6b2bfc283a12ec380bcd2af518aa6526a935',
  'tests/helpers/input-retirement-sts-binding.mjs':'f6395a7c5e299738db3caf30f29d7d29724e7ac091af012a585c76b785697219',
  'tests/helpers/input-retirement-merged-sts-source.json.gz':'0c8455ee5877bbb5c4c2fa9e8c2dfb5bfba9cb7e6c388bf1c67f149ac53ca960',

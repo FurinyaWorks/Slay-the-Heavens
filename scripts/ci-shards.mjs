@@ -14,6 +14,9 @@ export const timings = JSON.parse(readFileSync(new URL('./ci-test-timings.json',
 // repository-relative test path literal is parsed as a dependency by test-affected.
 const artFeatureInverseTest = ['tests', 'art-feature-source-inverse.test.mjs'].join('/');
 const hostLifecycleTest = ['tests', 'game-ui-host-lifecycle.test.mjs'].join('/');
+const hostResultTest = ['tests', 'game-ui-host-result.test.mjs'].join('/');
+const windowsPresentationReplays = ['colorless-catalog-source', 'presentation-m3-integration']
+  .map(name => ['tests', name + '.test.mjs'].join('/'));
 timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);
 
 // Reserve the work that completed in POSIX jobs 137444936421, 137444936442,
@@ -107,16 +110,19 @@ const hostedLaneMinimumMs = {
     'art-feature-source-inverse.test.mjs': 1537000,
     'battle-drag-click-compatibility.test.mjs': 592000,
     'colorless-catalog-source.test.mjs': 1068000,
+    'defect-final-execute.test.mjs': 126000,
+    'defect-plan-responsibilities.test.mjs': 53000,
     'formal-campaign-entry.test.mjs': 367000,
     'game-ui-host-lifecycle.test.mjs': 308000,
     'game-ui-host-result.test.mjs': 222000,
     'max-hp-accepted-source-inverse.test.mjs': 883000,
     'mobile-qa-source-migration.test.mjs': 143000,
+    'native-monster-art.test.mjs': 77000,
     'presentation-m3-integration.test.mjs': 1488000,
     'pure-source-projection-cache.test.mjs': 463000,
     'seven-refactor-source-epoch.test.mjs': 773000,
     'task76-owner-composition.test.mjs': 105000,
-    'watcher-final-execution.test.mjs': 287000,
+    'watcher-final-execution.test.mjs': 366000,
   },
 };
 
@@ -159,11 +165,25 @@ export function jsShard(files, value, platform = process.platform) {
   // Only shard 1 runs the platform's non-test gates. Reserve their measured
   // cost before distributing JS, and carry it into the subsequent Lua plan.
   const initial = timings.initialMs?.[platform];
-  const count = Number(String(value).split('/')[1]);
+  const [index, count] = String(value).split('/').map(Number);
   const loads = initial && Number.isSafeInteger(count) && count > 0 && count <= 64
     ? Array.from({length:count},(_,index)=>index===0?initial[0]:0) : undefined;
-  return partition(files, value, jsPlanningWeights(files,platform), timings.unknownJsMs,
-    loads);
+  const weights = jsPlanningWeights(files, platform);
+  const plan = partition(files, value, weights, timings.unknownJsMs, loads);
+  if (platform !== 'win32' || count !== 18 || !Object.hasOwn(weights, hostResultTest)) return plan;
+  const first = index === 1 ? plan : partition(files, '1/18', weights, timings.unknownJsMs, loads);
+  if (!first.files.includes(hostResultTest) || !windowsPresentationReplays.every(file => first.files.includes(file))) return plan;
+
+  // Windows job 137668948404 passed both source replays, but four strict Host
+  // result VMs timed out during their overlap. Job 137668948532 (shard 8)
+  // completed both suites in under 24 minutes. Isolate the original Host
+  // streams on that VM and carry the transferred cost into the Lua plan.
+  const hostCost = weights[hostResultTest];
+  plan.loads[0] -= hostCost;
+  plan.loads[7] += hostCost;
+  if (index === 1) plan.files = plan.files.filter(file => file !== hostResultTest);
+  if (index === 8) plan.files = [...plan.files, hostResultTest].sort();
+  return plan;
 }
 
 export function discoverJs(root = '.') {

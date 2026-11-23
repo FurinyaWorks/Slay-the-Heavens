@@ -116,6 +116,20 @@ test('all current JS and Lua files are scheduled exactly once; new unmeasured fi
   }
 });
 
+test('Windows runs strict Host result replay separately from the concurrent source replays', () => {
+  const files = discoverJs(), count = qualityShardMatrices.windows.length;
+  const host = 'tests/game-ui-host-result.test.mjs';
+  const sourceReplays = ['tests/colorless-catalog-source.test.mjs', 'tests/presentation-m3-integration.test.mjs'];
+  const bins = Array.from({length:count}, (_, index) => jsShard(files, `${index + 1}/${count}`, 'win32'));
+  const weights = jsPlanningWeights(files, 'win32');
+  assert.equal(bins.filter(bin => bin.files.includes(host)).length, 1);
+  assert.ok(sourceReplays.every(file => bins.some(bin => bin.files.includes(file) && !bin.files.includes(host))));
+  for (const [index, bin] of bins.entries()) {
+    const expectedLoad = bin.files.reduce((total, path) => total + weights[path], index === 0 ? timings.initialMs.win32[0] : 0);
+    assert.equal(bin.loads[index], expectedLoad, 'Lua receives the actual cost of each JS shard');
+  }
+});
+
 function expectedPlanningWeight(file,platform,floor=timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0){
  const native=Object.hasOwn(timings.js,platform)?[platform]:Object.keys(timings.js);
  return Math.max(floor,...native.flatMap(os=>[
