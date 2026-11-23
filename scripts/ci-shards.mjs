@@ -93,6 +93,26 @@ const windowsReplayMinimumMs = Object.freeze({
 
 export const replayPlanningMinimumMs = Object.freeze({ linux: linuxReplayMinimumMs, win32: windowsReplayMinimumMs });
 
+// Completed per-file observations from jobs 137561143750, 137561143756 and
+// 137561143768. Balance the existing lanes without moving the Full inventory.
+const hostedLaneMinimumMs = {
+  linux: {
+    'official-assets-runtime.test.mjs': 233000,
+    'power-shop-boundaries.test.mjs': 525000,
+    'reward-query-boundary-source.test.mjs': 1112000,
+  },
+  win32: {
+    'actor-presence-source.test.mjs': 573000,
+    'battle-drag-click-compatibility.test.mjs': 592000,
+    'formal-campaign-entry.test.mjs': 367000,
+    'max-hp-accepted-source-inverse.test.mjs': 883000,
+    'mobile-qa-source-migration.test.mjs': 143000,
+    'pure-source-projection-cache.test.mjs': 463000,
+    'seven-refactor-source-epoch.test.mjs': 773000,
+    'task76-owner-composition.test.mjs': 105000,
+  },
+};
+
 export function partition(files, value, weights, fallback, initial) {
   const match = /^([1-9]\d*)\/([1-9]\d*)$/.exec(String(value));
   const [index, count] = match ? match.slice(1).map(Number) : [];
@@ -174,6 +194,11 @@ async function runHostedShard(files, root, env) {
     // starting either process to isolate Git metadata, build outputs and fixtures.
     cpSync(root, snapshot, { recursive: true, verbatimSymlinks: true, mode: constants.COPYFILE_FICLONE });
     const weights = jsPlanningWeights(files);
+    const laneMinimum = hostedLaneMinimumMs[process.platform];
+    for (const file of files) {
+      const name = file.slice('tests/'.length);
+      weights[file] = Math.max(weights[file], laneMinimum[name] ?? 0);
+    }
     const original = partition(files, '1/2', weights, timings.unknownJsMs).files;
     const copy = partition(files, '2/2', weights, timings.unknownJsMs).files;
     const results = await Promise.allSettled([

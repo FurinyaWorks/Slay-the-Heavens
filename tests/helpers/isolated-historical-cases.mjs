@@ -15,13 +15,15 @@ export function hasTestNameFilter(){
 }
 
 const execute=promisify(execFile);
-export async function runIsolatedTest(url,args,nodeOptions=[]){
+export async function runIsolatedTest(url,args,nodeOptions=[],expected=1){
  const env={...process.env};delete env.NODE_TEST_CONTEXT;
  const {stdout}=await execute(process.execPath,['--test-reporter=tap',...nodeOptions,fileURLToPath(url),...args],
   {env,maxBuffer:1024*1024,windowsHide:true})
   .catch(error=>assert.fail([error.stdout,error.stderr,error.message].filter(Boolean).join('\n')));
- assert.match(stdout,/^# tests 1\r?$/m,'the isolated process ran one registered case');
- assert.match(stdout,/^# pass 1\r?$/m,'the isolated case passed');
+ const summary=field=>Number(stdout.match(new RegExp(`^# ${field} (\\d+)\\r?$`,'m'))?.[1]);
+ assert.equal(summary('tests'),expected,'the isolated process ran every registered case');
+ assert.equal(summary('pass'),expected,'every isolated case passed');
+ return stdout;
 }
 
 export function runHistoricalCases(url,suite,cases){
