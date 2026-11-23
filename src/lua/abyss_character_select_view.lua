@@ -34,6 +34,10 @@ local function renderStarterDeck(details,info)
     text(details:GetChild('deckTitle'),'初始牌组 · '..number(info.deckSize)..' 张')
     text(details:GetChild('deckSummary'),table.concat(parts,'  '))
 end
+local function paintLegacyDeck(panel,details,info)
+    visible(panel:GetChild('deckView'),false)
+    if info and details:GetChild('deckSummary') then renderStarterDeck(details,info) end
+end
 local function selected(box,value)
     visible(box:GetChild('selected'),value)
 end
@@ -101,7 +105,6 @@ local function paintDetails(details,state,platform,nativeV25,info)
     for _,r in ipairs(info.relics)do relics[#relics+1]=r.name;if r.text and r.text~='' then texts[#texts+1]=r.text end end
     text(details:GetChild('relic'),#relics>0 and table.concat(relics,'、') or '无')
     text(details:GetChild('relicText'),table.concat(texts,' '))
-    if not nativeV25 and details:GetChild('deckSummary') then renderStarterDeck(details,info) end
     local large=paintPortraits(details,state,platform)
     local note=info.name
     if large and large.playable==false then note=note..' · 非本次正式角色' end
@@ -129,11 +132,12 @@ function M.render(panel,state,platform,published)
     paintCharacterButtons(panel,state,platform,originalSts,open,nativeV25 and roster and open==1)
     paintThemesAndElements(panel,state,platform,elementsOpen)
     local details=panel:GetChild('details');visible(details,info~=nil)
-    if not nativeV25 then visible(panel:GetChild('deckView'),false) end
     if nativeV25 and roster then
         visible(roster,open==1)
         visible(panel:GetChild('title'),info==nil)
         visible(roster:GetChild('selected'):GetChild('selection'),info~=nil)
+    else
+        paintLegacyDeck(panel,details,info)
     end
     visible(panel:GetChild('confirm'),info~=nil)
     local confirm=panel:GetChild('confirm'):GetChild('hit')
