@@ -138,6 +138,13 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         return ctx.options.hostRendersEvents and node and node.type == "event"
     end
 
+    function ctx.hostLeavesForMap()
+        local self,owner=ctx.self,ctx.self.run
+        return ctx.options.hostRendersMap and ctx.onChange and owner and owner.phase=='map'
+            and owner.nodeFlow and owner.nodeFlow.complete and not self:holding()
+            and not require('abyss_relic_pending').owner(owner)
+    end
+
     function ctx.syncNodeIdentity(node)
         if ctx.self.renderRun ~= ctx.self.run or ctx.self.renderMap ~= ctx.self.map or ctx.self.nodeId ~= (node and node.id) then
             ctx.self.page, ctx.self.relicPage, ctx.self.pickPage, ctx.self.mode, ctx.self.picker = 1, 1, 1, "main", nil
@@ -218,7 +225,7 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         confirmLabel, confirmOk = "继续", true
         confirmFn = function()
             ctx.self.result, ctx.self.notice = nil, ""
-            if not ctx.hostRendersEvent(node) then ctx.self:render() end
+            if not ctx.hostRendersEvent(node) and not ctx.hostLeavesForMap() then ctx.self:render() end
             if ctx.onChange then ctx.onChange(true, "continue", ctx.self) end
             return true, "continue"
         end

@@ -1,5 +1,6 @@
 package.path='src/lua/?.lua;'..package.path
 local Gate=require('abyss_page_reveal')
+local blocker={SetAnchoredPosition=function()end,SetSizeDelta=function()end}
 local function fixture()
  local hooks={};local writes=0
  local veil={alive=true}
@@ -14,7 +15,7 @@ local function fixture()
   if hooks.size then return hooks.size(self,w,h)end
  end
  local cover={SetVisible=function(self,v)self.visible=v end,SetAsLastSibling=function()end,
-  GetChild=function(_,name)if name=='veil'then return veil end end}
+  GetChild=function(_,name)if name=='veil'then return veil elseif name=='blocker'then return blocker end end}
  local frames={full={0,0,1280,720},deckPanel={0,28,1120,560}}
  local g=Gate.new(cover,function()return not hooks.pending end,nil,frames)
  local run,battle={},{}
@@ -63,7 +64,7 @@ for _,boundary in ipairs({'position','size','onIntent'})do
  function veil:SetAnchoredPosition()if hooks.position then hooks.position()end end
  function veil:SetSizeDelta()if hooks.size then hooks.size()end end
  local cover={SetVisible=function(self,v)self.visible=v end,SetAsLastSibling=function()end,
-  GetChild=function(_,name)if name=='veil'then return veil end end}
+  GetChild=function(_,name)if name=='veil'then return veil elseif name=='blocker'then return blocker end end}
  local frames={full={0,0,1280,720},deckPanel={0,28,1120,560},potionPanel={0,0,500,400}}
  local g=Gate.new(cover,function(intent)queries[#queries+1]=intent.page;return intent.page~='potionPanel' end,
   function()if hooks.onIntent then hooks.onIntent()end end,frames)

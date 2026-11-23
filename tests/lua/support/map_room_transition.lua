@@ -6,6 +6,18 @@ local F,frame,onMap,hitFor,tap=native.ui,native.frame,native.onMap,native.hitFor
 local enter=Nodes.enter
 local section=assert(ABYSS_MAP_ROOM_SECTION,'map room transition test section required')
 
+local function returnShade(root)
+    return root:GetChild('mapPanel'):GetChild('v25MapPaper'):GetChild('mapReturnShade')
+end
+
+local function assertFirstMapFrame(host,root)
+    local shade=returnShade(root)
+    assert(host.mode=='map' and host.mapUI.navigationEnabled)
+    assert(not host.pageReveal:covered() and not root:GetChild('pageReveal').visible)
+    assert(shade.visible and shade.imageColor.a==144,
+        'completed room skipped the first dimmed map frame')
+end
+
 local function observeCore(host,root)
     local trace={calls=0,opaqueFrame=false,alphaStarts=0,frames=0}
     local cover=root:GetChild('pageReveal')
@@ -60,13 +72,168 @@ local function same(a,b,seen)
     return true
 end
 
+local function openTreasure(fast,device,sapphire)
+    local host,root,assets,settle,resize,_,hit=onMap('treasure',fast,device,sapphire)
+    local shade=returnShade(root)
+    assert(not shade.visible,'new run started a room return')
+    if sapphire then host.run.endingUnlocked=true end
+    dofile('tests/lua/support/sapphire_source_fixture.lua').stage(host.run)
+    if not sapphire then host.run.treasureRng=require('abyss_sts_random').fromSeed('42') end
+    assert(tap(hit,1));settle()
+    assert(not shade.visible)
+    assert(F.click(root,'nodePanel','treasureView/chest'));settle()
+    assert(host.run.nodeFlow.chest.opened and not shade.visible)
+    OnUpdate(2)
+    return host,root,assets,settle,resize,shade
+end
+
+local function claim(host,root,kind)
+    for index,item in ipairs(host.run.nodeFlow.reward.items)do
+        if item.kind==kind then
+            assert(F.click(root,'nodePanel','treasureView/rewardItem'..index))
+            return item
+        end
+    end
+    error('fixture chest is missing '..kind)
+end
+
+local function countRenders(host)
+    local counts={map=0,room=0}
+    for key,view in pairs({map=host.mapUI,room=host.nodeUI})do
+        local paint=view.render
+        view.render=function(...)
+            counts[key]=counts[key]+1
+            return paint(...)
+        end
+    end
+    return counts
+end
+
+local function finishMapReveal(host,root,dt,frames)
+    local shade=returnShade(root)
+    local snapshot=F.Combat.copy(host.run,{[host.run.data]=host.run.data})
+    local map=Map.snapshot(host.map)
+    local scroll=host.mapUI.scroll
+    local opacity=shade.imageColor.a
+    for index=1,frames do
+        OnUpdate(dt)
+        local nextOpacity=shade.visible and shade.imageColor.a or 0
+        assert(nextOpacity>=0 and nextOpacity<=opacity,'map brightness reversed')
+        assert((index==frames)==(nextOpacity==0),'map did not settle at the source cadence')
+        assert(not host.pageReveal:covered() and host.mapUI.navigationEnabled)
+        opacity=nextOpacity
+    end
+    snapshot.elapsedSeconds=host.run.elapsedSeconds
+    assert(host.mapUI.scroll==scroll and same(map,Map.snapshot(host.map)))
+    assert(same(snapshot,host.run),'animation changed rewards or Run/RNG state')
+end
+
+if section=='treasure-return' then
+    local host,root,_,settle,resize,shade=openTreasure(false,'pc')
+    assert(F.click(root,'nodePanel','runRoute'));settle()
+    assert(host.routeOpen and not shade.visible)
+    assert(tap(root:GetChild('mapPanel'):GetChild('previewBack'):GetChild('hit'),4));settle()
+    assert(host.mode=='node' and not shade.visible)
+    local relics,gold=#host.run.relics,host.run.gold
+    claim(host,root,'relic');settle()
+    assert(#host.run.relics==relics+1 and host.mode=='node' and not shade.visible)
+    local counts=countRenders(host)
+    local oldBack=root:GetChild('nodePanel'):GetChild('back'):GetChild('hit')
+    local coins=claim(host,root,'gold')
+    assert(host.run.gold==gold+coins.amount)
+    assertFirstMapFrame(host,root)
+    assert(not tap(oldBack,2),'old room input leaked through the map')
+    assert(counts.map==1 and counts.room==0,'return redrew the departed room or repeated map projection')
+    finishMapReveal(host,root,1/60,21)
+    assert(counts.map==1 and counts.room==0,'fade rebuilt map or room')
+    host:refresh()
+    assert(not shade.visible)
+    local next=assert(Nodes.available(host.run,host.map)[1])
+    assert(tap(hitFor(host,root,next.id),3))
+    assert(host.pageReveal:covered() and not shade.visible,'next room reused the previous reveal')
+    settle()
+    assert(host.mode~='map' and not shade.visible)
+    OnDestroy()
+
+    host,root,_,settle,resize,shade=openTreasure(true,'mobile',true)
+    resize(1600,800)
+    OnUpdate(frame)
+    relics=#host.run.relics
+    claim(host,root,'sapphire')
+    assert(host.run.keys.sapphire and #host.run.relics==relics)
+    assertFirstMapFrame(host,root)
+    -- A stall gets one bounded step. Viewport changes and refreshes must not restart it.
+    resize(1480,720)
+    OnUpdate(2)
+    assert(shade.visible and shade.imageColor.a==86)
+    host:refresh()
+    assert(shade.imageColor.a==86)
+    finishMapReveal(host,root,1/30,9)
+    OnDestroy()
+    return
+end
+
+if section=='return-readiness' then
+    local host,root,assets,settle,_,shade=openTreasure(true,'mobile')
+    local loading,reason=true,nil
+    assets.mapReady=function()return not loading,reason end
+    local counts=countRenders(host)
+    local cover=root:GetChild('pageReveal')
+    assert(F.click(root,'nodePanel','back'))
+    assert(cover.visible and not shade.visible and host.pageReveal:covered())
+    local next=assert(Nodes.available(host.run,host.map)[1])
+    assert(not tap(hitFor(host,root,next.id),3),'map input escaped readiness')
+    OnUpdate(frame)
+    reason='mock readiness failure'
+    OnUpdate(frame)
+    assert(host.pageReveal.state=='failed' and not shade.visible)
+    loading,reason=false,nil
+    OnUpdate(frame)
+    assert(cover.visible and not shade.visible,'map bypassed scheduler confirmation')
+    OnUpdate(frame)
+    assertFirstMapFrame(host,root)
+    assert(counts.map==1 and counts.room==0,'readiness confirmation repeated map projection')
+    assert(host:openDeck());settle()
+    assert(not shade.visible,'deck replacement left the map reveal active')
+    assert(host:closeDeck());settle()
+    assert(not shade.visible,'deck return restarted the map reveal')
+    OnDestroy()
+
+    host,root,_,settle,_,shade=openTreasure(true,'mobile')
+    local setVisible=shade.SetVisible
+    shade.SetVisible=function(control,visible)
+        if visible then assert(host:openMenu()) end
+        setVisible(control,visible)
+    end
+    assert(F.click(root,'nodePanel','back'))
+    assert(host.menuOpen and not shade.visible,'obsolete visibility setter revived the cancelled reveal')
+    assert(host:closeExit());settle()
+    assert(not shade.visible)
+    OnDestroy()
+    return
+end
+
 local function finishBattle(host,root,settle,cover)
     -- Terminal combat setup follows scripts/runtime-baseline/host.lua.
     for _,enemy in ipairs(host.run.combat.enemies)do enemy.hp=0 end
     assert(Run.finishCombat(host.run))
     assertLocal(host,cover,function()host:refresh();return true end);settle()
+    local render=host.battleUI.render
+    local paints=0
+    host.battleUI.render=function(...)
+        paints=paints+1
+        return render(...)
+    end
     assertLocal(host,cover,function()F.click(root,'battlePanel','continue');return true end);settle()
+    assert(paints==1,'leaving rewards repainted the battle before unmounting it')
+    host.battleUI.render=render
     assert(host.mode=='map' and host.mapUI.navigationEnabled)
+    assertFirstMapFrame(host,root)
+    assert(tap(root:GetChild('combatRewards'):GetChild('hit'),9))
+    settle()
+    assert(host.run.phase=='reward' and not returnShade(root).visible)
+    F.click(root,'battlePanel','continue');settle()
+    assert(host.mode=='map' and not returnShade(root).visible,'same room reward revisit restarted the map reveal')
 end
 
 if section=='rooms' then
@@ -135,24 +302,33 @@ for _,kind in ipairs({'camp','shop','event','combat','elite','boss','treasure'})
         assertLocal(host,cover,function()OnUpdate(2);return true end)
         assertLocal(host,cover,function()return F.click(root,'nodePanel','confirm') end);settle()
         assert(host.mode=='map' and host.mapUI.navigationEnabled and not panel.active)
+        assertFirstMapFrame(host,root)
     elseif kind=='shop' then
         assert(not host.nodeUI.actions['shopView/card1'],'entry drew the hidden shelf')
         local talk=root:GetChild('nodePanel'):GetChild('merchant'):GetChild('talk'):GetChild('hit')
         assertLocal(host,cover,function()return tap(talk,5)end)
         dofile('tests/lua/support/shop_timeline.lua')(host)
         assert(host.nodeUI.actions['shopView/card1'],'accepted merchant tap did not populate shelf')
+        host.run.gold=999;host:refresh()
         assertLocal(host,cover,function()return F.click(root,'nodePanel','shopView/card1')end)
-        assertLocal(host,cover,function()return F.click(root,'nodePanel','back')end)
+        assertLocal(host,cover,function()return F.click(root,'nodePanel','confirm')end)
+        assert(host.run.gold<999 and not returnShade(root).visible)
         assertLocal(host,cover,function()return F.click(root,'nodePanel','back')end)
         assertLocal(host,cover,function()OnUpdate(2);return true end);settle()
-        if host.mode=='node' then assertLocal(host,cover,function()return F.click(root,'nodePanel','confirm')end);settle()end
+        assert(host.mode=='node' and host.nodeUI:holding() and not returnShade(root).visible)
+        roomPaints=0
+        assertLocal(host,cover,function()return F.click(root,'nodePanel','confirm')end);settle()
         assert(host.mode=='map')
+        assertFirstMapFrame(host,root)
+        assert(mapPaints==1 and roomPaints==0,'shop return repeated a projection')
+        finishMapReveal(host,root,1/30,10)
     elseif kind=='treasure' then
         assertLocal(host,cover,function()return F.click(root,'nodePanel','treasureView/chest')end)
         OnUpdate(2);settle()
         assertLocal(host,cover,function()return F.click(root,'nodePanel','back')end);settle()
         if host.mode=='node' then assertLocal(host,cover,function()return F.click(root,'nodePanel','confirm')end);settle()end
         assert(host.mode=='map')
+        assertFirstMapFrame(host,root)
     elseif kind=='event' and host.mode=='node' then
         assert(host.run.nodeFlow.event.id=='big_fish')
         local mapView, mapViews = Map.view, 0
@@ -168,6 +344,7 @@ for _,kind in ipairs({'camp','shop','event','combat','elite','boss','treasure'})
         assertLocal(host,cover,function()return F.click(root,'nodePanel','eventView/option1')end);settle()
         if host.mode=='node' then assertLocal(host,cover,function()return F.click(root,'nodePanel','confirm')end);settle()end
         assert(host.mode=='map' and host.mapUI.navigationEnabled and host.map.currentNodeId==id)
+        assertFirstMapFrame(host,root)
         assert(mapPaints==1 and mapViews==1 and roomPaints==1,'event return repainted a departed room or the map')
         Map.view=mapView
     elseif host.mode=='battle' then

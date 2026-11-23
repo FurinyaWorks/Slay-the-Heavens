@@ -90,6 +90,10 @@ export function mapLayout(theme = loadMapTheme()) {
     name: `mapGroup${groups.length + 1}`, kind: 'container', size: theme.canvas.base,
     children: controls.slice(i, i + 50),
   });
+  const background = groups[0].children;
+  background.splice(background.findIndex(item => item.name === 'dragArea'), 0,
+    { ...image('mapReturnShade', 0, 0, ...theme.canvas.base, '#000000'),
+      visible: false, raycastTarget: false });
   return { name: 'AbyssMap', showCursor: true, blockKeys: true, blockCursor: true,
     controls: [image('mapBackdrop', 0, 0, ...theme.canvas.base, c.backdrop),
       { name: 'stage', kind: 'container', size: theme.canvas.base, children: [

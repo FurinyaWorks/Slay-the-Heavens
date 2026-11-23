@@ -86,8 +86,9 @@ test('ready combat choice cannot publish through a synchronous paint or on its f
  lua(`package.path='src/lua/?.lua;'..package.path
 local Gate=require('abyss_page_reveal');local shown=false
 local veil={SetAnchoredPosition=function()end,SetSizeDelta=function()end}
+local blocker={SetAnchoredPosition=function()end,SetSizeDelta=function()end}
 local cover={SetVisible=function(_,v)shown=v end,SetAsLastSibling=function()end,
- GetChild=function(_,name)if name=='veil'then return veil end end}
+ GetChild=function(_,name)if name=='veil'then return veil elseif name=='blocker'then return blocker end end}
 local gate=Gate.new(cover,function()return true end,nil,{full={0,0,1280,720},choicePanel={5,10,1100,600},battlePanel={0,0,1100,600}})
 local run,battle={},{}
 local fight={page='battlePanel',mode='battle',phase='combat',run=run,battle=battle}
@@ -302,7 +303,7 @@ test('official Host publishes painted map rooms immediately when ready and gates
  lua(`${source}
 dofile('tests/lua/support/map_room_reveal.lua')
 print('PAGE_REVEAL_PASS')`);
- for(const section of ['rooms','readiness','cancellation','fast','boss']){
+ for(const section of ['rooms','readiness','cancellation','fast','boss','treasure-return','return-readiness']){
    lua(`${source}
 ABYSS_MAP_ROOM_SECTION=${luaString(section)}
 dofile('tests/lua/support/map_room_transition.lua')

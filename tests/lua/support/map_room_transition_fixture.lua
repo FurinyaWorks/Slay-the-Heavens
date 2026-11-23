@@ -17,7 +17,7 @@ local function untilState(condition, label, maxFrames)
     assert(condition(), label)
 end
 
-local function makeNativeHost(fast,device)
+local function makeNativeHost(fast,device,fullCampaign)
     local canvas = F.control({children=F.Layout})
     local stage = canvas:GetChild('stage')
     for _, name in ipairs({'nodePanel', 'choicePanel'}) do
@@ -28,13 +28,14 @@ local function makeNativeHost(fast,device)
             F.setEngineActive(self, active)
         end
     end
-    local host, width = nil, 1280
+    local host, width, height = nil, 1280, 720
     local assets = {value=true,ticks=0,created=0,destroyed=0,events={}}
     function assets.ready()
         return assets.value,assets.failure,assets.progress
     end
     GameUI.new = function(root, data, presentation, click, platform)
         assert(platform.prologue and platform.campaign and platform.nativePageLifecycle)
+        if fullCampaign then platform.campaignProfile='full-source' end
         local trace=platform.entryTrace
         if trace then
             platform.entryTrace=function(phase,request,detail)
@@ -49,9 +50,10 @@ local function makeNativeHost(fast,device)
     Portraits.new = function()
         return {
             tick=function() assets.ticks=assets.ticks+1 end,
-            sync=quiet, syncResult=quiet, battlePose=quiet,
+            sync=quiet, syncResult=quiet, battlePose=quiet, warmSelection=quiet,
             status=function() return {} end, release=quiet, onEngineDestroy=quiet,
             readyForPage=function(_,mode,_,_,page)
+                if page=='mapPanel' and assets.mapReady then return assets.mapReady() end
                 if mode=='node' and page=='nodePanel' or mode=='battle' and page=='battlePanel' then
                     return assets.ready()
                 end
@@ -67,7 +69,7 @@ local function makeNativeHost(fast,device)
     Enum={CursorEventType={CursorClick='click',CursorDown='down',CursorUp='up'},ImageSource={StaticReference='static'},
         Device={Mobile='mobile',Controller='controller',MobileController='mobile-controller'}}
     Color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end
-    game={IsTestPlay=function()return true end,GetUICanvasSize=function()return width,720 end,
+    game={IsTestPlay=function()return true end,GetUICanvasSize=function()return width,height end,
         InstantiateClientUIControl=function(...)
             local control=actors.instantiate(...)
             assets.created=assets.created+1
@@ -84,7 +86,7 @@ local function makeNativeHost(fast,device)
     assert(host and script.updating and host.pageReveal:usesFade(),'native motion is required')
     host.seed=42
     local function settled()
-        untilState(function()return not host.pageReveal:covered()end,'native page did not publish')
+        untilState(function()return not host.pageReveal:covered()end,'native page did not publish',120)
         assert(script.updating and not host.disabled)
     end
     settled()
@@ -98,7 +100,7 @@ local function makeNativeHost(fast,device)
         end
     end
     assert(host.mode=='map' and host.mapUI.navigationEnabled)
-    return host,stage,assets,settled,function(value)width=value end
+    return host,stage,assets,settled,function(w,h)width,height=w,h or height end
 end
 
 local function hitFor(host, root, nodeId)
@@ -118,8 +120,8 @@ local function tap(hit, id)
     return hit.click(event)
 end
 
-local function onMap(kind,fast,device)
-    local host,root,assets,settle,resize=makeNativeHost(fast,device)
+local function onMap(kind,fast,device,fullCampaign)
+    local host,root,assets,settle,resize=makeNativeHost(fast,device,fullCampaign)
     if kind=='camp' then host.run.hp=host.run.maxHp-10 end
     local path=Routes.to(host.map,function(node)return node.type==kind end)
     -- Project a route checkpoint through real edges. The regression starts

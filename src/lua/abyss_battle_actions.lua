@@ -49,9 +49,9 @@ function M.install(owner, _ownership, host, dependencies)
             if not found then owner.selected = nil end
         else owner.selected = nil end
     end
-    local function refresh(changed)
+    local function refresh(changed, deferRender)
         reconcileSelection()
-        owner:render()
+        if not deferRender then owner:render() end
         if changed and host.options.onChange then host.options.onChange(owner) end
     end
     local function perform(command, origin, clearPlayedSelection, commandContext)

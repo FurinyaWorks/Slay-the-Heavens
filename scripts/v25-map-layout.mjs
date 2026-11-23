@@ -17,7 +17,7 @@ function rounded(name,w,h,r,colour){
   ...[-1,1].flatMap(x=>[-1,1].map(y=>image('corner'+x+'_'+y,x*(w/2-r),y*(h/2-r),r*2,r*2,100002,colour)))]);
 }
 
-function paper(theme){
+function paper(theme,returnShade){
  const items=[plate('darkField',0,0,1280,720,'#000000',{opacity:.85}),
   image('fieldHaze',38,20,1150,720,theme.image.glowWide,'#15201F',{opacity:.72}),
   plate('parchment',.5,-22,838,676,'#929286'),
@@ -46,6 +46,7 @@ function paper(theme){
  }
  items.push(plate('leftInnerLight',-418,-22,1,676,'#DEDDD3',{opacity:.28}),
   plate('rightInnerLight',420,-22,1,676,'#D7D8CB',{opacity:.15}),
+  {...returnShade,position:[0,-22],size:[844,676]},
   plate('headerFace',0,338,1280,44,'#44464F'),
   image('headerDepth',0,338,1280,44,106095,'#2C3038'),
   plate('headerRule',0,316,1280,1,'#111A20',{opacity:.8}));
@@ -134,6 +135,7 @@ export function applyV25MapLayout(layout,theme){
  if(resources)for(const name of ['hpIcon','hp','goldIcon','gold'])must(resources,name);
  if(hints&&resources)for(const name of ['hp','gold'])must(must(hints,name),'hit');
  const legacy=['mapField','mapLight','fog1','fog2','fog3','fog4','headerShade','headerDivider','titleLineLeft','titleLineRight'].map(at);
+ const returnShade=at('mapReturnShade');
  // All validation completed before mutation. Preserve the mapGroup paths that
  // the real MapUI at() resolver owns, including the complete node/edge pools.
  for(const control of legacy)control.visible=false;
@@ -162,5 +164,7 @@ export function applyV25MapLayout(layout,theme){
    }
   }
  }
- panel.children.unshift(paper(theme));return layout;
+ const background=groups[0].children;
+ background.splice(background.indexOf(returnShade),1);
+ panel.children.unshift(paper(theme,returnShade));return layout;
 }

@@ -9,7 +9,7 @@ local Gate=require('abyss_page_reveal')
 local shown;local veil={};local cancel={SetVisible=function()end}
 local cover={GetChild=function(_,n)if n=='veil'then return veil elseif n=='cancel'then return cancel end end,SetVisible=function(_,v)shown=v end,SetAsLastSibling=function()end}
 local ready=true;local g=Gate.new(cover,function()return ready end,nil,nil,{duration=.2,color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end})
-local a={page='menuPanel'};local b={page='characterPanel'}
+local a={page='characterPanel',mode='menu'};local b={page='nodePanel',mode='node'}
 g:begin(a);g:step(a,0);g:step(a,0);g:step(a,.2);assert(not g:covered())
 local calls=0
 assert(g:depart(function()calls=calls+1;g:begin(b);return true end))
@@ -72,7 +72,7 @@ test('readiness reentry cannot uncover an unpainted replacement during fade-in',
 local Gate=require('abyss_page_reveal');local veil={};local shown;local callback;local gate
 local cover={GetChild=function(_,n)if n=='veil'then return veil end end,SetVisible=function(_,v)shown=v end,SetAsLastSibling=function()end}
 gate=Gate.new(cover,function()if callback then local f=callback;callback=nil;f()end;return true end,nil,nil,{duration=.2,color=function(r,g,b,a)return {a=a}end})
-local a={page='menuPanel'};local b={page='characterPanel'};local c={page='mapPanel'}
+local a={page='characterPanel',mode='menu'};local b={page='nodePanel',mode='node'};local c={page='mapPanel',mode='map'}
 gate:begin(a);gate:step(a,0);gate:step(a,0);gate:step(a,.2)
 assert(gate:depart(function()return gate:begin(b)end))
 gate:step(a,.2);gate:step(a,0);gate:step(b,0);gate:step(b,0)
@@ -119,7 +119,8 @@ print('SAME_PANEL_NEW_BASE_PASS')`;
 test('departure restores the full cover after a retained local panel',()=>{
  const body=`package.path='src/lua/?.lua;'..package.path
 local G=require('abyss_page_reveal');local ready=true;local veil={SetAnchoredPosition=function()end,SetSizeDelta=function(self,w,h)self.size={w,h}end}
-local cover={GetChild=function(_,n)if n=='veil'then return veil end end,SetVisible=function()end,SetAsLastSibling=function()end}
+local blocker={SetAnchoredPosition=function()end,SetSizeDelta=function()end}
+local cover={GetChild=function(_,n)if n=='veil'then return veil elseif n=='blocker'then return blocker end end,SetVisible=function()end,SetAsLastSibling=function()end}
 local frames={full={0,0,1280,720},deckPanel={0,0,600,400}}
 local gate=G.new(cover,function()return ready end,nil,frames,{duration=.2,color=function(r,g,b,a)return {a=a}end})
 local run,combat={},{};local a={page='battlePanel',mode='battle',phase='combat',run=run,battle=combat};local b={page='deckPanel',mode='battle',phase='combat',run=run,battle=combat}
@@ -137,7 +138,8 @@ test('a reverting local intent cannot end a room fade or skip input publication'
  const body=`package.path='src/lua/?.lua;'..package.path
 local Gate=require('abyss_page_reveal')
 local veil={SetAnchoredPosition=function()end,SetSizeDelta=function()end}
-local cover={GetChild=function(_,n)if n=='veil'then return veil end end,SetVisible=function()end,SetAsLastSibling=function()end}
+local blocker={SetAnchoredPosition=function()end,SetSizeDelta=function()end}
+local cover={GetChild=function(_,n)if n=='veil'then return veil elseif n=='blocker'then return blocker end end,SetVisible=function()end,SetAsLastSibling=function()end}
 local frames={full={0,0,1280,720},nodePanel={0,0,1240,680}}
 local enabled=0
 local gate=Gate.new(cover,function()return true end,nil,frames,{duration=.2,color=function(r,g,b,a)return {a=a}end,

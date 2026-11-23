@@ -328,7 +328,8 @@ function M.new(root, data, presentation, clickEvent, platform, options)
             if self.rewardScreen ~= "list" then return end
             local ok,reason=Run.leaveCombatRewards(self.run)
             if not ok then services.notice(reasons[reason] or "当前无法离开奖励。") end
-            services.refresh(ok)
+            -- The embedded host unmounts and cleans up the old battle.
+            services.refresh(ok,ok and host.options.embedded and host.options.onChange~=nil)
         elseif not host.options.embedded and self.run.phase == "map" then assert(Run.startCombat(self.run, "cultist_solo")) services.refresh(true) end
     end)
     host.potionPopup=PotionPopup.new(host.stage:GetChild('potionHelp'):GetChild('potionPopup'),self,host.platform,host.clickEvent,{

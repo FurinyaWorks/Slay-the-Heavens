@@ -16,6 +16,7 @@ end
 local function abandonReveal(self)
     self.nodeEntry=nil
     if self.pageReveal then self.pageReveal:abandon()end
+    self.mapUI:cancelReturnReveal()
 end
 
 function M.onEngineDestroy(self)

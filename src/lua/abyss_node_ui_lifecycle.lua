@@ -176,7 +176,7 @@ function M.install(ctx)
     local function publishCommit(node, command, before, accepted, reason)
         -- The game host paints events inside its presentation frame or switches
         -- directly to the destination when the event completes.
-        if not ctx.hostRendersEvent(node) then
+        if not ctx.hostRendersEvent(node) and not (accepted and ctx.hostLeavesForMap()) then
             ctx.self:render()
             if accepted then ctx.roomMotion:start(command,before) end
             ctx.self.failed = false

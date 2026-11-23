@@ -85,6 +85,43 @@ function M.roomInk(node, state, currentFloor)
 end
 local function finite(n) return type(n) == "number" and n == n and math.abs(n) < math.huge end
 local function clamp(n, low, high) return math.max(low, math.min(high, n)) end
+local function returnReveal(panel,colour)
+    local paper=panel:GetChild('v25MapPaper')
+    local background=paper or panel:GetChild('mapGroup1')
+    local shade=background and background:GetChild('mapReturnShade')
+    -- The V25 parchment is #929286. Start near #3F3F3A over its dark room backdrop.
+    local initialAlpha=paper and 144 or 64
+    local remaining,alpha,owner
+    local function paint(value)
+        if alpha==value then return end
+        alpha=value
+        shade.imageColor=colour(0,0,0,value)
+    end
+    local function cancel()
+        if not remaining then return end
+        remaining,alpha,owner=nil,nil,nil
+        if shade.alive~=false then shade:SetVisible(false) end
+    end
+    local function start()
+        if not shade or shade.alive==false then return false end
+        local ticket={}
+        owner,remaining=ticket,1
+        paint(initialAlpha)
+        if owner~=ticket then return false end
+        shade:SetVisible(true)
+        if not owner and shade.alive~=false then shade:SetVisible(false) end
+        return owner==ticket
+    end
+    local function update(dt)
+        if not remaining or dt<=0 then return end
+        -- DungeonMap fades toward 1 with fadeLerpSnap. Track its complement.
+        -- Limit unusually large frame deltas so the paper cannot flash to full.
+        remaining=remaining*(1-12*math.min(dt,1/30))
+        if remaining<.01 then cancel()
+        else paint(math.floor(initialAlpha*remaining+.5)) end
+    end
+    return start,update,cancel
+end
 local function child(control, name) return assert(control:GetChild(name), "missing map UI control " .. name) end
 -- Chapter metadata is presentation context, not permission to enter new content.
 -- Legacy Act 1 intentionally has no act/firstFloor/terminalFloor fields.
@@ -252,6 +289,8 @@ function M.new(root, map, onChoose, clickEvent, options)
         scroll = 0, slots = {}, time = 0, breathing = {}, roomFx = {}, stage = stage, panel = panel,
         embedded = embedded, scale = 1, observedMap = map, observedContext = view,
         observedNodeId = view and view.currentNodeId, observedFloor = view and view.floor }
+    local updateReturnReveal
+    self.startReturnReveal,updateReturnReveal,self.cancelReturnReveal=returnReveal(panel,colour)
     local drag, released, pointerObserved, scrollAnimation
     local function cancelSelection()
         if drag then drag.selection = nil end
@@ -500,6 +539,7 @@ function M.new(root, map, onChoose, clickEvent, options)
     function self.update(_, dt)
         if not finite(dt) or dt < 0 then return false, "invalid_delta" end
         if not self.visible then return true end
+        updateReturnReveal(dt)
         if not chapterFor(self.map) or self.map ~= self.observedMap or not sameContext(self.map,self.observedContext) then
             self:render()
             return true
@@ -604,7 +644,7 @@ function M.new(root, map, onChoose, clickEvent, options)
     function self.setVisible(_, visible, retainPage, retainPosition, renderByHost)
         assert(type(visible) == "boolean", "map visibility must be boolean")
         if visible and not self.map then return false, "map_unbound" end
-        if not visible then cancelDrag() end
+        if not visible then cancelDrag();self:cancelReturnReveal() end
         -- A modal suspends navigation but retains its already mounted backdrop.
         self.visible = visible root:SetVisible(visible or retainPage==true)
         if visible and not (retainPosition and atPaintedPosition()) then self:focusCurrent(false, renderByHost) end

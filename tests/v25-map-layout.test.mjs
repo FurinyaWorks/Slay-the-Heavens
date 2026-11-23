@@ -37,6 +37,10 @@ test('paper and blue legend have layered native silhouettes, continuous light an
  applyV25MapLayout(layout,nativeTheme);const panel=find(layout,'mapPanel'),paper=panel.children[0];
  assert.equal(paper.name,'v25MapPaper');assert(paper.children.length>10);
  assert(paper.children.some(c=>c.image===106095));assert(paper.children.some(c=>c.name.startsWith('paperEdge')));
+ const shade=find(paper,'mapReturnShade');
+ assert.equal(shade.raycastTarget,false);assert.equal(shade.visible,false);
+ assert(paper.children.indexOf(shade)>paper.children.findIndex(c=>c.name==='parchment'));
+ assert(panel.children.indexOf(paper)<panel.children.findIndex(c=>c.name==='mapGroup1'));
  const legend=find(layout,'typeLegend'),chrome=legend.children[0];assert.equal(chrome.name,'v25LegendPaper');
  assert.deepEqual(legend.position,[486,22.5]);assert.deepEqual(legend.size,[266,333]);
  assert(chrome.children.some(c=>c.name==='topRoll'));assert(chrome.children.some(c=>c.name==='bottomRoll'));

@@ -125,6 +125,16 @@ local function isMapOverlayChange(previous,intent)
         and (previous.page=='mapPanel' or intent.page=='mapPanel')
         and (sameBase(intent,previous) or intent.mode=='map' and intent.phase=='map')
 end
+local returnRoomKeys={'run','roomGeneration','act','floor','nodeId','mapSignature'}
+local function returnsFromRoom(previous,intent)
+    if not previous or intent.page~='mapPanel' or intent.mode~='map' or intent.phase~='map'
+        or not intent.complete or not intent.nodeId or not intent.roomGeneration then return false end
+    for _,key in ipairs(returnRoomKeys)do
+        if previous[key]~=intent[key] then return false end
+    end
+    return previous.page=='nodePanel' and not previous.neow
+        or previous.page=='battlePanel' and previous.phase=='reward' and not previous.complete
+end
 local roomTypes={shop=true,event=true,camp=true}
 local function entersMapRoom(previous,intent)
     return previous and previous.page=='mapPanel' and previous.mode=='map' and previous.phase=='map'
@@ -170,7 +180,7 @@ end
 local function needsRecovery(gate)
     return gate.timedOut or gate.projectionError or gate.entry and gate.state=='failed'
 end
-function M.new(cover,ready,onIntent,frames,motion)
+function M.new(cover,ready,onIntent,frames,motion,onMapReturn)
     assert(cover and type(ready)=='function','page reveal requires cover and readiness source')
     local gate={epoch=0,state='preparing',tick=0,alpha=1,wait=0,stall=0}
     local function trace(entry,phase,detail)
@@ -208,6 +218,7 @@ function M.new(cover,ready,onIntent,frames,motion)
         self.state='abandoned';self.departure=nil;self.entry=nil;self.painting=nil
         self.sceneDuration,self.sceneDestination=nil,nil
         self.intent=nil;self.published=nil;self.armed=nil;self.retryProjection=nil
+        self.mapReturnPainted=nil
     end
     function gate:retryPreparation()
         if self.projectionError then self.retryProjection=true
@@ -347,10 +358,10 @@ function M.new(cover,ready,onIntent,frames,motion)
         trace(entry,'native_preparation_end',intent.page)
         if gate.entry==entry then trace(entry,'page_ready',intent.page)end
     end
-    local function enableEntry(intent)
+    local function enableEntry(intent,mapReturn)
         local entry=gate.entry;gate.entry=nil
         trace(entry,'input_enabled',intent.page)
-        return true,not entry
+        return true,not (entry or mapReturn)
     end
     local function finishMapRoom(self,intent,ticket)
         local value,reason=readiness(ready,intent)
@@ -370,24 +381,30 @@ function M.new(cover,ready,onIntent,frames,motion)
         if self.state=='visible'then logVisible(intent,ticket.epoch)end
         return true
     end
-    local function finishLocalPage(self,intent,ticket)
+    local function finishLocalPage(self,intent,ticket,mapReturn)
         -- Only the explicit post-paint caller can use readiness for new leases.
         local value,reason=readiness(ready,intent)
         if self.painting~=ticket or ticket.epoch~=self.epoch then return false end
         self.painting=nil
         if reason or value~=true then
             if not same(intent,self.intent) and not self:request(intent) then return false end
+            if mapReturn then self.mapReturnPainted=self.epoch end
             if reason then return reject(self,tostring(reason))end
             return false
         end
         self.epoch=self.epoch+1;self.intent=intent;self.published=intent;self.armed=nil;self.error=nil
         local epoch=self.epoch
+        if mapReturn then onMapReturn()end
+        if self.epoch~=epoch then return false end
         self.state='visible';cover:SetVisible(false)
         if self.epoch~=epoch then return false end
         if onIntent then onIntent(epoch)end
         if self.epoch~=epoch then return false end
         print('ABYSS_PAGE_REVEAL updated page='..tostring(intent.page)..' epoch='..epoch)
         return true
+    end
+    local function mapReturnFor(intent)
+        return onMapReturn and not gate.sceneDuration and returnsFromRoom(gate.published,intent)
     end
     function gate:finish(intent,roomPainted)
         local ticket=self.painting
@@ -406,8 +423,12 @@ function M.new(cover,ready,onIntent,frames,motion)
             return false
         end
         if not acceptPaintedIntent(ticket,intent,roomPainted) then self:request(intent);return false end
-        if not ticket.fast or not ticket.changed then self.painting=nil;return false end
-        return finishLocalPage(self,intent,ticket)
+        local mapReturn=mapReturnFor(intent)
+        if not ticket.fast or not ticket.changed then
+            self.mapReturnPainted=mapReturn and self.epoch
+            self.painting=nil;return false
+        end
+        return finishLocalPage(self,intent,ticket,mapReturn)
     end
     local subtitle,subtitleAlpha
     local function paintSubtitle(narration,ticket)
@@ -540,13 +561,20 @@ function M.new(cover,ready,onIntent,frames,motion)
             gate.state='ready';gate.armed={epoch=ticket,tick=gate.tick};return false
         end
         if narrating then return false end
-        gate.state=gate.sceneDuration and 'fadingIn' or 'visible'
+        local mapReturn=gate.mapReturnPainted==ticket
         gate.published=intent;gate.roomEntry=nil;gate.armed=nil;gate.error=nil
+        -- The covered refresh already painted the map and its input targets.
+        if mapReturn then onMapReturn()end
+        if ticket~=gate.epoch then return false end
+        gate.state=gate.sceneDuration and 'fadingIn' or 'visible'
         readyEntry(intent)
         if ticket~=gate.epoch then return false end
         cover:SetVisible(gate:covered())
         if ticket~=gate.epoch then return false end
-        if gate.state=='visible' then logVisible(intent,ticket);return enableEntry(intent)end
+        if gate.state=='visible' then
+            logVisible(intent,ticket)
+            return enableEntry(intent,mapReturn)
+        end
         return true,not gate.entry
     end
     function gate:step(intent,dt)
