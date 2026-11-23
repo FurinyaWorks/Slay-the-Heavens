@@ -5,7 +5,7 @@ TASK-25、TASK-10.1.2、TASK-105。源码固定为 `73c21489efaab409d4c0c46bee51
 ## A0 到 A3
 
 - **A0 源图覆盖 75/75。** 对 75 个稳定 `cardId` 的参考表、当前非状态／诅咒牌、catalog、文件和像素格式逐项核对。实读完整 PNG 并重算 75 个 SHA-256，均与登记一致且互不重复。3 张获 Owner 离线视觉认可并具原生精修，72 张有历史独立源设计审查及转换候选。历史转换数据的 72 份矩形流也各不相同。`iron_wave`、`disarm`、`offering`、`reaper` 留有 STD10 画质风险。不同摘要证明字节独立，具体画面与技能的历史审查见原记录。正式装配启用 0/75，官方导入与设备通过 0/75。见[逐卡矩阵](matrix.json)、[源设计审查](../../../art/cards/traveler-geo/source-design-review.json)及[装配策略](../../../data/release/candidate-art-policy.json)。
-- **A1 用三张已获认可样本做单卡。** 按图元量选低 `armaments`、中 `heavy_blade`、高 `cleave`，复核原生 JSON/Lua、稳定 ID、实际共享 `battlePanel/card1` 和导出控件。沿用批准绘图，1× 历史离线对照一致，4× 严格对照历史有 25/4/11 像素差。当前封装、导入和手机均待验。见[批准范围和逐卡来源](../../../art/cards/traveler-geo/README.md)。
+- **A1 用三张已获认可样本做单卡。** 按图元量选低 `armaments`、中 `heavy_blade`、高 `cleave`，复核原生 JSON/Lua、稳定 ID、实际共享 `battlePanel/card1` 和导出控件。沿用批准绘图，1× 历史离线对照一致，4× 严格对照历史有 25/4/11 像素差。当前复核三张既有原生预览，可分别辨认整备武装的锻整器物、重剑斩的刃缘接触和星陨剑的落石群体打击。当前封装、导入和手机均待验。见[批准范围和逐卡来源](../../../art/cards/traveler-geo/README.md)。
 - **A2 将唯一插画数据与宿主开销分开。** 从 `cleave` 单图/单宿主增加为三图/单宿主，布局和模板 SHA-256 不变，映射 Lua 增加 1,321,614 字节。三图不变，将 `battlePanel/card1` 扩为 `card1` 到 `card3`，映射 Lua 清单 SHA-256 不变，增加 5,406 个静态控件，紧凑布局增 688,050 字节。这两个对照都沿用容量 2,657 形状/池。复用现有 runtime 回归检查切换、回退与释放。正式候选策略当前会拒绝卡图开启，设备容量仍待验。见[离线清单](inventory.json)。
 - **A3 仍有画质与验收缺口。** 现有 75 图历史实验可离线重建，其中 72 份是既有压缩矩形版本。与 A 实验空白对照相比，此历史实验增加 4,916,062 字节映射 Lua、63 个空 `artSamples` 宿主和 1 个共享模板带来的 64 个静态控件。现有动态宿主合同上界为 10 池、每更新最多创建 64 个控件、峰值 27,020 个动态图元与分组控件。离线合同尚无本候选实测，需先完成 A1/A2 实机和画质验收，再以不降低画质的方式推进余下 72 张的正式原生精修。现有记录也缺可核查的正式稳定批、单张人工工时与返工成本，无法用于第二职业产能预测。见[历史转换记录](../../../art/cards/traveler-geo/runtime-candidate/README.md)。
 
@@ -23,7 +23,7 @@ TASK-25、TASK-10.1.2、TASK-105。源码固定为 `73c21489efaab409d4c0c46bee51
 
 | 阶段 | 证据与复测条件 |
 | --- | --- |
-| B0 双幕资源和音频基线 | 从当前正常生产构建选项 `official-assets-battle-v3` 跑实际数据/UI生成和生产映射盘点。独立卡图关闭，背景关闭，两类肖像及精修敌人开启，42 资产 / 42 绑定、分页生存期开启。373 个映射 Lua 模块共 5,943,861 字节、紧凑布局 4,153,371 字节、紧凑模板 244,803 字节、27,264 个控件含模板根、24,875 个初始隐藏、16 模板、0 个卡图宿主。保留 BGM 源身份，待实际音频装配、GIL 写入/读回与官方测量。 |
+| B0 双幕资源和音频基线 | 从当前正常生产构建选项 `official-assets-battle-v3` 跑实际数据/UI生成和生产映射盘点。独立卡图关闭，背景关闭，两类肖像及精修敌人开启，42 资产 / 42 绑定、分页生存期开启。373 个映射 Lua 模块共 5,943,861 字节、紧凑布局 4,153,371 字节、紧凑模板 244,803 字节、27,264 个控件含模板根、24,875 个初始隐藏、16 模板、0 个卡图宿主。既有 `abyss_act3_ai`、`abyss_act3_enemies`、`abyss_act3_bosses`、`abyss_act3_events`、`abyss_original_v4_data` 等已在这 373 个模块中。见[B0 映射清单](b0-mapped-lua.json)。保留 BGM 源身份，待实际音频装配、GIL 写入/读回与官方测量。 |
 | B1 四职业玩法 | 待 B 提供四职业完整可达的干净组合 SHA，不新增三职业批量独立卡图。基线依赖与已映射数据在源码中已存在，逐阶段比较 Lua／模板／控件清单，避免把关闭入口当成未序列化或把已映射模块重复计入增量。 |
 | B2 B1 加第三幕玩法 | 待 C 确认真正公开的完整第三幕候选 SHA。沿用 B1 底图、音频和美术，只改变第三幕内容与必要功能 UI。B0 已有第三幕相关数据、模块和部分表现入口，实际增量以映射差异为准。 |
 | B3 B2 分批加第三幕美术 | 当前精修敌人注册表覆盖既有双幕。以第三幕常见战斗、精英、Boss、必要事件／场景为批，每次固定 B2 及上个批次，登记真实资产 ID、输入摘要、绑定、模板索引和控件。现有事件插画或复用单位先核 B2 装配，新增批次仅计算真实变化。尚无按第三幕分批的受审精修注册表和同候选证据。 |
@@ -41,3 +41,9 @@ node docs/evidence/v6-d-art-capacity/replay.mjs build/v6-d-replay
 ```
 
 源码身份在运行前后复核。随本次证据版提交重放时，源码 HEAD 会变化。比较实际输入摘要、映射清单和布局摘要可以核对装配是否相同。完整候选另需编码器输入、底图、最终写入读回、音频和 buildId。
+
+## 测试
+
+- 先生成默认数据/UI。12 个既有测试文件覆盖 64 项，首次按此完整前置运行时 61 项通过，三个既有 NodeUI Lua 场景在同时执行其他重测试时触发原 30 秒上限。随后原参数单独复跑 `tests/native-card-art-runtime.test.mjs`，9 项通过，三处此前未过的 `node-shop`、`node-picker`、`node-return` 均完成。没有更改时间上限、断言或测试数据。
+- 定向组包含 `reviewed-traveler-geo-assets`、`converted-card-data`、`ready-card-art`、`ready-card-runtime-layout`、`ready-card-production-build`、`native-card-art-runtime`、`native-card-art-reentrancy`、`native-card-art-fallback-ownership`、`native-card-art-ending`、`candidate-art-policy`、`platform-load` 和 `refined-release-ui`。
+- `npm run check:guidance` 和 `git diff --check` 通过，切片门禁为 0 生产文件。运行态测试在 Lua 仿真宿主中进行。官方负载及设备仍待验。
