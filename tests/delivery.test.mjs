@@ -1456,3 +1456,48 @@ test('Fork push routing skips every Quality runner outside Fork B Full and prese
     for(const job of ['impact','check','engineering-posix'])assert.equal(evaluate(condition(quality,job),github),true,job+' '+eventName);
   }
 });
+
+test('first Fork B Full push uses its pinned upstream base in real quality ratchet execution',t=>{
+ const workflow=readFileSync(new URL('../.github/workflows/quality.yml',import.meta.url),'utf8');
+ const expressions=[...workflow.matchAll(/^          (CI_COMPARISON_BASE|BASE_SHA|QUALITY_RATCHET_BASE): \$\{\{ (.+github.event.before.*?) \}\}$/gm)];
+ assert.equal(expressions.length,3,'retain all three existing comparison consumers');
+ const root=mkdtempSync(join(tmpdir(),'fork-full-first-push-'));t.after(()=>rmSync(root,{recursive:true,force:true}));
+ const git=(...args)=>{const r=spawnSync('git',args,{cwd:root,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
+ git('init','-q');writeFileSync(join(root,'fixture'),'base');git('add','.');
+ git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','base');
+ const base=git('rev-parse','HEAD'),zero='0'.repeat(40),formal='a'.repeat(40);
+ writeFileSync(join(root,'fixture'),'head');git('add','.');git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','head');
+ const context={event:{pull_request:{base:{sha:''}},merge_group:{base_sha:''},before:zero}};
+ const evaluate=(expression,github,inputs,needs)=>Function('github','inputs','needs','return '+expression)(github,inputs,needs);
+ const needs={impact:{outputs:{fork_base_sha:base}}};
+ const ratchet=expressions.find(row=>row[1]==='QUALITY_RATCHET_BASE')[2];
+ const resolved=evaluate(ratchet,context,{base_sha:''},needs);
+ const command=fileURLToPath(new URL('../scripts/check-quality-ratchet.mjs',import.meta.url));
+ const checkout=join(root,'checkout');
+ const clone=spawnSync('git',['clone','--quiet','--depth=1',pathToFileURL(root).href,checkout],{encoding:'utf8'});
+ assert.equal(clone.status,0,clone.stderr);
+ const run=qualityBase=>spawnSync(process.execPath,[command],{cwd:checkout,encoding:'utf8',env:{...process.env,CI:'false',QUALITY_RATCHET_BASE:qualityBase}});
+ assert.notEqual(run(resolved).status,0,'a base object in impact is absent from a separate shallow rules checkout');
+ const fetchStep=workflow.match(/      - name: Fetch exact upstream base for Fork B Full ratchet\n([\s\S]*?)(?=      - name:)/)[1];
+ const fetchScript=fetchStep.match(/        run: \|\n([\s\S]*)/)[1].replace(/^          /gm,'')
+  .replace('https://github.com/FurinyaWorks/Slay-the-Heavens.git',pathToFileURL(root).href);
+ const shell=process.platform==='win32'?`${process.env.ProgramFiles}/Git/bin/bash.exe`:'/bin/bash';
+ const fetch=spawnSync(shell,['-e','-c',fetchScript],{cwd:checkout,encoding:'utf8',env:{...process.env,FORK_BASE_SHA:base}});
+ assert.equal(fetch.status,0,fetch.stdout+fetch.stderr);
+ const result=run(resolved);assert.equal(result.status,0,result.stdout+result.stderr);
+ assert.equal(JSON.parse(readFileSync(join(checkout,'build/quality-ratchet.json'),'utf8')).base,base);
+ assert.notEqual(run(zero).status,0,'an all-zero base remains fail-closed, never a bypass');
+ assert.match(workflow,/^      fork_base_sha: \$\{\{ steps.forkbase.outputs.base_sha \}\}$/m);
+ assert.match(fetchStep,/if: matrix.shard == 1 && needs.impact.outputs.fork_base_sha != ''/);
+ assert.match(fetchStep,/\[\[ "\$FORK_BASE_SHA" =~ \^\[a-f0-9\]\{40\}\$ \]\]/);
+ assert.match(fetchStep,/fetch --depth=1 --filter=blob:none --no-auto-maintenance --no-tags https:\/\/github.com\/FurinyaWorks\/Slay-the-Heavens.git "\$FORK_BASE_SHA"/);
+ assert.match(fetchStep,/git cat-file -e "\$\{FORK_BASE_SHA\}\^\{commit\}"/);
+ for(const [,name,expression]of expressions){
+  assert.equal(evaluate(expression,context,{base_sha:''},needs),name==='QUALITY_RATCHET_BASE'?base:zero,name+' first push');
+  const noPin={impact:{outputs:{fork_base_sha:''}}};
+  assert.equal(evaluate(expression,{event:{...context.event,before:formal}},{base_sha:''},noPin),formal,name+' protected push');
+  assert.equal(evaluate(expression,{event:{...context.event,pull_request:{base:{sha:formal}}}},{base_sha:''},needs),formal,name+' PR');
+  assert.equal(evaluate(expression,{event:{...context.event,merge_group:{base_sha:formal}}},{base_sha:''},needs),formal,name+' queue');
+  assert.equal(evaluate(expression,context,{base_sha:formal},needs),formal,name+' dispatch');
+ }
+});

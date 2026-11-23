@@ -5,7 +5,7 @@
 1. 从最新主仓 `develop` 建任务短分支，先用 `node scripts/test-affected.mjs --plan --base <BASE>` 估算影响。推送 Fork A 后，`quick-feedback.yml` 自动执行受影响 Quick；仅修改 Markdown 的推送不启动 Quick。
 2. Quick 在运行时固定主仓 `develop` 的比较 BASE，记录 HEAD/BASE；新 Push 取消同分支旧运行。比较 BASE 可能随主仓推进，不冒充开发初始基线。
 3. 只有核心路径、共享 CI 或覆盖未知等风险要求 Full 时，把同一候选推到 Fork B 的 `ci/full/<task>` 短分支；`quality.yml` 自动运行 hosted Full。不要对普通任务重复启动 Full。
-   Fork B 的比较 BASE 记在 impact 作业摘要；其 Full checkout 收据仍按正式 Push 合同记录 `event.before`，不把两者混为同一基线。Fork A Quick 的 `--preflight` 收据记录实际受影响选测的比较 BASE。
+   Fork B 的比较 BASE 记在 impact 作业摘要，并经输出传给首个 rules 分片的质量棘轮；该分片从固定主仓获取此精确 SHA，首次 Push 的全零 before 不作棘轮基线；其 Full checkout 收据仍按正式 Push 合同记录 `event.before`，不把两者混为同一基线。Fork A Quick 的 `--preflight` 收据记录实际受影响选测的比较 BASE。
 4. 验证后同步精确候选到主仓短分支，创建同仓 PR，继续正式 Quality/Licenses、独立 Review 与 Merge Queue Full。
 
 ```sh

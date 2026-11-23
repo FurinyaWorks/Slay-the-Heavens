@@ -37,6 +37,7 @@ jobs:
       statuses: write
     timeout-minutes: 6
     outputs:
+      fork_base_sha: ${{ steps.forkbase.outputs.base_sha }}
       mode: ${{ steps.plan.outputs.mode }}
       windows_shards: ${{ steps.plan.outputs.windows_shards }}
       posix_shards: ${{ steps.plan.outputs.posix_shards }}
@@ -410,10 +411,20 @@ jobs:
         if: matrix.shard == 1
       - run: npm run check:engineering
         if: matrix.shard == 1
+      - name: Fetch exact upstream base for Fork B Full ratchet
+        if: matrix.shard == 1 && needs.impact.outputs.fork_base_sha != ''
+        shell: bash
+        env:
+          FORK_BASE_SHA: ${{ needs.impact.outputs.fork_base_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$FORK_BASE_SHA" =~ ^[a-f0-9]{40}$ ]]
+          git -c credential.helper= -c http.lowSpeedLimit=1024 -c http.lowSpeedTime=30 fetch --depth=1 --filter=blob:none --no-auto-maintenance --no-tags https://github.com/FurinyaWorks/Slay-the-Heavens.git "$FORK_BASE_SHA"
+          git cat-file -e "${FORK_BASE_SHA}^{commit}"
       - name: Enforce incremental Lua CC and SCC ratchet
         if: matrix.shard == 1 && (github.event_name == 'pull_request' || github.event_name == 'merge_group' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.base_sha != ''))
         env:
-          QUALITY_RATCHET_BASE: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || inputs.base_sha || github.event.before }}
+          QUALITY_RATCHET_BASE: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || inputs.base_sha || needs.impact.outputs.fork_base_sha || github.event.before }}
         run: node scripts/check-quality-ratchet.mjs
       - name: Check production platform load
         if: matrix.shard == 1
