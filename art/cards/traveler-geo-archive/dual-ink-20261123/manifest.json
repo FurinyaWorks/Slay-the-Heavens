@@ -1,0 +1,3008 @@
+{
+  "version": 1,
+  "sourceRuleRevision": "73c21489efaab409d4c0c46bee517d410d3427fc",
+  "scope": "75 authored archival assets and independent offline validation only. Not a runtime catalog. No client integration, game behavior or publication.",
+  "canvas": [
+    120,
+    82
+  ],
+  "notRun": [
+    "GIL import",
+    "PC and mobile playback",
+    "official capacity",
+    "runtime registry integration"
+  ],
+  "count": {
+    "minimum": 17,
+    "median": 37,
+    "maximum": 60,
+    "withFullBudget": 3,
+    "total": 2861
+  },
+  "cards": [
+    {
+      "id": "strike",
+      "name": "普通攻击",
+      "ref": "Strike",
+      "type": "attack",
+      "rarity": "basic",
+      "cost": {
+        "images": 46,
+        "batches": 1,
+        "artControls": 47
+      },
+      "effect": "造成 6 点伤害。",
+      "upgrade": "造成 9 点伤害。",
+      "artifact": {
+        "master": {
+          "path": "strike/source.png",
+          "sha256": "df7611cc7a106531080703171e68a5b6fe8d0ccfbb4de2ae80660320eb381494",
+          "bytes": 7855
+        },
+        "svg": {
+          "path": "strike/source.svg",
+          "sha256": "d2443586d66339ec5b33a9923b636b530cb89127b443dcc5a91681d7f675b3d1",
+          "bytes": 344
+        },
+        "native": {
+          "path": "strike/native-art.json",
+          "sha256": "0fb3a86f4d61a3c3416945416733754926ea26cbf65dd5cc4178b9c6ff22533e",
+          "bytes": 24954
+        },
+        "preview": {
+          "path": "strike/preview-native.png",
+          "sha256": "55652cc64180b4a7a3b3b16d71a668a1be93808d7fb260ad7111fe91856edae6",
+          "bytes": 4287
+        }
+      },
+      "review": {
+        "reportSHA256": "3723a851f4eda6b6b94be62fe7d9c9143842445ef361b4a6435ead7a19d66a41",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "defend",
+      "name": "防御",
+      "ref": "Defend",
+      "type": "skill",
+      "rarity": "basic",
+      "cost": {
+        "images": 44,
+        "batches": 1,
+        "artControls": 45
+      },
+      "effect": "获得 5 点格挡。",
+      "upgrade": "获得 8 点格挡。",
+      "artifact": {
+        "master": {
+          "path": "defend/source.png",
+          "sha256": "b4055a61562edc484410cb2aa9a7996ab58770ebb0a860e6c1db5715b8f24f86",
+          "bytes": 8111
+        },
+        "svg": {
+          "path": "defend/source.svg",
+          "sha256": "414e62508dc6846a9c4bb8a20a3f5a3f8b0a022abba59163461d5d725614763d",
+          "bytes": 442
+        },
+        "native": {
+          "path": "defend/native-art.json",
+          "sha256": "920be99d968c8c4eb9bf6675b225cbc83a2ec603a55fea74244e49db40422e2e",
+          "bytes": 23949
+        },
+        "preview": {
+          "path": "defend/preview-native.png",
+          "sha256": "203e41f9029ae2fd33546123da62818370a88bd90ea10114880c6274acf18d2d",
+          "bytes": 5702
+        }
+      },
+      "review": {
+        "reportSHA256": "3723a851f4eda6b6b94be62fe7d9c9143842445ef361b4a6435ead7a19d66a41",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "bash",
+      "name": "破防斩",
+      "ref": "Bash",
+      "type": "attack",
+      "rarity": "basic",
+      "cost": {
+        "images": 34,
+        "batches": 1,
+        "artControls": 35
+      },
+      "effect": "造成 8 点伤害，施加 2 层易伤。",
+      "upgrade": "造成 10 点伤害，施加 3 层易伤。",
+      "artifact": {
+        "master": {
+          "path": "bash/source.png",
+          "sha256": "8d40d95079e473bdc13465e5ca8106c053020c556b1fbb040a8ac01252dc8861",
+          "bytes": 8188
+        },
+        "svg": {
+          "path": "bash/source.svg",
+          "sha256": "26e65e90bedd55ab5cee93486ddfb4d7b7ddb93822703311e6af67e608ceb15b",
+          "bytes": 363
+        },
+        "native": {
+          "path": "bash/native-art.json",
+          "sha256": "0e09d3397849378fb5820101c4c1abe3dfc7ef14e39404023cc2080e504d1527",
+          "bytes": 18570
+        },
+        "preview": {
+          "path": "bash/preview-native.png",
+          "sha256": "af703405b8a1d26fbcc959434c2b92ec04eb60860b14b1ab455880b12b543f7a",
+          "bytes": 4814
+        }
+      },
+      "review": {
+        "reportSHA256": "22e7d70daa02c7e712aac7aaac80f71de60429a4c4bd11e44a5aab3712cd3bab",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "anger",
+      "name": "连续出剑",
+      "ref": "Anger",
+      "type": "attack",
+      "rarity": "common",
+      "cost": {
+        "images": 24,
+        "batches": 1,
+        "artControls": 25
+      },
+      "effect": "造成 6 点伤害，将本牌的一张复制加入弃牌堆。",
+      "upgrade": "造成 8 点伤害，将本牌的一张复制加入弃牌堆。",
+      "artifact": {
+        "master": {
+          "path": "anger/source.png",
+          "sha256": "e362358025141aa5b2d5f45e3d813ffb73052384c8424bf66912fbe361cd9605",
+          "bytes": 4982
+        },
+        "svg": {
+          "path": "anger/source.svg",
+          "sha256": "fc8411dfad4b9db9a531ffbe408737844063dcf4b4b62695bb5e2088474aa8be",
+          "bytes": 268
+        },
+        "native": {
+          "path": "anger/native-art.json",
+          "sha256": "8c8b3bdb2b12be61155d70b317cbf8d1480888426afa528fbcf7654dd2799b81",
+          "bytes": 13233
+        },
+        "preview": {
+          "path": "anger/preview-native.png",
+          "sha256": "65f53ec09627a0876db026f15037ba3a92933af156d8952b16b6d1fb85d90323",
+          "bytes": 3686
+        }
+      },
+      "review": {
+        "reportSHA256": "22e7d70daa02c7e712aac7aaac80f71de60429a4c4bd11e44a5aab3712cd3bab",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "cleave",
+      "name": "星陨剑",
+      "ref": "Cleave",
+      "type": "attack",
+      "rarity": "common",
+      "cost": {
+        "images": 58,
+        "batches": 2,
+        "artControls": 60
+      },
+      "effect": "对所有敌人造成 8 点伤害。",
+      "upgrade": "对所有敌人造成 11 点伤害。",
+      "artifact": {
+        "master": {
+          "path": "cleave/source.png",
+          "sha256": "349f4bc5f44efab99d27e573d4c5f934c84d04de86e67904c484b8427afa43b8",
+          "bytes": 3037
+        },
+        "svg": null,
+        "native": {
+          "path": "cleave/native-art.json",
+          "sha256": "83b3033970911b21395a8a82b6fa2f349870b6128408e00145ff71ea17b62e79",
+          "bytes": 17704
+        },
+        "preview": {
+          "path": "cleave/preview-native.png",
+          "sha256": "91143e4735766819a237815b275e7634c043b3fa959c891412a2650878d3ccf9",
+          "bytes": 5671
+        }
+      },
+      "review": {
+        "reportSHA256": "dc72195694d6a5fb9afac163555dd222c8cbbef0b79fb9e1527d39dd927312cf",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "warcry",
+      "name": "调整战术",
+      "ref": "Warcry",
+      "type": "skill",
+      "rarity": "common",
+      "cost": {
+        "images": 32,
+        "batches": 1,
+        "artControls": 33
+      },
+      "effect": "消耗。抽 1 张牌，将 1 张手牌置于抽牌堆顶。",
+      "upgrade": "消耗。抽 2 张牌，将 1 张手牌置于抽牌堆顶。",
+      "artifact": {
+        "master": {
+          "path": "warcry/source.png",
+          "sha256": "21b23d9ea6548853aa0c3cabfecb21f0f32699d909feebf5a86dbd6d704f6bf4",
+          "bytes": 5070
+        },
+        "svg": {
+          "path": "warcry/source.svg",
+          "sha256": "fb9a7fe172aff1c544486d2c6cd632911406316757b75dccbc7e2fdad8d9539d",
+          "bytes": 328
+        },
+        "native": {
+          "path": "warcry/native-art.json",
+          "sha256": "5e0d00efcbf6e8408058349a3a4cb4d8804dc52b1b007a92ba1f367746117e68",
+          "bytes": 17537
+        },
+        "preview": {
+          "path": "warcry/preview-native.png",
+          "sha256": "d5ec0f582672b9889be3414503b10a5955fc5ba1d6c3ef2cf9d2cd2ad354beb5",
+          "bytes": 4037
+        }
+      },
+      "review": {
+        "reportSHA256": "868ea8c70917539432c750f470d0fe59f8915cc56ff77a7255ad0178d9207594",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "flex",
+      "name": "蓄力",
+      "ref": "Flex",
+      "type": "skill",
+      "rarity": "common",
+      "cost": {
+        "images": 22,
+        "batches": 1,
+        "artControls": 23
+      },
+      "effect": "本回合获得 2 层力量，回合结束移除。",
+      "upgrade": "本回合获得 4 层力量，回合结束移除。",
+      "artifact": {
+        "master": {
+          "path": "flex/source.png",
+          "sha256": "8fd930cdea6b68b51b7532392baf651cbdfdee9b7315d4d23b20bbe5d2128043",
+          "bytes": 2800
+        },
+        "svg": {
+          "path": "flex/source.svg",
+          "sha256": "345094ba6aa5bb3077cc771f47c6e5e987d9e7cc830a880678d673118ebb2c6d",
+          "bytes": 317
+        },
+        "native": {
+          "path": "flex/native-art.json",
+          "sha256": "f5c80aea6100e0e17bd68e960ba92ee2eb1bf4a763ad57fe29648835006a944b",
+          "bytes": 12016
+        },
+        "preview": {
+          "path": "flex/preview-native.png",
+          "sha256": "544d4e576413ed42195685b6fe4f9e702ad300d176a93868f7c31e68fc6e15a7",
+          "bytes": 2706
+        }
+      },
+      "review": {
+        "reportSHA256": "a4ed4a94506032747d38e009a17d39bb57fa4803639b18d1f00fdfb881ad52b1",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "iron_wave",
+      "name": "招架还击",
+      "ref": "Iron Wave",
+      "type": "attack",
+      "rarity": "common",
+      "cost": {
+        "images": 58,
+        "batches": 2,
+        "artControls": 60
+      },
+      "effect": "获得 5 点格挡，造成 5 点伤害。",
+      "upgrade": "获得 7 点格挡，造成 7 点伤害。",
+      "artifact": {
+        "master": {
+          "path": "iron_wave/source.png",
+          "sha256": "22255a8f16f867bf18d6b61a7e67e324dfbd41a6427f541ac8354a78a4d64cb4",
+          "bytes": 6828
+        },
+        "svg": {
+          "path": "iron_wave/source.svg",
+          "sha256": "50e827390f6dc73bfbcef50cbd198aa157d941c4619a4ba30c670d2f5efdd8cc",
+          "bytes": 333
+        },
+        "native": {
+          "path": "iron_wave/native-art.json",
+          "sha256": "914fa5463fb1a6f908412acd53be2bdcaf226295fe8779c33653f0974154bd8d",
+          "bytes": 31303
+        },
+        "preview": {
+          "path": "iron_wave/preview-native.png",
+          "sha256": "1e909279d879c2fbf95fbe3cde12bce3868864e698ae40d63d381a238948de4f",
+          "bytes": 4438
+        }
+      },
+      "review": {
+        "reportSHA256": "3723a851f4eda6b6b94be62fe7d9c9143842445ef361b4a6435ead7a19d66a41",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "body_slam",
+      "name": "格挡反击",
+      "ref": "Body Slam",
+      "type": "attack",
+      "rarity": "common",
+      "cost": {
+        "images": 44,
+        "batches": 1,
+        "artControls": 45
+      },
+      "effect": "造成等同于当前格挡的伤害。",
+      "upgrade": "消耗 0 能量，造成等同于当前格挡的伤害。",
+      "artifact": {
+        "master": {
+          "path": "body_slam/source.png",
+          "sha256": "939e42e8d1cb6c82efdd1d3664aa0cd4125aec54b87bd812225be3ce8d470688",
+          "bytes": 7345
+        },
+        "svg": {
+          "path": "body_slam/source.svg",
+          "sha256": "3576b501bc263ad58a0ba05121909dea34165fe0741134c592cdfdbd4edfbb87",
+          "bytes": 384
+        },
+        "native": {
+          "path": "body_slam/native-art.json",
+          "sha256": "817e60e6b2b6887df10ee66e9158677f79f32ea82cb463ea275764310c3490c9",
+          "bytes": 23923
+        },
+        "preview": {
+          "path": "body_slam/preview-native.png",
+          "sha256": "d638ae000d16e1ea9781b2bb39e2580dd4407c14552befb9ea13fe20dab4bad1",
+          "bytes": 4727
+        }
+      },
+      "review": {
+        "reportSHA256": "868ea8c70917539432c750f470d0fe59f8915cc56ff77a7255ad0178d9207594",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "true_grit",
+      "name": "稳住阵脚",
+      "ref": "True Grit",
+      "type": "skill",
+      "rarity": "common",
+      "cost": {
+        "images": 24,
+        "batches": 1,
+        "artControls": 25
+      },
+      "effect": "获得 7 点格挡，随机消耗 1 张手牌。",
+      "upgrade": "获得 9 点格挡，选择消耗 1 张手牌。",
+      "artifact": {
+        "master": {
+          "path": "true_grit/source.png",
+          "sha256": "4dda55377f95d172ba7b4bdd644babeba84a67869f7d30ab1e52793dd1f9844b",
+          "bytes": 3866
+        },
+        "svg": {
+          "path": "true_grit/source.svg",
+          "sha256": "9806752e9be8f320b1e6dd0833bb1a36b05be9d62f8e72633fc58c8a66c08d6d",
+          "bytes": 396
+        },
+        "native": {
+          "path": "true_grit/native-art.json",
+          "sha256": "9c3da7c0d2dfaea5d412c4a75422906d3affaaf4b6cda0a3141b3fb531d68b48",
+          "bytes": 12994
+        },
+        "preview": {
+          "path": "true_grit/preview-native.png",
+          "sha256": "a5fb21de7d4a13ce8c20693d22f45b356ab7f8571bd9f3720780785bd2a0cbf8",
+          "bytes": 2924
+        }
+      },
+      "review": {
+        "reportSHA256": "a4ed4a94506032747d38e009a17d39bb57fa4803639b18d1f00fdfb881ad52b1",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "shrug_it_off",
+      "name": "伺机而动",
+      "ref": "Shrug It Off",
+      "type": "skill",
+      "rarity": "common",
+      "cost": {
+        "images": 30,
+        "batches": 1,
+        "artControls": 31
+      },
+      "effect": "获得 8 点格挡，抽 1 张牌。",
+      "upgrade": "获得 11 点格挡，抽 1 张牌。",
+      "artifact": {
+        "master": {
+          "path": "shrug_it_off/source.png",
+          "sha256": "49ad4186621ccb8e54e97bdc0f741259bcb709ab0bf1c1b18c72b4e8064a7838",
+          "bytes": 5261
+        },
+        "svg": {
+          "path": "shrug_it_off/source.svg",
+          "sha256": "d4f48d9b8aea23968a0c5fee1a7cdee4cf6983d773ede6a0f52d5d3f9c89af84",
+          "bytes": 346
+        },
+        "native": {
+          "path": "shrug_it_off/native-art.json",
+          "sha256": "53e240ff516c110259c477ae870a6afcd3a20a64e7cfccbe1c38e69f1c832074",
+          "bytes": 16452
+        },
+        "preview": {
+          "path": "shrug_it_off/preview-native.png",
+          "sha256": "7074c340723cb43d0de34fd28d5ba3a7f25e783bdfda9880208775c810dab1a0",
+          "bytes": 3722
+        }
+      },
+      "review": {
+        "reportSHA256": "74be7c5d6f14d63584e605713adcf91cd1d7a6153a485705ea39f6fe332445ea",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "clash",
+      "name": "全力进攻",
+      "ref": "Clash",
+      "type": "attack",
+      "rarity": "common",
+      "cost": {
+        "images": 34,
+        "batches": 1,
+        "artControls": 35
+      },
+      "effect": "仅当手牌全为攻击牌时可打出，造成 14 点伤害。",
+      "upgrade": "仅当手牌全为攻击牌时可打出，造成 18 点伤害。",
+      "artifact": {
+        "master": {
+          "path": "clash/source.png",
+          "sha256": "d9363e6819fb988f42be062ba148f2a65b5cd22cdb545acd9cadae3e8d3a03bf",
+          "bytes": 5176
+        },
+        "svg": {
+          "path": "clash/source.svg",
+          "sha256": "0f9091e93c924d11b81a83063a2ecb7922c0a66679353facaf520bfedcd4b163",
+          "bytes": 285
+        },
+        "native": {
+          "path": "clash/native-art.json",
+          "sha256": "ee66b997e2904b4322353e4e356989f3ae441ded89c7cbba96909fcd3deae65c",
+          "bytes": 18358
+        },
+        "preview": {
+          "path": "clash/preview-native.png",
+          "sha256": "5e542f4b729690bcbc203c24af00665b11c0a9e08c30b79807f857937ffd442c",
+          "bytes": 3703
+        }
+      },
+      "review": {
+        "reportSHA256": "868ea8c70917539432c750f470d0fe59f8915cc56ff77a7255ad0178d9207594",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "thunderclap",
+      "name": "横扫破防",
+      "ref": "Thunderclap",
+      "type": "attack",
+      "rarity": "common",
+      "cost": {
+        "images": 58,
+        "batches": 2,
+        "artControls": 60
+      },
+      "effect": "对所有敌人造成 4 点伤害并施加 1 层易伤。",
+      "upgrade": "对所有敌人造成 7 点伤害并施加 1 层易伤。",
+      "artifact": {
+        "master": {
+          "path": "thunderclap/source.png",
+          "sha256": "f883db87649aa55e053ca381be46a0a62d800eee4334c9755496c57a4bfadb31",
+          "bytes": 4732
+        },
+        "svg": {
+          "path": "thunderclap/source.svg",
+          "sha256": "6a001e81eca044e3ba573b14e7debc7c52d97ff872d2986bd138d1e08643906e",
+          "bytes": 416
+        },
+        "native": {
+          "path": "thunderclap/native-art.json",
+          "sha256": "2686837af1e5b3def80b5fa93748d751f6fe3257fc8ed20d7cf206a58f8b694b",
+          "bytes": 31193
+        },
+        "preview": {
+          "path": "thunderclap/preview-native.png",
+          "sha256": "818aee47aa03aa5764a17a41df5607280e252eb0375c1ecb1b14812d9aadf101",
+          "bytes": 3423
+        }
+      },
+      "review": {
+        "reportSHA256": "a4ed4a94506032747d38e009a17d39bb57fa4803639b18d1f00fdfb881ad52b1",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "pommel_strike",
+      "name": "试探一击",
+      "ref": "Pommel Strike",
+      "type": "attack",
+      "rarity": "common",
+      "cost": {
+        "images": 46,
+        "batches": 1,
+        "artControls": 47
+      },
+      "effect": "造成 9 点伤害，抽 1 张牌。",
+      "upgrade": "造成 10 点伤害，抽 2 张牌。",
+      "artifact": {
+        "master": {
+          "path": "pommel_strike/source.png",
+          "sha256": "b872a856a92e1663e5874f13267631074d57da4f833d65e8895e4dc5f7189a0e",
+          "bytes": 4494
+        },
+        "svg": {
+          "path": "pommel_strike/source.svg",
+          "sha256": "158ae20c317ae030d31e9661f2d14c0262f450314fc61f5323c00d945b39fc26",
+          "bytes": 339
+        },
+        "native": {
+          "path": "pommel_strike/native-art.json",
+          "sha256": "a5e5dd68df77df55015ec90a924dd6bf898d1dc61e7ad964b578815b14af0ab3",
+          "bytes": 24990
+        },
+        "preview": {
+          "path": "pommel_strike/preview-native.png",
+          "sha256": "2cd5a4a52cff928a2b1b4ebc8935bc5a7082b71a6fbdf7329e76cd74745ba869",
+          "bytes": 3919
+        }
+      },
+      "review": {
+        "reportSHA256": "22e7d70daa02c7e712aac7aaac80f71de60429a4c4bd11e44a5aab3712cd3bab",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "twin_strike",
+      "name": "重击",
+      "ref": "Twin Strike",
+      "type": "attack",
+      "rarity": "common",
+      "cost": {
+        "images": 24,
+        "batches": 1,
+        "artControls": 25
+      },
+      "effect": "造成 2 次 5 点伤害。",
+      "upgrade": "造成 2 次 7 点伤害。",
+      "artifact": {
+        "master": {
+          "path": "twin_strike/source.png",
+          "sha256": "8bf530b1a358ab16ae9829f1e5fe19e3554b68f8c79ed964db1886925da5f8cc",
+          "bytes": 6447
+        },
+        "svg": {
+          "path": "twin_strike/source.svg",
+          "sha256": "9761d75b0c6b121b7c09ba4bba9d1cc38af77ddedaa26431886331d63dcaa11f",
+          "bytes": 246
+        },
+        "native": {
+          "path": "twin_strike/native-art.json",
+          "sha256": "80554c7696bd8b27a5be52bebfaeaf934eb2a1fb57b94f1326231edba0e929f1",
+          "bytes": 13220
+        },
+        "preview": {
+          "path": "twin_strike/preview-native.png",
+          "sha256": "e1e35007326eafb779d9978b7ec1a582a07c1647f8695f1d56bf7e7ccb66dc88",
+          "bytes": 3818
+        }
+      },
+      "review": {
+        "reportSHA256": "22e7d70daa02c7e712aac7aaac80f71de60429a4c4bd11e44a5aab3712cd3bab",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "clothesline",
+      "name": "压制斩",
+      "ref": "Clothesline",
+      "type": "attack",
+      "rarity": "common",
+      "cost": {
+        "images": 40,
+        "batches": 1,
+        "artControls": 41
+      },
+      "effect": "造成 12 点伤害，施加 2 层虚弱。",
+      "upgrade": "造成 14 点伤害，施加 3 层虚弱。",
+      "artifact": {
+        "master": {
+          "path": "clothesline/source.png",
+          "sha256": "a1b3789a5511fb3283ff6c91140545087592cc850dbcf2f659db85eee22fc72c",
+          "bytes": 5920
+        },
+        "svg": {
+          "path": "clothesline/source.svg",
+          "sha256": "3b65b1ecbde7d044ab7acffb045766e0ef9939d1a38fd74ab96d4d4eccebaaab",
+          "bytes": 336
+        },
+        "native": {
+          "path": "clothesline/native-art.json",
+          "sha256": "2255e7c5925058700a321e672d6ed025a67c0159bbe1ea18d54b2e45bd3b7e6f",
+          "bytes": 21776
+        },
+        "preview": {
+          "path": "clothesline/preview-native.png",
+          "sha256": "791a2fd5346a4d6606da218160be6bf28740818a510888068a86c820abc4c7f2",
+          "bytes": 3972
+        }
+      },
+      "review": {
+        "reportSHA256": "a4ed4a94506032747d38e009a17d39bb57fa4803639b18d1f00fdfb881ad52b1",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "armaments",
+      "name": "整备武装",
+      "ref": "Armaments",
+      "type": "skill",
+      "rarity": "common",
+      "cost": {
+        "images": 38,
+        "batches": 1,
+        "artControls": 39
+      },
+      "effect": "获得 5 点格挡，升级手中 1 张牌（本场战斗）。",
+      "upgrade": "获得 5 点格挡，升级手中所有牌（本场战斗）。",
+      "artifact": {
+        "master": {
+          "path": "armaments/source.png",
+          "sha256": "266c523252bded1d755112e26179cd5109a25dbd755ab04c64bbe3bc73e798bb",
+          "bytes": 6785
+        },
+        "svg": {
+          "path": "armaments/source.svg",
+          "sha256": "124f6cd076addff0464f26eb965f9d479d6dfd5351c55a639dca4f4d3a46c5b1",
+          "bytes": 420
+        },
+        "native": {
+          "path": "armaments/native-art.json",
+          "sha256": "347ba6fb1fc576fe288caec88a1cfb47dc8750c0f151bce022f07547493c27d1",
+          "bytes": 20660
+        },
+        "preview": {
+          "path": "armaments/preview-native.png",
+          "sha256": "3a89ba6f278814c6c6b7da31aeb2519a16c3f6566470e5b5c7e00a1ff5921cc1",
+          "bytes": 4960
+        }
+      },
+      "review": {
+        "reportSHA256": "da13021d8a360086e2cabc891d8a6dc34f9501dcd72a3d67885e31773d95ea86",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "havoc",
+      "name": "临阵变招",
+      "ref": "Havoc",
+      "type": "skill",
+      "rarity": "common",
+      "cost": {
+        "images": 36,
+        "batches": 1,
+        "artControls": 37
+      },
+      "effect": "打出抽牌堆顶的牌，并将其消耗。",
+      "upgrade": "消耗 0 能量，打出抽牌堆顶的牌，并将其消耗。",
+      "artifact": {
+        "master": {
+          "path": "havoc/source.png",
+          "sha256": "81479255ddd3cc4a5c4c0c85b850b5f69f7aa94bc3bd41cf5f1cff7107e57fc2",
+          "bytes": 4508
+        },
+        "svg": {
+          "path": "havoc/source.svg",
+          "sha256": "322426de0ecffd059718fc760e8776dd76cc032d85f440fd5a0b0042c8d405d3",
+          "bytes": 315
+        },
+        "native": {
+          "path": "havoc/native-art.json",
+          "sha256": "4b0b333c7edbb18b91c7745eb12ea4da2787f29764ed4dfc0effa284d15439b9",
+          "bytes": 19659
+        },
+        "preview": {
+          "path": "havoc/preview-native.png",
+          "sha256": "d3585e8e5c1fa78c389709e98a004e75c57caa6b41945d35721a5bd5414e6f2a",
+          "bytes": 2829
+        }
+      },
+      "review": {
+        "reportSHA256": "a4ed4a94506032747d38e009a17d39bb57fa4803639b18d1f00fdfb881ad52b1",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "headbutt",
+      "name": "回身追击",
+      "ref": "Headbutt",
+      "type": "attack",
+      "rarity": "common",
+      "cost": {
+        "images": 54,
+        "batches": 2,
+        "artControls": 56
+      },
+      "effect": "造成 9 点伤害，将弃牌堆中 1 张牌置于抽牌堆顶。",
+      "upgrade": "造成 12 点伤害，将弃牌堆中 1 张牌置于抽牌堆顶。",
+      "artifact": {
+        "master": {
+          "path": "headbutt/source.png",
+          "sha256": "ee30e80aa748f736d773b4e3f6bf0c713deaa3ade275fccd5fad0c2076d69013",
+          "bytes": 7324
+        },
+        "svg": {
+          "path": "headbutt/source.svg",
+          "sha256": "2294d79fedf26a8440ea8a2a1f0188681fed5583efee98366c48e7663f7ad3ec",
+          "bytes": 354
+        },
+        "native": {
+          "path": "headbutt/native-art.json",
+          "sha256": "988bfc383ca1a8f202a5ad44e360a6f0a8ad2151afd824da40be75a70b6e77d3",
+          "bytes": 29275
+        },
+        "preview": {
+          "path": "headbutt/preview-native.png",
+          "sha256": "db87008c9ecde5ce0fd1b97605d8598be5374d0f2adfde1ab4156fe6d1f775bc",
+          "bytes": 5318
+        }
+      },
+      "review": {
+        "reportSHA256": "2b931ffbed468aadd06b160bab6f846de81fe8a635dc4cfbc70ccad6e73bcf1f",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "wild_strike",
+      "name": "猛进斩",
+      "ref": "Wild Strike",
+      "type": "attack",
+      "rarity": "common",
+      "cost": {
+        "images": 48,
+        "batches": 1,
+        "artControls": 49
+      },
+      "effect": "造成 12 点伤害，将 1 张伤口洗入抽牌堆。",
+      "upgrade": "造成 17 点伤害，将 1 张伤口洗入抽牌堆。",
+      "artifact": {
+        "master": {
+          "path": "wild_strike/source.png",
+          "sha256": "5389bfe9c092430cc7bd6a450e7602675d23622a8e0ff617b14f22526eefcbfe",
+          "bytes": 4045
+        },
+        "svg": {
+          "path": "wild_strike/source.svg",
+          "sha256": "bba24337b8612e9f21e9ae70a5ebac611fa945645792c8e6d7868a32a2520b4f",
+          "bytes": 354
+        },
+        "native": {
+          "path": "wild_strike/native-art.json",
+          "sha256": "d886e1471cf7ee3d70033658c83649c756881eaa7e6fff3842de14e6168b3bc5",
+          "bytes": 25775
+        },
+        "preview": {
+          "path": "wild_strike/preview-native.png",
+          "sha256": "7f5126309f09e8bbd8bff01ae856efe4630bcdc572f0d9589d563ff70810c7c3",
+          "bytes": 2757
+        }
+      },
+      "review": {
+        "reportSHA256": "2e6d886d46bdcfefc84d5cc257d74d6ab23b1d0beeffbf92f80bbd209f042461",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "heavy_blade",
+      "name": "重剑斩",
+      "ref": "Heavy Blade",
+      "type": "attack",
+      "rarity": "common",
+      "cost": {
+        "images": 52,
+        "batches": 2,
+        "artControls": 54
+      },
+      "effect": "造成 14 点伤害。力量对本牌生效 3 次。",
+      "upgrade": "造成 14 点伤害。力量对本牌生效 5 次。",
+      "artifact": {
+        "master": {
+          "path": "heavy_blade/source.png",
+          "sha256": "3b152dc3f400b9370ac96c612f26b6d9fdd09bf2b77fb8f530f5815fab9e8120",
+          "bytes": 6008
+        },
+        "svg": {
+          "path": "heavy_blade/source.svg",
+          "sha256": "d01d2a45c5d83ca4f64114a47a8a5c3d3641d680433794938245ff575e0b3f4a",
+          "bytes": 498
+        },
+        "native": {
+          "path": "heavy_blade/native-art.json",
+          "sha256": "f51f52d91e9617694224e5445e3701194df64f6f579067541a79afc966d41392",
+          "bytes": 28208
+        },
+        "preview": {
+          "path": "heavy_blade/preview-native.png",
+          "sha256": "a45b3d04f6eba3d56d1bd9a15591095030e48eecdb3c0467e6ddf21434e1e2bf",
+          "bytes": 5622
+        }
+      },
+      "review": {
+        "reportSHA256": "2af617b64241a355b4f64832a9cb17803bdb830cd5767eec106a130bc9f8edff",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "perfected_strike",
+      "name": "剑势如虹",
+      "ref": "Perfected Strike",
+      "type": "attack",
+      "rarity": "common",
+      "cost": {
+        "images": 34,
+        "batches": 1,
+        "artControls": 35
+      },
+      "effect": "造成 6 点伤害；你所有名称含“打击”的牌，每张额外造成 2 点伤害。",
+      "upgrade": "造成 6 点伤害；你所有名称含“打击”的牌，每张额外造成 3 点伤害。",
+      "artifact": {
+        "master": {
+          "path": "perfected_strike/source.png",
+          "sha256": "484ddca12e6994a292d7b6237c0df7ed7daadc4d42968871a4541a791838ed69",
+          "bytes": 4356
+        },
+        "svg": {
+          "path": "perfected_strike/source.svg",
+          "sha256": "7d133e0f8b22bfefd39d2e8ef39ee7746d4fc6c86b24f8057377fedab13962ba",
+          "bytes": 263
+        },
+        "native": {
+          "path": "perfected_strike/native-art.json",
+          "sha256": "c30a7cab8f765239765f9ba05de8fcffe56b7e89fc247ca849ec88efac455159",
+          "bytes": 18577
+        },
+        "preview": {
+          "path": "perfected_strike/preview-native.png",
+          "sha256": "b36b9d202b5abd7c7f6c22606be0bbb617dd2629e6b290066f3e083846939205",
+          "bytes": 3214
+        }
+      },
+      "review": {
+        "reportSHA256": "2b931ffbed468aadd06b160bab6f846de81fe8a635dc4cfbc70ccad6e73bcf1f",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "sword_boomerang",
+      "name": "回旋连斩",
+      "ref": "Sword Boomerang",
+      "type": "attack",
+      "rarity": "common",
+      "cost": {
+        "images": 48,
+        "batches": 1,
+        "artControls": 49
+      },
+      "effect": "对随机敌人造成 3 点伤害，共 3 次。",
+      "upgrade": "对随机敌人造成 3 点伤害，共 4 次。",
+      "artifact": {
+        "master": {
+          "path": "sword_boomerang/source.png",
+          "sha256": "c08bd7128410dd42a5c9ee15cc9f183f791208ac240c958a1d7137f6f29df6be",
+          "bytes": 6170
+        },
+        "svg": {
+          "path": "sword_boomerang/source.svg",
+          "sha256": "bc6023a7ffbb999360ebcc92ec382a1588e0e2f72aed917e1e8b05423070512e",
+          "bytes": 471
+        },
+        "native": {
+          "path": "sword_boomerang/native-art.json",
+          "sha256": "5301759dc1072988df402bfa5bb842b27dc87164975f7873a8fa42791f5d2f00",
+          "bytes": 25922
+        },
+        "preview": {
+          "path": "sword_boomerang/preview-native.png",
+          "sha256": "39afec8312f4b684d8c3a04de7d2906aef883c81c08d633ec22a6d185d0efb77",
+          "bytes": 4048
+        }
+      },
+      "review": {
+        "reportSHA256": "2e6d886d46bdcfefc84d5cc257d74d6ab23b1d0beeffbf92f80bbd209f042461",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "spot_weakness",
+      "name": "洞察破绽",
+      "ref": "Spot Weakness",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 36,
+        "batches": 1,
+        "artControls": 37
+      },
+      "effect": "若敌人意图攻击，获得 3 层力量。",
+      "upgrade": "若敌人意图攻击，获得 4 层力量。",
+      "artifact": {
+        "master": {
+          "path": "spot_weakness/source.png",
+          "sha256": "ae216b665718d339792549b55959fecb8493d46c0599909ba3d40e45b783b971",
+          "bytes": 5256
+        },
+        "svg": {
+          "path": "spot_weakness/source.svg",
+          "sha256": "1df832279df1810f71d46c6c83471a8ec8f403acf3134a6b7d6a2280419880a4",
+          "bytes": 351
+        },
+        "native": {
+          "path": "spot_weakness/native-art.json",
+          "sha256": "57ede83b2f3446cc14962f43048aede41cb1232b90e4299cce0d1c8fd5000132",
+          "bytes": 19659
+        },
+        "preview": {
+          "path": "spot_weakness/preview-native.png",
+          "sha256": "0d64217044c4153ffe85cdcbd04561120c850f8fedc720a8f48cc6387b259058",
+          "bytes": 4074
+        }
+      },
+      "review": {
+        "reportSHA256": "2b931ffbed468aadd06b160bab6f846de81fe8a635dc4cfbc70ccad6e73bcf1f",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "inflame",
+      "name": "剑术精进",
+      "ref": "Inflame",
+      "type": "power",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 30,
+        "batches": 1,
+        "artControls": 31
+      },
+      "effect": "获得 2 层力量。",
+      "upgrade": "获得 3 层力量。",
+      "artifact": {
+        "master": {
+          "path": "inflame/source.png",
+          "sha256": "c3476207c0433484bc13e01bc45d2cc708571d54ca1e605b4768aec1efc25f33",
+          "bytes": 1818
+        },
+        "svg": null,
+        "native": {
+          "path": "inflame/native-art.json",
+          "sha256": "fef8de88c2fedff8ea2d78ad72f4bf461a4a1e43000c9bb165eee896e33987df",
+          "bytes": 9043
+        },
+        "preview": {
+          "path": "inflame/preview-native.png",
+          "sha256": "b75d389997550ae1a3b24eee084a1ace7dc4c459fac7a657cd732a630a58f797",
+          "bytes": 2231
+        }
+      },
+      "review": {
+        "reportSHA256": "dc72195694d6a5fb9afac163555dd222c8cbbef0b79fb9e1527d39dd927312cf",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "power_through",
+      "name": "强行固守",
+      "ref": "Power Through",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 36,
+        "batches": 1,
+        "artControls": 37
+      },
+      "effect": "将 2 张伤口加入手中，获得 15 点格挡。",
+      "upgrade": "将 2 张伤口加入手中，获得 20 点格挡。",
+      "artifact": {
+        "master": {
+          "path": "power_through/source.png",
+          "sha256": "cfae5d955212c1868d46b62aad050785395731034285ffedaadf9a1f2b6ef8ad",
+          "bytes": 4008
+        },
+        "svg": {
+          "path": "power_through/source.svg",
+          "sha256": "8909df5d129395edba3ce8645502562d9195b06d1e82babf67007472f827e80d",
+          "bytes": 425
+        },
+        "native": {
+          "path": "power_through/native-art.json",
+          "sha256": "4dfc7a234ec15ca65eb5910293dcdfe22bf4f6e907104606eda674663313ca02",
+          "bytes": 19274
+        },
+        "preview": {
+          "path": "power_through/preview-native.png",
+          "sha256": "799732aaf503ea11720c731c9cc835ca42a6424e3d3b9bb0bd04ffb03766fdc7",
+          "bytes": 3423
+        }
+      },
+      "review": {
+        "reportSHA256": "2e6d886d46bdcfefc84d5cc257d74d6ab23b1d0beeffbf92f80bbd209f042461",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "dual_wield",
+      "name": "再演剑势",
+      "ref": "Dual Wield",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 24,
+        "batches": 1,
+        "artControls": 25
+      },
+      "effect": "选一张攻击牌或能力牌，将其 1 张复制加入手中。",
+      "upgrade": "选一张攻击牌或能力牌，将其 2 张复制加入手中。",
+      "artifact": {
+        "master": {
+          "path": "dual_wield/source.png",
+          "sha256": "70cdcb0153e2e976e9ba2988bf97288c5e6662a0dd1eb0dc3a84caf4f5c29e98",
+          "bytes": 3968
+        },
+        "svg": {
+          "path": "dual_wield/source.svg",
+          "sha256": "a03ac485b0cd20ee08b32800c1cef3f568153186667952f4d1f1474d5fe63def",
+          "bytes": 309
+        },
+        "native": {
+          "path": "dual_wield/native-art.json",
+          "sha256": "566fdaaa54705634a42d360ea4864a296800a06061f2cbc2714e5c24583df251",
+          "bytes": 13244
+        },
+        "preview": {
+          "path": "dual_wield/preview-native.png",
+          "sha256": "33d2b110b771984f7bc689269476cdfdc2cd1758a2264683d8ae9ac711bdf12e",
+          "bytes": 3480
+        }
+      },
+      "review": {
+        "reportSHA256": "2b931ffbed468aadd06b160bab6f846de81fe8a635dc4cfbc70ccad6e73bcf1f",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "infernal_blade",
+      "name": "临阵试招",
+      "ref": "Infernal Blade",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 48,
+        "batches": 1,
+        "artControls": 49
+      },
+      "effect": "消耗。将一张随机攻击牌加入手中，本回合其费用为 0。",
+      "upgrade": "消耗。将一张随机攻击牌加入手中，本回合其费用为 0。",
+      "artifact": {
+        "master": {
+          "path": "infernal_blade/source.png",
+          "sha256": "46a30bb6f9d43b708d6c5fc1fb8464daa7aa37babf9b054fee5abb1266194b41",
+          "bytes": 4384
+        },
+        "svg": {
+          "path": "infernal_blade/source.svg",
+          "sha256": "77e0e69a7dbc44b1379347d1feac6bb14ba424bc2e7481faad820dd54967de5a",
+          "bytes": 360
+        },
+        "native": {
+          "path": "infernal_blade/native-art.json",
+          "sha256": "1158107603b5d244690bd84a2140d504a821e3c5bf873be814490c4c9ea10fc0",
+          "bytes": 25783
+        },
+        "preview": {
+          "path": "infernal_blade/preview-native.png",
+          "sha256": "ba86fe42d282f2f8ec13eb063640af6b1dffddddf4bcb5b6a2d45bc79a64ed42",
+          "bytes": 4350
+        }
+      },
+      "review": {
+        "reportSHA256": "2b931ffbed468aadd06b160bab6f846de81fe8a635dc4cfbc70ccad6e73bcf1f",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "reckless_charge",
+      "name": "疾步突进",
+      "ref": "Reckless Charge",
+      "type": "attack",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 36,
+        "batches": 1,
+        "artControls": 37
+      },
+      "effect": "造成 7 点伤害，将 1 张眩晕洗入抽牌堆。",
+      "upgrade": "造成 10 点伤害，将 1 张眩晕洗入抽牌堆。",
+      "artifact": {
+        "master": {
+          "path": "reckless_charge/source.png",
+          "sha256": "70463c78f7f1c5fa831c032c858ec801399281aa19f088c2e2f0a9f91da8481a",
+          "bytes": 4997
+        },
+        "svg": {
+          "path": "reckless_charge/source.svg",
+          "sha256": "2a9e241ae404a31156802c4bdb9b272339e53468318a1d977af65e753634e601",
+          "bytes": 336
+        },
+        "native": {
+          "path": "reckless_charge/native-art.json",
+          "sha256": "07e4a3afd4436f02360b9279f41f8f4c824de30e80f9cfe2d6bae9ace337ceb7",
+          "bytes": 19660
+        },
+        "preview": {
+          "path": "reckless_charge/preview-native.png",
+          "sha256": "e8349acad692348f07c5100d3371557b42e78646b0885b0ee08f0d592d1a09e9",
+          "bytes": 3721
+        }
+      },
+      "review": {
+        "reportSHA256": "ca39e002d9b208db6878406eb4514571c18a1cbf65bdfb1de13b601b0011d4e0",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "hemokinesis",
+      "name": "舍身进攻",
+      "ref": "Hemokinesis",
+      "type": "attack",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 40,
+        "batches": 1,
+        "artControls": 41
+      },
+      "effect": "失去 2 点生命，造成 15 点伤害。",
+      "upgrade": "失去 2 点生命，造成 20 点伤害。",
+      "artifact": {
+        "master": {
+          "path": "hemokinesis/source.png",
+          "sha256": "bc2a57ec65215c0d5935161eefc53583a7f4aae81d9a621e269a457b816fce44",
+          "bytes": 4738
+        },
+        "svg": {
+          "path": "hemokinesis/source.svg",
+          "sha256": "966d2a24ba17ed74f93cd789c5ca3a668ebeff7a701444a54e144f97c5b80412",
+          "bytes": 347
+        },
+        "native": {
+          "path": "hemokinesis/native-art.json",
+          "sha256": "109eb1a9ca5986ef17f9eff544c69e1f1d8771372abf940d6e932eb09b985169",
+          "bytes": 21670
+        },
+        "preview": {
+          "path": "hemokinesis/preview-native.png",
+          "sha256": "4eeab1917b86868712e9164d143b1eeca850ccca432acf5ef64cb45e2d19e112",
+          "bytes": 2964
+        }
+      },
+      "review": {
+        "reportSHA256": "ca39e002d9b208db6878406eb4514571c18a1cbf65bdfb1de13b601b0011d4e0",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "intimidate",
+      "name": "威慑",
+      "ref": "Intimidate",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 32,
+        "batches": 1,
+        "artControls": 33
+      },
+      "effect": "消耗。对所有敌人施加 1 层虚弱。",
+      "upgrade": "消耗。对所有敌人施加 2 层虚弱。",
+      "artifact": {
+        "master": {
+          "path": "intimidate/source.png",
+          "sha256": "2b90b1c04bb500cbdaeb13fe688bc56195534203a4c373482541abf9e66aa5c3",
+          "bytes": 4332
+        },
+        "svg": {
+          "path": "intimidate/source.svg",
+          "sha256": "9c754235b9bbe95bd42d520bf4708fc548f48d1531a89b96e24322ab4747d6b8",
+          "bytes": 393
+        },
+        "native": {
+          "path": "intimidate/native-art.json",
+          "sha256": "494de10f0499c18520c04e2854366267c19b17e0eba164b1fa86d44cc43abddb",
+          "bytes": 17192
+        },
+        "preview": {
+          "path": "intimidate/preview-native.png",
+          "sha256": "16ad9ef65e281c39f215e5deede224ddeced2ccb8238f46778aae6974ce6e093",
+          "bytes": 3929
+        }
+      },
+      "review": {
+        "reportSHA256": "6338712bef68020bf5d886275cb267d8bcd263ab3ee0757960964d59f4f92038",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "blood_for_blood",
+      "name": "负伤反击",
+      "ref": "Blood for Blood",
+      "type": "attack",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 32,
+        "batches": 1,
+        "artControls": 33
+      },
+      "effect": "本场战斗每失去 1 次生命，本牌费用 -1。造成 18 点伤害。",
+      "upgrade": "本场战斗每失去 1 次生命，本牌费用 -1。造成 22 点伤害。",
+      "artifact": {
+        "master": {
+          "path": "blood_for_blood/source.png",
+          "sha256": "49eadc2a9f32998043ebd054be0ea93218b45ea1438a6ad7d3b072c46b1a5f5a",
+          "bytes": 4704
+        },
+        "svg": {
+          "path": "blood_for_blood/source.svg",
+          "sha256": "129eb65b249545415d6478e2beed8b62ff6f5095e9507e42cc252dc0ed35f266",
+          "bytes": 366
+        },
+        "native": {
+          "path": "blood_for_blood/native-art.json",
+          "sha256": "6ced41bec0f8ff6ade9568d13fb674b82f851496eb1a33ff8c53b14542919249",
+          "bytes": 17482
+        },
+        "preview": {
+          "path": "blood_for_blood/preview-native.png",
+          "sha256": "e926be6f7bf1866180cdc16f9cbcb3d74bec780c29913c921521bd3f93d128f5",
+          "bytes": 4149
+        }
+      },
+      "review": {
+        "reportSHA256": "6338712bef68020bf5d886275cb267d8bcd263ab3ee0757960964d59f4f92038",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "flame_barrier",
+      "name": "反击架势",
+      "ref": "Flame Barrier",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 46,
+        "batches": 1,
+        "artControls": 47
+      },
+      "effect": "获得 12 点格挡。本回合受到攻击时反弹 4 点伤害。",
+      "upgrade": "获得 16 点格挡。本回合受到攻击时反弹 6 点伤害。",
+      "artifact": {
+        "master": {
+          "path": "flame_barrier/source.png",
+          "sha256": "37a7d7475942fe14f7c3b55516f92ef1f6b1054ea8664ae2eac4d38f82172c80",
+          "bytes": 5750
+        },
+        "svg": {
+          "path": "flame_barrier/source.svg",
+          "sha256": "74e4809e1dd10c31e3712b05d5bfe4f06838e845b83b3bedd2537ba3d58618d5",
+          "bytes": 364
+        },
+        "native": {
+          "path": "flame_barrier/native-art.json",
+          "sha256": "e335b79434e67e5e7acb4db3b7ebc6f947ecc56951679117bd6bb99b9855af41",
+          "bytes": 24831
+        },
+        "preview": {
+          "path": "flame_barrier/preview-native.png",
+          "sha256": "a1d146c5f614df8689cacad4f84fe64e82a8cc153588f04c709ab3e4d689349b",
+          "bytes": 3984
+        }
+      },
+      "review": {
+        "reportSHA256": "ca39e002d9b208db6878406eb4514571c18a1cbf65bdfb1de13b601b0011d4e0",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "pummel",
+      "name": "疾风连斩",
+      "ref": "Pummel",
+      "type": "attack",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 32,
+        "batches": 1,
+        "artControls": 33
+      },
+      "effect": "消耗。造成 2 点伤害，共 4 次。",
+      "upgrade": "消耗。造成 2 点伤害，共 5 次。",
+      "artifact": {
+        "master": {
+          "path": "pummel/source.png",
+          "sha256": "b254866cf72615b5fd2adcec043208de8f329e9c70adf255521f86d55dccf229",
+          "bytes": 3162
+        },
+        "svg": {
+          "path": "pummel/source.svg",
+          "sha256": "855bf65f2549cdfb50837839cc56e0cda0a3b914ceacf86cafeb4f86549e3cb4",
+          "bytes": 293
+        },
+        "native": {
+          "path": "pummel/native-art.json",
+          "sha256": "ad06e2e985d53e6700b5c8bd8880565a69d916f35562c18c050e39b210e52f64",
+          "bytes": 17519
+        },
+        "preview": {
+          "path": "pummel/preview-native.png",
+          "sha256": "378bc7d9405a3421fc66547a30933632db697fce4c93027b7cd4888b24002c32",
+          "bytes": 2097
+        }
+      },
+      "review": {
+        "reportSHA256": "ca39e002d9b208db6878406eb4514571c18a1cbf65bdfb1de13b601b0011d4e0",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "burning_pact",
+      "name": "弃旧筹新",
+      "ref": "Burning Pact",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 32,
+        "batches": 1,
+        "artControls": 33
+      },
+      "effect": "消耗 1 张牌，抽 2 张牌。",
+      "upgrade": "消耗 1 张牌，抽 3 张牌。",
+      "artifact": {
+        "master": {
+          "path": "burning_pact/source.png",
+          "sha256": "3115fd9d029b09a99e1b8099663b29b59fbdf76eb087967804aeedd142fffbc2",
+          "bytes": 4131
+        },
+        "svg": {
+          "path": "burning_pact/source.svg",
+          "sha256": "8796b6f79d4e2169494c22f5bf1e62d19b5567a791d31d8045ee25ce2ef6d8b3",
+          "bytes": 331
+        },
+        "native": {
+          "path": "burning_pact/native-art.json",
+          "sha256": "c9e03695e703708827847547811b801d476ea6bf992e142ccf7664d022c3c812",
+          "bytes": 17514
+        },
+        "preview": {
+          "path": "burning_pact/preview-native.png",
+          "sha256": "be88231a8062f2cdfe9af6a23040318a919c4e4725e372643c0b8d155487c9b7",
+          "bytes": 3613
+        }
+      },
+      "review": {
+        "reportSHA256": "ca39e002d9b208db6878406eb4514571c18a1cbf65bdfb1de13b601b0011d4e0",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "metallicize",
+      "name": "持续防守",
+      "ref": "Metallicize",
+      "type": "power",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 44,
+        "batches": 1,
+        "artControls": 45
+      },
+      "effect": "每回合结束时获得 3 点格挡。",
+      "upgrade": "每回合结束时获得 4 点格挡。",
+      "artifact": {
+        "master": {
+          "path": "metallicize/source.png",
+          "sha256": "73a95e8a3424879540bf7bce90e20130696f8432c71ff9d8e011f9aa1e09b5bc",
+          "bytes": 5733
+        },
+        "svg": {
+          "path": "metallicize/source.svg",
+          "sha256": "9bd14559e55782640b3dd329ea2decb3ca6250fa9a404bb9fa9f9c042d2aba15",
+          "bytes": 289
+        },
+        "native": {
+          "path": "metallicize/native-art.json",
+          "sha256": "8f66008ac94f137bca18b25b225368512032e6c1e2e5a02c7444859535691798",
+          "bytes": 23925
+        },
+        "preview": {
+          "path": "metallicize/preview-native.png",
+          "sha256": "37538a1636664cb193b788402ccda4cd286f5314a99a6843ec2409f5108b9f7e",
+          "bytes": 3418
+        }
+      },
+      "review": {
+        "reportSHA256": "22e7d70daa02c7e712aac7aaac80f71de60429a4c4bd11e44a5aab3712cd3bab",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "shockwave",
+      "name": "震慑敌阵",
+      "ref": "Shockwave",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 44,
+        "batches": 1,
+        "artControls": 45
+      },
+      "effect": "消耗。对所有敌人施加 3 层虚弱与 3 层易伤。",
+      "upgrade": "消耗。对所有敌人施加 5 层虚弱与 5 层易伤。",
+      "artifact": {
+        "master": {
+          "path": "shockwave/source.png",
+          "sha256": "069c31346d6125e27388452a3f893608fe4ef6b196c5c09460ea8f8a4abda5fa",
+          "bytes": 6130
+        },
+        "svg": {
+          "path": "shockwave/source.svg",
+          "sha256": "565585cbab468e048440dc41748499c0c71cbcb9045792e00fc11794346f8e82",
+          "bytes": 346
+        },
+        "native": {
+          "path": "shockwave/native-art.json",
+          "sha256": "d7f49209dd1defb2bc64c1167a9fb9c689ae32da90a8a2ce005307f14c6d00dc",
+          "bytes": 23947
+        },
+        "preview": {
+          "path": "shockwave/preview-native.png",
+          "sha256": "7474dfbca4742dc01c3e48794c7c3362bacb8e11d7c0ab072f75c21d9e94b124",
+          "bytes": 4024
+        }
+      },
+      "review": {
+        "reportSHA256": "74be7c5d6f14d63584e605713adcf91cd1d7a6153a485705ea39f6fe332445ea",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "rampage",
+      "name": "越战越勇",
+      "ref": "Rampage",
+      "type": "attack",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 36,
+        "batches": 1,
+        "artControls": 37
+      },
+      "effect": "造成 8 点伤害，本场战斗中本牌伤害 +5。",
+      "upgrade": "造成 8 点伤害，本场战斗中本牌伤害 +8。",
+      "artifact": {
+        "master": {
+          "path": "rampage/source.png",
+          "sha256": "7998a1d7d460fb85903cce357d5510ed7c9cdae26350833e2ca2c2bb17f0669d",
+          "bytes": 5864
+        },
+        "svg": {
+          "path": "rampage/source.svg",
+          "sha256": "66816125d881b86258240c77c9f10ca41d6644749d4154220dbe246e90b7d7ab",
+          "bytes": 363
+        },
+        "native": {
+          "path": "rampage/native-art.json",
+          "sha256": "a17c7bb8145f0d78c7ab1de278eed12ef526d59ea13fc9036f05c7838d61af25",
+          "bytes": 19604
+        },
+        "preview": {
+          "path": "rampage/preview-native.png",
+          "sha256": "34f4dca8428b8467455d5d7c1cb58aee413b5807bef3820004dbeb5449a06ddd",
+          "bytes": 3973
+        }
+      },
+      "review": {
+        "reportSHA256": "ca39e002d9b208db6878406eb4514571c18a1cbf65bdfb1de13b601b0011d4e0",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "sever_soul",
+      "name": "弃守强攻",
+      "ref": "Sever Soul",
+      "type": "attack",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 42,
+        "batches": 1,
+        "artControls": 43
+      },
+      "effect": "消耗手中所有非攻击牌，造成 16 点伤害。",
+      "upgrade": "消耗手中所有非攻击牌，造成 22 点伤害。",
+      "artifact": {
+        "master": {
+          "path": "sever_soul/source.png",
+          "sha256": "808eb8b8060568a2184fd848e7ad2a116e875bfc50e68c3d0c2ca70f99e029e0",
+          "bytes": 5341
+        },
+        "svg": {
+          "path": "sever_soul/source.svg",
+          "sha256": "cca1f6b38b7ed31106e39e44cb14c1ae4245decfcc497dfd074f8a19ae7df279",
+          "bytes": 376
+        },
+        "native": {
+          "path": "sever_soul/native-art.json",
+          "sha256": "468d8316c4be63407baea8915abe494c7696aa0049b2780a1f2b013e355a70d2",
+          "bytes": 22759
+        },
+        "preview": {
+          "path": "sever_soul/preview-native.png",
+          "sha256": "ee555e48d9c81909d4925439adf6dee83826962b4b3538cc7c28d6b71fe953ad",
+          "bytes": 4029
+        }
+      },
+      "review": {
+        "reportSHA256": "74be7c5d6f14d63584e605713adcf91cd1d7a6153a485705ea39f6fe332445ea",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "whirlwind",
+      "name": "岩潮叠嶂",
+      "ref": "Whirlwind",
+      "type": "attack",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 46,
+        "batches": 1,
+        "artControls": 47
+      },
+      "effect": "消耗所有剩余能量，每点对所有敌人造成 5 点伤害。",
+      "upgrade": "消耗所有剩余能量，每点对所有敌人造成 8 点伤害。",
+      "artifact": {
+        "master": {
+          "path": "whirlwind/source.png",
+          "sha256": "2156a2cb10567d63bc0c21f6d3e3ce200c37abaeacee2ac8b68ed677cf854791",
+          "bytes": 7661
+        },
+        "svg": {
+          "path": "whirlwind/source.svg",
+          "sha256": "12c1d0abe51316cebb8b37b9fc042c4d420bc82515baf3f1c2406883d14bbcdf",
+          "bytes": 414
+        },
+        "native": {
+          "path": "whirlwind/native-art.json",
+          "sha256": "4f6866615080be7597351adc2a591d8c47b47f163b44a4cadaab01bd427a593a",
+          "bytes": 25008
+        },
+        "preview": {
+          "path": "whirlwind/preview-native.png",
+          "sha256": "658df5c0694bbabde92ad912f6796a21b39ced6dc005380b1e52c86701897e3a",
+          "bytes": 5105
+        }
+      },
+      "review": {
+        "reportSHA256": "3723a851f4eda6b6b94be62fe7d9c9143842445ef361b4a6435ead7a19d66a41",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "combust",
+      "name": "强攻压阵",
+      "ref": "Combust",
+      "type": "power",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 36,
+        "batches": 1,
+        "artControls": 37
+      },
+      "effect": "回合结束时失去 1 点生命，并对所有敌人造成 5 点伤害。",
+      "upgrade": "回合结束时失去 1 点生命，并对所有敌人造成 7 点伤害。",
+      "artifact": {
+        "master": {
+          "path": "combust/source.png",
+          "sha256": "c750ddac903781e5988610b2bacc5265b73394090910e4080885d49b0a7f36ec",
+          "bytes": 5125
+        },
+        "svg": {
+          "path": "combust/source.svg",
+          "sha256": "62003e69d1e68e013f89697a48b4a64b02773f54318a4ddd7cbb24c435ab0f52",
+          "bytes": 345
+        },
+        "native": {
+          "path": "combust/native-art.json",
+          "sha256": "9500b46529ad167bde747953ad4d385ba8258f8fb0e8fe46beb9588968b55ce0",
+          "bytes": 19669
+        },
+        "preview": {
+          "path": "combust/preview-native.png",
+          "sha256": "1d9aaf3a9a0940400d131d126e496d9bd24d1370ec2dffd2b538c7088ddc9936",
+          "bytes": 3018
+        }
+      },
+      "review": {
+        "reportSHA256": "a2b0fe0f4915cfc29fa487cc35c72ed59a78b517b459a8a79a682782b5a02a4c",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "dark_embrace",
+      "name": "临机应变",
+      "ref": "Dark Embrace",
+      "type": "power",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 48,
+        "batches": 1,
+        "artControls": 49
+      },
+      "effect": "每当一张牌被消耗，抽 1 张牌。",
+      "upgrade": "消耗 1 能量。每当一张牌被消耗，抽 1 张牌。",
+      "artifact": {
+        "master": {
+          "path": "dark_embrace/source.png",
+          "sha256": "570367cd048fd0cd82e17ae14977cc4dff4db57d9740c8cb578772b64e3c2a04",
+          "bytes": 4358
+        },
+        "svg": {
+          "path": "dark_embrace/source.svg",
+          "sha256": "075d439a57001d8805cea7db5a2c8a5a8d991644940087a0618014f355dd6840",
+          "bytes": 527
+        },
+        "native": {
+          "path": "dark_embrace/native-art.json",
+          "sha256": "1ee9064b80a4000f87e4a9cef879203657d097253f2404836f045a9523dd798d",
+          "bytes": 25771
+        },
+        "preview": {
+          "path": "dark_embrace/preview-native.png",
+          "sha256": "c85d0a9b63fab46777038dba73f2473fe6121c140e2c24a6dd8424768f2f91fc",
+          "bytes": 4188
+        }
+      },
+      "review": {
+        "reportSHA256": "f99261c76518a351a00c72a7e63b3978dcd016fec8958602a12c5f2d57359e39",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "seeing_red",
+      "name": "重整旗鼓",
+      "ref": "Seeing Red",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 32,
+        "batches": 1,
+        "artControls": 33
+      },
+      "effect": "消耗。获得 2 点能量。",
+      "upgrade": "消耗。消耗 0 能量，获得 2 点能量。",
+      "artifact": {
+        "master": {
+          "path": "seeing_red/source.png",
+          "sha256": "e8de87b51f5bc124f12c6cce6cf0da66b7e6137507c65dce4fc285861fcb71b7",
+          "bytes": 4848
+        },
+        "svg": {
+          "path": "seeing_red/source.svg",
+          "sha256": "683ea9be784db86570428c31a5dc7a260ad9737ab07955ec3731107098e7088f",
+          "bytes": 302
+        },
+        "native": {
+          "path": "seeing_red/native-art.json",
+          "sha256": "2b58dcd2b2015792b2f6a7076bf8b87d0e79991bdea37a6ffd79af4a2270e39e",
+          "bytes": 17486
+        },
+        "preview": {
+          "path": "seeing_red/preview-native.png",
+          "sha256": "c16ba07629d7295a7f4edb21f7267b2fc328467b1b22d7d127b9c17e1e717d84",
+          "bytes": 3851
+        }
+      },
+      "review": {
+        "reportSHA256": "a2b0fe0f4915cfc29fa487cc35c72ed59a78b517b459a8a79a682782b5a02a4c",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "disarm",
+      "name": "压制攻势",
+      "ref": "Disarm",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 56,
+        "batches": 2,
+        "artControls": 58
+      },
+      "effect": "消耗。目标力量变化 -2 层。",
+      "upgrade": "消耗。目标力量变化 -3 层。",
+      "artifact": {
+        "master": {
+          "path": "disarm/source.png",
+          "sha256": "ea4db2ef3cbef569e8b25a5035b56919545370ddda32fe41e292e7c922d7a709",
+          "bytes": 5357
+        },
+        "svg": {
+          "path": "disarm/source.svg",
+          "sha256": "b9c9efaff50d124874604e449c96675799ed3c1f041740ad9584218b47673b32",
+          "bytes": 450
+        },
+        "native": {
+          "path": "disarm/native-art.json",
+          "sha256": "bb7fae490adb6a0ec9e7fab707fea9aacff491e007260af7f84a95337358f1eb",
+          "bytes": 30257
+        },
+        "preview": {
+          "path": "disarm/preview-native.png",
+          "sha256": "e8ff25c2e4c3e8fc4d3db46f757e56c8b4356a6fbb4c9757e8731d52ab3afc10",
+          "bytes": 4962
+        }
+      },
+      "review": {
+        "reportSHA256": "2af617b64241a355b4f64832a9cb17803bdb830cd5767eec106a130bc9f8edff",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "feel_no_pain",
+      "name": "百折不挠",
+      "ref": "Feel No Pain",
+      "type": "power",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 44,
+        "batches": 1,
+        "artControls": 45
+      },
+      "effect": "每当一张牌被消耗，获得 3 点格挡。",
+      "upgrade": "每当一张牌被消耗，获得 4 点格挡。",
+      "artifact": {
+        "master": {
+          "path": "feel_no_pain/source.png",
+          "sha256": "17f7a8ff0cd4a43919f33b514f8f8753c7212baf35e46825a47529338e59d4af",
+          "bytes": 5461
+        },
+        "svg": {
+          "path": "feel_no_pain/source.svg",
+          "sha256": "ab8a466228dc6d13af70c4376d39e0c93aa2c6f64f5662a00e4f8399db465d0f",
+          "bytes": 309
+        },
+        "native": {
+          "path": "feel_no_pain/native-art.json",
+          "sha256": "825fe640c1be2c864e8ab3995b3fc5b9240dfe3eb1ce0b813bce365d283792d3",
+          "bytes": 23835
+        },
+        "preview": {
+          "path": "feel_no_pain/preview-native.png",
+          "sha256": "23312e171b2206acc13a2b275814f22142a3eb5d0b4ce3f9e856469b1793b20b",
+          "bytes": 3910
+        }
+      },
+      "review": {
+        "reportSHA256": "74be7c5d6f14d63584e605713adcf91cd1d7a6153a485705ea39f6fe332445ea",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "rage",
+      "name": "攻守相济",
+      "ref": "Rage",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 44,
+        "batches": 1,
+        "artControls": 45
+      },
+      "effect": "本回合每打出一张攻击牌，获得 3 点格挡。",
+      "upgrade": "本回合每打出一张攻击牌，获得 5 点格挡。",
+      "artifact": {
+        "master": {
+          "path": "rage/source.png",
+          "sha256": "e0e2343ac004f94a1de33d9ecf3079f537e013088eb52b630d2f20b0d7cf336b",
+          "bytes": 6510
+        },
+        "svg": {
+          "path": "rage/source.svg",
+          "sha256": "a1fa3c0e6414c0e200e71efa34ed1f71570d163c1a3c0e5464eda663f494b716",
+          "bytes": 393
+        },
+        "native": {
+          "path": "rage/native-art.json",
+          "sha256": "62ba91a4f3eeff27e7a6dbca81279dc05f231b077615986925408225edab67c9",
+          "bytes": 23965
+        },
+        "preview": {
+          "path": "rage/preview-native.png",
+          "sha256": "71374b55e874d42c2491af856867b80af9f488b6de2095caf33123da8217c0ce",
+          "bytes": 3622
+        }
+      },
+      "review": {
+        "reportSHA256": "25b18c303c43fc1c0c1d7b843d2a0a00ad119db4459dd9e6ea365c45fe716bf8",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "entrench",
+      "name": "加固防线",
+      "ref": "Entrench",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 36,
+        "batches": 1,
+        "artControls": 37
+      },
+      "effect": "当前格挡翻倍。",
+      "upgrade": "消耗 1 能量，当前格挡翻倍。",
+      "artifact": {
+        "master": {
+          "path": "entrench/source.png",
+          "sha256": "a196cac12291ebcc528f1ff8dfd0d215d5a29e3b3d01aae04412e8eb2ed5cd96",
+          "bytes": 4119
+        },
+        "svg": {
+          "path": "entrench/source.svg",
+          "sha256": "0fd0f97297799c0c839045e6d826562e1a3893d1d8919fc44ab3debb373a6fc7",
+          "bytes": 338
+        },
+        "native": {
+          "path": "entrench/native-art.json",
+          "sha256": "b06199dad1d5487e356f4c63d143376ad378be3cac8f81fe11ad1c7dafe5ad7d",
+          "bytes": 19656
+        },
+        "preview": {
+          "path": "entrench/preview-native.png",
+          "sha256": "7387b5afe9ea007f96b24e67a44434bb857869d12951cee5baea7c94e89f84cf",
+          "bytes": 3538
+        }
+      },
+      "review": {
+        "reportSHA256": "a2b0fe0f4915cfc29fa487cc35c72ed59a78b517b459a8a79a682782b5a02a4c",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "sentinel",
+      "name": "后援守势",
+      "ref": "Sentinel",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 36,
+        "batches": 1,
+        "artControls": 37
+      },
+      "effect": "获得 5 点格挡。若本牌被消耗，获得 2 点能量。",
+      "upgrade": "获得 8 点格挡。若本牌被消耗，获得 3 点能量。",
+      "artifact": {
+        "master": {
+          "path": "sentinel/source.png",
+          "sha256": "28dffb24e49faeeb390b243cfd527d3956167dde19e562d73f967470b7900d04",
+          "bytes": 4442
+        },
+        "svg": {
+          "path": "sentinel/source.svg",
+          "sha256": "c373902add65d79e1049feac7d3d3ef25419ed24a20b3e5eaa3d6fae4163622e",
+          "bytes": 345
+        },
+        "native": {
+          "path": "sentinel/native-art.json",
+          "sha256": "eedd79a16a34b0181485b0979ab70e8b3857ef89c9abd4adf71f79048cd56bf6",
+          "bytes": 19661
+        },
+        "preview": {
+          "path": "sentinel/preview-native.png",
+          "sha256": "cf8f1856b79e0c6fa65651cb602fe0355e45c46f39575170c3fc7a1fbc7a55a2",
+          "bytes": 3861
+        }
+      },
+      "review": {
+        "reportSHA256": "25b18c303c43fc1c0c1d7b843d2a0a00ad119db4459dd9e6ea365c45fe716bf8",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "battle_trance",
+      "name": "集中精神",
+      "ref": "Battle Trance",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 32,
+        "batches": 1,
+        "artControls": 33
+      },
+      "effect": "抽 3 张牌，本回合无法再抽牌。",
+      "upgrade": "抽 4 张牌，本回合无法再抽牌。",
+      "artifact": {
+        "master": {
+          "path": "battle_trance/source.png",
+          "sha256": "db36d752dbd7ffd3777e48ba84f0e80c3294b1e1eca2cc08975693c3a800994d",
+          "bytes": 927332
+        },
+        "svg": null,
+        "native": {
+          "path": "battle_trance/native-art.json",
+          "sha256": "b308977f1743f97a2ec5f52ab02c32556ae4afd7770f5b6234ffdddb6c01f464",
+          "bytes": 9947
+        },
+        "preview": {
+          "path": "battle_trance/preview-native.png",
+          "sha256": "0abb6bc9df0cc9ce858e3b28ba251f85f9978e7ca1e6cd1f7a30f8cc3f39fe25",
+          "bytes": 4147
+        }
+      },
+      "review": {
+        "reportSHA256": "22e7d70daa02c7e712aac7aaac80f71de60429a4c4bd11e44a5aab3712cd3bab",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "searing_blow",
+      "name": "千锤一剑",
+      "ref": "Searing Blow",
+      "type": "attack",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 48,
+        "batches": 1,
+        "artControls": 49
+      },
+      "effect": "造成 12 点伤害。可被升级任意次数。",
+      "upgrade": "造成 16 点伤害。可被升级任意次数。",
+      "artifact": {
+        "master": {
+          "path": "searing_blow/source.png",
+          "sha256": "3708b82bcb0632bbc5b732288894b22d26f12bde010c786b47a860c91d3271cc",
+          "bytes": 5485
+        },
+        "svg": {
+          "path": "searing_blow/source.svg",
+          "sha256": "730270d36d757a433cd0b4b934b87dcda8e35da4cdf7f62ac2126f6dd4e6eb69",
+          "bytes": 373
+        },
+        "native": {
+          "path": "searing_blow/native-art.json",
+          "sha256": "8bc7566333245179ab37c4bc849c9c1736f9234b76d27da3156edbcf9418c56f",
+          "bytes": 26046
+        },
+        "preview": {
+          "path": "searing_blow/preview-native.png",
+          "sha256": "a2f9f757680c165b49c0b5eeef69666a9946369607ca903c550f899c8a22ed4a",
+          "bytes": 4316
+        }
+      },
+      "review": {
+        "reportSHA256": "25b18c303c43fc1c0c1d7b843d2a0a00ad119db4459dd9e6ea365c45fe716bf8",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "second_wind",
+      "name": "弃繁守拙",
+      "ref": "Second Wind",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 36,
+        "batches": 1,
+        "artControls": 37
+      },
+      "effect": "消耗手中所有非攻击牌，每张获得 5 点格挡。",
+      "upgrade": "消耗手中所有非攻击牌，每张获得 7 点格挡。",
+      "artifact": {
+        "master": {
+          "path": "second_wind/source.png",
+          "sha256": "610e6fd88a451ba13ea3586e3b3fc173450efd0f78c79210cdb0b7c132c3380c",
+          "bytes": 5021
+        },
+        "svg": {
+          "path": "second_wind/source.svg",
+          "sha256": "50dc11803ac63895a70788c9cde67a2564fae5b20f34c5656933fe6c786c5563",
+          "bytes": 330
+        },
+        "native": {
+          "path": "second_wind/native-art.json",
+          "sha256": "bc070d185449519d79974ca1dd20af90a13954d0b05f91acd98dbe2fa2fabfb7",
+          "bytes": 19657
+        },
+        "preview": {
+          "path": "second_wind/preview-native.png",
+          "sha256": "984de5cfde61bb3590b0fc8809d2bd423952aed2e1b1d2746a1b521434291d58",
+          "bytes": 4190
+        }
+      },
+      "review": {
+        "reportSHA256": "25b18c303c43fc1c0c1d7b843d2a0a00ad119db4459dd9e6ea365c45fe716bf8",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "rupture",
+      "name": "愈挫愈勇",
+      "ref": "Rupture",
+      "type": "power",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 26,
+        "batches": 1,
+        "artControls": 27
+      },
+      "effect": "每当你因卡牌失去生命，获得 1 层力量。",
+      "upgrade": "每当你因卡牌失去生命，获得 2 层力量。",
+      "artifact": {
+        "master": {
+          "path": "rupture/source.png",
+          "sha256": "f35402545f14e8860e4a1918d378e8bf28a81c45c580b2edb1cb831188dd71db",
+          "bytes": 4384
+        },
+        "svg": {
+          "path": "rupture/source.svg",
+          "sha256": "668c8d26a7c5f145183048fc1e8133c23c3787a52d7e2719ad82651487cd6915",
+          "bytes": 335
+        },
+        "native": {
+          "path": "rupture/native-art.json",
+          "sha256": "a6277ed1cfb504e6ebf628a7ef4c4450e09876c528530dce5620789b21edb67e",
+          "bytes": 14181
+        },
+        "preview": {
+          "path": "rupture/preview-native.png",
+          "sha256": "4eaffcf79766a06b3c653b5ec4cf0a0f5050565e010317c18c2e81d541487bdb",
+          "bytes": 3740
+        }
+      },
+      "review": {
+        "reportSHA256": "d7e6c55454e8386493f06cffcadbc7c50b6bd350de9b061def96881351762244",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "bloodletting",
+      "name": "透支",
+      "ref": "Bloodletting",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 46,
+        "batches": 1,
+        "artControls": 47
+      },
+      "effect": "失去 3 点生命，获得 2 点能量。",
+      "upgrade": "失去 3 点生命，获得 3 点能量。",
+      "artifact": {
+        "master": {
+          "path": "bloodletting/source.png",
+          "sha256": "777a7a3e5f8fec1da0330adc7bdfb99b7b6f51d954b1aa98411f28ecc66f55f6",
+          "bytes": 4174
+        },
+        "svg": {
+          "path": "bloodletting/source.svg",
+          "sha256": "d7ff399e6ac2ebf716a917563803ffcfe86209bdb771ae8aa40cec3103c6a5c0",
+          "bytes": 394
+        },
+        "native": {
+          "path": "bloodletting/native-art.json",
+          "sha256": "d0ecc9a1383bdc058612736b15e65e1d44d578b075df260f749056afb11b7b7f",
+          "bytes": 24800
+        },
+        "preview": {
+          "path": "bloodletting/preview-native.png",
+          "sha256": "f03f1aed083cecdcd44f027fc57e79247dfb308888a710a541526e0511b1814c",
+          "bytes": 3223
+        }
+      },
+      "review": {
+        "reportSHA256": "cd82ef9a779da6557f5b96223692aa28ea738468b8109bff15d7aa3ee29843d3",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "carnage",
+      "name": "抓住战机",
+      "ref": "Carnage",
+      "type": "attack",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 32,
+        "batches": 1,
+        "artControls": 33
+      },
+      "effect": "虚无。造成 20 点伤害。",
+      "upgrade": "虚无。造成 28 点伤害。",
+      "artifact": {
+        "master": {
+          "path": "carnage/source.png",
+          "sha256": "eb62c0af13ac9d9c85a382ac8922e27c1abc39efd32578be913270146b15e0b5",
+          "bytes": 3002
+        },
+        "svg": {
+          "path": "carnage/source.svg",
+          "sha256": "960d4487e8c5e1ad3ad8d9a78ad0c8709f390deb2b4d0e1aa8e84cc186713ccc",
+          "bytes": 401
+        },
+        "native": {
+          "path": "carnage/native-art.json",
+          "sha256": "f940dd16db68af696387b4206416ee154bb338fbf2d7d37d13d06c5accd2f27a",
+          "bytes": 17353
+        },
+        "preview": {
+          "path": "carnage/preview-native.png",
+          "sha256": "273a912a24454c74483915de9f5752a8e02efcbd34bf07158776b5e27e5f9825",
+          "bytes": 3428
+        }
+      },
+      "review": {
+        "reportSHA256": "13a0cad5d38a548348d7f2ecd84636090557b8eb03eaacae4a5549334cf7f37a",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "dropkick",
+      "name": "乘隙追击",
+      "ref": "Dropkick",
+      "type": "attack",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 28,
+        "batches": 1,
+        "artControls": 29
+      },
+      "effect": "造成 5 点伤害。若目标处于易伤，获得 1 点能量并抽 1 张牌。",
+      "upgrade": "造成 8 点伤害。若目标处于易伤，获得 1 点能量并抽 1 张牌。",
+      "artifact": {
+        "master": {
+          "path": "dropkick/source.png",
+          "sha256": "fd25bc7705be83d24fb463d73ac162e22c7a59d49f45f8f7de063975f937df2f",
+          "bytes": 2069
+        },
+        "svg": {
+          "path": "dropkick/source.svg",
+          "sha256": "239b806c93c9c5303b2d3cf32b236d6ebb9f34909672aaa381490876beae7d1b",
+          "bytes": 439
+        },
+        "native": {
+          "path": "dropkick/native-art.json",
+          "sha256": "05e2b7a4954a3a799a7a021eaa9bb73546585529c3f458027a8715ba383c0cf4",
+          "bytes": 14698
+        },
+        "preview": {
+          "path": "dropkick/preview-native.png",
+          "sha256": "066f3fa1336b00de473377bf3fb3c0bb9e06dc259e3e324da594a6e9a13cb486",
+          "bytes": 2192
+        }
+      },
+      "review": {
+        "reportSHA256": "d7e6c55454e8386493f06cffcadbc7c50b6bd350de9b061def96881351762244",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "fire_breathing",
+      "name": "逆势反攻",
+      "ref": "Fire Breathing",
+      "type": "power",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 26,
+        "batches": 1,
+        "artControls": 27
+      },
+      "effect": "每当你抽到状态牌或诅咒牌，对所有敌人造成 6 点伤害。",
+      "upgrade": "每当你抽到状态牌或诅咒牌，对所有敌人造成 10 点伤害。",
+      "artifact": {
+        "master": {
+          "path": "fire_breathing/source.png",
+          "sha256": "ef8c30150cd466af8ab93ca8be2ab6e77d2f87d780021d997ae46ed2f7af68f7",
+          "bytes": 4038
+        },
+        "svg": {
+          "path": "fire_breathing/source.svg",
+          "sha256": "1c01d7c79effe3bba6fbf3ffee494513675a40b02a61297ac3e64e7acccde615",
+          "bytes": 333
+        },
+        "native": {
+          "path": "fire_breathing/native-art.json",
+          "sha256": "8600610aeb9900045b10542dd3e01437f5c71ffd61cb3dfa790bfcda9f0f482f",
+          "bytes": 13864
+        },
+        "preview": {
+          "path": "fire_breathing/preview-native.png",
+          "sha256": "26f2dd0dfca9987d425612af5a3ee85241935cb48de3795c0a838ba4883c0267",
+          "bytes": 3509
+        }
+      },
+      "review": {
+        "reportSHA256": "d7e6c55454e8386493f06cffcadbc7c50b6bd350de9b061def96881351762244",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "ghostly_armor",
+      "name": "及时招架",
+      "ref": "Ghostly Armor",
+      "type": "skill",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 30,
+        "batches": 1,
+        "artControls": 31
+      },
+      "effect": "虚无。获得 10 点格挡。",
+      "upgrade": "虚无。获得 13 点格挡。",
+      "artifact": {
+        "master": {
+          "path": "ghostly_armor/source.png",
+          "sha256": "ed6a4c1302d9f3761f00f16b5041636c44b628df31e6256f872f4fa83102fa60",
+          "bytes": 3752
+        },
+        "svg": {
+          "path": "ghostly_armor/source.svg",
+          "sha256": "59b651fbf14533aed21638f1fbc222c0f4c27ec243a9ffa9b3d8649a40fd84f2",
+          "bytes": 323
+        },
+        "native": {
+          "path": "ghostly_armor/native-art.json",
+          "sha256": "31e5604909ce7483eb3501066cf212dceb8332a63f15c41969651c86d0e5b1de",
+          "bytes": 16370
+        },
+        "preview": {
+          "path": "ghostly_armor/preview-native.png",
+          "sha256": "12308025ba4bd4199e535b2001bfdcb5a85e0582838b0ba61d2d53a8b9650205",
+          "bytes": 3450
+        }
+      },
+      "review": {
+        "reportSHA256": "cd82ef9a779da6557f5b96223692aa28ea738468b8109bff15d7aa3ee29843d3",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "uppercut",
+      "name": "挑剑破势",
+      "ref": "Uppercut",
+      "type": "attack",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 34,
+        "batches": 1,
+        "artControls": 35
+      },
+      "effect": "造成 13 点伤害，施加 1 层虚弱与 1 层易伤。",
+      "upgrade": "造成 13 点伤害，施加 2 层虚弱与 2 层易伤。",
+      "artifact": {
+        "master": {
+          "path": "uppercut/source.png",
+          "sha256": "9fcb7af1fc2a99f0eebdbce11d540332569ed496de67484430e7b80de44cc75a",
+          "bytes": 4716
+        },
+        "svg": {
+          "path": "uppercut/source.svg",
+          "sha256": "34db24d118d1549cbc9da3f0531a31e636ce157e7a4b2735603fafc52c5410cb",
+          "bytes": 423
+        },
+        "native": {
+          "path": "uppercut/native-art.json",
+          "sha256": "32bb825a16f02cbc13ef079730daa87c334137b10441978549a9354907f3ce47",
+          "bytes": 18572
+        },
+        "preview": {
+          "path": "uppercut/preview-native.png",
+          "sha256": "ed031d61f9d4079d14a3986569be0f19431a3f58a2f6b8d3d91d1c3f6e52ab0d",
+          "bytes": 3598
+        }
+      },
+      "review": {
+        "reportSHA256": "cd82ef9a779da6557f5b96223692aa28ea738468b8109bff15d7aa3ee29843d3",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "evolve",
+      "name": "逆境求变",
+      "ref": "Evolve",
+      "type": "power",
+      "rarity": "uncommon",
+      "cost": {
+        "images": 22,
+        "batches": 1,
+        "artControls": 23
+      },
+      "effect": "每当你抽到状态牌，抽 1 张牌。",
+      "upgrade": "每当你抽到状态牌，抽 2 张牌。",
+      "artifact": {
+        "master": {
+          "path": "evolve/source.png",
+          "sha256": "7328dce61353a6402de30bd1e331da694a1ebc5139499c08ac581c7106ab5acb",
+          "bytes": 1408
+        },
+        "svg": {
+          "path": "evolve/source.svg",
+          "sha256": "90652b468eba357495a217510af228c5be3fcf0335fae43e22ff554274f21404",
+          "bytes": 372
+        },
+        "native": {
+          "path": "evolve/native-art.json",
+          "sha256": "c907a4b5120615db509d2a92e99f2f4c0875b7fc6b3b1ed2b73ab5a4dc0a7832",
+          "bytes": 11885
+        },
+        "preview": {
+          "path": "evolve/preview-native.png",
+          "sha256": "6f798a83c1b28091b981ced2911f789035b6bbed353e4b368fcbb3e0f405d124",
+          "bytes": 1611
+        }
+      },
+      "review": {
+        "reportSHA256": "d7e6c55454e8386493f06cffcadbc7c50b6bd350de9b061def96881351762244",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "immolate",
+      "name": "摧阵一击",
+      "ref": "Immolate",
+      "type": "attack",
+      "rarity": "rare",
+      "cost": {
+        "images": 26,
+        "batches": 1,
+        "artControls": 27
+      },
+      "effect": "对所有敌人造成 21 点伤害，将 1 张灼烧加入弃牌堆。",
+      "upgrade": "对所有敌人造成 28 点伤害，将 1 张灼烧加入弃牌堆。",
+      "artifact": {
+        "master": {
+          "path": "immolate/source.png",
+          "sha256": "5f40d4ad2f4fe0265cec9835ab378e90acc04c423be5f27569fa9d4c472c1520",
+          "bytes": 4886
+        },
+        "svg": {
+          "path": "immolate/source.svg",
+          "sha256": "65346cb93247b0b40109fd10db38ea06401a3d0896d60f8aac71aaed588998a0",
+          "bytes": 346
+        },
+        "native": {
+          "path": "immolate/native-art.json",
+          "sha256": "87a7b00468a35bcbb1e27766133f1a88a15343c784221e71570dd9845c79d207",
+          "bytes": 14125
+        },
+        "preview": {
+          "path": "immolate/preview-native.png",
+          "sha256": "f01fd64749f524e3002d07dc2d0bfed495c2de42f4889b2786bf08d51d39b578",
+          "bytes": 4040
+        }
+      },
+      "review": {
+        "reportSHA256": "58ea5ee790b16af3e84119cb6ef0ca1cadb65c000d9edb378e514e35d7472335",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "offering",
+      "name": "奋力一搏",
+      "ref": "Offering",
+      "type": "skill",
+      "rarity": "rare",
+      "cost": {
+        "images": 20,
+        "batches": 1,
+        "artControls": 21
+      },
+      "effect": "消耗。失去 6 点生命，获得 2 点能量，抽 3 张牌。",
+      "upgrade": "消耗。失去 6 点生命，获得 2 点能量，抽 5 张牌。",
+      "artifact": {
+        "master": {
+          "path": "offering/source.png",
+          "sha256": "6aa179c8e994f589b78742fa7f076f23ddf6d118efbda1f01a7b7c6898cfb6d0",
+          "bytes": 794022
+        },
+        "svg": null,
+        "native": {
+          "path": "offering/native-art.json",
+          "sha256": "1ac369f0b5bd68c5fe4a61cd0868f33199f46c25c608cbac7df8ad4281202109",
+          "bytes": 6130
+        },
+        "preview": {
+          "path": "offering/preview-native.png",
+          "sha256": "7f482ba45820a44ad816c91bc011c2eedfac37a560d834e8b3d39a789314e976",
+          "bytes": 3620
+        }
+      },
+      "review": {
+        "reportSHA256": "22e7d70daa02c7e712aac7aaac80f71de60429a4c4bd11e44a5aab3712cd3bab",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "exhume",
+      "name": "重拾旧策",
+      "ref": "Exhume",
+      "type": "skill",
+      "rarity": "rare",
+      "cost": {
+        "images": 28,
+        "batches": 1,
+        "artControls": 29
+      },
+      "effect": "消耗。将消耗堆中 1 张牌放回手中。",
+      "upgrade": "消耗 0 能量。将消耗堆中 1 张牌放回手中。",
+      "artifact": {
+        "master": {
+          "path": "exhume/source.png",
+          "sha256": "f98bc612c2f4efd95025866c42cfe1517fe033a2a9a38dafdc2544d18775ffb6",
+          "bytes": 4842
+        },
+        "svg": {
+          "path": "exhume/source.svg",
+          "sha256": "09439cd9ad37d8f52347446b8054bf0d0131ec5b345fa33b84cc0cd8ba5769c5",
+          "bytes": 416
+        },
+        "native": {
+          "path": "exhume/native-art.json",
+          "sha256": "d20362e59bd113b8228fdde2194d2d0e4e399e64edb59f4b02633bd5167af2d3",
+          "bytes": 15393
+        },
+        "preview": {
+          "path": "exhume/preview-native.png",
+          "sha256": "3b86c6e929c0d3bb43dcd0922251e33cc705e6dc973e29a90a3c1a7054ebbf0b",
+          "bytes": 4189
+        }
+      },
+      "review": {
+        "reportSHA256": "58ea5ee790b16af3e84119cb6ef0ca1cadb65c000d9edb378e514e35d7472335",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "reaper",
+      "name": "以战养战",
+      "ref": "Reaper",
+      "type": "attack",
+      "rarity": "rare",
+      "cost": {
+        "images": 54,
+        "batches": 2,
+        "artControls": 56
+      },
+      "effect": "消耗。对所有敌人造成 4 点伤害，回复等量生命。",
+      "upgrade": "消耗。对所有敌人造成 5 点伤害，回复等量生命。",
+      "artifact": {
+        "master": {
+          "path": "reaper/source.png",
+          "sha256": "273e8745c641841fcc56cac2461bc81dd7045f657b913943a8b956f20079e20f",
+          "bytes": 5440
+        },
+        "svg": {
+          "path": "reaper/source.svg",
+          "sha256": "d52a298fb8fa9939d6827c7578f4341b8cf6f9f56d1528eea95de37d039c0073",
+          "bytes": 444
+        },
+        "native": {
+          "path": "reaper/native-art.json",
+          "sha256": "5b14968c25304542ccb138e7c4061cd0dc3ec41d001af99d93d3467a94d6e7cc",
+          "bytes": 29003
+        },
+        "preview": {
+          "path": "reaper/preview-native.png",
+          "sha256": "c23c1fcb1435dfbcb85cc85d8a6c161b29e71b9beb7d5ee737747fd16625a7a3",
+          "bytes": 4977
+        }
+      },
+      "review": {
+        "reportSHA256": "2af617b64241a355b4f64832a9cb17803bdb830cd5767eec106a130bc9f8edff",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "brutality",
+      "name": "破釜沉舟",
+      "ref": "Brutality",
+      "type": "power",
+      "rarity": "rare",
+      "cost": {
+        "images": 30,
+        "batches": 1,
+        "artControls": 31
+      },
+      "effect": "每回合开始时失去1点生命，额外抽1张牌。",
+      "upgrade": "固有。每回合开始时失去1点生命，额外抽1张牌。",
+      "artifact": {
+        "master": {
+          "path": "brutality/source.png",
+          "sha256": "46d7992a1512bf9310199f089a263e764bf5b2065423f8e33c216580bca8fca0",
+          "bytes": 4614
+        },
+        "svg": {
+          "path": "brutality/source.svg",
+          "sha256": "0f622ca45629589a36d88ee1c0aa41dcb52b41c70fe5375949998becd7e607d0",
+          "bytes": 423
+        },
+        "native": {
+          "path": "brutality/native-art.json",
+          "sha256": "0ee3f47555f739b3b10f445cfbbaf6ed1c0aaad82dada69e3737f18e728f5f6d",
+          "bytes": 16468
+        },
+        "preview": {
+          "path": "brutality/preview-native.png",
+          "sha256": "d7c7c6b0ab78680c303fb51c42bc58e449ff9e12e14ce6eeada03b1eee8ebcf3",
+          "bytes": 3890
+        }
+      },
+      "review": {
+        "reportSHA256": "0539e136a79364768c6342697a57b4698e050a0e3ba38fa1986511de6bfcfd7e",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "juggernaut",
+      "name": "守中有攻",
+      "ref": "Juggernaut",
+      "type": "power",
+      "rarity": "rare",
+      "cost": {
+        "images": 16,
+        "batches": 1,
+        "artControls": 17
+      },
+      "effect": "每当你获得格挡，对随机敌人造成 5 点伤害。",
+      "upgrade": "每当你获得格挡，对随机敌人造成 7 点伤害。",
+      "artifact": {
+        "master": {
+          "path": "juggernaut/source.png",
+          "sha256": "7aeb9eec7042db7aea02c0b2df5b443d2a90e8807c0deba9ea621a24e31cfdb0",
+          "bytes": 3563
+        },
+        "svg": {
+          "path": "juggernaut/source.svg",
+          "sha256": "94237321045b5019bd9e7550e3dbe95bec6e48be2dc81db122c65eb971c6823d",
+          "bytes": 310
+        },
+        "native": {
+          "path": "juggernaut/native-art.json",
+          "sha256": "41382226363805ddbece6a99a6af25c09ef79f648e17f76490e92169754e0f04",
+          "bytes": 8959
+        },
+        "preview": {
+          "path": "juggernaut/preview-native.png",
+          "sha256": "cc69c6546aea927b9145ae02792a80f436977db8955d64e7f14cd7f78cd13425",
+          "bytes": 2889
+        }
+      },
+      "review": {
+        "reportSHA256": "58ea5ee790b16af3e84119cb6ef0ca1cadb65c000d9edb378e514e35d7472335",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "impervious",
+      "name": "坚守",
+      "ref": "Impervious",
+      "type": "skill",
+      "rarity": "rare",
+      "cost": {
+        "images": 32,
+        "batches": 1,
+        "artControls": 33
+      },
+      "effect": "消耗。获得 30 点格挡。",
+      "upgrade": "消耗。获得 40 点格挡。",
+      "artifact": {
+        "master": {
+          "path": "impervious/source.png",
+          "sha256": "db624af1bff196243d2e72a6a6a69a714ed0b642e5fa714feaa78c5a3dc1e479",
+          "bytes": 5468
+        },
+        "svg": {
+          "path": "impervious/source.svg",
+          "sha256": "f44a2c11c21c262d0bf432f5bb7b28a1c6e93ecacb7bc5b8310c678e49bf847e",
+          "bytes": 424
+        },
+        "native": {
+          "path": "impervious/native-art.json",
+          "sha256": "507540677ac23152ecc0caa32bcc94f5c77936c7d9ac3c270254549f6a495522",
+          "bytes": 17313
+        },
+        "preview": {
+          "path": "impervious/preview-native.png",
+          "sha256": "365136ee61940a3f2211b5bdbb505c6718f533dfd6a67501fa5b990c4d7f74ea",
+          "bytes": 4973
+        }
+      },
+      "review": {
+        "reportSHA256": "58ea5ee790b16af3e84119cb6ef0ca1cadb65c000d9edb378e514e35d7472335",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "berserk",
+      "name": "背水之战",
+      "ref": "Berserk",
+      "type": "power",
+      "rarity": "rare",
+      "cost": {
+        "images": 28,
+        "batches": 1,
+        "artControls": 29
+      },
+      "effect": "获得 2 层易伤。每回合开始时获得 1 点能量。",
+      "upgrade": "获得 1 层易伤。每回合开始时获得 1 点能量。",
+      "artifact": {
+        "master": {
+          "path": "berserk/source.png",
+          "sha256": "ea5485cd214145b696c7a37b008a7b246eaac837a708176c90eb4b00d0cae6a6",
+          "bytes": 5445
+        },
+        "svg": {
+          "path": "berserk/source.svg",
+          "sha256": "01b7e621875e9eee1f5599948ad7bcf20653a1ae56f06dd77e3a2eca11d47877",
+          "bytes": 417
+        },
+        "native": {
+          "path": "berserk/native-art.json",
+          "sha256": "c00f8eaab4c23144f0b711ff5ade56a2129e3199107ceaac3c23c5b9fd5dd9ac",
+          "bytes": 15059
+        },
+        "preview": {
+          "path": "berserk/preview-native.png",
+          "sha256": "50134a4f86cf643b78d0dea0eeca24f48475b65e6da5deef34f84cedcf0971c5",
+          "bytes": 4233
+        }
+      },
+      "review": {
+        "reportSHA256": "58ea5ee790b16af3e84119cb6ef0ca1cadb65c000d9edb378e514e35d7472335",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "fiend_fire",
+      "name": "舍尽一击",
+      "ref": "Fiend Fire",
+      "type": "attack",
+      "rarity": "rare",
+      "cost": {
+        "images": 36,
+        "batches": 1,
+        "artControls": 37
+      },
+      "effect": "消耗。消耗手中所有牌，每张造成 7 点伤害。",
+      "upgrade": "消耗。消耗手中所有牌，每张造成 10 点伤害。",
+      "artifact": {
+        "master": {
+          "path": "fiend_fire/source.png",
+          "sha256": "5e44319a6bb34df0d8ba1d06551f12c82f9c7fef6b0213dd81096c300223e0a2",
+          "bytes": 5770
+        },
+        "svg": {
+          "path": "fiend_fire/source.svg",
+          "sha256": "0ebc887379474dac1f22ce3aab4657786cdd0e725798332cd0a4434ba16a7ca4",
+          "bytes": 510
+        },
+        "native": {
+          "path": "fiend_fire/native-art.json",
+          "sha256": "e0356da52939a504380fa56288c38a392d7524ecf9776539f41913a435b40c94",
+          "bytes": 19389
+        },
+        "preview": {
+          "path": "fiend_fire/preview-native.png",
+          "sha256": "703c7a3f5b71b0dc01fc309b1dbe7860be4220292c4416d2a2f270b385282dd7",
+          "bytes": 5202
+        }
+      },
+      "review": {
+        "reportSHA256": "0539e136a79364768c6342697a57b4698e050a0e3ba38fa1986511de6bfcfd7e",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "barricade",
+      "name": "永世的磐岩",
+      "ref": "Barricade",
+      "type": "power",
+      "rarity": "rare",
+      "cost": {
+        "images": 54,
+        "batches": 2,
+        "artControls": 56
+      },
+      "effect": "格挡不再于自己回合开始时清空。",
+      "upgrade": "消耗 2 能量，格挡不再于自己回合开始时清空。",
+      "artifact": {
+        "master": {
+          "path": "barricade/source.png",
+          "sha256": "d6679272ea475b0f8a171847754b83be516212d97ee4afcd3420931269d8c70a",
+          "bytes": 5167
+        },
+        "svg": {
+          "path": "barricade/source.svg",
+          "sha256": "094cf256591cd6383b835e3e7b1bef4294637addd4c1012ed907751b83a13752",
+          "bytes": 515
+        },
+        "native": {
+          "path": "barricade/native-art.json",
+          "sha256": "4fc8c51d2d2aceb4055cc7deca64ed1ef140d81f631f4c1967867000467e9d68",
+          "bytes": 28181
+        },
+        "preview": {
+          "path": "barricade/preview-native.png",
+          "sha256": "5e3b69a666380c7a5ea15b5798621d0a42321206d2a3670fe8e3d53afea38e79",
+          "bytes": 4424
+        }
+      },
+      "review": {
+        "reportSHA256": "2af617b64241a355b4f64832a9cb17803bdb830cd5767eec106a130bc9f8edff",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "corruption",
+      "name": "孤注一掷",
+      "ref": "Corruption",
+      "type": "power",
+      "rarity": "rare",
+      "cost": {
+        "images": 32,
+        "batches": 1,
+        "artControls": 33
+      },
+      "effect": "技能牌无需能量。打出后消耗。",
+      "upgrade": "技能牌无需能量。打出后消耗。",
+      "artifact": {
+        "master": {
+          "path": "corruption/source.png",
+          "sha256": "cc3be0597046b1bad3926739e502d599b774eddfe728b1c4999c31aa5e0e5589",
+          "bytes": 5097
+        },
+        "svg": {
+          "path": "corruption/source.svg",
+          "sha256": "71c8da4bf31fb39dce885bdb9cd593ab5e659f1f82928903cbd198592b7802e2",
+          "bytes": 495
+        },
+        "native": {
+          "path": "corruption/native-art.json",
+          "sha256": "37c41a9d2a779d7b2793b75b6d1c7e79f8bf6cc5a671d04631b2d29b0c961523",
+          "bytes": 17419
+        },
+        "preview": {
+          "path": "corruption/preview-native.png",
+          "sha256": "0bbe6400c7b0e5e62454bc391ce78186a21d82937a66455009469e1630086c0a",
+          "bytes": 4609
+        }
+      },
+      "review": {
+        "reportSHA256": "0539e136a79364768c6342697a57b4698e050a0e3ba38fa1986511de6bfcfd7e",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "limit_break",
+      "name": "剑意突破",
+      "ref": "Limit Break",
+      "type": "skill",
+      "rarity": "rare",
+      "cost": {
+        "images": 30,
+        "batches": 1,
+        "artControls": 31
+      },
+      "effect": "消耗。力量翻倍。",
+      "upgrade": "力量翻倍。（不再消耗）",
+      "artifact": {
+        "master": {
+          "path": "limit_break/source.png",
+          "sha256": "a75d81928ea477df40603a43c076d7b55cad9f6f27069ff6db2979aecfd73406",
+          "bytes": 5875
+        },
+        "svg": {
+          "path": "limit_break/source.svg",
+          "sha256": "ff8db5e23305bf65b1d65c709cdabb4f4e55ab907e31a43243ed397434f00f86",
+          "bytes": 343
+        },
+        "native": {
+          "path": "limit_break/native-art.json",
+          "sha256": "ff23bfbc249383722de18e983ce8bd426ce019a1628fee3414985edea5182711",
+          "bytes": 16415
+        },
+        "preview": {
+          "path": "limit_break/preview-native.png",
+          "sha256": "fd6edfe9dddbba5cd25ca23859214228f9416ec6b356bac7b8e99dd410cf3b15",
+          "bytes": 4446
+        }
+      },
+      "review": {
+        "reportSHA256": "fba4b84d3328fa445256bc28c57840326b657009777c348f407e5665842a5d48",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "feed",
+      "name": "乘胜壮行",
+      "ref": "Feed",
+      "type": "attack",
+      "rarity": "rare",
+      "cost": {
+        "images": 42,
+        "batches": 1,
+        "artControls": 43
+      },
+      "effect": "消耗。造成 10 点伤害。若致命，最大生命 +3。",
+      "upgrade": "消耗。造成 12 点伤害。若致命，最大生命 +4。",
+      "artifact": {
+        "master": {
+          "path": "feed/source.png",
+          "sha256": "e4508dba99ebcbf60aab8075130f75db32508ff56ba73243b7322911615bdd2d",
+          "bytes": 5236
+        },
+        "svg": {
+          "path": "feed/source.svg",
+          "sha256": "c2fd16196fb958547d4df3b1456d3a8d34c50bf6bf7239dd0cae438b1d5aaac0",
+          "bytes": 350
+        },
+        "native": {
+          "path": "feed/native-art.json",
+          "sha256": "4fa66a6f1aad809ffcb3d91dcd1c088f0524963c4790b22fd54a93edf3eeb0fe",
+          "bytes": 22887
+        },
+        "preview": {
+          "path": "feed/preview-native.png",
+          "sha256": "44dcb0d28c2dc0a2e3ffb79e017235bdb4917d8c2fa9ef96be31801efb4cad40",
+          "bytes": 4054
+        }
+      },
+      "review": {
+        "reportSHA256": "1b02226eaa8c7fa474c9668b219d64afb2ce610c1fdb3cf9fced17e77d9083d5",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "bludgeon",
+      "name": "全力一击",
+      "ref": "Bludgeon",
+      "type": "attack",
+      "rarity": "rare",
+      "cost": {
+        "images": 34,
+        "batches": 1,
+        "artControls": 35
+      },
+      "effect": "造成 32 点伤害。",
+      "upgrade": "造成 42 点伤害。",
+      "artifact": {
+        "master": {
+          "path": "bludgeon/source.png",
+          "sha256": "1df0ec6bef0d1e0dad600570083a535d2001c5115deca9faaf503cc409403ad8",
+          "bytes": 5657
+        },
+        "svg": {
+          "path": "bludgeon/source.svg",
+          "sha256": "ac891b607a30902113a04c39691a73037b378a9891ac1a699555a9924e90d78f",
+          "bytes": 351
+        },
+        "native": {
+          "path": "bludgeon/native-art.json",
+          "sha256": "00c113f8314393237b222cc18541a37e37a5dbfbc002dd2c2177fc26e4e9c2dd",
+          "bytes": 18569
+        },
+        "preview": {
+          "path": "bludgeon/preview-native.png",
+          "sha256": "4a6cd1728e2bafde70a27d90f2a8fb7a830c8d759f2191f34e27808aa967a15e",
+          "bytes": 4836
+        }
+      },
+      "review": {
+        "reportSHA256": "fba4b84d3328fa445256bc28c57840326b657009777c348f407e5665842a5d48",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "demon_form",
+      "name": "渐入佳境",
+      "ref": "Demon Form",
+      "type": "power",
+      "rarity": "rare",
+      "cost": {
+        "images": 38,
+        "batches": 1,
+        "artControls": 39
+      },
+      "effect": "每回合开始时获得 2 层力量。",
+      "upgrade": "每回合开始时获得 3 层力量。",
+      "artifact": {
+        "master": {
+          "path": "demon_form/source.png",
+          "sha256": "4cb006467b4f0ba6314106fbda91081021941360a2221d2457aa3bf8d604ed2d",
+          "bytes": 4682
+        },
+        "svg": {
+          "path": "demon_form/source.svg",
+          "sha256": "d73c29b77d14acb19446c06b74832c42af44fb53b1377b0dfafc1bab8340605f",
+          "bytes": 339
+        },
+        "native": {
+          "path": "demon_form/native-art.json",
+          "sha256": "8a2c970a2e0f17289ab7ec2847919e7876dc73c6d61af249f2e54fa3fe8343c1",
+          "bytes": 20430
+        },
+        "preview": {
+          "path": "demon_form/preview-native.png",
+          "sha256": "f8f1269d18afff0333cc1d1650aa63e07f5d3395714c4f475d4f7dc017fe2bc0",
+          "bytes": 4126
+        }
+      },
+      "review": {
+        "reportSHA256": "fba4b84d3328fa445256bc28c57840326b657009777c348f407e5665842a5d48",
+        "visual": "PASS"
+      }
+    },
+    {
+      "id": "double_tap",
+      "name": "叠势连击",
+      "ref": "Double Tap",
+      "type": "skill",
+      "rarity": "rare",
+      "cost": {
+        "images": 22,
+        "batches": 1,
+        "artControls": 23
+      },
+      "effect": "本回合你打出的下 1 张攻击牌生效两次。",
+      "upgrade": "本回合你打出的下 2 张攻击牌各生效两次。",
+      "artifact": {
+        "master": {
+          "path": "double_tap/source.png",
+          "sha256": "ec9eab1a66948e8eb0c9e72693733a63b7e9482bbd6a59d7b694735a1a5ddc6f",
+          "bytes": 7549
+        },
+        "svg": {
+          "path": "double_tap/source.svg",
+          "sha256": "d7c2974d197127c23ad4290e604f60fbd814e5439d84e4c940dd1bce275fa406",
+          "bytes": 305
+        },
+        "native": {
+          "path": "double_tap/native-art.json",
+          "sha256": "378f95d862a82f588257d0afb4d44595a2389f9ceb4754e6616266f297554f58",
+          "bytes": 12150
+        },
+        "preview": {
+          "path": "double_tap/preview-native.png",
+          "sha256": "bb302e0cfda346656d6479d0da8a140fde3f949f98d30f346485e778b57b2c7f",
+          "bytes": 5074
+        }
+      },
+      "review": {
+        "reportSHA256": "1b02226eaa8c7fa474c9668b219d64afb2ce610c1fdb3cf9fced17e77d9083d5",
+        "visual": "PASS"
+      }
+    }
+  ]
+}
