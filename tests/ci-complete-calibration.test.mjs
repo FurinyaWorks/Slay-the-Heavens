@@ -1993,7 +1993,7 @@ test('menu current complete JS and Lua workload retains Full budgets and every a
  assertCurrentJsInventory(js,integratedCiProof.inventory);
  assert.deepEqual(menuRedPriorLua(lua),closeoutCiProof.luaInventory);
  for(const [path,row]of Object.entries(menuRedCiProof.addedLua)){
-  assert.equal(liveDiskReadFileSync(path,'utf8').replaceAll('\r\n','\n'),row.source);
+  assert.equal(replayInput(path,row.sha256,()=>liveDiskReadFileSync(path,'utf8').replaceAll('\r\n','\n')),row.source);
   assert.equal(hash(row.source),row.sha256);
   assert.throws(()=>menuRedPriorLua(lua,(p,e)=>rawBootstrapReadFileSync(p,e)+(p===path?'\n':'')),/added menu Lua source/);
  }

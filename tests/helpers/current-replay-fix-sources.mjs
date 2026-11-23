@@ -412,7 +412,7 @@ const bindings = new Map([
  {
   "path": "tests/ci-complete-calibration.test.mjs",
   "beforeSha256": "78b7d2983f4cb9e8cd53846f3c072158a200ad5b4dcd91fbe1873e99f57c1056",
-  "afterSha256": "c9d1020137a420dcb48cb4af581414c3d93e097008e5302c667ffbcb80028290",
+  "afterSha256": "70f6053e3992f7c2d32583555e6d87b59a249a184965253be08c5a626a3d9cea",
   "hunks": [
    {
     "at": 1863,
@@ -425,9 +425,9 @@ const bindings = new Map([
     "after": "  assert.equal(new Set(bins.flatMap(bin=>bin.files)).size,files.length);\n  const loads=bins[0].loads,combined=platform==='win32'?windowsFullLoads(lua,loads):loads;\n  const forecast=Math.max(...combined)+60000,budget=platform==='win32'?1800000:1200000;\n  assertReplayForecasts(files,lua,count,platform,forecast,budget);\n  t.diagnostic(`${platform} final ${files.length}JS/${lua.length}Lua forecast ${forecast}ms including reserve`);\n  for(const file of files)assert(rawCurrentJsPlanningWeights([file],platform)[file]>=rawCurrentTimings.unknownJsMs||rawCurrentTimings.js[platform][file]>0);"
    },
    {
-    "at": 1996,
-    "before": "  assert.equal(hash(row.source),row.sha256);\n  assert.throws(()=>menuRedPriorLua(lua,(p,e)=>liveDiskReadFileSync(p,e)+(p===path?'\\n':'')),/added menu Lua source/);\n }",
-    "after": "  assert.equal(hash(row.source),row.sha256);\n  assert.throws(()=>menuRedPriorLua(lua,(p,e)=>rawBootstrapReadFileSync(p,e)+(p===path?'\\n':'')),/added menu Lua source/);\n }"
+    "at": 1994,
+    "before": " for(const [path,row]of Object.entries(menuRedCiProof.addedLua)){\n  assert.equal(liveDiskReadFileSync(path,'utf8').replaceAll('\\r\\n','\\n'),row.source);\n  assert.equal(hash(row.source),row.sha256);\n  assert.throws(()=>menuRedPriorLua(lua,(p,e)=>liveDiskReadFileSync(p,e)+(p===path?'\\n':'')),/added menu Lua source/);\n }",
+    "after": " for(const [path,row]of Object.entries(menuRedCiProof.addedLua)){\n  assert.equal(replayInput(path,row.sha256,()=>liveDiskReadFileSync(path,'utf8').replaceAll('\\r\\n','\\n')),row.source);\n  assert.equal(hash(row.source),row.sha256);\n  assert.throws(()=>menuRedPriorLua(lua,(p,e)=>rawBootstrapReadFileSync(p,e)+(p===path?'\\n':'')),/added menu Lua source/);\n }"
    },
    {
     "at": 2002,
@@ -1630,6 +1630,23 @@ const bindings = new Map([
     "at": 40,
     "before": "local panel = root:GetChild(\"characterPanel\")\nassert(panel:GetChild(\"details\").visible, \"production opens on the traveler, not a blank card\")\nassert(ui.characterSelection.character == \"traveler\" and ui.characterSelection.element == \"ironclad\")",
     "after": "local panel = root:GetChild(\"characterPanel\")\nassert(not ui.characterSelection:canConfirm() and panel:GetChild(\"traveler\").visible,\n    \"production waits for the approved traveler choice\")\nassert(F.click(root, \"characterPanel\", \"traveler\"))\nassert(panel:GetChild(\"details\").visible, \"explicit traveler selection shows the portrait details\")\nassert(ui.characterSelection.character == \"traveler\" and ui.characterSelection.element == \"ironclad\")"
+   }
+  ]
+ },
+ {
+  "path": "tests/helpers/menu-red-ci-source.mjs",
+  "beforeSha256": "394646c52880cefde01a9a37cea15663303fa6513e3a05656c25892201c9be39",
+  "afterSha256": "6cef51a2b49f821ab26d6dbd54b84907e2590b98cdf9a8fef1f3f5959950c895",
+  "hunks": [
+   {
+    "at": 6,
+    "before": "import {menuCiBytes} from './menu-red-ci-binding.mjs';\nconst hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\\r\\n','\\n');",
+    "after": "import {menuCiBytes} from './menu-red-ci-binding.mjs';\nimport {beforeCurrentReplayFixes} from './current-replay-fix-sources.mjs';\nconst hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\\r\\n','\\n');"
+   },
+   {
+    "at": 30,
+    "before": " assert.deepEqual([...paths].sort(),menuRedCiProof.afterLua,'complete current menu Lua discovery');\n for(const [path,row]of Object.entries(menuRedCiProof.addedLua))assert.equal(hash(norm(read(path,'utf8'))),row.sha256,'complete added menu Lua source: '+path);\n return [...menuRedCiProof.beforeLua];",
+    "after": " assert.deepEqual([...paths].sort(),menuRedCiProof.afterLua,'complete current menu Lua discovery');\n for(const [path,row]of Object.entries(menuRedCiProof.addedLua)){\n  const source=beforeCurrentReplayFixes(path,read(path,'utf8'));\n  assert.equal(hash(norm(source)),row.sha256,'complete added menu Lua source: '+path);\n }\n return [...menuRedCiProof.beforeLua];"
    }
   ]
  }
