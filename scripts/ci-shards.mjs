@@ -16,8 +16,8 @@ timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureIn
 
 // Reserve the work that completed in POSIX jobs 137444936421, 137444936442,
 // 137444936458, 137444936507 and 137444936550 before their 30-minute cutoff.
-// The next attempt's jobs 137468791737, 137468791821 and 137468791853
-// exposed additional underweighted replay files.
+// Jobs 137468791737, 137468791821, 137468791852 and 137468791853 from
+// the next attempt exposed additional underweighted replay files.
 // These rounded-down case totals guide placement only. They are not full-file timings.
 const linuxReplayMinimumMs = Object.freeze({
   'approved-node-ui-refactor.test.mjs': 422000,
@@ -28,8 +28,11 @@ const linuxReplayMinimumMs = Object.freeze({
   'combat-reactions-architecture-inverse.test.mjs': 137000,
   'competition-roster.test.mjs': 505000,
   'core-architecture-inverse.test.mjs': 362000,
+  'core-lifecycle-source-inverse.test.mjs': 713000,
+  'defect-integration-source.test.mjs': 153000,
   'game-ui-extraction-source-inverse.test.mjs': 870000,
   'max-hp-accepted-source-inverse.test.mjs': 677000,
+  'native-enemy-theme-inverse.test.mjs': 54000,
   'player-death-inverse.test.mjs': 172000,
   'potion-callback-source.test.mjs': 238000,
   'power-shop-boundaries.test.mjs': 486000,
