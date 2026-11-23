@@ -849,7 +849,7 @@ const bindings = new Map([
  {
   "path": "scripts/ci-shards.mjs",
   "beforeSha256": "6becba66be6048f090cd0036c2e5292f180d9010bbe24aef181977dca18fdeb3",
-  "afterSha256": "054ca49870a3d83d9d5bd346099a4294cc5430a275e9a6f3a9c0cae3b7a0e0c4",
+  "afterSha256": "4906c3a347f35ea3b4575bc7b457a62d25a9c8b35f80732d1eda6cae805739ae",
   "hunks": [
    {
     "at": 0,
@@ -859,25 +859,25 @@ const bindings = new Map([
    {
     "at": 15,
     "before": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n",
-    "after": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n\n// Reserve the work that completed in POSIX jobs 137444936421, 137444936442,\n// 137444936458, 137444936507 and 137444936550 before their 30-minute cutoff.\n// Jobs 137468791737, 137468791821, 137468791838, 137468791852 and\n// 137468791853 from the next attempt exposed underweighted replay files.\n// Completed cases and file observations guide placement only.\nconst linuxReplayMinimumMs = Object.freeze({\n  'act1-choice-responsibilities.test.mjs': 153000,\n  'actor-lifecycle.test.mjs': 98000,\n  'approved-node-ui-refactor.test.mjs': 526000,\n  'approved-ui-inverse.test.mjs': 1295000,\n  'architecture-composition-format.test.mjs': 420000,\n  'art-feature-source-inverse.test.mjs': 412000,\n  'battle-max-hp-config-inverse.test.mjs': 124000,\n  'boss-ui-fixture-composition.test.mjs': 64000,\n  'card-origin-source-inverse.test.mjs': 149000,\n  'combat-reactions-architecture-inverse.test.mjs': 137000,\n  'competition-roster.test.mjs': 505000,\n  'core-architecture-inverse.test.mjs': 362000,\n  'core-lifecycle-source-inverse.test.mjs': 713000,\n  'defect-integration-source.test.mjs': 153000,\n  'end-turn-responsibilities.test.mjs': 252000,\n  'event-production-source-inverse.test.mjs': 100000,\n  'final-integration-source.test.mjs': 318000,\n  'game-ui-extraction-source-inverse.test.mjs': 870000,\n  'game-ui-host-result.test.mjs': 188000,\n  'max-hp-accepted-source-inverse.test.mjs': 677000,\n  'mobile-qa-source-migration.test.mjs': 140000,\n  'native-enemy-theme-inverse.test.mjs': 54000,\n  'nodes-battle-max-hp-config-inverse.test.mjs': 90000,\n  'player-death-inverse.test.mjs': 172000,\n  'potion-callback-source.test.mjs': 238000,\n  'power-shop-boundaries.test.mjs': 486000,\n  'presentation-native-m3-contract.test.mjs': 1037000,\n  'relic-query-source-inverse.test.mjs': 123000,\n});\n\n// Completed replay cases in Windows jobs 137468791786, 137468791799,\n// 137468791818, 137468791851, 137468791860, 137468791861, 137468791871\n// and 137468791996, and complete files from 137492433757, 137492433852\n// and 137492433888.\nconst windowsReplayMinimumMs = Object.freeze({\n  'act1-choice-responsibilities.test.mjs': 195000,\n  // Budget the longest completed case after isolating the three cases.\n  'approved-ui-inverse.test.mjs': 1455000,\n  'architecture-composition-format.test.mjs': 1190000,\n  'battle-max-hp-config-inverse.test.mjs': 681000,\n  'card-origin-source-inverse.test.mjs': 360000,\n  'colorless-catalog-source.test.mjs': 566000,\n  'compendium-source-inverse.test.mjs': 690000,\n  'competition-roster-config-composition.test.mjs': 287000,\n  'competition-roster.test.mjs': 735000,\n  'core-architecture-inverse.test.mjs': 321000,\n  // Job 137468791861 spent over half an hour on this file before cutoff.\n  'core-lifecycle-source-inverse.test.mjs': 800000,\n  'death-settlement-guard-inverse.test.mjs': 186000,\n  'defect-integration-source.test.mjs': 474000,\n  'formal-campaign-entry.test.mjs': 233000,\n  'game-ui-extraction-source-inverse.test.mjs': 2087000,\n  'living-wall-architecture-inverse.test.mjs': 1013000,\n  'native-candidate-art.test.mjs': 113000,\n  'official-assets-runtime.test.mjs': 216000,\n  'p0-presentation-inverse.test.mjs': 713000,\n  'potion-callback-source.test.mjs': 132000,\n  'power-shop-boundaries.test.mjs': 1364000,\n  'presentation-native-m3-contract.test.mjs': 791000,\n  'ready-art-source-inverse.test.mjs': 656000,\n  'reward-query-boundary-source.test.mjs': 1440000,\n  'round3-catalog-source-inverse.test.mjs': 278000,\n  'run-architecture-inverse.test.mjs': 384000,\n});\n\nexport const replayPlanningMinimumMs = Object.freeze({ linux: linuxReplayMinimumMs, win32: windowsReplayMinimumMs });\n"
+    "after": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n\n// Reserve the work that completed in POSIX jobs 137444936421, 137444936442,\n// 137444936458, 137444936507 and 137444936550 before their 30-minute cutoff.\n// Jobs 137468791737, 137468791821, 137468791838, 137468791852 and\n// 137468791853 from the next attempt exposed underweighted replay files.\n// Completed cases and file observations guide placement only.\nconst linuxReplayMinimumMs = Object.freeze({\n  'act1-choice-responsibilities.test.mjs': 153000,\n  'actor-lifecycle.test.mjs': 98000,\n  'approved-node-ui-refactor.test.mjs': 526000,\n  'approved-ui-inverse.test.mjs': 1295000,\n  'architecture-composition-format.test.mjs': 420000,\n  'art-feature-source-inverse.test.mjs': 412000,\n  'battle-max-hp-config-inverse.test.mjs': 124000,\n  'boss-ui-fixture-composition.test.mjs': 64000,\n  'card-origin-source-inverse.test.mjs': 149000,\n  'combat-reactions-architecture-inverse.test.mjs': 137000,\n  'competition-roster.test.mjs': 505000,\n  'core-architecture-inverse.test.mjs': 362000,\n  'core-lifecycle-source-inverse.test.mjs': 713000,\n  'defect-integration-source.test.mjs': 153000,\n  'end-turn-responsibilities.test.mjs': 252000,\n  'event-production-source-inverse.test.mjs': 100000,\n  'final-integration-source.test.mjs': 318000,\n  'game-ui-extraction-source-inverse.test.mjs': 870000,\n  'game-ui-host-result.test.mjs': 188000,\n  'max-hp-accepted-source-inverse.test.mjs': 677000,\n  'mobile-qa-source-migration.test.mjs': 140000,\n  'native-enemy-theme-inverse.test.mjs': 54000,\n  'nodes-battle-max-hp-config-inverse.test.mjs': 90000,\n  'player-death-inverse.test.mjs': 172000,\n  'potion-callback-source.test.mjs': 238000,\n  'power-shop-boundaries.test.mjs': 486000,\n  'presentation-native-m3-contract.test.mjs': 1037000,\n  'relic-query-source-inverse.test.mjs': 123000,\n  // Job 137510449969 spent over 22 minutes in this file before cutoff.\n  'task77-current-source-layers.test.mjs': 1295000,\n});\n\n// Completed replay cases in Windows jobs 137468791786, 137468791799,\n// 137468791818, 137468791851, 137468791860, 137468791861, 137468791871\n// and 137468791996, and complete files from 137492433757, 137492433852\n// and 137492433888.\nconst windowsReplayMinimumMs = Object.freeze({\n  'act1-choice-responsibilities.test.mjs': 195000,\n  // Budget the longest completed case after isolating the three cases.\n  'approved-ui-inverse.test.mjs': 1455000,\n  'architecture-composition-format.test.mjs': 1190000,\n  'battle-max-hp-config-inverse.test.mjs': 681000,\n  'card-origin-source-inverse.test.mjs': 360000,\n  'colorless-catalog-source.test.mjs': 566000,\n  'compendium-source-inverse.test.mjs': 690000,\n  'competition-roster-config-composition.test.mjs': 287000,\n  'competition-roster.test.mjs': 735000,\n  'core-architecture-inverse.test.mjs': 321000,\n  // Job 137468791861 spent over half an hour on this file before cutoff.\n  'core-lifecycle-source-inverse.test.mjs': 800000,\n  'death-settlement-guard-inverse.test.mjs': 186000,\n  'defect-integration-source.test.mjs': 474000,\n  'formal-campaign-entry.test.mjs': 233000,\n  'game-ui-extraction-source-inverse.test.mjs': 2087000,\n  'living-wall-architecture-inverse.test.mjs': 1013000,\n  'native-candidate-art.test.mjs': 113000,\n  'official-assets-runtime.test.mjs': 216000,\n  'p0-presentation-inverse.test.mjs': 713000,\n  'potion-callback-source.test.mjs': 132000,\n  'power-shop-boundaries.test.mjs': 1364000,\n  'presentation-native-m3-contract.test.mjs': 791000,\n  'ready-art-source-inverse.test.mjs': 656000,\n  'reward-query-boundary-source.test.mjs': 1440000,\n  'round3-catalog-source-inverse.test.mjs': 278000,\n  'run-architecture-inverse.test.mjs': 384000,\n});\n\nexport const replayPlanningMinimumMs = Object.freeze({ linux: linuxReplayMinimumMs, win32: windowsReplayMinimumMs });\n"
    },
    {
-    "at": 114,
+    "at": 116,
     "before": "  const maps=Object.hasOwn(timings.js,platform)?[timings.js[platform]]:Object.values(timings.js);\n  return Object.fromEntries(files.map(file=>[file,Math.max(\n    ...maps.map(weights=>weights[file]??timings.unknownJsMs),\n    timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0)]));\n}",
     "after": "  const maps=Object.hasOwn(timings.js,platform)?[timings.js[platform]]:Object.values(timings.js);\n  return Object.fromEntries(files.map(file=>{\n    const name=file.slice('tests/'.length);\n    return [file,Math.max(\n      ...maps.map(weights=>weights[file]??timings.unknownJsMs),\n      timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0,\n      platform !== 'win32' ? linuxReplayMinimumMs[name] ?? 0 : 0,\n      platform !== 'linux' ? windowsReplayMinimumMs[name] ?? 0 : 0)];\n  }));\n}"
    },
    {
-    "at": 141,
+    "at": 143,
     "before": "\nexport function main(args) {",
     "after": "\nconst timingReport = 'build/ci-js-timings.jsonl';\nconst nodeTestArgs = files => ['--test', '--test-concurrency=1', '--test-reporter=spec',\n  '--test-reporter=./scripts/ci-timing-reporter.mjs', '--test-reporter-destination=stdout',\n  `--test-reporter-destination=${timingReport}`, ...files];\n\nfunction runInCheckout(files, cwd, env) {\n  return new Promise((resolve, reject) => {\n    const child = spawn(process.execPath, nodeTestArgs(files), {\n      cwd, env: { ...env, GITHUB_WORKSPACE: cwd }, stdio: 'inherit', windowsHide: true,\n    });\n    child.once('error', reject);\n    child.once('close', status => resolve(status ?? 1));\n  });\n}\n\nasync function runHostedShard(files, root, env) {\n  if (!lstatSync(join(root, '.git'), { throwIfNoEntry: false })?.isDirectory()) {\n    throw new Error('Hosted execution requires physical checkout metadata');\n  }\n  const snapshot = realpathSync.native(mkdtempSync(join(env.RUNNER_TEMP || tmpdir(), 'slay-ci-shard-')));\n  try {\n    const location = relative(root, snapshot);\n    if (!location || !isAbsolute(location) && location !== '..' && !location.startsWith(`..${sep}`)) {\n      throw new Error('Hosted snapshot must be outside the checkout');\n    }\n    // Each test process still runs serially in its own checkout. Copy before\n    // starting either process to isolate Git metadata, build outputs and fixtures.\n    cpSync(root, snapshot, { recursive: true, verbatimSymlinks: true, mode: constants.COPYFILE_FICLONE });\n    const weights = jsPlanningWeights(files);\n    const original = partition(files, '1/2', weights, timings.unknownJsMs).files;\n    const copy = partition(files, '2/2', weights, timings.unknownJsMs).files;\n    const results = await Promise.allSettled([\n      runInCheckout(original, root, env), runInCheckout(copy, snapshot, env),\n    ]);\n    const copyReport = join(snapshot, timingReport);\n    const originalReport = join(root, timingReport);\n    const status = results.find(result => result.status === 'rejected');\n    if (!status) {\n      writeFileSync(originalReport, readFileSync(copyReport), { flag: 'a' });\n    }\n    if (status) throw status.reason;\n    return results.find(result => result.value !== 0)?.value ?? 0;\n  } finally {\n    rmSync(snapshot, { recursive: true, force: true, maxRetries: 2 });\n  }\n}\n\nexport function main(args) {"
    },
    {
-    "at": 204,
+    "at": 206,
     "before": "  delete env.NODE_TEST_CONTEXT;\n  const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', '--test-reporter=spec',\n    '--test-reporter=./scripts/ci-timing-reporter.mjs', '--test-reporter-destination=stdout',\n    '--test-reporter-destination=build/ci-js-timings.jsonl', ...plan.files], { stdio: 'inherit', env, windowsHide: true });\n  if (result.error) throw result.error;",
     "after": "  delete env.NODE_TEST_CONTEXT;\n  const root = realpathSync.native('.'), hostedOS = { linux: 'Linux', win32: 'Windows' }[process.platform];\n  if (hostedOS && env.GITHUB_ACTIONS === 'true' && env.RUNNER_OS === hostedOS\n      && env.RUNNER_ENVIRONMENT === 'github-hosted' && env.GITHUB_WORKSPACE\n      && realpathSync.native(env.GITHUB_WORKSPACE) === root && availableParallelism() >= 2 && plan.files.length >= 2) {\n    return runHostedShard(plan.files, root, env).then(status => { process.exitCode = status; });\n  }\n  const result = spawnSync(process.execPath, nodeTestArgs(plan.files), { stdio: 'inherit', env, windowsHide: true });\n  if (result.error) throw result.error;"
    },
    {
-    "at": 216,
+    "at": 218,
     "before": "if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {\n  try { main(process.argv.slice(2)); } catch (error) { console.error(error.message); process.exitCode = 1; }\n}",
     "after": "if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {\n  try { await main(process.argv.slice(2)); } catch (error) { console.error(error.message); process.exitCode = 1; }\n}"
    }
@@ -937,42 +937,37 @@ const bindings = new Map([
  {
   "path": "tests/approved-ui-inverse.test.mjs",
   "beforeSha256": "55ee7c59bd21d09ffc881f2eaf946685ab1b477473ec462b7e60a5eda7fc69a8",
-  "afterSha256": "121bf3942a2c777cbc7639105406306d309d3000034a9030c89677e4f5e94a97",
+  "afterSha256": "ea3c55fdd3e48c414165c00e56f5518d5d0d6704f39b3743e9d52c4433ce5328",
   "hunks": [
    {
     "at": 2,
     "before": "import {preIntegratedNodeUiSource} from './helpers/approved-node-ui-refactor.mjs';\nimport {historicalTest as test} from './helpers/historical-baseline-inputs.mjs';\nimport assert from 'node:assert/strict';",
-    "after": "import {preIntegratedNodeUiSource} from './helpers/approved-node-ui-refactor.mjs';\nimport test from 'node:test';\nimport {historicalTest} from './helpers/historical-baseline-inputs.mjs';\nimport assert from 'node:assert/strict';"
+    "after": "import {preIntegratedNodeUiSource} from './helpers/approved-node-ui-refactor.mjs';\nimport {runHistoricalCases} from './helpers/isolated-historical-cases.mjs';\nimport assert from 'node:assert/strict';"
    },
    {
-    "at": 7,
-    "before": "import {join} from 'node:path';\nimport {tmpdir} from 'node:os';\nimport {createHash} from 'node:crypto';\nimport {approvedUi,preApprovedUiSource,preApprovedUiOuterSource} from './helpers/approved-ui-inverse.mjs';",
-    "after": "import {join} from 'node:path';\nimport {availableParallelism,tmpdir} from 'node:os';\nimport {createHash} from 'node:crypto';\nimport {execFile} from 'node:child_process';\nimport {promisify} from 'node:util';\nimport {fileURLToPath} from 'node:url';\nimport {approvedUi,preApprovedUiSource,preApprovedUiOuterSource} from './helpers/approved-ui-inverse.mjs';"
-   },
-   {
-    "at": 16,
+    "at": 12,
     "before": "const read=p=>readBeforeMobileQaSource(p).replaceAll('\\r\\n','\\n');\nconst potionPath='tests/lua/battle_ui_potion_target_failures.lua';",
     "after": "const read=p=>readBeforeMobileQaSource(p).replaceAll('\\r\\n','\\n');\nconst cases=[];\nconst register=(name,body)=>cases.push([name,body]);\nconst potionPath='tests/lua/battle_ui_potion_target_failures.lua';"
    },
    {
-    "at": 36,
+    "at": 32,
     "before": "}\ntest('approved UI layer binds complete current sources and restores exactly the unchanged PR302 base',()=>{\n assert.equal(approvedUi.baseHead,'53fa164a9914dd8a7a5849ff741925dd3131f5e4');",
     "after": "}\nregister('approved UI layer binds complete current sources and restores exactly the unchanged PR302 base',()=>{\n assert.equal(approvedUi.baseHead,'53fa164a9914dd8a7a5849ff741925dd3131f5e4');"
    },
    {
-    "at": 60,
+    "at": 56,
     "before": "});\ntest('bounded potion registrar composes only its complete exact source before the unchanged frozen UI guard',()=>{\n const live=read(potionPath),original=originalPotionFailures(live),binding=approvedUi.files[potionPath];",
     "after": "});\nregister('bounded potion registrar composes only its complete exact source before the unchanged frozen UI guard',()=>{\n const live=read(potionPath),original=originalPotionFailures(live),binding=approvedUi.files[potionPath];"
    },
    {
-    "at": 90,
+    "at": 86,
     "before": "});\ntest('historical materialization consumes both all 26 original sources and every new UI consumer',()=>{\n for(const path of ['src/lua/abyss_card_display.lua','src/lua/abyss_card_skin.lua','src/lua/abyss_shop_ui.lua'])assert(approvedUi.files[path],path);",
     "after": "});\nregister('historical materialization consumes both all 26 original sources and every new UI consumer',()=>{\n for(const path of ['src/lua/abyss_card_display.lua','src/lua/abyss_card_skin.lua','src/lua/abyss_shop_ui.lua'])assert(approvedUi.files[path],path);"
    },
    {
-    "at": 110,
+    "at": 106,
     "before": "",
-    "after": "\nconst workerFlag='--isolated-approved-ui-case';\nconst nameFilter=/(?:^|[\\s\"'])--test-(?:name|skip)-pattern(?=[=\\s\"']|$)/;\nconst hasNameFilter=process.execArgv.some(arg=>nameFilter.test(arg))\n ||nameFilter.test(process.env.NODE_OPTIONS??'');\nif(process.argv[2]===workerFlag){\n const selected=cases.find(([name])=>name===process.argv[3]);\n assert(selected,'registered approved UI replay case');\n historicalTest(...selected);\n}else if(availableParallelism()<2||hasNameFilter){\n for(const entry of cases)historicalTest(...entry);\n}else{\n // The historical harness changes cwd. Run the cases in separate processes\n // so each keeps its own verified inputs and isolated working directory.\n const execute=promisify(execFile),file=fileURLToPath(import.meta.url);\n test('approved UI historical replay',{concurrency:2},async context=>{\n  await Promise.all(cases.map(([name])=>context.test(name,async()=>{\n   const env={...process.env};\n   delete env.NODE_TEST_CONTEXT;\n   const {stdout}=await execute(process.execPath,['--test-reporter=tap',file,workerFlag,name],{env,maxBuffer:1024*1024,windowsHide:true})\n    .catch(error=>assert.fail([error.stdout,error.stderr,error.message].filter(Boolean).join('\\n')));\n   assert.match(stdout,/^# tests 1\\r?$/m,'the isolated process ran one registered case');\n   assert.match(stdout,/^# pass 1\\r?$/m,'the isolated historical case passed');\n  })));\n });\n}\n"
+    "after": "\nrunHistoricalCases(import.meta.url,'approved UI historical replay',cases);\n"
    }
   ]
  },
@@ -1287,6 +1282,55 @@ const bindings = new Map([
     "at": 89,
     "before": "    h.run.gold=1000;h:refresh()\n    local offer",
     "after": "    h.run.gold=1000;h:refresh()\n    assert(F.click(r,'nodePanel','merchant/talk'));advanceShop(h)\n    local offer"
+   }
+  ]
+ },
+ {
+  "path": "tests/task77-current-source-layers.test.mjs",
+  "beforeSha256": "c16c80771ee301f3a26fa8b5607dfedf4f2764c1ea15d0787333e7c7fa1ef605",
+  "afterSha256": "aac72bc0dee77a8e1a5ad4b9ad15ce18a4266bed981d5cbad8ca8d6c75143835",
+  "hunks": [
+   {
+    "at": 1,
+    "before": "import {preApprovedUiSource} from './helpers/approved-ui-inverse.mjs';\nimport test from 'node:test';\nimport {historicalTest} from './helpers/historical-baseline-inputs.mjs';\nimport assert from 'node:assert/strict';",
+    "after": "import {preApprovedUiSource} from './helpers/approved-ui-inverse.mjs';\nimport {runHistoricalCases} from './helpers/isolated-historical-cases.mjs';\nimport assert from 'node:assert/strict';"
+   },
+   {
+    "at": 11,
+    "before": "const read=path=>preRosterSource(path,preAcceptedPr323Source(path,preTask77OuterSource(path,readFileSync(path,'utf8'))));\nfunction invert(source,binding){",
+    "after": "const read=path=>preRosterSource(path,preAcceptedPr323Source(path,preTask77OuterSource(path,readFileSync(path,'utf8'))));\nconst cases=[];\nconst register=(name,body)=>cases.push([name,body]);\nfunction invert(source,binding){"
+   },
+   {
+    "at": 20,
+    "before": "\nhistoricalTest('current Task77 source reverses only its owned edits and preserves the complete accepted confirmation/UI base',()=>{\n assert.equal(layers.acceptedBase,'77c2d5e6850f1758b821e5e2d45be60e8b5ed8a4');",
+    "after": "\nregister('current Task77 source reverses only its owned edits and preserves the complete accepted confirmation/UI base',()=>{\n assert.equal(layers.acceptedBase,'77c2d5e6850f1758b821e5e2d45be60e8b5ed8a4');"
+   },
+   {
+    "at": 36,
+    "before": "\nhistoricalTest('accepted UI source layers recover the original immutable formal bindings and reject incomplete or duplicated changes',()=>{\n assert.deepEqual(Object.keys(layers.acceptedUi),['data/presentation/ui_theme.json','scripts/character-ui-layout.mjs','scripts/game-ui-layout.mjs','src/lua/abyss_game_ui.lua']);",
+    "after": "\nregister('accepted UI source layers recover the original immutable formal bindings and reject incomplete or duplicated changes',()=>{\n assert.deepEqual(Object.keys(layers.acceptedUi),['data/presentation/ui_theme.json','scripts/character-ui-layout.mjs','scripts/game-ui-layout.mjs','src/lua/abyss_game_ui.lua']);"
+   },
+   {
+    "at": 51,
+    "before": "\nhistoricalTest('Task77 owns complete current sources before its unchanged formal guards and rejects current drift',()=>{\n for(const path of Object.keys(layers.acceptedUi)){",
+    "after": "\nregister('Task77 owns complete current sources before its unchanged formal guards and rejects current drift',()=>{\n for(const path of Object.keys(layers.acceptedUi)){"
+   },
+   {
+    "at": 68,
+    "before": "",
+    "after": "\nrunHistoricalCases(import.meta.url,'Task77 historical source replay',cases);\n"
+   }
+  ]
+ },
+ {
+  "path": "tests/integration-source-epoch.test.mjs",
+  "beforeSha256": "58159c0c30a0bbd658c1d47543c2350d8534198c43c4ba59b03318f14195178d",
+  "afterSha256": "857a72cbde0acc553ec440c953018f5a84f6e23fb7f9e62e616bd784116d5318",
+  "hunks": [
+   {
+    "at": 32,
+    "before": " assert.equal(authenticateInputRetirement(path,source,read),prior);\n assert.equal(authenticateInputRetirement(path,source.replaceAll('\\n','\\r\\n'),read),prior.replaceAll('\\n','\\r\\n'));\n assert.throws(()=>authenticateInputRetirement(path,source,()=>source+'\\n'),/input retirement validation/);",
+    "after": " assert.equal(authenticateInputRetirement(path,source,read),prior);\n const crlf=text=>text.replace(/\\r?\\n/g,'\\r\\n');\n assert.equal(authenticateInputRetirement(path,crlf(source),read),crlf(prior));\n assert.throws(()=>authenticateInputRetirement(path,source,()=>source+'\\n'),/input retirement validation/);"
    }
   ]
  }

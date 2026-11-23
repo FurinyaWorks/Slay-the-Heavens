@@ -49,6 +49,8 @@ const linuxReplayMinimumMs = Object.freeze({
   'power-shop-boundaries.test.mjs': 486000,
   'presentation-native-m3-contract.test.mjs': 1037000,
   'relic-query-source-inverse.test.mjs': 123000,
+  // Job 137510449969 spent over 22 minutes in this file before cutoff.
+  'task77-current-source-layers.test.mjs': 1295000,
 });
 
 // Completed replay cases in Windows jobs 137468791786, 137468791799,

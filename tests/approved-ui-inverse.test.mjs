@@ -1,16 +1,12 @@
 import {readBeforeMobileQaSource} from './helpers/mobile-qa-source-inverse.mjs';
 import {nodeUiRefactor} from './helpers/node-ui-refactor-inverse.mjs';
 import {preIntegratedNodeUiSource} from './helpers/approved-node-ui-refactor.mjs';
-import test from 'node:test';
-import {historicalTest} from './helpers/historical-baseline-inputs.mjs';
+import {runHistoricalCases} from './helpers/isolated-historical-cases.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync,mkdirSync,mkdtempSync,existsSync,rmSync} from 'node:fs';
 import {join} from 'node:path';
-import {availableParallelism,tmpdir} from 'node:os';
+import {tmpdir} from 'node:os';
 import {createHash} from 'node:crypto';
-import {execFile} from 'node:child_process';
-import {promisify} from 'node:util';
-import {fileURLToPath} from 'node:url';
 import {approvedUi,preApprovedUiSource,preApprovedUiOuterSource} from './helpers/approved-ui-inverse.mjs';
 import {p0Presentation,preAcceptedPresentation,materializeHistoricalPresentation} from './helpers/p0-presentation-inverse.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex');
@@ -109,28 +105,4 @@ register('historical materialization consumes both all 26 original sources and e
  }finally{rmSync(directory,{recursive:true,force:true});}
 });
 
-const workerFlag='--isolated-approved-ui-case';
-const nameFilter=/(?:^|[\s"'])--test-(?:name|skip)-pattern(?=[=\s"']|$)/;
-const hasNameFilter=process.execArgv.some(arg=>nameFilter.test(arg))
- ||nameFilter.test(process.env.NODE_OPTIONS??'');
-if(process.argv[2]===workerFlag){
- const selected=cases.find(([name])=>name===process.argv[3]);
- assert(selected,'registered approved UI replay case');
- historicalTest(...selected);
-}else if(availableParallelism()<2||hasNameFilter){
- for(const entry of cases)historicalTest(...entry);
-}else{
- // The historical harness changes cwd. Run the cases in separate processes
- // so each keeps its own verified inputs and isolated working directory.
- const execute=promisify(execFile),file=fileURLToPath(import.meta.url);
- test('approved UI historical replay',{concurrency:2},async context=>{
-  await Promise.all(cases.map(([name])=>context.test(name,async()=>{
-   const env={...process.env};
-   delete env.NODE_TEST_CONTEXT;
-   const {stdout}=await execute(process.execPath,['--test-reporter=tap',file,workerFlag,name],{env,maxBuffer:1024*1024,windowsHide:true})
-    .catch(error=>assert.fail([error.stdout,error.stderr,error.message].filter(Boolean).join('\n')));
-   assert.match(stdout,/^# tests 1\r?$/m,'the isolated process ran one registered case');
-   assert.match(stdout,/^# pass 1\r?$/m,'the isolated historical case passed');
-  })));
- });
-}
+runHistoricalCases(import.meta.url,'approved UI historical replay',cases);
