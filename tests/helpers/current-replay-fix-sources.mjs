@@ -131,7 +131,7 @@ const bindings = new Map([
  {
   "path": "tests/helpers/m7-core-final-source-inverse.mjs",
   "beforeSha256": "96eae58fe74ee798a8c87be865a3640508e983e43e98b55e0ccd8756516ba768",
-  "afterSha256": "e33c3f8db7b6ebd67809d24f3ac77dc6b7acbf7f1b254b6dba54c1edcd8cee3a",
+  "afterSha256": "215cfae4d501c03f01c3ea773772db867058a658863be6e13e0b0507668323a5",
   "hunks": [
    {
     "at": 9,
@@ -141,10 +141,10 @@ const bindings = new Map([
    {
     "at": 25,
     "before": "  // any old byte. Never cache permission or use a projected reader downstream.\n  sourceEpoch.preCombinedSource(actorAnchor,sourceEpoch.proof.current[actorAnchor].source,{target:'pr618',readSource:raw});\n  assert(Object.hasOwn(defectActorEpoch.proof.current,path),'known Actor owner');",
-    "after": "  // any old byte. Never cache permission or use a projected reader downstream.\n  const source=raw(actorAnchor);\n  assert.equal(sourceEpoch.preCombinedSource(actorAnchor,source,{target:'pr618',readSource:raw}),\n   actorTarget.files[actorAnchor].source,'exact current Actor admission target');\n  assert(Object.hasOwn(defectActorEpoch.proof.current,path),'known Actor owner');"
+    "after": "  // any old byte. Never cache permission or use a projected reader downstream.\n  const source=raw(actorAnchor);\n  assert(isCurrentInputRetirementSource(actorAnchor,beforeUiEntrance(actorAnchor,source)),'combined linked owner identity: '+actorAnchor);\n  assert.equal(sourceEpoch.preCombinedSource(actorAnchor,source,{target:'pr618',readSource:raw}),\n   actorTarget.files[actorAnchor].source,'exact current Actor admission target');\n  assert(Object.hasOwn(defectActorEpoch.proof.current,path),'known Actor owner');"
    },
    {
-    "at": 32,
+    "at": 33,
     "before": "}\n// Explicit compatibility readers share this same full-current admission gate.\nexport {actorReader as currentDefectActorReader};\nexport function preM7FinalSource(path,source,{readSource=live}={}){\n readSource=readers.get(readSource)??readSource;\n const input=source;source=preDefectActorSource(path,source,{readSource:actorReader(readSource)});\n const utility=preDefectUtilitySource(path,source);if(utility!==source)return utility;",
     "after": "}\n// Explicit live compatibility readers start with the exact current architecture\n// before authenticating the complete current graph and exposing an earlier view.\nexport function currentDefectActorReader(raw){\n if(typeof raw!=='function')return raw;\n return path=>{\n  const source=raw(actorAnchor);\n  assert(isCurrentInputRetirementSource(actorAnchor,beforeUiEntrance(actorAnchor,source)),'combined linked owner identity: '+actorAnchor);\n  assert.equal(sourceEpoch.preCombinedSource(actorAnchor,source,{target:'pr618',readSource:raw}),\n   actorTarget.files[actorAnchor].source,'exact current Actor admission target');\n  assert(Object.hasOwn(defectActorEpoch.proof.current,path),'known Actor owner');\n  return actorTarget.files[path].source;\n };\n}\nexport function preM7FinalSource(path,source,{readSource=live}={}){\n readSource=readers.get(readSource)??readSource;\n const input=source;\n // Authenticate the post-Actor combat backflow against real disk owners before\n // passing an older source to the independently frozen Actor verifier.\n const actorInput=sourceEpoch.preCombinedSource(path,input,{target:'pr618',readSource});\n source=preDefectActorSource(path,actorInput,{readSource:actorReader(readSource)});\n const utility=preDefectUtilitySource(path,source);if(utility!==source)return utility;"
    }
@@ -231,12 +231,12 @@ const bindings = new Map([
  {
   "path": "tests/defect-integration-source.test.mjs",
   "beforeSha256": "bbf70b7aae3ae376480b1291c8418e4ad5686e23c8d0cd7b8dafa172d51edae2",
-  "afterSha256": "433134488c464644b3c693a65c5fb386b0f19699a281098cb35a42d7e1d70788",
+  "afterSha256": "3a485ca0a3df9699186422945d54198662abe63ff5af89999f9ca373d0830799",
   "hunks": [
    {
     "at": 183,
     "before": " const expected=proof.targets.develop.files[p].source;\n assertRawActorClosure(project,expected,[...proof.owners,...currentProductionRereads],417,\n  '05131aa3de86e8f88d0e82bca23e667bba10e3921cf029de891ec4e8b06c3a67');\n});",
-    "after": " const expected=proof.targets.develop.files[p].source;\n assertRawActorClosure(project,expected,[...proof.owners,...currentProductionRereads],460,\n  '6b72ef490e6f79b870b0a21d5b63ddb122f065aff81f837e8f6fa3bafbd40d51');\n});"
+    "after": " const expected=proof.targets.develop.files[p].source;\n assertRawActorClosure(project,expected,[...proof.owners,...currentProductionRereads],480,\n  'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd');\n});"
    },
    {
     "at": 203,
@@ -256,7 +256,7 @@ const bindings = new Map([
    {
     "at": 240,
     "before": " const project=readSource=>preM7FinalSource(p,source,{readSource});\n const admittedReads=assertRawActorClosure(project,beforeUtility(),proof.owners,1209,\n  'b6d10e2f98133c5b61d8aaeb7982d3f6047c17b098cc126d39815a9b08af17e1');\n // Supplying just the old three-owner snapshot is never permission to bypass",
-    "after": " const project=readSource=>preM7FinalSource(p,source,{readSource});\n const admittedReads=assertRawActorClosure(project,beforeUtility(),proof.owners,1338,\n  '2d2695fc540981ef4a663d36bb70d7af6548c232f2a07f742426fcd0a588fda5');\n // Supplying just the old three-owner snapshot is never permission to bypass"
+    "after": " const project=readSource=>preM7FinalSource(p,source,{readSource});\n const admittedReads=assertRawActorClosure(project,beforeUtility(),proof.owners,1443,\n  '1e104db373ce2e1fdcb5c806685240db6bfc851f95ca2514b8a011d2d6981ffe');\n // Each of the three Actor reads now authenticates the actual current anchor,\n // adding this exact nested Actor/Stasis closure before the unchanged scan.\n const anchorReads=[\n  ...Array(4).fill('config/architecture.json'),\n  ...['actor','focus','stances','actor_artifact','stance_damage','act2_stasis','combat',\n   'warrior_status_cards','blood_for_blood_cost','card_upgrade'].map(name=>'src/lua/abyss_'+name+'.lua'),\n  'config/architecture.json',\n ];\n const priorReads=[];\n for(let offset=0;offset<admittedReads.length;offset+=481){\n  const cohort=admittedReads.slice(offset,offset+481);\n  assert.deepEqual(cohort.slice(21,36),anchorReads,'exact current-anchor addition');\n  priorReads.push(...cohort.slice(0,21),...cohort.slice(36));\n }\n assert.equal(priorReads.length,1398);\n assert.equal(hash(JSON.stringify(priorReads)),'5f3ab63b052ddc6e263f47ebda67168b3691d8f719a83f853a9af3df0d53f564','complete original Actor order is unchanged');\n // Supplying just the old three-owner snapshot is never permission to bypass"
    }
   ]
  },
@@ -729,12 +729,12 @@ const bindings = new Map([
  {
   "path": "tests/act1-choice-responsibilities.test.mjs",
   "beforeSha256": "1905ee60a014ae61728e2463717a5cbbdae05ff0d4e66d26184659e89a02ab3c",
-  "afterSha256": "de4f375b53338158e10b08a56e9a2ff4f55ab0e0b9f36d34b396e1543dc48ef8",
+  "afterSha256": "3d6fe95cdb32d4263ef7d16c46ff551908bdb7df4f9c90f5da973f55a43b92a5",
   "hunks": [
    {
     "at": 201,
     "before": "   // Keep the complete current trace and the ordered original contract.\n   assert.equal(reads.length,403);\n   assert.equal(createHash('sha256').update(JSON.stringify(reads)).digest('hex'),'6f35ecd12c3f1edbc8ee8e476324bdb4380725eeacf240cc6ec15cd106fc2e3f');\n   let position=-1;",
-    "after": "   // Keep the complete current trace and the ordered original contract.\n   assert.equal(reads.length,446);\n   assert.equal(createHash('sha256').update(JSON.stringify(reads)).digest('hex'),'5dad58d855f93d4169fa5877eff635d77f2c0b99af76f12e8f5cb68a4d659a4f');\n   let position=-1;"
+    "after": "   // Keep the complete current trace and the ordered original contract.\n   assert.equal(reads.length,466);\n   assert.equal(createHash('sha256').update(JSON.stringify(reads)).digest('hex'),'049af1e21af40d804c1201c01f79da465c7ee0a2b1c4a2544a0c4c3cd1da0500');\n   const entranceBytes=readFileSync('tests/fixtures/ui-entrance-source.json.gz');\n   assert.equal(createHash('sha256').update(entranceBytes).digest('hex'),'7ac3f53b242819cdb569c0a1ebf60de0605b72297a1072ea612bfeb11b0597c9');\n   const entranceOwners=Object.keys(JSON.parse(gunzipSync(entranceBytes)).files);\n   assert.equal(entranceOwners.length,20);\n   assert.deepEqual(reads.slice(1,21),entranceOwners,'complete current entrance cohort');\n   assert.equal(createHash('sha256').update(JSON.stringify([reads[0],...reads.slice(21)])).digest('hex'),\n    '5dad58d855f93d4169fa5877eff635d77f2c0b99af76f12e8f5cb68a4d659a4f','unchanged complete original Act1 order');\n   let position=-1;"
    }
   ]
  },

@@ -333,9 +333,9 @@ const currentReplayFiles=Object.freeze({
 });
 const entranceFiles=Object.freeze({
  ...currentReplayFiles,
- 'tests/helpers/m7-core-final-source-inverse.mjs':'e33c3f8db7b6ebd67809d24f3ac77dc6b7acbf7f1b254b6dba54c1edcd8cee3a',
+ 'tests/helpers/m7-core-final-source-inverse.mjs':'215cfae4d501c03f01c3ea773772db867058a658863be6e13e0b0507668323a5',
  'tests/helpers/release-ui-restore-source.mjs':'57ea0c0631f3a9817621554c786880c718d21550c375ab7e5bb75fdaedf66292',
- 'tests/helpers/current-replay-fix-sources.mjs':'95b08fe592a0180074cd775d202c51e1fb8d0ca715a2ed4c94367aa9d07b7287',
+ 'tests/helpers/current-replay-fix-sources.mjs':'219d3bc5006efa3accfd3843c4ac2fbeae885d7d00d762546da4ca837e7b6255',
  [runtime]:'278820e92b95d78ccca26cee32a353e53eaf8e87377fabe8c8dcb64f6995264d',
  [closeout]:'4f559399c631fbd0fd25ea7f1ceb8f3b8c6643e167f0116d9f151e12ee0a0ecb',
  'tests/helpers/character-preparation-source.mjs':'4d209e768d9dfcb5afa466c0224eccfd1fa8f47a22c27e5d7b8b99fd8231f5cb',

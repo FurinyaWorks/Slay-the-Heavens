@@ -25,6 +25,7 @@ function actorReader(raw){
   // source. Authenticate every current raw owner on each read, before exposing
   // any old byte. Never cache permission or use a projected reader downstream.
   const source=raw(actorAnchor);
+  assert(isCurrentInputRetirementSource(actorAnchor,beforeUiEntrance(actorAnchor,source)),'combined linked owner identity: '+actorAnchor);
   assert.equal(sourceEpoch.preCombinedSource(actorAnchor,source,{target:'pr618',readSource:raw}),
    actorTarget.files[actorAnchor].source,'exact current Actor admission target');
   assert(Object.hasOwn(defectActorEpoch.proof.current,path),'known Actor owner');

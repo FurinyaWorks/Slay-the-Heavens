@@ -92,7 +92,7 @@ export function beforeCurrentHistoricalStsSource(path,source){
 }
 function beforeCurrentReplayCopier(path,source){
  if(path===copierPath&&matches(source,{
-  sha256:'7265ef1d47a5fa8cc1abcb38cc27e82fd5e60d08fd27e6c1a1b59a94445eaedf',gitBlob:'5ed50ef54e07b897d84ce23f269e74c070774d0d',
+  sha256:'75252da772f381b319697ff4eb63d0c1e586cbf079dc87f0a5d9058af5768eec',gitBlob:'b1f62dbf965ed476cfe50bc3db444214dbbba991',
  })){
   const prior=lf(source).replace(/const entranceFiles=Object.freeze\(\{\n[\s\S]+?\n\}\);\n/,'')
    .replace('Object.entries(entranceFiles)','Object.entries(currentReplayFiles)');
