@@ -912,7 +912,7 @@ const bindings = new Map([
  {
   "path": "tests/approved-ui-inverse.test.mjs",
   "beforeSha256": "55ee7c59bd21d09ffc881f2eaf946685ab1b477473ec462b7e60a5eda7fc69a8",
-  "afterSha256": "7ddcd54195945c930e0056f4e5b2def83629c1046fc7070aa821a03950048e46",
+  "afterSha256": "b79ef1d399824206b89cf4e1c089c2835904994368a15d45a7867c6e2f65f62e",
   "hunks": [
    {
     "at": 2,
@@ -947,7 +947,7 @@ const bindings = new Map([
    {
     "at": 110,
     "before": "",
-    "after": "\nconst childCase=process.env.ABYSS_APPROVED_UI_REPLAY_CASE;\nif(childCase!==undefined){\n const selected=cases.find(([name])=>name===childCase);\n assert(selected,'registered approved UI replay case');\n historicalTest(...selected);\n}else if(process.platform!=='linux'||availableParallelism()<2){\n for(const entry of cases)historicalTest(...entry);\n}else{\n // The historical harness changes cwd. Run the cases in separate processes\n // so each keeps its own verified inputs and isolated working directory.\n const execute=promisify(execFile),file=fileURLToPath(import.meta.url);\n test('approved UI historical replay',{concurrency:2},async context=>{\n  await Promise.all(cases.map(([name])=>context.test(name,async()=>{\n   const env={...process.env,ABYSS_APPROVED_UI_REPLAY_CASE:name};\n   delete env.NODE_TEST_CONTEXT;\n   const {stdout}=await execute(process.execPath,['--test','--test-reporter=tap',file],{env,maxBuffer:1024*1024});\n   assert.match(stdout,/^# tests 1$/m,'the isolated process ran one registered case');\n   assert.match(stdout,/^# pass 1$/m,'the isolated historical case passed');\n  })));\n });\n}\n"
+    "after": "\nconst workerFlag='--isolated-approved-ui-case';\nconst hasNameFilter=process.execArgv.some(arg=>/^--test-(?:name|skip)-pattern(?:=|$)/.test(arg));\nif(process.argv[2]===workerFlag){\n const selected=cases.find(([name])=>name===process.argv[3]);\n assert(selected,'registered approved UI replay case');\n historicalTest(...selected);\n}else if(process.platform!=='linux'||availableParallelism()<2||hasNameFilter){\n for(const entry of cases)historicalTest(...entry);\n}else{\n // The historical harness changes cwd. Run the cases in separate processes\n // so each keeps its own verified inputs and isolated working directory.\n const execute=promisify(execFile),file=fileURLToPath(import.meta.url);\n test('approved UI historical replay',{concurrency:2},async context=>{\n  await Promise.all(cases.map(([name])=>context.test(name,async()=>{\n   const env={...process.env};\n   delete env.NODE_TEST_CONTEXT;\n   const {stdout}=await execute(process.execPath,['--test-reporter=tap',file,workerFlag,name],{env,maxBuffer:1024*1024})\n    .catch(error=>assert.fail([error.stdout,error.stderr,error.message].filter(Boolean).join('\\n')));\n   assert.match(stdout,/^# tests 1$/m,'the isolated process ran one registered case');\n   assert.match(stdout,/^# pass 1$/m,'the isolated historical case passed');\n  })));\n });\n}\n"
    }
   ]
  }
