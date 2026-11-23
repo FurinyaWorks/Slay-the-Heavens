@@ -187,6 +187,11 @@ async function runHostedShard(files, root, env) {
   if (!lstatSync(join(root, '.git'), { throwIfNoEntry: false })?.isDirectory()) {
     throw new Error('Hosted execution requires physical checkout metadata');
   }
+  // The two art workers overlapped the strict native Host VM timeouts in
+  // Windows job 137561143877. Keep those files in the same serial checkout.
+  const serial = [artFeatureInverseTest, hostLifecycleTest];
+  const together = process.platform === 'win32' && serial.every(file => files.includes(file));
+  if (together && files.length === serial.length) return runInCheckout(files, root, env);
   const snapshot = realpathSync.native(mkdtempSync(join(env.RUNNER_TEMP || tmpdir(), 'slay-ci-shard-')));
   try {
     const location = relative(root, snapshot);
@@ -202,10 +207,6 @@ async function runHostedShard(files, root, env) {
       const name = file.slice('tests/'.length);
       weights[file] = Math.max(weights[file], laneMinimum[name] ?? 0);
     }
-    // The two art workers overlapped the strict native Host VM timeouts in
-    // Windows job 137561143877. Keep those files in the same serial checkout.
-    const serial = [artFeatureInverseTest, hostLifecycleTest];
-    const together = process.platform === 'win32' && files.length > serial.length && serial.every(file => files.includes(file));
     const remaining = together ? files.filter(file => !serial.includes(file)) : files;
     const reserved = together ? [weights[serial[0]] + weights[serial[1]], 0] : undefined;
     const original = partition(remaining, '1/2', weights, timings.unknownJsMs, reserved).files;
