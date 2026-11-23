@@ -2024,3 +2024,7 @@ assert(require('abyss_art_features').flags.monsters)
 dofile('tests/lua/traveler_power_tooltip.lua')
 `, 'COMBAT_ACTOR_DETAILS_PASS', {}, true, true);
 });
+
+test('final release UI routes mobile HUD touches by screen coordinate across run pages',t=>{
+ runOfficial(t,"dofile('tests/lua/support/mobile_run_hud_geometry.lua')",'HUD_GEOMETRY',{},true,true);
+});

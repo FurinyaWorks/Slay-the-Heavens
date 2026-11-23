@@ -205,6 +205,7 @@
     "abyss_feedback_actor_painter": "ui",
     "abyss_game_ui_overlays": "ui",
     "abyss_game_ui_view": "ui",
+    "abyss_mobile_run_hud": "ui",
     "abyss_game_ui_run": "ui",
     "abyss_game_ui_lifecycle": "ui",
     "abyss_game_ui_input": "ui",

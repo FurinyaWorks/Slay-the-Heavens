@@ -23,6 +23,10 @@
       "status": "Project diagnostic renders of current and prior native UI geometry and text. System fonts are rasterized for offline comparison. No atlas textures or font binaries are distributed; upstream IP rights are reserved.",
       "evidence": "docs/evidence/v2-ui-20261119/README.md"
     },
+    "mobile-run-hud-geometry-evidence": {
+      "status": "Project geometry-only diagnostics of the mobile reward picker. Uses rasterized system text and bounding boxes. No platform atlas textures or source font binaries are distributed.",
+      "evidence": "docs/evidence/mobile-run-hud/README.md"
+    },
     "approved-menu-design-reference": {
       "status": "Owner-supplied full menu design reference for project comparison. Original artist and independent license remain unconfirmed. No runtime use or third-party sublicense.",
       "evidence": "docs/design/reference-assets/v2.0.0/README.md; original bytes preserved by PR #753"
@@ -7865,6 +7869,14 @@
       "lfs": true,
       "storage": "ci-media-lfs-v1",
       "bytes": 79052
+    },
+    "docs/evidence/mobile-run-hud/reward-picker-after.png": {
+      "sha256": "454a3ea145adfb8b5680d6781d40d1d099d783232be14f27a0f44ef6402a4c40",
+      "category": "mobile-run-hud-geometry-evidence"
+    },
+    "docs/evidence/mobile-run-hud/reward-picker-before.png": {
+      "sha256": "897011662160e354640321595d846df1b721d4e55542aa6bd1084ffb9b05b248",
+      "category": "mobile-run-hud-geometry-evidence"
     },
     "docs/evidence/mobile-readability-20261101/map-before-after.png": {
       "sha256": "3d5b5c69e0efdb4498fd35f2b1a4418811af2ade71f868161d55883bfc0dc68d",

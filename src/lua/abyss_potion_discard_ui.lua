@@ -23,9 +23,11 @@ local function refreshBottle(bottle,id,platform)
 end
 function M.refreshEntry(hit,run,platform,mapSlots)
     local capacity=run and Run.potionCapacity(run) or 0
+    local official=Theme.presentationProfile=='official-assets-first'
+    local hud=official and (platform.mobileRunHud or Theme.officialAssets.battleHud)
+    local step=hud and hud.potionStep or 42
     for _,state in ipairs({'normal','hover','pressed','disabled'})do
         local variant=hit:GetChild(state)
-        local official=Theme.presentationProfile=='official-assets-first'
         entryFace(variant,official,mapSlots)
         variant:GetChild('label').text=run and '药水 '..Run.potionCount(run)..'/'..capacity or '药水'
         for i=1,Theme.layout.battlePotions.count do
@@ -33,7 +35,6 @@ function M.refreshEntry(hit,run,platform,mapSlots)
             local id=i<=capacity and run.potions[i] or nil
             slot:SetVisible(mapSlots==true and i<=capacity)
             if mapSlots then
-                local step=official and Theme.officialAssets.battleHud.potionStep or 42
                 slot:SetAnchoredPosition((i-(capacity+1)/2)*step,0)
             end
             slot:GetChild('emptyShell'):SetVisible(id==nil)

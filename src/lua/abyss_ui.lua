@@ -155,9 +155,10 @@ function OnStart()
         local Theme = require("abyss_theme")
         Viewport = require("abyss_viewport")
         local width, height = game.GetUICanvasSize()
-        local stage = Viewport.apply(script.object, width, height)
+        local stage, scale = Viewport.apply(script.object, width, height)
         nativeStage=stage
-        print("ABYSS_UI viewport_ready")
+        print(("ABYSS_UI viewport_ready device=%s canvas=%sx%s stageScale=%.6f"):format(
+            tostring(game.GetDevice and game.GetDevice()),width,height,scale))
         local flags = artFeatures()
         stage=attachComponents(stage,flags)
         local createEasterEggArt

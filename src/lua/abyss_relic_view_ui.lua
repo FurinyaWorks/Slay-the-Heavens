@@ -80,6 +80,7 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
     self.localPanel=official
     local baseBar=Theme.layout.relicView.bar
     local battleBar=official and assert(Theme.officialAssets.battleRelicBar,'missing official battle relic layout')
+    local style=platform.mobileRunHud and platform.mobileRunHud.relicBar or battleBar or baseBar
     local boundCount=official and battleBar.count or baseBar.count
     local tooltip=bar:GetChild('tooltip')
     local function child(name)return assert(root:GetChild(name),'missing relic control '..name)end
@@ -221,13 +222,19 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
     local function hideEmptyArt(icon,cell,more)
         if not cell or more then Art.hide(icon)end
     end
-    local function paintBarCell(i,cell,relics,run,style)
+    local function paintBarCell(i,cell,relics,run)
         local slot=bar:GetChild('slot'..i)
         slot:SetVisible(cell~=false)
         slot:SetAnchoredPosition(style.origin[1]+style.step*(i-1),style.origin[2])
         local icon,hit=slot:GetChild('icon'),slot:GetChild('hit')
         icon:SetSizeDelta(style.icon,style.icon)
-        hit:SetSizeDelta(style.hit or style.step,style.hit or 44)
+        local mobile=platform.mobileRunHud
+        local hitSize=mobile and mobile.hit or style.hit
+        hit:SetSizeDelta(hitSize or style.step,hitSize or 44)
+        if mobile then
+            slot:SetSizeDelta(hitSize,hitSize+2*style.hitOffsetY)
+            hit:SetAnchoredPosition(0,style.hitOffsetY)
+        end
         for _,name in ipairs({'rim','face'})do slot:GetChild(name):SetVisible(not official)end
         local more=type(cell)=='string'
         hideEmptyArt(icon,cell,more)
@@ -239,7 +246,6 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
     end
     function self.refreshBar(_,run,visible,inputBlocked,deferHiddenPaint)
         local relics=run and run.relics or {}
-        local style=official and battleBar or baseBar
         self.barInteractive=official and visible and not inputBlocked and not self.visible or false
         if not self.barInteractive or self.barRun~=run or self.hoverIndex and relics[self.hoverIndex]~=self.hoverId then
             self:resetBarHover()
@@ -249,7 +255,7 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
         if deferHiddenPaint and not visible then return end
         bar:GetChild('tray'):SetVisible(false) -- STS: discs float under the HP row, no tray capsule
         local cells=M.barCells(#relics,style.count)
-        for i=1,boundCount do paintBarCell(i,cells[i] or false,relics,run,style)end
+        for i=1,boundCount do paintBarCell(i,cells[i] or false,relics,run)end
     end
     root.disableCursorEventPassthrough=true
     child('blocker'):AddCursorEventListener(clickEvent,function()
@@ -287,8 +293,8 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
                     self.hoverId=entry.id
                     tooltip:GetChild('name').text=entry.name
                     tooltip:GetChild('effect').text=entry.description..(entry.status and '\n'..entry.status or '')
-                    local x=battleBar.origin[1]+battleBar.step*(i-1)
-                    tooltip:SetAnchoredPosition(math.max(-450,math.min(450,x+148)),battleBar.origin[2]-108)
+                    local x=style.origin[1]+style.step*(i-1)
+                    tooltip:SetAnchoredPosition(math.max(-450,math.min(450,x+148)),style.origin[2]-108)
                     tooltip:SetVisible(true);tooltip:SetAsLastSibling()
                 end
                 return true

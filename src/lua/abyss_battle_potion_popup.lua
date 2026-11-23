@@ -19,11 +19,13 @@ end
 local function sameSlot(run,token)
     return token and run==token.run and run.potions==token.inventory and run.potions[token.slot]==token.id
 end
-local function anchor(slot)
+local function anchor(slot,mobile)
     local hud=Theme.presentationProfile=='official-assets-first' and Theme.officialAssets.battleHud
     if hud then
-        local relicBar=Theme.officialAssets.battleRelicBar
-        return hud.potionX+(slot-1)*hud.potionStep,relicBar.origin[2]-relicBar.hit/2-Theme.space.s
+        hud=mobile or hud
+        local relicBar=mobile and mobile.relicBar or Theme.officialAssets.battleRelicBar
+        local bottom=relicBar.origin[2]+(relicBar.hitOffsetY or 0)-(hud.hit or relicBar.hit)/2
+        return hud.potionX+(slot-1)*hud.potionStep,bottom-Theme.space.s
     end
     return L.battlePotions.origin[1]+(slot-1)*L.battlePotions.step[1],P.top
 end
@@ -71,7 +73,7 @@ function M.new(root,owner,platform,clickEvent,actions)
         local actionHeight=math.max(P.actionHeight,L.nativeText.lineHeight)
         local effectHeight=lines==1 and L.nativeText.lineHeight or (lines+1)*P.line
         local h=math.max(P.minimumHeight,P.padding*2+header+effectHeight+P.gap+actionHeight)
-        local x,anchorY=anchor(token.slot)
+        local x,anchorY=anchor(token.slot,platform.mobileRunHud)
         local y=anchorY-h/2
         root:SetAnchoredPosition(x,y);root:SetSizeDelta(P.width,h)
         size('dismiss',-x,-y,Theme.canvas.base[1],Theme.canvas.base[2])

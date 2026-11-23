@@ -97,6 +97,7 @@ function M.new(root, data, presentation, clickEvent, platform)
     local newSeed = platform.newSeed or function() return require("abyss_new_run_seed").next() end
     local bgm = Bgm.new(platform.music)
     local function child(name) return assert(root:GetChild(name), "missing game panel " .. name) end
+    platform.mobileRunHud=require('abyss_mobile_run_hud').apply(child,platform)
     local menu = child("menuPanel")
     local exitPanel, exitEntry = child("exitPanel"), child("exitEntry")
     local runMenu = child("runMenu")

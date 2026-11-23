@@ -123,7 +123,7 @@ function M.syncRewardReturn(self)
         end
 end
 
-local function mapPotionFrame(open,hit,run,mapSlots)
+local function mapPotionFrame(open,hit,run,mapSlots,mobile)
     local values=Theme.layout.nativeNode.topBar.potions
     local x,y,w,h=table.unpack(values)
     if mapSlots then
@@ -131,8 +131,8 @@ local function mapPotionFrame(open,hit,run,mapSlots)
         -- Keep the leftmost slot clear of live gold when Potion Belt adds two.
         x,y,w,h=-250+math.max(0,capacity-3)*21,338,capacity*42,44
         if Theme.presentationProfile=='official-assets-first' then
-            local hud=Theme.officialAssets.battleHud
-            x,y,w,h=hud.potionX+(capacity-1)*hud.potionStep/2,hud.y,capacity*hud.potionStep,44
+            local hud=mobile or Theme.officialAssets.battleHud
+            x,y,w,h=hud.potionX+(capacity-1)*hud.potionStep/2,hud.y,capacity*hud.potionStep,hud.hit or 44
         end
     end
     open:SetAnchoredPosition(x,y);hit:SetSizeDelta(w,h)
@@ -147,7 +147,7 @@ function M.refreshPotionEntry(child,inCombat,canManagePotions,platform)
             -- Battle rewards retain mode='battle' after combat has ended. The
             -- shared official entry keeps its physical slots on every run page.
             local mapSlots=official and run~=nil or anchor and mapVisible==true
-            if anchor or official then mapPotionFrame(open,potionHit,run,mapSlots)end
+            if anchor or official then mapPotionFrame(open,potionHit,run,mapSlots,platform.mobileRunHud)end
             if official then
                 potionHit.interactable=not inCombat();potionHit.raycastTarget=false
                 for i=1,Theme.layout.battlePotions.count do
@@ -376,8 +376,11 @@ function M.refreshForeground(characterPanel,self,platform,exitEntry,exitEntryVis
         if not hud or utilitiesReady then return end
         for _,entry in ipairs({{child('deckEntry'):GetChild('open'),hud.deck},{exitEntry:GetChild('open'),hud.menu}})do
             local control,values=entry[1],entry[2]
-            control:SetAnchoredPosition(values[1],values[2])
+            local mobile=platform.mobileRunHud
+            local x=mobile and (values==hud.deck and mobile.deckX or mobile.menuX) or values[1]
+            control:SetAnchoredPosition(x,mobile and mobile.y or values[2])
             local hit=control:GetChild('hit')
+            if mobile then hit:SetSizeDelta(mobile.hit,mobile.hit)end
             for _,name in ipairs({'normal','hover','pressed','disabled'})do
                 local variant=hit:GetChild(name)
                 variant:SetLocalScale((variant.localScaleX or 1)*values[3],(variant.localScaleY or 1)*values[3],1)
