@@ -109,9 +109,15 @@ test("native OnStart rereads wall and CPU time after script and module recreatio
         assert(#seen==i and script.updating)
         assert(seen[i]:start())
         assert(seen[i].run==nil, "opening character selection must not allocate a run or seed")
-        assert(F.confirmStart(seen[i],"traveler"))
+        local host=seen[i]
+        assert(host:selectCharacter("traveler"))
         for _=1,80 do
-            local host=seen[i]
+            if not host.pageReveal:covered() then break end
+            OnUpdate(0.05)
+        end
+        assert(host.run==nil,"waiting for the selection page must not allocate a run or seed")
+        assert(host:confirmCharacter())
+        for _=1,80 do
             if not host.starting and not(host.prologue and host.prologue:covering())
                 and not(host.pageReveal and host.pageReveal:covered())then break end
             OnUpdate(0.05)

@@ -849,15 +849,15 @@ const bindings = new Map([
  {
   "path": "scripts/ci-shards.mjs",
   "beforeSha256": "6becba66be6048f090cd0036c2e5292f180d9010bbe24aef181977dca18fdeb3",
-  "afterSha256": "6d4d4c4ee5a510be9a647a3fe6df738a70540e8c2d7bb1979f1a2f0d87c92e85",
+  "afterSha256": "65b55e95f57347f503b4f2fe9264774061081b640db6a4f8fb801e1c37943a4d",
   "hunks": [
    {
     "at": 14,
     "before": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n",
-    "after": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n\n// Reserve the work that completed in POSIX jobs 137444936421, 137444936442,\n// 137444936458, 137444936507 and 137444936550 before their 30-minute cutoff.\n// Jobs 137468791737, 137468791821, 137468791852 and 137468791853 from\n// the next attempt exposed additional underweighted replay files.\n// These rounded-down case totals guide placement only. They are not full-file timings.\nconst linuxReplayMinimumMs = Object.freeze({\n  'approved-node-ui-refactor.test.mjs': 422000,\n  'approved-ui-inverse.test.mjs': 1295000,\n  'art-feature-source-inverse.test.mjs': 412000,\n  'battle-max-hp-config-inverse.test.mjs': 124000,\n  'card-origin-source-inverse.test.mjs': 149000,\n  'combat-reactions-architecture-inverse.test.mjs': 137000,\n  'competition-roster.test.mjs': 505000,\n  'core-architecture-inverse.test.mjs': 362000,\n  'core-lifecycle-source-inverse.test.mjs': 713000,\n  'defect-integration-source.test.mjs': 153000,\n  'game-ui-extraction-source-inverse.test.mjs': 870000,\n  'max-hp-accepted-source-inverse.test.mjs': 677000,\n  'native-enemy-theme-inverse.test.mjs': 54000,\n  'player-death-inverse.test.mjs': 172000,\n  'potion-callback-source.test.mjs': 238000,\n  'power-shop-boundaries.test.mjs': 486000,\n  'presentation-native-m3-contract.test.mjs': 1037000,\n  'relic-query-source-inverse.test.mjs': 123000,\n});\n\n// Completed replay cases in Windows jobs 137468791786, 137468791799,\n// 137468791818, 137468791860 and 137468791871, rounded down for placement.\nconst windowsReplayMinimumMs = Object.freeze({\n  'architecture-composition-format.test.mjs': 1190000,\n  'battle-max-hp-config-inverse.test.mjs': 681000,\n  'card-origin-source-inverse.test.mjs': 360000,\n  'colorless-catalog-source.test.mjs': 566000,\n  'compendium-source-inverse.test.mjs': 690000,\n  'core-architecture-inverse.test.mjs': 321000,\n  'formal-campaign-entry.test.mjs': 233000,\n  'potion-callback-source.test.mjs': 132000,\n  'power-shop-boundaries.test.mjs': 1364000,\n  'presentation-native-m3-contract.test.mjs': 791000,\n  'reward-query-boundary-source.test.mjs': 1440000,\n  'round3-catalog-source-inverse.test.mjs': 278000,\n  'run-architecture-inverse.test.mjs': 384000,\n  'sapphire-treasure.test.mjs': 59000,\n});\n\nexport const replayPlanningMinimumMs = Object.freeze({ linux: linuxReplayMinimumMs, win32: windowsReplayMinimumMs });\n"
+    "after": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n\n// Reserve the work that completed in POSIX jobs 137444936421, 137444936442,\n// 137444936458, 137444936507 and 137444936550 before their 30-minute cutoff.\n// Jobs 137468791737, 137468791821, 137468791838, 137468791852 and\n// 137468791853 from the next attempt exposed underweighted replay files.\n// Completed cases and file observations guide placement only.\nconst linuxReplayMinimumMs = Object.freeze({\n  'act1-choice-responsibilities.test.mjs': 153000,\n  'actor-lifecycle.test.mjs': 98000,\n  'approved-node-ui-refactor.test.mjs': 526000,\n  'approved-ui-inverse.test.mjs': 1295000,\n  'architecture-composition-format.test.mjs': 420000,\n  'art-feature-source-inverse.test.mjs': 412000,\n  'battle-max-hp-config-inverse.test.mjs': 124000,\n  'boss-ui-fixture-composition.test.mjs': 64000,\n  'card-origin-source-inverse.test.mjs': 149000,\n  'combat-reactions-architecture-inverse.test.mjs': 137000,\n  'competition-roster.test.mjs': 505000,\n  'core-architecture-inverse.test.mjs': 362000,\n  'core-lifecycle-source-inverse.test.mjs': 713000,\n  'defect-integration-source.test.mjs': 153000,\n  'end-turn-responsibilities.test.mjs': 252000,\n  'event-production-source-inverse.test.mjs': 100000,\n  'final-integration-source.test.mjs': 318000,\n  'game-ui-extraction-source-inverse.test.mjs': 870000,\n  'game-ui-host-result.test.mjs': 188000,\n  'max-hp-accepted-source-inverse.test.mjs': 677000,\n  'mobile-qa-source-migration.test.mjs': 140000,\n  'native-enemy-theme-inverse.test.mjs': 54000,\n  'nodes-battle-max-hp-config-inverse.test.mjs': 90000,\n  'player-death-inverse.test.mjs': 172000,\n  'potion-callback-source.test.mjs': 238000,\n  'power-shop-boundaries.test.mjs': 486000,\n  'presentation-native-m3-contract.test.mjs': 1037000,\n  'relic-query-source-inverse.test.mjs': 123000,\n});\n\n// Completed replay cases in Windows jobs 137468791786, 137468791799,\n// 137468791818, 137468791860, 137468791861 and 137468791871.\nconst windowsReplayMinimumMs = Object.freeze({\n  'act1-choice-responsibilities.test.mjs': 195000,\n  'architecture-composition-format.test.mjs': 1190000,\n  'battle-max-hp-config-inverse.test.mjs': 681000,\n  'card-origin-source-inverse.test.mjs': 360000,\n  'colorless-catalog-source.test.mjs': 566000,\n  'compendium-source-inverse.test.mjs': 690000,\n  'competition-roster-config-composition.test.mjs': 287000,\n  'core-architecture-inverse.test.mjs': 321000,\n  // Job 137468791861 spent over half an hour on this file before cutoff.\n  'core-lifecycle-source-inverse.test.mjs': 800000,\n  'formal-campaign-entry.test.mjs': 233000,\n  'official-assets-runtime.test.mjs': 216000,\n  'potion-callback-source.test.mjs': 132000,\n  'power-shop-boundaries.test.mjs': 1364000,\n  'presentation-native-m3-contract.test.mjs': 791000,\n  'reward-query-boundary-source.test.mjs': 1440000,\n  'round3-catalog-source-inverse.test.mjs': 278000,\n  'run-architecture-inverse.test.mjs': 384000,\n});\n\nexport const replayPlanningMinimumMs = Object.freeze({ linux: linuxReplayMinimumMs, win32: windowsReplayMinimumMs });\n"
    },
    {
-    "at": 87,
+    "at": 101,
     "before": "  const maps=Object.hasOwn(timings.js,platform)?[timings.js[platform]]:Object.values(timings.js);\n  return Object.fromEntries(files.map(file=>[file,Math.max(\n    ...maps.map(weights=>weights[file]??timings.unknownJsMs),\n    timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0)]));\n}",
     "after": "  const maps=Object.hasOwn(timings.js,platform)?[timings.js[platform]]:Object.values(timings.js);\n  return Object.fromEntries(files.map(file=>{\n    const name=file.slice('tests/'.length);\n    return [file,Math.max(\n      ...maps.map(weights=>weights[file]??timings.unknownJsMs),\n      timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0,\n      platform !== 'win32' ? linuxReplayMinimumMs[name] ?? 0 : 0,\n      platform !== 'linux' ? windowsReplayMinimumMs[name] ?? 0 : 0)];\n  }));\n}"
    }
@@ -1077,6 +1077,47 @@ const bindings = new Map([
     "at": 65,
     "before": "}\nprocess.on('message',message=>{if(message.type==='run')void run(message);else if(message.type==='close'){runtime?.close();runtime=undefined;process.disconnect();}});\nprocess.on('disconnect',()=>{child?.kill();runtime?.close();});process.send({type:'ready'});",
     "after": "}\nprocess.on('message',message=>{\n if(message.type==='run')void run(message);\n else if(message.type==='close'){\n  // The parent already owns this root and deletes it after the worker exits.\n  // Windows directory removal need not consume the worker's shutdown deadline.\n  runtime=undefined;\n  process.disconnect();\n }\n});\nprocess.on('disconnect',()=>{child?.kill();runtime?.close();});process.send({type:'ready'});"
+   }
+  ]
+ },
+ {
+  "path": "tests/lua/game_ui_seed.lua",
+  "beforeSha256": "fd74b7c87d599f5701fcdc29d054527ca70bf3b75d8835999f897835a9e7e7d8",
+  "afterSha256": "b433399431f0ed51680d46f9644d319f52a8893197c038930b33873d12cf508a",
+  "hunks": [
+   {
+    "at": 110,
+    "before": "        assert(seen[i].run==nil, \"opening character selection must not allocate a run or seed\")\n        assert(F.confirmStart(seen[i],\"traveler\"))\n        for _=1,80 do\n            local host=seen[i]\n            if not host.starting and not(host.prologue and host.prologue:covering())",
+    "after": "        assert(seen[i].run==nil, \"opening character selection must not allocate a run or seed\")\n        local host=seen[i]\n        assert(host:selectCharacter(\"traveler\"))\n        for _=1,80 do\n            if not host.pageReveal:covered() then break end\n            OnUpdate(0.05)\n        end\n        assert(host.run==nil,\"waiting for the selection page must not allocate a run or seed\")\n        assert(host:confirmCharacter())\n        for _=1,80 do\n            if not host.starting and not(host.prologue and host.prologue:covering())"
+   }
+  ]
+ },
+ {
+  "path": "tests/lua/potion_remaining_inventory_ui.lua",
+  "beforeSha256": "4f1db1dec3f11ba49ff9eb0413a03d9cd54c70ea7109e05d651c698defda7c9a",
+  "afterSha256": "e3a7e8fda7f070bba58b6e04d58c3d5a9a7fb5cfce4b4b076d63745195e2711e",
+  "hunks": [
+   {
+    "at": 1,
+    "before": "local F=dofile('tests/lua/support/game_ui_fixture.lua')\nlocal Run,Shop=require('abyss_run'),require('abyss_shop')",
+    "after": "local F=dofile('tests/lua/support/game_ui_fixture.lua')\nlocal advanceShop=dofile('tests/lua/support/shop_timeline.lua')\nlocal Run,Shop=require('abyss_run'),require('abyss_shop')"
+   },
+   {
+    "at": 13,
+    "before": "end\nlocal flow=Shop.prepare(h.run);flow.type='shop';flow.id='description-fixture';flow.floor=h.run.floor;h.run.nodeFlow=flow;h.run.phase='node'\nh.nodeUI.run,h.nodeUI.map=h.run,h.map;h.run.gold=10000\nfor offset=0,3,3 do\n for slot=1,3 do flow.potions[slot]={slot=slot,id=specs[offset+slot][1],price=50,rarity='common',sold=false,unavailable=false}end\n h.nodeUI:render()\n for slot=1,3 do",
+    "after": "end\nh.run.gold=10000\nfor offset=0,3,3 do\n local flow=Shop.prepare(h.run);flow.type='shop';flow.id='description-fixture-'..offset;flow.floor=h.run.floor\n for slot=1,3 do flow.potions[slot]={slot=slot,id=specs[offset+slot][1],price=50,rarity='common',sold=false,unavailable=false}end\n h.run.nodeFlow=flow;h.run.phase='node';h:refresh()\n assert(F.click(root,'nodePanel','merchant/talk'));advanceShop(h)\n for slot=1,3 do"
+   }
+  ]
+ },
+ {
+  "path": "tests/core-lifecycle-source-inverse.test.mjs",
+  "beforeSha256": "3069d09db3b80d8e2ff1d67401b7b063884dadfe3e9d6586ee80757fd07610fd",
+  "afterSha256": "e51c7b8a96101bd1f46eb408e4676a8c76a5347fed5ed4904ae72ce7484739ee",
+  "hunks": [
+   {
+    "at": 71,
+    "before": " const old=Object.fromEntries(paths.map(path=>[path,before(path)]));\n for(const consume of [prior,publicPrior])for(const host of paths)for(const linked of owners){\n  const source=read(host),expected=consume(host,source);let mode='good',reads=[];\n  const readSource=p=>{reads.push(p);if(p===linked){if(mode==='throw')throw Error('reader failed');if(mode==='missing')return undefined;if(mode==='drift')return read(p)+'\\n';if(mode==='old')return old[p];}return read(p);};\n  assert.equal(consume(host,source,{readSource}),expected);assert.deepEqual(reads.slice(0,4),owners);",
+    "after": " const old=Object.fromEntries(paths.map(path=>[path,before(path)]));\n // Prepare the exact four-owner epoch once for the injected reader. That reader\n // still supplies every fresh success or fault to the unchanged historical guard.\n const sources=Object.fromEntries(owners.map(path=>[path,read(path)]));\n for(const consume of [prior,publicPrior])for(const host of paths)for(const linked of owners){\n  const source=sources[host],expected=consume(host,source);let mode='good',reads=[];\n  const readSource=p=>{reads.push(p);if(p===linked){if(mode==='throw')throw Error('reader failed');if(mode==='missing')return undefined;if(mode==='drift')return sources[p]+'\\n';if(mode==='old')return old[p];}return sources[p]??read(p);};\n  assert.equal(consume(host,source,{readSource}),expected);assert.deepEqual(reads.slice(0,4),owners);"
    }
   ]
  }

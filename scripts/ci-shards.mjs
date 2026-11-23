@@ -16,23 +16,33 @@ timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureIn
 
 // Reserve the work that completed in POSIX jobs 137444936421, 137444936442,
 // 137444936458, 137444936507 and 137444936550 before their 30-minute cutoff.
-// Jobs 137468791737, 137468791821, 137468791852 and 137468791853 from
-// the next attempt exposed additional underweighted replay files.
-// These rounded-down case totals guide placement only. They are not full-file timings.
+// Jobs 137468791737, 137468791821, 137468791838, 137468791852 and
+// 137468791853 from the next attempt exposed underweighted replay files.
+// Completed cases and file observations guide placement only.
 const linuxReplayMinimumMs = Object.freeze({
-  'approved-node-ui-refactor.test.mjs': 422000,
+  'act1-choice-responsibilities.test.mjs': 153000,
+  'actor-lifecycle.test.mjs': 98000,
+  'approved-node-ui-refactor.test.mjs': 526000,
   'approved-ui-inverse.test.mjs': 1295000,
+  'architecture-composition-format.test.mjs': 420000,
   'art-feature-source-inverse.test.mjs': 412000,
   'battle-max-hp-config-inverse.test.mjs': 124000,
+  'boss-ui-fixture-composition.test.mjs': 64000,
   'card-origin-source-inverse.test.mjs': 149000,
   'combat-reactions-architecture-inverse.test.mjs': 137000,
   'competition-roster.test.mjs': 505000,
   'core-architecture-inverse.test.mjs': 362000,
   'core-lifecycle-source-inverse.test.mjs': 713000,
   'defect-integration-source.test.mjs': 153000,
+  'end-turn-responsibilities.test.mjs': 252000,
+  'event-production-source-inverse.test.mjs': 100000,
+  'final-integration-source.test.mjs': 318000,
   'game-ui-extraction-source-inverse.test.mjs': 870000,
+  'game-ui-host-result.test.mjs': 188000,
   'max-hp-accepted-source-inverse.test.mjs': 677000,
+  'mobile-qa-source-migration.test.mjs': 140000,
   'native-enemy-theme-inverse.test.mjs': 54000,
+  'nodes-battle-max-hp-config-inverse.test.mjs': 90000,
   'player-death-inverse.test.mjs': 172000,
   'potion-callback-source.test.mjs': 238000,
   'power-shop-boundaries.test.mjs': 486000,
@@ -41,22 +51,26 @@ const linuxReplayMinimumMs = Object.freeze({
 });
 
 // Completed replay cases in Windows jobs 137468791786, 137468791799,
-// 137468791818, 137468791860 and 137468791871, rounded down for placement.
+// 137468791818, 137468791860, 137468791861 and 137468791871.
 const windowsReplayMinimumMs = Object.freeze({
+  'act1-choice-responsibilities.test.mjs': 195000,
   'architecture-composition-format.test.mjs': 1190000,
   'battle-max-hp-config-inverse.test.mjs': 681000,
   'card-origin-source-inverse.test.mjs': 360000,
   'colorless-catalog-source.test.mjs': 566000,
   'compendium-source-inverse.test.mjs': 690000,
+  'competition-roster-config-composition.test.mjs': 287000,
   'core-architecture-inverse.test.mjs': 321000,
+  // Job 137468791861 spent over half an hour on this file before cutoff.
+  'core-lifecycle-source-inverse.test.mjs': 800000,
   'formal-campaign-entry.test.mjs': 233000,
+  'official-assets-runtime.test.mjs': 216000,
   'potion-callback-source.test.mjs': 132000,
   'power-shop-boundaries.test.mjs': 1364000,
   'presentation-native-m3-contract.test.mjs': 791000,
   'reward-query-boundary-source.test.mjs': 1440000,
   'round3-catalog-source-inverse.test.mjs': 278000,
   'run-architecture-inverse.test.mjs': 384000,
-  'sapphire-treasure.test.mjs': 59000,
 });
 
 export const replayPlanningMinimumMs = Object.freeze({ linux: linuxReplayMinimumMs, win32: windowsReplayMinimumMs });
