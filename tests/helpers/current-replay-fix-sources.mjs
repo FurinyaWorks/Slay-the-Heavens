@@ -1775,6 +1775,18 @@ const bindings = new Map([
     "after": "\n// Each Windows worker owns its historical checkout and keeps the original\n// fixture deadlines. Pair the 79757-write replay with the frame provenance\n// case and keep the other 79543-write replay with the remaining checks.\nconst firstLane=new Set([\n 'M3 frame and first UI batch retain every old native write except the explicitly reviewed visual delta',\n 'the accepted presentation sources still execute the original strict 79757-write fixture',\n]);\nconst lanes=[cases.filter(([, [name]])=>firstLane.has(name)),cases.filter(([, [name]])=>!firstLane.has(name))];\nassert.equal(lanes[0].length,firstLane.size,'all first-lane cases are registered');\nassert.equal(new Set(cases.map(([, [name]])=>name)).size,cases.length,'every registered case is unique');\nconst laneFlag='--isolated-presentation-m3-lane';\nif(process.argv[2]===laneFlag){\n const lane=lanes[Number(process.argv[3])];assert(lane,'registered M3 presentation lane');\n for(const [register,args] of lane)register(...args);\n}else if(process.platform==='win32'&&process.env.GITHUB_ACTIONS==='true'&&process.env.RUNNER_ENVIRONMENT==='github-hosted'\n &&availableParallelism()>=4&&!hasTestNameFilter()){\n test('Windows M3 presentation replays',async()=>{\n  const outcomes=await Promise.allSettled(lanes.map((lane,index)=>runIsolatedTest(import.meta.url,[laneFlag,String(index)],[],lane.length)));\n  for(const result of outcomes){\n   if(result.status==='rejected')throw result.reason;\n   process.stdout.write(result.value);\n  }\n });\n}else{\n for(const [register,args] of cases)register(...args);\n}\n"
    }
   ]
+ },
+ {
+  "path": "tests/helpers/game-ui-host-equivalence.mjs",
+  "beforeSha256": "8455091292b8742bdec9a639e2e841827465a2949fb969d9e3c8219cb5343d96",
+  "afterSha256": "f03d734bc96cd9839ea4a114c1c488a3f6825e910ca2638a86cc85e674808c72",
+  "hunks": [
+   {
+    "at": 30,
+    "before": " fs.writeFileSync(f,text.replace(needle,'if ABYSS_HOST_CONTROL then ABYSS_HOST_CONTROL(self) end\\n    '+needle));\n return dir;",
+    "after": " fs.writeFileSync(f,text.replace(needle,'if ABYSS_HOST_CONTROL then ABYSS_HOST_CONTROL(self) end\\n    '+needle));\n const trace=path.join(dir,'tests/lua/support/game_ui_host_trace.lua');\n const collector=fs.readFileSync(trace,'utf8'),pathStart=/^ local function path\\(\\)(\\r?\\n)/gm;\n assert.equal([...collector.matchAll(pathStart)].length,1);\n // The archived collector evaluates path() before record() can discard an\n // event outside the selected window. Avoid walking the parent chain for\n // those discarded events in both historical VMs.\n fs.writeFileSync(trace,collector.replace(pathStart,(_,eol)=>[\n  ' local function path()',\n  '  local nextCheckpoint=count+1',\n  '  if not ABYSS_HOST_FULL_TRACE or nextCheckpoint<(ABYSS_HOST_FROM or 1) or nextCheckpoint>(ABYSS_HOST_TO or 35) then return end',\n  '',\n ].join(eol)));\n return dir;"
+   }
+  ]
  }
 ].map(row=>[row.path,row]));
 
