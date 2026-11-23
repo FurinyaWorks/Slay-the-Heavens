@@ -167,7 +167,7 @@ dofile('tests/lua/support/sts_ui_closeout.lua')`;
 const require=createRequire(import.meta.url),directory=mkdtempSync(join(tmpdir(),'selection-overlay-'));
 after(()=>rmSync(directory,{recursive:true,force:true}));
 buildLuaData('data',join(directory,'abyss_data.lua'));
-buildUI(directory,undefined,{officialAssets:true,refinedReleaseMonsterArt:true,nativePageLifecycle:true});
+buildUI(directory,undefined,{officialAssets:true,nativePageLifecycle:true});
 const layout=JSON.parse(readFileSync(join(directory,'game-ui.json'),'utf8'));
 const panel=child(child(layout,'stage'),'characterPanel');
 
@@ -177,12 +177,16 @@ test('generated official character selection follows the approved details revisi
  assert.deepEqual(revisions.filter(row=>['APPROVED','CURRENT_IMPLEMENTATION'].includes(row.status))
   .map(row=>[row.revision,row.status]),[['release-sts1-20261122','APPROVED']]);
  assert.equal(revisions.find(row=>row.revision==='sts1-open-copy-20261119')?.status,'SUPERSEDED');
- const details=child(panel,'details');
+ const output=join(directory,'refined-release');
+ buildUI(output,undefined,{officialAssets:true,refinedReleaseMonsterArt:true,nativePageLifecycle:true});
+ const tree=JSON.parse(readFileSync(join(output,'game-ui.json'),'utf8'));
+ const selection=child(child(tree,'stage'),'characterPanel');
+ const details=child(selection,'details');
  for(const name of ['name','stats','gold','v25Story','relic','relicText']){
   assert.equal(child(details,name)?.kind,'text',name);
  }
  const retired=new Set(['deckTitle','deckSummary','deckRule','deckOpen','deckView']);
- const found=all(panel).filter(node=>retired.has(node.name)||/初始牌组|查看牌组/.test(node.text?.content??''));
+ const found=all(selection).filter(node=>retired.has(node.name)||/初始牌组|查看牌组/.test(node.text?.content??''));
  assert.deepEqual(found.map(node=>node.name),[],'obsolete starter deck controls in the official selection tree');
 });
 
