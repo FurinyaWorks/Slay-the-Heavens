@@ -849,15 +849,15 @@ const bindings = new Map([
  {
   "path": "scripts/ci-shards.mjs",
   "beforeSha256": "6becba66be6048f090cd0036c2e5292f180d9010bbe24aef181977dca18fdeb3",
-  "afterSha256": "d7838e7460f2145d6de521c2bc7f148726d1b19a93ac24008f6c20676ffcb5d0",
+  "afterSha256": "6d4d4c4ee5a510be9a647a3fe6df738a70540e8c2d7bb1979f1a2f0d87c92e85",
   "hunks": [
    {
     "at": 14,
     "before": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n",
-    "after": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n\n// Reserve the work that completed in POSIX jobs 137444936421, 137444936442,\n// 137444936458, 137444936507 and 137444936550 before their 30-minute cutoff.\n// Jobs 137468791737, 137468791821, 137468791852 and 137468791853 from\n// the next attempt exposed additional underweighted replay files.\n// These rounded-down case totals guide placement only. They are not full-file timings.\nconst linuxReplayMinimumMs = Object.freeze({\n  'approved-node-ui-refactor.test.mjs': 422000,\n  'approved-ui-inverse.test.mjs': 1295000,\n  'art-feature-source-inverse.test.mjs': 412000,\n  'battle-max-hp-config-inverse.test.mjs': 124000,\n  'card-origin-source-inverse.test.mjs': 149000,\n  'combat-reactions-architecture-inverse.test.mjs': 137000,\n  'competition-roster.test.mjs': 505000,\n  'core-architecture-inverse.test.mjs': 362000,\n  'core-lifecycle-source-inverse.test.mjs': 713000,\n  'defect-integration-source.test.mjs': 153000,\n  'game-ui-extraction-source-inverse.test.mjs': 870000,\n  'max-hp-accepted-source-inverse.test.mjs': 677000,\n  'native-enemy-theme-inverse.test.mjs': 54000,\n  'player-death-inverse.test.mjs': 172000,\n  'potion-callback-source.test.mjs': 238000,\n  'power-shop-boundaries.test.mjs': 486000,\n  'presentation-native-m3-contract.test.mjs': 1037000,\n  'relic-query-source-inverse.test.mjs': 123000,\n});\n\n// Completed replay cases in Windows jobs 137468791786, 137468791799,\n// 137468791818 and 137468791860, rounded down for shard placement.\nconst windowsReplayMinimumMs = Object.freeze({\n  'architecture-composition-format.test.mjs': 1190000,\n  'card-origin-source-inverse.test.mjs': 360000,\n  'compendium-source-inverse.test.mjs': 690000,\n  'core-architecture-inverse.test.mjs': 321000,\n  'formal-campaign-entry.test.mjs': 233000,\n  'potion-callback-source.test.mjs': 132000,\n  'power-shop-boundaries.test.mjs': 1364000,\n  'presentation-native-m3-contract.test.mjs': 791000,\n  'reward-query-boundary-source.test.mjs': 1440000,\n  'round3-catalog-source-inverse.test.mjs': 278000,\n});\n"
+    "after": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n\n// Reserve the work that completed in POSIX jobs 137444936421, 137444936442,\n// 137444936458, 137444936507 and 137444936550 before their 30-minute cutoff.\n// Jobs 137468791737, 137468791821, 137468791852 and 137468791853 from\n// the next attempt exposed additional underweighted replay files.\n// These rounded-down case totals guide placement only. They are not full-file timings.\nconst linuxReplayMinimumMs = Object.freeze({\n  'approved-node-ui-refactor.test.mjs': 422000,\n  'approved-ui-inverse.test.mjs': 1295000,\n  'art-feature-source-inverse.test.mjs': 412000,\n  'battle-max-hp-config-inverse.test.mjs': 124000,\n  'card-origin-source-inverse.test.mjs': 149000,\n  'combat-reactions-architecture-inverse.test.mjs': 137000,\n  'competition-roster.test.mjs': 505000,\n  'core-architecture-inverse.test.mjs': 362000,\n  'core-lifecycle-source-inverse.test.mjs': 713000,\n  'defect-integration-source.test.mjs': 153000,\n  'game-ui-extraction-source-inverse.test.mjs': 870000,\n  'max-hp-accepted-source-inverse.test.mjs': 677000,\n  'native-enemy-theme-inverse.test.mjs': 54000,\n  'player-death-inverse.test.mjs': 172000,\n  'potion-callback-source.test.mjs': 238000,\n  'power-shop-boundaries.test.mjs': 486000,\n  'presentation-native-m3-contract.test.mjs': 1037000,\n  'relic-query-source-inverse.test.mjs': 123000,\n});\n\n// Completed replay cases in Windows jobs 137468791786, 137468791799,\n// 137468791818, 137468791860 and 137468791871, rounded down for placement.\nconst windowsReplayMinimumMs = Object.freeze({\n  'architecture-composition-format.test.mjs': 1190000,\n  'battle-max-hp-config-inverse.test.mjs': 681000,\n  'card-origin-source-inverse.test.mjs': 360000,\n  'colorless-catalog-source.test.mjs': 566000,\n  'compendium-source-inverse.test.mjs': 690000,\n  'core-architecture-inverse.test.mjs': 321000,\n  'formal-campaign-entry.test.mjs': 233000,\n  'potion-callback-source.test.mjs': 132000,\n  'power-shop-boundaries.test.mjs': 1364000,\n  'presentation-native-m3-contract.test.mjs': 791000,\n  'reward-query-boundary-source.test.mjs': 1440000,\n  'round3-catalog-source-inverse.test.mjs': 278000,\n  'run-architecture-inverse.test.mjs': 384000,\n  'sapphire-treasure.test.mjs': 59000,\n});\n\nexport const replayPlanningMinimumMs = Object.freeze({ linux: linuxReplayMinimumMs, win32: windowsReplayMinimumMs });\n"
    },
    {
-    "at": 81,
+    "at": 87,
     "before": "  const maps=Object.hasOwn(timings.js,platform)?[timings.js[platform]]:Object.values(timings.js);\n  return Object.fromEntries(files.map(file=>[file,Math.max(\n    ...maps.map(weights=>weights[file]??timings.unknownJsMs),\n    timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0)]));\n}",
     "after": "  const maps=Object.hasOwn(timings.js,platform)?[timings.js[platform]]:Object.values(timings.js);\n  return Object.fromEntries(files.map(file=>{\n    const name=file.slice('tests/'.length);\n    return [file,Math.max(\n      ...maps.map(weights=>weights[file]??timings.unknownJsMs),\n      timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0,\n      platform !== 'win32' ? linuxReplayMinimumMs[name] ?? 0 : 0,\n      platform !== 'linux' ? windowsReplayMinimumMs[name] ?? 0 : 0)];\n  }));\n}"
    }
@@ -1023,6 +1023,60 @@ const bindings = new Map([
     "at": 25,
     "before": " if(fingerprint.sha256!==binding.sha256)return false;\n fingerprint.gitBlob??=createHash('sha1').update(`blob ${Buffer.byteLength(text)}\\0`).update(text).digest('hex');",
     "after": " if(fingerprint.sha256!==binding.sha256)return false;\n const {text}=fingerprint;\n fingerprint.gitBlob??=createHash('sha1').update(`blob ${Buffer.byteLength(text)}\\0`).update(text).digest('hex');"
+   }
+  ]
+ },
+ {
+  "path": "tests/ci-runtime.test.mjs",
+  "beforeSha256": "e420cc0f4973bc975a1d0fabdbc1b316fcf34c7ccb7db0ab1efef9270bbf0876",
+  "afterSha256": "b17178f24a4ff222ab024c532a5ec5ffe869f989373f78fffd57b4205e1c2d38",
+  "hunks": [
+   {
+    "at": 33,
+    "before": "import {readBeforeMobileQaSource} from './helpers/mobile-qa-source-inverse.mjs';\nimport { partition, jsShard, jsPlanningWeights, discoverJs, timings } from '../scripts/ci-shards.mjs';\nimport { shardLuaScripts } from '../scripts/test-lua.mjs';",
+    "after": "import {readBeforeMobileQaSource} from './helpers/mobile-qa-source-inverse.mjs';\nimport { partition, jsShard, jsPlanningWeights, discoverJs, timings, replayPlanningMinimumMs } from '../scripts/ci-shards.mjs';\nimport { shardLuaScripts } from '../scripts/test-lua.mjs';"
+   },
+   {
+    "at": 117,
+    "before": "\ntest('platform-native placement covers every current file once and unknown platforms retain the conservative fallback',()=>{\n const files=discoverJs();\n const asymmetric=files.find(file=>{\n  const floor=timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0;\n  return Math.max(timings.js.win32[file]??timings.unknownJsMs,floor)!==Math.max(timings.js.linux[file]??timings.unknownJsMs,floor);\n });\n assert.ok(asymmetric,'the observed platform maps contain distinct costs');",
+    "after": "\nfunction expectedPlanningWeight(file,platform,floor=timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0){\n const native=Object.hasOwn(timings.js,platform)?[platform]:Object.keys(timings.js);\n return Math.max(floor,...native.flatMap(os=>[\n  timings.js[os][file]??timings.unknownJsMs,\n  replayPlanningMinimumMs[os]?.[file.slice('tests/'.length)]??0,\n ]));\n}\n\ntest('platform-native placement covers every current file once and unknown platforms retain the conservative fallback',()=>{\n const files=discoverJs();\n for(const floor of Object.values(replayPlanningMinimumMs))for(const [name,ms]of Object.entries(floor)){\n  assert(files.includes('tests/'+name),'measured replay placement has a current test: '+name);\n  assert(Number.isSafeInteger(ms)&&ms>0,'positive replay case duration: '+name);\n }\n const asymmetric=files.find(file=>expectedPlanningWeight(file,'win32')!==expectedPlanningWeight(file,'linux'));\n assert.ok(asymmetric,'the observed platform maps contain distinct costs');"
+   },
+   {
+    "at": 135,
+    "before": "  const native=jsPlanningWeights(files,platform);\n  for(const file of files)assert.equal(native[file],Math.max(timings.js[platform][file]??timings.unknownJsMs,timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0));\n  const count=platform==='win32'?qualityShardMatrices.windows.length:qualityShardMatrices.posix.length;",
+    "after": "  const native=jsPlanningWeights(files,platform);\n  for(const file of files)assert.equal(native[file],expectedPlanningWeight(file,platform));\n  const count=platform==='win32'?qualityShardMatrices.windows.length:qualityShardMatrices.posix.length;"
+   },
+   {
+    "at": 144,
+    "before": "  const fallback=jsPlanningWeights(files,platform);\n  for(const file of files)assert.equal(fallback[file],Math.max(...Object.values(timings.js).map(map=>map[file]??timings.unknownJsMs),timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0));\n }",
+    "after": "  const fallback=jsPlanningWeights(files,platform);\n  for(const file of files)assert.equal(fallback[file],expectedPlanningWeight(file,platform));\n }"
+   },
+   {
+    "at": 289,
+    "before": "  }\n  for(const platform of ['win32','linux'])assert.equal(jsPlanningWeights([file],platform)[file],Math.max(timings.js[platform][file]??timings.unknownJsMs,entry.durationMs));\n }",
+    "after": "  }\n  for(const platform of ['win32','linux'])assert.equal(jsPlanningWeights([file],platform)[file],expectedPlanningWeight(file,platform,entry.durationMs));\n }"
+   },
+   {
+    "at": 423,
+    "before": "  assert.equal(timings.js[platform][key],10000,'retain actual old observations separately from the new local planning floor');\n  assert.equal(jsPlanningWeights([key],platform)[key],Math.max(timings.js[platform][key],floor.durationMs));\n }",
+    "after": "  assert.equal(timings.js[platform][key],10000,'retain actual old observations separately from the new local planning floor');\n  assert.equal(jsPlanningWeights([key],platform)[key],expectedPlanningWeight(key,platform,floor.durationMs));\n }"
+   },
+   {
+    "at": 453,
+    "before": "  assert.equal(floor.durationMs,Math.ceil(observation.durationMs));assert.equal(observation.planningFloorMs,floor.durationMs);\n  for(const platform of ['win32','linux'])assert.equal(jsPlanningWeights([file],platform)[file],Math.max(timings.js[platform][file]??timings.unknownJsMs,floor.durationMs));\n }",
+    "after": "  assert.equal(floor.durationMs,Math.ceil(observation.durationMs));assert.equal(observation.planningFloorMs,floor.durationMs);\n  for(const platform of ['win32','linux'])assert.equal(jsPlanningWeights([file],platform)[file],expectedPlanningWeight(file,platform,floor.durationMs));\n }"
+   }
+  ]
+ },
+ {
+  "path": "tests/helpers/historical-drag-worker.mjs",
+  "beforeSha256": "b7f9fdc9854ab6e8ebd80606ee4b5a44e2926a5fd9dac311307c23f9548c2fdf",
+  "afterSha256": "eacffc2ccb806c0078b7d77938518be230add54685fe458d0598f4bd3b0063fd",
+  "hunks": [
+   {
+    "at": 65,
+    "before": "}\nprocess.on('message',message=>{if(message.type==='run')void run(message);else if(message.type==='close'){runtime?.close();runtime=undefined;process.disconnect();}});\nprocess.on('disconnect',()=>{child?.kill();runtime?.close();});process.send({type:'ready'});",
+    "after": "}\nprocess.on('message',message=>{\n if(message.type==='run')void run(message);\n else if(message.type==='close'){\n  // The parent already owns this root and deletes it after the worker exits.\n  // Windows directory removal need not consume the worker's shutdown deadline.\n  runtime=undefined;\n  process.disconnect();\n }\n});\nprocess.on('disconnect',()=>{child?.kill();runtime?.close();});process.send({type:'ready'});"
    }
   ]
  }

@@ -41,10 +41,12 @@ const linuxReplayMinimumMs = Object.freeze({
 });
 
 // Completed replay cases in Windows jobs 137468791786, 137468791799,
-// 137468791818 and 137468791860, rounded down for shard placement.
+// 137468791818, 137468791860 and 137468791871, rounded down for placement.
 const windowsReplayMinimumMs = Object.freeze({
   'architecture-composition-format.test.mjs': 1190000,
+  'battle-max-hp-config-inverse.test.mjs': 681000,
   'card-origin-source-inverse.test.mjs': 360000,
+  'colorless-catalog-source.test.mjs': 566000,
   'compendium-source-inverse.test.mjs': 690000,
   'core-architecture-inverse.test.mjs': 321000,
   'formal-campaign-entry.test.mjs': 233000,
@@ -53,7 +55,11 @@ const windowsReplayMinimumMs = Object.freeze({
   'presentation-native-m3-contract.test.mjs': 791000,
   'reward-query-boundary-source.test.mjs': 1440000,
   'round3-catalog-source-inverse.test.mjs': 278000,
+  'run-architecture-inverse.test.mjs': 384000,
+  'sapphire-treasure.test.mjs': 59000,
 });
+
+export const replayPlanningMinimumMs = Object.freeze({ linux: linuxReplayMinimumMs, win32: windowsReplayMinimumMs });
 
 export function partition(files, value, weights, fallback, initial) {
   const match = /^([1-9]\d*)\/([1-9]\d*)$/.exec(String(value));
