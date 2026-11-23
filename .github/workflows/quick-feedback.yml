@@ -19,7 +19,7 @@ concurrency:
 jobs:
   related:
     name: Complete affected preflight
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.repository == 'FurinyaDev/Slay-the-Heavens-Fork-A' && github.event_name == 'push' && !startsWith(github.ref, 'refs/heads/ci/full/')) }}
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.repository.id == 1460097312 && github.event_name == 'push' && !startsWith(github.ref, 'refs/heads/ci/full/')) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
