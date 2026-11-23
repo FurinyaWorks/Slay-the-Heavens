@@ -316,6 +316,17 @@ const actionButtonFiles=Object.freeze({
 });
 const currentReplayFiles=Object.freeze({
  ...actionButtonFiles,
+ 'tests/helpers/combined-epoch/pre-defect-source-epoch.mjs':'6199f290e0faf4770452de5e6481aa4d27e4d039bcd2d4b6673b96694726d6d0',
+ 'tests/helpers/defect-final-source-epoch.mjs':'d6dabee023a3a9f8a2620c3edd1dee0b8b359aa62aff8a17b63175e170ab8b04',
+ 'tests/helpers/effects-target-group-source-epoch.mjs':'c73c6b050ece8efd96775188c146e1d736561d068f61cd3e7081c74d937fc0af',
+ 'tests/helpers/encounter-formation-source-epoch.mjs':'a044c0830309415ea3858a6368f6d794440db1f2d68b6cf3742111b03cd047c5',
+ 'tests/helpers/noncombat-source-epoch.mjs':'4b8705f85cf1609b8e1c28253610b3ddc4ea8a1fa8dae4b054601c56fdd3c9b2',
+ 'tests/helpers/relic-equip-source-epoch.mjs':'b768a3e8023f0286f4aa577d1300f932567b9d731b836038dac5959e9d67ce02',
+ 'tests/helpers/room-ui-source-epoch.mjs':'ce50bd58037ea74976dae9e94515dfd16f91432c715ee880c00ae8080a73202e',
+ 'tests/helpers/seven-refactor-source-epoch.mjs':'5944f7c74d61e93fa5870281b5cc45993535c2e96c4d0014a1d5fe24baa46341',
+ 'tests/helpers/silent-final-source-epoch.mjs':'d31330033fd9e188d93001a55213e1c471546f6e57b3b6ec68f726c23468e35e',
+ 'tests/helpers/silent-tactics-source-epoch.mjs':'decd2795a2b2a02ae717787dd5ae822f69191b1660464da905a641f8116930d1',
+ 'tests/helpers/watcher-flow-source-epoch.mjs':'def224824eedc945a1cb402dd0429861593f0ff08a822f1961a954bf467f3378',
  'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'a8afebef6e0f30862db595c59dfc5e2056e3ea52207b70644a0fa3a5ae1568db',
  'tests/helpers/source-fingerprint.mjs':'61602dc332625a797e6d316c4871de39b4d241aa722a3f0dab3db2435576cbfd',
  'tests/helpers/game-ui-extraction-source-inverse.mjs':'2289fc74eb6d0948182080709e12d0e1f497a9c7b845dcbdeb704b6bd191be1a',
