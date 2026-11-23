@@ -51,7 +51,7 @@ const linuxReplayMinimumMs = Object.freeze({
 });
 
 // Completed replay cases in Windows jobs 137468791786, 137468791799,
-// 137468791818, 137468791860, 137468791861 and 137468791871.
+// 137468791818, 137468791860, 137468791861, 137468791871 and 137468791996.
 const windowsReplayMinimumMs = Object.freeze({
   'act1-choice-responsibilities.test.mjs': 195000,
   'architecture-composition-format.test.mjs': 1190000,
@@ -60,10 +60,13 @@ const windowsReplayMinimumMs = Object.freeze({
   'colorless-catalog-source.test.mjs': 566000,
   'compendium-source-inverse.test.mjs': 690000,
   'competition-roster-config-composition.test.mjs': 287000,
+  'competition-roster.test.mjs': 735000,
   'core-architecture-inverse.test.mjs': 321000,
   // Job 137468791861 spent over half an hour on this file before cutoff.
   'core-lifecycle-source-inverse.test.mjs': 800000,
   'formal-campaign-entry.test.mjs': 233000,
+  'living-wall-architecture-inverse.test.mjs': 1013000,
+  'native-candidate-art.test.mjs': 113000,
   'official-assets-runtime.test.mjs': 216000,
   'potion-callback-source.test.mjs': 132000,
   'power-shop-boundaries.test.mjs': 1364000,
