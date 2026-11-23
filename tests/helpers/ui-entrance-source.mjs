@@ -18,12 +18,12 @@ const owners=Object.keys(files);
 export const addedEntranceModules=Object.freeze(owners.filter(path=>files[path].before===null));
 const readLive=path=>readFileSync(path,'utf8');
 const binding=path=>Object.hasOwn(files,path)?files[path]:undefined;
-const currentInput=(path,source)=>['src/lua/abyss_node_ui_faces.lua','src/lua/abyss_game_ui.lua','src/lua/abyss_game_ui_run.lua',
+const currentInput=(path,source)=>['src/lua/abyss_node_ui_faces.lua','src/lua/abyss_game_ui.lua','src/lua/abyss_game_ui_run.lua','src/lua/abyss_game_ui_view.lua',
  'tests/lua/shop_entry.lua','tests/helpers/combined-epoch/source-epoch-runtime.mjs'].includes(path)
  ?beforeCurrentReplayFixes(path,source):source;
 function currentMatches(path,source,expected){
  const normalized=currentInput(path,source);
- if(['src/lua/abyss_node_ui_faces.lua','src/lua/abyss_game_ui.lua','src/lua/abyss_game_ui_run.lua'].includes(path)
+ if(['src/lua/abyss_node_ui_faces.lua','src/lua/abyss_game_ui.lua','src/lua/abyss_game_ui_run.lua','src/lua/abyss_game_ui_view.lua'].includes(path)
   &&normalized===source)return false;
  return matches(normalized,expected);
 }

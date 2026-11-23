@@ -142,6 +142,7 @@ test('exact production length rejection preserves full byte checks and fresh own
   ['src/lua/abyss_node_ui_faces.lua','d56aed5198b7111008f25c86f1f03eee36bab8549ebd9b92dd7f99f9e4cf6f58'],
   ['src/lua/abyss_game_ui.lua','1b1e3b9722dbc0c4c0af8c06243a15e118cf61d7a506ef6f801b2e735c85ed14'],
   ['src/lua/abyss_game_ui_run.lua','c2198e3d704115f83c6c172be3eb8515d72997d97779678df0bc4616b4e741f0'],
+  ['src/lua/abyss_game_ui_view.lua','84d9fb22584a5978d5c04170f3b3b145c26ff71865acf53b36b2496f01489ed1'],
  ];
  for(const [path,expected]of originals){
   const source=readFileSync(path,'utf8').replaceAll('\r\n','\n');
@@ -164,4 +165,26 @@ test('exact production length rejection preserves full byte checks and fresh own
   assert(reads.includes(path));bad=null;reads=[];authenticateUiEntrance(read);assert.deepEqual(reads,first,'recovery freshly authenticates the complete cohort');
  }
  authenticateUiEntrance(path=>readFileSync(path,'utf8').replaceAll('\r\n','\n').replaceAll('\n','\r\n'));
+});
+
+test('current view successor requires fresh raw owner bytes before historical projection',async()=>{
+ const {beforeCurrentReplayFixes}=await import('./helpers/current-replay-fix-sources.mjs');
+ const {authenticateUiEntrance,beforeUiEntrance}=await import('./helpers/ui-entrance-source.mjs');
+ const path='src/lua/abyss_game_ui_view.lua',source=readFileSync(path,'utf8').replaceAll('\r\n','\n');
+ const prior=beforeCurrentReplayFixes(path,source);
+ assert.notEqual(prior,source);assert.equal(hash(prior),'84d9fb22584a5978d5c04170f3b3b145c26ff71865acf53b36b2496f01489ed1');
+ assert.equal(beforeUiEntrance(path,source),beforeUiEntrance(path,prior),'pure historical projections keep the exact preceding layer');
+ const sameLength=source.slice(0,-1)+'!';assert.equal(sameLength.length,source.length);
+ let bad,reads=[];
+ const read=p=>{reads.push(p);return p===path&&bad!==undefined?bad:readFileSync(p,'utf8');};
+ authenticateUiEntrance(read);const first=[...reads];assert.equal(first.length,20);
+ reads=[];authenticateUiEntrance(read);assert.deepEqual(reads,first);
+ for(bad of [prior,sameLength,null,Buffer.from(source)]){
+  reads=[];assert.throws(()=>authenticateUiEntrance(read),error=>{assert.match(error.message,/linked owner identity/);assert(error.message.includes(path));return true;});
+  assert(reads.includes(path));bad=undefined;reads=[];authenticateUiEntrance(read);assert.deepEqual(reads,first,'every recovery authenticates all current owners');
+ }
+ const crlf=source.replaceAll('\n','\r\n');
+ assert.equal(beforeCurrentReplayFixes(path,crlf),prior.replaceAll('\n','\r\n'));
+ authenticateUiEntrance(p=>p===path?crlf:readFileSync(p,'utf8'));
+ for(const drift of [source+'\n',source.replaceAll('\n','\r\r\n')])assert.equal(beforeCurrentReplayFixes(path,drift),drift);
 });
