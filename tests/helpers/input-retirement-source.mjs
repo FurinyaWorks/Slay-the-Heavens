@@ -8,7 +8,7 @@ import {beforeNativeFixtureInputRetirement} from './native-fixture-replay-source
 import {beforeNativeHostInputRetirement} from './native-host-replay-source.mjs';
 import {beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';
 import {beforeCurrentReplayFixes} from './current-replay-fix-sources.mjs';
-import {exactSourceMatches as matches} from './source-fingerprint.mjs';
+import {exactSourceMatches as matches,sourceConfigLayoutMatches} from './source-fingerprint.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const normalize=source=>source.replaceAll('\r\n','\n');
@@ -35,10 +35,7 @@ for(const row of [...continued.map(row=>row.after),...Object.values(added),...Ob
 }
 
 function configLayoutMatches(source,expected,{allowConfigLayout=false}={}){
- if(!allowConfigLayout||!expected.tokensSha256||typeof source!=='string'||source.includes('\r\r\n'))return false;
- const tokens=source.replace(/"(?:\\.|[^"\\])*"|[ \t\r\n]+/g,token=>token.startsWith('"')?token:'');
- if(hash(tokens)!==expected.tokensSha256)return false;
- try{JSON.parse(source);return true;}catch{return false;}
+ return allowConfigLayout&&sourceConfigLayoutMatches(source,expected.tokensSha256);
 }
 
 const combatEventsArchive=readFileSync(new URL('../fixtures/develop-combat-events-source.json.gz',import.meta.url));
@@ -86,8 +83,8 @@ const rewardsBackViewBeforeCover=Object.freeze({
  gitBlob:'96f9fadefeabc3d3540e2797943c3b415605140d',
 });
 const rewardsBackViewSuccessor=Object.freeze({
- sha256:'e9bdbffa33a31551f993c79b7c9f0073718d95b11b9ab82f4d43fb78d0ee2015',
- gitBlob:'eb350ea03a9b8ef580243c124ce328935ba251ea',
+ sha256:'7560014af0cbe0512f53379c0e25e6f54910de91230ee5d56e28827f6270771d',
+ gitBlob:'7682235681f514805bf4924e1c662c00d34d2461',
 });
 function beforeRewardsBackExtraction(path,source){
  if(path!==rewardsBackView)return source;
@@ -95,17 +92,24 @@ function beforeRewardsBackExtraction(path,source){
  if(!current&&!matches(source,rewardsBackViewBeforeCover))return source;
  let text=normalize(source);
  if(current){
-  const cover=`            -- First cover must commit suspension before native sibling setters.
-            -- Subsequent covered refreshes can use just the final battle render.
-            local deferDeckRender=self.mode=='battle' and deckOpen and not self.battleUI.active
+  const cover=`            -- Reuse a cover only after its eager render has committed suspension.
+            -- The active flag changes before the native setter and can survive failure.
+            local deckBattle=self.mode=='battle' and deckOpen and run and run.combat or nil
+            local deferDeckRender=deckBattle~=nil and coveredDeckBattle==deckBattle
+            if not deferDeckRender then coveredDeckBattle=nil end
             self.battleUI:setActive(self.mode == "battle" and not deckOpen and not potionOpen and not blocked,
-                suspendBattle(run,deckOpen,potionOpen),deferDeckRender)`;
+                suspendBattle(run,deckOpen,potionOpen),deferDeckRender)
+            if visibilityPass==pass then coveredDeckBattle=deckBattle end`;
   const previous=`            -- A deck open still commits one battle render below (input retirement,
             -- art ownership and suspension), after the host's visibility writes.
             self.battleUI:setActive(self.mode == "battle" and not deckOpen and not potionOpen and not blocked,
                 suspendBattle(run,deckOpen,potionOpen),self.mode=='battle' and deckOpen)`;
-  assert.equal(text.split(cover).length,2,'exact first-cover render successor');
-  text=text.replace(cover,previous);
+  const scope='    local coveredMapRun,coveredDeckBattle\n    local visibilityPass=0';
+  const pass='            visibilityPass=visibilityPass+1\n            local pass=visibilityPass\n';
+  for(const [successor,prior] of [[scope,'    local coveredMapRun'],[pass,''],[cover,previous]]){
+   assert.equal(text.split(successor).length,2,'exact first-cover render successor');
+   text=text.replace(successor,prior);
+  }
   assert(matches(text,rewardsBackViewBeforeCover),'exact first-cover render predecessor');
  }
  const helper=`local function refreshRewardsBack(button,available)

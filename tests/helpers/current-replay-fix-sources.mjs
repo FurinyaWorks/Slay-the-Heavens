@@ -97,30 +97,35 @@ const bindings = new Map([
  {
   "path": "tests/helpers/input-retirement-source.mjs",
   "beforeSha256": "7d849cfad2c62efc07b65bb4c845dfe6b54b2f3bf2d3bca560457a1eed631488",
-  "afterSha256": "3e73c70528cce22a056448843dbe4f15e5f293081ecce601af58555610cfef19",
+  "afterSha256": "e7119c843014f44e294b70ea6f7f71952892723c49a3352e16c2d7ea21b2a56e",
   "hunks": [
    {
     "at": 8,
-    "before": "import {beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';\nimport {exactSourceMatches as matches} from './source-fingerprint.mjs';",
-    "after": "import {beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';\nimport {beforeCurrentReplayFixes} from './current-replay-fix-sources.mjs';\nimport {exactSourceMatches as matches} from './source-fingerprint.mjs';"
+    "before": "import {beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';\nimport {exactSourceMatches as matches} from './source-fingerprint.mjs';\n",
+    "after": "import {beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';\nimport {beforeCurrentReplayFixes} from './current-replay-fix-sources.mjs';\nimport {exactSourceMatches as matches,sourceConfigLayoutMatches} from './source-fingerprint.mjs';\n"
    },
    {
-    "at": 60,
+    "at": 36,
+    "before": "function configLayoutMatches(source,expected,{allowConfigLayout=false}={}){\n if(!allowConfigLayout||!expected.tokensSha256||typeof source!=='string'||source.includes('\\r\\r\\n'))return false;\n const tokens=source.replace(/\"(?:\\\\.|[^\"\\\\])*\"|[ \\t\\r\\n]+/g,token=>token.startsWith('\"')?token:'');\n if(hash(tokens)!==expected.tokensSha256)return false;\n try{JSON.parse(source);return true;}catch{return false;}\n}",
+    "after": "function configLayoutMatches(source,expected,{allowConfigLayout=false}={}){\n return allowConfigLayout&&sourceConfigLayoutMatches(source,expected.tokensSha256);\n}"
+   },
+   {
+    "at": 57,
     "before": "const browserBackflow=JSON.parse(gunzipSync(browserArchive));\nassert.equal(browserBackflow.base,'beba19bad25db7de71f96af521656c13b882909b');",
     "after": "const browserBackflow=JSON.parse(gunzipSync(browserArchive));\nconst deckChromePath='src/lua/abyss_deck_ui.lua';\nassert.equal(browserBackflow.base,'beba19bad25db7de71f96af521656c13b882909b');"
    },
    {
-    "at": 68,
+    "at": 65,
     "before": " const row=Object.hasOwn(browserBackflow.files,path)&&browserBackflow.files[path];\n if(!row||!matches(source,row.after))return source;",
     "after": " const row=Object.hasOwn(browserBackflow.files,path)&&browserBackflow.files[path];\n if(path===deckChromePath)source=beforeCurrentReplayFixes(path,source);\n if(!row||!matches(source,row.after))return source;"
    },
    {
-    "at": 81,
+    "at": 78,
     "before": "}\nexport function beforePotionBackflow(path,source){\n const row=Object.hasOwn(potionBackflow.files,path)&&potionBackflow.files[path];\n if(!row||!matches(source,row.after))return source;",
-    "after": "}\nconst rewardsBackView='src/lua/abyss_game_ui_view.lua';\nconst rewardsBackViewBeforeCover=Object.freeze({\n sha256:'9b4968a3fd23e0956ef565ef4da1d4dbc2a0c5b666308c59c963d02c8f15f0fb',\n gitBlob:'96f9fadefeabc3d3540e2797943c3b415605140d',\n});\nconst rewardsBackViewSuccessor=Object.freeze({\n sha256:'e9bdbffa33a31551f993c79b7c9f0073718d95b11b9ab82f4d43fb78d0ee2015',\n gitBlob:'eb350ea03a9b8ef580243c124ce328935ba251ea',\n});\nfunction beforeRewardsBackExtraction(path,source){\n if(path!==rewardsBackView)return source;\n const current=matches(source,rewardsBackViewSuccessor);\n if(!current&&!matches(source,rewardsBackViewBeforeCover))return source;\n let text=normalize(source);\n if(current){\n  const cover=`            -- First cover must commit suspension before native sibling setters.\n            -- Subsequent covered refreshes can use just the final battle render.\n            local deferDeckRender=self.mode=='battle' and deckOpen and not self.battleUI.active\n            self.battleUI:setActive(self.mode == \"battle\" and not deckOpen and not potionOpen and not blocked,\n                suspendBattle(run,deckOpen,potionOpen),deferDeckRender)`;\n  const previous=`            -- A deck open still commits one battle render below (input retirement,\n            -- art ownership and suspension), after the host's visibility writes.\n            self.battleUI:setActive(self.mode == \"battle\" and not deckOpen and not potionOpen and not blocked,\n                suspendBattle(run,deckOpen,potionOpen),self.mode=='battle' and deckOpen)`;\n  assert.equal(text.split(cover).length,2,'exact first-cover render successor');\n  text=text.replace(cover,previous);\n  assert(matches(text,rewardsBackViewBeforeCover),'exact first-cover render predecessor');\n }\n const helper=`local function refreshRewardsBack(button,available)\n    button:SetVisible(available)\n    if button:GetChild('v25Face') then\n        require('abyss_v25_menu_view').button(button,available)\n    end\n    -- Route preview raises the map. Raise this sibling when navigation returns.\n    if available then button:SetAsLastSibling() end\nend\n\n`;\n const inline=`local rewardsBack=child(\"combatRewards\")\n            rewardsBack:SetVisible(returnAvailable)\n            if rewardsBack:GetChild('v25Face') then\n                require('abyss_v25_menu_view').button(rewardsBack,returnAvailable)\n            end\n            -- Route preview raises the full-page map. Restore this sibling above it\n            -- when returning to navigation; visibility alone leaves it occluded.\n            if returnAvailable then rewardsBack:SetAsLastSibling() end`;\n const call='refreshRewardsBack(child(\"combatRewards\"),returnAvailable)';\n assert.equal(text.split(helper).length,2,'exact rewards back helper extraction');\n assert.equal(text.split(call).length,2,'exact rewards back helper call');\n const prior=text.replace(helper,'').replace(call,inline);\n assert(matches(prior,potionBackflow.files[path].after),'exact rewards back predecessor');\n return source.includes('\\r\\n')?prior.replaceAll('\\n','\\r\\n'):prior;\n}\nexport function beforePotionBackflow(path,source){\n const row=Object.hasOwn(potionBackflow.files,path)&&potionBackflow.files[path];\n source=beforeRewardsBackExtraction(path,source);\n if(!row||!matches(source,row.after))return source;"
+    "after": "}\nconst rewardsBackView='src/lua/abyss_game_ui_view.lua';\nconst rewardsBackViewBeforeCover=Object.freeze({\n sha256:'9b4968a3fd23e0956ef565ef4da1d4dbc2a0c5b666308c59c963d02c8f15f0fb',\n gitBlob:'96f9fadefeabc3d3540e2797943c3b415605140d',\n});\nconst rewardsBackViewSuccessor=Object.freeze({\n sha256:'7560014af0cbe0512f53379c0e25e6f54910de91230ee5d56e28827f6270771d',\n gitBlob:'7682235681f514805bf4924e1c662c00d34d2461',\n});\nfunction beforeRewardsBackExtraction(path,source){\n if(path!==rewardsBackView)return source;\n const current=matches(source,rewardsBackViewSuccessor);\n if(!current&&!matches(source,rewardsBackViewBeforeCover))return source;\n let text=normalize(source);\n if(current){\n  const cover=`            -- Reuse a cover only after its eager render has committed suspension.\n            -- The active flag changes before the native setter and can survive failure.\n            local deckBattle=self.mode=='battle' and deckOpen and run and run.combat or nil\n            local deferDeckRender=deckBattle~=nil and coveredDeckBattle==deckBattle\n            if not deferDeckRender then coveredDeckBattle=nil end\n            self.battleUI:setActive(self.mode == \"battle\" and not deckOpen and not potionOpen and not blocked,\n                suspendBattle(run,deckOpen,potionOpen),deferDeckRender)\n            if visibilityPass==pass then coveredDeckBattle=deckBattle end`;\n  const previous=`            -- A deck open still commits one battle render below (input retirement,\n            -- art ownership and suspension), after the host's visibility writes.\n            self.battleUI:setActive(self.mode == \"battle\" and not deckOpen and not potionOpen and not blocked,\n                suspendBattle(run,deckOpen,potionOpen),self.mode=='battle' and deckOpen)`;\n  const scope='    local coveredMapRun,coveredDeckBattle\\n    local visibilityPass=0';\n  const pass='            visibilityPass=visibilityPass+1\\n            local pass=visibilityPass\\n';\n  for(const [successor,prior] of [[scope,'    local coveredMapRun'],[pass,''],[cover,previous]]){\n   assert.equal(text.split(successor).length,2,'exact first-cover render successor');\n   text=text.replace(successor,prior);\n  }\n  assert(matches(text,rewardsBackViewBeforeCover),'exact first-cover render predecessor');\n }\n const helper=`local function refreshRewardsBack(button,available)\n    button:SetVisible(available)\n    if button:GetChild('v25Face') then\n        require('abyss_v25_menu_view').button(button,available)\n    end\n    -- Route preview raises the map. Raise this sibling when navigation returns.\n    if available then button:SetAsLastSibling() end\nend\n\n`;\n const inline=`local rewardsBack=child(\"combatRewards\")\n            rewardsBack:SetVisible(returnAvailable)\n            if rewardsBack:GetChild('v25Face') then\n                require('abyss_v25_menu_view').button(rewardsBack,returnAvailable)\n            end\n            -- Route preview raises the full-page map. Restore this sibling above it\n            -- when returning to navigation; visibility alone leaves it occluded.\n            if returnAvailable then rewardsBack:SetAsLastSibling() end`;\n const call='refreshRewardsBack(child(\"combatRewards\"),returnAvailable)';\n assert.equal(text.split(helper).length,2,'exact rewards back helper extraction');\n assert.equal(text.split(call).length,2,'exact rewards back helper call');\n const prior=text.replace(helper,'').replace(call,inline);\n assert(matches(prior,potionBackflow.files[path].after),'exact rewards back predecessor');\n return source.includes('\\r\\n')?prior.replaceAll('\\n','\\r\\n'):prior;\n}\nexport function beforePotionBackflow(path,source){\n const row=Object.hasOwn(potionBackflow.files,path)&&potionBackflow.files[path];\n source=beforeRewardsBackExtraction(path,source);\n if(!row||!matches(source,row.after))return source;"
    },
    {
-    "at": 144,
+    "at": 148,
     "before": " if(!row)return;\n assert(matches(source,row.after),'fresh current production owner: '+path);\n let live;\n try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}\n assert(matches(live,row.after),'combined linked owner identity: '+path+' during deck/potion backflow validation');\n}",
     "after": " if(!row)return;\n const expected=path===rewardsBackView?rewardsBackViewSuccessor:row.after;\n const isCurrent=value=>{\n  if(path!==deckChromePath)return matches(value,expected);\n  const prior=beforeCurrentReplayFixes(path,value);\n  return prior!==value&&matches(prior,expected);\n };\n assert(isCurrent(source),'fresh current production owner: '+path);\n let live;\n try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}\n assert(isCurrent(live),'combined linked owner identity: '+path+' during deck/potion backflow validation');\n}"
    }
@@ -468,20 +473,35 @@ const bindings = new Map([
  {
   "path": "tests/helpers/develop-release-backflow-source.mjs",
   "beforeSha256": "0b94dc40162bd992de8ecff48bbdd5d3d3d391a27bd59268eac309d714bf0752",
-  "afterSha256": "9ca671565f3919804ba22edf19a1fb13c5078f4597ac5f379de2d493a7c0d28e",
+  "afterSha256": "9e3606266f404f4992c32eb168b8924314deaf129ecbe2ac09c8fd2641efc954",
   "hunks": [
    {
-    "at": 333,
+    "at": 4,
+    "before": "import {gunzipSync} from 'node:zlib';\nimport {exactSourceMatches as matches} from './source-fingerprint.mjs';\nimport {authenticateInputRetirement,beforeInputRetirement,beforeInputRetirementReader,inputRetirementOwns,isCurrentInputRetirementSource,beforeCombatEvents,combatEventsOwns,beforeDevelopUiBackflows,assertPointerInputSource,pointerInputPath,retiredControllerPath,readRetiredController} from './input-retirement-source.mjs';",
+    "after": "import {gunzipSync} from 'node:zlib';\nimport {exactSourceMatches as matches,sourceConfigLayoutMatches} from './source-fingerprint.mjs';\nimport {authenticateInputRetirement,beforeInputRetirement,beforeInputRetirementReader,inputRetirementOwns,isCurrentInputRetirementSource,beforeCombatEvents,combatEventsOwns,beforeDevelopUiBackflows,assertPointerInputSource,pointerInputPath,retiredControllerPath,readRetiredController} from './input-retirement-source.mjs';"
+   },
+   {
+    "at": 305,
+    "before": "\nexport const configSourceTokens=source=>source.replace(/\"(?:\\\\.|[^\"\\\\])*\"|[ \\t\\r\\n]+/g,token=>token.startsWith('\"')?token:'');\nexport function isSessionRelicSuccessor(path,source,{allowConfigLayout=false}={}){",
+    "after": "\nexport {configSourceTokens} from './source-fingerprint.mjs';\nexport function isSessionRelicSuccessor(path,source,{allowConfigLayout=false}={}){"
+   },
+   {
+    "at": 311,
+    "before": " if(matches(source,expected))return true;\n if(!allowConfigLayout||!expected.tokensSha256||typeof source!=='string'||source.includes('\\r\\r\\n'))return false;\n if(hash(configSourceTokens(source))!==expected.tokensSha256)return false;\n try{JSON.parse(source);return true;}catch{return false;}\n}",
+    "after": " if(matches(source,expected))return true;\n return allowConfigLayout&&sourceConfigLayoutMatches(source,expected.tokensSha256);\n}"
+   },
+   {
+    "at": 331,
     "before": "}\nfunction authenticateDevelopBackflowWithReaders(path,source,readLive,readLinked,options){",
     "after": "}\nfunction readBackflowOwner(read,path){\n try{return read(path);}\n catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}\n}\nfunction authenticateDevelopBackflowWithReaders(path,source,readLive,readLinked,options){"
    },
    {
-    "at": 340,
+    "at": 338,
     "before": " if(priorUi!==source){\n  const live=readLive(path);\n  assert(typeof live==='string'&&live.replaceAll('\\r\\n','\\n')===source.replaceAll('\\r\\n','\\n'),",
     "after": " if(priorUi!==source){\n  const live=readBackflowOwner(readLive,path);\n  assert(typeof live==='string'&&live.replaceAll('\\r\\n','\\n')===source.replaceAll('\\r\\n','\\n'),"
    },
    {
-    "at": 349,
+    "at": 347,
     "before": " if(beforeCloseout!==source){\n  const live=readActions(path);\n  assert(typeof live==='string'&&live.replaceAll('\\r\\n','\\n')===source.replaceAll('\\r\\n','\\n'),",
     "after": " if(beforeCloseout!==source){\n  const live=readBackflowOwner(readActions,path);\n  assert(typeof live==='string'&&live.replaceAll('\\r\\n','\\n')===source.replaceAll('\\r\\n','\\n'),"
    }
@@ -854,7 +874,7 @@ const bindings = new Map([
  {
   "path": "scripts/ci-shards.mjs",
   "beforeSha256": "6becba66be6048f090cd0036c2e5292f180d9010bbe24aef181977dca18fdeb3",
-  "afterSha256": "fa5bc983031affcbd2a0737fdfbe1a1eb76bc426b1a92a8e282b5591f9f9e328",
+  "afterSha256": "f2d79f7279a787def5350115b9c966c6c016c56b0353af3c1b09a216f3063668",
   "hunks": [
    {
     "at": 0,
@@ -864,25 +884,25 @@ const bindings = new Map([
    {
     "at": 15,
     "before": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n",
-    "after": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n\n// Reserve the work that completed in POSIX jobs 137444936421, 137444936442,\n// 137444936458, 137444936507 and 137444936550 before their 30-minute cutoff.\n// Jobs 137468791737, 137468791821, 137468791838, 137468791852 and\n// 137468791853 from the next attempt exposed underweighted replay files.\n// Completed cases and file observations guide placement only.\nconst linuxReplayMinimumMs = Object.freeze({\n  'act1-choice-responsibilities.test.mjs': 153000,\n  'actor-lifecycle.test.mjs': 98000,\n  'approved-node-ui-refactor.test.mjs': 526000,\n  'approved-ui-inverse.test.mjs': 1295000,\n  'architecture-composition-format.test.mjs': 420000,\n  'art-feature-source-inverse.test.mjs': 412000,\n  'battle-max-hp-config-inverse.test.mjs': 124000,\n  'boss-ui-fixture-composition.test.mjs': 64000,\n  'card-origin-source-inverse.test.mjs': 149000,\n  'combat-reactions-architecture-inverse.test.mjs': 137000,\n  'competition-roster.test.mjs': 505000,\n  'core-architecture-inverse.test.mjs': 362000,\n  'core-lifecycle-source-inverse.test.mjs': 713000,\n  'defect-integration-source.test.mjs': 153000,\n  'end-turn-responsibilities.test.mjs': 252000,\n  'event-production-source-inverse.test.mjs': 100000,\n  'final-integration-source.test.mjs': 318000,\n  'game-ui-extraction-source-inverse.test.mjs': 870000,\n  'game-ui-host-result.test.mjs': 188000,\n  'max-hp-accepted-source-inverse.test.mjs': 677000,\n  'mobile-qa-source-migration.test.mjs': 140000,\n  'native-enemy-theme-inverse.test.mjs': 54000,\n  'nodes-battle-max-hp-config-inverse.test.mjs': 90000,\n  'player-death-inverse.test.mjs': 172000,\n  'potion-callback-source.test.mjs': 238000,\n  'power-shop-boundaries.test.mjs': 486000,\n  'presentation-native-m3-contract.test.mjs': 1037000,\n  'relic-query-source-inverse.test.mjs': 123000,\n  // Job 137510449969 spent over 22 minutes in this file before cutoff.\n  'task77-current-source-layers.test.mjs': 1295000,\n});\n\n// Completed replay cases in Windows jobs 137468791786, 137468791799,\n// 137468791818, 137468791851, 137468791860, 137468791861, 137468791871\n// and 137468791996, and complete files from 137492433757, 137492433852\n// and 137492433888.\nconst windowsReplayMinimumMs = Object.freeze({\n  'act1-choice-responsibilities.test.mjs': 195000,\n  // Budget the longest completed case after isolating the three cases.\n  'approved-ui-inverse.test.mjs': 1455000,\n  'architecture-composition-format.test.mjs': 1190000,\n  // The 1786s live-owner case in job 137510449987 now runs in two workers.\n  'art-feature-source-inverse.test.mjs': 1000000,\n  'battle-max-hp-config-inverse.test.mjs': 681000,\n  'card-origin-source-inverse.test.mjs': 360000,\n  'colorless-catalog-source.test.mjs': 566000,\n  'compendium-source-inverse.test.mjs': 690000,\n  'competition-roster-config-composition.test.mjs': 287000,\n  'competition-roster.test.mjs': 735000,\n  'core-architecture-inverse.test.mjs': 321000,\n  // Job 137468791861 spent over half an hour on this file before cutoff.\n  'core-lifecycle-source-inverse.test.mjs': 800000,\n  'death-settlement-guard-inverse.test.mjs': 186000,\n  'defect-integration-source.test.mjs': 474000,\n  'formal-campaign-entry.test.mjs': 233000,\n  'game-ui-extraction-source-inverse.test.mjs': 2087000,\n  'living-wall-architecture-inverse.test.mjs': 1013000,\n  'native-candidate-art.test.mjs': 113000,\n  'official-assets-runtime.test.mjs': 216000,\n  'p0-presentation-inverse.test.mjs': 713000,\n  'potion-callback-source.test.mjs': 132000,\n  'power-shop-boundaries.test.mjs': 1364000,\n  'presentation-native-m3-contract.test.mjs': 791000,\n  'ready-art-source-inverse.test.mjs': 656000,\n  'reward-query-boundary-source.test.mjs': 1440000,\n  'round3-catalog-source-inverse.test.mjs': 278000,\n  'run-architecture-inverse.test.mjs': 384000,\n});\n\nexport const replayPlanningMinimumMs = Object.freeze({ linux: linuxReplayMinimumMs, win32: windowsReplayMinimumMs });\n"
+    "after": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n\n// Reserve the work that completed in POSIX jobs 137444936421, 137444936442,\n// 137444936458, 137444936507 and 137444936550 before their 30-minute cutoff.\n// Jobs 137468791737, 137468791821, 137468791838, 137468791852 and\n// 137468791853 from the next attempt exposed underweighted replay files.\n// Completed cases and file observations guide placement only.\nconst linuxReplayMinimumMs = Object.freeze({\n  'act1-choice-responsibilities.test.mjs': 153000,\n  'actor-lifecycle.test.mjs': 98000,\n  'approved-node-ui-refactor.test.mjs': 526000,\n  'approved-ui-inverse.test.mjs': 1295000,\n  'architecture-composition-format.test.mjs': 420000,\n  'art-feature-source-inverse.test.mjs': 412000,\n  'battle-max-hp-config-inverse.test.mjs': 124000,\n  'boss-ui-fixture-composition.test.mjs': 64000,\n  'card-origin-source-inverse.test.mjs': 149000,\n  'combat-reactions-architecture-inverse.test.mjs': 137000,\n  'competition-roster.test.mjs': 505000,\n  'core-architecture-inverse.test.mjs': 362000,\n  'core-lifecycle-source-inverse.test.mjs': 713000,\n  'defect-integration-source.test.mjs': 153000,\n  'end-turn-responsibilities.test.mjs': 252000,\n  'event-production-source-inverse.test.mjs': 100000,\n  'final-integration-source.test.mjs': 318000,\n  'game-ui-extraction-source-inverse.test.mjs': 870000,\n  'game-ui-host-result.test.mjs': 188000,\n  'max-hp-accepted-source-inverse.test.mjs': 677000,\n  'mobile-qa-source-migration.test.mjs': 140000,\n  'native-enemy-theme-inverse.test.mjs': 54000,\n  'nodes-battle-max-hp-config-inverse.test.mjs': 90000,\n  'player-death-inverse.test.mjs': 172000,\n  'potion-callback-source.test.mjs': 238000,\n  'power-shop-boundaries.test.mjs': 486000,\n  'presentation-native-m3-contract.test.mjs': 1037000,\n  'relic-query-source-inverse.test.mjs': 123000,\n  // Job 137510449969 spent over 22 minutes in this file before cutoff.\n  'task77-current-source-layers.test.mjs': 1295000,\n});\n\n// Completed replay cases in Windows jobs 137468791786, 137468791799,\n// 137468791818, 137468791851, 137468791860, 137468791861, 137468791871\n// and 137468791996, and complete files from 137492433757, 137492433852\n// and 137492433888.\nconst windowsReplayMinimumMs = Object.freeze({\n  'act1-choice-responsibilities.test.mjs': 195000,\n  // Budget the longest completed case after isolating the three cases.\n  'approved-ui-inverse.test.mjs': 1455000,\n  'architecture-composition-format.test.mjs': 1190000,\n  // The 1786s live-owner case in job 137510449987 now runs in two workers.\n  'art-feature-source-inverse.test.mjs': 1000000,\n  'battle-max-hp-config-inverse.test.mjs': 681000,\n  'card-origin-source-inverse.test.mjs': 360000,\n  'colorless-catalog-source.test.mjs': 566000,\n  'compendium-source-inverse.test.mjs': 690000,\n  'competition-roster-config-composition.test.mjs': 287000,\n  'competition-roster.test.mjs': 735000,\n  'core-architecture-inverse.test.mjs': 321000,\n  // Job 137468791861 spent over half an hour on this file before cutoff.\n  'core-lifecycle-source-inverse.test.mjs': 800000,\n  'death-settlement-guard-inverse.test.mjs': 186000,\n  'defect-integration-source.test.mjs': 474000,\n  'formal-campaign-entry.test.mjs': 233000,\n  'game-ui-extraction-source-inverse.test.mjs': 2087000,\n  'living-wall-architecture-inverse.test.mjs': 1013000,\n  'native-candidate-art.test.mjs': 113000,\n  'official-assets-runtime.test.mjs': 216000,\n  'p0-presentation-inverse.test.mjs': 713000,\n  'potion-callback-source.test.mjs': 132000,\n  'power-shop-boundaries.test.mjs': 1364000,\n  'presentation-native-m3-contract.test.mjs': 791000,\n  // Job 137510450112 completed this file before its Lua phase reached cutoff.\n  'ready-art-source-inverse.test.mjs': 1167000,\n  'reward-query-boundary-source.test.mjs': 1440000,\n  'round3-catalog-source-inverse.test.mjs': 278000,\n  'run-architecture-inverse.test.mjs': 384000,\n});\n\nexport const replayPlanningMinimumMs = Object.freeze({ linux: linuxReplayMinimumMs, win32: windowsReplayMinimumMs });\n"
    },
    {
-    "at": 118,
+    "at": 119,
     "before": "  const maps=Object.hasOwn(timings.js,platform)?[timings.js[platform]]:Object.values(timings.js);\n  return Object.fromEntries(files.map(file=>[file,Math.max(\n    ...maps.map(weights=>weights[file]??timings.unknownJsMs),\n    timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0)]));\n}",
     "after": "  const maps=Object.hasOwn(timings.js,platform)?[timings.js[platform]]:Object.values(timings.js);\n  return Object.fromEntries(files.map(file=>{\n    const name=file.slice('tests/'.length);\n    return [file,Math.max(\n      ...maps.map(weights=>weights[file]??timings.unknownJsMs),\n      timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0,\n      platform !== 'win32' ? linuxReplayMinimumMs[name] ?? 0 : 0,\n      platform !== 'linux' ? windowsReplayMinimumMs[name] ?? 0 : 0)];\n  }));\n}"
    },
    {
-    "at": 145,
+    "at": 146,
     "before": "\nexport function main(args) {",
     "after": "\nconst timingReport = 'build/ci-js-timings.jsonl';\nconst nodeTestArgs = files => ['--test', '--test-concurrency=1', '--test-reporter=spec',\n  '--test-reporter=./scripts/ci-timing-reporter.mjs', '--test-reporter-destination=stdout',\n  `--test-reporter-destination=${timingReport}`, ...files];\n\nfunction runInCheckout(files, cwd, env) {\n  return new Promise((resolve, reject) => {\n    const child = spawn(process.execPath, nodeTestArgs(files), {\n      cwd, env: { ...env, GITHUB_WORKSPACE: cwd }, stdio: 'inherit', windowsHide: true,\n    });\n    child.once('error', reject);\n    child.once('close', status => resolve(status ?? 1));\n  });\n}\n\nasync function runHostedShard(files, root, env) {\n  if (!lstatSync(join(root, '.git'), { throwIfNoEntry: false })?.isDirectory()) {\n    throw new Error('Hosted execution requires physical checkout metadata');\n  }\n  const snapshot = realpathSync.native(mkdtempSync(join(env.RUNNER_TEMP || tmpdir(), 'slay-ci-shard-')));\n  try {\n    const location = relative(root, snapshot);\n    if (!location || !isAbsolute(location) && location !== '..' && !location.startsWith(`..${sep}`)) {\n      throw new Error('Hosted snapshot must be outside the checkout');\n    }\n    // Each test process still runs serially in its own checkout. Copy before\n    // starting either process to isolate Git metadata, build outputs and fixtures.\n    cpSync(root, snapshot, { recursive: true, verbatimSymlinks: true, mode: constants.COPYFILE_FICLONE });\n    const weights = jsPlanningWeights(files);\n    const original = partition(files, '1/2', weights, timings.unknownJsMs).files;\n    const copy = partition(files, '2/2', weights, timings.unknownJsMs).files;\n    const results = await Promise.allSettled([\n      runInCheckout(original, root, env), runInCheckout(copy, snapshot, env),\n    ]);\n    const copyReport = join(snapshot, timingReport);\n    const originalReport = join(root, timingReport);\n    const status = results.find(result => result.status === 'rejected');\n    if (!status) {\n      writeFileSync(originalReport, readFileSync(copyReport), { flag: 'a' });\n    }\n    if (status) throw status.reason;\n    return results.find(result => result.value !== 0)?.value ?? 0;\n  } finally {\n    rmSync(snapshot, { recursive: true, force: true, maxRetries: 2 });\n  }\n}\n\nexport function main(args) {"
    },
    {
-    "at": 208,
+    "at": 209,
     "before": "  delete env.NODE_TEST_CONTEXT;\n  const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', '--test-reporter=spec',\n    '--test-reporter=./scripts/ci-timing-reporter.mjs', '--test-reporter-destination=stdout',\n    '--test-reporter-destination=build/ci-js-timings.jsonl', ...plan.files], { stdio: 'inherit', env, windowsHide: true });\n  if (result.error) throw result.error;",
     "after": "  delete env.NODE_TEST_CONTEXT;\n  const root = realpathSync.native('.'), hostedOS = { linux: 'Linux', win32: 'Windows' }[process.platform];\n  if (hostedOS && env.GITHUB_ACTIONS === 'true' && env.RUNNER_OS === hostedOS\n      && env.RUNNER_ENVIRONMENT === 'github-hosted' && env.GITHUB_WORKSPACE\n      && realpathSync.native(env.GITHUB_WORKSPACE) === root && availableParallelism() >= 2 && plan.files.length >= 2) {\n    return runHostedShard(plan.files, root, env).then(status => { process.exitCode = status; });\n  }\n  const result = spawnSync(process.execPath, nodeTestArgs(plan.files), { stdio: 'inherit', env, windowsHide: true });\n  if (result.error) throw result.error;"
    },
    {
-    "at": 220,
+    "at": 221,
     "before": "if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {\n  try { main(process.argv.slice(2)); } catch (error) { console.error(error.message); process.exitCode = 1; }\n}",
     "after": "if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {\n  try { await main(process.argv.slice(2)); } catch (error) { console.error(error.message); process.exitCode = 1; }\n}"
    }
@@ -1037,7 +1057,7 @@ const bindings = new Map([
  {
   "path": "tests/helpers/source-fingerprint.mjs",
   "beforeSha256": "82873d43045cd012a0ed817a27d88343bd0f092d755d49a04629f98b9bd72612",
-  "afterSha256": "cf53dca53dfbbcf96d25a71e3076e09896c28aeff3fb1fd24c11ba794072ad4a",
+  "afterSha256": "61602dc332625a797e6d316c4871de39b4d241aa722a3f0dab3db2435576cbfd",
   "hunks": [
    {
     "at": 7,
@@ -1048,6 +1068,11 @@ const bindings = new Map([
     "at": 25,
     "before": " if(fingerprint.sha256!==binding.sha256)return false;\n fingerprint.gitBlob??=createHash('sha1').update(`blob ${Buffer.byteLength(text)}\\0`).update(text).digest('hex');",
     "after": " if(fingerprint.sha256!==binding.sha256)return false;\n const {text}=fingerprint;\n fingerprint.gitBlob??=createHash('sha1').update(`blob ${Buffer.byteLength(text)}\\0`).update(text).digest('hex');"
+   },
+   {
+    "at": 30,
+    "before": "",
+    "after": "\n// Cache only layout calculations for the exact text supplied by the caller.\n// This never skips a source read or validates identity on an owner's behalf.\nconst configLayouts=new Map(),configLimit=2*1024*1024;\nlet configRetained=0;\nfunction readConfigLayout(source){\n let layout=configLayouts.get(source);\n if(layout)return layout;\n const tokens=source.replace(/\"(?:\\\\.|[^\"\\\\])*\"|[ \\t\\r\\n]+/g,token=>token.startsWith('\"')?token:'');\n const length=source.length+tokens.length;\n layout={tokens,length};\n if(length<=configLimit){\n  while(configLayouts.size>=128||configRetained+length>configLimit){\n   const first=configLayouts.keys().next().value;\n   configRetained-=configLayouts.get(first).length;\n   configLayouts.delete(first);\n  }\n  configLayouts.set(source,layout);\n  configRetained+=length;\n }\n return layout;\n}\nexport const configSourceTokens=source=>readConfigLayout(source).tokens;\nexport function sourceConfigLayoutMatches(source,expectedSha256){\n if(!expectedSha256||typeof source!=='string'||source.includes('\\r\\r\\n'))return false;\n const layout=readConfigLayout(source);\n layout.sha256??=createHash('sha256').update(layout.tokens).digest('hex');\n if(layout.sha256!==expectedSha256)return false;\n if(layout.valid===undefined){\n  try{JSON.parse(source);layout.valid=true;}catch{layout.valid=false;}\n }\n return layout.valid;\n}\n"
    }
   ]
  },
@@ -1359,10 +1384,15 @@ const bindings = new Map([
  {
   "path": "tests/lua/game_ui_visibility_failure.lua",
   "beforeSha256": "5e320fd632c309742cfa6ff309f5032e71e8c3d3c802dcaa6808a236ffa1a742",
-  "afterSha256": "df9c5695e244dedab9926dab7dac31de5abae8baab931dea4d4f131d34e5268e",
+  "afterSha256": "268cf664b495b45bb3800a484cfe5a54d64353ff2e4f67c1e59163a0b89f0047",
   "hunks": [
    {
-    "at": 108,
+    "at": 101,
+    "before": "\n-- Two observable paints are required around arbitrary native callbacks. The",
+    "after": "\n-- An activation setter can fail after the inactive flag changes, before hiding actors.\ndo\n local host,root,panel,actor=fixture();local setter=panel.SetVisible;local first,second={},{}\n panel.SetVisible=function(_,value)assert(value==false);error(first)end\n local ok,why=pcall(host.openDeck,host)\n assert(not ok and why==first and host.deckUI.visible and not host.battleUI.active)\n assert(actor.alive and actor.visible,'first failure never committed the cover render')\n panel.SetVisible=setter\n root:GetChild('mapPanel').SetVisible=function()error(second)end\n ok,why=pcall(host.refresh,host)\n assert(not ok and why==second and actor.alive and not actor.visible,'cover retry must render before the sibling failure')\n print('CASE uncommitted cover retry hides actor before sibling failure')\nend\n\n-- Two observable paints are required around arbitrary native callbacks. The"
+   },
+   {
+    "at": 122,
     "before": " assert(host:openDeck());assert(count==2 and actor.alive and not actor.visible)\n count=0;assert(host:closeDeck());assert(count==2 and actor.alive and actor.visible)",
     "after": " assert(host:openDeck());assert(count==2 and actor.alive and not actor.visible)\n count=0;host:refresh();assert(count==1 and actor.alive and not actor.visible,'covered refresh should paint only once')\n count=0;assert(host:closeDeck());assert(count==2 and actor.alive and actor.visible)"
    }
@@ -1554,6 +1584,52 @@ const bindings = new Map([
     "at": 13,
     "before": "   const result=spawnSync(process.execPath,['--trace-event-file-pattern='+output,fileURLToPath(new URL('./helpers/architecture-token-read-probe.mjs',import.meta.url)),mode],{encoding:'utf8',timeout:30000,maxBuffer:1024*1024,windowsHide:true});\n   assert.ifError(result.error);assert.equal(result.status,0,result.stdout+result.stderr);\n   const events=JSON.parse(readFileSync(output,'utf8')).traceEvents;",
     "after": "   const result=spawnSync(process.execPath,['--trace-event-file-pattern='+output,fileURLToPath(new URL('./helpers/architecture-token-read-probe.mjs',import.meta.url)),mode],{encoding:'utf8',timeout:30000,maxBuffer:1024*1024,windowsHide:true});\n   assert.equal(result.error,undefined,mode+': '+result.error?.message);\n   assert.equal(result.status,0,mode+': '+result.stdout+result.stderr);\n   const events=JSON.parse(readFileSync(output,'utf8')).traceEvents;"
+   }
+  ]
+ },
+ {
+  "path": "tests/helpers/seven-refactor-source-epoch.mjs",
+  "beforeSha256": "adee26f0be88462722cd374430150bf7e519c359df87f852f93708629b60b942",
+  "afterSha256": "5944f7c74d61e93fa5870281b5cc45993535c2e96c4d0014a1d5fe24baa46341",
+  "hunks": [
+   {
+    "at": 4,
+    "before": "import {createHash} from 'node:crypto';\nimport {createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nconst hash=b=>createHash('sha256').update(b).digest('hex');",
+    "after": "import {createHash} from 'node:crypto';\nimport {createComposedSourceEpochProjector,createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nconst hash=b=>createHash('sha256').update(b).digest('hex');"
+   },
+   {
+    "at": 18,
+    "before": "  targets:{...prior.targets,sevenPrior:{commit:outer.targets.prior.commit,files:prior.current}}};\n const current=createSourceEpochProjector(proof,{allowConfigLayout:true}),live=p=>readFileSync(p,'utf8'),readers=new WeakMap();\n function preCombinedSource(path,source,{target,readSource=live}={}){",
+    "after": "  targets:{...prior.targets,sevenPrior:{commit:outer.targets.prior.commit,files:prior.current}}};\n const current=createComposedSourceEpochProjector(proof),live=p=>readFileSync(p,'utf8'),readers=new WeakMap();\n function preCombinedSource(path,source,{target,readSource=live}={}){"
+   }
+  ]
+ },
+ {
+  "path": "tests/helpers/combined-epoch/pre-defect-source-epoch.mjs",
+  "beforeSha256": "ee1631bc3e9e29ac7ef4f96b9c42769d75cb3bfe11881b2e07b868344c3e51fa",
+  "afterSha256": "6199f290e0faf4770452de5e6481aa4d27e4d039bcd2d4b6673b96694726d6d0",
+  "hunks": [
+   {
+    "at": 9,
+    "before": "import {createHash} from 'node:crypto';\nimport {createSourceEpochProjector} from './source-epoch-runtime.mjs';\nconst hash=b=>createHash('sha256').update(b).digest('hex');",
+    "after": "import {createHash} from 'node:crypto';\nimport {createComposedSourceEpochProjector} from './source-epoch-runtime.mjs';\nconst hash=b=>createHash('sha256').update(b).digest('hex');"
+   },
+   {
+    "at": 23,
+    "before": "// Standalone siblings retain their original exact 45/46-owner contracts.\nexport const preWatcherFlowEpoch=extendSevenRefactorEpoch(createSourceEpochProjector(proof,{allowConfigLayout:true}));\nexport const preSilentTacticsEpoch=preWatcherFlowEpoch;",
+    "after": "// Standalone siblings retain their original exact 45/46-owner contracts.\nexport const preWatcherFlowEpoch=extendSevenRefactorEpoch(createComposedSourceEpochProjector(proof));\nexport const preSilentTacticsEpoch=preWatcherFlowEpoch;"
+   }
+  ]
+ },
+ {
+  "path": "tests/lua/hero_visual_slots.lua",
+  "beforeSha256": "b1ead443273aeb30c303626d50227fc484f788e93497d34abc218d380ba5dc84",
+  "afterSha256": "15eddfa2f7b93269d9eb511d23e204af813703d8838145ec0bf632d110187b98",
+  "hunks": [
+   {
+    "at": 40,
+    "before": "local panel = root:GetChild(\"characterPanel\")\nassert(panel:GetChild(\"details\").visible, \"production opens on the traveler, not a blank card\")\nassert(ui.characterSelection.character == \"traveler\" and ui.characterSelection.element == \"ironclad\")",
+    "after": "local panel = root:GetChild(\"characterPanel\")\nassert(not ui.characterSelection:canConfirm() and panel:GetChild(\"traveler\").visible,\n    \"production waits for the approved traveler choice\")\nassert(F.click(root, \"characterPanel\", \"traveler\"))\nassert(panel:GetChild(\"details\").visible, \"explicit traveler selection shows the portrait details\")\nassert(ui.characterSelection.character == \"traveler\" and ui.characterSelection.element == \"ironclad\")"
    }
   ]
  }
