@@ -64,7 +64,7 @@ end
 local specialIntents = {
     unknown = function(_,enemy)
         if enemy.ai and enemy.ai.kind=='darkling'then
-            local view=special('unknown','unknown','再生：本次行动不攻击，随后准备复生；全部共生暗影同时休眠才会被击败。')
+            local view=special('unknown','unknown','本次行动准备复生。','全部共生暗影同时休眠才会被击败。')
             view.label,view.rows[1].name='再生','再生';return view
         end
         if enemy.ai and enemy.ai.kind=='awakened_one'then
@@ -104,6 +104,7 @@ end
 local function newPreview(state, index, intent)
     local preview = Events.frame(state)
     preview.rules,preview.catalog=state.rules,state.catalog
+    preview.relics=Combat.copy(state.relics)
     preview.events = {}
     local soften = state.originalV4 and require("abyss_original_v4").intentReduction(state, index) or 0
     return { state = state, enemy = state.enemies[index], intent = intent, preview = preview,
@@ -193,9 +194,10 @@ end
 
 local function blockEffect(v, effect)
     local master = effect.target == 'automaton'
-    local amount = number(Combat.blockAmount(v.state, v.copy, effect.value, effect.fixed or master or effect.target == "random_ally"))
+    local group = effect.target == 'all_allies'
     local ally = effect.target == "random_ally"
-    local text = effect.target=='all_allies' and '敌方全体存活单位各获得 '..amount..' 点格挡'
+    local amount = number(Combat.blockAmount(v.state, v.copy, effect.value, effect.fixed or master or group or ally))
+    local text = group and '敌方全体存活单位各获得 '..amount..' 点格挡'
         or master and '使青铜机枢获得 '..amount..' 点格挡'
         or ally and "让一名随机队友获得 " .. amount .. " 点格挡（没有队友时给自己）" or "获得 " .. amount .. " 点格挡"
     v.result[#v.result + 1] = text
@@ -223,10 +225,11 @@ local function statusEffect(v, effect)
     local gain = effect.op == "gainStatus"
     -- Each copied status passes ApplyPower before later effects read it. Artifact
     -- is spent in order and can reject a status before its addition overflows.
-    Actors.applyPower(v.preview, gain and v.copy or v.player, effect.status, effect.value, v.copy)
+    local applied = Actors.applyPower(v.preview, gain and v.copy or v.player, effect.status, effect.value, v.copy)
     local status = assert(v.state.catalog.statuses[effect.status])
     local size = number(math.abs(effect.value))
     local sentence = statusSentence(gain, effect, status, size)
+    if not applied then sentence = sentence .. "（当前会被抵挡）" end
     v.result[#v.result + 1] = sentence
     v.rows[#v.rows + 1] = statusRow(v, effect, gain, status, size, sentence)
 end
@@ -268,8 +271,8 @@ local function vampireEffect(v,effect)
     act2Row(v,'吸血','按你实际损失的生命回复自身生命','buff','格挡部分不产生治疗')
 end
 local function stasisEffect(v)
-    act2Row(v,'扣押卡牌','扣押抽牌堆中的一张牌；抽牌堆为空时从弃牌堆选择。击败此浮核后归还，满手时放入弃牌堆',
-        'debuff','优先稀有，其次罕见、普通；同稀有度随机选择')
+    act2Row(v,'扣押卡牌','扣押抽牌堆中的一张牌；抽牌堆为空时从弃牌堆选择',
+        'debuff','击败此浮核后归还，满手时放入弃牌堆。优先稀有，其次罕见、普通；同稀有度随机选择')
 end
 local function summonEffect(v,effect)
     local name,text

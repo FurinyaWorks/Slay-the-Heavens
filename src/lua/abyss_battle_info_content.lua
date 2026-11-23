@@ -270,19 +270,21 @@ function M.new(self, describe, lines)
         return body
     end
 
-    local function powerRows(entries, battle, info, actor)
+    local function intentTip(battle, index)
+        local view = projectedIntent(battle, index)
+        if view.hidden or #view.rows == 0 then return end
+        local results = {}
+        for _, row in ipairs(view.rows) do results[#results + 1] = row.text end
+        return {name = "下一步行动", body = table.concat(results, "\n")}
+    end
+
+    local function powerRows(battle, info, actor)
         local rows = {}
         if info.index > 0 and not info.statusId and not info.offset then
-            local view = projectedIntent(battle, info.index)
-            local effects = {}
-            for _, row in ipairs(view.rows) do
-                effects[#effects + 1] = view.hidden and powerBody(row) or row.name .. "\n" .. powerBody(row)
-            end
-            if #effects > 0 then
-                rows[1] = {name = view.hidden and view.label or "下一步行动", body = table.concat(effects, "\n")}
-            end
+            rows[1] = intentTip(battle, info.index)
         end
-        for _, entry in ipairs(selectedEntries(entries, info) or {}) do
+        if info.intentOnly then return rows[1] and rows or nil end
+        for _, entry in ipairs(selectedEntries(Combat.statusView(actor), info) or {}) do
             local row = statusRow(entry, battle, actor)
             rows[#rows + 1] = {name = row.name, body = powerBody(row)}
         end
@@ -290,13 +292,12 @@ function M.new(self, describe, lines)
     end
 
     return function(data, presentation, battle, info, actor)
-        local entries = Combat.statusView(actor)
-        if info.powerTips then return powerRows(entries, battle, info, actor) end
+        if info.powerTips then return powerRows(battle, info, actor) end
         local card = {title = actor.name or "旅行者", tag = "当前状态", accent = C.gold,
             hp = actor.hp, maxHp = actor.maxHp, block = actor.block, sections = {}}
         if info.kind == "card" or info.kind == "potion" or info.kind=='rewardCard' then return keywordCard(card, data, presentation, battle, info, actor) end
         card.actorDetail = true
-        entries = selectedEntries(entries, info)
+        local entries = selectedEntries(Combat.statusView(actor), info)
         if not entries then return end
         if info.index > 0 and not info.statusId and not info.offset then
             local view = projectedIntent(battle, info.index)

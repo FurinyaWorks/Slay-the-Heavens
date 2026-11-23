@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-24 10:34'
-updated_date: '2026-11-21 12:41'
+updated_date: '2026-11-23 12:42'
 labels:
   - awaiting-live
   - 待验
@@ -49,6 +49,8 @@ ordinal: 85000
 修正用户截图指出的虚弱上箭头语义：虚弱/缠绕改用主题既有削弱图标，排查其他状态映射并运行主题/布局与战斗UI回归。
 
 2026-10-31 修复PR432意图回归合同未同步：保留独立原版constructor事实及x/root/命中框，显式核原生适配后的art/hitbox净空、单图标、右侧同高伤害数值和多段文本；不修改生产。保留现有8类可读性负对照，仅迁移旧坐标/左下数字合同并定向复验。
+
+Release 紧急修复：参考 STS1 的独立提示项，头顶只读行动结果，本体和血条保留总览，状态图标查看已生效机制。用真实石颚兽行动与结算、两种输入路径和原生控件边界复验，独立复审后交付。
 <!-- SECTION:PLAN:END -->
 
 ## Implementation Notes

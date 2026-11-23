@@ -4,6 +4,7 @@ local Theme = require("abyss_theme")
 local number = require("abyss_numbers").integer
 local M = {}
 local UnitView=require("abyss_battle_unit_view")
+local EnemyView=require("abyss_battle_enemy_view")
 local C, L, S = Theme.color, Theme.layout, Theme.space
 local I, A, P = L.statusInfo, L.actorDetail, L.powerTips
 local wrappedLines = require("abyss_battle_info_content").lines
@@ -105,13 +106,13 @@ local function powerColumns(rows, width, font, room)
         for j = first, math.min(#rows, first + groupSize - 1) do
             local row = rows[j]
             count = count + wrappedLines(row.name, width, font, P.padding * 2)
-            for paragraph in row.body:gmatch("[^\n]+") do
-                count = count + wrappedLines(paragraph, width, font, P.padding * 2)
+            for paragraph in (row.body .. "\n"):gmatch("(.-)\n") do
+                count = count + math.max(1, wrappedLines(paragraph, width, font, P.padding * 2))
             end
             copy[#copy + 1] = powerTitle .. row.name .. "</color>\n" .. row.body
             i = j + 1
         end
-        local height = math.max(L.nativeText.lineHeight, count * pitch + P.padding * 2)
+        local height = math.max(L.nativeText.lineHeight, count * pitch) + P.padding * 2
         if used > 0 and used + height > room then
             columns[#columns + 1] = {rows = column, height = used - P.gap}
             column, used = {}, 0
@@ -146,6 +147,22 @@ local function powerLayout(rows, edge, direction)
     for _, column in ipairs(columns) do scale = math.min(scale, (top - floor) / column.height) end
     left = math.min(left, safeRight - span * scale)
     return columns, left, top, floor, width, P.minFont, scale
+end
+
+local function overheadIntent(battle, info, width, height, top)
+    if not info.intentOnly or #battle.enemies < 2 then return end
+    local actor = EnemyView.geometry(battle.enemies[info.index])
+    local limit = (Theme.canvas.base[1] - width) / 2 - Theme.canvas.safe.x
+    local x = math.max(-limit, math.min(limit, actor.x + actor.intentX))
+    local potions = L.battlePotions
+    local potionLeft = potions.origin[1] - potions.size[1] / 2 - S.s
+    local potionRight = potions.origin[1] + (potions.count - 1) * potions.step[1] + potions.size[1] / 2 + S.s
+    if x + width / 2 < potionLeft or x - width / 2 > potionRight then
+        top = L.topBar.y - L.topBar.height / 2 - S.s
+    end
+    local bottom = actor.y + actor.intentY + L.intent.size / 2 + S.s
+    if bottom + height > top then return end
+    return x, bottom + height
 end
 
 function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, picture)
@@ -362,7 +379,7 @@ function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, pi
         place(box, "edge", 0, 0, geometry.width, entry.height)
         place(box, "face", 0, 0, geometry.width - 2, entry.height - 2)
         box:SetLocalScale(geometry.scale, geometry.scale, 1)
-        local copy = place(box, "copy", 0, 0, geometry.width - P.padding * 2, entry.height)
+        local copy = place(box, "copy", 0, 0, geometry.width - P.padding * 2, entry.height - P.padding * 2)
         copy.fontSize, copy.minimumFontSize = geometry.font, geometry.font
         copy.text = entry.text
         box:SetVisible(true)
@@ -393,6 +410,8 @@ function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, pi
         for column, items in ipairs(columns) do
             local y = math.min(top, math.max(actorTop, floor + items.height * scale))
             local x = direction * (left + ((column - 1) * (width + P.gap) + width / 2) * scale)
+            local headX, headTop = overheadIntent(battle, info, width * scale, items.height * scale, top)
+            x, y = headX or x, headTop or y
             for _, entry in ipairs(items.rows) do
                 index = index + 1
                 nativePowerBox(layer, index, {x=x, y=y-(entry.y+entry.height/2)*scale, width=width, font=font, scale=scale}, entry)
@@ -432,7 +451,7 @@ function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, pi
     end
     local function awaitingPowers(info, battle, actor)
         -- An empty portrait hover can gain its first Power before the pointer exits.
-        return info.transient and not info.statusId and not info.offset and actor == info.actor
+        return info.transient and not info.intentOnly and not info.statusId and not info.offset and actor == info.actor
             and Actors.isPresent(actor) and info.turn == battle.turn
     end
     local function renderPowers(panel, info, rows, battle, actor)

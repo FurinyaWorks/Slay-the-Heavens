@@ -34,7 +34,7 @@ end
 local function painful(v)
  local status=assert(v.state.catalog.statuses.painful_stabs)
  local wound=assert(v.state.catalog.cards.wound).name
- row(v,status.name,'获得'..status.name..'：普通攻击使你损失生命时，向弃牌堆加入1张「'..wound..'」','buff','持续本场战斗')
+ row(v,status.name,'获得'..status.name,'buff','普通攻击使你损失生命时，向弃牌堆加入1张「'..wound..'」。持续本场战斗')
 end
 local handlers={heartStatusDraw=statusCard,spireBashDebuff=bash,heartPainfulStabs=painful}
 function M.describe(v,effect)

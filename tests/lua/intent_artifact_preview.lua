@@ -12,7 +12,14 @@ test("stock Fat Gremlin refresh and real end-turn agree at Weak upper bound with
     assert(Combat.endTurn(copy))
     eq(copy.player.statuses.weak, 2147483646); eq(copy.player.statuses.artifact, 0)
     local compact, detail = refresh(h, p, tap)
-    eq(compact, "4"); assert(detail:find("使你获得 1 回合虚弱", 1, true))
+    eq(compact, "4"); assert(detail:find("使你获得 1 回合虚弱（当前会被抵挡）", 1, true))
+    local ginger = Combat.copy(s)
+    ginger.player.statuses.artifact = 0
+    ginger.relics = {"ginger"}
+    local intent = require("abyss_battle_intent_view").intentView(ginger, 1)
+    assert(intent.rows[2].text:find("当前会被抵挡", 1, true))
+    assert(Combat.endTurn(ginger))
+    eq(ginger.player.statuses.weak, 2147483646)
     assert(u:showStatus(0))
     eq(p:GetChild("statusInfo"):GetChild("name2").text, "虚弱 2147483647")
     local recoveries = counters.recoveries

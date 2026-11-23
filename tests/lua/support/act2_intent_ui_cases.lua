@@ -101,7 +101,8 @@ assert(support:find('青铜机枢',1,true) and support:find('12',1,true),'orb bl
 end,
 function()
 local stasis=detail('bronze_orb','stasis')
-assert(stasis:find('扣押',1,true) and stasis:find('击败',1,true),'Stasis custody and return must be explained')
+assert(stasis:find('扣押',1,true) and stasis:find('弃牌堆',1,true) and not stasis:find('击败',1,true),
+    'pending Stasis previews custody and leaves return to the active Power')
 
 end,
 function()

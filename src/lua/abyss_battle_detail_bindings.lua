@@ -28,10 +28,12 @@ local function bindEnemyReaders(bindHelp, screenSlot, box, entryAt, guard, clean
     for _, name in ipairs({"intentHit", "hpHit"}) do
         if guard and not guard() then return end
         local control = box:GetChild(name)
+        local intentOnly = name == "intentHit"
         local function describe()
             local entry = entryAt()
             if not entry or control.visible == false or not Actors.isPresent(entry.actor) then return end
-            return {index = entry.index, screenSlot = screenSlot, controlBox = guard and box or nil, powerTips = true}
+            return {index = entry.index, screenSlot = screenSlot, controlBox = guard and box or nil,
+                powerTips = true, intentOnly = intentOnly}
         end
         bindHelp(control, describe, true, nil, guard, cleanups, "enemy")
     end

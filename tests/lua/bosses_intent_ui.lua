@@ -19,9 +19,12 @@ local inferno=View.intentView(hex,1)
 has(inferno.text,'灼伤');has(inferno.text,'3张');has(inferno.text,'弃牌堆');assert(#inferno.rows==2)
 assert(C.endTurn(hex));local sear=View.intentView(hex,1);has(sear.text,'+')
 local pair=battle({'deca','donu'});force(pair.enemies[1],'square')
+pair.enemies[1].statuses.dexterity=99
+pair.enemies[1].statuses.frail=1
 local defend=View.intentView(pair,1)
-has(defend.text,'全体');has(defend.text,'16')
+has(defend.text,'敌方全体存活单位各获得 16 点格挡')
 local circle=View.intentView(pair,2);has(circle.text,'全体');has(circle.text,'3')
+assert(C.endTurn(pair) and pair.enemies[1].block==16 and pair.enemies[2].block==16)
 
 -- Real generated battle controls must open the mixed split tooltip and keep
 -- both new actors targetable, with no nil single-child metadata assumption.

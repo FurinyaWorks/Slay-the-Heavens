@@ -32,14 +32,25 @@ return function(box,actor)
  eq(box.x,x,'source actor x');eq(box.y,rootY,'source actor y')
  local icon,hit=box:GetChild('intentIcon'),box:GetChild('intentHit')
  local glyph=math.min(128*sx,theme.layout.intent.size)
- eq(hit.x,iconX,'source intent x');eq(hit.y,iconY,'source intent y')
+ eq(hit.y,iconY,'source intent y')
  eq(icon.x,iconX,'source intent x');eq(icon.y,iconY,'native intent row clears art and hitbox')
  eq(icon.sizeDeltaX,glyph,'readable intent glyph width');eq(icon.sizeDeltaY,glyph,'readable intent glyph height')
- eq(hit.sizeDeltaX,64*sx,'source help width');eq(hit.sizeDeltaY,64*sy,'source help height')
+ eq(hit.sizeDeltaY,64*sy,'source help height')
  local value=box:GetChild('intent')
  eq(value.x-value.sizeDeltaX/2,iconX+glyph/2+theme.space.xs,'damage starts after the full-bleed glyph')
  eq(value.y,iconY,'damage shares the native intent row')
  eq(value.sizeDeltaY,line,'complete native damage text line')
+ local left,right=iconX-32*sx,iconX+32*sx
+ local badge=box:GetChild('intentBadge')
+ if badge.visible then
+  left=math.min(left,badge.x-badge.sizeDeltaX/2)
+  right=math.max(right,badge.x+badge.sizeDeltaX/2)
+ end
+ if value.visible then
+  right=math.max(right,value.x-value.sizeDeltaX/2+utf8.len(value.text)*theme.layout.intent.numberSize)
+ end
+ eq(hit.x-hit.sizeDeltaX/2,left,'help extends from the source box over the visible badge')
+ eq(hit.x+hit.sizeDeltaX/2,right,'help extends from the source box over visible content')
  assert(rootY+icon.y-glyph/2>=bodyTop+theme.space.xs-.001,'intent glyph overlaps body')
  assert(rootY+value.y-line/2>=bodyTop+theme.space.xs-.001,'intent damage overlaps body')
 end

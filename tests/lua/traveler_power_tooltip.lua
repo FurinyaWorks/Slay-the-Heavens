@@ -179,9 +179,9 @@ for _, mobile in ipairs({false, true}) do
     local intent = monster:GetChild("intentHit")
     if mobile then tap(intent, 8)
     else intent.listeners.enter(); ui:update(L.statusInfo.delay) end
-    local intentTips = opened(1, 2)
+    local intentTips = opened(1, 1)
     contains(copy(intentTips[1]), "下一步行动")
-    contains(copy(intentTips[2]), "力量 2")
+    assert(not copy(intentTips[1]):find("力量 2", 1, true))
     assert(ui.info.kind == nil and ui.info.powerTips and not detail:GetChild("plate").visible)
     assert(battle.energy == before.energy and battle.turn == before.turn and #battle.hand == #before.hand
         and #battle.events == #before.events and battle.seed == before.seed)
@@ -241,14 +241,30 @@ do
     host:refresh()
     event("potion1", "down", 19)
     event("potion1", "drag", 19, 150, 100)
-    assert(ui.potionAim and ui.potionAim.moving)
-    tap(portrait, 9)
-    for _, name in ipairs({"intentHit", "hpHit"}) do
-        tap(monster:GetChild(name), 9)
-        tap(monster:GetChild(name), 19)
+    if Theme.presentationProfile == "official-assets-first" then
+        event("potion1", "up", 19, 150, 100)
+        assert(not ui.potionAim and host.run.potions[1] == "fire_potion", "dragging a potion never arms it")
+        namedTap("potion1", 19)
+        dofile("tests/lua/support/confirm_potion_popup.lua")(ui, panel, 19)
+        local aim = assert(ui.potionAim)
+        tap(portrait, 9)
+        assert(not detail.visible and ui.potionAim == aim)
+        for _, name in ipairs({"intentHit", "hpHit"}) do
+            tap(monster:GetChild(name), 9)
+            assert(detail.visible and ui.potionAim == aim and host.run.potions[1] == "fire_potion")
+            panel:GetChild("statusDismiss").listeners.click({touchId = 9})
+        end
+        namedTap("playArea", 19)
+    else
+        assert(ui.potionAim and ui.potionAim.moving)
+        tap(portrait, 9)
+        for _, name in ipairs({"intentHit", "hpHit"}) do
+            tap(monster:GetChild(name), 9)
+            tap(monster:GetChild(name), 19)
+        end
+        assert(not detail.visible and ui.potionAim.moving and host.run.potions[1] == "fire_potion")
+        event("dragLayer", "up", 19, -590, -310)
     end
-    assert(not detail.visible and ui.potionAim.moving and host.run.potions[1] == "fire_potion")
-    event("dragLayer", "up", 19, -590, -310)
     assert(not ui.potionAim and host.run.potions[1] == "fire_potion")
 
     tap(portrait, 7)

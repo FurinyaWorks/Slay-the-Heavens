@@ -85,7 +85,7 @@ local function renderIntentBadge(box,face,x,y,size,allowed,alpha,binding,picture
     local kind=face.badge
     local visible=allowed~=false and kind~=nil and (not face.sourceEnum or face.worldVisible==true)
     intentVisible(badge,visible,binding)
-    if not visible then return end
+    if not visible then return 0 end
     local glyph=math.min(size,L.intent.size)
     -- Attack damage owns the right side of the main icon, including multi-hit text.
     local side=(face.worldKind or face.kind)=='attack' and -1 or 1
@@ -93,6 +93,14 @@ local function renderIntentBadge(box,face,x,y,size,allowed,alpha,binding,picture
     intentPosition(badge,x+side*(glyph/2+S.xs+L.intent.badge/2),y,binding)
     picture(badge,Theme.icon.intent[kind])
     tint(badge,intentTone(alpha,kind))
+    return side*(glyph/2+S.xs+L.intent.badge)
+end
+local function renderIntentHit(box,x,y,badgeEdge,numberEdge,allowed,binding)
+    local sx,sy=Theme.canvas.base[1]/1920,Theme.canvas.base[2]/1080
+    local hit=box:GetChild('intentHit');intentVisible(hit,allowed~=false,binding)
+    local left,right=math.min(-32*sx,badgeEdge),math.max(32*sx,badgeEdge,numberEdge)
+    intentPosition(hit,x+(left+right)/2,y,binding)
+    intentSize(hit,right-left,64*sy,binding)
 end
 -- Explicit ports preserve the approved implementation without a shared constructor closure.
 function M.install(owner, ownership, host, dependencies)
@@ -176,20 +184,20 @@ function M.install(owner, ownership, host, dependencies)
             value.text=text
             intentTexts[value]=text
         end
-        local width=math.max(L.intent.valueWidth,utf8.len(text)*L.intent.numberSize)
+        local textWidth=utf8.len(text)*L.intent.numberSize
+        local width=math.max(L.intent.valueWidth,textWidth)
         intentSize(value,width,L.nativeText.lineHeight,intentGeometryOwner)
         intentPosition(value,x+L.intent.size/2+S.xs+width/2,y,intentGeometryOwner)
         dependencies.ink(value,intentTone(alpha))
+        return attack and textWidth>0 and L.intent.size/2+S.xs+textWidth or 0
     end
     local function renderEnemyIntent(box,face,portrait,geometry,allowed,alpha)
         local x,y,size=intentGeometry(portrait,geometry)
         renderIntentIcon(box,face,x,y,size,allowed,alpha)
-        renderIntentBadge(box,face,x,y,size,allowed,alpha,intentGeometryOwner,intentPicture,dependencies.tint)
+        local badgeEdge=renderIntentBadge(box,face,x,y,size,allowed,alpha,intentGeometryOwner,intentPicture,dependencies.tint)
         for _,name in ipairs({'intentExtra','intentLabel'})do intentVisible(box:GetChild(name),false,intentGeometryOwner)end
-        renderIntentValue(box,face,x,y,allowed,alpha)
-        local sx,sy=Theme.canvas.base[1]/1920,Theme.canvas.base[2]/1080
-        local hit=box:GetChild('intentHit');intentVisible(hit,allowed~=false,intentGeometryOwner)
-        intentPosition(hit,x,y,intentGeometryOwner);intentSize(hit,64*sx,64*sy,intentGeometryOwner)
+        local numberEdge=renderIntentValue(box,face,x,y,allowed,alpha)
+        renderIntentHit(box,x,y,badgeEdge,numberEdge,allowed,intentGeometryOwner)
     end
     local function enemyIntentAllowed(actor,battle)
         return not require('abyss_boss_relics').hidesIntents(owner.run) and Actors.isPresent(actor) and not owner.feedback.dying[actor.id]
