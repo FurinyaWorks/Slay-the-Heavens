@@ -1204,6 +1204,23 @@ const bindings = new Map([
     "after": "  assert.equal(floor.durationMs,Math.ceil(observation.durationMs));assert.equal(observation.planningFloorMs,floor.durationMs);\n  for(const platform of ['win32','linux'])assert.equal(jsPlanningWeights([file],platform)[file],Math.max(timings.js[platform][file]??timings.unknownJsMs,floor.durationMs,replayMinimum(file,platform)));\n }"
    }
   ]
+ },
+ {
+  "path": "tests/round3-catalog-source-inverse.test.mjs",
+  "beforeSha256": "701bcd46e9a01d48dccfb5db89df6edc06bf1e228777e6d9a40254865e2fd219",
+  "afterSha256": "9a611b2e46643cfbb6032dccac3b4b272feb9ddbe67569dbfc0e449d889aaa5f",
+  "hunks": [
+   {
+    "at": 15,
+    "before": "import {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';\nimport {gameUiExtractionProof} from './helpers/epochs/develop/tests/helpers/game-ui-extraction-source-inverse.mjs';",
+    "after": "import {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';\nimport {addedEntranceModules} from './helpers/ui-entrance-source.mjs';\nimport {gameUiExtractionProof} from './helpers/epochs/develop/tests/helpers/game-ui-extraction-source-inverse.mjs';"
+   },
+   {
+    "at": 133,
+    "before": " };\n const addedOwners=['scripts/deck-ui-layout.mjs',...stasisUpgradeAddedPaths,...actorFocusAdded,pointerInputPath];\n assert.throws(()=>readLive(retiredControllerPath),{code:'ENOENT'});",
+    "after": " };\n const addedOwners=['scripts/deck-ui-layout.mjs',...stasisUpgradeAddedPaths,...actorFocusAdded,pointerInputPath,...addedEntranceModules];\n assert.throws(()=>readLive(retiredControllerPath),{code:'ENOENT'});"
+   }
+  ]
  }
 ].map(row=>[row.path,row]));
 
