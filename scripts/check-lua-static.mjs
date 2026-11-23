@@ -208,7 +208,7 @@ const responsibilityRoots = {
       'notifyDrawShuffle','drawSourcePile','drawVoid','drawStatusPowers','applyDrawHooks'].map(name=>`function '${name}'`),
     ...['previewDamage','directAttackPreview','finalAttackPreview','targetedEffectPreview',
       'damageEffectPreview','blockEffectPreview','previews','M.cardPreview'].map(name=>`function '${name}'`),
-    ...['baseCardDefinition','nativeStrikeDefinition','classCardDefinition','damageCardDefinition',
+    ...['baseCardDefinition','classCardDefinition','damageCardDefinition',
       'costCardDefinition','finishCardDefinition','M.cardDefinition'].map(name=>`function '${name}'`),
     ...['nativeEthereal','resetNativeTurnCosts','prepareNativePlayerEnd','autoUseNativeEndCards',
       'endNativePlayerPowers','resolveNativeRetainPowers','discardNativeRetainedHand',

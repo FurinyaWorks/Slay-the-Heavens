@@ -5,7 +5,7 @@
 {"id":"kunai","sourceId":"Kunai","name":"苦无","description":"每回合每打出3张攻击牌，获得1点敏捷。","rarity":"uncommon","trigger":"hooks","effects":[]},
 {"id":"blue_candle","sourceId":"Blue Candle","name":"蓝蜡烛","description":"你可以打出诅咒牌。每打出一张诅咒牌，失去1点生命并消耗它。","rarity":"uncommon","trigger":"hooks","effects":[]},
 {"id":"eternal_feather","sourceId":"Eternal Feather","name":"永恒羽毛","description":"每进入一个休息处，你的牌组每有5张牌，回复3点生命。","rarity":"uncommon","trigger":"hooks","effects":[]},
-{"id":"strike_dummy","sourceId":"StrikeDummy","name":"打击木偶","description":"名称中带有打击的牌额外造成3点伤害。","rarity":"uncommon","trigger":"hooks","effects":[]},
+{"id":"strike_dummy","sourceId":"StrikeDummy","name":"打击木偶","description":"『剑势』系列、其他角色的基础打击、潜袭、陨石打击、雷霆打击、风车打击和迅击，每段攻击额外造成3点伤害。","rarity":"uncommon","trigger":"hooks","effects":[]},
 {"id":"singing_bowl","sourceId":"Singing Bowl","name":"颂钵","description":"在卡牌奖励中，你可以选择增加2点生命上限来代替拿牌。","rarity":"uncommon","trigger":"hooks","effects":[]},
 {"id":"matryoshka","sourceId":"Matryoshka","name":"套娃","description":"接下来打开的两个非首领宝箱额外包含一件遗物。","rarity":"uncommon","trigger":"hooks","effects":[]},
 {"id":"ink_bottle","sourceId":"InkBottle","name":"墨水瓶","description":"每打出10张牌，抽1张牌。","rarity":"uncommon","trigger":"hooks","effects":[]},

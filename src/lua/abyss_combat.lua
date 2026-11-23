@@ -454,22 +454,11 @@ local function baseCardDefinition(state,instance)
     return card
 end
 
-local function nativeStrikeDefinition(state,card,native)
-    if native and card.id=='perfected_strike' then
-        local count=0
-        for _,pile in ipairs({state.hand or {},state.draw or {},state.discard or {}}) do
-            for _,held in ipairs(pile) do if state.catalog.cards[held.cardId].strikeTag then count=count+1 end end
-        end
-        card.effects[1].value=6+count*card.strikeBonus
-    end
-    return card
-end
-
-local function classCardDefinition(state,instance,card,native)
+local function classCardDefinition(state,instance,card,playing)
     card=require("abyss_silent_discard_cards").costAdapter(state,instance,card)
     if state.player then card=require("abyss_retained_cards").adaptDefinition(state,instance,card) end
     if state.player then
-        if not (native and card.id=='perfected_strike') then card=require('abyss_warrior_strength_cards').adaptDefinition(state,instance,card) end
+        card=require('abyss_warrior_strength_cards').adaptDefinition(state,instance,card,playing)
         card=require('abyss_watcher_attack_cards').adaptDefinition(state,instance,card)
         card=require('abyss_warrior_status_cards').adaptDefinition(state,instance,card)
         card=require('abyss_defect_engine_cards').adaptDefinition(state,instance,card)
@@ -483,7 +472,7 @@ local function damageCardDefinition(state,instance,card)
     local strikeBonus=Uncommon.strikeBonus(state,card)
     if strikeBonus>0 then
         for _,effect in ipairs(card.effects)do
-            if effect.op=='damage'or effect.op=='damageAll'then effect.value=effect.value+strikeBonus end
+            if effect.op=='damage'or effect.op=='damageAll'or effect.op=='thunderStrike'then effect.value=effect.value+strikeBonus end
         end
     end
     if instance.cardId=="shiv" and state.player then
@@ -528,11 +517,10 @@ local function finishCardDefinition(state,instance,card)
     return card
 end
 
-function M.cardDefinition(state, instance)
+function M.cardDefinition(state, instance, playing)
     local card=baseCardDefinition(state,instance)
     local native=nativeDefinition(state,card)
-    card=nativeStrikeDefinition(state,card,native)
-    card=classCardDefinition(state,instance,card,native)
+    card=classCardDefinition(state,instance,card,playing)
     card=damageCardDefinition(state,instance,card)
     card=costCardDefinition(state,instance,card,native)
     return finishCardDefinition(state,instance,card)
@@ -1265,7 +1253,7 @@ function M.resolveQueuedCard(state,e)
     end
     local target=state.enemies[e.targetIndex]
     local c=e.card
-    local d=M.cardDefinition(state,c)
+    local d=M.cardDefinition(state,c,true)
     local forceExhaust=e.exhaustCards
     if forceExhaust==nil then forceExhaust=e.autoplay end
     local function rejected()

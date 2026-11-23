@@ -558,7 +558,6 @@ function M.new(root, presentation, clickEvent, platform, onClose)
             notes[#notes+1]=OriginalDisplay.describe(definition,instance.upgraded)
             notes[#notes+1]=OriginalDisplay.keywordDefinitions(definition,instance.upgraded)
         elseif not fits then notes[#notes+1]=version.text:gsub('<color=#[%x]+>',''):gsub('</color>','') end
-        notes[#notes+1]=CardOrigin.keywords(definition)
         notes[#notes+1]=context.provenance
         local text=table.concat(notes,'\n'):gsub('^%s+',''):gsub('%s+$','')
         local pages=paginate(text,noteWidth,noteHeight)

@@ -54,7 +54,6 @@ local temporary=Combat.copy(permanentCard);temporary.deckUid=other;temporary.upg
 local text=View.describe(run,temporary,true)
 assert(text:find('永久升级',1,true) and text:find('闪耀之光',1,true) and text:find('本场临时升级',1,true))
 assert(View.describe(run,card(run,newUid),false):find('获得时已升级',1,true))
-assert(View.keywords({strikeTag=true}):find('打击标签',1,true))
 local V=require('abyss_relic_view_ui')
 assert(V.status({phase='combat',relicCounters={omamori=2},combat={relicCounters={omamori=0}}},'omamori')=='已耗尽','live battle counter must win')
 assert(V.status({relicCounters={lizard_tail=-1}},'lizard_tail')=='剩余 1 次')

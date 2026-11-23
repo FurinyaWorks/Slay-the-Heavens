@@ -27,7 +27,4 @@ function M.describe(run,instance,combat)
  end
  return text
 end
-function M.keywords(definition)
- return definition.strikeTag and '打击类：带有打击标签，计入剑势如虹等效果。' or ''
-end
 return M

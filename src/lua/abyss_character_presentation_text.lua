@@ -591,7 +591,7 @@ local function growthText(card,text)
         text=text..'力量对本牌的伤害加成为 '..number(card.strengthMultiplier)..' 倍。'
     elseif card.id=='perfected_strike' then
         assert(card.strikeBonus==2 or card.strikeBonus==3,'invalid Perfected Strike bonus')
-        text=text..'手牌、抽牌堆和弃牌堆中每有一张带打击标签的牌，基础伤害增加 '..number(card.strikeBonus)..'。'
+        text=text..'手牌、抽牌堆和弃牌堆中每有一张『剑势』系列牌，基础伤害增加'..number(card.strikeBonus)..'点。'
     elseif card.id=='brilliance' then text=text..'本场战斗每获得 1 点真言，基础伤害增加 1。'
     elseif card.id=='force_field'then text=text..'本场战斗每打出 1 张能力牌，本牌基础费用降低 1，最低0。' end
     if card.id=='blood_for_blood' then text=text..'本场战斗每次实际失去生命，本牌费用降低 1，最低 0。'

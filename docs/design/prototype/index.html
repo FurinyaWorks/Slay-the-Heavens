@@ -167,7 +167,7 @@ button{font-family:inherit}
 const CARDS=[
   [
     "strike",
-    "普通攻击",
+    "剑势·初式",
     "attack",
     "basic",
     "1",
@@ -311,13 +311,13 @@ const CARDS=[
     "attack",
     "common",
     "2",
-    "造成6点伤害。手牌、抽牌堆和弃牌堆中每张带打击标签的牌提升2点伤害。",
+    "造成6点伤害。手牌、抽牌堆和弃牌堆中每有一张『剑势』系列牌，基础伤害增加2点。",
     "2",
-    "造成6点伤害。手牌、抽牌堆和弃牌堆中每张带打击标签的牌提升3点伤害。"
+    "造成6点伤害。手牌、抽牌堆和弃牌堆中每有一张『剑势』系列牌，基础伤害增加3点。"
   ],
   [
     "pommel_strike",
-    "试探一击",
+    "剑势·试锋",
     "attack",
     "common",
     "1",
@@ -367,7 +367,7 @@ const CARDS=[
   ],
   [
     "twin_strike",
-    "重击",
+    "剑势·双斩",
     "attack",
     "common",
     "1",
@@ -387,7 +387,7 @@ const CARDS=[
   ],
   [
     "wild_strike",
-    "猛进斩",
+    "剑势·猛进",
     "attack",
     "common",
     "1",
@@ -487,7 +487,7 @@ const CARDS=[
   ],
   [
     "dual_wield",
-    "再演剑势",
+    "再演剑招",
     "skill",
     "uncommon",
     "1",
@@ -978,8 +978,7 @@ const CARDS=[
   ["parasite", "寄生", "curse", "curse", "", "无法打出。从牌组中永久移除时，最大生命值降低3点。", "", "无法打出。从牌组中永久移除时，最大生命值降低3点。"]
 ];
 // Keyword membership mirrors data/cards.json; effect bodies stay presentation-only.
-const STRIKE_TAGS=new Set(["strike","perfected_strike","pommel_strike","twin_strike","wild_strike"]);
-const C={};for(const[id,name,type,rarity,cost,text,ucost,utext] of CARDS)C[id]={id,name,type,rarity,strikeTag:STRIKE_TAGS.has(id),cost:cost===''?'':cost==='X'?'X':+cost,text,ucost:ucost===''?'':ucost==='X'?'X':+ucost,utext};
+const C={};for(const[id,name,type,rarity,cost,text,ucost,utext] of CARDS)C[id]={id,name,type,rarity,cost:cost===''?'':cost==='X'?'X':+cost,text,ucost:ucost===''?'':ucost==='X'?'X':+ucost,utext};
 const TYPE={attack:'攻击',skill:'技能',power:'能力',status:'状态',curse:'诅咒'};
 const ICON_OF_TYPE={attack:'sword',skill:'shield',power:'geo',status:'deck',curse:'deck'};
 const cv=document.getElementById('cv'),frame=document.getElementById('frame');
@@ -1009,10 +1008,9 @@ function cardEl(c,{up=false,cant=false}={}){
     <div class="fr${ann('rect 100001 · 稀有度色框')}"></div><div class="nb"></div>
     <div class="t nm">${c.name}${up?'+':''}</div>
     <div class="art${ann('图标 '+{attack:102012,skill:102014,power:102024,status:100122,curse:100122}[c.type])}"><div class="ico">${ic(ICON_OF_TYPE[c.type])}</div></div>
-    <div class="tl">${TYPE[c.type]}${c.strikeTag?' · 打击类':''}</div>
+    <div class="tl">${TYPE[c.type]}</div>
     <div class="tx"><span>${hl(text)}</span></div>
     <div class="cost num${ann('disc 106025')}">${cost}</div></div>`);
-  if(c.strikeTag)tip(el,'<b>打击类</b><br>带有打击标签，计入剑势如虹等效果。',520,80,240,true);
   return el;
 }
 function hpBar(x,y,w,hp,max,block){

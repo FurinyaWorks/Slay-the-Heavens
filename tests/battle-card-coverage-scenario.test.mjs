@@ -18,7 +18,7 @@ test('two real-card groups cover every existing RED75 rarity/type cell and disti
   assert.equal(mechanics.expected.find(card => card.id === 'regret').acquisition,'curse-acquisition');
   assert.ok(mechanics.expected.some(card => card.upgraded));
   assert.ok(mechanics.expected.some(card => card.exhaust));
-  assert.equal(mechanics.expected.find(card => card.id === 'perfected_strike').textLength,35);
+  assert.equal(mechanics.expected.find(card => card.id === 'perfected_strike').textLength,39);
   const status=coveragePlan(JSON.parse(cards),String(contract),'status');
   assert.equal(status.expected.length,10);
   assert.deepEqual(status.expected.filter(card=>card.acquisition==='combat-generated').map(card=>[card.id,card.type,card.rarity]),

@@ -146,7 +146,7 @@ function M.wasHpLost(state,actor,amount)
  if actor==state.player and amount>0 and M.owns(state,'self_forming_clay')then return {effect('gainStatus',3,{status='next_turn_block'})}end
  return {}
 end
-function M.strikeBonus(owner,definition)return definition.strikeTag and M.owns(owner,'strike_dummy')and 3 or 0 end
+function M.strikeBonus(owner,definition)return M.owns(owner,'strike_dummy')and require('abyss_strike').matches(definition)and 3 or 0 end
 function M.vulnerablePercent(owner,target)if target~=owner.player and M.owns(owner,'paper_frog')then return 175 end end
 function M.canPlayCurse(owner,definition)return definition.type=='curse'and M.owns(owner,'blue_candle')end
 end

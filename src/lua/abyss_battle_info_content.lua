@@ -131,9 +131,7 @@ function M.new(self, describe, lines)
         flush()
     end
 
-    local function cardTraits(definition, rows, keywordOnly)
-        if definition.strikeTag and not keywordOnly then rows[#rows+1]={intent='unknown',colour=C.goldBright,name='打击类',
-            text='带有打击标签',note='计入剑势如虹等效果'} end
+    local function cardTraits(definition, rows)
         if definition.exhaust then rows[#rows + 1] = {icon = Theme.icon.exhaust, colour = C.goldBright, name = "消耗",
             text = "打出后移出本场战斗", note = "不进入弃牌堆"} end
         if definition.ethereal then rows[#rows + 1] = {intent = "unknown", colour = C.goldBright, name = "虚无",
@@ -156,7 +154,7 @@ function M.new(self, describe, lines)
         if definition.originalV4 and not keywordOnly then fullEffectRows(definition,instance,battle,rows,info.reward)end
         local keywordText=keywordOnly and require('abyss_card_display').permanentText(self.presentation[instance.cardId],definition,instance)
         keywordRows(definition.effects, battle, actor, rows, keywordText)
-        cardTraits(definition, rows, keywordOnly)
+        cardTraits(definition, rows)
         if not keywordOnly then
             originRow(info,instance,rows)
             standardCardEffectRows(info.kind,definition,instance,battle,rows,info.reward)

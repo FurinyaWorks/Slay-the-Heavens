@@ -129,7 +129,7 @@ test('combat play, turn and constructor stages are required, bounded and fully m
     'startExperimentalEnemyGroup','runExperimentalEnemyGroup','finishExperimentalRound','endExperimentalTurn',
     'catalogNeedsTurnCleanup','powersNeedTurnCleanup','cardNeedsTurnCleanup','advancedTurnCleanup',
     'resumeRetainedEndTurn','endTurnNeedsTransaction','endTurnRestore','invokeEndTurnResolver','M.endTurn',
-    'baseCardDefinition','nativeStrikeDefinition','classCardDefinition','damageCardDefinition',
+    'baseCardDefinition','classCardDefinition','damageCardDefinition',
     'costCardDefinition','finishCardDefinition','M.cardDefinition',
     'previewDamage','directAttackPreview','finalAttackPreview','targetedEffectPreview',
     'damageEffectPreview','blockEffectPreview','previews','M.cardPreview'];

@@ -33,9 +33,11 @@ test('definition pipeline real semantic mutations fail behavior and input immuta
  const source=normalize(readFileSync(file,'utf8'));
  const changes=[
   ['native Perfected Strike cannot be counted twice','native',
-   "if not (native and card.id=='perfected_strike') then","if true then"],
-  ['captured native flag remains stable after adapter replacement','native',
-   "if not (native and card.id=='perfected_strike') then","if not (nativeDefinition(state,card) and card.id=='perfected_strike') then"],
+   "card=require('abyss_warrior_strength_cards').adaptDefinition(state,instance,card,playing)",
+   "card=require('abyss_warrior_strength_cards').adaptDefinition(state,instance,card,playing);card=require('abyss_warrior_strength_cards').adaptDefinition(state,instance,card,playing)"],
+  ['native Perfected Strike cannot skip the shared strength adapter','native',
+   "card=require('abyss_warrior_strength_cards').adaptDefinition(state,instance,card,playing)",
+   "if card.id~='perfected_strike' then card=require('abyss_warrior_strength_cards').adaptDefinition(state,instance,card,playing) end"],
   ['returned adapter object must be adopted','adapters',
    'card=require("abyss_silent_discard_cards").costAdapter(state,instance,card)',
    'require("abyss_silent_discard_cards").costAdapter(state,instance,card)'],

@@ -2,6 +2,7 @@
 -- Combat owns phase order, NORMAL snapshots, transactions and hook dispatch.
 local Actors=require('abyss_actor')
 local Events=require('abyss_events')
+local Strike=require('abyss_strike')
 local M={}
 local MAX=2147483647
 local copy=require('abyss_copy').copy
@@ -13,8 +14,8 @@ local cards={
   text='造成14点伤害。力量对此牌的加成提高为3倍。',upgradeText='造成14点伤害。力量对此牌的加成提高为5倍。'},
  {id='perfected_strike',name='完美打击',sts_name='Perfected Strike',type='attack',rarity='common',cost=2,
   effects={{op='damage',value=6}},strikeBonus=2,sourceTags={'STRIKE'},upgrade={strikeBonus=3},
-  text='造成6点伤害。你的抽牌堆、弃牌堆和手牌中每有一张带打击标签的牌，伤害增加2。',
-  upgradeText='造成6点伤害。你的抽牌堆、弃牌堆和手牌中每有一张带打击标签的牌，伤害增加3。'},
+  text='造成6点伤害。手牌、抽牌堆和弃牌堆中每有一张『剑势』系列牌，基础伤害增加2点。',
+  upgradeText='造成6点伤害。手牌、抽牌堆和弃牌堆中每有一张『剑势』系列牌，基础伤害增加3点。'},
  {id='combust',name='自燃',sts_name='Combust',type='power',rarity='uncommon',cost=1,
   effects={gain('combust',5)},upgrade={effects={gain('combust',7)}},
   text='每回合结束时，失去1点生命，对所有敌人造成5点伤害。',
@@ -88,11 +89,7 @@ function M.withCards(data)
  end
  out.experimentalWarriorStrength=true;return out
 end
-local function strike(def)
- for _,tag in ipairs(def.sourceTags or {}) do if tag=='STRIKE' then return true end end
- return strikeIds[def.id]==true
-end
-function M.adaptDefinition(state,instance,card)
+function M.adaptDefinition(state,instance,card,playing)
  assert(type(card)=='table' and card~=state.catalog.cards[instance.cardId],'strength adapter requires detached definition')
  if card.id=='heavy_blade' then
   local mult=card.strengthMultiplier;local strength=state.player.statuses.strength or 0
@@ -101,14 +98,16 @@ function M.adaptDefinition(state,instance,card)
  elseif card.id=='perfected_strike' then
   assert(card.strikeBonus==2 or card.strikeBonus==3,'invalid Perfected Strike bonus')
   local count,seen=0,{}
-  for _,name in ipairs({'hand','draw','discard'}) do
-   for _,c in ipairs(state[name]) do
+  local playingIdentity=playing and (instance.uuid or instance.uid)
+  for _,pile in ipairs({state.hand,state.draw,state.discard}) do
+   for _,c in ipairs(pile) do
     assert(not seen[c.uid],'duplicate Perfected Strike UID');seen[c.uid]=true
-    local d=assert(state.catalog.cards[c.cardId],'unknown Strike card')
-    if c.upgraded and d.upgrade and d.upgrade.sourceTags then d=copy(d);d.sourceTags=d.upgrade.sourceTags end
-    if strike(d) then count=count+1 end
+    if playingIdentity==(c.uuid or c.uid) then playingIdentity=nil end
+    if Strike.matches(assert(state.catalog.cards[c.cardId],'unknown Strike card'),c.upgraded) then count=count+1 end
    end
   end
+  -- Autoplay moves the card out of its pile before resolving it.
+  if playingIdentity and Strike.matches(card) then count=count+1 end
   local out=copy(card);out.effects[1].value=out.effects[1].value+0.0+count*card.strikeBonus;return out
  end
  return card

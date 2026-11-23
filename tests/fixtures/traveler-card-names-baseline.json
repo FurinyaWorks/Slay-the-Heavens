@@ -1,7 +1,7 @@
 {
   "sourcePath": "data/presentation/traveler.zh-CN.json",
   "names": {
-    "strike": "普通攻击",
+    "strike": "剑势·初式",
     "defend": "防御",
     "bash": "破防斩",
     "cleave": "星陨剑",
@@ -12,8 +12,8 @@
     "clash": "全力进攻",
     "flex": "蓄力",
     "true_grit": "稳住阵脚",
-    "twin_strike": "重击",
-    "pommel_strike": "试探一击",
+    "twin_strike": "剑势·双斩",
+    "pommel_strike": "剑势·试锋",
     "shrug_it_off": "伺机而动",
     "thunderclap": "横扫破防",
     "warcry": "调整战术",

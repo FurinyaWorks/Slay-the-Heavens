@@ -9,6 +9,7 @@ local root=F.Viewport.apply(F.control({children=F.Layout}),1280,720)
 local run=Run.new(F.Data,42,{character='furina'})
 local presentation=P.prepare(F.Presentation,run.data)
 local function assertLong(face,upgraded,context)
+ assert(face.visible,context..' preview is hidden')
  local name,kind=face:GetChild('name'),face:GetChild('type')
  assert(name.text=='恰到好处的停顿' and name.fontSize==14,context..' lost readable full title')
  assert(plainCardTitle(kind.text)==(upgraded and '技能 ＋' or '技能'),context..' lost or duplicated upgrade marker')
@@ -31,7 +32,7 @@ assert(Run.finishCombat(run))
 -- A controlled reward fixture selects the real long card; rendering still goes
 -- through the production reward face, not a test-only title writer.
 run.rewards.cards={'FR2-053'};run.rewards.cardUpgrades={true}
-battle.rewardScreen='cards';battle:render()
+battle:render();battle.rewardScreen='cards';battle:render()
 assertLong(root:GetChild('battlePanel'):GetChild('card1'),true,'reward')
 local shopRun=Run.new(F.Data,42,{character='furina'})
 local map=Map.generate(shopRun.data,42)
@@ -42,8 +43,12 @@ for _=1,17 do
  assert(Map.choose(map,assert(choices[1]).id))
 end
 shopRun.nodeFlow.cards[1].id='FR2-053'
+shopRun.nodeFlow.cards[2].id='perfected_strike'
 local node=NodeUI.new(root:GetChild('nodePanel'),shopRun,map,presentation,'click',function()end,platform)
 node:render()
+assert(root:GetChild('nodePanel'):GetChild('merchant'):GetChild('talk'):GetChild('hit').click())
+local advanceShop=dofile('tests/lua/support/shop_timeline.lua')
+advanceShop(node)
 assertLong(root:GetChild('nodePanel'):GetChild('shopView'):GetChild('card1'),false,'shop')
 -- Reusing the actual battle/deck slots must clear the relocated marker. X costs
 -- and repeatable upgrade counts retain their existing rule-derived values.
@@ -61,3 +66,43 @@ face=root:GetChild('deckPanel'):GetChild('grid').items[0]:GetChild('face')
 assert(plainCardTitle(face:GetChild('name').text)==text.searing_blow.name..'＋999')
 assert(face:GetChild('type').text=='攻击' and face:GetChild('cost').text=='2')
 print('LUA_CARD_FACE_CONTEXTS_PASS battle/reward/deck/shop; long upgrade, X cost, repeat upgrade, recycled marker')
+
+local function assertSwordTitle(cardFace,upgraded)
+ assert(cardFace.visible)
+ local name=cardFace:GetChild('name')
+ assert(plainCardTitle(name.text)==('剑势如虹'..(upgraded and '＋' or '')), tostring(name.text))
+ assert(name.fontSize>=14 and name.adaptiveFontSize==false)
+ assert(cardFace:GetChild('type').text=='攻击')
+end
+assert(deck:close())
+local sword={uid=3,cardId='perfected_strike',upgraded=false}
+traveler.deck={sword}
+assert(deck:open(traveler));deck:update()
+local panel=root:GetChild('deckPanel')
+assertSwordTitle(panel:GetChild('grid').items[0]:GetChild('face'),false)
+assert(deck:showCardDetails(sword))
+local focus=panel:GetChild('cardFocus'):GetChild('face')
+assertSwordTitle(focus,false)
+assert(focus:GetChild('label').text:find('基础伤害增加2点。',1,true))
+assert(deck:toggleUpgradePreview())
+assertSwordTitle(focus,true)
+assert(focus:GetChild('label').text:find('基础伤害增加3点。',1,true))
+assert(deck:close())
+traveler.combat.hand={sword}
+battle:render()
+assertSwordTitle(root:GetChild('battlePanel'):GetChild('card1'),false)
+traveler.combat.hand={}
+for _,pile in ipairs({'draw','discard'})do
+ traveler.combat[pile]={sword}
+ assert(deck:openPile(traveler,pile));deck:update()
+ assertSwordTitle(panel:GetChild('grid').items[0]:GetChild('face'),false)
+ assert(deck:close())
+ traveler.combat[pile]={}
+end
+for _,enemy in ipairs(traveler.combat.enemies)do enemy.hp=0 end
+assert(Run.finishCombat(traveler))
+traveler.rewards.cards={'perfected_strike'};traveler.rewards.cardUpgrades={true}
+battle:render();battle.rewardScreen='cards';battle:render()
+assertSwordTitle(root:GetChild('battlePanel'):GetChild('card1'),true)
+assertSwordTitle(root:GetChild('nodePanel'):GetChild('shopView'):GetChild('card2'),false)
+print('LUA_SWORD_CARD_FACE_CONTEXTS_PASS battle/deck/details/upgraded/draw/discard/reward/shop')
