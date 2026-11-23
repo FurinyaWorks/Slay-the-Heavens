@@ -81,12 +81,33 @@ for(const [path,row] of Object.entries(potionBackflow.files)){
  assert.match(row.after.sha256,/^[a-f0-9]{64}$/);assert.match(row.after.gitBlob,/^[a-f0-9]{40}$/);
 }
 const rewardsBackView='src/lua/abyss_game_ui_view.lua';
-const rewardsBackViewSuccessor=Object.freeze({
+const rewardsBackViewBeforeCover=Object.freeze({
  sha256:'9b4968a3fd23e0956ef565ef4da1d4dbc2a0c5b666308c59c963d02c8f15f0fb',
  gitBlob:'96f9fadefeabc3d3540e2797943c3b415605140d',
 });
+const rewardsBackViewSuccessor=Object.freeze({
+ sha256:'e9bdbffa33a31551f993c79b7c9f0073718d95b11b9ab82f4d43fb78d0ee2015',
+ gitBlob:'eb350ea03a9b8ef580243c124ce328935ba251ea',
+});
 function beforeRewardsBackExtraction(path,source){
- if(path!==rewardsBackView||!matches(source,rewardsBackViewSuccessor))return source;
+ if(path!==rewardsBackView)return source;
+ const current=matches(source,rewardsBackViewSuccessor);
+ if(!current&&!matches(source,rewardsBackViewBeforeCover))return source;
+ let text=normalize(source);
+ if(current){
+  const cover=`            -- First cover must commit suspension before native sibling setters.
+            -- Subsequent covered refreshes can use just the final battle render.
+            local deferDeckRender=self.mode=='battle' and deckOpen and not self.battleUI.active
+            self.battleUI:setActive(self.mode == "battle" and not deckOpen and not potionOpen and not blocked,
+                suspendBattle(run,deckOpen,potionOpen),deferDeckRender)`;
+  const previous=`            -- A deck open still commits one battle render below (input retirement,
+            -- art ownership and suspension), after the host's visibility writes.
+            self.battleUI:setActive(self.mode == "battle" and not deckOpen and not potionOpen and not blocked,
+                suspendBattle(run,deckOpen,potionOpen),self.mode=='battle' and deckOpen)`;
+  assert.equal(text.split(cover).length,2,'exact first-cover render successor');
+  text=text.replace(cover,previous);
+  assert(matches(text,rewardsBackViewBeforeCover),'exact first-cover render predecessor');
+ }
  const helper=`local function refreshRewardsBack(button,available)
     button:SetVisible(available)
     if button:GetChild('v25Face') then
@@ -105,7 +126,7 @@ end
             -- Route preview raises the full-page map. Restore this sibling above it
             -- when returning to navigation; visibility alone leaves it occluded.
             if returnAvailable then rewardsBack:SetAsLastSibling() end`;
- const text=normalize(source),call='refreshRewardsBack(child("combatRewards"),returnAvailable)';
+ const call='refreshRewardsBack(child("combatRewards"),returnAvailable)';
  assert.equal(text.split(helper).length,2,'exact rewards back helper extraction');
  assert.equal(text.split(call).length,2,'exact rewards back helper call');
  const prior=text.replace(helper,'').replace(call,inline);

@@ -62,6 +62,8 @@ const windowsReplayMinimumMs = Object.freeze({
   // Budget the longest completed case after isolating the three cases.
   'approved-ui-inverse.test.mjs': 1455000,
   'architecture-composition-format.test.mjs': 1190000,
+  // The 1786s live-owner case in job 137510449987 now runs in two workers.
+  'art-feature-source-inverse.test.mjs': 1000000,
   'battle-max-hp-config-inverse.test.mjs': 681000,
   'card-origin-source-inverse.test.mjs': 360000,
   'colorless-catalog-source.test.mjs': 566000,

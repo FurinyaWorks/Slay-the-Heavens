@@ -97,7 +97,7 @@ const bindings = new Map([
  {
   "path": "tests/helpers/input-retirement-source.mjs",
   "beforeSha256": "7d849cfad2c62efc07b65bb4c845dfe6b54b2f3bf2d3bca560457a1eed631488",
-  "afterSha256": "4d588c2a31f6fd9c6c03269ed310074dc13c865ae01b499d3e17f7bfb5dda624",
+  "afterSha256": "3e73c70528cce22a056448843dbe4f15e5f293081ecce601af58555610cfef19",
   "hunks": [
    {
     "at": 8,
@@ -117,10 +117,10 @@ const bindings = new Map([
    {
     "at": 81,
     "before": "}\nexport function beforePotionBackflow(path,source){\n const row=Object.hasOwn(potionBackflow.files,path)&&potionBackflow.files[path];\n if(!row||!matches(source,row.after))return source;",
-    "after": "}\nconst rewardsBackView='src/lua/abyss_game_ui_view.lua';\nconst rewardsBackViewSuccessor=Object.freeze({\n sha256:'9b4968a3fd23e0956ef565ef4da1d4dbc2a0c5b666308c59c963d02c8f15f0fb',\n gitBlob:'96f9fadefeabc3d3540e2797943c3b415605140d',\n});\nfunction beforeRewardsBackExtraction(path,source){\n if(path!==rewardsBackView||!matches(source,rewardsBackViewSuccessor))return source;\n const helper=`local function refreshRewardsBack(button,available)\n    button:SetVisible(available)\n    if button:GetChild('v25Face') then\n        require('abyss_v25_menu_view').button(button,available)\n    end\n    -- Route preview raises the map. Raise this sibling when navigation returns.\n    if available then button:SetAsLastSibling() end\nend\n\n`;\n const inline=`local rewardsBack=child(\"combatRewards\")\n            rewardsBack:SetVisible(returnAvailable)\n            if rewardsBack:GetChild('v25Face') then\n                require('abyss_v25_menu_view').button(rewardsBack,returnAvailable)\n            end\n            -- Route preview raises the full-page map. Restore this sibling above it\n            -- when returning to navigation; visibility alone leaves it occluded.\n            if returnAvailable then rewardsBack:SetAsLastSibling() end`;\n const text=normalize(source),call='refreshRewardsBack(child(\"combatRewards\"),returnAvailable)';\n assert.equal(text.split(helper).length,2,'exact rewards back helper extraction');\n assert.equal(text.split(call).length,2,'exact rewards back helper call');\n const prior=text.replace(helper,'').replace(call,inline);\n assert(matches(prior,potionBackflow.files[path].after),'exact rewards back predecessor');\n return source.includes('\\r\\n')?prior.replaceAll('\\n','\\r\\n'):prior;\n}\nexport function beforePotionBackflow(path,source){\n const row=Object.hasOwn(potionBackflow.files,path)&&potionBackflow.files[path];\n source=beforeRewardsBackExtraction(path,source);\n if(!row||!matches(source,row.after))return source;"
+    "after": "}\nconst rewardsBackView='src/lua/abyss_game_ui_view.lua';\nconst rewardsBackViewBeforeCover=Object.freeze({\n sha256:'9b4968a3fd23e0956ef565ef4da1d4dbc2a0c5b666308c59c963d02c8f15f0fb',\n gitBlob:'96f9fadefeabc3d3540e2797943c3b415605140d',\n});\nconst rewardsBackViewSuccessor=Object.freeze({\n sha256:'e9bdbffa33a31551f993c79b7c9f0073718d95b11b9ab82f4d43fb78d0ee2015',\n gitBlob:'eb350ea03a9b8ef580243c124ce328935ba251ea',\n});\nfunction beforeRewardsBackExtraction(path,source){\n if(path!==rewardsBackView)return source;\n const current=matches(source,rewardsBackViewSuccessor);\n if(!current&&!matches(source,rewardsBackViewBeforeCover))return source;\n let text=normalize(source);\n if(current){\n  const cover=`            -- First cover must commit suspension before native sibling setters.\n            -- Subsequent covered refreshes can use just the final battle render.\n            local deferDeckRender=self.mode=='battle' and deckOpen and not self.battleUI.active\n            self.battleUI:setActive(self.mode == \"battle\" and not deckOpen and not potionOpen and not blocked,\n                suspendBattle(run,deckOpen,potionOpen),deferDeckRender)`;\n  const previous=`            -- A deck open still commits one battle render below (input retirement,\n            -- art ownership and suspension), after the host's visibility writes.\n            self.battleUI:setActive(self.mode == \"battle\" and not deckOpen and not potionOpen and not blocked,\n                suspendBattle(run,deckOpen,potionOpen),self.mode=='battle' and deckOpen)`;\n  assert.equal(text.split(cover).length,2,'exact first-cover render successor');\n  text=text.replace(cover,previous);\n  assert(matches(text,rewardsBackViewBeforeCover),'exact first-cover render predecessor');\n }\n const helper=`local function refreshRewardsBack(button,available)\n    button:SetVisible(available)\n    if button:GetChild('v25Face') then\n        require('abyss_v25_menu_view').button(button,available)\n    end\n    -- Route preview raises the map. Raise this sibling when navigation returns.\n    if available then button:SetAsLastSibling() end\nend\n\n`;\n const inline=`local rewardsBack=child(\"combatRewards\")\n            rewardsBack:SetVisible(returnAvailable)\n            if rewardsBack:GetChild('v25Face') then\n                require('abyss_v25_menu_view').button(rewardsBack,returnAvailable)\n            end\n            -- Route preview raises the full-page map. Restore this sibling above it\n            -- when returning to navigation; visibility alone leaves it occluded.\n            if returnAvailable then rewardsBack:SetAsLastSibling() end`;\n const call='refreshRewardsBack(child(\"combatRewards\"),returnAvailable)';\n assert.equal(text.split(helper).length,2,'exact rewards back helper extraction');\n assert.equal(text.split(call).length,2,'exact rewards back helper call');\n const prior=text.replace(helper,'').replace(call,inline);\n assert(matches(prior,potionBackflow.files[path].after),'exact rewards back predecessor');\n return source.includes('\\r\\n')?prior.replaceAll('\\n','\\r\\n'):prior;\n}\nexport function beforePotionBackflow(path,source){\n const row=Object.hasOwn(potionBackflow.files,path)&&potionBackflow.files[path];\n source=beforeRewardsBackExtraction(path,source);\n if(!row||!matches(source,row.after))return source;"
    },
    {
-    "at": 123,
+    "at": 144,
     "before": " if(!row)return;\n assert(matches(source,row.after),'fresh current production owner: '+path);\n let live;\n try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}\n assert(matches(live,row.after),'combined linked owner identity: '+path+' during deck/potion backflow validation');\n}",
     "after": " if(!row)return;\n const expected=path===rewardsBackView?rewardsBackViewSuccessor:row.after;\n const isCurrent=value=>{\n  if(path!==deckChromePath)return matches(value,expected);\n  const prior=beforeCurrentReplayFixes(path,value);\n  return prior!==value&&matches(prior,expected);\n };\n assert(isCurrent(source),'fresh current production owner: '+path);\n let live;\n try{live=read(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}\n assert(isCurrent(live),'combined linked owner identity: '+path+' during deck/potion backflow validation');\n}"
    }
@@ -551,12 +551,12 @@ const bindings = new Map([
  {
   "path": "tests/runtime-ui-hotpaths.test.mjs",
   "beforeSha256": "54567cfd9f99a8f2197e305b4d3cb1475d0b3cd80a5f7fc905e4f0cda0533962",
-  "afterSha256": "653e02f06216b597260dd819f23e4ada87dc6d8bf2f870ff22938a7d1c0796e7",
+  "afterSha256": "51199b387822e3f4c0c1e7a81fbd36c9bf5e4b7f13a381af3957685d475cf887",
   "hunks": [
    {
     "at": 73,
     "before": "});\ntest('runtime UI negative control: deferred activation violates render ordering',()=>{\n const module='abyss_game_ui_view',source=readFileSync(`src/lua/${module}.lua`,'utf8');\n const anchor='suspendBattle(run,deckOpen,potionOpen))';assert.equal(source.split(anchor).length-1,1);\n const entry=join(tmpdir(),`gameui-render-mutant-${randomUUID()}.lua`);\n writeFileSync(entry,`package.preload[${luaString(module)}]=assert(load(${luaString(source.replace(anchor,'suspendBattle(run,deckOpen,potionOpen),true)'))},'@${module}-mutant'))\\ndofile('tests/lua/runtime_ui_hotpaths.lua')\\n`);\n try{const result=runLua(entry);assert.notEqual(result.status,0);assert.match(result.stdout+result.stderr,/GameUI refresh must preserve both observable render boundaries/);}finally{unlinkSync(entry);}",
-    "after": "});\nconst activation='suspendBattle(run,deckOpen,potionOpen),self.mode==\\'battle\\' and deckOpen)';\ntest('runtime UI negative control: deferred activation violates render ordering',()=>{\n const module='abyss_game_ui_view',source=readFileSync(`src/lua/${module}.lua`,'utf8');\n assert.equal(source.split(activation).length-1,1);\n const entry=join(tmpdir(),`gameui-render-mutant-${randomUUID()}.lua`);\n writeFileSync(entry,`package.preload[${luaString(module)}]=assert(load(${luaString(source.replace(activation,'suspendBattle(run,deckOpen,potionOpen),true)'))},'@${module}-mutant'))\\ndofile('tests/lua/runtime_ui_hotpaths.lua')\\n`);\n try{const result=runLua(entry);assert.notEqual(result.status,0);assert.match(result.stdout+result.stderr,/GameUI refresh must preserve both observable render boundaries/);}finally{unlinkSync(entry);}"
+    "after": "});\nconst activation='suspendBattle(run,deckOpen,potionOpen),deferDeckRender)';\ntest('runtime UI negative control: deferred activation violates render ordering',()=>{\n const module='abyss_game_ui_view',source=readFileSync(`src/lua/${module}.lua`,'utf8');\n assert.equal(source.split(activation).length-1,1);\n const entry=join(tmpdir(),`gameui-render-mutant-${randomUUID()}.lua`);\n writeFileSync(entry,`package.preload[${luaString(module)}]=assert(load(${luaString(source.replace(activation,'suspendBattle(run,deckOpen,potionOpen),true)'))},'@${module}-mutant'))\\ndofile('tests/lua/runtime_ui_hotpaths.lua')\\n`);\n try{const result=runLua(entry);assert.notEqual(result.status,0);assert.match(result.stdout+result.stderr,/GameUI refresh must preserve both observable render boundaries/);}finally{unlinkSync(entry);}"
    },
    {
     "at": 83,
@@ -768,25 +768,30 @@ const bindings = new Map([
  {
   "path": "tests/art-feature-source-inverse.test.mjs",
   "beforeSha256": "8b6e9fe7734cb8b52180adb708ceb89a232e9e0b7ec7a6801037c5a9192eb02b",
-  "afterSha256": "4b93c836f87883e6895e0bec7d449a2e721e586fa72acc332ef62e3764d11fdb",
+  "afterSha256": "68979368cc5ec145d2c43e4cc00b7ee095bea8b34e74e8f81ee9979e1b3499de",
   "hunks": [
    {
-    "at": 18,
+    "at": 6,
+    "before": "import {fileURLToPath,pathToFileURL} from 'node:url';\nimport {tmpdir} from 'node:os';\nimport {preArtFeatureSource as currentFeature,preHistoricalArtFeatureSource as currentHistory} from './helpers/art-feature-source-inverse.mjs';",
+    "after": "import {fileURLToPath,pathToFileURL} from 'node:url';\nimport {availableParallelism,tmpdir} from 'node:os';\nimport {hasTestNameFilter,runIsolatedTest} from './helpers/isolated-historical-cases.mjs';\nimport {preArtFeatureSource as currentFeature,preHistoricalArtFeatureSource as currentHistory} from './helpers/art-feature-source-inverse.mjs';"
+   },
+   {
+    "at": 19,
     "before": "import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';\n",
     "after": "import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';\nimport {pointerInputPath,readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';\n"
    },
    {
     "at": 239,
-    "before": "test('current feature and history entries authenticate supported intermediates and freshly read every raw owner',()=>{\n for(const [path,expected]of Object.entries(currentTargets)){\n  const current=readFileSync(path,'utf8').replaceAll('\\r\\n','\\n');\n  assert.notEqual(hash(expected),proof.files[path].beforeSha256,'a supported intermediate is not original feature history: '+path);",
-    "after": "test('current feature and history entries authenticate supported intermediates and freshly read every raw owner',()=>{\n const disk=path=>readFileSync(path,'utf8');\n assert.throws(()=>disk(retiredControllerPath),{code:'ENOENT'});\n const retired=readRetiredController(disk).source;\n const owners=[...sourceEpoch.proof.owners,pointerInputPath];\n const inputs=new Map();\n const currentBytes=owner=>{\n  if(owner===retiredControllerPath)return undefined;\n  if(!inputs.has(owner))inputs.set(owner,disk(owner));\n  return inputs.get(owner);\n };\n for(const [path,expected]of Object.entries(currentTargets)){\n  const current=currentBytes(path).replaceAll('\\r\\n','\\n');\n  assert.notEqual(hash(expected),proof.files[path].beforeSha256,'a supported intermediate is not original feature history: '+path);"
+    "before": "]);\ntest('current feature and history entries authenticate supported intermediates and freshly read every raw owner',()=>{\n for(const [path,expected]of Object.entries(currentTargets)){\n  const current=readFileSync(path,'utf8').replaceAll('\\r\\n','\\n');\n  assert.notEqual(hash(expected),proof.files[path].beforeSha256,'a supported intermediate is not original feature history: '+path);",
+    "after": "]);\nconst liveOwnerCase='current feature and history entries authenticate supported intermediates and freshly read every raw owner';\nconst liveOwnerWorker='--art-feature-owner-slice';\ntest(liveOwnerCase,async()=>{\n const targets=Object.entries(currentTargets);\n assert.equal(targets.length,4,'the feature oracle binds four present-day hosts');\n let selected=targets;\n if(process.argv[2]===liveOwnerWorker){\n  const index=Number(process.argv[3]);assert(index===0||index===1);\n  selected=targets.filter((_,position)=>position%2===index);\n }else if(availableParallelism()>=2&&!hasTestNameFilter()){\n  const outcomes=await Promise.allSettled([0,1].map(index=>runIsolatedTest(import.meta.url,\n   [liveOwnerWorker,String(index)],[`--test-name-pattern=^${liveOwnerCase}$`])));\n  for(const result of outcomes)if(result.status==='rejected')throw result.reason;\n  return;\n }\n const disk=path=>readFileSync(path,'utf8');\n assert.throws(()=>disk(retiredControllerPath),{code:'ENOENT'});\n const retired=readRetiredController(disk).source;\n const owners=[...sourceEpoch.proof.owners,pointerInputPath];\n const inputs=new Map();\n const currentBytes=owner=>{\n  if(owner===retiredControllerPath)return undefined;\n  if(!inputs.has(owner))inputs.set(owner,disk(owner));\n  return inputs.get(owner);\n };\n for(const [path,expected]of selected){\n  const current=currentBytes(path).replaceAll('\\r\\n','\\n');\n  assert.notEqual(hash(expected),proof.files[path].beforeSha256,'a supported intermediate is not original feature history: '+path);"
    },
    {
-    "at": 259,
+    "at": 274,
     "before": "     if(mode==='missing')return undefined;if(mode==='null')return null;\n     if(mode==='buffer')return Buffer.from(readFileSync(owner));\n     if(mode==='changed')return readFileSync(owner,'utf8')+'\\n';\n    }\n    return readFileSync(owner,'utf8');\n   };",
     "after": "     if(mode==='missing')return undefined;if(mode==='null')return null;\n     const source=owner===retiredControllerPath?retired:currentBytes(owner);\n     if(mode==='present')return source;\n     if(mode==='buffer')return Buffer.from(source);\n     if(mode==='changed')return source+'\\n';\n    }\n    return currentBytes(owner);\n   };"
    },
    {
-    "at": 268,
+    "at": 283,
     "before": "   check();const first=[...seen];\n   for(const owner of sourceEpoch.proof.owners)assert(first.includes(owner),'complete dynamic current owner: '+owner);\n   seen.length=0;check();assert.deepEqual(seen,first,'warm calls repeat the entire raw read sequence');\n   assert.equal(project(path,current.replaceAll('\\n','\\r\\n'),{readSource}),expected,'current CRLF input');\n   for(const owner of sourceEpoch.proof.owners){\n    for(const fault of ['changed','missing','null','buffer','throw']){\n     seen.length=0;bad=owner;mode=fault;\n     for(let repeat=0;repeat<2;repeat++)assert.throws(check,error=>{\n      assert.equal(error.code,'ERR_ASSERTION');assert.match(error.message,/linked owner/);assert(error.message.includes(owner));\n      if(fault==='throw')assert.match(error.message,/feature raw reader sentinel/);return true;",
     "after": "   check();const first=[...seen];\n   for(const owner of owners)assert(first.includes(owner),'complete dynamic current owner: '+owner);\n   seen.length=0;check();assert.deepEqual(seen,first,'warm calls repeat the entire raw read sequence');\n   assert.equal(project(path,current.replaceAll('\\n','\\r\\n'),{readSource}),expected,'current CRLF input');\n   for(const owner of owners){\n    if(owner===retiredControllerPath)for(mode of ['missing','null']){\n     bad=owner;seen.length=0;check();assert.deepEqual(seen,first,'retired Controller remains absent');\n    }\n    const faults=owner===retiredControllerPath?['present','changed','buffer','throw']:['changed','missing','null','buffer','throw'];\n    for(const fault of faults){\n     seen.length=0;bad=owner;mode=fault;\n     for(let repeat=0;repeat<2;repeat++)assert.throws(check,error=>{\n      const reported=owner===pointerInputPath&&fault!=='throw'?retiredControllerPath:owner;\n      assert.equal(error.code,'ERR_ASSERTION');assert.match(error.message,/linked owner/);assert(error.message.includes(reported));\n      if(fault==='throw')assert.match(error.message,/feature raw reader sentinel/);return true;"
    }
@@ -849,7 +854,7 @@ const bindings = new Map([
  {
   "path": "scripts/ci-shards.mjs",
   "beforeSha256": "6becba66be6048f090cd0036c2e5292f180d9010bbe24aef181977dca18fdeb3",
-  "afterSha256": "4906c3a347f35ea3b4575bc7b457a62d25a9c8b35f80732d1eda6cae805739ae",
+  "afterSha256": "fa5bc983031affcbd2a0737fdfbe1a1eb76bc426b1a92a8e282b5591f9f9e328",
   "hunks": [
    {
     "at": 0,
@@ -859,25 +864,25 @@ const bindings = new Map([
    {
     "at": 15,
     "before": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n",
-    "after": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n\n// Reserve the work that completed in POSIX jobs 137444936421, 137444936442,\n// 137444936458, 137444936507 and 137444936550 before their 30-minute cutoff.\n// Jobs 137468791737, 137468791821, 137468791838, 137468791852 and\n// 137468791853 from the next attempt exposed underweighted replay files.\n// Completed cases and file observations guide placement only.\nconst linuxReplayMinimumMs = Object.freeze({\n  'act1-choice-responsibilities.test.mjs': 153000,\n  'actor-lifecycle.test.mjs': 98000,\n  'approved-node-ui-refactor.test.mjs': 526000,\n  'approved-ui-inverse.test.mjs': 1295000,\n  'architecture-composition-format.test.mjs': 420000,\n  'art-feature-source-inverse.test.mjs': 412000,\n  'battle-max-hp-config-inverse.test.mjs': 124000,\n  'boss-ui-fixture-composition.test.mjs': 64000,\n  'card-origin-source-inverse.test.mjs': 149000,\n  'combat-reactions-architecture-inverse.test.mjs': 137000,\n  'competition-roster.test.mjs': 505000,\n  'core-architecture-inverse.test.mjs': 362000,\n  'core-lifecycle-source-inverse.test.mjs': 713000,\n  'defect-integration-source.test.mjs': 153000,\n  'end-turn-responsibilities.test.mjs': 252000,\n  'event-production-source-inverse.test.mjs': 100000,\n  'final-integration-source.test.mjs': 318000,\n  'game-ui-extraction-source-inverse.test.mjs': 870000,\n  'game-ui-host-result.test.mjs': 188000,\n  'max-hp-accepted-source-inverse.test.mjs': 677000,\n  'mobile-qa-source-migration.test.mjs': 140000,\n  'native-enemy-theme-inverse.test.mjs': 54000,\n  'nodes-battle-max-hp-config-inverse.test.mjs': 90000,\n  'player-death-inverse.test.mjs': 172000,\n  'potion-callback-source.test.mjs': 238000,\n  'power-shop-boundaries.test.mjs': 486000,\n  'presentation-native-m3-contract.test.mjs': 1037000,\n  'relic-query-source-inverse.test.mjs': 123000,\n  // Job 137510449969 spent over 22 minutes in this file before cutoff.\n  'task77-current-source-layers.test.mjs': 1295000,\n});\n\n// Completed replay cases in Windows jobs 137468791786, 137468791799,\n// 137468791818, 137468791851, 137468791860, 137468791861, 137468791871\n// and 137468791996, and complete files from 137492433757, 137492433852\n// and 137492433888.\nconst windowsReplayMinimumMs = Object.freeze({\n  'act1-choice-responsibilities.test.mjs': 195000,\n  // Budget the longest completed case after isolating the three cases.\n  'approved-ui-inverse.test.mjs': 1455000,\n  'architecture-composition-format.test.mjs': 1190000,\n  'battle-max-hp-config-inverse.test.mjs': 681000,\n  'card-origin-source-inverse.test.mjs': 360000,\n  'colorless-catalog-source.test.mjs': 566000,\n  'compendium-source-inverse.test.mjs': 690000,\n  'competition-roster-config-composition.test.mjs': 287000,\n  'competition-roster.test.mjs': 735000,\n  'core-architecture-inverse.test.mjs': 321000,\n  // Job 137468791861 spent over half an hour on this file before cutoff.\n  'core-lifecycle-source-inverse.test.mjs': 800000,\n  'death-settlement-guard-inverse.test.mjs': 186000,\n  'defect-integration-source.test.mjs': 474000,\n  'formal-campaign-entry.test.mjs': 233000,\n  'game-ui-extraction-source-inverse.test.mjs': 2087000,\n  'living-wall-architecture-inverse.test.mjs': 1013000,\n  'native-candidate-art.test.mjs': 113000,\n  'official-assets-runtime.test.mjs': 216000,\n  'p0-presentation-inverse.test.mjs': 713000,\n  'potion-callback-source.test.mjs': 132000,\n  'power-shop-boundaries.test.mjs': 1364000,\n  'presentation-native-m3-contract.test.mjs': 791000,\n  'ready-art-source-inverse.test.mjs': 656000,\n  'reward-query-boundary-source.test.mjs': 1440000,\n  'round3-catalog-source-inverse.test.mjs': 278000,\n  'run-architecture-inverse.test.mjs': 384000,\n});\n\nexport const replayPlanningMinimumMs = Object.freeze({ linux: linuxReplayMinimumMs, win32: windowsReplayMinimumMs });\n"
+    "after": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n\n// Reserve the work that completed in POSIX jobs 137444936421, 137444936442,\n// 137444936458, 137444936507 and 137444936550 before their 30-minute cutoff.\n// Jobs 137468791737, 137468791821, 137468791838, 137468791852 and\n// 137468791853 from the next attempt exposed underweighted replay files.\n// Completed cases and file observations guide placement only.\nconst linuxReplayMinimumMs = Object.freeze({\n  'act1-choice-responsibilities.test.mjs': 153000,\n  'actor-lifecycle.test.mjs': 98000,\n  'approved-node-ui-refactor.test.mjs': 526000,\n  'approved-ui-inverse.test.mjs': 1295000,\n  'architecture-composition-format.test.mjs': 420000,\n  'art-feature-source-inverse.test.mjs': 412000,\n  'battle-max-hp-config-inverse.test.mjs': 124000,\n  'boss-ui-fixture-composition.test.mjs': 64000,\n  'card-origin-source-inverse.test.mjs': 149000,\n  'combat-reactions-architecture-inverse.test.mjs': 137000,\n  'competition-roster.test.mjs': 505000,\n  'core-architecture-inverse.test.mjs': 362000,\n  'core-lifecycle-source-inverse.test.mjs': 713000,\n  'defect-integration-source.test.mjs': 153000,\n  'end-turn-responsibilities.test.mjs': 252000,\n  'event-production-source-inverse.test.mjs': 100000,\n  'final-integration-source.test.mjs': 318000,\n  'game-ui-extraction-source-inverse.test.mjs': 870000,\n  'game-ui-host-result.test.mjs': 188000,\n  'max-hp-accepted-source-inverse.test.mjs': 677000,\n  'mobile-qa-source-migration.test.mjs': 140000,\n  'native-enemy-theme-inverse.test.mjs': 54000,\n  'nodes-battle-max-hp-config-inverse.test.mjs': 90000,\n  'player-death-inverse.test.mjs': 172000,\n  'potion-callback-source.test.mjs': 238000,\n  'power-shop-boundaries.test.mjs': 486000,\n  'presentation-native-m3-contract.test.mjs': 1037000,\n  'relic-query-source-inverse.test.mjs': 123000,\n  // Job 137510449969 spent over 22 minutes in this file before cutoff.\n  'task77-current-source-layers.test.mjs': 1295000,\n});\n\n// Completed replay cases in Windows jobs 137468791786, 137468791799,\n// 137468791818, 137468791851, 137468791860, 137468791861, 137468791871\n// and 137468791996, and complete files from 137492433757, 137492433852\n// and 137492433888.\nconst windowsReplayMinimumMs = Object.freeze({\n  'act1-choice-responsibilities.test.mjs': 195000,\n  // Budget the longest completed case after isolating the three cases.\n  'approved-ui-inverse.test.mjs': 1455000,\n  'architecture-composition-format.test.mjs': 1190000,\n  // The 1786s live-owner case in job 137510449987 now runs in two workers.\n  'art-feature-source-inverse.test.mjs': 1000000,\n  'battle-max-hp-config-inverse.test.mjs': 681000,\n  'card-origin-source-inverse.test.mjs': 360000,\n  'colorless-catalog-source.test.mjs': 566000,\n  'compendium-source-inverse.test.mjs': 690000,\n  'competition-roster-config-composition.test.mjs': 287000,\n  'competition-roster.test.mjs': 735000,\n  'core-architecture-inverse.test.mjs': 321000,\n  // Job 137468791861 spent over half an hour on this file before cutoff.\n  'core-lifecycle-source-inverse.test.mjs': 800000,\n  'death-settlement-guard-inverse.test.mjs': 186000,\n  'defect-integration-source.test.mjs': 474000,\n  'formal-campaign-entry.test.mjs': 233000,\n  'game-ui-extraction-source-inverse.test.mjs': 2087000,\n  'living-wall-architecture-inverse.test.mjs': 1013000,\n  'native-candidate-art.test.mjs': 113000,\n  'official-assets-runtime.test.mjs': 216000,\n  'p0-presentation-inverse.test.mjs': 713000,\n  'potion-callback-source.test.mjs': 132000,\n  'power-shop-boundaries.test.mjs': 1364000,\n  'presentation-native-m3-contract.test.mjs': 791000,\n  'ready-art-source-inverse.test.mjs': 656000,\n  'reward-query-boundary-source.test.mjs': 1440000,\n  'round3-catalog-source-inverse.test.mjs': 278000,\n  'run-architecture-inverse.test.mjs': 384000,\n});\n\nexport const replayPlanningMinimumMs = Object.freeze({ linux: linuxReplayMinimumMs, win32: windowsReplayMinimumMs });\n"
    },
    {
-    "at": 116,
+    "at": 118,
     "before": "  const maps=Object.hasOwn(timings.js,platform)?[timings.js[platform]]:Object.values(timings.js);\n  return Object.fromEntries(files.map(file=>[file,Math.max(\n    ...maps.map(weights=>weights[file]??timings.unknownJsMs),\n    timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0)]));\n}",
     "after": "  const maps=Object.hasOwn(timings.js,platform)?[timings.js[platform]]:Object.values(timings.js);\n  return Object.fromEntries(files.map(file=>{\n    const name=file.slice('tests/'.length);\n    return [file,Math.max(\n      ...maps.map(weights=>weights[file]??timings.unknownJsMs),\n      timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0,\n      platform !== 'win32' ? linuxReplayMinimumMs[name] ?? 0 : 0,\n      platform !== 'linux' ? windowsReplayMinimumMs[name] ?? 0 : 0)];\n  }));\n}"
    },
    {
-    "at": 143,
+    "at": 145,
     "before": "\nexport function main(args) {",
     "after": "\nconst timingReport = 'build/ci-js-timings.jsonl';\nconst nodeTestArgs = files => ['--test', '--test-concurrency=1', '--test-reporter=spec',\n  '--test-reporter=./scripts/ci-timing-reporter.mjs', '--test-reporter-destination=stdout',\n  `--test-reporter-destination=${timingReport}`, ...files];\n\nfunction runInCheckout(files, cwd, env) {\n  return new Promise((resolve, reject) => {\n    const child = spawn(process.execPath, nodeTestArgs(files), {\n      cwd, env: { ...env, GITHUB_WORKSPACE: cwd }, stdio: 'inherit', windowsHide: true,\n    });\n    child.once('error', reject);\n    child.once('close', status => resolve(status ?? 1));\n  });\n}\n\nasync function runHostedShard(files, root, env) {\n  if (!lstatSync(join(root, '.git'), { throwIfNoEntry: false })?.isDirectory()) {\n    throw new Error('Hosted execution requires physical checkout metadata');\n  }\n  const snapshot = realpathSync.native(mkdtempSync(join(env.RUNNER_TEMP || tmpdir(), 'slay-ci-shard-')));\n  try {\n    const location = relative(root, snapshot);\n    if (!location || !isAbsolute(location) && location !== '..' && !location.startsWith(`..${sep}`)) {\n      throw new Error('Hosted snapshot must be outside the checkout');\n    }\n    // Each test process still runs serially in its own checkout. Copy before\n    // starting either process to isolate Git metadata, build outputs and fixtures.\n    cpSync(root, snapshot, { recursive: true, verbatimSymlinks: true, mode: constants.COPYFILE_FICLONE });\n    const weights = jsPlanningWeights(files);\n    const original = partition(files, '1/2', weights, timings.unknownJsMs).files;\n    const copy = partition(files, '2/2', weights, timings.unknownJsMs).files;\n    const results = await Promise.allSettled([\n      runInCheckout(original, root, env), runInCheckout(copy, snapshot, env),\n    ]);\n    const copyReport = join(snapshot, timingReport);\n    const originalReport = join(root, timingReport);\n    const status = results.find(result => result.status === 'rejected');\n    if (!status) {\n      writeFileSync(originalReport, readFileSync(copyReport), { flag: 'a' });\n    }\n    if (status) throw status.reason;\n    return results.find(result => result.value !== 0)?.value ?? 0;\n  } finally {\n    rmSync(snapshot, { recursive: true, force: true, maxRetries: 2 });\n  }\n}\n\nexport function main(args) {"
    },
    {
-    "at": 206,
+    "at": 208,
     "before": "  delete env.NODE_TEST_CONTEXT;\n  const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', '--test-reporter=spec',\n    '--test-reporter=./scripts/ci-timing-reporter.mjs', '--test-reporter-destination=stdout',\n    '--test-reporter-destination=build/ci-js-timings.jsonl', ...plan.files], { stdio: 'inherit', env, windowsHide: true });\n  if (result.error) throw result.error;",
     "after": "  delete env.NODE_TEST_CONTEXT;\n  const root = realpathSync.native('.'), hostedOS = { linux: 'Linux', win32: 'Windows' }[process.platform];\n  if (hostedOS && env.GITHUB_ACTIONS === 'true' && env.RUNNER_OS === hostedOS\n      && env.RUNNER_ENVIRONMENT === 'github-hosted' && env.GITHUB_WORKSPACE\n      && realpathSync.native(env.GITHUB_WORKSPACE) === root && availableParallelism() >= 2 && plan.files.length >= 2) {\n    return runHostedShard(plan.files, root, env).then(status => { process.exitCode = status; });\n  }\n  const result = spawnSync(process.execPath, nodeTestArgs(plan.files), { stdio: 'inherit', env, windowsHide: true });\n  if (result.error) throw result.error;"
    },
    {
-    "at": 218,
+    "at": 220,
     "before": "if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {\n  try { main(process.argv.slice(2)); } catch (error) { console.error(error.message); process.exitCode = 1; }\n}",
     "after": "if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {\n  try { await main(process.argv.slice(2)); } catch (error) { console.error(error.message); process.exitCode = 1; }\n}"
    }
@@ -1010,15 +1015,20 @@ const bindings = new Map([
  {
   "path": "tests/helpers/combined-epoch/source-epoch-runtime.mjs",
   "beforeSha256": "4bf2e1c7038d0bbe0bffd85ec5be1c4685811b63bf79653f56756779b5463348",
-  "afterSha256": "fb7228b5010fbb3f7638dd7d4d6eb72ac0ae2d3459432d5bbd56954cb06160e3",
+  "afterSha256": "a8afebef6e0f30862db595c59dfc5e2056e3ea52207b70644a0fa3a5ae1568db",
   "hunks": [
    {
-    "at": 105,
+    "at": 98,
+    "before": "}\nexport function createSourceEpochProjector(input,{root=process.cwd(),allowConfigLayout=false,reuseFrozenInput=false}={}){",
+    "after": "}\n// Composed epochs own their new containers and inherit immutable JSON records.\n// Keep those records shared while the constructor still validates the full graph.\nexport function createComposedSourceEpochProjector(proof){\n return createSourceEpochProjector(freeze(proof),{allowConfigLayout:true,reuseFrozenInput:true});\n}\n\nexport function createSourceEpochProjector(input,{root=process.cwd(),allowConfigLayout=false,reuseFrozenInput=false}={}){"
+   },
+   {
+    "at": 111,
     "before": " assert.match(proof.currentCommit,/^[a-f0-9]{40}$/);\n assert(Array.isArray(proof.owners));assert.equal(new Set(proof.owners).size,proof.owners.length,'unique owners');\n for(const [path,binding]of Object.entries(proof.current)){assert(validPath(path),'source path');validateBinding(binding);}",
     "after": " assert.match(proof.currentCommit,/^[a-f0-9]{40}$/);\n assert(Array.isArray(proof.owners));\n const owners=new Set(proof.owners);assert.equal(owners.size,proof.owners.length,'unique owners');\n const currentPaths=Object.keys(proof.current).sort();\n for(const [path,binding]of Object.entries(proof.current)){assert(validPath(path),'source path');validateBinding(binding);}"
    },
    {
-    "at": 112,
+    "at": 118,
     "before": "  assert(/^[A-Za-z0-9_-]+$/.test(name),'target name');assert.match(target.commit,/^[a-f0-9]{40}$/);\n  assert.deepEqual(Object.keys(target.files).sort(),Object.keys(proof.current).sort(),'complete target path set');\n  for(const [path,binding]of Object.entries(target.files)){\n   validateBinding(binding);\n   if(binding?.sha256!==proof.current[path]?.sha256)assert(proof.owners.includes(path),'changed source closure');\n  }",
     "after": "  assert(/^[A-Za-z0-9_-]+$/.test(name),'target name');assert.match(target.commit,/^[a-f0-9]{40}$/);\n  assert.deepEqual(Object.keys(target.files).sort(),currentPaths,'complete target path set');\n  for(const [path,binding]of Object.entries(target.files)){\n   validateBinding(binding);\n   if(binding?.sha256!==proof.current[path]?.sha256)assert(owners.has(path),'changed source closure');\n  }"
    }
@@ -1331,6 +1341,219 @@ const bindings = new Map([
     "at": 32,
     "before": " assert.equal(authenticateInputRetirement(path,source,read),prior);\n assert.equal(authenticateInputRetirement(path,source.replaceAll('\\n','\\r\\n'),read),prior.replaceAll('\\n','\\r\\n'));\n assert.throws(()=>authenticateInputRetirement(path,source,()=>source+'\\n'),/input retirement validation/);",
     "after": " assert.equal(authenticateInputRetirement(path,source,read),prior);\n const crlf=text=>text.replace(/\\r?\\n/g,'\\r\\n');\n assert.equal(authenticateInputRetirement(path,crlf(source),read),crlf(prior));\n assert.throws(()=>authenticateInputRetirement(path,source,()=>source+'\\n'),/input retirement validation/);"
+   }
+  ]
+ },
+ {
+  "path": "tests/session-menu-navigation.test.mjs",
+  "beforeSha256": "c6ac9daefb1d675e8db07a854f029feca0042c1ca085a6e5b9486a8ed9975c05",
+  "afterSha256": "a213e97200dcaa46b3edd6fb37bfb5b17edb221c5c3f425466414d08df49aadd",
+  "hunks": [
+   {
+    "at": 174,
+    "before": "  const raw=readLive(path);\n  assert.equal(beforeCharacterPreparationSource(path,raw,readLive),liveEpoch.proof.current[path].source);\n  assert.equal(liveEpoch.preCombinedSource(path,raw,{target:'v2RunMenuPrior',readSource:readLive}),sourceEpoch.proof.current[path].source);",
+    "after": "  const raw=readLive(path);\n  assert.equal(beforeCharacterPreparationSource(path,raw,readLive).replaceAll('\\r\\n','\\n'),liveEpoch.proof.current[path].source);\n  assert.equal(liveEpoch.preCombinedSource(path,raw,{target:'v2RunMenuPrior',readSource:readLive}),sourceEpoch.proof.current[path].source);"
+   }
+  ]
+ },
+ {
+  "path": "tests/lua/game_ui_visibility_failure.lua",
+  "beforeSha256": "5e320fd632c309742cfa6ff309f5032e71e8c3d3c802dcaa6808a236ffa1a742",
+  "afterSha256": "df9c5695e244dedab9926dab7dac31de5abae8baab931dea4d4f131d34e5268e",
+  "hunks": [
+   {
+    "at": 108,
+    "before": " assert(host:openDeck());assert(count==2 and actor.alive and not actor.visible)\n count=0;assert(host:closeDeck());assert(count==2 and actor.alive and actor.visible)",
+    "after": " assert(host:openDeck());assert(count==2 and actor.alive and not actor.visible)\n count=0;host:refresh();assert(count==1 and actor.alive and not actor.visible,'covered refresh should paint only once')\n count=0;assert(host:closeDeck());assert(count==2 and actor.alive and actor.visible)"
+   }
+  ]
+ },
+ {
+  "path": "tests/lua/noncombat_v25_menu.lua",
+  "beforeSha256": "ca7093be5b18e3c2dad934d8542ee434549a610cf5981766f5c107769c8b9670",
+  "afterSha256": "2c871406eb2796713399ecdeca0ab6c646524c5dce597938bca6b1f7655e2eb5",
+  "hunks": [
+   {
+    "at": 7,
+    "before": " function n:GetChild(key)\n  if key=='stsCharacter' then return self.children[key]end\n  if not self.children[key]then self.children[key]=control(key)end",
+    "after": " function n:GetChild(key)\n  if key=='stsCharacter' or key=='v25Face' then return self.children[key]end\n  if not self.children[key]then self.children[key]=control(key)end"
+   }
+  ]
+ },
+ {
+  "path": "tests/lua/menu_hover_continuity.lua",
+  "beforeSha256": "b27d47a2a08ddbc5014f56851149e7c9c65bd59a6a53eaf3c107b8032543032d",
+  "afterSha256": "a1904b2beab947d120c67d57e5efc9c8ce20b5febb5458317f5474f578729532",
+  "hunks": [
+   {
+    "at": 19,
+    "before": "local start,quit=button(),button()\nlocal ctx={start=start,menu=control('menu'),owner={mode='menu',motion={}},platform={color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end}}\nctx.menu.children.titleQuit=quit",
+    "after": "local start,quit=button(),button()\nlocal ctx={start=start,menu=control('menu'),owner={mode='menu',motion={},potionUI={visible=false}},platform={color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end}}\nctx.menu.children.titleQuit=quit"
+   }
+  ]
+ },
+ {
+  "path": "tests/helpers/defect-final-source-epoch.mjs",
+  "beforeSha256": "8088008202072d1ce22492383861fe5ccb2b57d2bd9d1b06abb6653f835c2137",
+  "afterSha256": "d6dabee023a3a9f8a2620c3edd1dee0b8b359aa62aff8a17b63175e170ab8b04",
+  "hunks": [
+   {
+    "at": 4,
+    "before": "import {createHash} from 'node:crypto';\nimport {createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nconst hash=b=>createHash('sha256').update(b).digest('hex');",
+    "after": "import {createHash} from 'node:crypto';\nimport {createComposedSourceEpochProjector,createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nconst hash=b=>createHash('sha256').update(b).digest('hex');"
+   },
+   {
+    "at": 18,
+    "before": "  targets:{...prior.targets,defectFinalPrior:{commit:outer.targets.prior.commit,files:prior.current}}};\n const current=createSourceEpochProjector(proof,{allowConfigLayout:true}),live=p=>readFileSync(p,'utf8'),readers=new WeakMap();\n function preCombinedSource(path,source,{target,readSource=live}={}){",
+    "after": "  targets:{...prior.targets,defectFinalPrior:{commit:outer.targets.prior.commit,files:prior.current}}};\n const current=createComposedSourceEpochProjector(proof),live=p=>readFileSync(p,'utf8'),readers=new WeakMap();\n function preCombinedSource(path,source,{target,readSource=live}={}){"
+   }
+  ]
+ },
+ {
+  "path": "tests/helpers/effects-target-group-source-epoch.mjs",
+  "beforeSha256": "8affe1c65d7a096fc5546375bcb19bb404923be2c94528e3e443b4095ef7c488",
+  "afterSha256": "c73c6b050ece8efd96775188c146e1d736561d068f61cd3e7081c74d937fc0af",
+  "hunks": [
+   {
+    "at": 4,
+    "before": "import {createHash} from 'node:crypto';\nimport {createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nconst hash=b=>createHash('sha256').update(b).digest('hex');",
+    "after": "import {createHash} from 'node:crypto';\nimport {createComposedSourceEpochProjector,createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nconst hash=b=>createHash('sha256').update(b).digest('hex');"
+   },
+   {
+    "at": 18,
+    "before": "  targets:{...prior.targets,effectsTargetGroupPrior:{commit:outer.targets.prior.commit,files:prior.current}}};\n const current=createSourceEpochProjector(proof,{allowConfigLayout:true}),live=p=>readFileSync(p,'utf8'),readers=new WeakMap();\n function preCombinedSource(path,source,{target,readSource=live}={}){",
+    "after": "  targets:{...prior.targets,effectsTargetGroupPrior:{commit:outer.targets.prior.commit,files:prior.current}}};\n const current=createComposedSourceEpochProjector(proof),live=p=>readFileSync(p,'utf8'),readers=new WeakMap();\n function preCombinedSource(path,source,{target,readSource=live}={}){"
+   }
+  ]
+ },
+ {
+  "path": "tests/helpers/room-ui-source-epoch.mjs",
+  "beforeSha256": "ddcb90da9fdaa1b93ccdc903cb348dd99c2ccaeaa2d5350bc2ed586631612500",
+  "afterSha256": "ce50bd58037ea74976dae9e94515dfd16f91432c715ee880c00ae8080a73202e",
+  "hunks": [
+   {
+    "at": 4,
+    "before": "import {createHash} from 'node:crypto';\nimport {createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nimport {componentUiSourceEpoch} from './component-ui-source-epoch.mjs';",
+    "after": "import {createHash} from 'node:crypto';\nimport {createComposedSourceEpochProjector,createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nimport {componentUiSourceEpoch} from './component-ui-source-epoch.mjs';"
+   },
+   {
+    "at": 24,
+    "before": "  targets:{...prior.targets,componentUiPrior:{commit:prior.currentCommit,files:prior.current}}};\n const current=createSourceEpochProjector(proof,{allowConfigLayout:true}),live=p=>{\n  try{return readFileSync(p,'utf8');}catch(error){if(error.code==='ENOENT')return null;throw error;}",
+    "after": "  targets:{...prior.targets,componentUiPrior:{commit:prior.currentCommit,files:prior.current}}};\n const current=createComposedSourceEpochProjector(proof),live=p=>{\n  try{return readFileSync(p,'utf8');}catch(error){if(error.code==='ENOENT')return null;throw error;}"
+   }
+  ]
+ },
+ {
+  "path": "tests/helpers/silent-final-source-epoch.mjs",
+  "beforeSha256": "62621989d65db4db12a6b7251fc8216bbd5851b196c87d28f0cffd222d8a28b4",
+  "afterSha256": "d31330033fd9e188d93001a55213e1c471546f6e57b3b6ec68f726c23468e35e",
+  "hunks": [
+   {
+    "at": 4,
+    "before": "import {createHash} from 'node:crypto';\nimport {createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nconst hash=b=>createHash('sha256').update(b).digest('hex');",
+    "after": "import {createHash} from 'node:crypto';\nimport {createComposedSourceEpochProjector,createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nconst hash=b=>createHash('sha256').update(b).digest('hex');"
+   },
+   {
+    "at": 18,
+    "before": "  targets:{...prior.targets,silentFinalPrior:{commit:outer.targets.prior.commit,files:prior.current}}};\n const current=createSourceEpochProjector(proof,{allowConfigLayout:true}),live=p=>readFileSync(p,'utf8'),readers=new WeakMap();\n function preCombinedSource(path,source,{target,readSource=live}={}){",
+    "after": "  targets:{...prior.targets,silentFinalPrior:{commit:outer.targets.prior.commit,files:prior.current}}};\n const current=createComposedSourceEpochProjector(proof),live=p=>readFileSync(p,'utf8'),readers=new WeakMap();\n function preCombinedSource(path,source,{target,readSource=live}={}){"
+   }
+  ]
+ },
+ {
+  "path": "tests/helpers/silent-tactics-source-epoch.mjs",
+  "beforeSha256": "1961b7399f1ec8ece9bfc598f9660f5fdc20c669cac3e967a2d4979296b597cf",
+  "afterSha256": "decd2795a2b2a02ae717787dd5ae822f69191b1660464da905a641f8116930d1",
+  "hunks": [
+   {
+    "at": 4,
+    "before": "import {createHash} from 'node:crypto';\nimport {createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nconst hash=b=>createHash('sha256').update(b).digest('hex');",
+    "after": "import {createHash} from 'node:crypto';\nimport {createComposedSourceEpochProjector,createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nconst hash=b=>createHash('sha256').update(b).digest('hex');"
+   },
+   {
+    "at": 18,
+    "before": "  targets:{...prior.targets,silentTacticsPrior:{commit:outer.targets.prior.commit,files:prior.current}}};\n const current=createSourceEpochProjector(proof,{allowConfigLayout:true}),live=p=>readFileSync(p,'utf8'),readers=new WeakMap();\n function preCombinedSource(path,source,{target,readSource=live}={}){",
+    "after": "  targets:{...prior.targets,silentTacticsPrior:{commit:outer.targets.prior.commit,files:prior.current}}};\n const current=createComposedSourceEpochProjector(proof),live=p=>readFileSync(p,'utf8'),readers=new WeakMap();\n function preCombinedSource(path,source,{target,readSource=live}={}){"
+   }
+  ]
+ },
+ {
+  "path": "tests/helpers/relic-equip-source-epoch.mjs",
+  "beforeSha256": "ff648711e65a818f22a52d2d8b4d9dc1fab42bada42cc8372fbde06a76738a35",
+  "afterSha256": "b768a3e8023f0286f4aa577d1300f932567b9d731b836038dac5959e9d67ce02",
+  "hunks": [
+   {
+    "at": 4,
+    "before": "import {createHash} from 'node:crypto';\nimport {createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nconst hash=b=>createHash('sha256').update(b).digest('hex');",
+    "after": "import {createHash} from 'node:crypto';\nimport {createComposedSourceEpochProjector,createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nconst hash=b=>createHash('sha256').update(b).digest('hex');"
+   },
+   {
+    "at": 18,
+    "before": "  targets:{...prior.targets,relicEquipPrior:{commit:outer.targets.prior.commit,files:prior.current}}};\n const current=createSourceEpochProjector(proof,{allowConfigLayout:true}),live=p=>readFileSync(p,'utf8'),readers=new WeakMap();\n function preCombinedSource(path,source,{target,readSource=live}={}){",
+    "after": "  targets:{...prior.targets,relicEquipPrior:{commit:outer.targets.prior.commit,files:prior.current}}};\n const current=createComposedSourceEpochProjector(proof),live=p=>readFileSync(p,'utf8'),readers=new WeakMap();\n function preCombinedSource(path,source,{target,readSource=live}={}){"
+   }
+  ]
+ },
+ {
+  "path": "tests/helpers/encounter-formation-source-epoch.mjs",
+  "beforeSha256": "1c654029938e0d5eb0864adb2f76333d3e4a1ed1fe95d73e2e0c21a8fb376436",
+  "afterSha256": "a044c0830309415ea3858a6368f6d794440db1f2d68b6cf3742111b03cd047c5",
+  "hunks": [
+   {
+    "at": 4,
+    "before": "import {createHash} from 'node:crypto';\nimport {createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nconst hash=b=>createHash('sha256').update(b).digest('hex');",
+    "after": "import {createHash} from 'node:crypto';\nimport {createComposedSourceEpochProjector,createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nconst hash=b=>createHash('sha256').update(b).digest('hex');"
+   },
+   {
+    "at": 18,
+    "before": "  targets:{...prior.targets,encounterFormationPrior:{commit:outer.targets.prior.commit,files:prior.current}}};\n const current=createSourceEpochProjector(proof,{allowConfigLayout:true}),live=p=>readFileSync(p,'utf8'),readers=new WeakMap();\n function preCombinedSource(path,source,{target,readSource=live}={}){",
+    "after": "  targets:{...prior.targets,encounterFormationPrior:{commit:outer.targets.prior.commit,files:prior.current}}};\n const current=createComposedSourceEpochProjector(proof),live=p=>readFileSync(p,'utf8'),readers=new WeakMap();\n function preCombinedSource(path,source,{target,readSource=live}={}){"
+   }
+  ]
+ },
+ {
+  "path": "tests/helpers/watcher-flow-source-epoch.mjs",
+  "beforeSha256": "dad47d3abfb21ce4922a2482142ac2f702644aaa4775558c4c5b06458196cccd",
+  "afterSha256": "def224824eedc945a1cb402dd0429861593f0ff08a822f1961a954bf467f3378",
+  "hunks": [
+   {
+    "at": 4,
+    "before": "import {createHash} from 'node:crypto';\nimport {createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nconst hash=b=>createHash('sha256').update(b).digest('hex');",
+    "after": "import {createHash} from 'node:crypto';\nimport {createComposedSourceEpochProjector,createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nconst hash=b=>createHash('sha256').update(b).digest('hex');"
+   },
+   {
+    "at": 18,
+    "before": "  targets:{...prior.targets,watcherFlowPrior:{commit:outer.targets.prior.commit,files:prior.current}}};\n const current=createSourceEpochProjector(proof,{allowConfigLayout:true}),live=p=>readFileSync(p,'utf8'),readers=new WeakMap();\n function preCombinedSource(path,source,{target,readSource=live}={}){",
+    "after": "  targets:{...prior.targets,watcherFlowPrior:{commit:outer.targets.prior.commit,files:prior.current}}};\n const current=createComposedSourceEpochProjector(proof),live=p=>readFileSync(p,'utf8'),readers=new WeakMap();\n function preCombinedSource(path,source,{target,readSource=live}={}){"
+   }
+  ]
+ },
+ {
+  "path": "tests/helpers/noncombat-source-epoch.mjs",
+  "beforeSha256": "6c012fe3e62431051d2ac6dbfe2af96c97fa1a7f617cda3413582ea50b6cbb50",
+  "afterSha256": "4b8705f85cf1609b8e1c28253610b3ddc4ea8a1fa8dae4b054601c56fdd3c9b2",
+  "hunks": [
+   {
+    "at": 5,
+    "before": "import {createHash} from 'node:crypto';\nimport {createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nconst hash=s=>createHash('sha256').update(s).digest('hex');",
+    "after": "import {createHash} from 'node:crypto';\nimport {createComposedSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nconst hash=s=>createHash('sha256').update(s).digest('hex');"
+   },
+   {
+    "at": 20,
+    "before": " const owners=paths.filter(p=>Object.values(targets).some(t=>t.files[p]?.sha256!==current[p]?.sha256));\n return createSourceEpochProjector({...prior.proof,currentCommit:archive.afterCommit,\n  currentCommitRole:'committed complete noncombat production source slice',currentTreeCommitted:true,\n  current,targets,owners},{allowConfigLayout:true});\n}",
+    "after": " const owners=paths.filter(p=>Object.values(targets).some(t=>t.files[p]?.sha256!==current[p]?.sha256));\n return createComposedSourceEpochProjector({...prior.proof,currentCommit:archive.afterCommit,\n  currentCommitRole:'committed complete noncombat production source slice',currentTreeCommitted:true,\n  current,targets,owners});\n}"
+   }
+  ]
+ },
+ {
+  "path": "tests/architecture-token-read.test.mjs",
+  "beforeSha256": "1cd2336bca41624bf4a1ba16fde096ec111895d69a7c8400b78c60e93e7fd2d8",
+  "afterSha256": "e70beefba57e546d8aa638fd2a2193dbb6a44784ddf7e24e9ac0ac77dc275781",
+  "hunks": [
+   {
+    "at": 13,
+    "before": "   const result=spawnSync(process.execPath,['--trace-event-file-pattern='+output,fileURLToPath(new URL('./helpers/architecture-token-read-probe.mjs',import.meta.url)),mode],{encoding:'utf8',timeout:30000,maxBuffer:1024*1024,windowsHide:true});\n   assert.ifError(result.error);assert.equal(result.status,0,result.stdout+result.stderr);\n   const events=JSON.parse(readFileSync(output,'utf8')).traceEvents;",
+    "after": "   const result=spawnSync(process.execPath,['--trace-event-file-pattern='+output,fileURLToPath(new URL('./helpers/architecture-token-read-probe.mjs',import.meta.url)),mode],{encoding:'utf8',timeout:30000,maxBuffer:1024*1024,windowsHide:true});\n   assert.equal(result.error,undefined,mode+': '+result.error?.message);\n   assert.equal(result.status,0,mode+': '+result.stdout+result.stderr);\n   const events=JSON.parse(readFileSync(output,'utf8')).traceEvents;"
    }
   ]
  }

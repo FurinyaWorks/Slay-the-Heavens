@@ -6,7 +6,7 @@ local V25=require('abyss_v25_menu_view')
 local function control(name)
  local n={name=name,visible=true,children={},scaleWrites=0}
  function n:GetChild(key)
-  if key=='stsCharacter' then return self.children[key]end
+  if key=='stsCharacter' or key=='v25Face' then return self.children[key]end
   if not self.children[key]then self.children[key]=control(key)end
   return self.children[key]
  end

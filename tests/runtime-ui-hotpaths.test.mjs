@@ -72,7 +72,7 @@ for(const [name,anchor,replacement,failure]of mutations)test(`runtime UI negativ
   assert.ok((result.stdout+result.stderr).includes(failure),result.stdout+result.stderr);
  }finally{unlinkSync(entry);}
 });
-const activation='suspendBattle(run,deckOpen,potionOpen),self.mode==\'battle\' and deckOpen)';
+const activation='suspendBattle(run,deckOpen,potionOpen),deferDeckRender)';
 test('runtime UI negative control: deferred activation violates render ordering',()=>{
  const module='abyss_game_ui_view',source=readFileSync(`src/lua/${module}.lua`,'utf8');
  assert.equal(source.split(activation).length-1,1);

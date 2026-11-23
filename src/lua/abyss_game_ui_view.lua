@@ -275,10 +275,11 @@ function M.refreshPageVisibility(menu,self,suspendBattle,child,refreshMapResourc
     return function(run,inMenu,deckOpen,potionOpen,blocked)
             if syncNative then syncNative(run) end
             menu:SetVisible(inMenu and not self.characterOpen and not self.easterEggOpen)
-            -- A deck open still commits one battle render below (input retirement,
-            -- art ownership and suspension), after the host's visibility writes.
+            -- First cover must commit suspension before native sibling setters.
+            -- Subsequent covered refreshes can use just the final battle render.
+            local deferDeckRender=self.mode=='battle' and deckOpen and not self.battleUI.active
             self.battleUI:setActive(self.mode == "battle" and not deckOpen and not potionOpen and not blocked,
-                suspendBattle(run,deckOpen,potionOpen),self.mode=='battle' and deckOpen)
+                suspendBattle(run,deckOpen,potionOpen),deferDeckRender)
             child("battlePanel"):SetVisible(self.mode == "battle")
             refreshMapVisibility(run,deckOpen,potionOpen or blocked)
             self.nodeUI:setVisible(self.mode == "node" and not deckOpen and not potionOpen and not blocked,self.mode == "node",true)

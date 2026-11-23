@@ -107,6 +107,7 @@ do
  local ui=host.battleUI;local render,count=ui.render,0
  ui.render=function(self,...)count=count+1;return render(self,...)end
  assert(host:openDeck());assert(count==2 and actor.alive and not actor.visible)
+ count=0;host:refresh();assert(count==1 and actor.alive and not actor.visible,'covered refresh should paint only once')
  count=0;assert(host:closeDeck());assert(count==2 and actor.alive and actor.visible)
  print('CASE normal cover/uncover ordered renders=2')
 end

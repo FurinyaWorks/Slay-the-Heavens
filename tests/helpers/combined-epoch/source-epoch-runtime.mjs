@@ -97,6 +97,12 @@ function assertReusableFrozenData(value,seen=new WeakSet(),active=new WeakSet())
  }
  active.delete(value);seen.add(value);
 }
+// Composed epochs own their new containers and inherit immutable JSON records.
+// Keep those records shared while the constructor still validates the full graph.
+export function createComposedSourceEpochProjector(proof){
+ return createSourceEpochProjector(freeze(proof),{allowConfigLayout:true,reuseFrozenInput:true});
+}
+
 export function createSourceEpochProjector(input,{root=process.cwd(),allowConfigLayout=false,reuseFrozenInput=false}={}){
  // Clone once to prevent the caller changing proof data after validation.
  assert.equal(typeof reuseFrozenInput,'boolean','source proof reuse policy');
