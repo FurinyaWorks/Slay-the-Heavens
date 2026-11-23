@@ -218,7 +218,7 @@ test('official character selection displays the approved traveler synopsis witho
  applyOfficialNoncombatLayout(layout,theme);
  const selected=panel(layout),approved='失却星辉、与血亲失散的异乡旅人。她与磐岩共鸣，剑势在鏖战中愈发凌厉';
  assert.equal(nativeTheme.v25Character.story,approved);
- assert.equal(child(child(selected,'details'),'v25Story').text.content,approved);
+ assert.equal(child(child(selected,'details'),'v25Story').text.content.replaceAll('\n',''),approved);
  const fallback=child(selected,'v25Background');
  assert.equal(fallback.visible,true);
  assert.deepEqual(children(fallback),[{

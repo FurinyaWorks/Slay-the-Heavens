@@ -133,6 +133,7 @@ settle()
 assert(fade:start())
 settle()
 if not STS_UI_BASELINE then
+    fade:resize(854,480)
     local panel=fadeRoot:GetChild('characterPanel')
     local details=panel:GetChild('details')
     assert(hit(panel:GetChild('character1')).click())
@@ -153,7 +154,9 @@ if not STS_UI_BASELINE then
     local details=fadeRoot:GetChild('characterPanel'):GetChild('details')
     assert(info.id=='ironclad' and info.deckSize==10 and details.visible)
     assert(details:GetChild('name').text==info.name)
-    assert(details:GetChild('v25Story').visible and details:GetChild('relicText').text~='')
+    local story=details:GetChild('v25Story')
+    assert(story.visible and story.text:find('\n',1,true) and story.text:find('愈发凌厉',1,true))
+    assert(details:GetChild('relicText').text~='')
 end
 assert(fade:confirmCharacter())
 settle()

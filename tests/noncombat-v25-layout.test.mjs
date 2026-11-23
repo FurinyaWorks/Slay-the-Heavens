@@ -18,6 +18,7 @@ import {officialAssetsTheme} from '../scripts/official-assets-layout.mjs';
 import {attachOfficialPortraits} from '../scripts/official-portraits.mjs';
 import {applyOfficialNoncombatLayout} from '../scripts/noncombat-v25-layout.mjs';
 import {loadUiReferences} from '../scripts/check-ui-references.mjs';
+import {capacityProblems} from './helpers/ui-readability.mjs';
 const parts=n=>n?.controls??n?.children??[],child=(n,name)=>parts(n).find(c=>c.name===name);
 const all=n=>[n,...parts(n).flatMap(all)];
 test('official menu and selection reuse live inputs with bounded native decoration',()=>{
@@ -188,6 +189,16 @@ test('generated official character selection follows the approved details revisi
  const retired=new Set(['deckTitle','deckSummary','deckRule','deckOpen','deckView']);
  const found=all(selection).filter(node=>retired.has(node.name)||/初始牌组|查看牌组/.test(node.text?.content??''));
  assert.deepEqual(found.map(node=>node.name),[],'obsolete starter deck controls in the official selection tree');
+ const story=child(details,'v25Story'),{content,fontSize,minFontSize}=story.text;
+ const problems=capacityProblems([{path:'characterPanel/details/v25Story',kind:story.kind,visible:true,
+  text:content,size:story.size,font:fontSize,minimum:minFontSize}],nativeTheme.layout.nativeText.lineHeight);
+ assert.deepEqual(problems,[],'reserve both native lines for the mobile synopsis');
+ assert.equal(content.split('\n').length,2);
+ assert.equal(content.replaceAll('\n',''),nativeTheme.v25Character.story.replaceAll('\n',''));
+ assert.equal(minFontSize,fontSize,'retain the authored text size');
+ const stats=child(details,'stats'),relic=child(details,'relic');
+ assert(story.position[1]+story.size[1]/2<stats.position[1]-stats.size[1]/2,'story clears health');
+ assert(story.position[1]-story.size[1]/2>relic.position[1]+relic.size[1]/2,'story clears the relic title');
 });
 
 test('official generated selection retires the legacy full-screen shade above its approved artwork',()=>{
