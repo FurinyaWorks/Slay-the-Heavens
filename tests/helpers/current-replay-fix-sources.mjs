@@ -4,6 +4,18 @@ import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
 
 const bindings = new Map([
  {
+   "path": "tests/integrated-ci-source.cases.mjs",
+   "beforeSha256": "3e6a0dd86a826099554169a298731f7382f9a682043412f610916671d8c7ca15",
+   "afterSha256": "370a2deaefa8ccb69a464bbd166f9d8993f40e857d7c933dca5246f07d7bc7b5",
+   "hunks": [
+     {
+       "at": 76,
+       "before": " const broken=leaf.replace(\"from './fork-preflight-source.mjs'\",'from '+JSON.stringify(new URL('./helpers/fork-preflight-source.mjs',import.meta.url).href))",
+       "after": " const leafUrl=new URL('./helpers/release-bootstrap-ci-source.mjs',import.meta.url);\n const broken=leaf.replace(/^(import .+ from )'(\\.\\/[^']+)';$/gm,\n  (_,prefix,specifier)=>prefix+JSON.stringify(new URL(specifier,leafUrl).href)+';')"
+     }
+   ]
+ },
+ {
   "path": "tests/competition-roster-config-composition.test.mjs",
   "beforeSha256": "049459f6f6f652d83cc78230145279290fe3766782c7a316056e05f7539f33fd",
   "afterSha256": "6c0f04822d7b8b7950429c426c8be7085e1bc0594ca3926848e688f988a7db57",
