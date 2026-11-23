@@ -40,7 +40,7 @@ TASK-25、TASK-10.1.2、TASK-105。源码固定为 `73c21489efaab409d4c0c46bee51
 node docs/evidence/v6-d-art-capacity/replay.mjs build/v6-d-replay
 ```
 
-源码身份在运行前后复核。随本次证据版提交重放时，源码 HEAD 会变化。比较实际输入摘要、映射清单和布局摘要可以核对装配是否相同。完整候选另需编码器输入、底图、最终写入读回、音频和 buildId。
+源码身份在运行前后复核。随本次证据版提交重放时，源码 HEAD 会变化。B0 源输入摘要、映射清单和布局摘要可跨工作树比较。`nativeCardArt.inputDigest` 包含当前工作树的绝对路径，跨目录复核时逐项比较相对路径和文件 SHA-256。完整候选另需编码器输入、底图、最终写入读回、音频和 buildId。
 
 ## 测试
 

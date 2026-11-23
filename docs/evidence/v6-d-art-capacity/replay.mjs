@@ -14,11 +14,11 @@ const normalizePaths = (_, value) => typeof value === 'string' && value.startsWi
 const out = process.argv[2];
 assert.match(out ?? '', /^build\/v6-d-[a-z0-9-]+$/);
 
-const [data, ui, native, platform, ready, converted, release, art, audio] = await Promise.all([
+const [data, ui, native, platform, ready, converted, release, art, audio, evidence] = await Promise.all([
   load('scripts/build-lua-data.mjs'), load('scripts/build-ui.mjs'), load('scripts/build-native-candidate.mjs'),
   load('scripts/platform-load.mjs'), load('scripts/art/ready-card-registry.mjs'),
   load('scripts/art/converted-card-data.mjs'), load('scripts/release-notes.mjs'),
-  load('scripts/card-art-samples.mjs'), load('scripts/build-native-audio-game.mjs'),
+  load('scripts/card-art-samples.mjs'), load('scripts/build-native-audio-game.mjs'), load('scripts/evidence-files.mjs'),
 ]);
 const identity = release.gitSourceIdentity();
 assert.equal(identity.sourceDirty, false, 'Use a clean source worktree');
@@ -65,6 +65,7 @@ const matrix = references.map(cardId => {
 assert.equal(new Set(matrix.map(row => row.sourceSha256)).size, 75);
 assert.equal(new Set(Object.values(rectanglePack).map(row => sha256(row.rectangles))).size, 72);
 
+evidence.prepareOutputDirectory(root, 'build');
 mkdirSync(out);
 const baseline = join(out, 'B0-profile');
 mkdirSync(baseline);
@@ -106,7 +107,8 @@ const experiments = cases.map(([label, cardIds, hostCount]) => {
   const hosts = Array.from({ length: hostCount }, (_, index) => `battlePanel/card${index + 1}`);
   return { label, ...inventory(directory, { nativeCardArt: { registry: resolve(file), hosts } }) };
 });
-const [aControl, , a1High, , a2Data, a2Pools] = experiments;
+const [aControl, a1High, a2Data, a2Pools] = ['a-control', 'a1-cleave', 'a2-three-ids', 'a2-three-pools']
+  .map(label => experiments.find(experiment => experiment.label === label));
 assert.equal(a2Data.layoutSha256, a1High.layoutSha256);
 assert.equal(a2Data.templatesSha256, a1High.templatesSha256);
 assert.equal(a2Data.mappedManifestSha256, a2Pools.mappedManifestSha256);
