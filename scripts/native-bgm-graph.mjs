@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 
 export const nativeBgmSignals = Object.freeze(Object.fromEntries(
-  ['map', 'battle', 'elite', 'boss', 'victory', 'defeat', 'stop'].map(cue => [cue, `ABYSS_BGM_${cue.toUpperCase()}`])));
+  ['map', 'battle', 'elite', 'boss', 'victory', 'defeat', 'stop', 'menu'].map(cue => [cue, `ABYSS_BGM_${cue.toUpperCase()}`])));
 
 export function loadNativeBgmConfig() {
   return JSON.parse(readFileSync(new URL('../data/presentation/native_bgm.json', import.meta.url), 'utf8'));

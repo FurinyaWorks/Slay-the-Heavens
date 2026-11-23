@@ -23,6 +23,14 @@ local reasons = {
 -- Keep legacy Act1 pointer ownership unchanged; only the new state machines join.
 local addedStaged={dead_adventurer=true,designer=true,face_trader=true,knowing_skull=true,nloth=true}
 local function stagedEvent(id)return addedStaged[id] or id=='match_game' or id=='neow' or id=='mysterious_sphere' or id=='mind_bloom' or Act2Events.ids[id]end
+local commitCues = {
+    upgrade='forge', openTreasure='treasure_open', rest='rest',
+    upgradeEvent='reward', claimTreasure='reward', claimBossTreasure='reward',
+    chooseTreasure='reward', claimTreasureReward='reward', recall='reward',
+    purifyEvent='card_remove', purgeWing='card_remove',
+    chooseEvent='event_confirm', claimRestReward='event_confirm', claimDigReward='event_confirm',
+}
+local roomMotionCues = { upgrade=true, openTreasure=true, rest=true }
 local M = {}
 
 -- Installs the lifecycle responsibility on one node UI instance.
@@ -193,18 +201,16 @@ function M.install(ctx)
         if not called then error(accepted) end
         if accepted then
             -- Sound confirms a committed action, never a preview or a refresh.
-            local function playCommitSound()
-                local cue
-                local function commitSoundCue()
-                    cue = ({upgrade="forge",openTreasure="treasure_open",upgradeEvent="reward",rest="rest"})[command]
-                        or (command == "claimTreasure" or command == "claimBossTreasure" or command == "chooseTreasure" or command=="claimTreasureReward") and argument ~= 0 and "reward"
-                        or (command == "removeCard" or command == "purifyEvent" or command == "purgeWing") and "card_remove"
-                end
-                commitSoundCue()
-                if cue and ctx.options.sound and not (ctx.options.enhancedRooms and
-                (command=='openTreasure' or command=='rest' or command=='upgrade')) then pcall(ctx.options.sound, cue) end
+            local function commitSoundCue()
+                local run = ctx.self.run
+                if run.gold > before.gold then return 'gold_gain' end
+                if run.lastRelicObtain and run.lastRelicObtain.sequence > before.relicSequence
+                    and node.type ~= 'shop' then return 'reward' end
+                if argument == 0 or ctx.options.enhancedRooms and roomMotionCues[command] then return end
+                return commitCues[command]
             end
-            playCommitSound()
+            local cue = commitSoundCue()
+            if cue then pcall(ctx.options.sound,cue) end
             local notice, hold = describe(before)
             local obtained=ctx.self.run.lastRelicObtain
             if ctx.self.run==sourceRun and obtained then

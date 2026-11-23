@@ -159,12 +159,12 @@ function M.new(root, data, presentation, clickEvent, platform)
     self.confirmExit = Overlays.confirmExit(self,owner)
     Navigation.install(self,owner,neowHistory)
 
-    self.openDeck = Overlays.openDeck(inputCovered,self)
+    self.openDeck = Overlays.openDeck(inputCovered,self,platform)
     self.openStarterDeck = Overlays.openStarterDeck(inputCovered,self,platform,owner)
     -- TASK-4.7 owned relics: icon-disc slots, not a text dump. Opening rides
     -- the deck gate so it stays read-only for battle, map, camp and chest.
     self.openRelics = Overlays.openRelics(self,inputCovered,platform)
-    self.closeDeck = Overlays.closeDeck(self)
+    self.closeDeck = Overlays.closeDeck(self,platform)
 
     local menuView = MenuView.new(self,menu,data,platform)
     if root:GetChild('victoryEasterEgg') then

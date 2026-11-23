@@ -24,7 +24,7 @@ function M.requestNodeEntry(self,platform,changed)
     end
     local function enterNow(node)
         local ok,reason=Nodes.enter(self.run,self.map,node.id)
-        if ok then changed()end
+        if ok then pcall(platform.sound,'map_pick');changed()end
         return ok,reason
     end
     return function(node,context)
@@ -39,7 +39,10 @@ function M.requestNodeEntry(self,platform,changed)
             if not canEnterNode(self) or not sameEntry(self,request) then return false,'entry_context_changed' end
             trace('core_enter_start',request,request.nodeId)
             local ok,reason=Nodes.enter(request.run,request.map,request.nodeId)
-            if ok then request.committedGeneration=request.run.roomGeneration end
+            if ok then
+                request.committedGeneration=request.run.roomGeneration
+                pcall(platform.sound,'map_pick')
+            end
             trace('core_enter_end',request,reason)
             return ok,reason
         end

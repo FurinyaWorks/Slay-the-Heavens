@@ -349,6 +349,27 @@ test("voice identity follows each monster and sleeping or stunned actors stay si
         assert(count(h.sounds, "action_jaw_worm") == 0)
     end
 end)
+test("each Act 2 runtime definition selects its own catalog cue at intent", function()
+    local definitions = require('abyss_act2_enemies').enemies
+    assert(#definitions == 17)
+    local seen = {}
+    for _, definition in ipairs(definitions) do
+        local members = definition.id == 'gremlin_leader' and {'mad_gremlin','sneaky_gremlin',definition.id}
+            or definition.id == 'bronze_orb' and {'automaton',definition.id} or {definition.id}
+        local h = harness({'strike'}, members)
+        local actor = h.battle.enemies[#members]
+        assert(actor.definitionId == definition.id)
+        local cue = 'action_'..actor.definitionId
+        local id = Theme.sound[cue]
+        local death = Theme.sound[Theme.deathSound[actor.definitionId] or 'enemy_die']
+        assert(id and death and id ~= death and not seen[id], cue)
+        seen[id] = true
+        local move = definition.intents[1]
+        h.run(function(state) Events.emit(state,'intent',{enemy=actor.id,id=move.id}); return true end)
+        h.drain()
+        assert(count(h.sounds,cue) == 1, cue)
+    end
+end)
 test("player uses one stable action sound across attack and skill cards", function()
     for _, card in ipairs({"strike", "defend", "inflame", "twin_strike", "cleave"}) do
         local h = harness({card}, {"jaw_worm"})

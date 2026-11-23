@@ -65,9 +65,10 @@ function fixture(t, corrupt, existing=false, official=false) {
     env: { ...process.env, MILIASTRA_MCP_ROOT: tool, BGM_SCENARIO: scenario, BGM_CALLS: calls } });
   return { root, sources, base, buildId, output, run, calls: readFileSync(calls, 'utf8').trim().split('\n').filter(Boolean).map(JSON.parse) };
 }
-test('audio packaging reuses existing BGM graph and signals without duplicates',t=>{
+test('audio packaging reuses the graph and only registers the missing menu signal',t=>{
  const f=fixture(t,undefined,true);assert.equal(f.run.status,0,f.run.stderr);
- assert.equal(f.calls.some(c=>c.name==='scene_add_signal'||c.name==='scene_add_graph'),false);
+ assert.equal(f.calls.some(c=>c.name==='scene_add_graph'),false);
+ assert.deepEqual(f.calls.filter(c=>c.name==='scene_add_signal').map(c=>c.args.name),['ABYSS_BGM_MENU']);
  assert.equal(f.calls.find(c=>c.name==='write_graphs').args.graphs[0].graphId,42);
  assert(existsSync(join(f.output,'candidate.json')));
 });

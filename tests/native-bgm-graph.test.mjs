@@ -26,19 +26,22 @@ test('native graph replaces each cue once, uses catalog length and keeps result 
       BigInt(track.volume), track.loop, 0, 1, true]);
     assert.deepEqual(calls.at(-1), ['pause', 'player', true], 'explicitly recover after an earlier menu/settlement pause');
   }
-  assert.equal(calls.length, 12);
+  assert.equal(calls.length, 14);
   handlers[nativeBgmSignals.stop]({}, f); handlers[nativeBgmSignals.stop]({}, f);
   assert.deepEqual(calls.at(-1), ['pause', 'player', false]);
   handlers[nativeBgmSignals.map]({}, f);
-  assert.equal(calls.length, 15, 'a cue after stop must start and recover again');
+  assert.equal(calls.length, 17, 'a cue after stop must start and recover again');
 });
 
-test('new graph instance handles platform Retry independently and pauses inherited music on menu', () => {
+test('platform Retry has independent graph state and switches from settlement to the title cue', () => {
   for (let i = 0; i < 2; i++) {
     const { handlers, f, calls } = harness();
+    handlers[nativeBgmSignals.menu]({}, f);
+    handlers[nativeBgmSignals.menu]({}, f);
     handlers[nativeBgmSignals.stop]({}, f);
-    handlers[nativeBgmSignals.map]({}, f);
-    assert.equal(calls.length, 3);
+    handlers[nativeBgmSignals.menu]({}, f);
+    assert.deepEqual(calls.filter(([kind]) => kind === 'modify').map(([, , id]) => id), [10041n, 10041n]);
+    assert.deepEqual(calls.filter(([kind]) => kind === 'pause').map(([, , start]) => start), [true, false, true]);
   }
 });
 

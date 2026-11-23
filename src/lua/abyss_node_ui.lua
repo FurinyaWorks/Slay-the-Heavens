@@ -186,8 +186,8 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
 
     function ctx.refreshNodeNotice(node,active,hint)
         -- The merchant speaks in his own dialogue box; the notice keeps only shop facts.
-        if node and node.type == "shop" and (ctx.self.merchantNode ~= node.id or ctx.self.merchantRun ~= ctx.self.run) then
-            ctx.self.merchantNode, ctx.self.merchantRun = node.id, ctx.self.run
+        if active and node.type == 'shop' and (ctx.self.merchantNode ~= node.id or ctx.self.merchantMap ~= ctx.self.map or ctx.self.merchantRun ~= ctx.self.run) then
+            ctx.self.merchantNode, ctx.self.merchantMap, ctx.self.merchantRun = node.id, ctx.self.map, ctx.self.run
             ctx.merchant:enter(ctx.self.run)
         end
         ctx.merchant:setVisible(merchantVisible(ctx, node, active))
