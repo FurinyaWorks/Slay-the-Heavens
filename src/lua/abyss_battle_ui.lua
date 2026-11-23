@@ -274,12 +274,12 @@ function M.new(root, data, presentation, clickEvent, platform, options)
     services.bind("goldReward", function()
         if not self.active or self.busy or self.rewardScreen ~= "list" or not self.run then return end
         local ok = Run.claimGoldReward(self.run)
-        if ok then services.notice("金币已领取。") services.refresh(true) end
+        if ok then pcall(platform.sound,'gold_gain');services.notice("金币已领取。") services.refresh(true) end
     end)
     services.bind('emeraldKeyReward',function()
         if not self.active or self.busy or self.rewardScreen~='list' or not self.run then return false end
         local ok,why=Run.claimEmeraldKey(self.run)
-        if ok then services.notice('已获得绿钥匙。');services.refresh(true)end
+        if ok then pcall(platform.sound,'reward');services.notice('已获得绿钥匙。');services.refresh(true)end
         return ok,why
     end)
     for i=1,2 do
@@ -290,6 +290,7 @@ function M.new(root, data, presentation, clickEvent, platform, options)
             local sequence=receipt and receipt.sequence or 0
             local ok,why=Run.claimRelicReward(self.run,slot)
             if ok then
+                pcall(platform.sound,'reward')
                 local names=require('abyss_relic_names')
                 services.notice('已获得遗物「'..names.get(self.run.data,why)..'」'..names.upgradeFeedback(self.run,sequence,presentation,why))
                 services.refresh(true)
@@ -300,7 +301,9 @@ function M.new(root, data, presentation, clickEvent, platform, options)
     services.bind("claimPotion", function() return self:claimPotionReward() end)
     services.bind("stolenGold", function()
         if self.active and self.run and not self.busy and self.rewardScreen == "list"
-            and Run.claimStolenGoldReward(self.run) then services.notice("已取回失金。") services.refresh(true) end
+            and Run.claimStolenGoldReward(self.run) then
+            pcall(platform.sound,'gold_gain');services.notice("已取回失金。");services.refresh(true)
+        end
     end)
     services.bind("continue", function()
         if not self.active or self.busy or not self.run then return end
@@ -338,7 +341,7 @@ function M.new(root, data, presentation, clickEvent, platform, options)
         discard=function(slot)
             if options.inputCovered and options.inputCovered()then return false,'panel_hidden' end
             local ok,reason=Run.discardPotion(self.run,slot)
-            if ok then self.potionSlots[slot]=nil end
+            if ok then self.potionSlots[slot]=nil;pcall(platform.sound,'potion_discard') end
             services.notice(ok and '已丢弃药水。' or reasons[reason] or '当前不能丢弃此药水。')
             services.refresh();return ok,reason
         end,

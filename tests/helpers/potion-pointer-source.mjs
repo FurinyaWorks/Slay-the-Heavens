@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {authenticateAudioPresentation,beforeAudioPresentationReader} from './act2-audio-source.mjs';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
@@ -26,6 +27,8 @@ export function authorizePotionPointerSource(path,source,binding,samples,read){
 export function beforePotionPointerSource(path,source,read){
  const continuation=continuations.get(path);
  if(!continuation)return source;
+ source=authenticateAudioPresentation(path,source,read);
+ read=beforeAudioPresentationReader(read);
  source=beforeStsUiCloseoutSource(path,source);
  const readSts=owner=>beforeStsUiCloseoutSource(owner,read(owner));
  source=beforeAuthenticatedReleaseUiRestore(path,source,readSts);

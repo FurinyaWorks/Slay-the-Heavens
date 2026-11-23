@@ -59,9 +59,10 @@ local function popupText(run,item)
 end
 local function localPopup(root,clickEvent,platform,allowed,onChange)
     local state={}
-    local function command(action)
+    local function command(action,cue)
         return function(slot,run)
             local ok,reason=action(run,slot)
+            if ok then pcall(platform.sound,cue) end
             onChange()
             return ok,reason
         end
@@ -70,7 +71,7 @@ local function localPopup(root,clickEvent,platform,allowed,onChange)
         allowed=function(run)return allowed(run) and run.phase~='combat'end,
         item=function(slot)return Run.potionSlotView(state.run,slot)end,
         text=function(item)return popupText(state.run,item)end,
-        use=command(Run.usePotion),discard=command(Run.discardPotion),changed=onChange,
+        use=command(Run.usePotion,'potion_use'),discard=command(Run.discardPotion,'potion_discard'),changed=onChange,
     })
     local open=popup.open
     function popup:open(run,slot)
@@ -194,11 +195,13 @@ function M.new(root,clickEvent,platform,allowed,onChange,onClose)
     bind('discard',function()
         if not currentSelection()then self:render();return false end
         local ok,reason=Run.discardPotion(self.run,self.selected.slot)
+        if ok then pcall(platform.sound,'potion_discard') end
         self.selected=nil;self:render();if ok then onChange()end;return ok,reason
     end)
     bind('use',function()
         if not currentSelection() or self.run.phase=='combat' then self:render();return false end
         local ok,reason=Run.usePotion(self.run,self.selected.slot)
+        if ok then pcall(platform.sound,'potion_use') end
         self.selected=nil;self:render();if ok then onChange()end;return ok,reason
     end)
     bind('cancel',onClose)

@@ -213,6 +213,7 @@ function M.install(owner, _ownership, host, dependencies)
         if owner.rewardScreen ~= "cards" then return end
         local ok, reason = Run.claimCardReward(run, index)
         if ok then
+            pcall(host.platform.sound,'reward')
             -- Adopt the committed rewards object before local feedback; an
             -- unrelated replacement still resets the page on the next render.
             owner.rewardOwner, owner.rewardRun = run.rewards, run
@@ -287,10 +288,12 @@ function M.install(owner, _ownership, host, dependencies)
             dependencies.cancelPotionAim("药水瞄准已失效，已取消。") refresh() return false
         end
         dependencies.cancelPotionAim()
-        local ok, reason = perform(function() return Run.usePotion(self.run, slot, target) end)
-        if ok then
-            self.potionSlots[slot] = nil
-        end
+        local ok, reason = perform(function()
+            local used, failure = Run.usePotion(self.run, slot, target)
+            if used then pcall(host.platform.sound,'potion_use') end
+            return used, failure
+        end)
+        if ok then self.potionSlots[slot] = nil end
         dependencies.notice(ok and "药水已生效。" or reasons[reason] or "当前无法使用此药水。")
         if reason ~= "presentation_unavailable" then refresh() end
         return ok, reason
@@ -304,6 +307,7 @@ function M.install(owner, _ownership, host, dependencies)
         if not owner.active or not owner.run or owner.busy or owner.gesture or owner.suppressClick then return false end
         if owner.rewardScreen ~= "list" then return false end
         local ok,reason=(claim and Run.claimPotionReward or Run.skipPotionReward)(owner.run)
+        if ok and claim and reason ~= 'potion_blocked_by_sozu' then pcall(host.platform.sound,'potion_claim') end
         dependencies.notice(potionRewardNotice(ok, reason, claim))
         refresh(ok)
         return ok,reason

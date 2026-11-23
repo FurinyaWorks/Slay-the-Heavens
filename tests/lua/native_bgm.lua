@@ -9,7 +9,8 @@ test("scene selection waits for feedback, treats reward and peaceful nodes as ex
     assert(Bgm.scene("battle", { phase = "reward" }) == "map")
     assert(Bgm.scene("node", { phase = "node" }) == "map")
     assert(Bgm.scene("victory", {}) == "victory" and Bgm.scene("defeat", {}) == "defeat")
-    assert(Bgm.scene("menu") == "stop")
+    assert(Bgm.scene("menu") == "menu" and Bgm.scene("victory", {}, false, "victory", true) == "menu")
+    assert(Bgm.scene("battle", {phase="reward",nodeFlow={type="elite"}}, true, "menu") == "elite")
 end)
 test("bridge deduplicates refresh/deck changes and sends stop before restart", function()
     local sent = {}
@@ -26,3 +27,4 @@ test("unavailable audio and failed signal never throw or retry each frame", func
     assert(not bgm:update("invented"))
 end)
 print("native BGM: " .. count .. " passed")
+dofile('tests/lua/support/act2_audio_interactions.lua')

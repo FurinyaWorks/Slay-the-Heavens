@@ -87,6 +87,9 @@ test('shop counter allows replacing a full belt without bypassing purchase price
     for i=1,#path-1 do assert(Map.choose(h.map,path[i]))end
     assert(F.Nodes.enter(h.run,h.map,path[#path]))
     h.run.gold=1000;h:refresh()
+    assert(r:GetChild('nodePanel'):GetChild('merchant'):GetChild('talk'):GetChild('hit').click())
+    dofile('tests/lua/support/shop_timeline.lua')(h)
+    assert(h.nodeUI.shopOpen)
     local offer
     for _,p in ipairs(h.run.nodeFlow.potions)do if not p.unavailable then offer=p;break end end
     assert(offer);local gold=h.run.gold

@@ -17,6 +17,7 @@ import {beforePotionTextSource,potionTextSourcePair} from './potion-text-source.
 import {beforeFatalBgmSource,fatalBgmPair} from './fatal-bgm-source-continuation.mjs';
 import {beforeEndingTerminalSource,endingTerminalSourcePath} from './ending-terminal-source.mjs';
 import assert from 'node:assert/strict';
+import {beforeAudioPresentation,beforeAudioPresentationReader,ownsAudioPresentation} from './act2-audio-source.mjs';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
@@ -138,6 +139,10 @@ const currentContinuationOwners = new Set([
 ]);
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
+  const audioPrior=beforeAudioPresentation(path,source);
+  if(ownsAudioPresentation(path))assert.notEqual(audioPrior,source,'fresh current production owner: '+path);
+  source=audioPrior;
+  read=beforeAudioPresentationReader(read,{current:true});
   assertCurrentDevelopUiSource(path,source,read);
   if(developBackflowOwns(path)){
     assertDevelopBackflowCurrent(path,source);

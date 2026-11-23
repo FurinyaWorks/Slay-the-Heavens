@@ -76,6 +76,33 @@ local function samePotionPointer(run,slot,held)
     return held and held.inventory==run.potions and held.id==run.potions[slot] and held.phase==run.phase
 end
 
+local commandCues = {
+    start='menu_confirm', continueRun='menu_confirm', character_confirm='menu_confirm',
+    open='menu_confirm', cancel='menu_confirm', character_cancel='menu_confirm',
+    titleQuit='menu_confirm', run_mainMenu='menu_confirm',
+    run_map='map_open', battleRoute='map_open', runRoute='map_open', combatRewards='deck_open',
+}
+local function audibleCommand(self, platform, kind, action)
+    local cue = commandCues[kind]
+    if cue then
+        return function()
+            local ok, reason = action()
+            if ok == true then pcall(platform.sound,cue) end
+            return ok, reason
+        end
+    end
+    if not kind:match('^character_') then return action end
+    return function()
+        local selection = self.characterSelection
+        local character, element = selection.character, selection.element
+        local ok, reason = action()
+        if ok and (selection.character ~= character or selection.element ~= element) then
+            pcall(platform.sound,'character_select')
+        end
+        return ok, reason
+    end
+end
+
 function M.bindCommand(platform,self,canManagePotions,clickEvent,owner)
     return function(box, kind, action, enabled, potionSlot)
             local hit = box:GetChild("hit")
@@ -189,6 +216,7 @@ function M.bindCommand(platform,self,canManagePotions,clickEvent,owner)
                     end) end
                 end
             end
+            local commit = audibleCommand(self,platform,kind,action)
             hit:AddCursorEventListener(clickEvent, function(event)
                 if Pointer.blocked(platform)then return false end
                 if observed or cursor.CursorDown and cursor.CursorUp and touch(event) ~= nil then
@@ -200,7 +228,7 @@ function M.bindCommand(platform,self,canManagePotions,clickEvent,owner)
                     if token.touch ~= touch(event) then return false end
                     held, released = nil, nil
                 elseif not available() then return false end
-                return action()
+                return commit()
             end)
         end
 end

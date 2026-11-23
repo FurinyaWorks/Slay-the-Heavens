@@ -1,6 +1,7 @@
 // Exact Develop predecessors for historical replay. Live builds read current sources.
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
+import {beforeAudioPresentation,beforeAudioPresentationReader} from './act2-audio-source.mjs';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {exactSourceMatches as matches} from './source-fingerprint.mjs';
@@ -333,6 +334,9 @@ export function authenticateDevelopBackflow(path,source,read,options){
  return authenticateDevelopBackflowWithReaders(path,source,read,recentBackflowOwnerReader(read),options);
 }
 function authenticateDevelopBackflowWithReaders(path,source,readLive,readLinked,options){
+ const audioPrior=beforeAudioPresentation(path,source);
+ readLive=beforeAudioPresentationReader(readLive,{current:audioPrior!==source});
+ source=audioPrior;
  const priorUi=beforeDevelopUiBackflows(path,source);
  if(priorUi!==source){
   const live=readLive(path);

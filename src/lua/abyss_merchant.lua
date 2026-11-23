@@ -41,7 +41,12 @@ function M.new(box, options)
     end
     -- First visit in a run opens with the scene narration; later shops start at the greeting.
     function merchant:enter(run)
-        if self.compact then self.current=nil;self.queue={};line.text="";if bubble then bubble:SetVisible(false) end;return end
+        if self.compact then
+            self.current=nil;self.queue={};line.text=""
+            if bubble then bubble:SetVisible(false) end
+            pcall(options.sound,'merchant_greet')
+            return
+        end
         local first = not self.met[run]
         self.met[run], self.idleUsed = true, false
         self.queue = first and { "greet" } or {}
@@ -53,6 +58,7 @@ function M.new(box, options)
         if self.compact then
             local short={buy='谢啦！',poor='金币不够。',leave='再会。'}
             if not short[kind] then return false end
+            if kind == 'poor' and self.current and self.current.kind == kind and not self.current.dismissed then return true end
             self.current={kind=kind,hold=0,shown=0};line.text=short[kind]
             if bubble then bubble:SetVisible(true) end;line:SetVisible(true)
             if cues[kind] and options.sound then pcall(options.sound,cues[kind]) end

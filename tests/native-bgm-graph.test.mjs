@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { authenticateAudioPresentation, beforeAudioPresentation, beforeAudioPresentationReader } from './helpers/act2-audio-source.mjs';
 import { nativeBgmGraphSource, nativeBgmSignals, loadNativeBgmConfig } from '../scripts/native-bgm-graph.mjs';
 
 function harness() {
@@ -26,19 +28,22 @@ test('native graph replaces each cue once, uses catalog length and keeps result 
       BigInt(track.volume), track.loop, 0, 1, true]);
     assert.deepEqual(calls.at(-1), ['pause', 'player', true], 'explicitly recover after an earlier menu/settlement pause');
   }
-  assert.equal(calls.length, 12);
+  assert.equal(calls.length, 14);
   handlers[nativeBgmSignals.stop]({}, f); handlers[nativeBgmSignals.stop]({}, f);
   assert.deepEqual(calls.at(-1), ['pause', 'player', false]);
   handlers[nativeBgmSignals.map]({}, f);
-  assert.equal(calls.length, 15, 'a cue after stop must start and recover again');
+  assert.equal(calls.length, 17, 'a cue after stop must start and recover again');
 });
 
-test('new graph instance handles platform Retry independently and pauses inherited music on menu', () => {
+test('platform Retry has independent graph state and switches from settlement to the title cue', () => {
   for (let i = 0; i < 2; i++) {
     const { handlers, f, calls } = harness();
+    handlers[nativeBgmSignals.menu]({}, f);
+    handlers[nativeBgmSignals.menu]({}, f);
     handlers[nativeBgmSignals.stop]({}, f);
-    handlers[nativeBgmSignals.map]({}, f);
-    assert.equal(calls.length, 3);
+    handlers[nativeBgmSignals.menu]({}, f);
+    assert.deepEqual(calls.filter(([kind]) => kind === 'modify').map(([, , id]) => id), [10041n, 10041n]);
+    assert.deepEqual(calls.filter(([kind]) => kind === 'pause').map(([, , start]) => start), [true, false, true]);
   }
 });
 
@@ -50,5 +55,29 @@ test('generator fails closed on unsafe metadata, missing scenes and unreviewed n
   for (const patch of [{ volume: 101 }, { seconds: 0 }, { id: '10040' }, { loop: 'true' }]) {
     const config = structuredClone(loadNativeBgmConfig()); Object.assign(config.cues.map, patch);
     assert.throws(() => nativeBgmGraphSource({ id: 1, name: 'BGM', config }));
+  }
+});
+
+test('historical audio source projection checks the current linked bytes on each read', () => {
+  for (const path of [
+    'data/presentation/ui_theme.json',
+    'src/lua/abyss_battle_actions.lua',
+    'src/lua/abyss_game_ui_view.lua',
+  ]) {
+    const source = readFileSync(path, 'utf8');
+    let live = source;
+    const read = () => live;
+    const prior = authenticateAudioPresentation(path, source, read, {current:true});
+    assert.notEqual(prior, source);
+    const predecessorRead = beforeAudioPresentationReader(read, {current:true});
+    assert.equal(predecessorRead(path), prior);
+    for (const broken of [prior, source+'\n', null]) {
+      live = broken;
+      assert.throws(() => predecessorRead(path), /combined linked owner identity/);
+      assert.throws(() => authenticateAudioPresentation(path, source, read), /combined linked owner identity/);
+    }
+    assert.equal(beforeAudioPresentation(path, source+'\n'), source+'\n');
+    live = source.replaceAll('\n', '\r\n');
+    assert.equal(predecessorRead(path).replaceAll('\r\n', '\n'), prior);
   }
 });

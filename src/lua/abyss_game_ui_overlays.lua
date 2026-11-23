@@ -155,12 +155,13 @@ local function canOpenDeck(openingCovered,self)
     return not openingCovered() and not deckBlocked(self)
         and (self.mode=='map' or self.mode=='battle' or self.mode=='node')
 end
-function M.openDeck(openingCovered,self)
+function M.openDeck(openingCovered,self,platform)
     return function(_,pileKind)
             if not canOpenDeck(openingCovered,self) then return false end
             if pileKind then
                 if self.mode~='battle' or not self.deckUI:openPile(self.run,pileKind)then return false end
             elseif not self.deckUI:open(self.run)then return false end
+            pcall(platform.sound,'deck_open')
             self.battleUI.selected = nil
             self:refresh()
             return true
@@ -175,6 +176,7 @@ function M.openStarterDeck(openingCovered,self,platform,owner)
             local ok,reason=self.deckUI:openPreview(self.characterSelection.info)
             if not ok then return false,reason end
             owner.exitGeneration=owner.exitGeneration+1;owner.menuGeneration=owner.menuGeneration+1
+            pcall(platform.sound,'deck_open')
             self.characterSelection.deckOpen=true;self:refresh();return true
         end
 end
@@ -183,17 +185,19 @@ function M.openRelics(self,openingCovered,platform)
             if self.deckUI.visible or not canOpenDeck(openingCovered,self) then return false end
             PageReveal.registerSource(platform,'deckPanel')
             if not self.deckUI:inspectRelics(self.run,self.relicUI,index) then return false end
+            pcall(platform.sound,'deck_open')
             self.battleUI.selected=nil
             self:refresh();return true
         end
 end
 
-function M.closeDeck(self)
+function M.closeDeck(self,platform)
     return function(_)
             if self.exitOpen or self.settlementRequested then return false end
             if self.deckUI.choiceToken then return false,"card_choice_pending" end
             local preview=self.deckUI.previewInfo~=nil
             if not self.deckUI:close() then return false end
+            pcall(platform.sound,'deck_close')
             if preview then self.characterSelection.deckOpen=false end
             -- Resume click-only hosts; pointer-capable card input still requires its
             -- own fresh Down/Up identity. Closing an overlay cannot revive old clicks.

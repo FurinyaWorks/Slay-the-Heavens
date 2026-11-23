@@ -1,5 +1,6 @@
 // Reverse the current input retirement for exact legacy presentation replays.
 import assert from 'node:assert/strict';
+import {beforeAudioPresentation} from './act2-audio-source.mjs';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
@@ -93,7 +94,7 @@ export function assertCurrentDevelopUiSource(path,source,read){
 }
 
 export function beforeDevelopUiBackflows(path,source){
- return beforeDeckBrowserBackflow(path,beforePotionBackflow(path,source));
+ return beforeDeckBrowserBackflow(path,beforePotionBackflow(path,beforeAudioPresentation(path,source)));
 }
 
 export function beforeMergedInputRetirement(path,source,options){
