@@ -1,0 +1,7 @@
+ABYSS_RUN seed=1 source=explicit
+click-parity.lua:39: official bottle drag must not arm aiming
+stack traceback:
+	[JS]: in function 'assert'
+	click-parity.lua:39: in main chunk
+	[JS]: in function 'dofile'
+	(command line):1: in main chunk

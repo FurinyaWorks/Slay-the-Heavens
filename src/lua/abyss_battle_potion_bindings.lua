@@ -146,6 +146,17 @@ function M.install(owner, ownership, host, dependencies)
                     beginPotionPress(slot,control,input,event,helpOnly)
                 end)
                 control:AddCursorEventListener(host.cursor.CursorDrag,function(event)
+                    if Theme.presentationProfile=='official-assets-first' then
+                        local touch=event and event.touchId
+                        local held,released=input.held,input.released
+                        -- One dragged origin cannot become a new click on Up or EndDrag.
+                        if held and held.touch==touch then
+                            input.held=nil
+                            releasePotionHelp(control,input,touch)
+                        end
+                        if released and released.touch==touch then input.released=nil end
+                        return
+                    end
                     if not helpOnly then return movePotion(event,input) end
                 end)
                 local function releasePotion(event, ended)

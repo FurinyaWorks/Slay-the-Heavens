@@ -1,0 +1,97 @@
+local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
+local Surfaces=require('abyss_monster_surfaces')
+local function named(children,name)
+    for _,entry in ipairs(children)do if entry.name==name then return entry end end
+    error('missing '..name)
+end
+assert(H.F.Theme.presentationProfile=='official-assets-first')
+local layout=named(named(H.F.Layout,'stage').children,'battlePanel')
+local sx,sy=table.unpack(named(layout.children,'potion1').position)
+for _,touchScreen in ipairs({false,true}) do
+    local host,ui,panel,event,tap,drain=H.setup({'defend','defend','defend'},{'cultist','jaw_worm'},{touchScreen=function()return touchScreen end})
+    if touchScreen then host:resize(1600,720) end
+    host.run.potions={'fire_potion','energy_potion'}
+    host:refresh()
+    local combat=host.run.combat
+    local hp1,hp2=combat.enemies[1].hp,combat.enemies[2].hp
+    local function intact()
+        assert(host.run.potions[1]=='fire_potion')
+        assert(combat.enemies[1].hp==hp1 and combat.enemies[2].hp==hp2)
+    end
+    local other=Surfaces.get(panel):find(combat.enemies[2].id)
+    local popup=panel:GetChild('potionHelp'):GetChild('potionPopup')
+    local function signal(name,kind,id)
+        local b=popup:GetChild(name)
+        local hit=b.listeners and b or b:GetChild('hit')
+        return assert(hit.listeners[kind],name..'/'..kind)({touchId=id})
+    end
+    local function action(name,id)
+        signal(name,'down',id)
+        signal(name,'up',id)
+        signal(name,'click',id)
+    end
+
+    -- Ordinary and delayed native event endings cannot turn a Drag into Use.
+    for i,tail in ipairs({'endDrag','up'})do
+        local id=10+i
+        event('potion1','down',id,sx,sy)
+        event('potion1','drag',id,other.x,other.y)
+        assert(not ui.potionAim,'official bottle drag must not arm aiming')
+        event('potion1',tail,id,other.x,other.y)
+        event('potion1','click',id,other.x,other.y)
+        assert(not ui.potionMenu,'cancelled drag cannot open the popup')
+        intact()
+    end
+    -- Some devices only send Down and displaced Up. Never use a bottle by release.
+    event('potion1','down',13,sx,sy)
+    event('potion1','up',13,other.x,other.y)
+    assert(not ui.potionAim and not ui.potionMenu)
+    intact()
+    tap('potion1',14)
+    assert(ui.potionMenu and not ui.potionAim)
+    signal('use','down',15)
+    signal('use','drag',15)
+    signal('use','up',15)
+    signal('use','click',15)
+    assert(ui.potionMenu and not ui.potionAim,'dragging Use cannot arm')
+    intact()
+    action('dismiss',16)
+    assert(not ui.potionMenu and not ui.potionAim,'outside closes just the popup')
+    intact()
+    tap('potion1',17)
+    action('use',18)
+    local aim=assert(ui.potionAim)
+    assert(not aim.moving and not ui.potionMenu,'Use must arm click-only targeting')
+    intact()
+    event('enemy2','down',24,other.x,other.y)
+    tap('playArea',25)
+    assert(not ui.potionAim,'blank field tap cancels the staged aim')
+    event('enemy2','up',24,other.x,other.y)
+    event('enemy2','click',24,other.x,other.y)
+    intact()
+    tap('potion1',26)
+    action('use',27)
+    aim=assert(ui.potionAim)
+    event('potion2','down',19)
+    event('potion2','drag',19,other.x,other.y)
+    event('potion2','up',19,other.x,other.y)
+    event('potion2','click',19,other.x,other.y)
+    assert(ui.potionAim==aim and not ui.potionMenu,'a foreign bottle gesture cannot steal the staged aim')
+    intact()
+    tap('enemy2',20)
+    assert(not ui.potionAim and not host.run.potions[1] and combat.enemies[2].hp==hp2-20 and combat.enemies[1].hp==hp1)
+    event('enemy2','click',20)
+    assert(combat.enemies[2].hp==hp2-20,'late tail must not apply again')
+    assert(ui.busy,"real hit presentation owns the next input until feedback settles")
+    drain()
+    local energy=combat.energy
+    tap('potion2',21)
+    assert(ui.potionMenu and not ui.potionAim)
+    action('use',22)
+    assert(not host.run.potions[2] and combat.energy==energy+2 and not ui.potionAim,'self-use confirms immediately')
+    drain()
+    event('card1','down',23)
+    event('card1','drag',23,0,180)
+    assert(ui.gesture and ui.gesture.moving,'unrelated card dragging must remain active')
+    print((touchScreen and 'TOUCH' or 'MOUSE')..' OFFICIAL STAGED CLICK PARITY PASS')
+end
