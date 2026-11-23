@@ -72,13 +72,13 @@ local function same(a,b,seen)
     return true
 end
 
-local function openTreasure(fast,device,sapphire)
+local function openTreasure(fast,device,sapphire,gold)
     local host,root,assets,settle,resize,_,hit=onMap('treasure',fast,device,sapphire)
     local shade=returnShade(root)
     assert(not shade.visible,'new run started a room return')
     if sapphire then host.run.endingUnlocked=true end
     dofile('tests/lua/support/sapphire_source_fixture.lua').stage(host.run)
-    if not sapphire then host.run.treasureRng=require('abyss_sts_random').fromSeed('42') end
+    if gold then host.run.treasureRng=require('abyss_sts_random').fromSeed('42') end
     assert(tap(hit,1));settle()
     assert(not shade.visible)
     assert(F.click(root,'nodePanel','treasureView/chest'));settle()
@@ -129,7 +129,7 @@ local function finishMapReveal(host,root,dt,frames)
 end
 
 if section=='treasure-return' then
-    local host,root,_,settle,resize,shade=openTreasure(false,'pc')
+    local host,root,_,settle,resize,shade=openTreasure(false,'pc',false,true)
     assert(F.click(root,'nodePanel','runRoute'));settle()
     assert(host.routeOpen and not shade.visible)
     assert(tap(root:GetChild('mapPanel'):GetChild('previewBack'):GetChild('hit'),4));settle()
@@ -162,6 +162,8 @@ if section=='treasure-return' then
     claim(host,root,'sapphire')
     assert(host.run.keys.sapphire and #host.run.relics==relics)
     assertFirstMapFrame(host,root)
+    OnUpdate(0)
+    assertFirstMapFrame(host,root)
     -- A stall gets one bounded step. Viewport changes and refreshes must not restart it.
     resize(1480,720)
     OnUpdate(2)
@@ -179,7 +181,9 @@ if section=='return-readiness' then
     assets.mapReady=function()return not loading,reason end
     local counts=countRenders(host)
     local cover=root:GetChild('pageReveal')
-    assert(F.click(root,'nodePanel','back'))
+    local relics=#host.run.relics
+    claim(host,root,'relic')
+    assert(#host.run.relics==relics+1)
     assert(cover.visible and not shade.visible and host.pageReveal:covered())
     local next=assert(Nodes.available(host.run,host.map)[1])
     assert(not tap(hitFor(host,root,next.id),3),'map input escaped readiness')
@@ -207,8 +211,11 @@ if section=='return-readiness' then
     end
     assert(F.click(root,'nodePanel','back'))
     assert(host.menuOpen and not shade.visible,'obsolete visibility setter revived the cancelled reveal')
-    assert(host:closeExit());settle()
-    assert(not shade.visible)
+    local run,map=host.run,host.map
+    assert(host:returnToMainMenu());settle()
+    assert(host.mode=='menu' and not shade.visible)
+    assert(host:continueRun());settle()
+    assert(host.mode=='map' and host.run==run and host.map==map and not shade.visible)
     OnDestroy()
     return
 end
