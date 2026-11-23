@@ -1686,6 +1686,90 @@ const bindings = new Map([
     "after": "run.combat.draw={};assert(host:openDeck('draw'));settle();assert(#deck.cards==0 and not deck.pendingGrid and not deck.calibrating,'N to EMPTY left preparation pending')\nassert(host:closeDeck());settle()\n-- Commands issued by a sibling native callback invalidate the eager cover paint.\nlocal Run=require('abyss_run')\nlocal function coveredCallback(change)\n local mapPanel=root:GetChild('mapPanel');local mapVisible=mapPanel.SetVisible\n local replayed,paints=false,0\n host.battleUI.render=function(self,...)paints=paints+1;return renderOriginal(self,...)end\n mapPanel.SetVisible=function(self,visible)\n  local result=mapVisible(self,visible)\n  if not replayed then replayed=true;change()end\n  return result\n end\n assert(host:openDeck('draw'));mapPanel.SetVisible=mapVisible;host.battleUI.render=renderOriginal\n assert(replayed and paints==2,'reentrant combat command must repaint the newly covered battle')\nend\ncoveredCallback(function()\n for _,candidate in ipairs(run.combat.hand)do\n  if F.Combat.canPlay(run.combat,candidate.uid,nil)then assert(Run.play(run,candidate.uid));return end\n end\n error('fixture hand requires a legal no-target card')\nend)\nassert(host:closeDeck());settle()\nassert(Run.obtainPotion(run,'fire_potion'));host:refresh();assert(host.battleUI.potionSlots[1])\nlocal function withoutEvents(change)\n local events=run.combat.events;local count=#events\n assert(change());assert(run.combat.events==events and #events==count)\nend\ncoveredCallback(function()withoutEvents(function()return Run.discardPotion(run,1)end)end)\nassert(not host.battleUI.potionSlots[1],'eventless discard left a stale potion control')\nassert(host:closeDeck());settle()\nlocal cap=run.maxHp\ncoveredCallback(function()withoutEvents(function()return Run.increaseMaxHp(run,1)end)end)\nassert(run.maxHp==cap+1 and root:GetChild('battlePanel'):GetChild('player').text:match('/'..(cap+1)..'$'),\n 'eventless max-health change left a stale HUD')\nassert(host:closeDeck());settle()\n"
    }
   ]
+ },
+ {
+  "path": "tests/colorless-catalog-source.test.mjs",
+  "beforeSha256": "7099f6c9f8572b220c45d463ed986c039076a5baefae08ce7608749da476188d",
+  "afterSha256": "1f2fc5bff24370b718aee29cdd4ef744f1096f7a2088a7691b401c7de86ebe50",
+  "hunks": [
+   {
+    "at": 2,
+    "before": "import {readFileSync,mkdtempSync,mkdirSync,writeFileSync,existsSync,rmSync,symlinkSync} from 'node:fs';\nimport {join} from 'node:path';import {tmpdir} from 'node:os';\nimport {createHash} from 'node:crypto';",
+    "after": "import {readFileSync,mkdtempSync,mkdirSync,writeFileSync,existsSync,rmSync,symlinkSync} from 'node:fs';\nimport {join} from 'node:path';import {availableParallelism,tmpdir} from 'node:os';\nimport {createHash} from 'node:crypto';"
+   },
+   {
+    "at": 10,
+    "before": "import {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';\nconst read=p=>readFileSync(p,'utf8').replaceAll('\\r\\n','\\n');",
+    "after": "import {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';\nimport {hasTestNameFilter,runIsolatedTest} from './helpers/isolated-historical-cases.mjs';\nconst read=p=>readFileSync(p,'utf8').replaceAll('\\r\\n','\\n');"
+   },
+   {
+    "at": 86,
+    "before": "\ntest('every current Colorless entry freshly authenticates the full dynamic owner set through all reader forms',()=>{\n const currentOwners=[...sourceEpoch.proof.owners,pointerInputPath];",
+    "after": "\nconst expandedColorlessCase='every current Colorless entry freshly authenticates the full dynamic owner set through all reader forms';\nconst expandedColorlessLane='--colorless-expanded-owner-lane';\ntest(expandedColorlessCase,async()=>{\n const wrappers=[r=>r,colorlessCatalogReader,r=>colorlessCatalogReader(colorlessCatalogReader(r))];\n const entries=originals.flatMap((path,pathIndex)=>wrappers.map((wrap,wrapperIndex)=>({\n  path,wrap,lane:(pathIndex+wrapperIndex)%2,\n })));\n assert.equal(entries.length,9,'every Colorless entry uses all three reader forms');\n let selected=entries;\n if(process.argv[2]===expandedColorlessLane){\n  const lane=Number(process.argv[3]);assert(lane===0||lane===1,'registered Colorless owner lane');\n  selected=entries.filter(entry=>entry.lane===lane);\n  assert.equal(selected.length,lane===0?5:4,'all entry and reader pairs for this lane');\n }else if(process.platform==='win32'&&process.env.GITHUB_ACTIONS==='true'&&process.env.RUNNER_ENVIRONMENT==='github-hosted'\n  &&availableParallelism()>=4&&!hasTestNameFilter()){\n  const outcomes=await Promise.allSettled([0,1].map(lane=>runIsolatedTest(import.meta.url,\n   [expandedColorlessLane,String(lane)],[`--test-name-pattern=^${expandedColorlessCase}$`])));\n  for(const result of outcomes){\n   if(result.status==='rejected')throw result.reason;\n   process.stdout.write(result.value);\n  }\n  return;\n }\n const currentOwners=[...sourceEpoch.proof.owners,pointerInputPath];"
+   },
+   {
+    "at": 113,
+    "before": " const current=Object.fromEntries(currentOwners.filter(path=>path!==retiredControllerPath).map(path=>[path,read(path)]));\n for(const path of originals)for(const wrap of [r=>r,colorlessCatalogReader,r=>colorlessCatalogReader(colorlessCatalogReader(r))]){\n  let bad=null,mode='good',seen=[];",
+    "after": " const current=Object.fromEntries(currentOwners.filter(path=>path!==retiredControllerPath).map(path=>[path,read(path)]));\n for(const {path,wrap} of selected){\n  let bad=null,mode='good',seen=[];"
+   }
+  ]
+ },
+ {
+  "path": "tests/presentation-m3-integration.test.mjs",
+  "beforeSha256": "6e19dcf15657ae91f216c99aca9183e7db0471db21ce7da064a1a68c5e9441dc",
+  "afterSha256": "896e12caa792d05f5f9272136858beb8655d83fa74d1b69a4ff790dd98f9d628",
+  "hunks": [
+   {
+    "at": 5,
+    "before": "import {spawnSync} from 'node:child_process';\nimport {runLua} from '../scripts/test-lua.mjs';",
+    "after": "import {spawnSync} from 'node:child_process';\nimport {availableParallelism} from 'node:os';\nimport {runLua} from '../scripts/test-lua.mjs';"
+   },
+   {
+    "at": 13,
+    "before": "import {preMaxHpSource} from './helpers/max-hp-accepted-source-inverse.mjs';\n",
+    "after": "import {preMaxHpSource} from './helpers/max-hp-accepted-source-inverse.mjs';\nimport {hasTestNameFilter,runIsolatedTest} from './helpers/isolated-historical-cases.mjs';\n\nconst cases=[];\nconst replay=(...args)=>cases.push([historicalTest,args]);\nconst check=(...args)=>cases.push([test,args]);\n"
+   },
+   {
+    "at": 116,
+    "before": "\nhistoricalTest('M3 frame and first UI batch retain every old native write except the explicitly reviewed visual delta',()=>{\n  assert.equal(proof.base,'4f5bf5bb30821f88f33467585abec3caba7e6005');",
+    "after": "\nreplay('M3 frame and first UI batch retain every old native write except the explicitly reviewed visual delta',()=>{\n  assert.equal(proof.base,'4f5bf5bb30821f88f33467585abec3caba7e6005');"
+   },
+   {
+    "at": 126,
+    "before": "\ntest('visual proof rejects changed gameplay text, missing writes, reordered writes and broadened visual approval',()=>{\n  const wrong=[...proof.after];const position=wrong.findIndex(value=>value.includes('/hp,2=string:text,'));",
+    "after": "\ncheck('visual proof rejects changed gameplay text, missing writes, reordered writes and broadened visual approval',()=>{\n  const wrong=[...proof.after];const position=wrong.findIndex(value=>value.includes('/hp,2=string:text,'));"
+   },
+   {
+    "at": 141,
+    "before": " [79757,1467902785,retirementSources.beforeSources],\n])historicalTest(`the accepted presentation sources still execute the original strict ${count}-write fixture`,()=>{\n  mkdirSync('build',{recursive:true});const directory=mkdtempSync(resolve('build/accepted-presentation-'));",
+    "after": " [79757,1467902785,retirementSources.beforeSources],\n])replay(`the accepted presentation sources still execute the original strict ${count}-write fixture`,()=>{\n  mkdirSync('build',{recursive:true});const directory=mkdtempSync(resolve('build/accepted-presentation-'));"
+   },
+   {
+    "at": 168,
+    "before": "\nhistoricalTest('historical replay inputs bind every changed build, host and version source, including the deleted module',()=>{\n assert.deepEqual(retirementSources.trace,{before:[79757,1467902785],removed:68,after:[79689,2034622601]});",
+    "after": "\nreplay('historical replay inputs bind every changed build, host and version source, including the deleted module',()=>{\n assert.deepEqual(retirementSources.trace,{before:[79757,1467902785],removed:68,after:[79689,2034622601]});"
+   },
+   {
+    "at": 179,
+    "before": "\nhistoricalTest('historical relic input is the complete frozen pre-Molten/Mushrooms source, not a reduced live dataset',()=>{\n const path='data/relics.json',live=readFileSync(path,'utf8').replaceAll('\\r\\n','\\n');",
+    "after": "\nreplay('historical relic input is the complete frozen pre-Molten/Mushrooms source, not a reduced live dataset',()=>{\n const path='data/relics.json',live=readFileSync(path,'utf8').replaceAll('\\r\\n','\\n');"
+   },
+   {
+    "at": 196,
+    "before": "\nhistoricalTest('NodeUI refactor inverse preserves historical Mushrooms copy and rejects drift in every responsibility',()=>{\n const path='src/lua/abyss_node_ui.lua',source=readFileSync(path,'utf8').replaceAll('\\r\\n','\\n');",
+    "after": "\nreplay('NodeUI refactor inverse preserves historical Mushrooms copy and rejects drift in every responsibility',()=>{\n const path='src/lua/abyss_node_ui.lua',source=readFileSync(path,'utf8').replaceAll('\\r\\n','\\n');"
+   },
+   {
+    "at": 217,
+    "before": "\ntest('historical announcement copy is independent of current player text but rejects archive tampering',()=>{\n const historical=retirementSources.beforeSources['CHANGELOG.md'];",
+    "after": "\ncheck('historical announcement copy is independent of current player text but rejects archive tampering',()=>{\n const historical=retirementSources.beforeSources['CHANGELOG.md'];"
+   },
+   {
+    "at": 232,
+    "before": "",
+    "after": "\n// Each Windows worker owns its historical checkout and keeps the original\n// fixture deadlines. Pair the 79757-write replay with the frame provenance\n// case and keep the other 79543-write replay with the remaining checks.\nconst firstLane=new Set([\n 'M3 frame and first UI batch retain every old native write except the explicitly reviewed visual delta',\n 'the accepted presentation sources still execute the original strict 79757-write fixture',\n]);\nconst lanes=[cases.filter(([, [name]])=>firstLane.has(name)),cases.filter(([, [name]])=>!firstLane.has(name))];\nassert.equal(lanes[0].length,firstLane.size,'all first-lane cases are registered');\nassert.equal(new Set(cases.map(([, [name]])=>name)).size,cases.length,'every registered case is unique');\nconst laneFlag='--isolated-presentation-m3-lane';\nif(process.argv[2]===laneFlag){\n const lane=lanes[Number(process.argv[3])];assert(lane,'registered M3 presentation lane');\n for(const [register,args] of lane)register(...args);\n}else if(process.platform==='win32'&&process.env.GITHUB_ACTIONS==='true'&&process.env.RUNNER_ENVIRONMENT==='github-hosted'\n &&availableParallelism()>=4&&!hasTestNameFilter()){\n test('Windows M3 presentation replays',async()=>{\n  const outcomes=await Promise.allSettled(lanes.map((lane,index)=>runIsolatedTest(import.meta.url,[laneFlag,String(index)],[],lane.length)));\n  for(const result of outcomes){\n   if(result.status==='rejected')throw result.reason;\n   process.stdout.write(result.value);\n  }\n });\n}else{\n for(const [register,args] of cases)register(...args);\n}\n"
+   }
+  ]
  }
 ].map(row=>[row.path,row]));
 
