@@ -19,7 +19,7 @@ test('Actor and Focus replay exact predecessor bytes and reject changed linked o
   const archive=JSON.parse(gunzipSync(readFileSync(new URL('./fixtures/develop-actor-focus-source.json.gz',import.meta.url))));
   const stasis=JSON.parse(gunzipSync(readFileSync(new URL('./fixtures/develop-stasis-upgrade-boundary-source.json.gz',import.meta.url))));
   const config='config/architecture.json';
-  const read=path=>readFileSync(path,'utf8');
+  const read=path=>readFileSync(path,'utf8').replaceAll('\r\n','\n');
   const paths=readdirSync('src/lua').filter(path=>path.endsWith('.lua')).map(path=>'src/lua/'+path);
   assertActorFocusInventory(paths,read);
   assert.throws(()=>assertActorFocusInventory([...paths,'src/lua/foreign.lua'],read),/complete current Actor\/Focus Lua module inventory/);

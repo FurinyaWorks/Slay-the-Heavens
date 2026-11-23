@@ -29,7 +29,8 @@ test('historical map deck replay authenticates every current Lua owner before re
  const current=read(path,'utf8');
  const prior=beforeMapDeckSource(path,current,read);
  assert.notEqual(prior,current);
- assert.equal(beforeMapDeckSource(path,current.replaceAll('\n','\r\n'),read),prior.replaceAll('\n','\r\n'));
+ const crlf=source=>source.replace(/\r?\n/g,'\r\n');
+ assert.equal(beforeMapDeckSource(path,crlf(current),read),crlf(prior));
  assert.deepEqual(mapDeckPriorRead(read)(path),Buffer.from(prior));
  for(const owner of paths){
   assert.throws(()=>beforeMapDeckSource(path,current,p=>p===owner?read(p,'utf8')+'\n':read(p,'utf8')),/(?:map deck|combined) linked owner identity/);

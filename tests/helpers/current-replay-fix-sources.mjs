@@ -844,17 +844,17 @@ const bindings = new Map([
  {
   "path": "scripts/ci-shards.mjs",
   "beforeSha256": "6becba66be6048f090cd0036c2e5292f180d9010bbe24aef181977dca18fdeb3",
-  "afterSha256": "880762fa2bd26657c735bc701151bff7748ffda09559561bfc1013d2c1c5709e",
+  "afterSha256": "886b8523b1371d018c37b6f9cf1a9ccdf3ad89425f08481da21e97b79b5942f4",
   "hunks": [
    {
     "at": 14,
     "before": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n",
-    "after": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n\n// Reserve the work that completed in POSIX jobs 137444936421, 137444936442,\n// 137444936458, 137444936507 and 137444936550 before their 30-minute cutoff.\n// The next attempt's jobs 137468791737, 137468791821 and 137468791853\n// exposed additional underweighted replay files.\n// These rounded-down case totals guide placement only. They are not full-file timings.\nconst linuxReplayMinimumMs = Object.freeze({\n  'approved-node-ui-refactor.test.mjs': 422000,\n  'approved-ui-inverse.test.mjs': 1295000,\n  'art-feature-source-inverse.test.mjs': 412000,\n  'battle-max-hp-config-inverse.test.mjs': 124000,\n  'card-origin-source-inverse.test.mjs': 149000,\n  'combat-reactions-architecture-inverse.test.mjs': 137000,\n  'competition-roster.test.mjs': 505000,\n  'core-architecture-inverse.test.mjs': 362000,\n  'game-ui-extraction-source-inverse.test.mjs': 870000,\n  'max-hp-accepted-source-inverse.test.mjs': 677000,\n  'player-death-inverse.test.mjs': 172000,\n  'potion-callback-source.test.mjs': 238000,\n  'power-shop-boundaries.test.mjs': 486000,\n  'presentation-native-m3-contract.test.mjs': 1037000,\n  'relic-query-source-inverse.test.mjs': 123000,\n});\n"
+    "after": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n\n// Reserve the work that completed in POSIX jobs 137444936421, 137444936442,\n// 137444936458, 137444936507 and 137444936550 before their 30-minute cutoff.\n// The next attempt's jobs 137468791737, 137468791821 and 137468791853\n// exposed additional underweighted replay files.\n// These rounded-down case totals guide placement only. They are not full-file timings.\nconst linuxReplayMinimumMs = Object.freeze({\n  'approved-node-ui-refactor.test.mjs': 422000,\n  'approved-ui-inverse.test.mjs': 1295000,\n  'art-feature-source-inverse.test.mjs': 412000,\n  'battle-max-hp-config-inverse.test.mjs': 124000,\n  'card-origin-source-inverse.test.mjs': 149000,\n  'combat-reactions-architecture-inverse.test.mjs': 137000,\n  'competition-roster.test.mjs': 505000,\n  'core-architecture-inverse.test.mjs': 362000,\n  'game-ui-extraction-source-inverse.test.mjs': 870000,\n  'max-hp-accepted-source-inverse.test.mjs': 677000,\n  'player-death-inverse.test.mjs': 172000,\n  'potion-callback-source.test.mjs': 238000,\n  'power-shop-boundaries.test.mjs': 486000,\n  'presentation-native-m3-contract.test.mjs': 1037000,\n  'relic-query-source-inverse.test.mjs': 123000,\n});\n\n// Completed replay cases in Windows jobs 137468791786, 137468791799,\n// 137468791818 and 137468791860, rounded down for shard placement.\nconst windowsReplayMinimumMs = Object.freeze({\n  'architecture-composition-format.test.mjs': 1190000,\n  'card-origin-source-inverse.test.mjs': 360000,\n  'compendium-source-inverse.test.mjs': 690000,\n  'core-architecture-inverse.test.mjs': 321000,\n  'formal-campaign-entry.test.mjs': 233000,\n  'potion-callback-source.test.mjs': 132000,\n  'power-shop-boundaries.test.mjs': 1364000,\n  'presentation-native-m3-contract.test.mjs': 791000,\n  'reward-query-boundary-source.test.mjs': 1440000,\n  'round3-catalog-source-inverse.test.mjs': 278000,\n});\n"
    },
    {
-    "at": 65,
-    "before": "    ...maps.map(weights=>weights[file]??timings.unknownJsMs),\n    timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0)]));\n}",
-    "after": "    ...maps.map(weights=>weights[file]??timings.unknownJsMs),\n    timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0,\n    platform === 'win32' ? 0 : linuxReplayMinimumMs[file.slice('tests/'.length)] ?? 0)]));\n}"
+    "at": 78,
+    "before": "  const maps=Object.hasOwn(timings.js,platform)?[timings.js[platform]]:Object.values(timings.js);\n  return Object.fromEntries(files.map(file=>[file,Math.max(\n    ...maps.map(weights=>weights[file]??timings.unknownJsMs),\n    timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0)]));\n}",
+    "after": "  const maps=Object.hasOwn(timings.js,platform)?[timings.js[platform]]:Object.values(timings.js);\n  return Object.fromEntries(files.map(file=>{\n    const name=file.slice('tests/'.length);\n    return [file,Math.max(\n      ...maps.map(weights=>weights[file]??timings.unknownJsMs),\n      timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0,\n      platform !== 'win32' ? linuxReplayMinimumMs[name] ?? 0 : 0,\n      platform !== 'linux' ? windowsReplayMinimumMs[name] ?? 0 : 0)];\n  }));\n}"
    }
   ]
  },
@@ -912,7 +912,7 @@ const bindings = new Map([
  {
   "path": "tests/approved-ui-inverse.test.mjs",
   "beforeSha256": "55ee7c59bd21d09ffc881f2eaf946685ab1b477473ec462b7e60a5eda7fc69a8",
-  "afterSha256": "b79ef1d399824206b89cf4e1c089c2835904994368a15d45a7867c6e2f65f62e",
+  "afterSha256": "121bf3942a2c777cbc7639105406306d309d3000034a9030c89677e4f5e94a97",
   "hunks": [
    {
     "at": 2,
@@ -947,7 +947,77 @@ const bindings = new Map([
    {
     "at": 110,
     "before": "",
-    "after": "\nconst workerFlag='--isolated-approved-ui-case';\nconst hasNameFilter=process.execArgv.some(arg=>/^--test-(?:name|skip)-pattern(?:=|$)/.test(arg));\nif(process.argv[2]===workerFlag){\n const selected=cases.find(([name])=>name===process.argv[3]);\n assert(selected,'registered approved UI replay case');\n historicalTest(...selected);\n}else if(process.platform!=='linux'||availableParallelism()<2||hasNameFilter){\n for(const entry of cases)historicalTest(...entry);\n}else{\n // The historical harness changes cwd. Run the cases in separate processes\n // so each keeps its own verified inputs and isolated working directory.\n const execute=promisify(execFile),file=fileURLToPath(import.meta.url);\n test('approved UI historical replay',{concurrency:2},async context=>{\n  await Promise.all(cases.map(([name])=>context.test(name,async()=>{\n   const env={...process.env};\n   delete env.NODE_TEST_CONTEXT;\n   const {stdout}=await execute(process.execPath,['--test-reporter=tap',file,workerFlag,name],{env,maxBuffer:1024*1024})\n    .catch(error=>assert.fail([error.stdout,error.stderr,error.message].filter(Boolean).join('\\n')));\n   assert.match(stdout,/^# tests 1$/m,'the isolated process ran one registered case');\n   assert.match(stdout,/^# pass 1$/m,'the isolated historical case passed');\n  })));\n });\n}\n"
+    "after": "\nconst workerFlag='--isolated-approved-ui-case';\nconst nameFilter=/(?:^|[\\s\"'])--test-(?:name|skip)-pattern(?=[=\\s\"']|$)/;\nconst hasNameFilter=process.execArgv.some(arg=>nameFilter.test(arg))\n ||nameFilter.test(process.env.NODE_OPTIONS??'');\nif(process.argv[2]===workerFlag){\n const selected=cases.find(([name])=>name===process.argv[3]);\n assert(selected,'registered approved UI replay case');\n historicalTest(...selected);\n}else if(availableParallelism()<2||hasNameFilter){\n for(const entry of cases)historicalTest(...entry);\n}else{\n // The historical harness changes cwd. Run the cases in separate processes\n // so each keeps its own verified inputs and isolated working directory.\n const execute=promisify(execFile),file=fileURLToPath(import.meta.url);\n test('approved UI historical replay',{concurrency:2},async context=>{\n  await Promise.all(cases.map(([name])=>context.test(name,async()=>{\n   const env={...process.env};\n   delete env.NODE_TEST_CONTEXT;\n   const {stdout}=await execute(process.execPath,['--test-reporter=tap',file,workerFlag,name],{env,maxBuffer:1024*1024,windowsHide:true})\n    .catch(error=>assert.fail([error.stdout,error.stderr,error.message].filter(Boolean).join('\\n')));\n   assert.match(stdout,/^# tests 1\\r?$/m,'the isolated process ran one registered case');\n   assert.match(stdout,/^# pass 1\\r?$/m,'the isolated historical case passed');\n  })));\n });\n}\n"
+   }
+  ]
+ },
+ {
+  "path": "tests/actor-damage-pipeline.test.mjs",
+  "beforeSha256": "94c11d90caf0e024c9f987e483bbb782e5b250323d14bb2420cf88e09d302f2e",
+  "afterSha256": "a284f0061ed61b68c31cd29d07550580c2b11b455c425ff6f91c7d35c34234b8",
+  "hunks": [
+   {
+    "at": 20,
+    "before": "  const config='config/architecture.json';\n  const read=path=>readFileSync(path,'utf8');\n  const paths=readdirSync('src/lua').filter(path=>path.endsWith('.lua')).map(path=>'src/lua/'+path);",
+    "after": "  const config='config/architecture.json';\n  const read=path=>readFileSync(path,'utf8').replaceAll('\\r\\n','\\n');\n  const paths=readdirSync('src/lua').filter(path=>path.endsWith('.lua')).map(path=>'src/lua/'+path);"
+   }
+  ]
+ },
+ {
+  "path": "tests/deck-item-lifecycle.test.mjs",
+  "beforeSha256": "6a62cb556a016e52e80feac4e870f674ec786a14485b2568f7341050bc5e6677",
+  "afterSha256": "1b94c6f88d5a821c010f5fd978261d2c52e98b119aa91fc2d4bacbe084b78416",
+  "hunks": [
+   {
+    "at": 30,
+    "before": " assert.notEqual(prior,current);\n assert.equal(beforeMapDeckSource(path,current.replaceAll('\\n','\\r\\n'),read),prior.replaceAll('\\n','\\r\\n'));\n assert.deepEqual(mapDeckPriorRead(read)(path),Buffer.from(prior));",
+    "after": " assert.notEqual(prior,current);\n const crlf=source=>source.replace(/\\r?\\n/g,'\\r\\n');\n assert.equal(beforeMapDeckSource(path,crlf(current),read),crlf(prior));\n assert.deepEqual(mapDeckPriorRead(read)(path),Buffer.from(prior));"
+   }
+  ]
+ },
+ {
+  "path": "tests/integrated-ci-source.cases.mjs",
+  "beforeSha256": "3e6a0dd86a826099554169a298731f7382f9a682043412f610916671d8c7ca15",
+  "afterSha256": "7532d563f7e22f4e12d532887e12ace3bf8fa676044660825ac9470cb0ec1848",
+  "hunks": [
+   {
+    "at": 75,
+    "before": " assert.equal(leaf.split(marker).length,2);\n const broken=leaf.replace(\"from './fork-preflight-source.mjs'\",'from '+JSON.stringify(new URL('./helpers/fork-preflight-source.mjs',import.meta.url).href))\n  .replace(marker,`const bytes=Buffer.from(${JSON.stringify(bytes.subarray(0,bytes.length-1).toString('base64'))},'base64');`);",
+    "after": " assert.equal(leaf.split(marker).length,2);\n const helperDirectory=new URL('./helpers/',import.meta.url);\n const broken=leaf.replace(/^(import [^\\r\\n]+ from )'(\\.\\/[^']+)'/gm,(_match,statement,specifier)=>\n  statement+JSON.stringify(new URL(specifier,helperDirectory).href))\n  .replace(marker,`const bytes=Buffer.from(${JSON.stringify(bytes.subarray(0,bytes.length-1).toString('base64'))},'base64');`);"
+   }
+  ]
+ },
+ {
+  "path": "tests/helpers/combined-epoch/source-epoch-runtime.mjs",
+  "beforeSha256": "4bf2e1c7038d0bbe0bffd85ec5be1c4685811b63bf79653f56756779b5463348",
+  "afterSha256": "fb7228b5010fbb3f7638dd7d4d6eb72ac0ae2d3459432d5bbd56954cb06160e3",
+  "hunks": [
+   {
+    "at": 105,
+    "before": " assert.match(proof.currentCommit,/^[a-f0-9]{40}$/);\n assert(Array.isArray(proof.owners));assert.equal(new Set(proof.owners).size,proof.owners.length,'unique owners');\n for(const [path,binding]of Object.entries(proof.current)){assert(validPath(path),'source path');validateBinding(binding);}",
+    "after": " assert.match(proof.currentCommit,/^[a-f0-9]{40}$/);\n assert(Array.isArray(proof.owners));\n const owners=new Set(proof.owners);assert.equal(owners.size,proof.owners.length,'unique owners');\n const currentPaths=Object.keys(proof.current).sort();\n for(const [path,binding]of Object.entries(proof.current)){assert(validPath(path),'source path');validateBinding(binding);}"
+   },
+   {
+    "at": 112,
+    "before": "  assert(/^[A-Za-z0-9_-]+$/.test(name),'target name');assert.match(target.commit,/^[a-f0-9]{40}$/);\n  assert.deepEqual(Object.keys(target.files).sort(),Object.keys(proof.current).sort(),'complete target path set');\n  for(const [path,binding]of Object.entries(target.files)){\n   validateBinding(binding);\n   if(binding?.sha256!==proof.current[path]?.sha256)assert(proof.owners.includes(path),'changed source closure');\n  }",
+    "after": "  assert(/^[A-Za-z0-9_-]+$/.test(name),'target name');assert.match(target.commit,/^[a-f0-9]{40}$/);\n  assert.deepEqual(Object.keys(target.files).sort(),currentPaths,'complete target path set');\n  for(const [path,binding]of Object.entries(target.files)){\n   validateBinding(binding);\n   if(binding?.sha256!==proof.current[path]?.sha256)assert(owners.has(path),'changed source closure');\n  }"
+   }
+  ]
+ },
+ {
+  "path": "tests/helpers/source-fingerprint.mjs",
+  "beforeSha256": "82873d43045cd012a0ed817a27d88343bd0f092d755d49a04629f98b9bd72612",
+  "afterSha256": "cf53dca53dfbbcf96d25a71e3076e09896c28aeff3fb1fd24c11ba794072ad4a",
+  "hunks": [
+   {
+    "at": 7,
+    "before": "export function exactSourceMatches(source,binding){\n if(typeof source!=='string'||source.includes('\\r\\r\\n'))return false;\n const text=source.replaceAll('\\r\\n','\\n');\n let fingerprint=fingerprints.get(text);\n if(!fingerprint){\n  fingerprint={sha256:createHash('sha256').update(text).digest('hex')};\n  if(text.length<=limit){\n   while(fingerprints.size>=512||retained+text.length>limit){\n    const first=fingerprints.keys().next().value;\n    fingerprints.delete(first);\n    retained-=first.length;\n   }\n   fingerprints.set(text,fingerprint);\n   retained+=text.length;\n  }",
+    "after": "export function exactSourceMatches(source,binding){\n if(typeof source!=='string')return false;\n let fingerprint=fingerprints.get(source);\n if(!fingerprint){\n  if(source.includes('\\r\\r\\n'))return false;\n  const text=source.replaceAll('\\r\\n','\\n');\n  const length=text===source?source.length:source.length+text.length;\n  fingerprint={text,length,sha256:createHash('sha256').update(text).digest('hex')};\n  if(length<=limit){\n   while(fingerprints.size>=512||retained+length>limit){\n    const first=fingerprints.keys().next().value;\n    retained-=fingerprints.get(first).length;\n    fingerprints.delete(first);\n   }\n   fingerprints.set(source,fingerprint);\n   retained+=length;\n  }"
+   },
+   {
+    "at": 25,
+    "before": " if(fingerprint.sha256!==binding.sha256)return false;\n fingerprint.gitBlob??=createHash('sha1').update(`blob ${Buffer.byteLength(text)}\\0`).update(text).digest('hex');",
+    "after": " if(fingerprint.sha256!==binding.sha256)return false;\n const {text}=fingerprint;\n fingerprint.gitBlob??=createHash('sha1').update(`blob ${Buffer.byteLength(text)}\\0`).update(text).digest('hex');"
    }
   ]
  }

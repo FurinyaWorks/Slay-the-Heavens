@@ -37,6 +37,21 @@ const linuxReplayMinimumMs = Object.freeze({
   'relic-query-source-inverse.test.mjs': 123000,
 });
 
+// Completed replay cases in Windows jobs 137468791786, 137468791799,
+// 137468791818 and 137468791860, rounded down for shard placement.
+const windowsReplayMinimumMs = Object.freeze({
+  'architecture-composition-format.test.mjs': 1190000,
+  'card-origin-source-inverse.test.mjs': 360000,
+  'compendium-source-inverse.test.mjs': 690000,
+  'core-architecture-inverse.test.mjs': 321000,
+  'formal-campaign-entry.test.mjs': 233000,
+  'potion-callback-source.test.mjs': 132000,
+  'power-shop-boundaries.test.mjs': 1364000,
+  'presentation-native-m3-contract.test.mjs': 791000,
+  'reward-query-boundary-source.test.mjs': 1440000,
+  'round3-catalog-source-inverse.test.mjs': 278000,
+});
+
 export function partition(files, value, weights, fallback, initial) {
   const match = /^([1-9]\d*)\/([1-9]\d*)$/.exec(String(value));
   const [index, count] = match ? match.slice(1).map(Number) : [];
@@ -62,10 +77,14 @@ export function jsPlanningWeights(files,platform=process.platform) {
   // Known platforms use their actual observations; an unknown platform falls
   // back to the conservative maximum. Local estimates never certify execution.
   const maps=Object.hasOwn(timings.js,platform)?[timings.js[platform]]:Object.values(timings.js);
-  return Object.fromEntries(files.map(file=>[file,Math.max(
-    ...maps.map(weights=>weights[file]??timings.unknownJsMs),
-    timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0,
-    platform === 'win32' ? 0 : linuxReplayMinimumMs[file.slice('tests/'.length)] ?? 0)]));
+  return Object.fromEntries(files.map(file=>{
+    const name=file.slice('tests/'.length);
+    return [file,Math.max(
+      ...maps.map(weights=>weights[file]??timings.unknownJsMs),
+      timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0,
+      platform !== 'win32' ? linuxReplayMinimumMs[name] ?? 0 : 0,
+      platform !== 'linux' ? windowsReplayMinimumMs[name] ?? 0 : 0)];
+  }));
 }
 
 export function jsShard(files, value, platform = process.platform) {

@@ -316,6 +316,8 @@ const actionButtonFiles=Object.freeze({
 });
 const currentReplayFiles=Object.freeze({
  ...actionButtonFiles,
+ 'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'fb7228b5010fbb3f7638dd7d4d6eb72ac0ae2d3459432d5bbd56954cb06160e3',
+ 'tests/helpers/source-fingerprint.mjs':'cf53dca53dfbbcf96d25a71e3076e09896c28aeff3fb1fd24c11ba794072ad4a',
  'tests/helpers/game-ui-extraction-source-inverse.mjs':'2289fc74eb6d0948182080709e12d0e1f497a9c7b845dcbdeb704b6bd191be1a',
  'tests/helpers/action-buttons-source.mjs':'2ed23e99f0b72927215c24189b1a93752d9869b968cca0fc327a4b780900d4af',
  'tests/helpers/develop-release-backflow-source.mjs':'9ca671565f3919804ba22edf19a1fb13c5078f4597ac5f379de2d493a7c0d28e',
@@ -323,7 +325,7 @@ const currentReplayFiles=Object.freeze({
  'tests/helpers/potion-pointer-source.mjs':'0eee6e133a69f776e08576c0f5c981c1601ec45a371c1d641ec647f998734c76',
  'tests/helpers/input-retirement-source.mjs':'4d588c2a31f6fd9c6c03269ed310074dc13c865ae01b499d3e17f7bfb5dda624',
  'tests/helpers/release-ui-restore-source.mjs':'de6835c2a44271c50a20ea39cb18c68f3d5c84b04ce8959171c013b34efc4664',
- 'tests/helpers/current-replay-fix-sources.mjs':'e06cd3d6c82909aa152a1f6b34e2c45f3d544fe3c8cf82124902ce7616734d22',
+ 'tests/helpers/current-replay-fix-sources.mjs':'fcd4af8c50a78975b628213aaf10743e60c1a0968c0e8798707e513819af490c',
  'tests/helpers/exact-fixture-hunks.mjs':'83f9cb15d9d745c86c555a77875b6b2bfc283a12ec380bcd2af518aa6526a935',
  'tests/helpers/input-retirement-sts-binding.mjs':'f6395a7c5e299738db3caf30f29d7d29724e7ac091af012a585c76b785697219',
  'tests/helpers/input-retirement-merged-sts-source.json.gz':'0c8455ee5877bbb5c4c2fa9e8c2dfb5bfba9cb7e6c388bf1c67f149ac53ca960',
