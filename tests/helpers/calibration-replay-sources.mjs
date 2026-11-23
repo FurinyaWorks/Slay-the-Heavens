@@ -86,7 +86,7 @@ export function beforeCurrentHistoricalStsSource(path,source){
 }
 export function beforeCurrentReplayCopier(path,source){
  if(path!==copierPath||!matches(source,{
-  sha256:'2278c6291db97f1586ba0894771cc08059a62a830fcd4b407bd20d5ef69843e1',gitBlob:'6b773a5af3273fcc8e99c3d4cef8390396a2edee',
+  sha256:'82c04bfd197db6011f1b225adb172d49b4408086a0bd77de51b0ee865fe09209',gitBlob:'b427328edff0354a7e67809b85303bbb365034c8',
  }))return source;
  const text=lf(source);
  const block='const currentReplayFiles=Object.freeze({\n';

@@ -94,8 +94,8 @@ const windowsReplayMinimumMs = Object.freeze({
 
 export const replayPlanningMinimumMs = Object.freeze({ linux: linuxReplayMinimumMs, win32: windowsReplayMinimumMs });
 
-// Completed per-file observations from jobs 137561143750, 137561143756 and
-// 137561143768. Balance the existing lanes without moving the Full inventory.
+// Completed per-file observations from jobs 137561143750, 137561143756,
+// 137561143768 and 137593688616. Balance lanes without moving the Full inventory.
 const hostedLaneMinimumMs = {
   linux: {
     'official-assets-runtime.test.mjs': 233000,
@@ -106,13 +106,17 @@ const hostedLaneMinimumMs = {
     'actor-presence-source.test.mjs': 573000,
     'art-feature-source-inverse.test.mjs': 1537000,
     'battle-drag-click-compatibility.test.mjs': 592000,
+    'colorless-catalog-source.test.mjs': 1068000,
     'formal-campaign-entry.test.mjs': 367000,
     'game-ui-host-lifecycle.test.mjs': 308000,
+    'game-ui-host-result.test.mjs': 222000,
     'max-hp-accepted-source-inverse.test.mjs': 883000,
     'mobile-qa-source-migration.test.mjs': 143000,
+    'presentation-m3-integration.test.mjs': 1488000,
     'pure-source-projection-cache.test.mjs': 463000,
     'seven-refactor-source-epoch.test.mjs': 773000,
     'task76-owner-composition.test.mjs': 105000,
+    'watcher-final-execution.test.mjs': 287000,
   },
 };
 
