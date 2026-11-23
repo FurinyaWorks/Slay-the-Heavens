@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // Read-only branch lifecycle audit. Never deletes branches or changes PRs.
 import { mkdir, writeFile, appendFile, readFile } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
 import { readBacklogRecords } from './backlog-closeout.mjs';
-import { auditHistory } from './branch-hygiene-history.mjs';
+import { auditBacklogDelivery, auditHistory } from './branch-hygiene-history.mjs';
 const token = process.env.GITHUB_TOKEN;
 const repo = process.env.GITHUB_REPOSITORY || 'FurinyaWorks/Slay-the-Heavens';
 if (!token) throw new Error('GITHUB_TOKEN is required');
@@ -69,6 +70,13 @@ async function releaseBackflow() {
 
   const develop = await api('/branches/develop');
   const developSha = develop.commit.sha;
+  const backlogWindow = process.env.GITHUB_EVENT_NAME === 'schedule';
+  if (backlogWindow && execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim() !== developSha)
+    throw Error('Backlog audit checkout differs from current develop; retry the read-only snapshot');
+  const recentlyMerged = backlogWindow ? (await paged('/pulls?state=closed&base=develop&sort=updated&direction=desc',
+    new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString())).filter(pr =>
+      Date.now() - Date.parse(pr.merged_at) <= 48 * 60 * 60 * 1000 && pr.merged_at) : [];
+  const deliveryDrift = await auditBacklogDelivery({prs:recentlyMerged, tasks:readBacklogRecords(process.cwd()), loadFiles});
   const [open, { tree, truncated }] = prs.length ? await Promise.all([
     paged('/pulls?state=open&base=develop'), api('/git/trees/' + developSha + '?recursive=1')
   ]) : [[], {tree: []}];
@@ -78,7 +86,7 @@ async function releaseBackflow() {
   const releases = results.map(({pr, base, release_merge, production_paths, different_develop_paths,
     linked_develop_prs, review, errors}) => ({pr, base, release_merge, production_paths, different_develop_paths,
     linked_develop_prs, review, errors}));
-  const report = { develop_sha: developSha, releases };
+  const report = { develop_sha: developSha, releases, backlog_delivery_drift: deliveryDrift };
   const link = number => '[#' + number + '](https://github.com/' + repo + '/pull/' + number + ')';
   const markdown = ['# Release 回流核对', '', 'Develop 比较 SHA `' + developSha + '`', '',
     ...results.flatMap(result => {
@@ -89,12 +97,18 @@ async function releaseBackflow() {
         '待核对生产路径：' + (result.different_develop_paths?.length ?? '未知'),
         pending ? '请本轮接续小修复，并在 develop PR 正文注明 Release 来源。其余路径登记未接续原因。'
           : '本次 Release 生产路径与 develop 当前内容相同。', ''];
-    }), ...(results.length ? [] : ['过去 48 小时没有 Release PR 合入。', ''])].join('\n');
+    }), ...(results.length ? [] : ['过去 48 小时没有 Release PR 合入。', '']),
+    ...deliveryLines(deliveryDrift)].join('\n');
 
   await mkdir('build', { recursive: true });
   await writeFile('build/branch-hygiene.json', JSON.stringify(report, null, 2) + '\n');
   await writeFile('build/branch-hygiene.md', markdown);
   if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, markdown);
+}
+
+function deliveryLines(drift) {
+  return ['## Develop Backlog delivery drift', '',
+    ...drift.map(row => `- #${row.pr} \`${row.merge_sha}\` · ${row.drift.join('; ')}`), ''];
 }
 
 if (['pull_request_target', 'schedule'].includes(process.env.GITHUB_EVENT_NAME)) {
@@ -110,7 +124,11 @@ if (!developSha) throw new Error('Missing develop inventory snapshot');
 const { tree, truncated } = await api('/git/trees/' + developSha + '?recursive=1');
 const developTree = truncated ? null : new Map(tree.filter(row => row.type !== 'tree').map(row => [row.path, row.sha]));
 
-const history = auditHistory({ repo, branches, prs, comments, tasks: readBacklogRecords(process.cwd()), developTree, loadFiles });
+const tasks = readBacklogRecords(process.cwd());
+const history = auditHistory({ repo, branches, prs, comments, tasks, developTree, loadFiles });
+const deliveryDrift = await auditBacklogDelivery({
+  prs:prs.filter(pr => pr.merged_at && Date.now() - Date.parse(pr.merged_at) <= 48 * 60 * 60 * 1000), tasks, loadFiles
+});
 const byHead = new Map();
 for (const pr of prs) {
   if (pr.head?.repo?.full_name !== repo || !pr.head?.ref) continue;
@@ -176,7 +194,7 @@ const summary = {
 };
 await mkdir('build', { recursive: true });
 await writeFile('build/branch-hygiene.json',
-  JSON.stringify({ summary, branches: rows, handoffs }, null, 2) + '\n');
+  JSON.stringify({ summary, branches: rows, handoffs, backlog_delivery_drift: deliveryDrift }, null, 2) + '\n');
 const esc = value => String(value ?? '-').replaceAll('|', '\\|').replaceAll('\n', ' ');
 const review = rows.filter(row => ['no-pr', 'closed-unmerged-pr',
   'merged-pr-head-remains'].includes(row.category));
@@ -184,7 +202,7 @@ const lines = [
   '# Branch lifecycle inventory', '',
   'Generated: ' + summary.generated_at,
   'Total: **' + rows.length + '**; open PRs: **' + summary.prs_open + '**.',
-  '', '## Category counts', '',
+  '', ...deliveryLines(deliveryDrift), '## Category counts', '',
   '| Category | Count |', '| --- | ---: |',
   ...Object.entries(counts).sort((a, b) => b[1] - a[1])
     .map(([key, val]) => '| ' + key + ' | ' + val + ' |'),

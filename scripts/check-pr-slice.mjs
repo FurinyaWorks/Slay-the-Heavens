@@ -2,7 +2,8 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
-import { checkTaskIntake } from './check-task-intake.mjs';
+import { backlogDeclaration, changedBacklogTasks, mentionedTasks } from './backlog-closeout.mjs';
+import { checkTaskIntake, developmentRemotes } from './check-task-intake.mjs';
 
 const production = /^(?:src|scripts|tools|experiments|config|data|schemas|\.github\/workflows)\/|^package(?:-lock)?\.json$/;
 const evidence = /^(?:\.artifacts|docs\/(?:evidence|reviews)|experiments\/(?:lumine-native-fit\/evidence|archive\/emergency-20261108\/card-upgrade-recovery\/evidence))\//;
@@ -94,13 +95,14 @@ export function checkHostedSlice(env = process.env) {
     throw new Error('PR slice checkout differs from the event HEAD/BASE');
   }
   checkSlice(base, candidate, pr.body ?? '');
+  if (pr.base.ref === 'develop') {
+    const files = execFileSync('git', ['diff', '--name-only', '-z', '--no-renames', base, candidate, '--'],
+      { encoding: 'utf8' }).split('\0').filter(Boolean).map(filename => ({filename}));
+    const { errors } = backlogDeclaration(pr.body, [...changedBacklogTasks(files), ...mentionedTasks(pr.title)]);
+    if (errors.length) throw Error(errors.join('\n'));
+  }
 }
 
-const developmentRemotes = {
-  origin: 'FurinyaWorks/Slay-the-Heavens',
-  'fork-a': 'FurinyaDev/Slay-the-Heavens-Fork-A',
-  'fork-b': 'v5g95m7t8m-max/Slay-the-Heavens-Fork-B',
-};
 const forkRequired = new Set(['feature', 'feat', 'refactor', 'experiment', 'spike']);
 const gitRead = (...args) => execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
 
@@ -157,6 +159,8 @@ function developmentPlan(args) {
 }
 
 function startSlice([id = '', ...args]) {
+  const live = args.includes('--live');
+  args = args.filter(arg => arg !== '--live');
   const result = checkTaskIntake(id);
   let plan;
   if (result.decision === 'ALLOW') {
@@ -167,8 +171,9 @@ function startSlice([id = '', ...args]) {
       result.reasons.push(error.message);
     }
   }
-  console.log(result.decision + ' ' + id);
-  if (result.reasons.length) throw new Error(result.reasons.join('\n'));
+  const claim = live && plan ? checkTaskIntake(id, '.', {live:true}) : result;
+  console.log(claim.decision + ' ' + id);
+  if (claim.reasons.length) throw new Error(claim.reasons.join('\n'));
   console.log(`Development branch: ${plan.remote}/${plan.branch}\nDevelop base: ${plan.base}`);
   if (plan.mainReason) console.log(`Record Fork-First-Exception: ${plan.mainReason} in the task and PR for independent review.`);
   console.log('Before claiming, record the branch, base, slice and verification in the task. Check approvals, open PRs, claims and file ownership. Finish or hand off your current slice before claiming another.');

@@ -8,7 +8,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { verifyDelivery, verifyMergedDelivery, collectPrDelivery, collectMergedDelivery, checkoutReceipt, isLowRiskDocumentationChange, fullQualityJobs, currentFullQualityJobs, deliverySchemaVersion, qualityWorkflowPath } from '../scripts/verify-delivery.mjs';
 import {qualityShardMatrices,qualityShardJobs} from '../scripts/ci-quality-shape.mjs';
 import * as delivery from '../scripts/verify-delivery.mjs';
-import { auditHistory } from '../scripts/branch-hygiene-history.mjs';
+import { auditBacklogDelivery, auditHistory } from '../scripts/branch-hygiene-history.mjs';
 
 const handoffRepo = 'FurinyaWorks/Slay-the-Heavens';
 const handoffSha = '1'.repeat(40);
@@ -96,6 +96,14 @@ test('merged Release paths are compared against the develop snapshot with unavai
 test('Release event and default-branch sweep report residuals against an immutable develop tree', t => {
   const cwd = mkdtempSync(join(tmpdir(), 'release-backflow-'));
   t.after(() => rmSync(cwd, {recursive: true, force: true}));
+  const git = (...args) => {
+    const result = spawnSync('git', args, {cwd, encoding:'utf8'});
+    assert.equal(result.status, 0, result.stderr);
+    return result.stdout.trim();
+  };
+  git('init', '-q');
+  git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '--allow-empty', '-qm', 'Develop');
+  const develop = git('rev-parse', 'HEAD');
   const base = {ref: releaseBranch, repo: {full_name: handoffRepo}};
   const updatedAt = new Date().toISOString();
   const pr = historyPr(34, {...mergedHistory, base, merged_at: updatedAt, updated_at: updatedAt, merged: true});
@@ -105,11 +113,12 @@ test('Release event and default-branch sweep report residuals against an immutab
   const page = 'per_page=100&page=1';
   const responses = {
     '/pulls/34': pr,
-    '/branches/develop': {commit: {sha: handoffSha}},
-    ['/git/trees/' + handoffSha + '?recursive=1']: {tree: [{type: 'blob', path: 'src/lua/fix.lua', sha: 'old'}]},
+    '/branches/develop': {commit: {sha: develop}},
+    ['/git/trees/' + develop + '?recursive=1']: {tree: [{type: 'blob', path: 'src/lua/fix.lua', sha: 'old'}]},
     ['/pulls/34/files?' + page]: [historyFile('src/lua/fix.lua', 'fixed')],
     ['/pulls?state=open&base=develop&' + page]: [successor],
-    ['/pulls?state=closed&sort=updated&direction=desc&' + page]: [pr, old]
+    ['/pulls?state=closed&sort=updated&direction=desc&' + page]: [pr, old],
+    ['/pulls?state=closed&base=develop&sort=updated&direction=desc&' + page]: []
   };
   const fixture = join(cwd, 'fetch.mjs'), event = join(cwd, 'event.json');
   writeFileSync(fixture, `const responses = ${JSON.stringify(responses)};
@@ -131,7 +140,7 @@ globalThis.fetch = async (address, init) => {
     assert.equal(result.status, 0, result.stderr);
     assert.match(result.stderr, /Merged Release PR #34/);
     const report = JSON.parse(readFileSync(join(cwd, 'build/branch-hygiene.json'), 'utf8'));
-    assert.equal(report.develop_sha, handoffSha);
+    assert.equal(report.develop_sha, develop);
     assert.equal(report.releases.length, 1);
     const [release] = report.releases;
     assert.equal(release.release_merge, pr.merge_commit_sha);
@@ -1437,4 +1446,90 @@ test('a partial native Licenses rerun inherits actual old auxiliary skips while 
   x=>x.jobs.push({...x.jobs[2],id:802,run_attempt:2,conclusion:'success'}),
   x=>x.jobs[1].run_attempt=3,x=>x.jobs[2].head_sha=sha('f')
  ]){const bad=structuredClone(e);mutate(bad.queueFull.licenses);assert.equal(verifyMergedDelivery(bad).state,'merged_pending',String(mutate));}
+});
+
+test('current closeout rejects unsupported none and task references omitted from disposition',t=>{
+  const f=closeoutFixture(t);
+  for(const body of ['Backlog: none','Backlog: none\nBacklog-none-reason: docs only\nTracks TASK-1.']) {
+    assert.throws(()=>delivery.syncBacklogCloseout({...f,pr:{...f.pr,body},targetSha:f.mergeSha},
+      ()=>assert.fail('invalid declaration must not write')),/Backlog-none-reason|TASK-1/);
+  }
+});
+
+test('a later command cannot overwrite a different task edited during a CLI step',t=>{
+  const f=closeoutFixture(t),second=join(f.root,'backlog/tasks/task-2 - 下一项.md');
+  writeFileSync(second,f.source.replace('TASK-1','TASK-2'));
+  f.git('add','.');f.git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','two tasks');
+  const targetSha=f.git('rev-parse','HEAD'),pr={...f.pr,merge_commit_sha:targetSha,body:'Backlog: TASK-1=continue, TASK-2=continue'};
+  let edits=0;
+  const run=args=>{
+    edits++;
+    assert.equal(args[2],'TASK-1');
+    writeFileSync(f.path,f.source+args.at(-1)+'\n');
+    writeFileSync(second,readFileSync(second,'utf8')+'Concurrent edit.\n');
+  };
+  assert.throws(()=>delivery.syncBacklogCloseout({...f,pr,targetSha},run),/changed during CLI/);
+  assert.equal(edits,1);
+});
+
+test('incremental delivery drift binds task receipts to the actual merged develop SHA',async()=>{
+  const actual='a'.repeat(40), old='b'.repeat(40);
+  const merged={number:10,state:'closed',merged_at:'2026-11-23T00:00:00Z',
+    base:{ref:'develop'},merge_commit_sha:actual,body:'Backlog: TASK-1=verify'};
+  const tasks=[{id:'TASK-1',status:'In Progress',acCount:1,acCompleted:0,
+    source:`[delivery:${old}] verify PR #10; remaining AC: 1.`}];
+  const unmerged={...merged,number:11,merged_at:null};
+  const input={prs:[merged,unmerged],tasks,loadFiles:async()=>[]};
+  const [drift]=await auditBacklogDelivery(input);
+  assert.deepEqual([drift.pr,drift.merge_sha,drift.task_ids,drift.tasks[0].remaining_ac],[10,actual,['TASK-1'],1]);
+  assert.match(drift.drift.join(' '),/receipt missing/);
+  tasks[0].source=tasks[0].source.replace(old,actual);
+  assert.deepEqual(await auditBacklogDelivery(input),[]);
+});
+
+test('an open or closed-unmerged PR with a synthetic merge SHA cannot write a receipt',t=>{
+  const f=closeoutFixture(t);
+  assert.throws(()=>delivery.syncBacklogCloseout({...f,pr:{...f.pr,merged:false},targetSha:f.mergeSha},
+    ()=>assert.fail('unmerged PR must not invoke CLI')),/requires a verified merged/);
+});
+
+test('closeout stops before writing when the remote develop SHA advances',t=>{
+  const f=closeoutFixture(t);
+  assert.throws(()=>delivery.syncBacklogCloseout({...f,targetSha:f.mergeSha,readTargetSha:()=> 'a'.repeat(40)},
+    ()=>assert.fail('remote advance must stop CLI writes')),/remote develop advanced/);
+});
+
+test('recorded-only closeout rejects a stale remote without writing a receipt',t=>{
+  const f=closeoutFixture(t),pr={...f.pr,body:'Backlog: TASK-1=recorded'};
+  assert.throws(()=>delivery.syncBacklogCloseout({...f,pr,targetSha:f.mergeSha,readTargetSha:()=> 'a'.repeat(40)},
+    ()=>assert.fail('recorded-only must not invoke the CLI')),/remote develop advanced/);
+  assert.throws(()=>readFileSync(join(f.root,'build/delivery',`backlog-${pr.number}-${f.mergeSha}.json`)),/ENOENT/);
+});
+
+test('closeout rejects a remote advance during the final CLI write',t=>{
+  const f=closeoutFixture(t),pr={...f.pr,body:'Backlog: TASK-1=continue'};
+  let remote=f.mergeSha;
+  assert.throws(()=>delivery.syncBacklogCloseout({...f,pr,targetSha:f.mergeSha,readTargetSha:()=>remote},args=>{
+    writeFileSync(f.path,f.source+args.at(-1)+'\n');
+    remote='b'.repeat(40);
+  }),/remote develop advanced/);
+});
+
+test('closeout will not archive a task that acquires a new active dependent',t=>{
+  const f=closeoutFixture(t);
+  const successor=join(f.root,'backlog/tasks/task-2 - 承接.md');
+  const dependent=join(f.root,'backlog/tasks/task-3 - 新依赖.md');
+  writeFileSync(successor,f.source.replace('TASK-1','TASK-2'));
+  writeFileSync(dependent,f.source.replace('TASK-1','TASK-3'));
+  f.git('add','.');f.git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','initial scope');
+  const targetSha=f.git('rev-parse','HEAD');
+  const pr={...f.pr,merge_commit_sha:targetSha,body:'Backlog: TASK-1=superseded:TASK-2'};
+  const calls=[];
+  assert.throws(()=>delivery.syncBacklogCloseout({...f,pr,targetSha},args=>{
+    calls.push(args[1]);
+    if(args[1]!=='edit')assert.fail('new active dependent must prevent archive');
+    writeFileSync(f.path,f.source.replace('dependencies: []','dependencies: []\nreferences: [TASK-2]')+args.at(-1)+'\n');
+    writeFileSync(dependent,f.source.replace('TASK-1','TASK-3').replace('dependencies: []','dependencies: [TASK-1]'));
+  }),/migrate active dependencies/);
+  assert.deepEqual(calls,['edit']);
 });

@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-15 19:11'
-updated_date: '2026-11-20 23:55'
+updated_date: '2026-11-23 04:32'
 labels:
   - mobile
   - playtest-20261115
@@ -65,4 +65,6 @@ ordinal: 176000
 依据2026-11-15用户两轮真机录音。P0/P1是体验严重度，非突破High队列上限的授权。逐字时间和截图映射见docs/backlog-details/MOBILE-QA-20261115.md。本PR仅登记任务，不代表Bug已修、代码或手机已验。
 
 2026-11-21 发版对账：#772 小屋修复已完成定向验证、精确 HEAD Full 和独立审查，使用原生合并队列交付。同一最新候选仍需在实体手机自然领取小屋、确认奖励仅结算一次、能进入第二幕，并覆盖空奖励、失败重试及重入。全部既有 AC 保持未勾。
+
+2026-11-23：#772 已合 develop b836c54361eece5bd9f6860487268e3cf7e8ff83，小屋奖励可读性修复。#769 已合 173f61cd87fce82d0d1decd51026da0d4bd9575c，提供独立组合回放。奖励领取后的手机实际流程仍按原 AC 验收。
 <!-- SECTION:NOTES:END -->

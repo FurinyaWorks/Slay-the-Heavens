@@ -4,8 +4,8 @@ title: PC页面就绪与同页闪屏专项收口
 status: In Progress
 assignee:
   - Furinya
-created_date: 2026-11-15 20:14
-updated_date: '2026-11-18T14:00:00Z'
+created_date: '2026-11-15 20:14'
+updated_date: '2026-11-23 04:22'
 labels: []
 milestone: m-8
 dependencies: []
@@ -40,4 +40,6 @@ type: bug
 
 <!-- SECTION:NOTES:BEGIN -->
 2026-11-15 对账：PR #672（未合入）声明已实现“同页ready立即展示、异步仅局部遮罩、旧callback保护”，且含 modal-loading-frames 等测试。属于代码候选而非现行正式玩家实机验收；全部AC保持未勾。PR #672 原Depends-on #663，现#663已于11月15日合入develop（c2409ad），仍必须按最新基线及最终完整GIL复核。产品观察严重度 P0/P1，Backlog priority medium 是当前高优先级配额约束，两者不可混读。
+
+2026-11-23：#899 merge 392fae8d8dee2bd57829dda0e8da836f45107398；#904 merge 103aa4072bd3801deb6bf090455bd974181a9647，已有牌库分页和牌堆回流。字号/排序回归由开放 #907 HEAD 00cd3aef7830b05cefdbb8ddd44f6110ae4ba487 接续；保留同候选 PC/手机黑闪、快速往返和延迟取证。
 <!-- SECTION:NOTES:END -->

@@ -5,8 +5,10 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-21 12:38'
-updated_date: '2026-11-21 12:43'
-labels: []
+updated_date: '2026-11-23 04:22'
+labels:
+  - 待验
+  - delivery-verify
 milestone: m-8
 dependencies: []
 parent_task_id: TASK-29
@@ -46,4 +48,6 @@ ordinal: 186000
 
 <!-- SECTION:NOTES:BEGIN -->
 2026-11-21 用户明确授权下一版优化。目标 develop@345ba083，分支 feat/card-play-feedback，Owner /root。源码实现复用 pulseEdge2 做0.24秒一次扩散及出牌短闪/旋转；四项定向回归4/4通过（含原命中时间），语法通过。官方设备未验证；正式CI与独审待执行。主题变更选测要求Full，计划仅Fork B运行一次。
+
+2026-11-23：#799 merge 0c6f5a036366230ccf7f777c471b923f9e4c03b5，选牌瞬亮与出牌旋转已合 develop。保留同候选官方 PC/手机手感、性能与完整交付回执验收。
 <!-- SECTION:NOTES:END -->

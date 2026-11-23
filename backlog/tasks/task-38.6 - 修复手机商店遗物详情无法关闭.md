@@ -1,11 +1,11 @@
 ---
 id: TASK-38.6
 title: 修复手机商店遗物说明，让点空白可以关闭
-status: To Do
+status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-15 19:11'
-updated_date: '2026-11-19 03:49'
+updated_date: '2026-11-23 04:22'
 labels:
   - mobile
   - playtest-20261115
@@ -59,4 +59,6 @@ ordinal: 177000
 
 <!-- SECTION:NOTES:BEGIN -->
 依据2026-11-15用户两轮真机录音。P0/P1是体验严重度，非突破High队列上限的授权。逐字时间和截图映射见docs/backlog-details/MOBILE-QA-20261115.md。本PR仅登记任务，不代表Bug已修、代码或手机已验。
+
+2026-11-23：#776 已合 develop e095a08a5d4b544ee9629b0ea24f2d27cdb9f8a6，覆盖地图预览后旧触点；与 #867 的遗物详情变更核对实际可关闭和触点隔离，保留同候选手机 AC。
 <!-- SECTION:NOTES:END -->

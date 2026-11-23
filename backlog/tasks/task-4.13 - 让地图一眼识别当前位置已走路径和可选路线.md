@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-30 21:58'
-updated_date: '2026-11-21 16:53'
+updated_date: '2026-11-23 04:22'
 labels:
   - playtest-20261030
   - p1
@@ -62,4 +62,6 @@ Owner强调地图是**整体交互体验**问题：当前节点和连线灰暗�
 2026-11-15 PC截图01（游戏顶栏第0层地图与图例）及实机录音06:09–07:52反映视觉偏移；静态图不能证明生成概率或可点范围错误，不应顺手改地图规则。
 
 本轮证据见 docs/evidence/sts1-map-details。第一、二幕保留真实17/34层；在首领奖励页确认继续后经 Nodes.enter 进入宝箱。已用控件夹具验证鼠标与触摸，官方 PC/实体手机待验。
+
+2026-11-23：#817 merge 57ebfc20ca726ae00f739147f38b234bd08ff752 回流 STS1 地图与首领宝箱；#876 merge 00229683d0d38660c98ced2f4a41e89d84fc5e4e 覆盖进房反馈与恢复。现接同候选 PC/手机地图可读性、截图01、点击回归。
 <!-- SECTION:NOTES:END -->

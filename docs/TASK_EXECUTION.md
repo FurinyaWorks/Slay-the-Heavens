@@ -28,6 +28,8 @@
 4. 按 [认领配置](../config/task-intake.json) 和任务正文核对各自明确的 Owner 批准。已合 PR #491 的离线成果不等于正式职业方向或后续实施获批。其他任务中的具体批准、设计/范围/设备授权和依赖要求也不因移除 Sprint 失效。
 5. 从最新基线建立独立工作树，遵守 Backlog、独立评审、精确 HEAD 的 Required CI、分支保护和正常合并流程。`npm run verify:backlog` 继续检查负责人、优先级、任务/里程碑身份和范围；源码通过不代替同候选官方导入、ready、设备或发布验收。
 
+开发前用 `npm run task:pick -- TASK-ID --live` 查询三仓在途 PR。也可给下文切片检查的 `--start` 附 `--live`。本地模式仅核对 Git 中的任务、依赖及批准。正式第三幕验收保留 TASK-61 和 TASK-62.1，源码切片从 TASK-62.1 接续。Owner 已批准原版四职业与第三幕在 develop 并行开发，TASK-64 暂缓，M8 验收继续。见 [切片索引](plans/2026-11-23-m9-acts-classes-reasons.md)。
+
 ## Fork-First 开发
 
 | 工作类型 | 开发位置 |

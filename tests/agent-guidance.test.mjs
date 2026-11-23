@@ -176,9 +176,10 @@ test('hosted size check binds both exact PR parents and consumes the visible exc
 
   const event = join(root, 'event.json');
   const guard = fileURLToPath(new URL('../scripts/check-pr-slice.mjs', import.meta.url)).replaceAll('\\', '/');
-  function run({ head, merge }, ref, sha, body = '') {
+  const noTask = 'Backlog: none\nBacklog-none-reason: isolated fixture for the production-size limit';
+  function run({ head, merge }, ref, sha, body = noTask, title = '') {
     git('checkout', '--detach', '-q', merge);
-    writeFileSync(event, JSON.stringify({ pull_request: { base: { ref, sha }, head: { sha: head }, body } }));
+    writeFileSync(event, JSON.stringify({ pull_request: { base: { ref, sha }, head: { sha: head }, body, title } }));
     return spawnSync(process.execPath, ['--input-type=module', '-e',
       `import { checkHostedSlice } from ${JSON.stringify(new URL('../scripts/check-pr-slice.mjs', import.meta.url).href)}; checkHostedSlice();`],
       { cwd: root, encoding: 'utf8', env: { ...process.env, GITHUB_ACTIONS: 'true', GITHUB_EVENT_NAME: 'pull_request',
@@ -201,7 +202,7 @@ test('hosted size check binds both exact PR parents and consumes the visible exc
     const oversized = run(large, ref, base);
     assert.notEqual(oversized.status, 0, ref);
     assert.match(oversized.stderr, /Split the production change/, ref);
-    const reviewed = run(large, ref, base, exception);
+    const reviewed = run(large, ref, base, noTask + '\n' + exception);
     assert.equal(reviewed.status, 0, reviewed.stderr);
     assert.match(reviewed.stdout, /REVIEW_EXCEPTION/, ref);
     const movedProduction = run(moved, ref, base);
@@ -210,6 +211,8 @@ test('hosted size check binds both exact PR parents and consumes the visible exc
     assert.match(movedProduction.stderr, /Split the production change/, ref);
   }
   assert.equal(run(large, 'master', base).stdout, '');
+  assert.match(run(small, 'develop', base, 'Backlog: none').stderr, /Backlog-none-reason/);
+  assert.match(run(small, 'develop', base, noTask, 'fix: reconcile TASK-25').stderr, /TASK-25/);
 
   mkdirSync(join(root, 'backlog', 'tasks'), { recursive: true });
   mkdirSync(join(root, 'config'));

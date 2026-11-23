@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-28 14:39'
-updated_date: '2026-11-14 06:50'
+updated_date: '2026-11-23 04:32'
 labels:
   - 待验
   - delivery-verify
@@ -21,6 +21,7 @@ references:
   - docs/reviews/M3-BACKLOG-CLOSEOUT-20261031.md
   - docs/evidence/m3-visual-20261031/README.md
   - docs/evidence/m3-completion-20261031/
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/867'
 parent_task_id: TASK-4
 priority: medium
 ordinal: 123000
@@ -81,4 +82,6 @@ PR336收口复审：原CI40871514608仅game_ui_result_gestures.lua在30秒超时
 2026-11-07 看板核对（develop 2c85bc61）：实现类交付已按历史记录保留，剩余 AC 待同候选官方/设备验证；当前无在途 PR，状态由 In Progress 归 To Do（待验）。
 
 2026-11-14第二轮状态纠正：已有4/7项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+2026-11-23：#867 已合 develop 19d4be4d9af4bf42635a224a118fc99898ea7898，遗物详情弹窗有正式入口。继续对照来源信息、返回/关闭与同候选设备 AC。
 <!-- SECTION:NOTES:END -->

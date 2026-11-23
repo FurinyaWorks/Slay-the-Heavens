@@ -8,8 +8,12 @@
     "TASK-85",
     "TASK-96",
     "TASK-97",
-    "TASK-62",
     "TASK-64"
   ],
-  "note": "Read-only preliminary check for new claims. M7 archived; only M8/M9 are active product milestones. No calendar or milestone lane gates. ALLOW does not grant approval or claim ownership."
+  "note": "Owner scope recorded in docs/plans/2026-11-23-m9-acts-classes-reasons.md. TASK-62.1 is the independent develop source slice; TASK-62 keeps its final acceptance dependencies. TASK-64 remains paused.",
+  "ownerDecisions": {
+    "TASK-62": "develop-approved",
+    "TASK-62.1": "develop-approved",
+    "TASK-64": "paused"
+  }
 }

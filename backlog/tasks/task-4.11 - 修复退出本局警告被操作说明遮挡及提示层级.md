@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-10-30T21:58:00Z'
-updated_date: '2026-11-21T16:35:18Z'
+updated_date: '2026-11-23 04:32'
 labels:
   - playtest-20261030
   - p0
@@ -18,6 +18,7 @@ references:
   - docs/backlog-details/PC-QA-20261115.md
   - docs/backlog-details/PLAYTEST-20261030.md
   - docs/backlog-details/MOBILE-QA-20261029.md
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/814'
 parent_task_id: TASK-4
 priority: medium
 type: bug
@@ -47,4 +48,6 @@ Owner截图：放弃本局确认框中的「操作说明」入口直接压住失
 2026-11-15 用户58:18–58:48明确要求退出界面‘操作说明’彻底移除；#672 声明已改，但PR未合入、同候选实机未验，保持In Progress。
 
 按 Owner 再确认，从 Release #784 回流退出确认及局内菜单的操作说明删除。两处入口、面板、Lua 状态与控制器绑定同片删除，保留退出、取消与地图返回。合到 develop 及同候选实机待验。
+
+2026-11-23：#814 已合 develop d7d77fe88d3b6fef6da233cfad0ec9361094db0d，回流操作说明及血量修复。核对离开警告的实际层级、选择及设备范围，原 AC 保留。
 <!-- SECTION:NOTES:END -->

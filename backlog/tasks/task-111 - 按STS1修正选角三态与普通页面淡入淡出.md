@@ -5,14 +5,17 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-21T12:50:00Z'
-updated_date: '2026-11-21T16:30:33Z'
+updated_date: '2026-11-23 04:32'
 labels:
   - P2
   - non-blocking
   - next-version
+  - 待验
+  - delivery-verify
 dependencies: []
 references:
   - docs/evidence/sts-character-reference-20261113/REFERENCE.md
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/812'
 priority: medium
 type: enhancement
 ordinal: 186000
@@ -71,4 +74,6 @@ PR803已创建并仅指向develop，ci:full申请正式Full。最终独审发现
 集成 PR #812 指向 develop，针对独立评审补了换瓶前的触点撤销、过期弹窗的同帧恢复，以及失败路线预览的手柄返回。正式验证和官方实机证据仍待取得。
 
 Owner 纠正界面基线为最新 Release。按只读 release/v2.0.0@8af38667 接回 #797 菜单与 #784 说明删除，重新拍摄；主菜单与退出确认正式布局树逐字节相同，集成目标仍 develop。
+
+2026-11-23：#812 已合 develop c186c1dce398727440c25d9db36022c27ed771a8；选角三态和页面 Fade 已接，按原 AC 和 TASK-59.3 复验同候选白名单、PC/手机真实交互。
 <!-- SECTION:NOTES:END -->

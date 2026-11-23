@@ -1,4 +1,5 @@
 import { isProduction } from './check-pr-slice.mjs';
+import { backlogDeclaration, changedBacklogTasks, mentionedTasks } from './backlog-closeout.mjs';
 
 const visible = body => (body ?? '').replace(/<!--[^]*?(?:-->|$)/g, '');
 const withoutReceipts = body => visible(body).replace(/^CLOSEOUT:.*$/gm, '');
@@ -137,4 +138,37 @@ export async function auditHistory({ repo, branches, prs, comments, tasks, devel
     };
   }));
   return results.sort((a, b) => b.pr - a.pr);
+}
+
+export async function auditBacklogDelivery({prs, tasks, loadFiles}) {
+  const byId = new Map(tasks.map(task => [task.id, task]));
+  const merged = prs.filter(pr => pr.state === 'closed' && pr.merged_at && pr.base.ref === 'develop' &&
+    /^[a-f0-9]{40}$/.test(pr.merge_commit_sha ?? ''));
+  const rows = await Promise.all(merged.map(async pr => {
+    const sha = pr.merge_commit_sha;
+    let changed;
+    try {
+      const files = await loadFiles(pr.number);
+      if (Number.isInteger(pr.changed_files) && files.length !== pr.changed_files) throw Error('Incomplete PR file list');
+      changed = changedBacklogTasks(files);
+    } catch (error) {
+      return {pr:pr.number, merge_sha:sha, task_ids:[], drift:[error.message]};
+    }
+    const { actions, errors } = backlogDeclaration(pr.body, [...changed, ...mentionedTasks(pr.title)]);
+    const historicalLinks = tasks.filter(task =>
+      task.source.includes(pr.html_url ?? 'https://invalid.example/no-link')).map(task => task.id);
+    const scopedIds = [...new Set([...actions.keys(), ...changed, ...mentionedTasks(pr.title), ...historicalLinks])];
+    const drift = [...errors];
+    const taskStatus = scopedIds.map(id => {
+      const task = byId.get(id), action = actions.get(id);
+      const marker = `[delivery:${sha}] ${action} PR #${pr.number}; remaining AC:`;
+      const receipt = task && !task.metadataErrors?.length &&
+        (action === 'recorded' ? changed.includes(id) : task.source.split(/\r?\n/).some(line => line.startsWith(marker)));
+      if (!receipt) drift.push(`${id}: merged delivery receipt missing`);
+      return {id, disposition:action ?? null, status:task?.status ?? null,
+        remaining_ac:task ? task.acCount - task.acCompleted : null, receipt:Boolean(receipt)};
+    });
+    return {pr:pr.number, merge_sha:sha, task_ids:scopedIds, tasks:taskStatus, drift};
+  }));
+  return rows.filter(row => row.drift.length).sort((a,b) => b.pr - a.pr);
 }

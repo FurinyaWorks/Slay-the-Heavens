@@ -96,3 +96,5 @@ CLOSEOUT: <branch>@<full-head-sha> | version/base=<...> | outcome=<DELIVERED_VER
 - 对合入 Release 的 PR，用报告所列 develop SHA 比较生产文件内容，输出仍需核对的回流路径。同路径的后续修改也会触发复核。继任者合并、文件路径相交和文件内容相同都只是导航证据，行为与验收照旧按原任务验证。对应范围与结果写回原 PR 或 Backlog。旧 `release/v2.0.0` 保持冻结。
 - 进行批量清理前由具备完整 Git、PR 和 Backlog 上下文的协调 Agent 二次验证；远端删除必须独立执行、记录结果。禁止让没有源码判断能力的巡检机器人按天数清除。
 - 治理更新走 develop 的正常 PR。Develop 与后续批准的 Release PR 使用同一[生产代码规模门禁](TASK_EXECUTION.md#小批量集成)。两类分支沿用各自 Fast、Full、独立评审及规则集。
+
+近 48 小时 develop 合入的 Backlog 回执差异通过既有巡检报告 `backlog_delivery_drift` 输出，按 PR、merge SHA、任务及差异与上次报告对比。日报只通知新增、升级和恢复。负责人按 [交付同步规约](plans/2026-11-23-backlog-delivery-reasons.md) 核对并经 CLI 记录。

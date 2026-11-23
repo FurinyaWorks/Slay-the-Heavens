@@ -31,14 +31,20 @@ Review/test the complete combined candidate; source green checks are not inherit
 
 ## Backlog closeout
 Backlog: none
+Backlog-none-reason: [specific reason, if none]
 <!-- List every changed task: TASK-1=done, TASK-2=verify, TASK-3=continue,
 TASK-4=superseded:TASK-3. done requires all AC already evidenced and checked;
 verify keeps started work In Progress with open acceptance; superseded preserves history and its successor.
 Use recorded for cleanup/status updates already committed; it validates without mutating the task again.
 verify:delivery --merged applies this line via CLI after exact merged verification.
-Use none only when this PR has no task updates. -->
+Declare all changed tasks and every formal slice in Tracks: TASK-123, when applicable.
+Use none and a specific reason only when no formal task is involved. Remove the reason line for task dispositions. -->
 
 ## Integration slice
+M8/M9 status: source / develop-merged / runtime-wired / automated-regression / normal-play / official-device-verified / production-published (select evidenced stage)
+REASONS Canvas: link versioned docs/plans path for a major module/contract change; state requirement, SSOT, dependencies, trade-off and negative control.
+Existing implementation reused: [source PR/SHA or none]
+Remaining unchecked AC and next owner: [IDs + explicit next action]
 <!-- Describe the independently verified behavior, the next dependent slice if any, and the
 flag owner/removal condition if applicable. For over-budget production that cannot reasonably be split, use
 Slice-exception: atomic | why it must land together | verification command or evidence
@@ -56,7 +62,7 @@ evidence. Confirm that spec, decision, tests and Backlog reflect the same change
 - [ ] Tests added/updated and passing locally
 - [ ] No secrets/PII in diff
 - [ ] Breaking changes documented + migration notes
-- [ ] Backlog task status updated
+- [ ] Backlog task status/disposition reconciled with the actual merged scope; verify:delivery --merged and CLI readback owned after integration
 - [ ] One independent slice, or a scoped coordinated integration with frozen sources; external dependencies have landed
 - [ ] After merge, compare the exact PR head before deleting its branch/worktree; retain dirty files, independent commits and unique evidence
 

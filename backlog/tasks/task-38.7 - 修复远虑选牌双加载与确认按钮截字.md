@@ -1,11 +1,11 @@
 ---
 id: TASK-38.7
 title: 修复「远虑」选牌，让一次点按生效并显示完整按钮
-status: To Do
+status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-15 19:11'
-updated_date: '2026-11-19 03:49'
+updated_date: '2026-11-23 04:32'
 labels:
   - mobile
   - playtest-20261115
@@ -18,6 +18,7 @@ references:
   - TASK-4.21
   - TASK-4.20
   - TASK-100.1
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/842'
 parent_task_id: TASK-38
 priority: medium
 type: bug
@@ -61,4 +62,6 @@ ordinal: 178000
 
 <!-- SECTION:NOTES:BEGIN -->
 依据2026-11-15用户两轮真机录音。P0/P1是体验严重度，非突破High队列上限的授权。逐字时间和截图映射见docs/backlog-details/MOBILE-QA-20261115.md。本PR仅登记任务，不代表Bug已修、代码或手机已验。
+
+2026-11-23：#842 已合 develop 1aceec72a3522b98c9921deb48a266965c0e5187，接回远虑与状态触点修复。按原 AC 复验实体手机双加载与确认截字，尚未关闭。
 <!-- SECTION:NOTES:END -->

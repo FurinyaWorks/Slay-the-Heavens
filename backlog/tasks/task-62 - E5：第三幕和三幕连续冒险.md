@@ -5,7 +5,7 @@ status: Blocked
 assignee:
   - '@Furinya'
 created_date: '2026-10-24 02:02'
-updated_date: '2026-11-14 06:51'
+updated_date: '2026-11-23 04:22'
 labels:
   - sts1
   - acts
@@ -16,6 +16,7 @@ labels:
 milestone: m-9
 dependencies:
   - TASK-61
+  - TASK-62.1
 references:
   - docs/backlog-details/DRAFT-6.md
   - docs/rules/CROSS_ACT.md
@@ -80,4 +81,6 @@ type: feature
 2026-11-03 赛后排期：none → M8 内容建设与扩充；状态与未验 AC 保留，不设新截止日。
 
 2026-11-14第二轮状态纠正：第三幕已有实现与历史验收记录；已退出当前旅行者两幕范围，待Owner另行批准接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+2026-11-23：第三幕源码开发在 develop 获批，授权切片 TASK-62.1。#213 已合 e3a9fe2c24c8dfa18e90f526e9b3bf74d8281342；#252 已合 0c07e3dce38ef9d7ce07e90894ac36b57465793d，已有敌人、三个 Boss 与相关回归。父项 Blocked，保留 TASK-61 和新源级切片的验收依赖；继续待四职业同局三幕及官方验收。
 <!-- SECTION:NOTES:END -->

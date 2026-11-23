@@ -10,6 +10,7 @@
 | --- | --- |
 | 认领任务、核对依赖或准备 PR | [任务执行](docs/TASK_EXECUTION.md#开始任务)；[分支收口与 WIP](docs/BRANCH_LIFECYCLE.md) |
 | 重构状态归属、依赖或关键生命周期 | [REASONS 规约与验收](docs/ENGINEERING.md#关键架构变更) |
+| 对账交付或接续 M9 | [交付同步 REASONS](docs/plans/2026-11-23-backlog-delivery-reasons.md)、[M9 切片索引](docs/plans/2026-11-23-m9-acts-classes-reasons.md) |
 | 修改玩法、UI、数据或构建 | [模块与生成物](docs/ARCHITECTURE.md)；[产品范围](docs/SCOPE.md) |
 | 定位故障、选择验证或使用平台工具 | [工具任务索引](docs/TOOLCHAIN.md#工具任务索引)；[工程与候选证据](docs/ENGINEERING.md) |
 | 独立评审、CI 或合并 | [PR 自动合并准入](docs/CI.md#pr-自动合并准入) |

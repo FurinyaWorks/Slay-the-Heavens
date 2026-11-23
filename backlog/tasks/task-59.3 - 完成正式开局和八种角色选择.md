@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-28 06:32'
-updated_date: '2026-11-14 06:51'
+updated_date: '2026-11-23 04:22'
 labels:
   - required implementation-gap
   - 待验
@@ -149,4 +149,6 @@ PR338合并前修复：神像显示拆分为独立职责，renderEvent回到15�
 2026-11-07 看板核对（develop 2c85bc61）：实现类交付已按历史记录保留，剩余 AC 待同候选官方/设备验证；当前无在途 PR，状态由 In Progress 归 To Do（待验）。
 
 2026-11-14第二轮状态纠正：已有3/8项AC通过及既有实施证据，剩余未完成要求属于后续验证或接续。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+2026-11-23：#812 已合 develop c186c1dce398727440c25d9db36022c27ed771a8，接续选角三态与转场；与 TASK-111 对齐并复验同候选正式白名单和 UI。新三职业实验入口由 TASK-59.4/59.5/59.6 核对，原设备 AC 保留。
 <!-- SECTION:NOTES:END -->

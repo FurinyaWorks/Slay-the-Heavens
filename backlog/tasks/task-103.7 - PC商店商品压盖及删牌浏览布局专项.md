@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-15 20:14'
-updated_date: '2026-11-21 16:01'
+updated_date: '2026-11-23 04:32'
 labels: []
 milestone: m-8
 dependencies: []
@@ -15,6 +15,7 @@ references:
   - TASK-4.15
   - >-
     https://github.com/FurinyaWorks/Slay-the-Heavens/blob/e40b421104aed1a47f971dc5eaeae08431c5a130/docs/qa/playtests/pc-20261115-verbatim.txt
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/838'
 parent_task_id: TASK-103
 priority: medium
 type: bug
@@ -43,4 +44,6 @@ type: bug
 2026-11-21 营地锻造切片按本轮授权接入 release/v2.0.0。以卡组原生滚动控件的五列布局复用现有卡面，独立覆盖选牌、取消、确认与营地结果。离线夹具测 12 张、少量居中、跨卡回收与拖动误选；全任务继续待正式 CI 和同一候选 PC/手机验收。
 
 2026-11-21 同一营地锻造切片补充性能回归，目标 release/v2.0.0。复用原生滚动列表与已绘制卡面，离线验证取消预览、返回再进、滚动复用和旧触控。设备帧率与手感仍待同候选实机验收。
+
+2026-11-23：#838 已合 develop 742a540ffc999e91acdface3d8fc7f753731f0a8，商店入场已回流。实际商品压盖、删牌浏览布局与同候选 PC 剩余 AC 继续核对。
 <!-- SECTION:NOTES:END -->

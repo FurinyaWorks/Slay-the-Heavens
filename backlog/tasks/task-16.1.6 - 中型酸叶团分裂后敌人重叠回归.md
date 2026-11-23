@@ -4,9 +4,11 @@ title: 中型酸叶团分裂后敌人重叠回归
 status: In Progress
 assignee:
   - Furinya
-created_date: 2026-11-15 20:14
-updated_date: '2026-11-18T14:00:00Z'
-labels: []
+created_date: '2026-11-15 20:14'
+updated_date: '2026-11-23 04:22'
+labels:
+  - 待验
+  - delivery-verify
 milestone: m-8
 dependencies: []
 references:
@@ -38,4 +40,6 @@ type: bug
 
 <!-- SECTION:NOTES:BEGIN -->
 #672 当前包含 slime-split-positions 源码与回归，尚未合并；状态 In Progress/待复验，严重度P0。不能重新发明分裂机制或复工TASK-15.15已完成业务逻辑。
+
+2026-11-23：#809 merge aae948788d93012d11fe5b6da3281150bb9957c6 已有分裂显示修复及自动回归。接同候选 PC/手机布局、命中区域及 HUD 复验，原 AC 保留。
 <!-- SECTION:NOTES:END -->

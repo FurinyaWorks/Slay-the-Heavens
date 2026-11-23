@@ -4,8 +4,8 @@ title: PC最后一击死亡与奖励出现顺序复验
 status: In Progress
 assignee:
   - Furinya
-created_date: 2026-11-15 20:14
-updated_date: '2026-11-18T14:00:00Z'
+created_date: '2026-11-15 20:14'
+updated_date: '2026-11-23 04:32'
 labels: []
 milestone: m-8
 dependencies: []
@@ -15,6 +15,7 @@ references:
   - TASK-103.6
   - >-
     https://github.com/FurinyaWorks/Slay-the-Heavens/blob/e40b421104aed1a47f971dc5eaeae08431c5a130/docs/qa/playtests/pc-20261115-verbatim.txt
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/818'
 parent_task_id: TASK-16.1
 priority: medium
 type: bug
@@ -38,4 +39,6 @@ type: bug
 
 <!-- SECTION:NOTES:BEGIN -->
 #672 存在 original_monster_death 相关测试以及PC整体揭幕改动，但没有充分依据声称本用户观察的全部末击时序已经修好。归于 In Progress 需复核，所有AC未勾。产品P0。
+
+2026-11-23：#837 已合 develop 27ffd73f9e783653b7b4edb2fba0d96db52e7063，#818 已合 ff8b9baf67a965c45820914b3bbed273ffb3293c，已有结束后直达奖励接线。仍需 PC 确认末击、死亡、奖励、无黑闪时序。
 <!-- SECTION:NOTES:END -->

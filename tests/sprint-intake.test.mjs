@@ -311,3 +311,26 @@ test('short-branch start routes routine work to verified Forks and limits main e
   git('update-ref','-d','refs/remotes/origin/develop');
   assert.match(code(1,'--branch','perf/one-caller','--remote','fork-b'),/Fetch origin\/develop/);
 });
+
+test('an open PR declaring the task blocks an otherwise eligible claim',()=>{
+  const result=check('TASK-25','m-9','To Do',{openPullRequests:[
+    {url:'https://github.com/a/b/pull/8',body:'Backlog: TASK-25=continue'}
+  ]});
+  assert.equal(result.decision,'HOLD');
+  assert.match(result.reasons.join(' '),/pull\/8/);
+});
+
+test('the checked-in approval allows the source slice and holds Act 4 even when the task appears ready',()=>{
+  const current=JSON.parse(readFileSync(new URL('../config/task-intake.json',import.meta.url),'utf8'));
+  assert.equal(check('TASK-62.1','m-9','To Do',{policy:current}).decision,'ALLOW');
+  assert.match(check('TASK-64','m-9','To Do',{policy:current}).reasons.join(' '),/Owner approval/);
+  const conflict={...current,blockedUntilOwnerApproval:current.blockedUntilOwnerApproval.filter(id=>id!=='TASK-64')};
+  assert.match(check('TASK-64','m-9','To Do',{policy:conflict}).reasons.join(' '),/policy invalid/);
+});
+
+test('an administrative recorded disposition does not occupy an independent implementation slice',()=>{
+  const result=check('TASK-25','m-9','To Do',{openPullRequests:[
+    {url:'https://github.com/a/b/pull/8',body:'Backlog: TASK-25=recorded\nTASK-25 可单独源码开发。'}
+  ]});
+  assert.equal(result.decision,'ALLOW');
+});

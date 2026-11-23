@@ -1,11 +1,11 @@
 ---
 id: TASK-38.4
 title: 修复手机药水触控，避免误出牌和无效闪屏
-status: To Do
+status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-15 19:11'
-updated_date: '2026-11-19 03:49'
+updated_date: '2026-11-23 04:22'
 labels:
   - mobile
   - playtest-20261115
@@ -60,4 +60,6 @@ ordinal: 175000
 
 <!-- SECTION:NOTES:BEGIN -->
 依据2026-11-15用户两轮真机录音。P0/P1是体验严重度，非突破High队列上限的授权。逐字时间和截图映射见docs/backlog-details/MOBILE-QA-20261115.md。本PR仅登记任务，不代表Bug已修、代码或手机已验。
+
+2026-11-23：#763 已合 develop 901f87c9e7922c78f31154d9c88d2a5f5ef2720c，覆盖手机药水弹窗误关闭；#872 已合 03c02aeb81d405123a528f06685da1c71a8c1aed，回流药水弹窗及遗物栏修复。接续手牌穿透、选牌无效点击和同候选手机复验；原 AC 保留。
 <!-- SECTION:NOTES:END -->

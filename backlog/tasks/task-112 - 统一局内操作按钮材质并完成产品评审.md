@@ -5,9 +5,11 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-22T05:43:10Z'
-updated_date: '2026-11-22T06:00:00Z'
+updated_date: '2026-11-23 04:32'
 labels: []
 dependencies: []
+references:
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/869'
 priority: medium
 type: enhancement
 ordinal: 187000
@@ -46,4 +48,6 @@ ordinal: 187000
 
 <!-- SECTION:NOTES:BEGIN -->
 develop 基线 d7ae494a。正式精修布局构建通过，12 项 UI 定向通过，独立评审复验了地图两返回、宝箱奖励和首领战败后重开。产品评审及改前改后地图位置对照见 docs/reviews/TASK-112-ACTION-BUTTONS.md。源码与官方设备验收分别记录。
+
+2026-11-23：#869 已合 develop beba19bad25db7de71f96af521656c13b882909b，全局操作按钮与地图返回位置已有交付；沿原任务收口设备和界面验收。
 <!-- SECTION:NOTES:END -->
