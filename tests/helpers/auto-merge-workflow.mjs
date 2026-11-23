@@ -1,3 +1,4 @@
+import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {beforeNativeMergeQueueWorkflow} from './merge-queue-workflow.mjs';
 import {beforePosixConcurrencyWorkflow} from './posix-concurrency-workflow.mjs';
@@ -8,7 +9,21 @@ const {edits}=JSON.parse(readFileSync(new URL('./auto-merge-workflow.json',impor
 // Restore only the reviewed execution slack for immutable historical guards.
 // Performance targets are not current execution deadlines. Partial or unrelated
 // changes remain visible to the old whole-source identities.
+// The reviewed 60-minute guard restores only complete exact current, six-cap
+// or uncapped workflow bytes. Original 30-minute and all foreign bytes pass through.
+const posixDeadlinePredecessors=new Map([["9f0a309dffe7a8a356d895d1ed03b167499cb1f296e80c27fa87d38e357eb08b","6e951f39539296339c3ffaaee97d0bdcae4c72e97914ee33fccfb4420fd50adf"],["1b159fa2685b8bc2a36c82653710c6ab75e4f56c06ba8048b220ce7f1960eb52","34e0bc864351cb2b660c0ccb6a8278eb20fa3cfcc2808735695839f4518d1199"],["959bd6e7a31fb08170fbad592e1dfb5154f3c5cd982c0ed7673d57bf5017ea39","4f75bbb052340a40a87af0601a6652e8c9e94cae6c72a501abcda88e9f34c3fe"]]);
+export function beforePosixDeadlineWorkflow(text){
+ if(typeof text!=='string'||text.includes('\r\r\n'))return text;
+ const lf=text.replaceAll('\r\n','\n');
+ const hash=value=>createHash('sha256').update(value).digest('hex');
+ const before=posixDeadlinePredecessors.get(hash(lf));
+ if(!before)return text;
+ const prior=lf.replace('    runs-on: ubuntu-24.04\n    timeout-minutes: 60\n','    runs-on: ubuntu-24.04\n    timeout-minutes: 30\n');
+ if(hash(prior)!==before)throw Error('Exact POSIX deadline predecessor required');
+ return text.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 export function beforeExecutionTimeoutWorkflow(text){
+ text=beforePosixDeadlineWorkflow(text);
  const original=text;
  text=beforeDraftQualityWorkflow(text);
  const eol=text.includes('\r\n')?'\r\n':'\n';

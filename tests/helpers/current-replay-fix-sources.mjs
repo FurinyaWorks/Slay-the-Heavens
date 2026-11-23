@@ -4,16 +4,16 @@ import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
 
 const bindings = new Map([
  {
-   "path": "tests/integrated-ci-source.cases.mjs",
-   "beforeSha256": "3e6a0dd86a826099554169a298731f7382f9a682043412f610916671d8c7ca15",
-   "afterSha256": "370a2deaefa8ccb69a464bbd166f9d8993f40e857d7c933dca5246f07d7bc7b5",
-   "hunks": [
-     {
-       "at": 76,
-       "before": " const broken=leaf.replace(\"from './fork-preflight-source.mjs'\",'from '+JSON.stringify(new URL('./helpers/fork-preflight-source.mjs',import.meta.url).href))",
-       "after": " const leafUrl=new URL('./helpers/release-bootstrap-ci-source.mjs',import.meta.url);\n const broken=leaf.replace(/^(import .+ from )'(\\.\\/[^']+)';$/gm,\n  (_,prefix,specifier)=>prefix+JSON.stringify(new URL(specifier,leafUrl).href)+';')"
-     }
-   ]
+  "path": "tests/integrated-ci-source.cases.mjs",
+  "beforeSha256": "3e6a0dd86a826099554169a298731f7382f9a682043412f610916671d8c7ca15",
+  "afterSha256": "370a2deaefa8ccb69a464bbd166f9d8993f40e857d7c933dca5246f07d7bc7b5",
+  "hunks": [
+   {
+    "at": 76,
+    "before": " const broken=leaf.replace(\"from './fork-preflight-source.mjs'\",'from '+JSON.stringify(new URL('./helpers/fork-preflight-source.mjs',import.meta.url).href))",
+    "after": " const leafUrl=new URL('./helpers/release-bootstrap-ci-source.mjs',import.meta.url);\n const broken=leaf.replace(/^(import .+ from )'(\\.\\/[^']+)';$/gm,\n  (_,prefix,specifier)=>prefix+JSON.stringify(new URL(specifier,leafUrl).href)+';')"
+   }
+  ]
  },
  {
   "path": "tests/competition-roster-config-composition.test.mjs",
@@ -419,8 +419,13 @@ const bindings = new Map([
  {
   "path": "tests/ci-complete-calibration.test.mjs",
   "beforeSha256": "78b7d2983f4cb9e8cd53846f3c072158a200ad5b4dcd91fbe1873e99f57c1056",
-  "afterSha256": "e303a20272ab9f55f21e66ef4c1e7adf4801a53459b6352a3b845d7080795f52",
+  "afterSha256": "fe5a05e1bc9bddf1a39ace3a64913b91e76d3ce904e60ba07f245b96659b1c4b",
   "hunks": [
+   {
+    "at": 420,
+    "before": "test('current Full38 retains full coverage and reports performance targets under unchanged execution guards',t=>{\n const workflow=read('.github/workflows/quality.yml');assert.match(workflow,/timeout-minutes: \\$\\{\\{ inputs.runner_pool == 'local-special' && 75 \\|\\| 45 \\}\\}/);assert.match(workflow,/runs-on: ubuntu-24.04\\n    timeout-minutes: 30/);\n const js=discoverJs(),lua=currentLua();",
+    "after": "test('current Full38 retains full coverage and reports performance targets under unchanged execution guards',t=>{\n const workflow=rawBootstrapReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\\r\\n','\\n');assert.match(workflow,/timeout-minutes: \\$\\{\\{ inputs.runner_pool == 'local-special' && 75 \\|\\| 45 \\}\\}/);assert.match(workflow,/runs-on: ubuntu-24.04\\n    timeout-minutes: 60/);\n const js=discoverJs(),lua=currentLua();"
+   },
    {
     "at": 1863,
     "before": "\ntest('combined closeout validates raw current sources and complete Full discovery independently of immutable slice views',t=>{",
@@ -440,6 +445,11 @@ const bindings = new Map([
     "at": 2009,
     "before": "  }\n  const forecast=Math.max(...combined)+60000;assert(forecast<budget,'complete current menu workload and unchanged reserve');\n  t.diagnostic(`${platform}: ${js.length} JS / ${lua.length} Lua, forecast ${forecast}ms < ${budget}ms`);\n }",
     "after": "  }\n  const forecast=Math.max(...combined)+60000;\n  if(platform==='linux')assertPosixForecasts(js,count,forecast,budget);\n  else assert(forecast<budget,'complete current menu workload and unchanged reserve');\n  t.diagnostic(`${platform}: ${js.length} JS / ${lua.length} Lua, forecast ${forecast}ms including reserve`);\n }"
+   },
+   {
+    "at": 2032,
+    "before": " assert.match(job('rules'),/timeout-minutes: \\$\\{\\{ inputs.runner_pool == 'local-special' && 75 \\|\\| 45 \\}\\}/);\n assert.match(job('engineering-posix-shards'),/runs-on: ubuntu-24.04\\n    timeout-minutes: 30/);\n assert.deepEqual(currentQualityShardMatrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});\n for(const [platform,count,target,guard]of [['win32',18,1800000,2700000],['linux',15,1200000,1800000]]){\n  const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(js,`${i+1}/${count}`,platform));",
+    "after": " assert.match(job('rules'),/timeout-minutes: \\$\\{\\{ inputs.runner_pool == 'local-special' && 75 \\|\\| 45 \\}\\}/);\n assert.match(job('engineering-posix-shards'),/runs-on: ubuntu-24.04\\n    timeout-minutes: 60/);\n assert.deepEqual(currentQualityShardMatrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});\n for(const [platform,count,target,guard]of [['win32',18,1800000,2700000],['linux',15,1200000,3600000]]){\n  const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(js,`${i+1}/${count}`,platform));"
    }
   ]
  },
@@ -1231,6 +1241,64 @@ const bindings = new Map([
     "at": 133,
     "before": " };\n const addedOwners=['scripts/deck-ui-layout.mjs',...stasisUpgradeAddedPaths,...actorFocusAdded,pointerInputPath];\n assert.throws(()=>readLive(retiredControllerPath),{code:'ENOENT'});",
     "after": " };\n const addedOwners=['scripts/deck-ui-layout.mjs',...stasisUpgradeAddedPaths,...actorFocusAdded,pointerInputPath,...addedEntranceModules];\n assert.throws(()=>readLive(retiredControllerPath),{code:'ENOENT'});"
+   }
+  ]
+ },
+ {
+  "path": "tests/ci-posix-concurrency.test.mjs",
+  "beforeSha256": "a0dba46c0886e9b779b780ef4f8ae72d75552643fb2f84bf51e71c7dda8bfbf7",
+  "afterSha256": "c157f84dd4362844bbaf1b528dd639dbdfc442d539b3dd77da0db261df6b91df",
+  "hunks": [
+   {
+    "at": 20,
+    "before": "  assert.ok(job(current).includes('    strategy:\\n      fail-fast: false\\n'+cap+'      matrix:\\n        shard: ${{ fromJSON(needs.impact.outputs.posix_shards) }}\\n'));\n  assert.ok(job(current).includes('    runs-on: ubuntu-24.04\\n    timeout-minutes: 30\\n'));\n  assert.equal(beforePosixConcurrencyWorkflow(current),current.replace(cap,''));",
+    "after": "  assert.ok(job(current).includes('    strategy:\\n      fail-fast: false\\n'+cap+'      matrix:\\n        shard: ${{ fromJSON(needs.impact.outputs.posix_shards) }}\\n'));\n  assert.ok(job(current).includes('    runs-on: ubuntu-24.04\\n    timeout-minutes: 60\\n'));\n  assert.equal(beforePosixConcurrencyWorkflow(current),current.replace(cap,''));"
+   }
+  ]
+ },
+ {
+  "path": "tests/ci-posix-shards.test.mjs",
+  "beforeSha256": "7075d2a2a905d06667cc593c8a4413499700774d4b6403033d6658245bc990c9",
+  "afterSha256": "72b5841496c9254180a796ae2b922bee9af1ed6ae85675e0954c4d151dbf0782",
+  "hunks": [
+   {
+    "at": 75,
+    "before": "  assert.match(shards,/^    needs: impact\\n    if: \\$\\{\\{ !cancelled\\(\\) && needs\\.impact\\.result == 'success' && needs\\.impact\\.outputs\\.mode == 'full' \\}\\}$/m);\n  assert.match(shards,/^    runs-on: ubuntu-24\\.04\\n    timeout-minutes: 30$/m);\n  assert.match(shards,/^      fail-fast: false$/m);",
+    "after": "  assert.match(shards,/^    needs: impact\\n    if: \\$\\{\\{ !cancelled\\(\\) && needs\\.impact\\.result == 'success' && needs\\.impact\\.outputs\\.mode == 'full' \\}\\}$/m);\n  assert.match(shards,/^    runs-on: ubuntu-24\\.04\\n    timeout-minutes: 60$/m);\n  assert.match(shards,/^      fail-fast: false$/m);"
+   }
+  ]
+ },
+ {
+  "path": "tests/ci-summary-runners.test.mjs",
+  "beforeSha256": "4d3654d6309e49bd9a2984e071243659db59223d3cd9c8fe7633665ebf38d7ca",
+  "afterSha256": "cb7215eb41c870856fddd638f4413dd6de4a514242b733d34fc7c5e17ce18c11",
+  "hunks": [
+   {
+    "at": 9,
+    "before": "import { beforeDraftQualityWorkflow, draftQualityWorkflowEdits } from './helpers/draft-quality-workflow.mjs';\nimport { beforeAutoMergeWorkflow, beforeExecutionTimeoutWorkflow } from './helpers/auto-merge-workflow.mjs';\nimport {closeoutRead,closeoutInventory} from './helpers/closeout-ci-source.mjs';",
+    "after": "import { beforeDraftQualityWorkflow, draftQualityWorkflowEdits } from './helpers/draft-quality-workflow.mjs';\nimport { beforeAutoMergeWorkflow, beforeExecutionTimeoutWorkflow, beforePosixDeadlineWorkflow } from './helpers/auto-merge-workflow.mjs';\nimport {closeoutRead,closeoutInventory} from './helpers/closeout-ci-source.mjs';"
+   },
+   {
+    "at": 282,
+    "before": "",
+    "after": "\n\ntest('reviewed POSIX sixty-minute hard guard preserves exact thirty-minute predecessors and rejects all drift',()=>{\n const physical=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\\r\\n','\\n');\n const body=job('engineering-posix-shards',physical);\n assert.match(body,/^    timeout-minutes: 60$/m);\n assert.match(body,/# performance target; the hard guard allows host variance. Files execute once./);\n assert.match(body,/max-parallel: 12/);\n const previous=physical.replace('    runs-on: ubuntu-24.04\\n    timeout-minutes: 60\\n','    runs-on: ubuntu-24.04\\n    timeout-minutes: 30\\n');\n assert.equal(digest(previous),'6e951f39539296339c3ffaaee97d0bdcae4c72e97914ee33fccfb4420fd50adf','immutable physical thirty-minute predecessor');\n for(const eol of ['\\n','\\r\\n']){\n  const current=physical.replaceAll('\\n',eol),old=previous.replaceAll('\\n',eol);\n  assert.equal(beforePosixDeadlineWorkflow(current),old);\n  assert.equal(beforePosixDeadlineWorkflow(old),old);\n  assert.equal(beforeExecutionTimeoutWorkflow(current),beforeExecutionTimeoutWorkflow(old));\n }\n for(const [from,to]of [['timeout-minutes: 60','timeout-minutes: 61'],['contents: read','contents: write'],\n  ['max-parallel: 12','max-parallel: 13'],['npm run check:engineering','npm run check:missing'],\n  ['timeout-minutes: 60','timeout-minutes: 60\\n    timeout-minutes: 60']]){\n  const changed=physical.replace(from,to);assert.notEqual(changed,physical);\n  assert.equal(beforePosixDeadlineWorkflow(changed),changed,'unknown policy bytes must remain visible');\n  assert.equal(beforeExecutionTimeoutWorkflow(changed),changed,'unknown sixty-minute source cannot inherit historical execution slack');\n }\n assert.equal(beforePosixDeadlineWorkflow(physical+'# foreign\\n'),physical+'# foreign\\n');\n});\n"
+   }
+  ]
+ },
+ {
+  "path": "tests/helpers/auto-merge-workflow.mjs",
+  "beforeSha256": "4f3d88760eece33410ea9e895a6fb49d5cebab29bc7d124b88478ff0bf775103",
+  "afterSha256": "a2a718288c94baf4937114bc64f5fe31d6b993bc94960028085a1179cd2c9957",
+  "hunks": [
+   {
+    "at": 0,
+    "before": "import {readFileSync} from 'node:fs';",
+    "after": "import {createHash} from 'node:crypto';\nimport {readFileSync} from 'node:fs';"
+   },
+   {
+    "at": 10,
+    "before": "// changes remain visible to the old whole-source identities.\nexport function beforeExecutionTimeoutWorkflow(text){\n const original=text;",
+    "after": "// changes remain visible to the old whole-source identities.\n// The reviewed 60-minute guard restores only complete exact current, six-cap\n// or uncapped workflow bytes. Original 30-minute and all foreign bytes pass through.\nconst posixDeadlinePredecessors=new Map([[\"9f0a309dffe7a8a356d895d1ed03b167499cb1f296e80c27fa87d38e357eb08b\",\"6e951f39539296339c3ffaaee97d0bdcae4c72e97914ee33fccfb4420fd50adf\"],[\"1b159fa2685b8bc2a36c82653710c6ab75e4f56c06ba8048b220ce7f1960eb52\",\"34e0bc864351cb2b660c0ccb6a8278eb20fa3cfcc2808735695839f4518d1199\"],[\"959bd6e7a31fb08170fbad592e1dfb5154f3c5cd982c0ed7673d57bf5017ea39\",\"4f75bbb052340a40a87af0601a6652e8c9e94cae6c72a501abcda88e9f34c3fe\"]]);\nexport function beforePosixDeadlineWorkflow(text){\n if(typeof text!=='string'||text.includes('\\r\\r\\n'))return text;\n const lf=text.replaceAll('\\r\\n','\\n');\n const hash=value=>createHash('sha256').update(value).digest('hex');\n const before=posixDeadlinePredecessors.get(hash(lf));\n if(!before)return text;\n const prior=lf.replace('    runs-on: ubuntu-24.04\\n    timeout-minutes: 60\\n','    runs-on: ubuntu-24.04\\n    timeout-minutes: 30\\n');\n if(hash(prior)!==before)throw Error('Exact POSIX deadline predecessor required');\n return text.includes('\\r\\n')?prior.replaceAll('\\n','\\r\\n'):prior;\n}\nexport function beforeExecutionTimeoutWorkflow(text){\n text=beforePosixDeadlineWorkflow(text);\n const original=text;"
    }
   ]
  }

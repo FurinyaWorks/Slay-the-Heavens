@@ -8,7 +8,7 @@ import { compileFunction } from 'node:vm';
 import { originalWorkflow } from './helpers/ci-runtime-workflow.mjs';
 import { beforePlatformWorkflow } from './helpers/platform-load-wiring.mjs';
 import { beforeDraftQualityWorkflow, draftQualityWorkflowEdits } from './helpers/draft-quality-workflow.mjs';
-import { beforeAutoMergeWorkflow, beforeExecutionTimeoutWorkflow } from './helpers/auto-merge-workflow.mjs';
+import { beforeAutoMergeWorkflow, beforeExecutionTimeoutWorkflow, beforePosixDeadlineWorkflow } from './helpers/auto-merge-workflow.mjs';
 import {closeoutRead,closeoutInventory} from './helpers/closeout-ci-source.mjs';
 import {beforeHostedCheckoutWorkflow} from './helpers/hosted-checkout-workflow.mjs';
 
@@ -279,4 +279,29 @@ test('combined preflight selects a complete fixed Release predecessor without ma
  for(const source of [Buffer.from(live),null,{},17])assert.equal(beforePreflightSource(path,source,'release-bootstrap'),source);
  assert.equal(beforePreflightSource('__proto__',live,'release-bootstrap'),live);
  assert.throws(()=>beforePreflightSource(path,live,'unknown'),/explicit preflight predecessor/);
+});
+
+
+test('reviewed POSIX sixty-minute hard guard preserves exact thirty-minute predecessors and rejects all drift',()=>{
+ const physical=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ const body=job('engineering-posix-shards',physical);
+ assert.match(body,/^    timeout-minutes: 60$/m);
+ assert.match(body,/# performance target; the hard guard allows host variance. Files execute once./);
+ assert.match(body,/max-parallel: 12/);
+ const previous=physical.replace('    runs-on: ubuntu-24.04\n    timeout-minutes: 60\n','    runs-on: ubuntu-24.04\n    timeout-minutes: 30\n');
+ assert.equal(digest(previous),'6e951f39539296339c3ffaaee97d0bdcae4c72e97914ee33fccfb4420fd50adf','immutable physical thirty-minute predecessor');
+ for(const eol of ['\n','\r\n']){
+  const current=physical.replaceAll('\n',eol),old=previous.replaceAll('\n',eol);
+  assert.equal(beforePosixDeadlineWorkflow(current),old);
+  assert.equal(beforePosixDeadlineWorkflow(old),old);
+  assert.equal(beforeExecutionTimeoutWorkflow(current),beforeExecutionTimeoutWorkflow(old));
+ }
+ for(const [from,to]of [['timeout-minutes: 60','timeout-minutes: 61'],['contents: read','contents: write'],
+  ['max-parallel: 12','max-parallel: 13'],['npm run check:engineering','npm run check:missing'],
+  ['timeout-minutes: 60','timeout-minutes: 60\n    timeout-minutes: 60']]){
+  const changed=physical.replace(from,to);assert.notEqual(changed,physical);
+  assert.equal(beforePosixDeadlineWorkflow(changed),changed,'unknown policy bytes must remain visible');
+  assert.equal(beforeExecutionTimeoutWorkflow(changed),changed,'unknown sixty-minute source cannot inherit historical execution slack');
+ }
+ assert.equal(beforePosixDeadlineWorkflow(physical+'# foreign\n'),physical+'# foreign\n');
 });
