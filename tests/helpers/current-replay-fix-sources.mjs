@@ -1238,6 +1238,57 @@ const bindings = new Map([
     "after": " local r=F.Run.new(F.D,42);assert(F.Run.obtainRelic(r,'Toxic Egg 2'));F.Run.gainGold(r,1000);local m=F.enter(r,'shop');local ui,get,p=bind(r,m)\n assert(ui:press('merchant/talk'));advanceShop(ui)\n local c=r.nodeFlow.cards[3];assert(c.upgraded);assert(get('shopView/card3/name').text:find('＋',1,true))"
    }
   ]
+ },
+ {
+  "path": "tests/lua/card_art_binding.lua",
+  "beforeSha256": "4cf06bcbeee0f43a30ee0f5c1612f18ee37ed5821503daabee9ac9fdb2d1c256",
+  "afterSha256": "405cecf4ab43524de54f7a1f7fad365b60da08f495789fac11ea8b93368f01e1",
+  "hunks": [
+   {
+    "at": 0,
+    "before": "local H = dofile(\"tests/lua/support/battle_gesture_fixture.lua\")\nlocal Theme = require(\"abyss_theme\")",
+    "after": "local H = dofile(\"tests/lua/support/battle_gesture_fixture.lua\")\nlocal advanceShop = dofile(\"tests/lua/support/shop_timeline.lua\")\nlocal Theme = require(\"abyss_theme\")"
+   },
+   {
+    "at": 41,
+    "before": "Theme.icon.cardPortraits[offer.id] = {id=102035,status=\"test-native-asset\",size={288,128}}\nhost.nodeUI.run,host.nodeUI.map = run,map\nhost.nodeUI:render()\nlocal shown = 0\nfor name,control in pairs(root:GetChild(\"nodePanel\"):GetChild(\"shopView\"):GetChild(\"card1\").children) do\n    if name:match(\"^art_\") and control.visible then",
+    "after": "Theme.icon.cardPortraits[offer.id] = {id=102035,status=\"test-native-asset\",size={288,128}}\nlocal shopRoot = H.F.Viewport.apply(H.F.control({children=H.F.Layout}),1280,720)\nlocal shopPanel = shopRoot:GetChild(\"nodePanel\")\nlocal shopPresentation = require(\"abyss_character_presentation\").prepare(H.F.Presentation,run.data)\nlocal shopUI = require(\"abyss_node_ui\").new(shopPanel,run,map,shopPresentation,\"click\",nil,\n    {imageSource=\"static\",color=function(...) return {...} end})\nshopUI:setVisible(true)\nassert(shopUI:press(\"merchant/talk\"));advanceShop(shopUI)\nlocal shown = 0\nfor name,control in pairs(shopPanel:GetChild(\"shopView\"):GetChild(\"card1\").children) do\n    if name:match(\"^art_\") and control.visible then"
+   }
+  ]
+ },
+ {
+  "path": "tests/lua/card_face_contexts.lua",
+  "beforeSha256": "2cda25c77f24a7eab16f9375f3e40ad896526a2f6b03a333329108527a40f55d",
+  "afterSha256": "70db9b533b3f2e9a8422cccd78e8b3cca0eda180157a36dfecf95cbd622d4cd6",
+  "hunks": [
+   {
+    "at": 2,
+    "before": "local F=dofile('tests/lua/support/game_ui_fixture.lua')\nlocal Run,Map,Nodes=require('abyss_run'),require('abyss_map'),require('abyss_nodes')",
+    "after": "local F=dofile('tests/lua/support/game_ui_fixture.lua')\nlocal advanceShop=dofile('tests/lua/support/shop_timeline.lua')\nlocal Run,Map,Nodes=require('abyss_run'),require('abyss_map'),require('abyss_nodes')"
+   },
+   {
+    "at": 45,
+    "before": "local node=NodeUI.new(root:GetChild('nodePanel'),shopRun,map,presentation,'click',function()end,platform)\nnode:render()\nassertLong(root:GetChild('nodePanel'):GetChild('shopView'):GetChild('card1'),false,'shop')",
+    "after": "local node=NodeUI.new(root:GetChild('nodePanel'),shopRun,map,presentation,'click',function()end,platform)\nnode:setVisible(true);assert(node:press('merchant/talk'));advanceShop(node)\nassertLong(root:GetChild('nodePanel'):GetChild('shopView'):GetChild('card1'),false,'shop')"
+   }
+  ]
+ },
+ {
+  "path": "tests/lua/game_ui_potion_discard.lua",
+  "beforeSha256": "ca97350d058d00e0e94ac00bedc6b7f534c976e9471edcdfa777992af3f49707",
+  "afterSha256": "5aad6010a542a72f6d862be4439762e504c5d54562b689c25285426a2d570fe9",
+  "hunks": [
+   {
+    "at": 0,
+    "before": "local testStart=dofile('tests/lua/support/game_ui_fixture.lua').start\npackage.path='src/lua/?.lua;build/lua/?.lua;'..package.path",
+    "after": "local testStart=dofile('tests/lua/support/game_ui_fixture.lua').start\nlocal advanceShop=dofile('tests/lua/support/shop_timeline.lua')\npackage.path='src/lua/?.lua;build/lua/?.lua;'..package.path"
+   },
+   {
+    "at": 89,
+    "before": "    h.run.gold=1000;h:refresh()\n    local offer",
+    "after": "    h.run.gold=1000;h:refresh()\n    assert(F.click(r,'nodePanel','merchant/talk'));advanceShop(h)\n    local offer"
+   }
+  ]
  }
 ].map(row=>[row.path,row]));
 
