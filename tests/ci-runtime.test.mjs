@@ -180,8 +180,9 @@ test('real executor preserves test failure, continues later files, reports timin
   assert.ok(records.every(record => Number.isFinite(record.durationMs) && record.durationMs > 0));
 });
 
-test('hosted POSIX execution isolates checkout writes and combines both timing reports', {
-  skip: process.platform !== 'linux' || availableParallelism() < 2,
+const hostedOS = { linux: 'Linux', win32: 'Windows' }[process.platform];
+test('hosted execution isolates checkout writes and combines both timing reports', {
+  skip: !hostedOS || availableParallelism() < 2,
 }, t => {
   const parent = mkdtempSync(join(tmpdir(), 'abyss-ci-posix-executor-'));
   t.after(() => rmSync(parent, { recursive: true, force: true }));
@@ -191,15 +192,15 @@ test('hosted POSIX execution isolates checkout writes and combines both timing r
   copyFileSync('scripts/ci-timing-reporter.mjs', join(root, 'scripts/ci-timing-reporter.mjs'));
   for (const label of ['a', 'b']) writeFileSync(join(root, `tests/${label}.test.mjs`), `
     import assert from 'node:assert/strict';
-    import {writeFileSync} from 'node:fs';
+    import {realpathSync,writeFileSync} from 'node:fs';
     import test from 'node:test';
     test('${label}',()=>{
-      assert.equal(process.env.GITHUB_WORKSPACE,process.cwd());
+      assert.equal(process.env.GITHUB_WORKSPACE,realpathSync.native('.'));
       writeFileSync('build/checkpoint','${label}',{flag:'wx'});
       ${label === 'b' ? "throw Error('isolated failure');" : ''}
     });`);
-  const env = { ...process.env, GITHUB_ACTIONS: 'true', RUNNER_OS: 'Linux', RUNNER_ENVIRONMENT: 'github-hosted',
-    GITHUB_WORKSPACE: root, TMPDIR: copyTemp };
+  const env = { ...process.env, GITHUB_ACTIONS: 'true', RUNNER_OS: hostedOS, RUNNER_ENVIRONMENT: 'github-hosted',
+    GITHUB_WORKSPACE: root, RUNNER_TEMP: copyTemp };
   delete env.NODE_TEST_CONTEXT;
   const result = spawnSync(process.execPath, [resolve('scripts/ci-shards.mjs'), '--shard=1/1'], {
     cwd: root, env, encoding: 'utf8', timeout: 30000,

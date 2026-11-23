@@ -53,7 +53,8 @@ const linuxReplayMinimumMs = Object.freeze({
 
 // Completed replay cases in Windows jobs 137468791786, 137468791799,
 // 137468791818, 137468791851, 137468791860, 137468791861, 137468791871
-// and 137468791996.
+// and 137468791996, and complete files from 137492433757, 137492433852
+// and 137492433888.
 const windowsReplayMinimumMs = Object.freeze({
   'act1-choice-responsibilities.test.mjs': 195000,
   // Budget the longest completed case after isolating the three cases.
@@ -69,13 +70,17 @@ const windowsReplayMinimumMs = Object.freeze({
   // Job 137468791861 spent over half an hour on this file before cutoff.
   'core-lifecycle-source-inverse.test.mjs': 800000,
   'death-settlement-guard-inverse.test.mjs': 186000,
+  'defect-integration-source.test.mjs': 474000,
   'formal-campaign-entry.test.mjs': 233000,
+  'game-ui-extraction-source-inverse.test.mjs': 2087000,
   'living-wall-architecture-inverse.test.mjs': 1013000,
   'native-candidate-art.test.mjs': 113000,
   'official-assets-runtime.test.mjs': 216000,
+  'p0-presentation-inverse.test.mjs': 713000,
   'potion-callback-source.test.mjs': 132000,
   'power-shop-boundaries.test.mjs': 1364000,
   'presentation-native-m3-contract.test.mjs': 791000,
+  'ready-art-source-inverse.test.mjs': 656000,
   'reward-query-boundary-source.test.mjs': 1440000,
   'round3-catalog-source-inverse.test.mjs': 278000,
   'run-architecture-inverse.test.mjs': 384000,
@@ -150,20 +155,20 @@ function runInCheckout(files, cwd, env) {
   });
 }
 
-async function runHostedPosixShard(files, root, env) {
+async function runHostedShard(files, root, env) {
   if (!lstatSync(join(root, '.git'), { throwIfNoEntry: false })?.isDirectory()) {
-    throw new Error('Hosted POSIX execution requires physical checkout metadata');
+    throw new Error('Hosted execution requires physical checkout metadata');
   }
-  const snapshot = realpathSync(mkdtempSync(join(tmpdir(), 'slay-ci-posix-')));
+  const snapshot = realpathSync.native(mkdtempSync(join(env.RUNNER_TEMP || tmpdir(), 'slay-ci-shard-')));
   try {
     const location = relative(root, snapshot);
     if (!location || !isAbsolute(location) && location !== '..' && !location.startsWith(`..${sep}`)) {
-      throw new Error('Hosted POSIX snapshot must be outside the checkout');
+      throw new Error('Hosted snapshot must be outside the checkout');
     }
     // Each test process still runs serially in its own checkout. Copy before
     // starting either process to isolate Git metadata, build outputs and fixtures.
     cpSync(root, snapshot, { recursive: true, verbatimSymlinks: true, mode: constants.COPYFILE_FICLONE });
-    const weights = jsPlanningWeights(files, 'linux');
+    const weights = jsPlanningWeights(files);
     const original = partition(files, '1/2', weights, timings.unknownJsMs).files;
     const copy = partition(files, '2/2', weights, timings.unknownJsMs).files;
     const results = await Promise.allSettled([
@@ -178,7 +183,7 @@ async function runHostedPosixShard(files, root, env) {
     if (status) throw status.reason;
     return results.find(result => result.value !== 0)?.value ?? 0;
   } finally {
-    rmSync(snapshot, { recursive: true, force: true });
+    rmSync(snapshot, { recursive: true, force: true, maxRetries: 2 });
   }
 }
 
@@ -198,11 +203,11 @@ export function main(args) {
   // failure/timeout handling. No NODE_TEST_CONTEXT may disable this child CLI.
   const env = { ...process.env };
   delete env.NODE_TEST_CONTEXT;
-  const root = realpathSync('.');
-  if (process.platform === 'linux' && env.GITHUB_ACTIONS === 'true' && env.RUNNER_OS === 'Linux'
-      && env.RUNNER_ENVIRONMENT === 'github-hosted'
-      && env.GITHUB_WORKSPACE === root && availableParallelism() >= 2 && plan.files.length >= 2) {
-    return runHostedPosixShard(plan.files, root, env).then(status => { process.exitCode = status; });
+  const root = realpathSync.native('.'), hostedOS = { linux: 'Linux', win32: 'Windows' }[process.platform];
+  if (hostedOS && env.GITHUB_ACTIONS === 'true' && env.RUNNER_OS === hostedOS
+      && env.RUNNER_ENVIRONMENT === 'github-hosted' && env.GITHUB_WORKSPACE
+      && realpathSync.native(env.GITHUB_WORKSPACE) === root && availableParallelism() >= 2 && plan.files.length >= 2) {
+    return runHostedShard(plan.files, root, env).then(status => { process.exitCode = status; });
   }
   const result = spawnSync(process.execPath, nodeTestArgs(plan.files), { stdio: 'inherit', env, windowsHide: true });
   if (result.error) throw result.error;
