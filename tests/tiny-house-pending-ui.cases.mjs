@@ -49,16 +49,16 @@ test('Tiny House exact source admission preserves the ordered full owner read an
  }});
  assert.equal(project(),proof.targets.develop.files[config].source);
  const expected=[...reads];
- assert.equal(expected.length,417,'complete fresh raw closure size');
+ assert.equal(expected.length,460,'complete fresh raw closure size');
  assert.equal(createHash('sha256').update(JSON.stringify(expected)).digest('hex'),
-  '05131aa3de86e8f88d0e82bca23e667bba10e3921cf029de891ec4e8b06c3a67','exact current admission order');
+  '6b72ef490e6f79b870b0a21d5b63ddb122f065aff81f837e8f6fa3bafbd40d51','exact current admission order');
  let position=-1;
  for(const owner of priorReadOrder){
   position=expected.indexOf(owner,position+1);
   assert.notEqual(position,-1,'retained original admission read: '+owner);
  }
  eventReread=expected.lastIndexOf(event)+1;
- assert.equal(eventReread,417,'the event owner must be checked again after the initial scan');
+ assert.equal(eventReread,460,'the event owner must be checked again after the initial scan');
  assert.notEqual(expected.indexOf(event)+1,eventReread,'the injected failure belongs to a fresh repeat read');
  for(readFailure of [null,read(event)+'\n',new Error('unavailable')]){
   reads.length=0;

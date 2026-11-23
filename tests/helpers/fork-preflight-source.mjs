@@ -2,7 +2,7 @@ import {beforeInputRetirementTestInventory,readRetiredInputLuaReceipt} from './i
 import {beforeDeckPagesSuiteSource} from './input-retirement-source.mjs';
 export {beforeInputRetirementTestInventory} from './input-retirement-inventory.mjs';
 import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,beforeDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
-import {beforeCalibrationReplay} from './calibration-replay-sources.mjs';
+import {beforeCalibrationReplay,beforeCurrentReplayCopier} from './calibration-replay-sources.mjs';
 import {beforeNativeHostReplay} from './native-host-replay-source.mjs';
 import {assertNativeFixturesCurrent,beforeNativeFixtureReplay} from './native-fixture-replay-source.mjs';
 import {assertNativeFlowFixturesCurrent,beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';
@@ -323,6 +323,7 @@ function beforeReleaseUiBuildSource(path,source,read=readFileSync){
  return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
 }
 function releaseHistoricalInput(path,source){
+ source=beforeCurrentReplayCopier(path,source);
  return beforeRebasedCopier(path,source)!==source?historicalReleaseCopier(source):beforeRebasedRelease(path,source);
 }
 export function beforeReleaseTinyHouseSource(path,source,read=readFileSync){
@@ -752,7 +753,7 @@ export function beforeReviewedBuildInput(path,source,read){
  const live=owner=>read(owner,'utf8');
  const production=authenticateDevelopBackflow(path,source,live);
  const deck=beforeDeckPagesSuiteSource(path,production);
- const merged=beforeDevelopReplayMerge(path,deck);
+ const merged=beforeDevelopReplayMerge(path,beforeCurrentReplayFixes(path,deck));
  return beforeForkFirstCi(path,beforeReplayArchiveStorage(path,merged));
 }
 function beforeIntegrationSuccessor(path,source){

@@ -60,20 +60,35 @@ const bindings = new Map([
  {
   "path": "tests/helpers/fork-preflight-source.mjs",
   "beforeSha256": "f1611ba371126867ce69926daa71fbb211bafb32ece60362d992cd9d3efc49c0",
-  "afterSha256": "3f5545f4164d5fdefdc5e42712fadbee5571d0a5ed19334090c6224f319aba4a",
+  "afterSha256": "3d693e7d95844a9bec8ffe43cc128dacddb8555b706b142563fb2f3ebf816d73",
   "hunks": [
+   {
+    "at": 3,
+    "before": "import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,beforeDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';\nimport {beforeCalibrationReplay} from './calibration-replay-sources.mjs';\nimport {beforeNativeHostReplay} from './native-host-replay-source.mjs';",
+    "after": "import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,beforeDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';\nimport {beforeCalibrationReplay,beforeCurrentReplayCopier} from './calibration-replay-sources.mjs';\nimport {beforeNativeHostReplay} from './native-host-replay-source.mjs';"
+   },
    {
     "at": 11,
     "before": "import {beforeStsFadeCi} from './sts-fade-ci-source.mjs';\nimport {beforeIntegratedStsInventory} from './sts-selection-fade-source.mjs';",
     "after": "import {beforeStsFadeCi} from './sts-fade-ci-source.mjs';\nimport {beforeCurrentReplayFixes} from './current-replay-fix-sources.mjs';\nimport {beforeIntegratedStsInventory} from './sts-selection-fade-source.mjs';"
    },
    {
-    "at": 768,
+    "at": 324,
+    "before": "function releaseHistoricalInput(path,source){\n return beforeRebasedCopier(path,source)!==source?historicalReleaseCopier(source):beforeRebasedRelease(path,source);",
+    "after": "function releaseHistoricalInput(path,source){\n source=beforeCurrentReplayCopier(path,source);\n return beforeRebasedCopier(path,source)!==source?historicalReleaseCopier(source):beforeRebasedRelease(path,source);"
+   },
+   {
+    "at": 754,
+    "before": " const deck=beforeDeckPagesSuiteSource(path,production);\n const merged=beforeDevelopReplayMerge(path,deck);\n return beforeForkFirstCi(path,beforeReplayArchiveStorage(path,merged));",
+    "after": " const deck=beforeDeckPagesSuiteSource(path,production);\n const merged=beforeDevelopReplayMerge(path,beforeCurrentReplayFixes(path,deck));\n return beforeForkFirstCi(path,beforeReplayArchiveStorage(path,merged));"
+   },
+   {
+    "at": 769,
     "before": " assertNativeFlowFixturesCurrent(liveRead);\n read=(path,encoding)=>beforeCalibrationReplay(path,liveRead(path,encoding));\n const readCurrent=(path,encoding)=>{",
     "after": " assertNativeFlowFixturesCurrent(liveRead);\n read=(path,encoding)=>beforeCalibrationReplay(path,beforeCurrentReplayFixes(path,liveRead(path,encoding)));\n const readCurrent=(path,encoding)=>{"
    },
    {
-    "at": 815,
+    "at": 816,
     "before": "export function beforePreflightSource(path,source,view='prior'){\n source=beforeNativeFlowFixture(path,source);",
     "after": "export function beforePreflightSource(path,source,view='prior'){\n source=beforeCurrentReplayFixes(path,source);\n source=beforeNativeFlowFixture(path,source);"
    }
@@ -829,15 +844,15 @@ const bindings = new Map([
  {
   "path": "scripts/ci-shards.mjs",
   "beforeSha256": "6becba66be6048f090cd0036c2e5292f180d9010bbe24aef181977dca18fdeb3",
-  "afterSha256": "a1c56eb4386b5144e7540e2b3926d69181b49808340517e199731d9695028799",
+  "afterSha256": "880762fa2bd26657c735bc701151bff7748ffda09559561bfc1013d2c1c5709e",
   "hunks": [
    {
     "at": 14,
     "before": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n",
-    "after": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n\n// Reserve the work that completed in POSIX jobs 137444936421, 137444936442,\n// 137444936458, 137444936507 and 137444936550 before their 30-minute cutoff.\n// These rounded-down case totals guide placement only. They are not full-file timings.\nconst linuxReplayMinimumMs = Object.freeze({\n  'approved-ui-inverse.test.mjs': 1295000,\n  'art-feature-source-inverse.test.mjs': 412000,\n  'card-origin-source-inverse.test.mjs': 149000,\n  'combat-reactions-architecture-inverse.test.mjs': 137000,\n  'game-ui-extraction-source-inverse.test.mjs': 870000,\n  'max-hp-accepted-source-inverse.test.mjs': 677000,\n  'player-death-inverse.test.mjs': 172000,\n  'potion-callback-source.test.mjs': 238000,\n  'presentation-native-m3-contract.test.mjs': 1037000,\n});\n"
+    "after": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n\n// Reserve the work that completed in POSIX jobs 137444936421, 137444936442,\n// 137444936458, 137444936507 and 137444936550 before their 30-minute cutoff.\n// The next attempt's jobs 137468791737, 137468791821 and 137468791853\n// exposed additional underweighted replay files.\n// These rounded-down case totals guide placement only. They are not full-file timings.\nconst linuxReplayMinimumMs = Object.freeze({\n  'approved-node-ui-refactor.test.mjs': 422000,\n  'approved-ui-inverse.test.mjs': 1295000,\n  'art-feature-source-inverse.test.mjs': 412000,\n  'battle-max-hp-config-inverse.test.mjs': 124000,\n  'card-origin-source-inverse.test.mjs': 149000,\n  'combat-reactions-architecture-inverse.test.mjs': 137000,\n  'competition-roster.test.mjs': 505000,\n  'core-architecture-inverse.test.mjs': 362000,\n  'game-ui-extraction-source-inverse.test.mjs': 870000,\n  'max-hp-accepted-source-inverse.test.mjs': 677000,\n  'player-death-inverse.test.mjs': 172000,\n  'potion-callback-source.test.mjs': 238000,\n  'power-shop-boundaries.test.mjs': 486000,\n  'presentation-native-m3-contract.test.mjs': 1037000,\n  'relic-query-source-inverse.test.mjs': 123000,\n});\n"
    },
    {
-    "at": 57,
+    "at": 65,
     "before": "    ...maps.map(weights=>weights[file]??timings.unknownJsMs),\n    timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0)]));\n}",
     "after": "    ...maps.map(weights=>weights[file]??timings.unknownJsMs),\n    timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0,\n    platform === 'win32' ? 0 : linuxReplayMinimumMs[file.slice('tests/'.length)] ?? 0)]));\n}"
    }
@@ -874,6 +889,65 @@ const bindings = new Map([
     "at": 26,
     "before": " assert(R.obtainRelic(r,'dollys_mirror'));local root=F.root(r)\n F.call(root,'mirror ordinary public no-adapter selection',Shop.chooseMirror,r,original.uid)\n F.eq(r.deck[#r.deck].cardId,original.cardId,'mirror identity');assert(r.deck[#r.deck].uid~=original.uid)",
     "after": " assert(R.obtainRelic(r,'dollys_mirror'));local root=F.root(r)\n local called,accepted=F.call(root,'mirror ordinary public selection',Shop.chooseMirror,r,original.uid,R)\n F.eq(called,true,'mirror selection runs');F.eq(accepted,true,'mirror selection accepted')\n F.eq(r.deck[#r.deck].cardId,original.cardId,'mirror identity');assert(r.deck[#r.deck].uid~=original.uid)"
+   }
+  ]
+ },
+ {
+  "path": "tests/tiny-house-pending-ui.cases.mjs",
+  "beforeSha256": "38c4bbfa3b5ebb26248f56f9df9fe5f3736c978cc4e44c4f6fd49de85f87908c",
+  "afterSha256": "2560d0f11773f6f0d7ba2a6111cb77cb686dbe8b53695ec35f373091eeb6beb6",
+  "hunks": [
+   {
+    "at": 50,
+    "before": " const expected=[...reads];\n assert.equal(expected.length,417,'complete fresh raw closure size');\n assert.equal(createHash('sha256').update(JSON.stringify(expected)).digest('hex'),\n  '05131aa3de86e8f88d0e82bca23e667bba10e3921cf029de891ec4e8b06c3a67','exact current admission order');\n let position=-1;",
+    "after": " const expected=[...reads];\n assert.equal(expected.length,460,'complete fresh raw closure size');\n assert.equal(createHash('sha256').update(JSON.stringify(expected)).digest('hex'),\n  '6b72ef490e6f79b870b0a21d5b63ddb122f065aff81f837e8f6fa3bafbd40d51','exact current admission order');\n let position=-1;"
+   },
+   {
+    "at": 59,
+    "before": " eventReread=expected.lastIndexOf(event)+1;\n assert.equal(eventReread,417,'the event owner must be checked again after the initial scan');\n assert.notEqual(expected.indexOf(event)+1,eventReread,'the injected failure belongs to a fresh repeat read');",
+    "after": " eventReread=expected.lastIndexOf(event)+1;\n assert.equal(eventReread,460,'the event owner must be checked again after the initial scan');\n assert.notEqual(expected.indexOf(event)+1,eventReread,'the injected failure belongs to a fresh repeat read');"
+   }
+  ]
+ },
+ {
+  "path": "tests/approved-ui-inverse.test.mjs",
+  "beforeSha256": "55ee7c59bd21d09ffc881f2eaf946685ab1b477473ec462b7e60a5eda7fc69a8",
+  "afterSha256": "7ddcd54195945c930e0056f4e5b2def83629c1046fc7070aa821a03950048e46",
+  "hunks": [
+   {
+    "at": 2,
+    "before": "import {preIntegratedNodeUiSource} from './helpers/approved-node-ui-refactor.mjs';\nimport {historicalTest as test} from './helpers/historical-baseline-inputs.mjs';\nimport assert from 'node:assert/strict';",
+    "after": "import {preIntegratedNodeUiSource} from './helpers/approved-node-ui-refactor.mjs';\nimport test from 'node:test';\nimport {historicalTest} from './helpers/historical-baseline-inputs.mjs';\nimport assert from 'node:assert/strict';"
+   },
+   {
+    "at": 7,
+    "before": "import {join} from 'node:path';\nimport {tmpdir} from 'node:os';\nimport {createHash} from 'node:crypto';\nimport {approvedUi,preApprovedUiSource,preApprovedUiOuterSource} from './helpers/approved-ui-inverse.mjs';",
+    "after": "import {join} from 'node:path';\nimport {availableParallelism,tmpdir} from 'node:os';\nimport {createHash} from 'node:crypto';\nimport {execFile} from 'node:child_process';\nimport {promisify} from 'node:util';\nimport {fileURLToPath} from 'node:url';\nimport {approvedUi,preApprovedUiSource,preApprovedUiOuterSource} from './helpers/approved-ui-inverse.mjs';"
+   },
+   {
+    "at": 16,
+    "before": "const read=p=>readBeforeMobileQaSource(p).replaceAll('\\r\\n','\\n');\nconst potionPath='tests/lua/battle_ui_potion_target_failures.lua';",
+    "after": "const read=p=>readBeforeMobileQaSource(p).replaceAll('\\r\\n','\\n');\nconst cases=[];\nconst register=(name,body)=>cases.push([name,body]);\nconst potionPath='tests/lua/battle_ui_potion_target_failures.lua';"
+   },
+   {
+    "at": 36,
+    "before": "}\ntest('approved UI layer binds complete current sources and restores exactly the unchanged PR302 base',()=>{\n assert.equal(approvedUi.baseHead,'53fa164a9914dd8a7a5849ff741925dd3131f5e4');",
+    "after": "}\nregister('approved UI layer binds complete current sources and restores exactly the unchanged PR302 base',()=>{\n assert.equal(approvedUi.baseHead,'53fa164a9914dd8a7a5849ff741925dd3131f5e4');"
+   },
+   {
+    "at": 60,
+    "before": "});\ntest('bounded potion registrar composes only its complete exact source before the unchanged frozen UI guard',()=>{\n const live=read(potionPath),original=originalPotionFailures(live),binding=approvedUi.files[potionPath];",
+    "after": "});\nregister('bounded potion registrar composes only its complete exact source before the unchanged frozen UI guard',()=>{\n const live=read(potionPath),original=originalPotionFailures(live),binding=approvedUi.files[potionPath];"
+   },
+   {
+    "at": 90,
+    "before": "});\ntest('historical materialization consumes both all 26 original sources and every new UI consumer',()=>{\n for(const path of ['src/lua/abyss_card_display.lua','src/lua/abyss_card_skin.lua','src/lua/abyss_shop_ui.lua'])assert(approvedUi.files[path],path);",
+    "after": "});\nregister('historical materialization consumes both all 26 original sources and every new UI consumer',()=>{\n for(const path of ['src/lua/abyss_card_display.lua','src/lua/abyss_card_skin.lua','src/lua/abyss_shop_ui.lua'])assert(approvedUi.files[path],path);"
+   },
+   {
+    "at": 110,
+    "before": "",
+    "after": "\nconst childCase=process.env.ABYSS_APPROVED_UI_REPLAY_CASE;\nif(childCase!==undefined){\n const selected=cases.find(([name])=>name===childCase);\n assert(selected,'registered approved UI replay case');\n historicalTest(...selected);\n}else if(process.platform!=='linux'||availableParallelism()<2){\n for(const entry of cases)historicalTest(...entry);\n}else{\n // The historical harness changes cwd. Run the cases in separate processes\n // so each keeps its own verified inputs and isolated working directory.\n const execute=promisify(execFile),file=fileURLToPath(import.meta.url);\n test('approved UI historical replay',{concurrency:2},async context=>{\n  await Promise.all(cases.map(([name])=>context.test(name,async()=>{\n   const env={...process.env,ABYSS_APPROVED_UI_REPLAY_CASE:name};\n   delete env.NODE_TEST_CONTEXT;\n   const {stdout}=await execute(process.execPath,['--test','--test-reporter=tap',file],{env,maxBuffer:1024*1024});\n   assert.match(stdout,/^# tests 1$/m,'the isolated process ran one registered case');\n   assert.match(stdout,/^# pass 1$/m,'the isolated historical case passed');\n  })));\n });\n}\n"
    }
   ]
  }

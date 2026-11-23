@@ -84,9 +84,9 @@ export function beforeCurrentHistoricalStsSource(path,source){
  }),'exact historical StS runner predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
-function beforeCurrentReplayCopier(path,source){
+export function beforeCurrentReplayCopier(path,source){
  if(path!==copierPath||!matches(source,{
-  sha256:'f606b9a16cf0800cdec7f8a781aaab7deca6f05e08937a3488fef86a54b6742b',gitBlob:'a796a1ddf69bd0a3c19e21eb7be78d21f498e720',
+  sha256:'7c22a7498c810042be30b0a4d71988913beca7d93945653ed7658ee523ac7e06',gitBlob:'d7781f367b64f79ea329cb1eb655298527a2e42d',
  }))return source;
  const text=lf(source);
  const block='const currentReplayFiles=Object.freeze({\n';
