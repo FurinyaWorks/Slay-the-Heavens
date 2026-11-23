@@ -8,7 +8,7 @@ import { compileFunction } from 'node:vm';
 import { originalWorkflow } from './helpers/ci-runtime-workflow.mjs';
 import { beforePlatformWorkflow } from './helpers/platform-load-wiring.mjs';
 import { beforeDraftQualityWorkflow, draftQualityWorkflowEdits } from './helpers/draft-quality-workflow.mjs';
-import { beforeAutoMergeWorkflow, beforeExecutionTimeoutWorkflow, beforePosixDeadlineWorkflow, beforeWindowsDeadlineWorkflow } from './helpers/auto-merge-workflow.mjs';
+import { beforeAutoMergeWorkflow, beforeExecutionTimeoutWorkflow, beforePosixDeadlineWorkflow, beforeWindowsDeadlineWorkflow, beforeHostedDeadlineWorkflow } from './helpers/auto-merge-workflow.mjs';
 import {closeoutRead,closeoutInventory} from './helpers/closeout-ci-source.mjs';
 import {beforeHostedCheckoutWorkflow} from './helpers/hosted-checkout-workflow.mjs';
 
@@ -283,7 +283,7 @@ test('combined preflight selects a complete fixed Release predecessor without ma
 
 
 test('reviewed POSIX sixty-minute hard guard preserves exact thirty-minute predecessors and rejects all drift',()=>{
- const actual=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ const actual=beforeHostedDeadlineWorkflow(readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n'));
  const physical=beforeWindowsDeadlineWorkflow(actual);
  const body=job('engineering-posix-shards',actual);
  assert.match(body,/^    timeout-minutes: 60$/m);
@@ -308,7 +308,7 @@ test('reviewed POSIX sixty-minute hard guard preserves exact thirty-minute prede
 });
 
 test('reviewed Windows seventy-five-minute hard guard retains its exact forty-five-minute predecessor and rejects drift',()=>{
- const physical=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ const physical=beforeHostedDeadlineWorkflow(readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n'));
  const rules=job('rules',physical);
  const deadline="timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 75 }}";
  assert.ok(rules.includes(deadline),'ordinary and local-special Full retain explicit seventy-five-minute limits');
@@ -331,4 +331,33 @@ test('reviewed Windows seventy-five-minute hard guard retains its exact forty-fi
   assert.equal(beforeExecutionTimeoutWorkflow(changed),changed,'unreviewed full-source changes remain visible');
  }
  assert.equal(beforeWindowsDeadlineWorkflow(physical+'# foreign\n'),physical+'# foreign\n');
+});
+
+
+test('current hosted 105/90-minute deadlines preserve local 75 and exact complete predecessor checks',()=>{
+ const physical=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ const windows="timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 105 }}";
+ assert.ok(job('rules',physical).includes(windows));
+ assert.match(job('engineering-posix-shards',physical),/^    timeout-minutes: 90$/m);
+ const previous=physical.replace(windows,"timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 75 }}").replace("    runs-on: ubuntu-24.04\n    timeout-minutes: 90\n","    runs-on: ubuntu-24.04\n    timeout-minutes: 60\n");
+ assert.equal(digest(previous),'c61bcf8806af9b370342c44a32077c65896fe15d8af097b99ab8342cc257158a');
+ for(const cap of [12,6,null]){
+  const variant=text=>cap===12?text:text.replace('      max-parallel: 12\n',cap===null?'':`      max-parallel: ${cap}\n`);
+  for(const eol of ['\n','\r\n']){
+   const current=variant(physical).replaceAll('\n',eol),old=variant(previous).replaceAll('\n',eol);
+   assert.equal(beforeHostedDeadlineWorkflow(current),old);
+   assert.equal(beforeHostedDeadlineWorkflow(old),old);
+   assert.equal(beforeWindowsDeadlineWorkflow(current),beforeWindowsDeadlineWorkflow(old));
+   assert.equal(beforeExecutionTimeoutWorkflow(current),beforeExecutionTimeoutWorkflow(old));
+  }
+ }
+ for(const [from,to]of [[windows,windows.replace('|| 105','|| 106')],[windows,windows.replace('&& 75','&& 74')],
+  [windows,"timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 75 }}"],['timeout-minutes: 90','timeout-minutes: 60'],
+  [windows,windows+'\n    '+windows],['timeout-minutes: 90','timeout-minutes: 90\n    timeout-minutes: 90'],
+  ['contents: read','contents: write'],['max-parallel: 12','max-parallel: 13'],['npm run check:engineering','npm run check:missing']]){
+  const changed=physical.replace(from,to);assert.notEqual(changed,physical);
+  assert.equal(beforeHostedDeadlineWorkflow(changed),changed);
+  assert.equal(beforeExecutionTimeoutWorkflow(changed),changed,'unknown complete source must retain its actual bytes');
+ }
+ for(const changed of [physical+'# foreign\n',physical.replaceAll('\n','\r\r\n')])assert.equal(beforeHostedDeadlineWorkflow(changed),changed);
 });

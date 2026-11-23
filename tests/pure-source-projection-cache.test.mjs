@@ -134,3 +134,34 @@ test('warm current UI projections preserve their frozen intermediate epoch and r
   }
  }
 });
+
+test('exact production length rejection preserves full byte checks and fresh owner admission',async()=>{
+ const {beforeCurrentReplayFixes}=await import('./helpers/current-replay-fix-sources.mjs');
+ const {authenticateUiEntrance}=await import('./helpers/ui-entrance-source.mjs');
+ const originals=[
+  ['src/lua/abyss_node_ui_faces.lua','d56aed5198b7111008f25c86f1f03eee36bab8549ebd9b92dd7f99f9e4cf6f58'],
+  ['src/lua/abyss_game_ui.lua','1b1e3b9722dbc0c4c0af8c06243a15e118cf61d7a506ef6f801b2e735c85ed14'],
+  ['src/lua/abyss_game_ui_run.lua','c2198e3d704115f83c6c172be3eb8515d72997d97779678df0bc4616b4e741f0'],
+ ];
+ for(const [path,expected]of originals){
+  const source=readFileSync(path,'utf8').replaceAll('\r\n','\n');
+  const prior=beforeCurrentReplayFixes(path,source);assert.notEqual(prior,source);assert.equal(hash(prior),expected);
+  const crlf=source.replaceAll('\n','\r\n');
+  assert.equal(beforeCurrentReplayFixes(path,crlf),prior.replaceAll('\n','\r\n'));
+  const sameLength=source.slice(0,-1)+'!';assert.equal(sameLength.length,source.length);
+  for(const unknown of [source.slice(1),source+'\n',sameLength,source.replaceAll('\n','\r\r\n')])
+   assert.equal(beforeCurrentReplayFixes(path,unknown),unknown,'unknown complete bytes cannot project');
+  const bytes=Buffer.from(source);assert.equal(beforeCurrentReplayFixes(path,bytes),bytes,'Buffer inputs remain outside this string-only inverse');
+  assert.equal(beforeCurrentReplayFixes('foreign/'+path,source),source,'path remains part of the exact identity');
+  assert.equal(beforeCurrentReplayFixes(path,source),prior,'unknown inputs do not alter the exact projection');
+ }
+ let reads=[],bad=null;
+ const read=path=>{reads.push(path);const source=readFileSync(path,'utf8');return path===bad?source.replaceAll('\r\n','\n').slice(0,-1)+'!':source;};
+ authenticateUiEntrance(read);const first=[...reads];assert.equal(first.length,20);
+ reads=[];authenticateUiEntrance(read);assert.deepEqual(reads,first,'warm calls retain every linked read');
+ for(const [path]of originals){
+  bad=path;reads=[];assert.throws(()=>authenticateUiEntrance(read),error=>{assert.match(error.message,/linked owner identity/);assert(error.message.includes(path));return true;});
+  assert(reads.includes(path));bad=null;reads=[];authenticateUiEntrance(read);assert.deepEqual(reads,first,'recovery freshly authenticates the complete cohort');
+ }
+ authenticateUiEntrance(path=>readFileSync(path,'utf8').replaceAll('\r\n','\n').replaceAll('\n','\r\n'));
+});

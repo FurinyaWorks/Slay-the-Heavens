@@ -25,7 +25,20 @@ export function beforePosixDeadlineWorkflow(text){
 // A later measured Windows cutoff raises only the ordinary Full hard guard.
 // Exact known workflow variants retain the preceding 45-minute source bytes.
 const windowsDeadlinePredecessors=new Map([["c61bcf8806af9b370342c44a32077c65896fe15d8af097b99ab8342cc257158a","9f0a309dffe7a8a356d895d1ed03b167499cb1f296e80c27fa87d38e357eb08b"],["9031980631b073f06b6101840c5ab6532ca6087dc4a80c35a46eab0a944922cf","1b159fa2685b8bc2a36c82653710c6ab75e4f56c06ba8048b220ce7f1960eb52"],["81f8e9bc17d5b88f2d7123f243c530d7c664343b6ce497557644f5a9a316a0cb","959bd6e7a31fb08170fbad592e1dfb5154f3c5cd982c0ed7673d57bf5017ea39"]]);
+// Complete measured hosted deadlines restore only the exact preceding 75/60-minute workflow.
+const hostedDeadlinePredecessors=new Map([["58763ef02fe4ebd955198bfa47b84c5de49497c378339b931cd1ebb556bd0688","c61bcf8806af9b370342c44a32077c65896fe15d8af097b99ab8342cc257158a"],["8976dd643663ead3b1ba2eb80b416518ef637a93a5486c49208e493e7efbb9b1","9031980631b073f06b6101840c5ab6532ca6087dc4a80c35a46eab0a944922cf"],["1759564303c5a9eae393cd33756513b752fd82444ed5c740e32ba3c162a40f0c","81f8e9bc17d5b88f2d7123f243c530d7c664343b6ce497557644f5a9a316a0cb"]]);
+export function beforeHostedDeadlineWorkflow(text){
+ if(typeof text!=='string'||text.includes('\r\r\n'))return text;
+ const lf=text.replaceAll('\r\n','\n'),hash=value=>createHash('sha256').update(value).digest('hex');
+ const before=hostedDeadlinePredecessors.get(hash(lf));
+ if(!before)return text;
+ const prior=lf.replace("timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 105 }}","timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 75 }}")
+  .replace("    runs-on: ubuntu-24.04\n    timeout-minutes: 90\n","    runs-on: ubuntu-24.04\n    timeout-minutes: 60\n");
+ if(hash(prior)!==before)throw Error('Exact hosted execution deadline predecessor required');
+ return text.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 export function beforeWindowsDeadlineWorkflow(text){
+ text=beforeHostedDeadlineWorkflow(text);
  if(typeof text!=='string'||text.includes('\r\r\n'))return text;
  const lf=text.replaceAll('\r\n','\n'),hash=value=>createHash('sha256').update(value).digest('hex');
  const before=windowsDeadlinePredecessors.get(hash(lf));

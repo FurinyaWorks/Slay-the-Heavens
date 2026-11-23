@@ -174,7 +174,7 @@ test('v2 run menu continuation preserves the prior owner and rejects changed sib
  const changed=['src/lua/abyss_game_ui_input.lua','src/lua/abyss_game_ui_navigation.lua','src/lua/abyss_game_ui_navigation_view.lua'];
  for(const path of changed) {
   const raw=readLive(path);
-  assert.equal(beforeCharacterPreparationSource(path,raw,readLive),liveEpoch.proof.current[path].source);
+  assert.equal(beforeCharacterPreparationSource(path,raw,readLive).replaceAll('\r\n','\n'),liveEpoch.proof.current[path].source);
   assert.equal(liveEpoch.preCombinedSource(path,raw,{target:'v2RunMenuPrior',readSource:readLive}),sourceEpoch.proof.current[path].source);
   for(const missing of changed)assert.throws(()=>liveEpoch.preCombinedSource(path,raw,
    {target:'v2RunMenuPrior',readSource:p=>p===missing?null:readLive(p)}),/linked owner identity/);

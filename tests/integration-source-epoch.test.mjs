@@ -32,7 +32,11 @@ test('input retirement preserves exact older bytes and rejects tampered successo
  const prior=beforeInputRetirement(path,source);
  assert.notEqual(prior,source);
  assert.equal(authenticateInputRetirement(path,source,read),prior);
- assert.equal(authenticateInputRetirement(path,source.replaceAll('\n','\r\n'),read),prior.replaceAll('\n','\r\n'));
+ const crlf=text=>text.replaceAll('\r\n','\n').replaceAll('\n','\r\n');
+ assert.equal(authenticateInputRetirement(path,crlf(source),read),crlf(prior));
+ const doubleCr=crlf(source).replaceAll('\n','\r\n');
+ assert.notEqual(doubleCr,crlf(source));
+ assert.equal(authenticateInputRetirement(path,doubleCr,()=>assert.fail('double CR bytes authorized linked reads')),doubleCr);
  assert.throws(()=>authenticateInputRetirement(path,source,()=>source+'\n'),/input retirement validation/);
  assert.equal(authenticateInputRetirement(path,source+'\n',()=>assert.fail('foreign bytes authorized reads')),source+'\n');
  const retired=beforeInputRetirementReader(read)(retiredControllerPath);

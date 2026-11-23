@@ -76,6 +76,8 @@ export function beforeCurrentHistoricalStsSource(path,source){
   const text=source.toString('utf8'),prior=beforeCurrentHistoricalStsSource(path,text);
   return prior===text?source:Buffer.from(prior);
  }
+ // New exact integration tests first continue to the entrance witness's reviewed input.
+ if(path==='tests/integration-source-epoch.test.mjs')source=beforeCurrentReplayFixes(path,source);
  source=beforeUiEntranceWitness(path,source);
  if(path===copierPath)return beforeCurrentReplayCopier(path,source);
  if(path!==historicalStsEntry)return beforeCurrentReplayFixes(path,source);
@@ -92,7 +94,7 @@ export function beforeCurrentHistoricalStsSource(path,source){
 }
 function beforeCurrentReplayCopier(path,source){
  if(path===copierPath&&matches(source,{
-  sha256:'29df9432296fd722afcf73bf57fde0d6a8f35b7834a564e4f762bf7dee7d6937',gitBlob:'05d01d04e4a154dcbc70525c2569f7df264222c7',
+  sha256:'90a1ca010c889629b51b9d5590f5579fcd2cc5e9041572d19a351802c2f68ed6',gitBlob:'c51c6ada14844b355eb84730a986cec8bf93e8bc',
  })){
   const prior=lf(source).replace(/const entranceFiles=Object.freeze\(\{\n[\s\S]+?\n\}\);\n/,'')
    .replace('Object.entries(entranceFiles)','Object.entries(currentReplayFiles)');
