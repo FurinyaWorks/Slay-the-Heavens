@@ -22,7 +22,20 @@ export function beforePosixDeadlineWorkflow(text){
  if(hash(prior)!==before)throw Error('Exact POSIX deadline predecessor required');
  return text.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+// A later measured Windows cutoff raises only the ordinary Full hard guard.
+// Exact known workflow variants retain the preceding 45-minute source bytes.
+const windowsDeadlinePredecessors=new Map([["c61bcf8806af9b370342c44a32077c65896fe15d8af097b99ab8342cc257158a","9f0a309dffe7a8a356d895d1ed03b167499cb1f296e80c27fa87d38e357eb08b"],["9031980631b073f06b6101840c5ab6532ca6087dc4a80c35a46eab0a944922cf","1b159fa2685b8bc2a36c82653710c6ab75e4f56c06ba8048b220ce7f1960eb52"],["81f8e9bc17d5b88f2d7123f243c530d7c664343b6ce497557644f5a9a316a0cb","959bd6e7a31fb08170fbad592e1dfb5154f3c5cd982c0ed7673d57bf5017ea39"]]);
+export function beforeWindowsDeadlineWorkflow(text){
+ if(typeof text!=='string'||text.includes('\r\r\n'))return text;
+ const lf=text.replaceAll('\r\n','\n'),hash=value=>createHash('sha256').update(value).digest('hex');
+ const before=windowsDeadlinePredecessors.get(hash(lf));
+ if(!before)return text;
+ const prior=lf.replace("timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 75 }}","timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 45 }}");
+ if(hash(prior)!==before)throw Error('Exact Windows deadline predecessor required');
+ return text.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 export function beforeExecutionTimeoutWorkflow(text){
+ text=beforeWindowsDeadlineWorkflow(text);
  text=beforePosixDeadlineWorkflow(text);
  const original=text;
  text=beforeDraftQualityWorkflow(text);

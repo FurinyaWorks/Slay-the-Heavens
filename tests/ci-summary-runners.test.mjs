@@ -8,7 +8,7 @@ import { compileFunction } from 'node:vm';
 import { originalWorkflow } from './helpers/ci-runtime-workflow.mjs';
 import { beforePlatformWorkflow } from './helpers/platform-load-wiring.mjs';
 import { beforeDraftQualityWorkflow, draftQualityWorkflowEdits } from './helpers/draft-quality-workflow.mjs';
-import { beforeAutoMergeWorkflow, beforeExecutionTimeoutWorkflow, beforePosixDeadlineWorkflow } from './helpers/auto-merge-workflow.mjs';
+import { beforeAutoMergeWorkflow, beforeExecutionTimeoutWorkflow, beforePosixDeadlineWorkflow, beforeWindowsDeadlineWorkflow } from './helpers/auto-merge-workflow.mjs';
 import {closeoutRead,closeoutInventory} from './helpers/closeout-ci-source.mjs';
 import {beforeHostedCheckoutWorkflow} from './helpers/hosted-checkout-workflow.mjs';
 
@@ -283,8 +283,9 @@ test('combined preflight selects a complete fixed Release predecessor without ma
 
 
 test('reviewed POSIX sixty-minute hard guard preserves exact thirty-minute predecessors and rejects all drift',()=>{
- const physical=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
- const body=job('engineering-posix-shards',physical);
+ const actual=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ const physical=beforeWindowsDeadlineWorkflow(actual);
+ const body=job('engineering-posix-shards',actual);
  assert.match(body,/^    timeout-minutes: 60$/m);
  assert.match(body,/# performance target; the hard guard allows host variance. Files execute once./);
  assert.match(body,/max-parallel: 12/);
@@ -304,4 +305,30 @@ test('reviewed POSIX sixty-minute hard guard preserves exact thirty-minute prede
   assert.equal(beforeExecutionTimeoutWorkflow(changed),changed,'unknown sixty-minute source cannot inherit historical execution slack');
  }
  assert.equal(beforePosixDeadlineWorkflow(physical+'# foreign\n'),physical+'# foreign\n');
+});
+
+test('reviewed Windows seventy-five-minute hard guard retains its exact forty-five-minute predecessor and rejects drift',()=>{
+ const physical=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ const rules=job('rules',physical);
+ const deadline="timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 75 }}";
+ assert.ok(rules.includes(deadline),'ordinary and local-special Full retain explicit seventy-five-minute limits');
+ assert.match(rules,/# Thirty minutes is a performance target/);
+ assert.match(job('engineering-posix-shards',physical),/^    timeout-minutes: 60$/m);
+ const previous=physical.replace(deadline,deadline.replace('|| 75','|| 45'));
+ assert.equal(digest(previous),'9f0a309dffe7a8a356d895d1ed03b167499cb1f296e80c27fa87d38e357eb08b');
+ for(const eol of ['\n','\r\n']){
+  const current=physical.replaceAll('\n',eol),old=previous.replaceAll('\n',eol);
+  assert.equal(beforeWindowsDeadlineWorkflow(current),old);
+  assert.equal(beforeWindowsDeadlineWorkflow(old),old);
+  assert.equal(beforeExecutionTimeoutWorkflow(current),beforeExecutionTimeoutWorkflow(old));
+ }
+ for(const [from,to]of [[deadline,deadline.replace('|| 75','|| 76')],
+  [deadline,deadline.replace('&& 75','&& 74')],[deadline,deadline+'\n    '+deadline],
+  ['contents: read','contents: write'],['max-parallel: 12','max-parallel: 13'],
+  ['npm run check:engineering','npm run check:missing']]){
+  const changed=physical.replace(from,to);assert.notEqual(changed,physical);
+  assert.equal(beforeWindowsDeadlineWorkflow(changed),changed,'foreign Windows guard bytes cannot inherit the predecessor');
+  assert.equal(beforeExecutionTimeoutWorkflow(changed),changed,'unreviewed full-source changes remain visible');
+ }
+ assert.equal(beforeWindowsDeadlineWorkflow(physical+'# foreign\n'),physical+'# foreign\n');
 });

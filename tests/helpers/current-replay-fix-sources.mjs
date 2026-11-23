@@ -165,7 +165,7 @@ const bindings = new Map([
  {
   "path": "tests/helpers/release-ui-restore-source.mjs",
   "beforeSha256": "75da223110ac6a108face448920b3c07f61c427544cc8953a043721f99499c03",
-  "afterSha256": "57ea0c0631f3a9817621554c786880c718d21550c375ab7e5bb75fdaedf66292",
+  "afterSha256": "d2f34bef11ae4cb35c5df68556afc37d3de8d4ce7268a988bcef8fc39495b47a",
   "hunks": [
    {
     "at": 3,
@@ -175,7 +175,7 @@ const bindings = new Map([
    {
     "at": 61,
     "before": "export const beforeRecordingUi=(path,source)=>beforeReleaseDetailSource(path,recording.project(path,beforeCombatVisualSource(path,source)));\nexport function beforeAuthenticatedRecordingStage(path,source,read){\n const released=beforeRebasedRelease(path,source);\n if(released!==source)authorizeRebasedRelease([[path,source]],owner=>read(owner,'utf8'));\n const readReleased=owner=>beforeRebasedRelease(owner,read(owner,'utf8'));\n const current=beforeCombatVisualSource(path,released,readReleased);\n const prior=recording.project(path,current);\n if(prior!==current){\n  const live=combatVisualPriorRead(readReleased)(path,'utf8');\n  assert(matches(live,recording.files[path].after),'recording UI linked owner changed: '+path);",
-    "after": "export const beforeRecordingUi=(path,source)=>beforeReleaseDetailSource(path,recording.project(path,beforeCombatVisualSource(path,source)));\nconst officialRuntimePath='tests/official-assets-runtime.test.mjs';\nconst currentOfficialRuntime={\n sha256:'a3341b88551a035189ccc811fa7aa2b7f2eb9c1b6377baa22df6ff3b1fc8c828',\n gitBlob:'82bdb7dda43d8772e1d1d5ffac3a9690509d9dd4',\n};\nconst deckLayoutPath='scripts/deck-ui-layout.mjs';\nconst pileReturnLayout={\n sha256:'0f57f26a4fb520c8feb1df92d48417a6b445900a9ae453c160f500e5a9ee2272',\n gitBlob:'6c9ce59b446f0dd9b8d5f9ffb3c2303e0320195d',\n};\nfunction recordingRuntimeInput(path,source){\n source=beforeCurrentReplayFixes(path,beforeUiEntranceWitness(path,source));\n if(path!==officialRuntimePath||!matches(source,currentOfficialRuntime))return source;\n return beforeStsFadeCi(path,inputRetirementStsFixtureSource(path,source));\n}\nfunction recordingLayoutInput(path,source){\n if(path!==deckLayoutPath||!matches(source,pileReturnLayout))return source;\n const successor=\"battlePileReturn(button('pileReturn',[-550,-237,180,54],'返回'),theme.officialAssets.buttonInk)\";\n const predecessor=\"battlePileReturn(button('pileReturn',[-550,-237,180,54],'返回'),true,undefined,theme.officialAssets.buttonInk)\";\n assert.equal(source.split(successor).length,2,'exact pile return layout change');\n const prior=source.replace(successor,predecessor);\n assert(matches(prior,recording.files[path].after),'exact recording layout predecessor');\n return prior;\n}\nexport function beforeAuthenticatedRecordingStage(path,source,read){\n const input=recordingRuntimeInput(path,source);\n if(input!==source){\n  const live=read(path,'utf8');\n  assert(typeof live==='string'&&live.replaceAll('\\r\\n','\\n')===source.replaceAll('\\r\\n','\\n'),\n   'recording UI linked owner changed: '+path);\n }\n const readInput=owner=>recordingRuntimeInput(owner,read(owner,'utf8'));\n const released=beforeRebasedRelease(path,input);\n if(released!==input)authorizeRebasedRelease([[path,input]],readInput);\n const readReleased=owner=>beforeRebasedRelease(owner,readInput(owner));\n const current=recordingLayoutInput(path,beforeCombatVisualSource(path,released,readReleased));\n const prior=recording.project(path,current);\n if(prior!==current){\n  const live=recordingLayoutInput(path,combatVisualPriorRead(readReleased)(path,'utf8'));\n  assert(matches(live,recording.files[path].after),'recording UI linked owner changed: '+path);"
+    "after": "export const beforeRecordingUi=(path,source)=>beforeReleaseDetailSource(path,recording.project(path,beforeCombatVisualSource(path,source)));\nconst officialRuntimePath='tests/official-assets-runtime.test.mjs';\nconst currentOfficialRuntime={\n sha256:'a3341b88551a035189ccc811fa7aa2b7f2eb9c1b6377baa22df6ff3b1fc8c828',\n gitBlob:'82bdb7dda43d8772e1d1d5ffac3a9690509d9dd4',\n};\nconst deckLayoutPath='scripts/deck-ui-layout.mjs';\nconst pileReturnLayout={\n sha256:'0f57f26a4fb520c8feb1df92d48417a6b445900a9ae453c160f500e5a9ee2272',\n gitBlob:'6c9ce59b446f0dd9b8d5f9ffb3c2303e0320195d',\n};\nfunction recordingRuntimeInput(path,source){\n // Production owners must remain raw for the entrance cohort's fresh identity check.\n if(path.startsWith('src/')||path==='config/architecture.json')return source;\n source=beforeCurrentReplayFixes(path,beforeUiEntranceWitness(path,source));\n if(path!==officialRuntimePath||!matches(source,currentOfficialRuntime))return source;\n return beforeStsFadeCi(path,inputRetirementStsFixtureSource(path,source));\n}\nfunction recordingLayoutInput(path,source){\n if(path!==deckLayoutPath||!matches(source,pileReturnLayout))return source;\n const successor=\"battlePileReturn(button('pileReturn',[-550,-237,180,54],'返回'),theme.officialAssets.buttonInk)\";\n const predecessor=\"battlePileReturn(button('pileReturn',[-550,-237,180,54],'返回'),true,undefined,theme.officialAssets.buttonInk)\";\n assert.equal(source.split(successor).length,2,'exact pile return layout change');\n const prior=source.replace(successor,predecessor);\n assert(matches(prior,recording.files[path].after),'exact recording layout predecessor');\n return prior;\n}\nexport function beforeAuthenticatedRecordingStage(path,source,read){\n const input=recordingRuntimeInput(path,source);\n if(input!==source){\n  const live=read(path,'utf8');\n  assert(typeof live==='string'&&live.replaceAll('\\r\\n','\\n')===source.replaceAll('\\r\\n','\\n'),\n   'recording UI linked owner changed: '+path);\n }\n const readInput=owner=>recordingRuntimeInput(owner,read(owner,'utf8'));\n const released=beforeRebasedRelease(path,input);\n if(released!==input)authorizeRebasedRelease([[path,input]],readInput);\n const readReleased=owner=>beforeRebasedRelease(owner,readInput(owner));\n const current=recordingLayoutInput(path,beforeCombatVisualSource(path,released,readReleased));\n const prior=recording.project(path,current);\n if(prior!==current){\n  const live=recordingLayoutInput(path,combatVisualPriorRead(readReleased)(path,'utf8'));\n  assert(matches(live,recording.files[path].after),'recording UI linked owner changed: '+path);"
    }
   ]
  },
@@ -231,12 +231,22 @@ const bindings = new Map([
  {
   "path": "tests/v25-map-layout.test.mjs",
   "beforeSha256": "5040690e1a91ed327826662e953b0ff7ecdc4ecb47d00eeb5e5c6dbb4984c292",
-  "afterSha256": "1e672671a07a86720fe9ade094038e0f01efc7619fadee32275009c35222d428",
+  "afterSha256": "d42b3fb1f94d3b4efff6dfe84fd90da3aad989c4b7f1392cbe57922621ae2988",
   "hunks": [
    {
-    "at": 129,
+    "at": 125,
+    "before": "import {beforeAuthenticatedRecordingStage} from './helpers/release-ui-restore-source.mjs';\ntest('recording historical continuation accepts exact owners and rejects stale, drifted or mixed reads',()=>{",
+    "after": "import {beforeAuthenticatedRecordingStage} from './helpers/release-ui-restore-source.mjs';\nimport {beforeCurrentReplayFixes} from './helpers/current-replay-fix-sources.mjs';\ntest('recording historical continuation accepts exact owners and rejects stale, drifted or mixed reads',()=>{"
+   },
+   {
+    "at": 130,
     "before": "  const live=readFileSync(path,'utf8');\n  assert.equal(beforeAuthenticatedRecordingStage(path,live,readFileSync),row.before.source,path);\n  const drift=live+'\\n-- unreviewed drift\\n';",
     "after": "  const live=readFileSync(path,'utf8');\n  assert.equal(beforeAuthenticatedRecordingStage(path,live,readFileSync).replaceAll('\\r\\n','\\n'),row.before.source,path);\n  const drift=live+'\\n-- unreviewed drift\\n';"
+   },
+   {
+    "at": 137,
+    "before": "",
+    "after": "\ntest('recording continuation authenticates raw current production owners before projection',()=>{\n const path='src/lua/abyss_deck_ui.lua',live=readFileSync(path,'utf8');\n const expected=beforeAuthenticatedRecordingStage(path,live,readFileSync);\n const expectedLf=expected.replaceAll('\\r\\n','\\n');\n for(const owner of ['src/lua/abyss_game_ui.lua','src/lua/abyss_node_ui_faces.lua','src/lua/abyss_game_ui_run.lua']){\n  const raw=readFileSync(owner,'utf8'),stale=beforeCurrentReplayFixes(owner,raw);\n  assert.notEqual(stale,raw,'negative control must change production bytes');\n  for(const bad of [stale,raw+'\\n-- unreviewed drift\\n']){\n   assert.throws(()=>beforeAuthenticatedRecordingStage(path,live,p=>p===owner?bad:readFileSync(p,'utf8')),/linked owner (?:missing|identity|changed)/,owner);\n   assert.equal(beforeAuthenticatedRecordingStage(path,live,readFileSync),expected,'a rejected read must not authorize or poison the next cohort');\n  }\n }\n assert.equal(beforeAuthenticatedRecordingStage(path,live.replace(/\\r?\\n/g,'\\r\\n'),p=>readFileSync(p,'utf8').replace(/\\r?\\n/g,'\\r\\n')).replaceAll('\\r\\n','\\n'),expectedLf);\n});\n"
    }
   ]
  },
@@ -419,12 +429,12 @@ const bindings = new Map([
  {
   "path": "tests/ci-complete-calibration.test.mjs",
   "beforeSha256": "78b7d2983f4cb9e8cd53846f3c072158a200ad5b4dcd91fbe1873e99f57c1056",
-  "afterSha256": "fe5a05e1bc9bddf1a39ace3a64913b91e76d3ce904e60ba07f245b96659b1c4b",
+  "afterSha256": "6523ccaee4c995a97404ef743b684bd1e1152b9fdb59232bef14893bd6e00499",
   "hunks": [
    {
     "at": 420,
     "before": "test('current Full38 retains full coverage and reports performance targets under unchanged execution guards',t=>{\n const workflow=read('.github/workflows/quality.yml');assert.match(workflow,/timeout-minutes: \\$\\{\\{ inputs.runner_pool == 'local-special' && 75 \\|\\| 45 \\}\\}/);assert.match(workflow,/runs-on: ubuntu-24.04\\n    timeout-minutes: 30/);\n const js=discoverJs(),lua=currentLua();",
-    "after": "test('current Full38 retains full coverage and reports performance targets under unchanged execution guards',t=>{\n const workflow=rawBootstrapReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\\r\\n','\\n');assert.match(workflow,/timeout-minutes: \\$\\{\\{ inputs.runner_pool == 'local-special' && 75 \\|\\| 45 \\}\\}/);assert.match(workflow,/runs-on: ubuntu-24.04\\n    timeout-minutes: 60/);\n const js=discoverJs(),lua=currentLua();"
+    "after": "test('current Full38 retains full coverage and reports performance targets under unchanged execution guards',t=>{\n const workflow=rawBootstrapReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\\r\\n','\\n');assert.match(workflow,/timeout-minutes: \\$\\{\\{ inputs.runner_pool == 'local-special' && 75 \\|\\| 75 \\}\\}/);assert.match(workflow,/runs-on: ubuntu-24.04\\n    timeout-minutes: 60/);\n const js=discoverJs(),lua=currentLua();"
    },
    {
     "at": 1863,
@@ -447,9 +457,9 @@ const bindings = new Map([
     "after": "  }\n  const forecast=Math.max(...combined)+60000;\n  if(platform==='linux')assertPosixForecasts(js,count,forecast,budget);\n  else assert(forecast<budget,'complete current menu workload and unchanged reserve');\n  t.diagnostic(`${platform}: ${js.length} JS / ${lua.length} Lua, forecast ${forecast}ms including reserve`);\n }"
    },
    {
-    "at": 2032,
-    "before": " assert.match(job('rules'),/timeout-minutes: \\$\\{\\{ inputs.runner_pool == 'local-special' && 75 \\|\\| 45 \\}\\}/);\n assert.match(job('engineering-posix-shards'),/runs-on: ubuntu-24.04\\n    timeout-minutes: 30/);\n assert.deepEqual(currentQualityShardMatrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});\n for(const [platform,count,target,guard]of [['win32',18,1800000,2700000],['linux',15,1200000,1800000]]){\n  const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(js,`${i+1}/${count}`,platform));",
-    "after": " assert.match(job('rules'),/timeout-minutes: \\$\\{\\{ inputs.runner_pool == 'local-special' && 75 \\|\\| 45 \\}\\}/);\n assert.match(job('engineering-posix-shards'),/runs-on: ubuntu-24.04\\n    timeout-minutes: 60/);\n assert.deepEqual(currentQualityShardMatrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});\n for(const [platform,count,target,guard]of [['win32',18,1800000,2700000],['linux',15,1200000,3600000]]){\n  const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(js,`${i+1}/${count}`,platform));"
+    "at": 2031,
+    "before": " const job=name=>physical.match(new RegExp(`^  ${name}:\\\\n[\\\\s\\\\S]*?(?=^  [\\\\w-]+:|(?![\\\\s\\\\S]))`,'m'))[0];\n assert.match(job('rules'),/timeout-minutes: \\$\\{\\{ inputs.runner_pool == 'local-special' && 75 \\|\\| 45 \\}\\}/);\n assert.match(job('engineering-posix-shards'),/runs-on: ubuntu-24.04\\n    timeout-minutes: 30/);\n assert.deepEqual(currentQualityShardMatrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});\n for(const [platform,count,target,guard]of [['win32',18,1800000,2700000],['linux',15,1200000,1800000]]){\n  const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(js,`${i+1}/${count}`,platform));",
+    "after": " const job=name=>physical.match(new RegExp(`^  ${name}:\\\\n[\\\\s\\\\S]*?(?=^  [\\\\w-]+:|(?![\\\\s\\\\S]))`,'m'))[0];\n assert.match(job('rules'),/timeout-minutes: \\$\\{\\{ inputs.runner_pool == 'local-special' && 75 \\|\\| 75 \\}\\}/);\n assert.match(job('engineering-posix-shards'),/runs-on: ubuntu-24.04\\n    timeout-minutes: 60/);\n assert.deepEqual(currentQualityShardMatrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});\n for(const [platform,count,target,guard]of [['win32',18,1800000,4500000],['linux',15,1200000,3600000]]){\n  const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(js,`${i+1}/${count}`,platform));"
    }
   ]
  },
@@ -1271,24 +1281,24 @@ const bindings = new Map([
  {
   "path": "tests/ci-summary-runners.test.mjs",
   "beforeSha256": "4d3654d6309e49bd9a2984e071243659db59223d3cd9c8fe7633665ebf38d7ca",
-  "afterSha256": "cb7215eb41c870856fddd638f4413dd6de4a514242b733d34fc7c5e17ce18c11",
+  "afterSha256": "41b67b2bd77becd9e3dce36e027b1fd356fea42bb4dcbd9b073e8e21b4573361",
   "hunks": [
    {
     "at": 9,
     "before": "import { beforeDraftQualityWorkflow, draftQualityWorkflowEdits } from './helpers/draft-quality-workflow.mjs';\nimport { beforeAutoMergeWorkflow, beforeExecutionTimeoutWorkflow } from './helpers/auto-merge-workflow.mjs';\nimport {closeoutRead,closeoutInventory} from './helpers/closeout-ci-source.mjs';",
-    "after": "import { beforeDraftQualityWorkflow, draftQualityWorkflowEdits } from './helpers/draft-quality-workflow.mjs';\nimport { beforeAutoMergeWorkflow, beforeExecutionTimeoutWorkflow, beforePosixDeadlineWorkflow } from './helpers/auto-merge-workflow.mjs';\nimport {closeoutRead,closeoutInventory} from './helpers/closeout-ci-source.mjs';"
+    "after": "import { beforeDraftQualityWorkflow, draftQualityWorkflowEdits } from './helpers/draft-quality-workflow.mjs';\nimport { beforeAutoMergeWorkflow, beforeExecutionTimeoutWorkflow, beforePosixDeadlineWorkflow, beforeWindowsDeadlineWorkflow } from './helpers/auto-merge-workflow.mjs';\nimport {closeoutRead,closeoutInventory} from './helpers/closeout-ci-source.mjs';"
    },
    {
     "at": 282,
     "before": "",
-    "after": "\n\ntest('reviewed POSIX sixty-minute hard guard preserves exact thirty-minute predecessors and rejects all drift',()=>{\n const physical=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\\r\\n','\\n');\n const body=job('engineering-posix-shards',physical);\n assert.match(body,/^    timeout-minutes: 60$/m);\n assert.match(body,/# performance target; the hard guard allows host variance. Files execute once./);\n assert.match(body,/max-parallel: 12/);\n const previous=physical.replace('    runs-on: ubuntu-24.04\\n    timeout-minutes: 60\\n','    runs-on: ubuntu-24.04\\n    timeout-minutes: 30\\n');\n assert.equal(digest(previous),'6e951f39539296339c3ffaaee97d0bdcae4c72e97914ee33fccfb4420fd50adf','immutable physical thirty-minute predecessor');\n for(const eol of ['\\n','\\r\\n']){\n  const current=physical.replaceAll('\\n',eol),old=previous.replaceAll('\\n',eol);\n  assert.equal(beforePosixDeadlineWorkflow(current),old);\n  assert.equal(beforePosixDeadlineWorkflow(old),old);\n  assert.equal(beforeExecutionTimeoutWorkflow(current),beforeExecutionTimeoutWorkflow(old));\n }\n for(const [from,to]of [['timeout-minutes: 60','timeout-minutes: 61'],['contents: read','contents: write'],\n  ['max-parallel: 12','max-parallel: 13'],['npm run check:engineering','npm run check:missing'],\n  ['timeout-minutes: 60','timeout-minutes: 60\\n    timeout-minutes: 60']]){\n  const changed=physical.replace(from,to);assert.notEqual(changed,physical);\n  assert.equal(beforePosixDeadlineWorkflow(changed),changed,'unknown policy bytes must remain visible');\n  assert.equal(beforeExecutionTimeoutWorkflow(changed),changed,'unknown sixty-minute source cannot inherit historical execution slack');\n }\n assert.equal(beforePosixDeadlineWorkflow(physical+'# foreign\\n'),physical+'# foreign\\n');\n});\n"
+    "after": "\n\ntest('reviewed POSIX sixty-minute hard guard preserves exact thirty-minute predecessors and rejects all drift',()=>{\n const actual=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\\r\\n','\\n');\n const physical=beforeWindowsDeadlineWorkflow(actual);\n const body=job('engineering-posix-shards',actual);\n assert.match(body,/^    timeout-minutes: 60$/m);\n assert.match(body,/# performance target; the hard guard allows host variance. Files execute once./);\n assert.match(body,/max-parallel: 12/);\n const previous=physical.replace('    runs-on: ubuntu-24.04\\n    timeout-minutes: 60\\n','    runs-on: ubuntu-24.04\\n    timeout-minutes: 30\\n');\n assert.equal(digest(previous),'6e951f39539296339c3ffaaee97d0bdcae4c72e97914ee33fccfb4420fd50adf','immutable physical thirty-minute predecessor');\n for(const eol of ['\\n','\\r\\n']){\n  const current=physical.replaceAll('\\n',eol),old=previous.replaceAll('\\n',eol);\n  assert.equal(beforePosixDeadlineWorkflow(current),old);\n  assert.equal(beforePosixDeadlineWorkflow(old),old);\n  assert.equal(beforeExecutionTimeoutWorkflow(current),beforeExecutionTimeoutWorkflow(old));\n }\n for(const [from,to]of [['timeout-minutes: 60','timeout-minutes: 61'],['contents: read','contents: write'],\n  ['max-parallel: 12','max-parallel: 13'],['npm run check:engineering','npm run check:missing'],\n  ['timeout-minutes: 60','timeout-minutes: 60\\n    timeout-minutes: 60']]){\n  const changed=physical.replace(from,to);assert.notEqual(changed,physical);\n  assert.equal(beforePosixDeadlineWorkflow(changed),changed,'unknown policy bytes must remain visible');\n  assert.equal(beforeExecutionTimeoutWorkflow(changed),changed,'unknown sixty-minute source cannot inherit historical execution slack');\n }\n assert.equal(beforePosixDeadlineWorkflow(physical+'# foreign\\n'),physical+'# foreign\\n');\n});\n\ntest('reviewed Windows seventy-five-minute hard guard retains its exact forty-five-minute predecessor and rejects drift',()=>{\n const physical=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\\r\\n','\\n');\n const rules=job('rules',physical);\n const deadline=\"timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 75 }}\";\n assert.ok(rules.includes(deadline),'ordinary and local-special Full retain explicit seventy-five-minute limits');\n assert.match(rules,/# Thirty minutes is a performance target/);\n assert.match(job('engineering-posix-shards',physical),/^    timeout-minutes: 60$/m);\n const previous=physical.replace(deadline,deadline.replace('|| 75','|| 45'));\n assert.equal(digest(previous),'9f0a309dffe7a8a356d895d1ed03b167499cb1f296e80c27fa87d38e357eb08b');\n for(const eol of ['\\n','\\r\\n']){\n  const current=physical.replaceAll('\\n',eol),old=previous.replaceAll('\\n',eol);\n  assert.equal(beforeWindowsDeadlineWorkflow(current),old);\n  assert.equal(beforeWindowsDeadlineWorkflow(old),old);\n  assert.equal(beforeExecutionTimeoutWorkflow(current),beforeExecutionTimeoutWorkflow(old));\n }\n for(const [from,to]of [[deadline,deadline.replace('|| 75','|| 76')],\n  [deadline,deadline.replace('&& 75','&& 74')],[deadline,deadline+'\\n    '+deadline],\n  ['contents: read','contents: write'],['max-parallel: 12','max-parallel: 13'],\n  ['npm run check:engineering','npm run check:missing']]){\n  const changed=physical.replace(from,to);assert.notEqual(changed,physical);\n  assert.equal(beforeWindowsDeadlineWorkflow(changed),changed,'foreign Windows guard bytes cannot inherit the predecessor');\n  assert.equal(beforeExecutionTimeoutWorkflow(changed),changed,'unreviewed full-source changes remain visible');\n }\n assert.equal(beforeWindowsDeadlineWorkflow(physical+'# foreign\\n'),physical+'# foreign\\n');\n});\n"
    }
   ]
  },
  {
   "path": "tests/helpers/auto-merge-workflow.mjs",
   "beforeSha256": "4f3d88760eece33410ea9e895a6fb49d5cebab29bc7d124b88478ff0bf775103",
-  "afterSha256": "a2a718288c94baf4937114bc64f5fe31d6b993bc94960028085a1179cd2c9957",
+  "afterSha256": "f9002033ad195c34429a1c4e6ba5b8926c9fa0411262c35b6aef78064374b878",
   "hunks": [
    {
     "at": 0,
@@ -1298,7 +1308,80 @@ const bindings = new Map([
    {
     "at": 10,
     "before": "// changes remain visible to the old whole-source identities.\nexport function beforeExecutionTimeoutWorkflow(text){\n const original=text;",
-    "after": "// changes remain visible to the old whole-source identities.\n// The reviewed 60-minute guard restores only complete exact current, six-cap\n// or uncapped workflow bytes. Original 30-minute and all foreign bytes pass through.\nconst posixDeadlinePredecessors=new Map([[\"9f0a309dffe7a8a356d895d1ed03b167499cb1f296e80c27fa87d38e357eb08b\",\"6e951f39539296339c3ffaaee97d0bdcae4c72e97914ee33fccfb4420fd50adf\"],[\"1b159fa2685b8bc2a36c82653710c6ab75e4f56c06ba8048b220ce7f1960eb52\",\"34e0bc864351cb2b660c0ccb6a8278eb20fa3cfcc2808735695839f4518d1199\"],[\"959bd6e7a31fb08170fbad592e1dfb5154f3c5cd982c0ed7673d57bf5017ea39\",\"4f75bbb052340a40a87af0601a6652e8c9e94cae6c72a501abcda88e9f34c3fe\"]]);\nexport function beforePosixDeadlineWorkflow(text){\n if(typeof text!=='string'||text.includes('\\r\\r\\n'))return text;\n const lf=text.replaceAll('\\r\\n','\\n');\n const hash=value=>createHash('sha256').update(value).digest('hex');\n const before=posixDeadlinePredecessors.get(hash(lf));\n if(!before)return text;\n const prior=lf.replace('    runs-on: ubuntu-24.04\\n    timeout-minutes: 60\\n','    runs-on: ubuntu-24.04\\n    timeout-minutes: 30\\n');\n if(hash(prior)!==before)throw Error('Exact POSIX deadline predecessor required');\n return text.includes('\\r\\n')?prior.replaceAll('\\n','\\r\\n'):prior;\n}\nexport function beforeExecutionTimeoutWorkflow(text){\n text=beforePosixDeadlineWorkflow(text);\n const original=text;"
+    "after": "// changes remain visible to the old whole-source identities.\n// The reviewed 60-minute guard restores only complete exact current, six-cap\n// or uncapped workflow bytes. Original 30-minute and all foreign bytes pass through.\nconst posixDeadlinePredecessors=new Map([[\"9f0a309dffe7a8a356d895d1ed03b167499cb1f296e80c27fa87d38e357eb08b\",\"6e951f39539296339c3ffaaee97d0bdcae4c72e97914ee33fccfb4420fd50adf\"],[\"1b159fa2685b8bc2a36c82653710c6ab75e4f56c06ba8048b220ce7f1960eb52\",\"34e0bc864351cb2b660c0ccb6a8278eb20fa3cfcc2808735695839f4518d1199\"],[\"959bd6e7a31fb08170fbad592e1dfb5154f3c5cd982c0ed7673d57bf5017ea39\",\"4f75bbb052340a40a87af0601a6652e8c9e94cae6c72a501abcda88e9f34c3fe\"]]);\nexport function beforePosixDeadlineWorkflow(text){\n if(typeof text!=='string'||text.includes('\\r\\r\\n'))return text;\n const lf=text.replaceAll('\\r\\n','\\n');\n const hash=value=>createHash('sha256').update(value).digest('hex');\n const before=posixDeadlinePredecessors.get(hash(lf));\n if(!before)return text;\n const prior=lf.replace('    runs-on: ubuntu-24.04\\n    timeout-minutes: 60\\n','    runs-on: ubuntu-24.04\\n    timeout-minutes: 30\\n');\n if(hash(prior)!==before)throw Error('Exact POSIX deadline predecessor required');\n return text.includes('\\r\\n')?prior.replaceAll('\\n','\\r\\n'):prior;\n}\n// A later measured Windows cutoff raises only the ordinary Full hard guard.\n// Exact known workflow variants retain the preceding 45-minute source bytes.\nconst windowsDeadlinePredecessors=new Map([[\"c61bcf8806af9b370342c44a32077c65896fe15d8af097b99ab8342cc257158a\",\"9f0a309dffe7a8a356d895d1ed03b167499cb1f296e80c27fa87d38e357eb08b\"],[\"9031980631b073f06b6101840c5ab6532ca6087dc4a80c35a46eab0a944922cf\",\"1b159fa2685b8bc2a36c82653710c6ab75e4f56c06ba8048b220ce7f1960eb52\"],[\"81f8e9bc17d5b88f2d7123f243c530d7c664343b6ce497557644f5a9a316a0cb\",\"959bd6e7a31fb08170fbad592e1dfb5154f3c5cd982c0ed7673d57bf5017ea39\"]]);\nexport function beforeWindowsDeadlineWorkflow(text){\n if(typeof text!=='string'||text.includes('\\r\\r\\n'))return text;\n const lf=text.replaceAll('\\r\\n','\\n'),hash=value=>createHash('sha256').update(value).digest('hex');\n const before=windowsDeadlinePredecessors.get(hash(lf));\n if(!before)return text;\n const prior=lf.replace(\"timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 75 }}\",\"timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 45 }}\");\n if(hash(prior)!==before)throw Error('Exact Windows deadline predecessor required');\n return text.includes('\\r\\n')?prior.replaceAll('\\n','\\r\\n'):prior;\n}\nexport function beforeExecutionTimeoutWorkflow(text){\n text=beforeWindowsDeadlineWorkflow(text);\n text=beforePosixDeadlineWorkflow(text);\n const original=text;"
+   }
+  ]
+ },
+ {
+  "path": "tests/actor-damage-pipeline.test.mjs",
+  "beforeSha256": "94c11d90caf0e024c9f987e483bbb782e5b250323d14bb2420cf88e09d302f2e",
+  "afterSha256": "b2a58a1431f5143a1ae1569aabd0997efab68d07cfa1b447514180ce8e1df01c",
+  "hunks": [
+   {
+    "at": 29,
+    "before": "  }\n  const crlf=source=>source.replaceAll('\\n','\\r\\n');\n  for(const [path,{before}] of Object.entries(archive.files)){",
+    "after": "  }\n  const crlf=source=>source.replace(/\\r?\\n/g,'\\r\\n');\n  for(const [path,{before}] of Object.entries(archive.files)){"
+   },
+   {
+    "at": 33,
+    "before": "    const prior=path===config?stasis.files[config].before.source:before.source;\n    assert.equal(authenticateDevelopBackflow(path,live,read),prior);\n    assert.equal(authenticateDevelopBackflow(path,crlf(live),owner=>crlf(read(owner))),crlf(prior));",
+    "after": "    const prior=path===config?stasis.files[config].before.source:before.source;\n    assert.equal(authenticateDevelopBackflow(path,live,read),live.includes('\\r\\n')?crlf(prior):prior);\n    assert.equal(authenticateDevelopBackflow(path,crlf(live),owner=>crlf(read(owner))),crlf(prior));"
+   },
+   {
+    "at": 37,
+    "before": "    assert.equal(authenticateDevelopBackflow(path,live+'\\n',()=>assert.fail('unknown bytes must not read owners')),live+'\\n');\n    for(const owner of [...Object.keys(archive.files),...Object.keys(archive.added)]){",
+    "after": "    assert.equal(authenticateDevelopBackflow(path,live+'\\n',()=>assert.fail('unknown bytes must not read owners')),live+'\\n');\n    const doubleCr=live.replace(/\\r?\\n/g,'\\r\\r\\n');\n    assert.notEqual(doubleCr,live,'double CR negative must change bytes');\n    assert.equal(authenticateDevelopBackflow(path,doubleCr,()=>assert.fail('double CR source must not read owners')),doubleCr);\n    for(const owner of [...Object.keys(archive.files),...Object.keys(archive.added)]){"
+   },
+   {
+    "at": 64,
+    "before": "  const stasisPath='src/lua/abyss_act2_stasis.lua';\n  assert.equal(authenticateDevelopBackflow(stasisPath,read(stasisPath),read),stasis.files[stasisPath].before.source);\n  assert.throws(()=>authenticateDevelopBackflow(stasisPath,read(stasisPath),path=>path===config?stasisConfig:read(path)),/linked owner identity/);",
+    "after": "  const stasisPath='src/lua/abyss_act2_stasis.lua';\n  assert.equal(authenticateDevelopBackflow(stasisPath,read(stasisPath),read),read(stasisPath).includes('\\r\\n')?crlf(stasis.files[stasisPath].before.source):stasis.files[stasisPath].before.source);\n  assert.throws(()=>authenticateDevelopBackflow(stasisPath,read(stasisPath),path=>path===config?stasisConfig:read(path)),/linked owner identity/);"
+   }
+  ]
+ },
+ {
+  "path": "tests/deck-item-lifecycle.test.mjs",
+  "beforeSha256": "6a62cb556a016e52e80feac4e870f674ec786a14485b2568f7341050bc5e6677",
+  "afterSha256": "38928d3848838f84c974b6022856b9fc41c1bf1e61f8b6a1c6a08124da3195f3",
+  "hunks": [
+   {
+    "at": 30,
+    "before": " assert.notEqual(prior,current);\n assert.equal(beforeMapDeckSource(path,current.replaceAll('\\n','\\r\\n'),read),prior.replaceAll('\\n','\\r\\n'));\n assert.deepEqual(mapDeckPriorRead(read)(path),Buffer.from(prior));",
+    "after": " assert.notEqual(prior,current);\n assert.equal(beforeMapDeckSource(path,current.replace(/\\r?\\n/g,'\\r\\n'),read),prior.replace(/\\r?\\n/g,'\\r\\n'));\n assert.deepEqual(mapDeckPriorRead(read)(path),Buffer.from(prior));"
+   },
+   {
+    "at": 39,
+    "before": " }),/(?:map deck|combined) linked owner missing: src\\/lua\\/abyss_deck_ui\\.lua/);\n const drift=current+'\\n';",
+    "after": " }),/(?:map deck|combined) linked owner missing: src\\/lua\\/abyss_deck_ui\\.lua/);\n const doubleCr=current.replace(/\\r?\\n/g,'\\r\\r\\n');\n assert.notEqual(doubleCr,current,'double CR negative must change bytes');\n assert.equal(beforeMapDeckSource(path,doubleCr,()=>assert.fail('double CR source must not read owners')),doubleCr);\n const drift=current+'\\n';"
+   }
+  ]
+ },
+ {
+  "path": "tests/seven-refactor-source-epoch.test.mjs",
+  "beforeSha256": "b09c67aaf2f40ce8d4ffdf9fad05c32e44ad289b853e6ac424ac0bb2f5a5f4f5",
+  "afterSha256": "62d1daad52fd3ba42896b65b200b42edfbc90d24d25d87940d7815cfaabe5a1f",
+  "hunks": [
+   {
+    "at": 427,
+    "before": "  assert.equal(run(source),'{}\\n');assert.equal(reads,2);\n  const layout='{ \"cacheFreshness\" : 1 }\\n';\n  assert.equal(run(layout),'{}\\n');assert.equal(parses,1);assert.equal(reads,3);\n  assert.equal(run(layout),'{}\\n');assert.equal(parses,1);assert.equal(reads,4);\n  actual=source.replace('1','2');assert.throws(()=>run(layout),/linked owner identity/);assert.equal(reads,5);",
+    "after": "  assert.equal(run(source),'{}\\n');assert.equal(reads,2);\n  // Entrance admission parses every input afresh; only the pure layout matcher memoizes.\n  assert.equal(parses,2,'two exact input calls each retain the fresh entrance syntax gate');\n  const layout='{ \"cacheFreshness\" : 1 }\\n';\n  const beforeLayout=parses;\n  assert.equal(run(layout),'{}\\n');assert.equal(parses-beforeLayout,2,'fresh entrance plus first pure layout calculation');assert.equal(reads,3);\n  const beforeWarmLayout=parses;\n  assert.equal(run(layout),'{}\\n');assert.equal(parses-beforeWarmLayout,1,'warm calculation still runs fresh entrance admission');assert.equal(reads,4);\n  actual=source.replace('1','2');assert.throws(()=>run(layout),/linked owner identity/);assert.equal(reads,5);"
+   },
+   {
+    "at": 438,
+    "before": "  assert.throws(()=>project.preCombinedSource(path,layout,{target:'prior',readSource:null}),/linked owner reader/);\n  const foreign=layout.replace('1','2');assert.equal(run(foreign),foreign);assert.equal(reads,7);\n  assert.equal(run(foreign),foreign);assert.equal(reads,7);assert.equal(parses,2);\n }finally{crypto.createHash=originalHash;JSON.parse=originalParse;syncBuiltinESMExports();}",
+    "after": "  assert.throws(()=>project.preCombinedSource(path,layout,{target:'prior',readSource:null}),/linked owner reader/);\n  const foreign=layout.replace('1','2'),beforeForeign=parses;assert.equal(run(foreign),foreign);assert.equal(reads,7);\n  assert.equal(parses-beforeForeign,2,'foreign input runs entrance syntax and its first pure calculation');\n  const beforeWarmForeign=parses;\n  assert.equal(run(foreign),foreign);assert.equal(reads,7);assert.equal(parses-beforeWarmForeign,1,'foreign warm calculation is cached without caching admission');\n }finally{crypto.createHash=originalHash;JSON.parse=originalParse;syncBuiltinESMExports();}"
+   }
+  ]
+ },
+ {
+  "path": "tests/reward-query-boundary-source.test.mjs",
+  "beforeSha256": "378703a708fce2a44c6cb039d8825b0708a25e92191956afe9e347e39b4aedb8",
+  "afterSha256": "c9d507b438db574106eb871ba6fad96d0fcd9d05c8535e5a9bed15943ab03490",
+  "hunks": [
+   {
+    "at": 163,
+    "before": "console.log('ISOLATED_REWARD_QUERY_SOURCE_PASS');`;\n  const result=spawnSync(process.execPath,['--input-type=module','-e',script],{cwd:root,encoding:'utf8',timeout:30000,maxBuffer:1024*1024});\n  assert.ifError(result.error);assert.equal(result.status,0,result.stdout+result.stderr);assert.match(result.stdout,/ISOLATED_REWARD_QUERY_SOURCE_PASS/);",
+    "after": "console.log('ISOLATED_REWARD_QUERY_SOURCE_PASS');`;\n  const result=spawnSync(process.execPath,['--input-type=module','-e',script],{cwd:root,encoding:'utf8',timeout:180000,maxBuffer:1024*1024});\n  assert.ifError(result.error);assert.equal(result.status,0,result.stdout+result.stderr);assert.match(result.stdout,/ISOLATED_REWARD_QUERY_SOURCE_PASS/);"
    }
   ]
  }

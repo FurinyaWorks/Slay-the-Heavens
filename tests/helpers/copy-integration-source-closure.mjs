@@ -334,8 +334,8 @@ const currentReplayFiles=Object.freeze({
 const entranceFiles=Object.freeze({
  ...currentReplayFiles,
  'tests/helpers/m7-core-final-source-inverse.mjs':'215cfae4d501c03f01c3ea773772db867058a658863be6e13e0b0507668323a5',
- 'tests/helpers/release-ui-restore-source.mjs':'57ea0c0631f3a9817621554c786880c718d21550c375ab7e5bb75fdaedf66292',
- 'tests/helpers/current-replay-fix-sources.mjs':'dc4ffa64e6359501e10b3415e0e2f8203f1f25f0e19866f73d52497d6bc60482',
+ 'tests/helpers/release-ui-restore-source.mjs':'d2f34bef11ae4cb35c5df68556afc37d3de8d4ce7268a988bcef8fc39495b47a',
+ 'tests/helpers/current-replay-fix-sources.mjs':'16898ae731955510a65b780ae28ee88d7b8bf0d16533bdf4310ce03f9b824ce1',
  [runtime]:'278820e92b95d78ccca26cee32a353e53eaf8e87377fabe8c8dcb64f6995264d',
  [closeout]:'4f559399c631fbd0fd25ea7f1ceb8f3b8c6643e167f0116d9f151e12ee0a0ecb',
  'tests/helpers/character-preparation-source.mjs':'4d209e768d9dfcb5afa466c0224eccfd1fa8f47a22c27e5d7b8b99fd8231f5cb',

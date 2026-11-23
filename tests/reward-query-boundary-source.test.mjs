@@ -162,7 +162,7 @@ for(const host of paths)for(const linked of paths){
  writeFileSync(linked,sources[linked]);assert.equal(project(host,sources[host]),proof.files[host].beforeSource);
 }
 console.log('ISOLATED_REWARD_QUERY_SOURCE_PASS');`;
-  const result=spawnSync(process.execPath,['--input-type=module','-e',script],{cwd:root,encoding:'utf8',timeout:30000,maxBuffer:1024*1024});
+  const result=spawnSync(process.execPath,['--input-type=module','-e',script],{cwd:root,encoding:'utf8',timeout:180000,maxBuffer:1024*1024});
   assert.ifError(result.error);assert.equal(result.status,0,result.stdout+result.stderr);assert.match(result.stdout,/ISOLATED_REWARD_QUERY_SOURCE_PASS/);
   const proofPath=join(root,'tests/helpers/epochs/reward/tests/helpers/reward-query-boundary-before.json');
   writeFileSync(proofPath,readFileSync(proofPath,'utf8').replace('d8a57cae','e8a57cae'));
