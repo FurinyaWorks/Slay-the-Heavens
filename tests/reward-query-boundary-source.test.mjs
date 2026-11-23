@@ -5,7 +5,8 @@ import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
 import {execFile,spawnSync} from 'node:child_process';
 import {join} from 'node:path';
-import {tmpdir} from 'node:os';
+import {availableParallelism,tmpdir} from 'node:os';
+import {hasTestNameFilter,runIsolatedTest} from './helpers/isolated-historical-cases.mjs';
 import {promisify} from 'node:util';
 import {rewardQueryBoundaryProof as proof,preRewardQueryBoundarySource as project,rewardQueryBoundaryReader as reader} from './helpers/reward-query-boundary-source-inverse.mjs';
 import {preM7FinalSource,m7FinalReader} from './helpers/m7-core-final-source-inverse.mjs';
@@ -186,12 +187,27 @@ console.log('ISOLATED_REWARD_QUERY_SOURCE_PASS '+index);`;
 });
 
 
-test('current reward and M7 wrappers freshly reject every expanded owner and recover after each fault',()=>{
+const expandedOwnerCase='current reward and M7 wrappers freshly reject every expanded owner and recover after each fault';
+const expandedOwnerLane='--reward-expanded-owner-lane';
+test(expandedOwnerCase,async()=>{
+ assert.equal(paths.length,4,'the expanded reward checks bind four hosts');
+ let hosts=paths;
+ if(process.argv[2]===expandedOwnerLane){
+  const index=Number(process.argv[3]);assert(index===0||index===1);
+  hosts=paths.filter((_,position)=>position%2===index);
+ }else if(process.platform==='win32'&&process.env.GITHUB_ACTIONS==='true'&&process.env.RUNNER_ENVIRONMENT==='github-hosted'
+  &&availableParallelism()>=2&&!hasTestNameFilter()){
+  // This case alone used over 35 minutes in Windows job 137628123978.
+  const outcomes=await Promise.allSettled([0,1].map(index=>runIsolatedTest(import.meta.url,
+   [expandedOwnerLane,String(index)],[`--test-name-pattern=^${expandedOwnerCase}$`])));
+  for(const outcome of outcomes)if(outcome.status==='rejected')throw outcome.reason;
+  return;
+ }
  const owners=[...sourceEpoch.proof.owners,pointerInputPath];
  assert.throws(()=>read(retiredControllerPath),{code:'ENOENT'});
  const retiredSource=beforeInputRetirementReader(read)(retiredControllerPath);
  const sources=Object.fromEntries(owners.filter(path=>path!==retiredControllerPath).map(path=>[path,read(path)]));
- for(const [consume,wrap]of [[project,reader],[preM7FinalSource,m7FinalReader]])for(const host of paths){
+ for(const [consume,wrap]of [[project,reader],[preM7FinalSource,m7FinalReader]])for(const host of hosts){
   let bad=null,mode='good',seen=[];
   const raw=p=>{seen.push(p);if(p===bad){
    if(mode==='throw')throw Error('expanded reader sentinel: '+p);

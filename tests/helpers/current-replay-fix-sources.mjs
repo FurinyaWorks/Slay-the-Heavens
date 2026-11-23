@@ -1243,27 +1243,37 @@ const bindings = new Map([
  {
   "path": "tests/reward-query-boundary-source.test.mjs",
   "beforeSha256": "378703a708fce2a44c6cb039d8825b0708a25e92191956afe9e347e39b4aedb8",
-  "afterSha256": "6783c2d6e87559400dda46ecd45719bbdafbf391007f301704a3fd44995755f5",
+  "afterSha256": "7bf078a323881c3b5b77dec581678dd68cb471a0dd320411f0eebbae57451aa9",
   "hunks": [
    {
     "at": 1,
     "before": "import assert from 'node:assert/strict';\nimport {readFileSync,writeFileSync,mkdtempSync,rmSync} from 'node:fs';\nimport {createHash} from 'node:crypto';\nimport {gunzipSync} from 'node:zlib';\nimport {spawnSync} from 'node:child_process';\nimport {join} from 'node:path';\nimport {tmpdir} from 'node:os';\nimport {rewardQueryBoundaryProof as proof,preRewardQueryBoundarySource as project,rewardQueryBoundaryReader as reader} from './helpers/reward-query-boundary-source-inverse.mjs';",
-    "after": "import assert from 'node:assert/strict';\nimport {readFileSync,writeFileSync,mkdtempSync,mkdirSync,rmSync} from 'node:fs';\nimport {createHash} from 'node:crypto';\nimport {gunzipSync} from 'node:zlib';\nimport {execFile,spawnSync} from 'node:child_process';\nimport {join} from 'node:path';\nimport {tmpdir} from 'node:os';\nimport {promisify} from 'node:util';\nimport {rewardQueryBoundaryProof as proof,preRewardQueryBoundarySource as project,rewardQueryBoundaryReader as reader} from './helpers/reward-query-boundary-source-inverse.mjs';"
+    "after": "import assert from 'node:assert/strict';\nimport {readFileSync,writeFileSync,mkdtempSync,mkdirSync,rmSync} from 'node:fs';\nimport {createHash} from 'node:crypto';\nimport {gunzipSync} from 'node:zlib';\nimport {execFile,spawnSync} from 'node:child_process';\nimport {join} from 'node:path';\nimport {availableParallelism,tmpdir} from 'node:os';\nimport {hasTestNameFilter,runIsolatedTest} from './helpers/isolated-historical-cases.mjs';\nimport {promisify} from 'node:util';\nimport {rewardQueryBoundaryProof as proof,preRewardQueryBoundarySource as project,rewardQueryBoundaryReader as reader} from './helpers/reward-query-boundary-source-inverse.mjs';"
    },
    {
-    "at": 147,
+    "at": 148,
     "before": "\ntest('an isolated copied helper has a complete closure and cannot borrow live owners after warm edits or deletion',()=>{\n const root=mkdtempSync(join(tmpdir(),'reward-query-source-'));\n try{\n  copyCurrentSourceFixture(root);\n  const script=`",
     "after": "\ntest('an isolated copied helper has a complete closure and cannot borrow live owners after warm edits or deletion',async()=>{\n const root=mkdtempSync(join(tmpdir(),'reward-query-source-'));\n try{\n  const copies=['first','second'].map(name=>{\n   const directory=join(root,name);mkdirSync(directory);copyCurrentSourceFixture(directory);return directory;\n  });\n  const script=`"
    },
    {
-    "at": 158,
+    "at": 159,
     "before": "const paths=Object.keys(proof.files),sources=Object.fromEntries(paths.map(p=>[p,readFileSync(p,'utf8')]));\nfor(const host of paths)for(const linked of paths){\n assert.equal(project(host,sources[host]),proof.files[host].beforeSource);",
     "after": "const paths=Object.keys(proof.files),sources=Object.fromEntries(paths.map(p=>[p,readFileSync(p,'utf8')]));\nassert.equal(paths.length,4,'the reviewed reward closure has four owners');\nconst index=Number(process.argv[1]),host=paths[index];assert(host,'registered host for detached verification');\nfor(const linked of paths){\n assert.equal(project(host,sources[host]),proof.files[host].beforeSource);"
    },
    {
-    "at": 167,
+    "at": 168,
     "before": "}\nconsole.log('ISOLATED_REWARD_QUERY_SOURCE_PASS');`;\n  const result=spawnSync(process.execPath,['--input-type=module','-e',script],{cwd:root,encoding:'utf8',timeout:30000,maxBuffer:1024*1024});\n  assert.ifError(result.error);assert.equal(result.status,0,result.stdout+result.stderr);assert.match(result.stdout,/ISOLATED_REWARD_QUERY_SOURCE_PASS/);\n  const proofPath=join(root,'tests/helpers/epochs/reward/tests/helpers/reward-query-boundary-before.json');\n  writeFileSync(proofPath,readFileSync(proofPath,'utf8').replace('d8a57cae','e8a57cae'));\n  const negative=spawnSync(process.execPath,['--input-type=module','-e',\"import './tests/helpers/reward-query-boundary-source-inverse.mjs'\"],{cwd:root,encoding:'utf8',timeout:30000,maxBuffer:1024*1024});\n  assert.ifError(negative.error);assert.notEqual(negative.status,0);assert.match(negative.stderr,/complete reward query boundary source proof/);",
     "after": "}\nconsole.log('ISOLATED_REWARD_QUERY_SOURCE_PASS '+index);`;\n  const execute=promisify(execFile),options={encoding:'utf8',timeout:30000,maxBuffer:1024*1024,windowsHide:true};\n  // Keep two independent copies and give each complete host check its own VM.\n  // Windows job 137593688380 reached the per-VM deadline with two hosts.\n  const outcomes=await Promise.allSettled(copies.map(async(cwd,lane)=>{\n   for(const index of [lane*2,lane*2+1]){\n    const {stdout}=await execute(process.execPath,['--input-type=module','-e',script,String(index)],{...options,cwd})\n     .catch(error=>assert.fail([`detached host ${index}`,error.code,error.signal,error.stdout,error.stderr,error.message].filter(Boolean).join('\\n')));\n    assert.match(stdout,new RegExp('^ISOLATED_REWARD_QUERY_SOURCE_PASS '+index+'\\\\r?$','m'));\n   }\n  }));\n  for(const result of outcomes)if(result.status==='rejected')throw result.reason;\n  const proofPath=join(copies[0],'tests/helpers/epochs/reward/tests/helpers/reward-query-boundary-before.json');\n  writeFileSync(proofPath,readFileSync(proofPath,'utf8').replace('d8a57cae','e8a57cae'));\n  const negative=spawnSync(process.execPath,['--input-type=module','-e',\"import './tests/helpers/reward-query-boundary-source-inverse.mjs'\"],{...options,cwd:copies[0]});\n  assert.ifError(negative.error);assert.notEqual(negative.status,0);assert.match(negative.stderr,/complete reward query boundary source proof/);"
+   },
+   {
+    "at": 188,
+    "before": "\ntest('current reward and M7 wrappers freshly reject every expanded owner and recover after each fault',()=>{\n const owners=[...sourceEpoch.proof.owners,pointerInputPath];",
+    "after": "\nconst expandedOwnerCase='current reward and M7 wrappers freshly reject every expanded owner and recover after each fault';\nconst expandedOwnerLane='--reward-expanded-owner-lane';\ntest(expandedOwnerCase,async()=>{\n assert.equal(paths.length,4,'the expanded reward checks bind four hosts');\n let hosts=paths;\n if(process.argv[2]===expandedOwnerLane){\n  const index=Number(process.argv[3]);assert(index===0||index===1);\n  hosts=paths.filter((_,position)=>position%2===index);\n }else if(process.platform==='win32'&&process.env.GITHUB_ACTIONS==='true'&&process.env.RUNNER_ENVIRONMENT==='github-hosted'\n  &&availableParallelism()>=2&&!hasTestNameFilter()){\n  // This case alone used over 35 minutes in Windows job 137628123978.\n  const outcomes=await Promise.allSettled([0,1].map(index=>runIsolatedTest(import.meta.url,\n   [expandedOwnerLane,String(index)],[`--test-name-pattern=^${expandedOwnerCase}$`])));\n  for(const outcome of outcomes)if(outcome.status==='rejected')throw outcome.reason;\n  return;\n }\n const owners=[...sourceEpoch.proof.owners,pointerInputPath];"
+   },
+   {
+    "at": 208,
+    "before": " const sources=Object.fromEntries(owners.filter(path=>path!==retiredControllerPath).map(path=>[path,read(path)]));\n for(const [consume,wrap]of [[project,reader],[preM7FinalSource,m7FinalReader]])for(const host of paths){\n  let bad=null,mode='good',seen=[];",
+    "after": " const sources=Object.fromEntries(owners.filter(path=>path!==retiredControllerPath).map(path=>[path,read(path)]));\n for(const [consume,wrap]of [[project,reader],[preM7FinalSource,m7FinalReader]])for(const host of hosts){\n  let bad=null,mode='good',seen=[];"
    }
   ]
  },
