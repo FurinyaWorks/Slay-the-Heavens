@@ -85,7 +85,7 @@ const windowsReplayMinimumMs = Object.freeze({
   'power-shop-boundaries.test.mjs': 1364000,
   'presentation-native-m3-contract.test.mjs': 791000,
   // Job 137510450112 completed this file before its Lua phase reached cutoff.
-  'ready-art-source-inverse.test.mjs': 1167000,
+  'ready-art-source-inverse.test.mjs': 1166000,
   'reward-query-boundary-source.test.mjs': 1440000,
   'round3-catalog-source-inverse.test.mjs': 278000,
   'run-architecture-inverse.test.mjs': 384000,

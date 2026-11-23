@@ -83,8 +83,8 @@ const rewardsBackViewBeforeCover=Object.freeze({
  gitBlob:'96f9fadefeabc3d3540e2797943c3b415605140d',
 });
 const rewardsBackViewSuccessor=Object.freeze({
- sha256:'7560014af0cbe0512f53379c0e25e6f54910de91230ee5d56e28827f6270771d',
- gitBlob:'7682235681f514805bf4924e1c662c00d34d2461',
+ sha256:'68ea9ed62cb732f0eab3ff65a4385e6dd018910db556e6fc3923f5972059885d',
+ gitBlob:'c3b64369b091e043a61529d9a4b15a42c04af99a',
 });
 function beforeRewardsBackExtraction(path,source){
  if(path!==rewardsBackView)return source;
@@ -92,21 +92,25 @@ function beforeRewardsBackExtraction(path,source){
  if(!current&&!matches(source,rewardsBackViewBeforeCover))return source;
  let text=normalize(source);
  if(current){
-  const cover=`            -- Reuse a cover only after its eager render has committed suspension.
-            -- The active flag changes before the native setter and can survive failure.
-            local deckBattle=self.mode=='battle' and deckOpen and run and run.combat or nil
-            local deferDeckRender=deckBattle~=nil and coveredDeckBattle==deckBattle
-            if not deferDeckRender then coveredDeckBattle=nil end
-            self.battleUI:setActive(self.mode == "battle" and not deckOpen and not potionOpen and not blocked,
-                suspendBattle(run,deckOpen,potionOpen),deferDeckRender)
-            if visibilityPass==pass then coveredDeckBattle=deckBattle end`;
+  const cover=`    local function refreshBattleVisibility(run,deckOpen,potionOpen,blocked,pass)
+        -- Reuse a cover only after its eager render has committed suspension.
+        -- The active flag changes before the native setter and can survive failure.
+        local deckBattle=self.mode=='battle' and deckOpen and run and run.combat or nil
+        local deferDeckRender=deckBattle~=nil and coveredDeckBattle==deckBattle
+        if not deferDeckRender then coveredDeckBattle=nil end
+        self.battleUI:setActive(self.mode == "battle" and not deckOpen and not potionOpen and not blocked,
+            suspendBattle(run,deckOpen,potionOpen),deferDeckRender)
+        if visibilityPass==pass then coveredDeckBattle=deckBattle end
+    end
+`;
   const previous=`            -- A deck open still commits one battle render below (input retirement,
             -- art ownership and suspension), after the host's visibility writes.
             self.battleUI:setActive(self.mode == "battle" and not deckOpen and not potionOpen and not blocked,
                 suspendBattle(run,deckOpen,potionOpen),self.mode=='battle' and deckOpen)`;
   const scope='    local coveredMapRun,coveredDeckBattle\n    local visibilityPass=0';
   const pass='            visibilityPass=visibilityPass+1\n            local pass=visibilityPass\n';
-  for(const [successor,prior] of [[scope,'    local coveredMapRun'],[pass,''],[cover,previous]]){
+  const call='            refreshBattleVisibility(run,deckOpen,potionOpen,blocked,pass)';
+  for(const [successor,prior] of [[scope,'    local coveredMapRun'],[pass,''],[cover,''],[call,previous]]){
    assert.equal(text.split(successor).length,2,'exact first-cover render successor');
    text=text.replace(successor,prior);
   }

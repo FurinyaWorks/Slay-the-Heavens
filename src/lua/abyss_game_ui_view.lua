@@ -273,19 +273,22 @@ function M.refreshPageVisibility(menu,self,suspendBattle,child,refreshMapResourc
         child("mapPanel"):SetVisible(onMap)
         refreshMapResources(run)
     end
+    local function refreshBattleVisibility(run,deckOpen,potionOpen,blocked,pass)
+        -- Reuse a cover only after its eager render has committed suspension.
+        -- The active flag changes before the native setter and can survive failure.
+        local deckBattle=self.mode=='battle' and deckOpen and run and run.combat or nil
+        local deferDeckRender=deckBattle~=nil and coveredDeckBattle==deckBattle
+        if not deferDeckRender then coveredDeckBattle=nil end
+        self.battleUI:setActive(self.mode == "battle" and not deckOpen and not potionOpen and not blocked,
+            suspendBattle(run,deckOpen,potionOpen),deferDeckRender)
+        if visibilityPass==pass then coveredDeckBattle=deckBattle end
+    end
     return function(run,inMenu,deckOpen,potionOpen,blocked)
             visibilityPass=visibilityPass+1
             local pass=visibilityPass
             if syncNative then syncNative(run) end
             menu:SetVisible(inMenu and not self.characterOpen and not self.easterEggOpen)
-            -- Reuse a cover only after its eager render has committed suspension.
-            -- The active flag changes before the native setter and can survive failure.
-            local deckBattle=self.mode=='battle' and deckOpen and run and run.combat or nil
-            local deferDeckRender=deckBattle~=nil and coveredDeckBattle==deckBattle
-            if not deferDeckRender then coveredDeckBattle=nil end
-            self.battleUI:setActive(self.mode == "battle" and not deckOpen and not potionOpen and not blocked,
-                suspendBattle(run,deckOpen,potionOpen),deferDeckRender)
-            if visibilityPass==pass then coveredDeckBattle=deckBattle end
+            refreshBattleVisibility(run,deckOpen,potionOpen,blocked,pass)
             child("battlePanel"):SetVisible(self.mode == "battle")
             refreshMapVisibility(run,deckOpen,potionOpen or blocked)
             self.nodeUI:setVisible(self.mode == "node" and not deckOpen and not potionOpen and not blocked,self.mode == "node",true)
