@@ -137,6 +137,27 @@ assert(battleRenders==renders,'master deck sorting repainted the covered battle'
 assert(host:closeDeck());assert(battleRenders>renders,'closing the deck must refresh the returning battle');settle()
 host.battleUI.render=renderBattle
 run.combat.draw={};assert(host:openDeck('draw'));settle();assert(#deck.cards==0 and not deck.pendingGrid and not deck.calibrating,'N to EMPTY left preparation pending')
+assert(host:closeDeck());settle()
+-- A command issued by a sibling native callback invalidates the eager cover paint.
+local mapPanel=root:GetChild('mapPanel');local mapVisible=mapPanel.SetVisible
+local replayed,paints=false,0
+host.battleUI.render=function(self,...)paints=paints+1;return renderOriginal(self,...)end
+mapPanel.SetVisible=function(self,visible)
+ local result=mapVisible(self,visible)
+ if not replayed then
+  replayed=true
+  for _,candidate in ipairs(run.combat.hand)do
+   if F.Combat.canPlay(run.combat,candidate.uid,nil)then
+    assert(require('abyss_run').play(run,candidate.uid));return result
+   end
+  end
+  error('fixture hand requires a legal no-target card')
+ end
+ return result
+end
+assert(host:openDeck('draw'));mapPanel.SetVisible=mapVisible;host.battleUI.render=renderOriginal
+assert(replayed and paints==2,'reentrant combat command must repaint the newly covered battle')
+assert(host:closeDeck());settle()
 
 -- Raiden's live rule highlighting still reads the combat snapshot, even though
 -- cards outside the hand no longer simulate a play to produce an empty preview.
