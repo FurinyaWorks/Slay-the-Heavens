@@ -1120,6 +1120,23 @@ const bindings = new Map([
     "after": " const old=Object.fromEntries(paths.map(path=>[path,before(path)]));\n // Prepare the exact four-owner epoch once for the injected reader. That reader\n // still supplies every fresh success or fault to the unchanged historical guard.\n const sources=Object.fromEntries(owners.map(path=>[path,read(path)]));\n for(const consume of [prior,publicPrior])for(const host of paths)for(const linked of owners){\n  const source=sources[host],expected=consume(host,source);let mode='good',reads=[];\n  const readSource=p=>{reads.push(p);if(p===linked){if(mode==='throw')throw Error('reader failed');if(mode==='missing')return undefined;if(mode==='drift')return sources[p]+'\\n';if(mode==='old')return old[p];}return sources[p]??read(p);};\n  assert.equal(consume(host,source,{readSource}),expected);assert.deepEqual(reads.slice(0,4),owners);"
    }
   ]
+ },
+ {
+  "path": "tests/native-audio-release-provenance.test.mjs",
+  "beforeSha256": "1e661c1eca61f3eaa762bb139ab9d18b1c507a6e9b28c5555638385ffe90f6e9",
+  "afterSha256": "76ad3a693920e182918eb37bc7f86066b940807e3843f447eeb1ae7d1fb47fac",
+  "hunks": [
+   {
+    "at": 5,
+    "before": "import assert from 'node:assert/strict';\nimport { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from 'node:fs';\nimport { join } from 'node:path';",
+    "after": "import assert from 'node:assert/strict';\nimport { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync, realpathSync } from 'node:fs';\nimport { join } from 'node:path';"
+   },
+   {
+    "at": 17,
+    "before": "function fixture(t, mutate = () => {}, {refined=false}={}) {\n  const root = mkdtempSync(join(tmpdir(), 'abyss-audio-release-'));\n  t.after(() => rmSync(root, { recursive: true, force: true }));",
+    "after": "function fixture(t, mutate = () => {}, {refined=false}={}) {\n  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'abyss-audio-release-')));\n  t.after(() => rmSync(root, { recursive: true, force: true }));"
+   }
+  ]
  }
 ].map(row=>[row.path,row]));
 
