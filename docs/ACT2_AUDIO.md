@@ -143,11 +143,11 @@
 
 ## 验证入口
 
-`tests/lua/feedback_polish.lua` 逐个创建 17 位二幕敌人并经过生产回放，检查实际 ID、行动唯一请求及死亡编号分离。既有回放用例保留多段、群攻、同批多敌死亡、连续出牌、取消后无旧音重播。交互回归见 `tests/lua/act2_audio_interactions.lua`。音乐由 `native_bgm.lua`、`native_bgm_host.lua`、原生图及打包测试覆盖。异常路径沿用致命启动／更新故障的停播合同。
+`tests/lua/feedback_polish.lua` 逐个创建 17 位二幕敌人并经过生产回放，检查实际 ID、行动唯一请求及死亡编号分离。既有回放用例保留多段、群攻、同批多敌死亡、连续出牌、取消后无旧音重播。交互回归见 `tests/lua/support/act2_audio_interactions.lua`。音乐由 `native_bgm.lua`、`native_bgm_host.lua`、原生图及打包测试覆盖。异常路径沿用致命启动／更新故障的停播合同。
 
 ```sh
 npm run build:data && npm run build:ui
-node scripts/test-lua.mjs tests/lua/act2_audio_interactions.lua
+node scripts/test-lua.mjs tests/lua/support/act2_audio_interactions.lua
 node scripts/test-lua.mjs tests/lua/feedback_polish.lua
 node scripts/test-lua.mjs tests/lua/feedback_continuous_cards.lua
 node --test tests/native-bgm-graph.test.mjs tests/native-bgm-build-provenance.test.mjs tests/native-audio-release-provenance.test.mjs

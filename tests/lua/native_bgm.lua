@@ -27,3 +27,4 @@ test("unavailable audio and failed signal never throw or retry each frame", func
     assert(not bgm:update("invented"))
 end)
 print("native BGM: " .. count .. " passed")
+dofile('tests/lua/support/act2_audio_interactions.lua')

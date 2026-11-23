@@ -49,7 +49,10 @@ const mapRoomCohortPaths=new Set([
  'tests/lua/support/session_menu_v25.lua',
  'tests/sts-page-reveal.test.mjs',
 ]);
+const audioReplayCohort=releaseUiRestoreArchive(readFileSync(new URL('./act2-audio-replay-cohort-source.json.gz',import.meta.url)),
+ '8789840857e25b02d5277a154a325d3ce5c9b0e2954fb9b23140186fb5946e0a','73c21489efaab409d4c0c46bee517d410d3427fc');
 export function beforeMapRoomReplayCohort(path,source){
+ source=audioReplayCohort.project(path,source);
  if(!mapRoomCohortPaths.has(path))return source;
  mapRoomReplayCohort??=releaseUiRestoreArchive(readFileSync(new URL('./map-room-replay-cohort-source.json.gz',import.meta.url)),
   '6af29058c13b798d571e11355bca6af33a9912c4363a627a7618f6979ec8a61f','67fc8750dd6ef9a13067c6a43137f910b6a44228');

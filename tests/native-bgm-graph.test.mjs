@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { authenticateAudioPresentation, beforeAudioPresentation, beforeAudioPresentationReader } from './helpers/act2-audio-source.mjs';
 import { nativeBgmGraphSource, nativeBgmSignals, loadNativeBgmConfig } from '../scripts/native-bgm-graph.mjs';
 
 function harness() {
@@ -53,5 +55,29 @@ test('generator fails closed on unsafe metadata, missing scenes and unreviewed n
   for (const patch of [{ volume: 101 }, { seconds: 0 }, { id: '10040' }, { loop: 'true' }]) {
     const config = structuredClone(loadNativeBgmConfig()); Object.assign(config.cues.map, patch);
     assert.throws(() => nativeBgmGraphSource({ id: 1, name: 'BGM', config }));
+  }
+});
+
+test('historical audio source projection checks the current linked bytes on each read', () => {
+  for (const path of [
+    'data/presentation/ui_theme.json',
+    'src/lua/abyss_battle_actions.lua',
+    'src/lua/abyss_game_ui_view.lua',
+  ]) {
+    const source = readFileSync(path, 'utf8');
+    let live = source;
+    const read = () => live;
+    const prior = authenticateAudioPresentation(path, source, read, {current:true});
+    assert.notEqual(prior, source);
+    const predecessorRead = beforeAudioPresentationReader(read, {current:true});
+    assert.equal(predecessorRead(path), prior);
+    for (const broken of [prior, source+'\n', null]) {
+      live = broken;
+      assert.throws(() => predecessorRead(path), /combined linked owner identity/);
+      assert.throws(() => authenticateAudioPresentation(path, source, read), /combined linked owner identity/);
+    }
+    assert.equal(beforeAudioPresentation(path, source+'\n'), source+'\n');
+    live = source.replaceAll('\n', '\r\n');
+    assert.equal(predecessorRead(path).replaceAll('\r\n', '\n'), prior);
   }
 });

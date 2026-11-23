@@ -2,6 +2,7 @@ import {beforeCoopJsInventory,beforeShopEntryInventory,beforePreflightSource,pre
 // Explicit immutable source views for the reviewed integration inputs.
 // Production projectors never import this CI-only archive.
 import assert from 'node:assert/strict';
+import {beforeAudioPresentation,beforeAudioPresentationReader} from './act2-audio-source.mjs';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
@@ -17,7 +18,7 @@ for(const [path,row]of Object.entries(integratedCiProof.files))for(const binding
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(binding.source)}\0`).update(binding.source).digest('hex'),binding.gitBlob);
 }
 export function integratedSource(path,source,target){
- source=beforePreflightSource(path,source);
+ source=beforePreflightSource(path,beforeAudioPresentation(path,source));
  assert(Object.hasOwn(integratedCiProof.sources,target),'known integration input');
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
  const row=Object.hasOwn(integratedCiProof.files,path)?integratedCiProof.files[path]:null;
@@ -36,6 +37,7 @@ export function integratedRead(target,{read=readFileSync}={}){read=preflightPrio
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function assertIntegratedCurrent(read=readFileSync){
+ read=beforeAudioPresentationReader(read,{current:true});
  assertReleaseBootstrapCiCurrent(read);
  read=preflightPriorRead(read);
  for(const [path,row]of Object.entries(integratedCiProof.files))assert.equal(hash(norm(releaseBootstrapCiCheckedSource(path,read(path,'utf8'),row.current))),row.current.sha256,'fresh complete integration source: '+path);
