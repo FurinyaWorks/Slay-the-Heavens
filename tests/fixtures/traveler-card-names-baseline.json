@@ -1,7 +1,7 @@
 {
   "sourcePath": "data/presentation/traveler.zh-CN.json",
   "names": {
-    "strike": "剑势·初式",
+    "strike": "普通攻击",
     "defend": "防御",
     "bash": "破防斩",
     "cleave": "星陨剑",
@@ -12,8 +12,8 @@
     "clash": "全力进攻",
     "flex": "蓄力",
     "true_grit": "稳住阵脚",
-    "twin_strike": "剑势·双斩",
-    "pommel_strike": "剑势·试锋",
+    "twin_strike": "重击",
+    "pommel_strike": "试探一击",
     "shrug_it_off": "伺机而动",
     "thunderclap": "横扫破防",
     "warcry": "调整战术",
@@ -41,6 +41,11 @@
     "reaper": "以战养战",
     "slimed": "黏滞",
     "regret": "余悔"
+  },
+  "approvedNameOverrides": {
+    "strike": "剑势·初式",
+    "twin_strike": "剑势·双斩",
+    "pommel_strike": "剑势·试锋"
   },
   "sourceCommit": "9ae1aec",
   "gitBlob": "41fceac09619c83e41ad1d33daf30a3fed7c6c4c"
