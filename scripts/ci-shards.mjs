@@ -1,6 +1,7 @@
-import { readFileSync, readdirSync } from 'node:fs';
-import { spawnSync } from 'node:child_process';
-import { resolve } from 'node:path';
+import { constants, cpSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { spawn, spawnSync } from 'node:child_process';
+import { availableParallelism, tmpdir } from 'node:os';
+import { isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { prepareReviewedAssets, prepareRuntimePreviews, needsRuntimePreviews } from './ci-reviewed-lfs.mjs';
 import {prepareMediaAssets} from './ci-media-lfs.mjs';
@@ -134,6 +135,50 @@ export function discoverJs(root = '.') {
   return files;
 }
 
+const timingReport = 'build/ci-js-timings.jsonl';
+const nodeTestArgs = files => ['--test', '--test-concurrency=1', '--test-reporter=spec',
+  '--test-reporter=./scripts/ci-timing-reporter.mjs', '--test-reporter-destination=stdout',
+  `--test-reporter-destination=${timingReport}`, ...files];
+
+function runInCheckout(files, cwd, env) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, nodeTestArgs(files), {
+      cwd, env: { ...env, GITHUB_WORKSPACE: cwd }, stdio: 'inherit', windowsHide: true,
+    });
+    child.once('error', reject);
+    child.once('close', status => resolve(status ?? 1));
+  });
+}
+
+async function runHostedPosixShard(files, root, env) {
+  const snapshot = mkdtempSync(join(tmpdir(), 'slay-ci-posix-'));
+  try {
+    const location = relative(root, realpathSync(snapshot));
+    if (!location || !isAbsolute(location) && location !== '..' && !location.startsWith(`..${sep}`)) {
+      throw new Error('Hosted POSIX snapshot must be outside the checkout');
+    }
+    // Each test process still runs serially in its own checkout. Copy before
+    // starting either process to isolate Git metadata, build outputs and fixtures.
+    cpSync(root, snapshot, { recursive: true, verbatimSymlinks: true, mode: constants.COPYFILE_FICLONE });
+    const weights = jsPlanningWeights(files, 'linux');
+    const original = partition(files, '1/2', weights, timings.unknownJsMs).files;
+    const copy = partition(files, '2/2', weights, timings.unknownJsMs).files;
+    const results = await Promise.allSettled([
+      runInCheckout(original, root, env), runInCheckout(copy, snapshot, env),
+    ]);
+    const copyReport = join(snapshot, timingReport);
+    const originalReport = join(root, timingReport);
+    const status = results.find(result => result.status === 'rejected');
+    if (!status) {
+      writeFileSync(originalReport, readFileSync(copyReport), { flag: 'a' });
+    }
+    if (status) throw status.reason;
+    return results.find(result => result.value !== 0)?.value ?? 0;
+  } finally {
+    rmSync(snapshot, { recursive: true, force: true });
+  }
+}
+
 export function main(args) {
   if (args.length !== 1 || !/^--(shard|prepare)=/.test(args[0])) throw new Error('Usage: ci-shards.mjs --shard=i/n | --prepare=i/n');
   const shard = args[0].split('=')[1], plan = jsShard(discoverJs(), shard);
@@ -150,13 +195,16 @@ export function main(args) {
   // failure/timeout handling. No NODE_TEST_CONTEXT may disable this child CLI.
   const env = { ...process.env };
   delete env.NODE_TEST_CONTEXT;
-  const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', '--test-reporter=spec',
-    '--test-reporter=./scripts/ci-timing-reporter.mjs', '--test-reporter-destination=stdout',
-    '--test-reporter-destination=build/ci-js-timings.jsonl', ...plan.files], { stdio: 'inherit', env, windowsHide: true });
+  const root = realpathSync('.');
+  if (process.platform === 'linux' && env.GITHUB_ACTIONS === 'true' && env.RUNNER_OS === 'Linux'
+      && env.GITHUB_WORKSPACE === root && availableParallelism() >= 2 && plan.files.length >= 2) {
+    return runHostedPosixShard(plan.files, root, env).then(status => { process.exitCode = status; });
+  }
+  const result = spawnSync(process.execPath, nodeTestArgs(plan.files), { stdio: 'inherit', env, windowsHide: true });
   if (result.error) throw result.error;
   process.exitCode = result.status ?? 1;
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  try { main(process.argv.slice(2)); } catch (error) { console.error(error.message); process.exitCode = 1; }
+  try { await main(process.argv.slice(2)); } catch (error) { console.error(error.message); process.exitCode = 1; }
 }

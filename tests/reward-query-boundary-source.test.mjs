@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,writeFileSync,mkdtempSync,rmSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdtempSync,mkdirSync,rmSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
-import {spawnSync} from 'node:child_process';
+import {execFile,spawnSync} from 'node:child_process';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
+import {promisify} from 'node:util';
 import {rewardQueryBoundaryProof as proof,preRewardQueryBoundarySource as project,rewardQueryBoundaryReader as reader} from './helpers/reward-query-boundary-source-inverse.mjs';
 import {preM7FinalSource,m7FinalReader} from './helpers/m7-core-final-source-inverse.mjs';
 import {preRelicQuerySource} from './helpers/relic-query-source-inverse.mjs';
@@ -145,28 +146,37 @@ test('reader wrappers never retain successful permissions and later same-call co
  assert(configReads>1);
 });
 
-test('an isolated copied helper has a complete closure and cannot borrow live owners after warm edits or deletion',()=>{
+test('an isolated copied helper has a complete closure and cannot borrow live owners after warm edits or deletion',async()=>{
  const root=mkdtempSync(join(tmpdir(),'reward-query-source-'));
  try{
-  copyCurrentSourceFixture(root);
+  const copies=['first','second'].map(name=>{
+   const directory=join(root,name);mkdirSync(directory);copyCurrentSourceFixture(directory);return directory;
+  });
   const script=`
 import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync,rmSync} from 'node:fs';
 import {rewardQueryBoundaryProof as proof,preRewardQueryBoundarySource as project} from './tests/helpers/reward-query-boundary-source-inverse.mjs';
 const paths=Object.keys(proof.files),sources=Object.fromEntries(paths.map(p=>[p,readFileSync(p,'utf8')]));
-for(const host of paths)for(const linked of paths){
+assert.equal(paths.length,4,'the reviewed reward closure has four owners');
+const index=Number(process.argv[1]);assert(index===0||index===1);
+for(const host of paths.slice(index*2,index*2+2))for(const linked of paths){
  assert.equal(project(host,sources[host]),proof.files[host].beforeSource);
  writeFileSync(linked,sources[linked]+'\\n');assert.throws(()=>project(host,sources[host]),/linked owner/);
  writeFileSync(linked,sources[linked]);assert.equal(project(host,sources[host]),proof.files[host].beforeSource);
  rmSync(linked);assert.throws(()=>project(host,sources[host]),/linked owner/);
  writeFileSync(linked,sources[linked]);assert.equal(project(host,sources[host]),proof.files[host].beforeSource);
 }
-console.log('ISOLATED_REWARD_QUERY_SOURCE_PASS');`;
-  const result=spawnSync(process.execPath,['--input-type=module','-e',script],{cwd:root,encoding:'utf8',timeout:30000,maxBuffer:1024*1024});
-  assert.ifError(result.error);assert.equal(result.status,0,result.stdout+result.stderr);assert.match(result.stdout,/ISOLATED_REWARD_QUERY_SOURCE_PASS/);
-  const proofPath=join(root,'tests/helpers/epochs/reward/tests/helpers/reward-query-boundary-before.json');
+console.log('ISOLATED_REWARD_QUERY_SOURCE_PASS '+index);`;
+  const execute=promisify(execFile),options={encoding:'utf8',timeout:30000,maxBuffer:1024*1024,windowsHide:true};
+  const outcomes=await Promise.allSettled(copies.map((cwd,index)=>
+   execute(process.execPath,['--input-type=module','-e',script,String(index)],{...options,cwd})));
+  for(const [index,result]of outcomes.entries()){
+   if(result.status==='rejected')assert.fail([result.reason.stdout,result.reason.stderr,result.reason.message].filter(Boolean).join('\n'));
+   assert.match(result.value.stdout,new RegExp('^ISOLATED_REWARD_QUERY_SOURCE_PASS '+index+'\\r?$','m'));
+  }
+  const proofPath=join(copies[0],'tests/helpers/epochs/reward/tests/helpers/reward-query-boundary-before.json');
   writeFileSync(proofPath,readFileSync(proofPath,'utf8').replace('d8a57cae','e8a57cae'));
-  const negative=spawnSync(process.execPath,['--input-type=module','-e',"import './tests/helpers/reward-query-boundary-source-inverse.mjs'"],{cwd:root,encoding:'utf8',timeout:30000,maxBuffer:1024*1024});
+  const negative=spawnSync(process.execPath,['--input-type=module','-e',"import './tests/helpers/reward-query-boundary-source-inverse.mjs'"],{...options,cwd:copies[0]});
   assert.ifError(negative.error);assert.notEqual(negative.status,0);assert.match(negative.stderr,/complete reward query boundary source proof/);
  }finally{rmSync(root,{recursive:true,force:true});}
 });

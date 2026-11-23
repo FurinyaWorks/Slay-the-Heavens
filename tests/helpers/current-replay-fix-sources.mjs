@@ -849,17 +849,37 @@ const bindings = new Map([
  {
   "path": "scripts/ci-shards.mjs",
   "beforeSha256": "6becba66be6048f090cd0036c2e5292f180d9010bbe24aef181977dca18fdeb3",
-  "afterSha256": "3a60c3e8f1b551099f7419f5f1c518e6ff7d5b8f02d0bc2efec3a391603231f4",
+  "afterSha256": "8edf95206df85e0ccfff53b739720b0c37d301ce3a9baa67acac5521d285588e",
   "hunks": [
    {
-    "at": 14,
+    "at": 0,
+    "before": "import { readFileSync, readdirSync } from 'node:fs';\nimport { spawnSync } from 'node:child_process';\nimport { resolve } from 'node:path';\nimport { pathToFileURL } from 'node:url';",
+    "after": "import { constants, cpSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs';\nimport { spawn, spawnSync } from 'node:child_process';\nimport { availableParallelism, tmpdir } from 'node:os';\nimport { isAbsolute, join, relative, resolve, sep } from 'node:path';\nimport { pathToFileURL } from 'node:url';"
+   },
+   {
+    "at": 15,
     "before": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n",
     "after": "timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);\n\n// Reserve the work that completed in POSIX jobs 137444936421, 137444936442,\n// 137444936458, 137444936507 and 137444936550 before their 30-minute cutoff.\n// Jobs 137468791737, 137468791821, 137468791838, 137468791852 and\n// 137468791853 from the next attempt exposed underweighted replay files.\n// Completed cases and file observations guide placement only.\nconst linuxReplayMinimumMs = Object.freeze({\n  'act1-choice-responsibilities.test.mjs': 153000,\n  'actor-lifecycle.test.mjs': 98000,\n  'approved-node-ui-refactor.test.mjs': 526000,\n  'approved-ui-inverse.test.mjs': 1295000,\n  'architecture-composition-format.test.mjs': 420000,\n  'art-feature-source-inverse.test.mjs': 412000,\n  'battle-max-hp-config-inverse.test.mjs': 124000,\n  'boss-ui-fixture-composition.test.mjs': 64000,\n  'card-origin-source-inverse.test.mjs': 149000,\n  'combat-reactions-architecture-inverse.test.mjs': 137000,\n  'competition-roster.test.mjs': 505000,\n  'core-architecture-inverse.test.mjs': 362000,\n  'core-lifecycle-source-inverse.test.mjs': 713000,\n  'defect-integration-source.test.mjs': 153000,\n  'end-turn-responsibilities.test.mjs': 252000,\n  'event-production-source-inverse.test.mjs': 100000,\n  'final-integration-source.test.mjs': 318000,\n  'game-ui-extraction-source-inverse.test.mjs': 870000,\n  'game-ui-host-result.test.mjs': 188000,\n  'max-hp-accepted-source-inverse.test.mjs': 677000,\n  'mobile-qa-source-migration.test.mjs': 140000,\n  'native-enemy-theme-inverse.test.mjs': 54000,\n  'nodes-battle-max-hp-config-inverse.test.mjs': 90000,\n  'player-death-inverse.test.mjs': 172000,\n  'potion-callback-source.test.mjs': 238000,\n  'power-shop-boundaries.test.mjs': 486000,\n  'presentation-native-m3-contract.test.mjs': 1037000,\n  'relic-query-source-inverse.test.mjs': 123000,\n});\n\n// Completed replay cases in Windows jobs 137468791786, 137468791799,\n// 137468791818, 137468791851, 137468791860, 137468791861, 137468791871\n// and 137468791996.\nconst windowsReplayMinimumMs = Object.freeze({\n  'act1-choice-responsibilities.test.mjs': 195000,\n  // Budget the longest completed case after isolating the three cases.\n  'approved-ui-inverse.test.mjs': 1455000,\n  'architecture-composition-format.test.mjs': 1190000,\n  'battle-max-hp-config-inverse.test.mjs': 681000,\n  'card-origin-source-inverse.test.mjs': 360000,\n  'colorless-catalog-source.test.mjs': 566000,\n  'compendium-source-inverse.test.mjs': 690000,\n  'competition-roster-config-composition.test.mjs': 287000,\n  'competition-roster.test.mjs': 735000,\n  'core-architecture-inverse.test.mjs': 321000,\n  // Job 137468791861 spent over half an hour on this file before cutoff.\n  'core-lifecycle-source-inverse.test.mjs': 800000,\n  'death-settlement-guard-inverse.test.mjs': 186000,\n  'formal-campaign-entry.test.mjs': 233000,\n  'living-wall-architecture-inverse.test.mjs': 1013000,\n  'native-candidate-art.test.mjs': 113000,\n  'official-assets-runtime.test.mjs': 216000,\n  'potion-callback-source.test.mjs': 132000,\n  'power-shop-boundaries.test.mjs': 1364000,\n  'presentation-native-m3-contract.test.mjs': 791000,\n  'reward-query-boundary-source.test.mjs': 1440000,\n  'round3-catalog-source-inverse.test.mjs': 278000,\n  'run-architecture-inverse.test.mjs': 384000,\n});\n\nexport const replayPlanningMinimumMs = Object.freeze({ linux: linuxReplayMinimumMs, win32: windowsReplayMinimumMs });\n"
    },
    {
-    "at": 108,
+    "at": 109,
     "before": "  const maps=Object.hasOwn(timings.js,platform)?[timings.js[platform]]:Object.values(timings.js);\n  return Object.fromEntries(files.map(file=>[file,Math.max(\n    ...maps.map(weights=>weights[file]??timings.unknownJsMs),\n    timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0)]));\n}",
     "after": "  const maps=Object.hasOwn(timings.js,platform)?[timings.js[platform]]:Object.values(timings.js);\n  return Object.fromEntries(files.map(file=>{\n    const name=file.slice('tests/'.length);\n    return [file,Math.max(\n      ...maps.map(weights=>weights[file]??timings.unknownJsMs),\n      timings.jsPlanning?.localLowerBounds?.[file]?.durationMs??0,\n      platform !== 'win32' ? linuxReplayMinimumMs[name] ?? 0 : 0,\n      platform !== 'linux' ? windowsReplayMinimumMs[name] ?? 0 : 0)];\n  }));\n}"
+   },
+   {
+    "at": 136,
+    "before": "\nexport function main(args) {",
+    "after": "\nconst timingReport = 'build/ci-js-timings.jsonl';\nconst nodeTestArgs = files => ['--test', '--test-concurrency=1', '--test-reporter=spec',\n  '--test-reporter=./scripts/ci-timing-reporter.mjs', '--test-reporter-destination=stdout',\n  `--test-reporter-destination=${timingReport}`, ...files];\n\nfunction runInCheckout(files, cwd, env) {\n  return new Promise((resolve, reject) => {\n    const child = spawn(process.execPath, nodeTestArgs(files), {\n      cwd, env: { ...env, GITHUB_WORKSPACE: cwd }, stdio: 'inherit', windowsHide: true,\n    });\n    child.once('error', reject);\n    child.once('close', status => resolve(status ?? 1));\n  });\n}\n\nasync function runHostedPosixShard(files, root, env) {\n  const snapshot = mkdtempSync(join(tmpdir(), 'slay-ci-posix-'));\n  try {\n    const location = relative(root, realpathSync(snapshot));\n    if (!location || !isAbsolute(location) && location !== '..' && !location.startsWith(`..${sep}`)) {\n      throw new Error('Hosted POSIX snapshot must be outside the checkout');\n    }\n    // Each test process still runs serially in its own checkout. Copy before\n    // starting either process to isolate Git metadata, build outputs and fixtures.\n    cpSync(root, snapshot, { recursive: true, verbatimSymlinks: true, mode: constants.COPYFILE_FICLONE });\n    const weights = jsPlanningWeights(files, 'linux');\n    const original = partition(files, '1/2', weights, timings.unknownJsMs).files;\n    const copy = partition(files, '2/2', weights, timings.unknownJsMs).files;\n    const results = await Promise.allSettled([\n      runInCheckout(original, root, env), runInCheckout(copy, snapshot, env),\n    ]);\n    const copyReport = join(snapshot, timingReport);\n    const originalReport = join(root, timingReport);\n    const status = results.find(result => result.status === 'rejected');\n    if (!status) {\n      writeFileSync(originalReport, readFileSync(copyReport), { flag: 'a' });\n    }\n    if (status) throw status.reason;\n    return results.find(result => result.value !== 0)?.value ?? 0;\n  } finally {\n    rmSync(snapshot, { recursive: true, force: true });\n  }\n}\n\nexport function main(args) {"
+   },
+   {
+    "at": 196,
+    "before": "  delete env.NODE_TEST_CONTEXT;\n  const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', '--test-reporter=spec',\n    '--test-reporter=./scripts/ci-timing-reporter.mjs', '--test-reporter-destination=stdout',\n    '--test-reporter-destination=build/ci-js-timings.jsonl', ...plan.files], { stdio: 'inherit', env, windowsHide: true });\n  if (result.error) throw result.error;",
+    "after": "  delete env.NODE_TEST_CONTEXT;\n  const root = realpathSync('.');\n  if (process.platform === 'linux' && env.GITHUB_ACTIONS === 'true' && env.RUNNER_OS === 'Linux'\n      && env.GITHUB_WORKSPACE === root && availableParallelism() >= 2 && plan.files.length >= 2) {\n    return runHostedPosixShard(plan.files, root, env).then(status => { process.exitCode = status; });\n  }\n  const result = spawnSync(process.execPath, nodeTestArgs(plan.files), { stdio: 'inherit', env, windowsHide: true });\n  if (result.error) throw result.error;"
+   },
+   {
+    "at": 207,
+    "before": "if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {\n  try { main(process.argv.slice(2)); } catch (error) { console.error(error.message); process.exitCode = 1; }\n}",
+    "after": "if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {\n  try { await main(process.argv.slice(2)); } catch (error) { console.error(error.message); process.exitCode = 1; }\n}"
    }
   ]
  },
@@ -1029,8 +1049,13 @@ const bindings = new Map([
  {
   "path": "tests/ci-runtime.test.mjs",
   "beforeSha256": "e420cc0f4973bc975a1d0fabdbc1b316fcf34c7ccb7db0ab1efef9270bbf0876",
-  "afterSha256": "b17178f24a4ff222ab024c532a5ec5ffe869f989373f78fffd57b4205e1c2d38",
+  "afterSha256": "e89fb00e2f3432c2496fec60bbc0d2e4be997fcc8553d94617798e9888bcfb5d",
   "hunks": [
+   {
+    "at": 26,
+    "before": "import {officialAssetsFlowPlanningFloors as officialAssetsPlanningFloors} from './helpers/official-assets-flow-ci-source-inverse.mjs';\nimport { tmpdir } from 'node:os';\nimport { resolve, join } from 'node:path';",
+    "after": "import {officialAssetsFlowPlanningFloors as officialAssetsPlanningFloors} from './helpers/official-assets-flow-ci-source-inverse.mjs';\nimport { availableParallelism, tmpdir } from 'node:os';\nimport { resolve, join } from 'node:path';"
+   },
    {
     "at": 33,
     "before": "import {readBeforeMobileQaSource} from './helpers/mobile-qa-source-inverse.mjs';\nimport { partition, jsShard, jsPlanningWeights, discoverJs, timings } from '../scripts/ci-shards.mjs';\nimport { shardLuaScripts } from '../scripts/test-lua.mjs';",
@@ -1052,17 +1077,27 @@ const bindings = new Map([
     "after": "  const fallback=jsPlanningWeights(files,platform);\n  for(const file of files)assert.equal(fallback[file],expectedPlanningWeight(file,platform));\n }"
    },
    {
-    "at": 289,
+    "at": 149,
+    "before": "\ntest('workflow uses the same balanced plan for materialization and execution without changing concurrency', () => {\n  const workflow = readFileSync('.github/workflows/quality.yml', 'utf8');",
+    "after": "\ntest('workflow uses the same balanced shard for materialization and isolated test execution', () => {\n  const workflow = readFileSync('.github/workflows/quality.yml', 'utf8');"
+   },
+   {
+    "at": 179,
+    "before": "  assert.ok(records.every(record => Number.isFinite(record.durationMs) && record.durationMs > 0));\n});",
+    "after": "  assert.ok(records.every(record => Number.isFinite(record.durationMs) && record.durationMs > 0));\n});\n\ntest('hosted POSIX execution isolates checkout writes and combines both timing reports', {\n  skip: process.platform !== 'linux' || availableParallelism() < 2,\n}, t => {\n  const parent = mkdtempSync(join(tmpdir(), 'abyss-ci-posix-executor-'));\n  t.after(() => rmSync(parent, { recursive: true, force: true }));\n  const root = join(parent, 'checkout'), copyTemp = join(parent, 'scratch');\n  for (const dir of ['tests', 'scripts', 'build']) mkdirSync(join(root, dir), { recursive: true });\n  mkdirSync(copyTemp);\n  copyFileSync('scripts/ci-timing-reporter.mjs', join(root, 'scripts/ci-timing-reporter.mjs'));\n  for (const label of ['a', 'b']) writeFileSync(join(root, `tests/${label}.test.mjs`), `\n    import assert from 'node:assert/strict';\n    import {writeFileSync} from 'node:fs';\n    import test from 'node:test';\n    test('${label}',()=>{\n      assert.equal(process.env.GITHUB_WORKSPACE,process.cwd());\n      writeFileSync('build/checkpoint','${label}',{flag:'wx'});\n      ${label === 'b' ? \"throw Error('isolated failure');\" : ''}\n    });`);\n  const env = { ...process.env, GITHUB_ACTIONS: 'true', RUNNER_OS: 'Linux', GITHUB_WORKSPACE: root, TMPDIR: copyTemp };\n  delete env.NODE_TEST_CONTEXT;\n  const result = spawnSync(process.execPath, [resolve('scripts/ci-shards.mjs'), '--shard=1/1'], {\n    cwd: root, env, encoding: 'utf8', timeout: 30000,\n  });\n  assert.ifError(result.error);\n  assert.notEqual(result.status, 0);\n  assert.match(result.stdout + result.stderr, /isolated failure/);\n  assert.equal(readFileSync(join(root, 'build/checkpoint'), 'utf8'), 'a');\n  assert.deepEqual(readdirSync(copyTemp), []);\n  const records = readFileSync(join(root, 'build/ci-js-timings.jsonl'), 'utf8').trim().split('\\n').map(JSON.parse);\n  assert.deepEqual(records.map(({file,success}) => [file,success]).sort(), [['tests/a.test.mjs',true],['tests/b.test.mjs',false]]);\n});"
+   },
+   {
+    "at": 321,
     "before": "  }\n  for(const platform of ['win32','linux'])assert.equal(jsPlanningWeights([file],platform)[file],Math.max(timings.js[platform][file]??timings.unknownJsMs,entry.durationMs));\n }",
     "after": "  }\n  for(const platform of ['win32','linux'])assert.equal(jsPlanningWeights([file],platform)[file],expectedPlanningWeight(file,platform,entry.durationMs));\n }"
    },
    {
-    "at": 423,
+    "at": 455,
     "before": "  assert.equal(timings.js[platform][key],10000,'retain actual old observations separately from the new local planning floor');\n  assert.equal(jsPlanningWeights([key],platform)[key],Math.max(timings.js[platform][key],floor.durationMs));\n }",
     "after": "  assert.equal(timings.js[platform][key],10000,'retain actual old observations separately from the new local planning floor');\n  assert.equal(jsPlanningWeights([key],platform)[key],expectedPlanningWeight(key,platform,floor.durationMs));\n }"
    },
    {
-    "at": 453,
+    "at": 485,
     "before": "  assert.equal(floor.durationMs,Math.ceil(observation.durationMs));assert.equal(observation.planningFloorMs,floor.durationMs);\n  for(const platform of ['win32','linux'])assert.equal(jsPlanningWeights([file],platform)[file],Math.max(timings.js[platform][file]??timings.unknownJsMs,floor.durationMs));\n }",
     "after": "  assert.equal(floor.durationMs,Math.ceil(observation.durationMs));assert.equal(observation.planningFloorMs,floor.durationMs);\n  for(const platform of ['win32','linux'])assert.equal(jsPlanningWeights([file],platform)[file],expectedPlanningWeight(file,platform,floor.durationMs));\n }"
    }
@@ -1157,6 +1192,33 @@ const bindings = new Map([
     "at": 187,
     "before": "   if(mode==='missing')return undefined;if(mode==='null')return null;\n   if(mode==='buffer')return Buffer.from(current[p]);if(mode==='changed')return current[p]+'\\n';\n  }return current[p]??read(p);};\n  const wrapped=actorPresenceReader(actorPresenceReader(raw));assert.equal(actorPresenceReader(wrapped),wrapped);\n  const check=()=>assert.equal(project(path,read(path),{readSource:wrapped}),proof.files[path].beforeSource);\n  check();const first=[...seen];for(const owner of sourceEpoch.proof.owners)assert(first.includes(owner),'fresh current owner: '+owner);\n  seen=[];check();assert.deepEqual(seen,first,'warm calls repeat the complete raw-read sequence');\n  for(bad of sourceEpoch.proof.owners)for(mode of ['changed','missing','null','buffer','throw']){\n   seen=[];assert.throws(check,error=>{assert.match(error.message,/linked owner/);assert(error.message.includes(bad));if(mode==='throw')assert.match(error.message,/expanded reader sentinel/);return true;});\n   assert(seen.includes(bad));const previous=mode;mode='good';check();mode=previous;\n  }",
     "after": "   if(mode==='missing')return undefined;if(mode==='null')return null;\n   const bytes=p===retiredControllerPath?retired.source:current[p];\n   if(mode==='present')return bytes;\n   if(mode==='buffer')return Buffer.from(bytes);if(mode==='changed')return bytes+'\\n';\n  }return p===retiredControllerPath?null:current[p]??read(p);};\n  const wrapped=actorPresenceReader(actorPresenceReader(raw));assert.equal(actorPresenceReader(wrapped),wrapped);\n  const check=()=>assert.equal(project(path,source,{readSource:wrapped}),proof.files[path].beforeSource);\n  check();const first=[...seen];for(const owner of sourceEpoch.proof.owners)assert(first.includes(owner),'fresh current owner: '+owner);\n  seen=[];check();assert.deepEqual(seen,first,'warm calls repeat the complete raw-read sequence');\n  for(bad of sourceEpoch.proof.owners){\n   const isRetired=bad===retiredControllerPath;\n   if(isRetired)for(mode of ['missing','null']){\n    seen=[];check();assert.deepEqual(seen,first,'retired controller still requires every current owner');\n   }\n   const modes=isRetired?['changed','present','buffer','throw']:['changed','missing','null','buffer','throw'];\n   for(mode of modes){\n    seen=[];assert.throws(check,error=>{assert.match(error.message,/linked owner/);assert(error.message.includes(bad));if(mode==='throw')assert.match(error.message,/expanded reader sentinel/);return true;});\n    assert(seen.includes(bad));const previous=mode;mode='good';check();mode=previous;\n   }\n  }"
+   }
+  ]
+ },
+ {
+  "path": "tests/reward-query-boundary-source.test.mjs",
+  "beforeSha256": "378703a708fce2a44c6cb039d8825b0708a25e92191956afe9e347e39b4aedb8",
+  "afterSha256": "f0c0507419de366b1f7d728242434047cc10d97ccf7bbaf6176f1f85ca1f4449",
+  "hunks": [
+   {
+    "at": 1,
+    "before": "import assert from 'node:assert/strict';\nimport {readFileSync,writeFileSync,mkdtempSync,rmSync} from 'node:fs';\nimport {createHash} from 'node:crypto';\nimport {gunzipSync} from 'node:zlib';\nimport {spawnSync} from 'node:child_process';\nimport {join} from 'node:path';\nimport {tmpdir} from 'node:os';\nimport {rewardQueryBoundaryProof as proof,preRewardQueryBoundarySource as project,rewardQueryBoundaryReader as reader} from './helpers/reward-query-boundary-source-inverse.mjs';",
+    "after": "import assert from 'node:assert/strict';\nimport {readFileSync,writeFileSync,mkdtempSync,mkdirSync,rmSync} from 'node:fs';\nimport {createHash} from 'node:crypto';\nimport {gunzipSync} from 'node:zlib';\nimport {execFile,spawnSync} from 'node:child_process';\nimport {join} from 'node:path';\nimport {tmpdir} from 'node:os';\nimport {promisify} from 'node:util';\nimport {rewardQueryBoundaryProof as proof,preRewardQueryBoundarySource as project,rewardQueryBoundaryReader as reader} from './helpers/reward-query-boundary-source-inverse.mjs';"
+   },
+   {
+    "at": 147,
+    "before": "\ntest('an isolated copied helper has a complete closure and cannot borrow live owners after warm edits or deletion',()=>{\n const root=mkdtempSync(join(tmpdir(),'reward-query-source-'));\n try{\n  copyCurrentSourceFixture(root);\n  const script=`",
+    "after": "\ntest('an isolated copied helper has a complete closure and cannot borrow live owners after warm edits or deletion',async()=>{\n const root=mkdtempSync(join(tmpdir(),'reward-query-source-'));\n try{\n  const copies=['first','second'].map(name=>{\n   const directory=join(root,name);mkdirSync(directory);copyCurrentSourceFixture(directory);return directory;\n  });\n  const script=`"
+   },
+   {
+    "at": 158,
+    "before": "const paths=Object.keys(proof.files),sources=Object.fromEntries(paths.map(p=>[p,readFileSync(p,'utf8')]));\nfor(const host of paths)for(const linked of paths){\n assert.equal(project(host,sources[host]),proof.files[host].beforeSource);",
+    "after": "const paths=Object.keys(proof.files),sources=Object.fromEntries(paths.map(p=>[p,readFileSync(p,'utf8')]));\nassert.equal(paths.length,4,'the reviewed reward closure has four owners');\nconst index=Number(process.argv[1]);assert(index===0||index===1);\nfor(const host of paths.slice(index*2,index*2+2))for(const linked of paths){\n assert.equal(project(host,sources[host]),proof.files[host].beforeSource);"
+   },
+   {
+    "at": 167,
+    "before": "}\nconsole.log('ISOLATED_REWARD_QUERY_SOURCE_PASS');`;\n  const result=spawnSync(process.execPath,['--input-type=module','-e',script],{cwd:root,encoding:'utf8',timeout:30000,maxBuffer:1024*1024});\n  assert.ifError(result.error);assert.equal(result.status,0,result.stdout+result.stderr);assert.match(result.stdout,/ISOLATED_REWARD_QUERY_SOURCE_PASS/);\n  const proofPath=join(root,'tests/helpers/epochs/reward/tests/helpers/reward-query-boundary-before.json');\n  writeFileSync(proofPath,readFileSync(proofPath,'utf8').replace('d8a57cae','e8a57cae'));\n  const negative=spawnSync(process.execPath,['--input-type=module','-e',\"import './tests/helpers/reward-query-boundary-source-inverse.mjs'\"],{cwd:root,encoding:'utf8',timeout:30000,maxBuffer:1024*1024});\n  assert.ifError(negative.error);assert.notEqual(negative.status,0);assert.match(negative.stderr,/complete reward query boundary source proof/);",
+    "after": "}\nconsole.log('ISOLATED_REWARD_QUERY_SOURCE_PASS '+index);`;\n  const execute=promisify(execFile),options={encoding:'utf8',timeout:30000,maxBuffer:1024*1024,windowsHide:true};\n  const outcomes=await Promise.allSettled(copies.map((cwd,index)=>\n   execute(process.execPath,['--input-type=module','-e',script,String(index)],{...options,cwd})));\n  for(const [index,result]of outcomes.entries()){\n   if(result.status==='rejected')assert.fail([result.reason.stdout,result.reason.stderr,result.reason.message].filter(Boolean).join('\\n'));\n   assert.match(result.value.stdout,new RegExp('^ISOLATED_REWARD_QUERY_SOURCE_PASS '+index+'\\\\r?$','m'));\n  }\n  const proofPath=join(copies[0],'tests/helpers/epochs/reward/tests/helpers/reward-query-boundary-before.json');\n  writeFileSync(proofPath,readFileSync(proofPath,'utf8').replace('d8a57cae','e8a57cae'));\n  const negative=spawnSync(process.execPath,['--input-type=module','-e',\"import './tests/helpers/reward-query-boundary-source-inverse.mjs'\"],{...options,cwd:copies[0]});\n  assert.ifError(negative.error);assert.notEqual(negative.status,0);assert.match(negative.stderr,/complete reward query boundary source proof/);"
    }
   ]
  }

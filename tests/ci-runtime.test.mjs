@@ -25,7 +25,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync as actualReadFileSync, mkdtempSync, mkdirSync, writeFileSync, copyFileSync, rmSync } from 'node:fs';
 import {officialAssetsFlowPlanningFloors as officialAssetsPlanningFloors} from './helpers/official-assets-flow-ci-source-inverse.mjs';
-import { tmpdir } from 'node:os';
+import { availableParallelism, tmpdir } from 'node:os';
 import { resolve, join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -148,7 +148,7 @@ test('platform-native placement covers every current file once and unknown platf
  assert.deepEqual(jsPlanningWeights(files),jsPlanningWeights(files,process.platform));
 });
 
-test('workflow uses the same balanced plan for materialization and execution without changing concurrency', () => {
+test('workflow uses the same balanced shard for materialization and isolated test execution', () => {
   const workflow = readFileSync('.github/workflows/quality.yml', 'utf8');
   assert.ok(workflow.includes("--workers ${{ inputs.runner_pool == 'local-special' && 1 || 2 }}"));
   assert.equal((workflow.match(/node scripts\/ci-shards.mjs --prepare=/g) ?? []).length, 2);
@@ -178,6 +178,38 @@ test('real executor preserves test failure, continues later files, reports timin
   const records = readFileSync(join(root, 'build/ci-js-timings.jsonl'), 'utf8').trim().split('\n').map(JSON.parse);
   assert.deepEqual(records.map(record => record.file).sort(), ['tests/a.test.mjs', 'tests/b.test.mjs']);
   assert.ok(records.every(record => Number.isFinite(record.durationMs) && record.durationMs > 0));
+});
+
+test('hosted POSIX execution isolates checkout writes and combines both timing reports', {
+  skip: process.platform !== 'linux' || availableParallelism() < 2,
+}, t => {
+  const parent = mkdtempSync(join(tmpdir(), 'abyss-ci-posix-executor-'));
+  t.after(() => rmSync(parent, { recursive: true, force: true }));
+  const root = join(parent, 'checkout'), copyTemp = join(parent, 'scratch');
+  for (const dir of ['tests', 'scripts', 'build']) mkdirSync(join(root, dir), { recursive: true });
+  mkdirSync(copyTemp);
+  copyFileSync('scripts/ci-timing-reporter.mjs', join(root, 'scripts/ci-timing-reporter.mjs'));
+  for (const label of ['a', 'b']) writeFileSync(join(root, `tests/${label}.test.mjs`), `
+    import assert from 'node:assert/strict';
+    import {writeFileSync} from 'node:fs';
+    import test from 'node:test';
+    test('${label}',()=>{
+      assert.equal(process.env.GITHUB_WORKSPACE,process.cwd());
+      writeFileSync('build/checkpoint','${label}',{flag:'wx'});
+      ${label === 'b' ? "throw Error('isolated failure');" : ''}
+    });`);
+  const env = { ...process.env, GITHUB_ACTIONS: 'true', RUNNER_OS: 'Linux', GITHUB_WORKSPACE: root, TMPDIR: copyTemp };
+  delete env.NODE_TEST_CONTEXT;
+  const result = spawnSync(process.execPath, [resolve('scripts/ci-shards.mjs'), '--shard=1/1'], {
+    cwd: root, env, encoding: 'utf8', timeout: 30000,
+  });
+  assert.ifError(result.error);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stdout + result.stderr, /isolated failure/);
+  assert.equal(readFileSync(join(root, 'build/checkpoint'), 'utf8'), 'a');
+  assert.deepEqual(readdirSync(copyTemp), []);
+  const records = readFileSync(join(root, 'build/ci-js-timings.jsonl'), 'utf8').trim().split('\n').map(JSON.parse);
+  assert.deepEqual(records.map(({file,success}) => [file,success]).sort(), [['tests/a.test.mjs',true],['tests/b.test.mjs',false]]);
 });
 
 
