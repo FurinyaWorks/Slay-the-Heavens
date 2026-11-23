@@ -1,0 +1,460 @@
+{
+  "total": 75,
+  "counts": {
+    "母版退修": 66,
+    "盲审通过": 8,
+    "拟合退修": 1
+  },
+  "byCard": {
+    "anger": {
+      "name": "连续出剑",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "主稿虽选对，未认出方条是同招复本；缩图只读到挥击与灰条，弃选。"
+    },
+    "armaments": {
+      "name": "整备武装",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两版虽选对，只见护形与内部折片，未读到既有牌被整备变强。"
+    },
+    "barricade": {
+      "name": "永世的磐岩",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "固定门楼能表达壁垒；两版都未读出保留已有防御而非建立一次壁垒。"
+    },
+    "bash": {
+      "name": "破防斩",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "主稿只见两片交错，缩图只见穿刺且目标不清；未读到打击造成同一目标的防护破口。"
+    },
+    "battle_trance": {
+      "name": "集中精神",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两版弃选；未认出抽取多牌后停止的关系。"
+    },
+    "berserk": {
+      "name": "背水之战",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两版虽选对，向外翼片与菱形未被读成打开自身防线换能量。"
+    },
+    "blood_for_blood": {
+      "name": "负伤反击",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两路均不识别旧伤"
+    },
+    "bloodletting": {
+      "name": "透支",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两版虽选对，却只认出并列滴形和石／晶块，未读到自身生命转成能量。"
+    },
+    "bludgeon": {
+      "name": "全力一击",
+      "master": "PASS",
+      "fit": "PASS",
+      "why": "两版均选对，自由读均认出单一大锤头连柄及旁侧单道斜线／短线，足以区别普通挥剑、连斩或触发型攻击。"
+    },
+    "body_slam": {
+      "name": "格挡反击",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两版虽选对，自由读仅见倾斜盾框与尖尾，未读到盾本身作为进攻主体冲出。"
+    },
+    "brutality": {
+      "name": "破釜沉舟",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "主稿虽选对但只有滴与碎片并列；缩图弃选，均未读到用自身生命换新牌。"
+    },
+    "burning_pact": {
+      "name": "弃旧筹新",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两版虽选对，只看见不同颜色碎片，未读到牺牲旧牌而换新牌的动作。"
+    },
+    "carnage": {
+      "name": "抓住战机",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "主稿弃选；缩图虽选对，自由读仅认出突刺与收拢线，没有能区别于普通强击的短暂窗口。"
+    },
+    "clash": {
+      "name": "全力进攻",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "主稿弃选；缩图虽选对但只认出单一带尾刃形，未读出多项准备汇聚为一次出击。"
+    },
+    "cleave": {
+      "name": "星陨剑",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两版弃选，只认出单个裂岩，没有岩造物引出向外冲击、波及多敌的关系。"
+    },
+    "clothesline": {
+      "name": "压制斩",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "主稿弃选，缩图虽选对却也只认出横扫；两版均无敌方反击被压低的读法。"
+    },
+    "combust": {
+      "name": "强攻压阵",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "主稿弃选；缩图虽选对，宽扁轮廓与下滴未读成自身失血并伤及多敌。"
+    },
+    "corruption": {
+      "name": "孤注一掷",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "主稿弃选、缩图错选；碎片未读出技能以消耗换免费施放。"
+    },
+    "dark_embrace": {
+      "name": "临机应变",
+      "master": "PASS",
+      "fit": "PASS",
+      "why": "两版均选对；自由读明确识别暗旧方框至亮新方框的单向一对一替代，有因果方向而非并列、护盾或一换多。"
+    },
+    "defend": {
+      "name": "防御",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "母版像翼或折纸；拟合稿像尖拱，看选项才知道可能是防护"
+    },
+    "demon_form": {
+      "name": "渐入佳境",
+      "master": "PASS",
+      "fit": "PASS",
+      "why": "两版均选对，自由读均识别多层向上叠升的形态，最低限度区别一次提升或直接翻倍。"
+    },
+    "disarm": {
+      "name": "压制攻势",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两版虽选对，弧线邻近短刃，但自由读未说武器受制或攻势被压低。"
+    },
+    "double_tap": {
+      "name": "叠势连击",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "主稿虽选对但只读出两片和弧，未读出预备让下一招重演；缩图错读成复制。"
+    },
+    "dropkick": {
+      "name": "乘隙追击",
+      "master": "PASS",
+      "fit": "PASS",
+      "why": "两版均选对；自由读同见尖刃进入已开口的框，旁有独立小框／矩形作为后续资源线索，没有把裂口读成新打出的。"
+    },
+    "dual_wield": {
+      "name": "再演剑势",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两版虽选对，均只看见两个并列多边片；没有读出同一已有招式产生副本的关系。"
+    },
+    "entrench": {
+      "name": "加固防线",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两阶段只认出两盾并列，未读出由原盾加厚或复制。"
+    },
+    "evolve": {
+      "name": "逆境求变",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两阶段只认出缺口块与纸样形并排，未读出坏牌入手带来额外抽牌。"
+    },
+    "exhume": {
+      "name": "重拾旧策",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "母版错选、拟合弃选；未读出从消耗堆取回手牌。"
+    },
+    "feed": {
+      "name": "乘胜壮行",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "均弃选；未读出击倒目标后生命上限成长。"
+    },
+    "feel_no_pain": {
+      "name": "百折不挠",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "均弃选；只见灰块嵌在浅弧中，未读出耗牌生防。"
+    },
+    "fiend_fire": {
+      "name": "舍尽一击",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "虽均选对，但只见碎块与尖形，未读出整手牌耗尽并汇成对敌攻击。"
+    },
+    "fire_breathing": {
+      "name": "逆势反攻",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "虽均选对，母版只读到缺口矩形旁三叉展开，未把它读成坏牌触发；拟合甚至可能是三叉指回方块。"
+    },
+    "flame_barrier": {
+      "name": "反击架势",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "只有选项提示后才读作反弹"
+    },
+    "flex": {
+      "name": "蓄力",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "母版虽选对，却只读到折片相对，未读出自身收势蓄力；拟合未选对。"
+    },
+    "ghostly_armor": {
+      "name": "及时招架",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "母版虽选对，却未明确读出防护显形或失去；拟合未选对。"
+    },
+    "havoc": {
+      "name": "临阵变招",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "母版未选对；拟合虽选对，只看到纸状物和尖尾，未读出从堆打出后离场。"
+    },
+    "headbutt": {
+      "name": "回身追击",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "虽均选对，但弧线与灰块未读成击中对手后让旧牌回堆。"
+    },
+    "heavy_blade": {
+      "name": "重剑斩",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "均未选对；能识别挥刃，但没有已有力量加重这层关系。"
+    },
+    "hemokinesis": {
+      "name": "舍身进攻",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "虽均选对，但只看到剑和水滴，未辨认自身付出生命来发动攻击。"
+    },
+    "immolate": {
+      "name": "摧阵一击",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "虽均选对，但爆裂或尖簇旁一块碎片未读成留给自己的灼烧牌。"
+    },
+    "impervious": {
+      "name": "坚守",
+      "master": "PASS",
+      "fit": "PASS",
+      "why": "均选对；中心实体被左右两侧包住，自由描述已有全面包护关系。无需靠动作方向或精确格挡值区分。"
+    },
+    "infernal_blade": {
+      "name": "临阵试招",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "均未选对；未读出获得一张马上可用的新攻击牌。"
+    },
+    "inflame": {
+      "name": "剑术精进",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "虽均选对，但只辨认出竖剑、没有目标，未读出自身力量变强。"
+    },
+    "intimidate": {
+      "name": "威慑",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两路均误读为碎石"
+    },
+    "iron_wave": {
+      "name": "招架还击",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "虽均选对，但灰弧未被读成护住自己，缺少攻防并举的关系。"
+    },
+    "juggernaut": {
+      "name": "守中有攻",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "母版虽选对，却只读出盾与尖菱分离，未读出护盾生伤害；拟合未选对。"
+    },
+    "limit_break": {
+      "name": "剑意突破",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "虽均选对，但三方向箭头未读出放大自身已有力量。"
+    },
+    "metallicize": {
+      "name": "持续防守",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "均未选对；未读出护甲持续、反复补防。"
+    },
+    "offering": {
+      "name": "奋力一搏",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "均未选对；未读出以自身生命换能量和新牌。"
+    },
+    "perfected_strike": {
+      "name": "剑势如虹",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "均未选对；只认出单一弯刃或锯齿，未读出同类出剑汇成更强攻击。"
+    },
+    "pommel_strike": {
+      "name": "试探一击",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "原稿虽选对，先读只见剑和灰矩形，不见命中或新牌；拟合直接选看不出。"
+    },
+    "power_through": {
+      "name": "强行固守",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "均选对，但自由读没认出保护与招来伤口牌，只见大块和缺口小块并置。"
+    },
+    "pummel": {
+      "name": "疾风连斩",
+      "master": "PASS",
+      "fit": "PASS",
+      "why": "两版均先读出多条分开的同向短轨迹，原稿还辨出错位推进；与双重斩和回旋明显不同，选项均对。"
+    },
+    "rage": {
+      "name": "攻守相济",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两版仅见剑与灰弧或碎块，未读到攻击带出新防护，皆选看不出。"
+    },
+    "rampage": {
+      "name": "越战越勇",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "均见单刃的阶梯或变宽，没读到反复用同一招后续变强，皆选看不出。"
+    },
+    "reaper": {
+      "name": "以战养战",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "自由读看出绕扫但没有生命回流；两版都选错。"
+    },
+    "reckless_charge": {
+      "name": "疾步突进",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "原稿虽选对，只见尖形和浮片，未读出突击留下眩晕妨碍；拟合选看不出。"
+    },
+    "rupture": {
+      "name": "愈挫愈勇",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "原稿读成向下落入槽、选看不出；拟合虽选对，仍读成落下或刺入，没有由受伤向上生长的因果。"
+    },
+    "searing_blow": {
+      "name": "千锤一剑",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两版识别竖剑或长尖和折线，没有反复锻造同一武器的关系，皆选看不出。"
+    },
+    "second_wind": {
+      "name": "弃繁守拙",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "虽均选对，原稿读成碎片离开碗口，拟合不知是否承接；均未读到把弃牌转为护势。"
+    },
+    "seeing_red": {
+      "name": "重整旗鼓",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两版先读均只辨冠或折片，未读到能量回升；拟合选对不足以补自由读。"
+    },
+    "sentinel": {
+      "name": "后援守势",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "原稿先读盾边飞碎块，没读出护牌消耗而释放能量；拟合连脱离或相撞都不确定且选看不出。"
+    },
+    "sever_soul": {
+      "name": "弃守强攻",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两版虽选对，但先读只见剑和附近灰块，未读到牺牲非攻击牌促成强攻。"
+    },
+    "shockwave": {
+      "name": "震慑敌阵",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两版首先读作扫过甚至扫击，没有敌群受震而同时失势、露防的线索；皆选看不出。"
+    },
+    "shrug_it_off": {
+      "name": "伺机而动",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "母版只看见两项并排，拟合稿被读成碎块"
+    },
+    "spot_weakness": {
+      "name": "洞察破绽",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "原稿虽选对只读出两轮廓相对，没有看入来攻破口并蓄力；拟合选看不出。"
+    },
+    "strike": {
+      "name": "普通攻击",
+      "master": "PASS",
+      "fit": "PASS",
+      "why": "清楚的一把剑与一道连续挥斩"
+    },
+    "sword_boomerang": {
+      "name": "回旋连斩",
+      "master": "PASS",
+      "fit": "HOLD",
+      "why": "原稿先读为甩出的回绕轨迹和多枚分开拍点，且选对；拟合虽然选对，但先将尖点读作碎片，只看出一次回弯。"
+    },
+    "thunderclap": {
+      "name": "横扫破防",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两版虽选对，只读到宽弧与并列灰块；没看出横扫命中并使多处防护破开。"
+    },
+    "true_grit": {
+      "name": "稳住阵脚",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "原稿虽选对只读出两块大小不同的形，没辨出护势或失去一张牌；拟合选看不出。"
+    },
+    "twin_strike": {
+      "name": "重击",
+      "master": "PASS",
+      "fit": "PASS",
+      "why": "两版都先读出两道同向平行且分开的划击痕，不是单痕残影或抽一张牌，选项均对。"
+    },
+    "uppercut": {
+      "name": "挑剑破势",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两版虽选对，先读只看到上挑和碎片，不能辨出攻守双失衡，而非普通击碎。"
+    },
+    "warcry": {
+      "name": "调整战术",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "原稿虽选对只见两层棱形与挑尖，没有抽入和回置的双向关系；拟合选看不出。"
+    },
+    "whirlwind": {
+      "name": "岩潮叠嶂",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "两版虽选对，先读只见高低排列的静态尖锥，没读出连续岩潮向外波及群敌。"
+    },
+    "wild_strike": {
+      "name": "猛进斩",
+      "master": "HOLD",
+      "fit": "HOLD",
+      "why": "原稿选看不出；拟合虽选对，缺角方块仍未读成攻击给自己留下的伤口牌。"
+    }
+  }
+}

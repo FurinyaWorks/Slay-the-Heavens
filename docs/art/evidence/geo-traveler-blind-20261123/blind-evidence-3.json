@@ -1,0 +1,1324 @@
+{
+  "archive": "6295c4b786816c167f2b05403ad85f239f5a17e7",
+  "viewport": [
+    120,
+    82
+  ],
+  "neutralBackplate": "#575754",
+  "stage": "offline_semantic_only",
+  "lockedRubricSha256": "f01a384024ce1af68d30eb94d06aaa141d53d226040f059b67b71cb06e95c6f3",
+  "optionOrderSha256": "5e05976d6707be293ec3ccd770eb6609b8b9ba1c6e7d0c6c34e2090c2a6870b9",
+  "cards": {
+    "pommel_strike": {
+      "name": "试探一击",
+      "effect": "造成 9 点伤害，抽 1 张牌。",
+      "lockedRubric": {
+        "core": "向敌人打一击，并带来一张新牌",
+        "distractors": [
+          "出剑后生成自己复本",
+          "进攻且把旧牌放回顶部"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c3:1",
+        "imageSHA256": "b872a856a92e1663e5874f13267631074d57da4f833d65e8895e4dc5f7189a0e",
+        "sheetSHA256": "02301b88ec5637c8be9c6525770959a681235350dbb2007b8614c73d6b5ceed9",
+        "free": {
+          "seen": "白色长剑横着指向左上，下面一块灰色长方形；无接触",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "B",
+          "why": "一把长剑加一张单独的灰色长方片，偏向一击一牌；看不到归牌动作。"
+        },
+        "answer": "B",
+        "shownOptions": {
+          "A": "进攻且把旧牌放回顶部",
+          "B": "向敌人打一击，并带来一张新牌",
+          "C": "出剑后生成自己复本",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d10:6",
+        "imageSHA256": "2cd5a4a52cff928a2b1b4ebc8935bc5a7082b71a6fbdf7329e76cd74745ba869",
+        "sheetSHA256": "683416d28c240e7373674eb114967209c835f9a4f2f22211d92b592b1e7a4c3e",
+        "free": {
+          "seen": "白色剑形尖头朝左，右端像握柄，下面独立灰条；看不出是否要打到它。",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "X",
+          "why": "只有白剑和一灰片，没有新旧、牌顶或相同招式复本的标记。"
+        },
+        "answer": "A",
+        "shownOptions": {
+          "A": "向敌人打一击，并带来一张新牌",
+          "B": "进攻且把旧牌放回顶部",
+          "C": "出剑后生成自己复本",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "HOLD",
+        "fit": "HOLD",
+        "why": "原稿虽选对，先读只见剑和灰矩形，不见命中或新牌；拟合直接选看不出。"
+      }
+    },
+    "power_through": {
+      "name": "强行固守",
+      "effect": "将 2 张伤口加入手中，获得 15 点格挡。",
+      "lockedRubric": {
+        "core": "强力护住自己，同时招来多张伤口牌",
+        "distractors": [
+          "防御并烧掉旧牌",
+          "加强或复制已有的防护"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c11:3",
+        "imageSHA256": "cfae5d955212c1868d46b62aad050785395731034285ffedaadf9a1f2b6ef8ad",
+        "sheetSHA256": "3bcd1633339e83029cb1a5ebb4c59b2dbd8aae6e69e3729308d5617aa6f2c667",
+        "free": {
+          "seen": "左侧白色大多边形，右边上下两个小白矩形，各有V缺口",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "C",
+          "why": "盾状大块与两个独立的缺口小片并列。"
+        },
+        "answer": "C",
+        "shownOptions": {
+          "A": "加强或复制已有的防护",
+          "B": "防御并烧掉旧牌",
+          "C": "强力护住自己，同时招来多张伤口牌",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d5:1",
+        "imageSHA256": "799732aaf503ea11720c731c9cc835ca42a6424e3d3b9bb0bd04ffb03766fdc7",
+        "sheetSHA256": "fab246e3ee7bfed27ef062ed576ada072befa4917c9957f9166462a78ad84df8",
+        "free": {
+          "seen": "左侧白色大多边形似石块，右侧两个带上缘缺口的白方块上下排列；无明显动作",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "A",
+          "why": "左侧一块盾状大轮廓，右边两枚独立缺口方块，不像盾复制或牌燃去。"
+        },
+        "answer": "A",
+        "shownOptions": {
+          "A": "强力护住自己，同时招来多张伤口牌",
+          "B": "防御并烧掉旧牌",
+          "C": "加强或复制已有的防护",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "HOLD",
+        "fit": "HOLD",
+        "why": "均选对，但自由读没认出保护与招来伤口牌，只见大块和缺口小块并置。"
+      }
+    },
+    "pummel": {
+      "name": "疾风连斩",
+      "effect": "消耗。造成 2 点伤害，共 4 次。",
+      "lockedRubric": {
+        "core": "向目标连续发动多次短促攻击",
+        "distractors": [
+          "并行挥出两次重斩",
+          "一条旋转路线分次命中"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c11:5",
+        "imageSHA256": "b254866cf72615b5fd2adcec043208de8f329e9c70adf255521f86d55dccf229",
+        "sheetSHA256": "3bcd1633339e83029cb1a5ebb4c59b2dbd8aae6e69e3729308d5617aa6f2c667",
+        "free": {
+          "seen": "四道白色平行横斜楔条，朝右收尖，最上条位置更靠右",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "C",
+          "why": "四条方向一致、分开的短轨迹。"
+        },
+        "answer": "C",
+        "shownOptions": {
+          "A": "并行挥出两次重斩",
+          "B": "一条旋转路线分次命中",
+          "C": "向目标连续发动多次短促攻击",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d10:3",
+        "imageSHA256": "378bc7d9405a3421fc66547a30933632db697fce4c93027b7cd4888b24002c32",
+        "sheetSHA256": "683416d28c240e7373674eb114967209c835f9a4f2f22211d92b592b1e7a4c3e",
+        "free": {
+          "seen": "四道平行细长白条，收尖朝右，像划过的线；无目标。",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "A",
+          "why": "四道平行短细斩线，不是两道也没有画旋转。"
+        },
+        "answer": "A",
+        "shownOptions": {
+          "A": "向目标连续发动多次短促攻击",
+          "B": "并行挥出两次重斩",
+          "C": "一条旋转路线分次命中",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "PASS",
+        "fit": "PASS",
+        "why": "两版均先读出多条分开的同向短轨迹，原稿还辨出错位推进；与双重斩和回旋明显不同，选项均对。"
+      }
+    },
+    "rage": {
+      "name": "攻守相济",
+      "effect": "本回合每打出一张攻击牌，获得 3 点格挡。",
+      "lockedRubric": {
+        "core": "攻击在先，随进攻形成新的防护",
+        "distractors": [
+          "防御在先，随后出剑",
+          "获得格挡后对敌发出伤害"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c11:1",
+        "imageSHA256": "e0e2343ac004f94a1de33d9ecf3079f537e013088eb52b630d2f20b0d7cf336b",
+        "sheetSHA256": "3bcd1633339e83029cb1a5ebb4c59b2dbd8aae6e69e3729308d5617aa6f2c667",
+        "free": {
+          "seen": "白色弧刃斜指右上，左侧有横突及灰色弧片",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "X",
+          "why": "有向右上的刀和灰弧，但没有清晰的护持先后。"
+        },
+        "answer": "C",
+        "shownOptions": {
+          "A": "防御在先，随后出剑",
+          "B": "获得格挡后对敌发出伤害",
+          "C": "攻击在先，随进攻形成新的防护",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d9:1",
+        "imageSHA256": "71374b55e874d42c2491af856867b80af9f488b6de2095caf33123da8217c0ce",
+        "sheetSHA256": "7b01916691792d716e8c078763069ffd4ef49bcee205b9681d5da314285340ea",
+        "free": {
+          "seen": "剑或刀状长物斜指右上，左下有灰色小片与柄重叠；看不出击中什么。",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "X",
+          "why": "白剑与灰片同现，没有可辨先后或明确的格挡符号。"
+        },
+        "answer": "C",
+        "shownOptions": {
+          "A": "防御在先，随后出剑",
+          "B": "获得格挡后对敌发出伤害",
+          "C": "攻击在先，随进攻形成新的防护",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "HOLD",
+        "fit": "HOLD",
+        "why": "两版仅见剑与灰弧或碎块，未读到攻击带出新防护，皆选看不出。"
+      }
+    },
+    "rampage": {
+      "name": "越战越勇",
+      "effect": "造成 8 点伤害，本场战斗中本牌伤害 +5。",
+      "lockedRubric": {
+        "core": "同一招反复斩击，后续每次都更强",
+        "distractors": [
+          "先准备同类牌，再打出一次强招",
+          "常态持续加强全部力量"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c4:6",
+        "imageSHA256": "7998a1d7d460fb85903cce357d5510ed7c9cdae26350833e2ca2c2bb17f0669d",
+        "sheetSHA256": "84dcf88f69a2ffb75823fbb67cc9584d7f31d05f004e7e08c067e3059975dae0",
+        "free": {
+          "seen": "上缘阶梯状的白色厚弧刃向右上抬升，底缘灰白；无接触",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "X",
+          "why": "单幅同向刃形只有阶梯状边缘，没明确画出前置牌或多次击中。"
+        },
+        "answer": "C",
+        "shownOptions": {
+          "A": "先准备同类牌，再打出一次强招",
+          "B": "常态持续加强全部力量",
+          "C": "同一招反复斩击，后续每次都更强",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d10:1",
+        "imageSHA256": "34f4dca8428b8467455d5d7c1cb58aee413b5807bef3820004dbeb5449a06ddd",
+        "sheetSHA256": "683416d28c240e7373674eb114967209c835f9a4f2f22211d92b592b1e7a4c3e",
+        "free": {
+          "seen": "白色弯片从左下向右上变宽，下面贴着灰面；像斜抬的刃或弧带，无目标。",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "X",
+          "why": "一条弯片加贴边灰面，看不出重复、强度增长或准备来源。"
+        },
+        "answer": "A",
+        "shownOptions": {
+          "A": "同一招反复斩击，后续每次都更强",
+          "B": "常态持续加强全部力量",
+          "C": "先准备同类牌，再打出一次强招",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "HOLD",
+        "fit": "HOLD",
+        "why": "均见单刃的阶梯或变宽，没读到反复用同一招后续变强，皆选看不出。"
+      }
+    },
+    "reaper": {
+      "name": "以战养战",
+      "effect": "消耗。对所有敌人造成 4 点伤害，回复等量生命。",
+      "lockedRubric": {
+        "core": "攻击扫过群敌，造成伤害后生命回流自己",
+        "distractors": [
+          "扫群造成伤害但没有回流",
+          "用自身生命换取群攻"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c2:2",
+        "imageSHA256": "273e8745c641841fcc56cac2461bc81dd7045f657b913943a8b956f20079e20f",
+        "sheetSHA256": "ad615d354e79d1f7c265366af91e0385c8484cc8d39ee15e53371d8a623a6c79",
+        "free": {
+          "seen": "小型有护手的刃在左上，白色弯月弧绕它向右上；像挥动",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "C",
+          "why": "有弯月长弧与小刃形成扫击，没见血滴或返回身体的轨迹。"
+        },
+        "answer": "A",
+        "shownOptions": {
+          "A": "攻击扫过群敌，造成伤害后生命回流自己",
+          "B": "用自身生命换取群攻",
+          "C": "扫群造成伤害但没有回流",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d1:6",
+        "imageSHA256": "c23c1fcb1435dfbcb85cc85d8a6c161b29e71b9beb7d5ee737747fd16625a7a3",
+        "sheetSHA256": "b1e6b1038da0003fd584f9a7c6bf21d1540f9e48b79e56dd8e468c13cd2f242a",
+        "free": {
+          "seen": "一条白色弯月从左下包绕几个交错灰尖角，右端向上翘；像一次绕扫",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "B",
+          "why": "弧线扫过多个灰尖形，没有回到自身的来源、路线或生命符号。"
+        },
+        "answer": "C",
+        "shownOptions": {
+          "A": "用自身生命换取群攻",
+          "B": "扫群造成伤害但没有回流",
+          "C": "攻击扫过群敌，造成伤害后生命回流自己",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "HOLD",
+        "fit": "HOLD",
+        "why": "自由读看出绕扫但没有生命回流；两版都选错。"
+      }
+    },
+    "reckless_charge": {
+      "name": "疾步突进",
+      "effect": "造成 7 点伤害，将 1 张眩晕洗入抽牌堆。",
+      "lockedRubric": {
+        "core": "仓促向前打击，副作用是留下眩晕妨碍",
+        "distractors": [
+          "猛斩后留下持续伤口",
+          "因损失当前生命强化攻击"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c9:4",
+        "imageSHA256": "70463c78f7f1c5fa831c032c858ec801399281aa19f088c2e2f0a9f91da8481a",
+        "sheetSHA256": "e17f0cd68212ba279b480a8df6bde3d8dc3a158e6951b26a19745a43baabfd32",
+        "free": {
+          "seen": "白色扁尖形向右上伸，左上浮着一枚灰折片",
+          "confidence": "low"
+        },
+        "choice": {
+          "pick": "C",
+          "why": "一记向右上的尖形与分离的灰折片并置，灰片可读为额外妨碍。"
+        },
+        "answer": "C",
+        "shownOptions": {
+          "A": "猛斩后留下持续伤口",
+          "B": "因损失当前生命强化攻击",
+          "C": "仓促向前打击，副作用是留下眩晕妨碍",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d3:6",
+        "imageSHA256": "e8349acad692348f07c5100d3371557b42e78646b0885b0ee08f0d592d1a09e9",
+        "sheetSHA256": "30e6081d61247c25e7e911677dd8c3b14bebbf9bdcbd71ed1ac04cfd302ad0c1",
+        "free": {
+          "seen": "白色细长尖形朝右上伸，左上另有灰色小块；像掠过或扫开，关系不清",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "X",
+          "why": "一条平斩与一个小灰块，不足以认出掉血、伤口或眩晕。"
+        },
+        "answer": "C",
+        "shownOptions": {
+          "A": "因损失当前生命强化攻击",
+          "B": "猛斩后留下持续伤口",
+          "C": "仓促向前打击，副作用是留下眩晕妨碍",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "HOLD",
+        "fit": "HOLD",
+        "why": "原稿虽选对，只见尖形和浮片，未读出突击留下眩晕妨碍；拟合选看不出。"
+      }
+    },
+    "rupture": {
+      "name": "愈挫愈勇",
+      "effect": "每当你因卡牌失去生命，获得 1 层力量。",
+      "lockedRubric": {
+        "core": "承受自身失血，由伤触发自己的力量成长",
+        "distractors": [
+          "主动耗血换攻击",
+          "主动耗血换能量"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c3:6",
+        "imageSHA256": "f35402545f14e8860e4a1918d378e8bf28a81c45c580b2edb1cb831188dd71db",
+        "sheetSHA256": "02301b88ec5637c8be9c6525770959a681235350dbb2007b8614c73d6b5ceed9",
+        "free": {
+          "seen": "一支白色箭头垂直朝下，落向灰色浅槽",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "X",
+          "why": "箭头向下落到槽中；没有可识别的血滴、剑或能量标记。"
+        },
+        "answer": "A",
+        "shownOptions": {
+          "A": "承受自身失血，由伤触发自己的力量成长",
+          "B": "主动耗血换攻击",
+          "C": "主动耗血换能量",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d11:5",
+        "imageSHA256": "4eaffcf79766a06b3c653b5ec4cf0a0f5050565e010317c18c2e81d541487bdb",
+        "sheetSHA256": "63db2107cb37302ca0235b9116c3ae999a1742d873716809251105aa760fac0b",
+        "free": {
+          "seen": "竖直白色星芒状尖形贴近下方灰色浅槽，像向下落或刺入；没有明确轨迹。",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "C",
+          "why": "尖芒在中央向上伸出，下部灰片似承受处；较像受伤后起势，主动性读不清。"
+        },
+        "answer": "C",
+        "shownOptions": {
+          "A": "主动耗血换能量",
+          "B": "主动耗血换攻击",
+          "C": "承受自身失血，由伤触发自己的力量成长",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "HOLD",
+        "fit": "HOLD",
+        "why": "原稿读成向下落入槽、选看不出；拟合虽选对，仍读成落下或刺入，没有由受伤向上生长的因果。"
+      }
+    },
+    "searing_blow": {
+      "name": "千锤一剑",
+      "effect": "造成 12 点伤害。可被升级任意次数。",
+      "lockedRubric": {
+        "core": "反复锻打同一剑，使其不断精进",
+        "distractors": [
+          "同一攻击牌打出次数越多越强",
+          "只是挥动普通重剑"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c11:2",
+        "imageSHA256": "3708b82bcb0632bbc5b732288894b22d26f12bde010c786b47a860c91d3271cc",
+        "sheetSHA256": "3bcd1633339e83029cb1a5ebb4c59b2dbd8aae6e69e3729308d5617aa6f2c667",
+        "free": {
+          "seen": "白色竖尖刀朝上，右面一枚灰弯箭头往左上回转",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "X",
+          "why": "回转箭头和同一尖刃有重复感，无法区分锻打和反复使用。"
+        },
+        "answer": "B",
+        "shownOptions": {
+          "A": "只是挥动普通重剑",
+          "B": "反复锻打同一剑，使其不断精进",
+          "C": "同一攻击牌打出次数越多越强",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d4:5",
+        "imageSHA256": "a2f9f757680c165b49c0b5eeef69666a9946369607ca903c550f899c8a22ed4a",
+        "sheetSHA256": "5b1a1654c563749badb4591124e9d8f010b2de21c79c55fda3c54ef203eb791d",
+        "free": {
+          "seen": "中间白色长尖朝上，右侧灰色粗折线弯向左上；不确定是剑还是箭",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "X",
+          "why": "长尖和折角弧可表示挥动或循环，缺少同一牌变强或锻打的画面证据。"
+        },
+        "answer": "C",
+        "shownOptions": {
+          "A": "同一攻击牌打出次数越多越强",
+          "B": "只是挥动普通重剑",
+          "C": "反复锻打同一剑，使其不断精进",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "HOLD",
+        "fit": "HOLD",
+        "why": "两版识别竖剑或长尖和折线，没有反复锻造同一武器的关系，皆选看不出。"
+      }
+    },
+    "second_wind": {
+      "name": "弃繁守拙",
+      "effect": "消耗手中所有非攻击牌，每张获得 5 点格挡。",
+      "lockedRubric": {
+        "core": "放弃一批非攻击手牌，把这些资源转成防护",
+        "distractors": [
+          "失去单张旧牌随后摸新牌",
+          "全数投入重击"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c5:2",
+        "imageSHA256": "610e6fd88a451ba13ea3586e3b3fc173450efd0f78c79210cdb0b7c132c3380c",
+        "sheetSHA256": "2629b380bb8ebcdd837c295bbb2608afce4a5c9109833ac7b9a0e3c6f9d40601",
+        "free": {
+          "seen": "上面灰色折片向左上探出，下面右侧白色碗状弧；像折片离开碗口",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "C",
+          "why": "上部灰折片接着下方较大的白色碗盾形，像材料换成防护。"
+        },
+        "answer": "C",
+        "shownOptions": {
+          "A": "失去单张旧牌随后摸新牌",
+          "B": "全数投入重击",
+          "C": "放弃一批非攻击手牌，把这些资源转成防护",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d12:1",
+        "imageSHA256": "984de5cfde61bb3590b0fc8809d2bd423952aed2e1b1d2746a1b521434291d58",
+        "sheetSHA256": "cc818deba8dd24c11b6f2be3a7ed120995d66ba4a6d4c4157dbde5f5c1f551a2",
+        "free": {
+          "seen": "左上有两块灰色折片，下方一块开口朝上的白色弯折多边片；是否捧接不清。",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "C",
+          "why": "几片灰折形在白色开口托形上方，比单张交换更像一批牌进入防护形。"
+        },
+        "answer": "C",
+        "shownOptions": {
+          "A": "失去单张旧牌随后摸新牌",
+          "B": "全数投入重击",
+          "C": "放弃一批非攻击手牌，把这些资源转成防护",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "HOLD",
+        "fit": "HOLD",
+        "why": "虽均选对，原稿读成碎片离开碗口，拟合不知是否承接；均未读到把弃牌转为护势。"
+      }
+    },
+    "seeing_red": {
+      "name": "重整旗鼓",
+      "effect": "消耗。获得 2 点能量。",
+      "lockedRubric": {
+        "core": "回升自身可消耗的战斗能量，不等于打伤对手或增强力量",
+        "distractors": [
+          "压缩蓄力增长力量",
+          "损失生命换能量"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c2:6",
+        "imageSHA256": "e8de87b51f5bc124f12c6cce6cf0da66b7e6137507c65dce4fc285861fcb71b7",
+        "sheetSHA256": "ad615d354e79d1f7c265366af91e0385c8484cc8d39ee15e53371d8a623a6c79",
+        "free": {
+          "seen": "白色双尖角冠状片，两尖朝上、中间下凹；下方有一道灰色浅V形折片，两片分离。像叠在一起的两层，动作不明。",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "X",
+          "why": "双尖冠和灰折片有两层，没有清楚区分力量、能量和生命。"
+        },
+        "answer": "B",
+        "shownOptions": {
+          "A": "压缩蓄力增长力量",
+          "B": "回升自身可消耗的战斗能量，不等于打伤对手或增强力量",
+          "C": "损失生命换能量",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d11:1",
+        "imageSHA256": "c16ba07629d7295a7f4edb21f7267b2fc328467b1b22d7d127b9c17e1e717d84",
+        "sheetSHA256": "63db2107cb37302ca0235b9116c3ae999a1742d873716809251105aa760fac0b",
+        "free": {
+          "seen": "白形像两个尖角朝上的冠或折片，下方灰弧；不清是升起还是托住。",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "A",
+          "why": "中心白尖片似上升，灰弧托底，没见攻击轮廓或失血形。"
+        },
+        "answer": "A",
+        "shownOptions": {
+          "A": "回升自身可消耗的战斗能量，不等于打伤对手或增强力量",
+          "B": "压缩蓄力增长力量",
+          "C": "损失生命换能量",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "HOLD",
+        "fit": "HOLD",
+        "why": "两版先读均只辨冠或折片，未读到能量回升；拟合选对不足以补自由读。"
+      }
+    },
+    "sentinel": {
+      "name": "后援守势",
+      "effect": "获得 5 点格挡。若本牌被消耗，获得 2 点能量。",
+      "lockedRubric": {
+        "core": "守势牌可护自己，被消耗时释放资源能量",
+        "distractors": [
+          "消耗旧牌直接变盾",
+          "盾只是攻击后附加"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c4:4",
+        "imageSHA256": "28dffb24e49faeeb390b243cfd527d3956167dde19e562d73f967470b7900d04",
+        "sheetSHA256": "84dcf88f69a2ffb75823fbb67cc9584d7f31d05f004e7e08c067e3059975dae0",
+        "free": {
+          "seen": "左白盾样缺口块，右侧灰色长楔指右；像碎块从白块边缘离开",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "C",
+          "why": "有缺口的盾块旁边向右分出一个灰楔，像从防护片释放出另一物。"
+        },
+        "answer": "C",
+        "shownOptions": {
+          "A": "消耗旧牌直接变盾",
+          "B": "盾只是攻击后附加",
+          "C": "守势牌可护自己，被消耗时释放资源能量",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d1:1",
+        "imageSHA256": "cf8f1856b79e0c6fa65651cb602fe0355e45c46f39575170c3fc7a1fbc7a55a2",
+        "sheetSHA256": "b1e6b1038da0003fd584f9a7c6bf21d1540f9e48b79e56dd8e468c13cd2f242a",
+        "free": {
+          "seen": "左侧白色折口块朝右侧灰色菱形张开；不确定是咬合还是相撞",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "X",
+          "why": "折口块对着外侧菱形，有离开关系但看不出护自己、消耗还是受击。"
+        },
+        "answer": "A",
+        "shownOptions": {
+          "A": "守势牌可护自己，被消耗时释放资源能量",
+          "B": "消耗旧牌直接变盾",
+          "C": "盾只是攻击后附加",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "HOLD",
+        "fit": "HOLD",
+        "why": "原稿先读盾边飞碎块，没读出护牌消耗而释放能量；拟合连脱离或相撞都不确定且选看不出。"
+      }
+    },
+    "sever_soul": {
+      "name": "弃守强攻",
+      "effect": "消耗手中所有非攻击牌，造成 16 点伤害。",
+      "lockedRubric": {
+        "core": "放弃防守等非攻击手段，换来一次强攻击",
+        "distractors": [
+          "耗尽所有手牌换一次重击",
+          "耗掉非攻击牌然后防护自己"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c6:5",
+        "imageSHA256": "808eb8b8060568a2184fd848e7ad2a116e875bfc50e68c3d0c2ca70f99e029e0",
+        "sheetSHA256": "c5f5ad3e5aa66e151e0f881dcf574f04c31a5396b0b8893ebb7ec3f3fa9e47d4",
+        "free": {
+          "seen": "大白剑斜指右上，护手左下贴近灰色方块，方块有白色短折痕；像刺入或脱离",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "B",
+          "why": "短剑外划，护手后面贴一枚有缺口的灰方片；像留下某件材料换斩击，没见整手牌。"
+        },
+        "answer": "B",
+        "shownOptions": {
+          "A": "耗掉非攻击牌然后防护自己",
+          "B": "放弃防守等非攻击手段，换来一次强攻击",
+          "C": "耗尽所有手牌换一次重击",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d9:6",
+        "imageSHA256": "ee555e48d9c81909d4925439adf6dee83826962b4b3538cc7c28d6b71fe953ad",
+        "sheetSHA256": "7b01916691792d716e8c078763069ffd4ef49bcee205b9681d5da314285340ea",
+        "free": {
+          "seen": "短剑状白色尖片斜指右上，左下有灰方块和小灰片；只是相近还是接触不明。",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "A",
+          "why": "显眼的剑与不规则灰色小牌相对，较像梳掉非剑牌换进攻，未明确是否耗尽。"
+        },
+        "answer": "A",
+        "shownOptions": {
+          "A": "放弃防守等非攻击手段，换来一次强攻击",
+          "B": "耗尽所有手牌换一次重击",
+          "C": "耗掉非攻击牌然后防护自己",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "HOLD",
+        "fit": "HOLD",
+        "why": "两版虽选对，但先读只见剑和附近灰块，未读到牺牲非攻击牌促成强攻。"
+      }
+    },
+    "shockwave": {
+      "name": "震慑敌阵",
+      "effect": "消耗。对所有敌人施加 3 层虚弱与 3 层易伤。",
+      "lockedRubric": {
+        "core": "向敌群发出震慑，使它们攻击受抑且防御暴露；不直接打伤",
+        "distractors": [
+          "只让敌群攻击变弱",
+          "直接打伤敌群并破防"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c1:5",
+        "imageSHA256": "069c31346d6125e27388452a3f893608fe4ef6b196c5c09460ea8f8a4abda5fa",
+        "sheetSHA256": "581c782b987a0f41f3a85c9c5cc27d201403be58092b1f2a753fe8cc4a36776c",
+        "free": {
+          "seen": "两块灰色碎片在上，下方白色弧刃向右上舒展；像扫过",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "X",
+          "why": "弧线和两碎片像扫过，但没法区分伤害、震慑和破防。"
+        },
+        "answer": "A",
+        "shownOptions": {
+          "A": "向敌群发出震慑，使它们攻击受抑且防御暴露；不直接打伤",
+          "B": "直接打伤敌群并破防",
+          "C": "只让敌群攻击变弱",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d12:3",
+        "imageSHA256": "7474dfbca4742dc01c3e48794c7c3362bacb8e11d7c0ab072f75c21d9e94b124",
+        "sheetSHA256": "cc818deba8dd24c11b6f2be3a7ed120995d66ba4a6d4c4157dbde5f5c1f551a2",
+        "free": {
+          "seen": "一段浅色弧带横扫下方并上挑到右端，上方有两小灰片；像扫击，但对象不明。",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "X",
+          "why": "白色扫弧、上方两灰片没有攻/防独立符号；也分不出有无伤害。"
+        },
+        "answer": "A",
+        "shownOptions": {
+          "A": "向敌群发出震慑，使它们攻击受抑且防御暴露；不直接打伤",
+          "B": "只让敌群攻击变弱",
+          "C": "直接打伤敌群并破防",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "HOLD",
+        "fit": "HOLD",
+        "why": "两版首先读作扫过甚至扫击，没有敌群受震而同时失势、露防的线索；皆选看不出。"
+      }
+    },
+    "spot_weakness": {
+      "name": "洞察破绽",
+      "effect": "若敌人意图攻击，获得 3 层力量。",
+      "lockedRubric": {
+        "core": "识出对手的来攻破口，借此让自己备好更强的力量",
+        "distractors": [
+          "出剑把敌人的防守劈开",
+          "无需对手直接自我增强"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c4:2",
+        "imageSHA256": "ae216b665718d339792549b55959fecb8493d46c0599909ba3d40e45b783b971",
+        "sheetSHA256": "84dcf88f69a2ffb75823fbb67cc9584d7f31d05f004e7e08c067e3059975dae0",
+        "free": {
+          "seen": "白色开口弧朝右，右有灰色折楔尖指左，彼此不接触；像相对",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "B",
+          "why": "右侧尖楔朝向左侧开口形，像观察或接住迎面的来势，不像刃劈开。"
+        },
+        "answer": "B",
+        "shownOptions": {
+          "A": "无需对手直接自我增强",
+          "B": "识出对手的来攻破口，借此让自己备好更强的力量",
+          "C": "出剑把敌人的防守劈开",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d7:6",
+        "imageSHA256": "0d64217044c4153ffe85cdcbd04561120c850f8fedc720a8f48cc6387b259058",
+        "sheetSHA256": "715457ba5bd1f42e8d92ed88b7e6608ca450c8e6b06e88880428dd638f59c7a6",
+        "free": {
+          "seen": "白色向左弯折的开口弧形对着右侧灰色楔块，楔尖朝左；谁在移动不明。",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "X",
+          "why": "开口弧与楔块相对，但未画出武器、敌方破口或力量。"
+        },
+        "answer": "A",
+        "shownOptions": {
+          "A": "识出对手的来攻破口，借此让自己备好更强的力量",
+          "B": "出剑把敌人的防守劈开",
+          "C": "无需对手直接自我增强",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "HOLD",
+        "fit": "HOLD",
+        "why": "原稿虽选对只读出两轮廓相对，没有看入来攻破口并蓄力；拟合选看不出。"
+      }
+    },
+    "sword_boomerang": {
+      "name": "回旋连斩",
+      "effect": "对随机敌人造成 3 点伤害，共 3 次。",
+      "lockedRubric": {
+        "core": "同一攻击沿回旋路线多次切入目标",
+        "distractors": [
+          "双刃沿单一路线直斩",
+          "围扫后把生命收回来"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c6:4",
+        "imageSHA256": "c08bd7128410dd42a5c9ee15cc9f183f791208ac240c958a1d7137f6f29df6be",
+        "sheetSHA256": "c5f5ad3e5aa66e151e0f881dcf574f04c31a5396b0b8893ebb7ec3f3fa9e47d4",
+        "free": {
+          "seen": "白色流线从左上弯绕右端又回到右下，下方三枚小三角；像甩出的轨迹",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "C",
+          "why": "一条回旋弧旁有三个依次排列的小尖口，像沿同一路径反复切入。"
+        },
+        "answer": "C",
+        "shownOptions": {
+          "A": "围扫后把生命收回来",
+          "B": "双刃沿单一路线直斩",
+          "C": "同一攻击沿回旋路线多次切入目标",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d5:3",
+        "imageSHA256": "39afec8312f4b684d8c3a04de7d2906aef883c81c08d633ec22a6d185d0efb77",
+        "sheetSHA256": "fab246e3ee7bfed27ef062ed576ada072befa4917c9957f9166462a78ad84df8",
+        "free": {
+          "seen": "白色新月形从左上掠向右，再向下回弯；弧内下方有三枚白三角碎片",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "C",
+          "why": "弧线回旋，内部连续分布多枚三角痕，像沿回旋多次切入而非单线双刃或反馈回血。"
+        },
+        "answer": "C",
+        "shownOptions": {
+          "A": "双刃沿单一路线直斩",
+          "B": "围扫后把生命收回来",
+          "C": "同一攻击沿回旋路线多次切入目标",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "PASS",
+        "fit": "HOLD",
+        "why": "原稿先读为甩出的回绕轨迹和多枚分开拍点，且选对；拟合虽然选对，但先将尖点读作碎片，只看出一次回弯。"
+      }
+    },
+    "thunderclap": {
+      "name": "横扫破防",
+      "effect": "对所有敌人造成 4 点伤害并施加 1 层易伤。",
+      "lockedRubric": {
+        "core": "横向扫中一群敌人，同时打出多处破绽",
+        "distractors": [
+          "横扫造成范围伤害但不破防",
+          "单点击出一个破绽"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c12:2",
+        "imageSHA256": "f883db87649aa55e053ca381be46a0a62d800eee4334c9755496c57a4bfadb31",
+        "sheetSHA256": "8f8476cc160c3607cb13c49a8ddd76511dbb32833ba5833f49920d34f4455345",
+        "free": {
+          "seen": "上面一条白色细弧横跨向右收尖，下方两枚灰色小折片并排",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "A",
+          "why": "长横扫线下有两个独立缺口折片，兼有扫击和多处破口。"
+        },
+        "answer": "A",
+        "shownOptions": {
+          "A": "横向扫中一群敌人，同时打出多处破绽",
+          "B": "横扫造成范围伤害但不破防",
+          "C": "单点击出一个破绽",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d1:4",
+        "imageSHA256": "818aee47aa03aa5764a17a41df5607280e252eb0375c1ecb1b14812d9aadf101",
+        "sheetSHA256": "b1e6b1038da0003fd584f9a7c6bf21d1540f9e48b79e56dd8e468c13cd2f242a",
+        "free": {
+          "seen": "上方白色长弧向右伸展，下方两个灰色缺口块并列；不确定是否同向运动",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "A",
+          "why": "一条横弧同时覆盖两个分开的缺口块，缺口有多处破绽的信号。"
+        },
+        "answer": "A",
+        "shownOptions": {
+          "A": "横向扫中一群敌人，同时打出多处破绽",
+          "B": "单点击出一个破绽",
+          "C": "横扫造成范围伤害但不破防",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "HOLD",
+        "fit": "HOLD",
+        "why": "两版虽选对，只读到宽弧与并列灰块；没看出横扫命中并使多处防护破开。"
+      }
+    },
+    "true_grit": {
+      "name": "稳住阵脚",
+      "effect": "获得 7 点格挡，随机消耗 1 张手牌。",
+      "lockedRubric": {
+        "core": "守住防线但失去一张手里的牌",
+        "distractors": [
+          "守住后抽新牌",
+          "守住并升级手中牌"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c9:6",
+        "imageSHA256": "4dda55377f95d172ba7b4bdd644babeba84a67869f7d30ab1e52793dd1f9844b",
+        "sheetSHA256": "e17f0cd68212ba279b480a8df6bde3d8dc3a158e6951b26a19745a43baabfd32",
+        "free": {
+          "seen": "左侧大白扁多边块底部灰面，右侧独立一枚小斜块",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "C",
+          "why": "大块像挡体，旁边独立小斜片有分离感；没有升级提示。"
+        },
+        "answer": "C",
+        "shownOptions": {
+          "A": "守住并升级手中牌",
+          "B": "守住后抽新牌",
+          "C": "守住防线但失去一张手里的牌",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d2:1",
+        "imageSHA256": "a5fb21de7d4a13ce8c20693d22f45b356ab7f8571bd9f3720780785bd2a0cbf8",
+        "sheetSHA256": "536dafc4d2652026f044df916a6a1722d4f0248b0bb07d528c12dc6c55c61329",
+        "free": {
+          "seen": "左侧白色大扁块有灰色底面，右边一片白色小块分离；看不出谁在动",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "X",
+          "why": "大块右侧只有一个分离的小方块，没有箭头指示它进来、离开或升级。"
+        },
+        "answer": "B",
+        "shownOptions": {
+          "A": "守住后抽新牌",
+          "B": "守住防线但失去一张手里的牌",
+          "C": "守住并升级手中牌",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "HOLD",
+        "fit": "HOLD",
+        "why": "原稿虽选对只读出两块大小不同的形，没辨出护势或失去一张牌；拟合选看不出。"
+      }
+    },
+    "twin_strike": {
+      "name": "重击",
+      "effect": "造成 2 次 5 点伤害。",
+      "lockedRubric": {
+        "core": "同一招里打出两个独立命中",
+        "distractors": [
+          "一击附一条残影",
+          "把下一张攻击牌重复施放"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c10:4",
+        "imageSHA256": "8bf530b1a358ab16ae9829f1e5fe19e3554b68f8c79ed964db1886925da5f8cc",
+        "sheetSHA256": "6a0bd16cce3b26bac2b0ad115fe4b4ff9b969a6bf48e537e3eb8c150691a5b79",
+        "free": {
+          "seen": "两道白色弧形划痕平行向右上收尖",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "A",
+          "why": "双弧各有独立完整的尖端，像同一动作挥出两道。"
+        },
+        "answer": "A",
+        "shownOptions": {
+          "A": "同一招里打出两个独立命中",
+          "B": "把下一张攻击牌重复施放",
+          "C": "一击附一条残影",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d4:1",
+        "imageSHA256": "e1e35007326eafb779d9978b7ec1a582a07c1647f8695f1d56bf7e7ccb66dc88",
+        "sheetSHA256": "5b1a1654c563749badb4591124e9d8f010b2de21c79c55fda3c54ef203eb791d",
+        "free": {
+          "seen": "两条并排白色细弧都朝右上收尖，像成对划痕；看不出被划对象",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "A",
+          "why": "两条走势平行且都清晰收尖，不像前后牌序；较像一次双击，残影不能完全排除。"
+        },
+        "answer": "A",
+        "shownOptions": {
+          "A": "同一招里打出两个独立命中",
+          "B": "一击附一条残影",
+          "C": "把下一张攻击牌重复施放",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "PASS",
+        "fit": "PASS",
+        "why": "两版都先读出两道同向平行且分开的划击痕，不是单痕残影或抽一张牌，选项均对。"
+      }
+    },
+    "uppercut": {
+      "name": "挑剑破势",
+      "effect": "造成 13 点伤害，施加 1 层虚弱与 1 层易伤。",
+      "lockedRubric": {
+        "core": "向上挑击，把目标攻势和防守同时打乱",
+        "distractors": [
+          "横切并只打出破防",
+          "不抬刀只压下对方武器"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c8:3",
+        "imageSHA256": "9fcb7af1fc2a99f0eebdbce11d540332569ed496de67484430e7b80de44cc75a",
+        "sheetSHA256": "fbd166ba168a3ce37c7cab3b0f5f64200fe542aa29bb9d6dbff4da5b866aa155",
+        "free": {
+          "seen": "白色弯刀折向右上，尖端两侧分离两枚小碎片",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "B",
+          "why": "弯刀向右上挑，顶部两块飞散。"
+        },
+        "answer": "B",
+        "shownOptions": {
+          "A": "不抬刀只压下对方武器",
+          "B": "向上挑击，把目标攻势和防守同时打乱",
+          "C": "横切并只打出破防",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d9:2",
+        "imageSHA256": "ed031d61f9d4079d14a3986569be0f19431a3f58a2f6b8d3d91d1c3f6e52ab0d",
+        "sheetSHA256": "7b01916691792d716e8c078763069ffd4ef49bcee205b9681d5da314285340ea",
+        "free": {
+          "seen": "白色带折角的长物从左下向右上伸，右上方两小碎块分离；像有碎片飞出。",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "B",
+          "why": "折刃斜上，顶端两块碎片上扬；最符合挑击并扰乱。"
+        },
+        "answer": "B",
+        "shownOptions": {
+          "A": "横切并只打出破防",
+          "B": "向上挑击，把目标攻势和防守同时打乱",
+          "C": "不抬刀只压下对方武器",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "HOLD",
+        "fit": "HOLD",
+        "why": "两版虽选对，先读只看到上挑和碎片，不能辨出攻守双失衡，而非普通击碎。"
+      }
+    },
+    "warcry": {
+      "name": "调整战术",
+      "effect": "消耗。抽 1 张牌，将 1 张手牌置于抽牌堆顶。",
+      "lockedRubric": {
+        "core": "战术换牌：一张到手，另一张回到牌堆顶部",
+        "distractors": [
+          "单向抽新牌",
+          "把旧牌移除再抽新牌"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c12:1",
+        "imageSHA256": "21b23d9ea6548853aa0c3cabfecb21f0f32699d909feebf5a86dbd6d704f6bf4",
+        "sheetSHA256": "8f8476cc160c3607cb13c49a8ddd76511dbb32833ba5833f49920d34f4455345",
+        "free": {
+          "seen": "上下两层扁多边形，白色顶片向左挑尖，灰色底片平直",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "A",
+          "why": "两个上下叠置的片，上层侧面露出尖角，像从牌堆顶部换片。"
+        },
+        "answer": "A",
+        "shownOptions": {
+          "A": "战术换牌：一张到手，另一张回到牌堆顶部",
+          "B": "单向抽新牌",
+          "C": "把旧牌移除再抽新牌",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d6:5",
+        "imageSHA256": "d5ec0f582672b9889be3414503b10a5955fc5ba1d6c3ef2cf9d2cd2ad354beb5",
+        "sheetSHA256": "dc64572ee19d3efc7b44a7b6617010c6ba9096da3bf3fea7e76975b9ab6bf676",
+        "free": {
+          "seen": "一白一灰两片扁平棱角块上下叠放，中间有一条暗缝；无明显动作",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "X",
+          "why": "两层平块上下叠放，但没有反向移动提示，不能从视觉确认是交换还是普通抽牌。"
+        },
+        "answer": "C",
+        "shownOptions": {
+          "A": "单向抽新牌",
+          "B": "把旧牌移除再抽新牌",
+          "C": "战术换牌：一张到手，另一张回到牌堆顶部",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "HOLD",
+        "fit": "HOLD",
+        "why": "原稿虽选对只见两层棱形与挑尖，没有抽入和回置的双向关系；拟合选看不出。"
+      }
+    },
+    "whirlwind": {
+      "name": "岩潮叠嶂",
+      "effect": "消耗所有剩余能量，每点对所有敌人造成 5 点伤害。",
+      "lockedRubric": {
+        "core": "以能量连续掀起一阵阵岩潮，波及周围多敌",
+        "distractors": [
+          "一次荒星落地后扩散",
+          "消耗自己的生命伤害敌群"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c12:3",
+        "imageSHA256": "2156a2cb10567d63bc0c21f6d3e3ce200c37abaeacee2ac8b68ed677cf854791",
+        "sheetSHA256": "8f8476cc160c3607cb13c49a8ddd76511dbb32833ba5833f49920d34f4455345",
+        "free": {
+          "seen": "三枚白色尖锥自左往右依次缩小，最大一枚有灰色侧面",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "C",
+          "why": "三枚大小递减的独立岩锥，像分波出现而不是单颗落地。"
+        },
+        "answer": "C",
+        "shownOptions": {
+          "A": "一次荒星落地后扩散",
+          "B": "消耗自己的生命伤害敌群",
+          "C": "以能量连续掀起一阵阵岩潮，波及周围多敌",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d6:1",
+        "imageSHA256": "658df5c0694bbabde92ad912f6796a21b39ced6dc005380b1e52c86701897e3a",
+        "sheetSHA256": "dc64572ee19d3efc7b44a7b6617010c6ba9096da3bf3fea7e76975b9ab6bf676",
+        "free": {
+          "seen": "三个白色直立尖锥，从左到右由高到低，上端都尖；像岩尖，无明显运动",
+          "confidence": "high"
+        },
+        "choice": {
+          "pick": "C",
+          "why": "三根高低不同的独立岩尖并排成一列，像一阵阵掀起；没显示目标或消耗。"
+        },
+        "answer": "C",
+        "shownOptions": {
+          "A": "一次荒星落地后扩散",
+          "B": "消耗自己的生命伤害敌群",
+          "C": "以能量连续掀起一阵阵岩潮，波及周围多敌",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "HOLD",
+        "fit": "HOLD",
+        "why": "两版虽选对，先读只见高低排列的静态尖锥，没读出连续岩潮向外波及群敌。"
+      }
+    },
+    "wild_strike": {
+      "name": "猛进斩",
+      "effect": "造成 12 点伤害，将 1 张伤口洗入抽牌堆。",
+      "lockedRubric": {
+        "core": "猛击敌方，自己牌堆留下持续妨碍的伤口",
+        "distractors": [
+          "付出当前生命换一击",
+          "攻势同时留下短暂眩晕"
+        ],
+        "notRequired": "精确数字与升级、具体费用、持续回合数及非核心状态名称；不要求逐字复述。不得省掉 core 中用于和近邻区分的关系。"
+      },
+      "master": {
+        "blindId": "c1:2",
+        "imageSHA256": "5389bfe9c092430cc7bd6a450e7602675d23622a8e0ff617b14f22526eefcbfe",
+        "sheetSHA256": "581c782b987a0f41f3a85c9c5cc27d201403be58092b1f2a753fe8cc4a36776c",
+        "free": {
+          "seen": "灰色带缺口方块在左，白色短剑在右斜指右下；看不出是否击中",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "X",
+          "why": "右下短剑和左上缺角块并列；没有明示伤口、付血或眩晕。"
+        },
+        "answer": "A",
+        "shownOptions": {
+          "A": "猛击敌方，自己牌堆留下持续妨碍的伤口",
+          "B": "付出当前生命换一击",
+          "C": "攻势同时留下短暂眩晕",
+          "X": "看不出／都不是"
+        }
+      },
+      "fit": {
+        "blindId": "d5:2",
+        "imageSHA256": "7f5126309f09e8bbd8bff01ae856efe4630bcdc572f0d9589d563ff70810c7c3",
+        "sheetSHA256": "fab246e3ee7bfed27ef062ed576ada072befa4917c9957f9166462a78ad84df8",
+        "free": {
+          "seen": "左上灰色方块上缘有缺口，右下白色长尖形往右下延展，近端有短横突起；像刺出或掠过",
+          "confidence": "med"
+        },
+        "choice": {
+          "pick": "B",
+          "why": "白色斩形旁单独留下一个缺口方块，和上一格相似的伤口图形；没有血或眩晕符号。"
+        },
+        "answer": "B",
+        "shownOptions": {
+          "A": "付出当前生命换一击",
+          "B": "猛击敌方，自己牌堆留下持续妨碍的伤口",
+          "C": "攻势同时留下短暂眩晕",
+          "X": "看不出／都不是"
+        }
+      },
+      "decision": {
+        "master": "HOLD",
+        "fit": "HOLD",
+        "why": "原稿选看不出；拟合虽选对，缺角方块仍未读成攻击给自己留下的伤口牌。"
+      }
+    }
+  }
+}
