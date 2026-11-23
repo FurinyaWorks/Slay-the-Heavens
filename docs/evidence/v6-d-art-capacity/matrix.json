@@ -1,0 +1,1275 @@
+{
+  "sourceCommit": "73c21489efaab409d4c0c46bee517d410d3427fc",
+  "sourceDirty": false,
+  "cards": [
+    {
+      "cardId": "strike",
+      "name": "普通攻击",
+      "manifest": "art/cards/traveler-geo/strike/asset.json",
+      "sourceSha256": "a7dc3facc320b1c5b36d3d220e33b4ace98ea441d46d4023c0a7c538a18679aa",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2610,
+        "std": 7,
+        "mae": 4.4213686342592595,
+        "maxError": 75,
+        "previewSha256": "5e3719be1b7063d07266c7dcdd1a5af5e864d6565fbfef88959bb24a7b723118"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "defend",
+      "name": "防御",
+      "manifest": "art/cards/traveler-geo/defend/asset.json",
+      "sourceSha256": "5e21b58bb6841348a25411d387cc1128823ad653b7860988aab6cceb75dcfc87",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2577,
+        "std": 5,
+        "mae": 3.6429036458333335,
+        "maxError": 44,
+        "previewSha256": "17fe7fb60350f06ce623dd4e4efb076c42f51ca0a601367e12b299f92d8b8dfe"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "bash",
+      "name": "破防斩",
+      "manifest": "art/cards/traveler-geo/bash/asset.json",
+      "sourceSha256": "022f81c8375e8886956332de56b1c63b0284b83c63217377f71e349de4ddae22",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2556,
+        "std": 6,
+        "mae": 4.474826388888889,
+        "maxError": 57,
+        "previewSha256": "f5fd729de1601a4e5b0a45cbd74385c12479489618e6d93aa0a7f52b5ee1f9cb"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "anger",
+      "name": "连续出剑",
+      "manifest": "art/cards/traveler-geo/anger/asset.json",
+      "sourceSha256": "e83ec7a32c82c2e48a23081f6dd861dc4bc6713151fba792eb890078b2e44427",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2628,
+        "std": 7,
+        "mae": 4.583043981481482,
+        "maxError": 66,
+        "previewSha256": "8c5a46c38e931276eb674134e6af63300b0211b00e52717ca7b656d9f49a3afb"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "armaments",
+      "name": "整备武装",
+      "manifest": "art/cards/traveler-geo/armaments/asset.json",
+      "sourceSha256": "e63cd8703ce983eb1556efa31a017b803e31c7b887e9c3e14c77bd3ba9928332",
+      "sourceReview": "owner-reviewed-offline-visual",
+      "nativeRedraw": {
+        "images": 1834,
+        "luaSha256": "b120cb5d4d30372611c539b69c8b04af1c8ea5feafbdb561c1eabb37443c8a04",
+        "jsonSha256": "277afd4d54a2a6a2688205c81e29663ff3253d19df72759ead8621935f9a3e0a"
+      },
+      "historicalConversion": null,
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "body_slam",
+      "name": "格挡反击",
+      "manifest": "art/cards/traveler-geo/body_slam/asset.json",
+      "sourceSha256": "3fcf03ef72dc63be51204fd4e151512ec74e2d235beb77c7f348361c06acc39f",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2615,
+        "std": 7,
+        "mae": 4.729311342592593,
+        "maxError": 64,
+        "previewSha256": "ad3dd01d29c8f95df96ab347da35b52643f9bdbe04ce1a5ce9499c099ef23a64"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "clash",
+      "name": "全力进攻",
+      "manifest": "art/cards/traveler-geo/clash/asset.json",
+      "sourceSha256": "a58a66442d3df85876e16eafd3b27b73bfe8c687d4b41a806ddc76769da6c6d2",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2523,
+        "std": 6,
+        "mae": 3.6130280671296298,
+        "maxError": 42,
+        "previewSha256": "9b530229dd824e5f141a54375d294163939a289baa9d10d3f6a172f31cea58ef"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "cleave",
+      "name": "星陨剑",
+      "manifest": "art/cards/traveler-geo/cleave/asset.json",
+      "sourceSha256": "6e37a7b9264154a2cd7e6560a625cf001b3b00d63e8fdbf4d01369a714397155",
+      "sourceReview": "owner-reviewed-offline-visual",
+      "nativeRedraw": {
+        "images": 2657,
+        "luaSha256": "3c9eaa03741391f594846e59708563d4912a96b8757092112ce3cabb7c2e5185",
+        "jsonSha256": "f60eaf057ea4a94231525047ea9d54afda09a7857bc671209cedebd2677b6eff"
+      },
+      "historicalConversion": null,
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "clothesline",
+      "name": "压制斩",
+      "manifest": "art/cards/traveler-geo/clothesline/asset.json",
+      "sourceSha256": "a434c61705587c8bbaab5110e7c81c6c271ee65a75eea5cccf45c85975fbec5d",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2521,
+        "std": 7,
+        "mae": 5.07689525462963,
+        "maxError": 55,
+        "previewSha256": "ad7da5807c3470316d220f7ef4310ee82fca425ee09392c1176bc0eb81d93b2f"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "flex",
+      "name": "蓄力",
+      "manifest": "art/cards/traveler-geo/flex/asset.json",
+      "sourceSha256": "e717d5a2a47bd5efc32fc61d55e1bd98de335154ce932351764c679d3dae21c6",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2501,
+        "std": 5,
+        "mae": 4.234194155092593,
+        "maxError": 60,
+        "previewSha256": "52a6ddf6feb4ea2225925f217ff5027d199015ecfb75e410390c393db8c2fbf1"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "havoc",
+      "name": "临阵变招",
+      "manifest": "art/cards/traveler-geo/havoc/asset.json",
+      "sourceSha256": "a094433a8272a6517b6f928246cc4bf67800bc5a19fb8d319b94eb192994899d",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2433,
+        "std": 5,
+        "mae": 4.054651331018518,
+        "maxError": 67,
+        "previewSha256": "2ec7018b784bda953898f7e54acc99dc8334ac88358e23bae63d7da079344e71"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "headbutt",
+      "name": "回身追击",
+      "manifest": "art/cards/traveler-geo/headbutt/asset.json",
+      "sourceSha256": "8e59ccd99b01ce71535a7db5a219cebb9831a8610e9b5133e7cd7221aa450572",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2545,
+        "std": 6,
+        "mae": 4.7348813657407405,
+        "maxError": 137,
+        "previewSha256": "26d0c8d272fe9ac116965695dc6aafaf82a7cb05a6e1d4955089df015f9ef2c6"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "heavy_blade",
+      "name": "重剑斩",
+      "manifest": "art/cards/traveler-geo/heavy_blade/asset.json",
+      "sourceSha256": "1cf7dec3ef1f9ae369837204c24b0ce727142909f200c225d252dd85760bdbfc",
+      "sourceReview": "owner-reviewed-offline-visual",
+      "nativeRedraw": {
+        "images": 2043,
+        "luaSha256": "6e0b632d02e285e6412a2cfbc13c95ae6b28498259b031d0b23f5992cfd8903f",
+        "jsonSha256": "38708d271df2b168f71e90fae0f8780bb0acefc522bde1f313cb0d4a4e6fdee0"
+      },
+      "historicalConversion": null,
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "iron_wave",
+      "name": "招架还击",
+      "manifest": "art/cards/traveler-geo/iron_wave/asset.json",
+      "sourceSha256": "4beedcb5b196d12970fa2d8be59faaf40ab6a4b43c7c750f8489e847c18c8f10",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2525,
+        "std": 10,
+        "mae": 5.909722222222222,
+        "maxError": 104,
+        "previewSha256": "f2efeec7c9bfe1490050824c74f352bbee2a1b4410f3869b97a85d0346d642b1"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "perfected_strike",
+      "name": "剑势如虹",
+      "manifest": "art/cards/traveler-geo/perfected_strike/asset.json",
+      "sourceSha256": "652a74943042a7e27765d959c1f198e0178b1c5a21cb067b1c26eec605a7dbf5",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2595,
+        "std": 5,
+        "mae": 3.8947844328703702,
+        "maxError": 56,
+        "previewSha256": "50b856f8c1b726a9c4e3ea9b98b57e2017610ab00dc4ec6ed7fa95cee31139cf"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "pommel_strike",
+      "name": "试探一击",
+      "manifest": "art/cards/traveler-geo/pommel_strike/asset.json",
+      "sourceSha256": "4bebd8693cb4dac9edbf16b8581a3878252c19c03dc47db8b805f96bd7aa80fe",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2461,
+        "std": 6,
+        "mae": 4.061451099537037,
+        "maxError": 80,
+        "previewSha256": "b726ccf727015e1f70df5db729853a548ce8ee581e3723cb2530d02a2ab57c79"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "shrug_it_off",
+      "name": "伺机而动",
+      "manifest": "art/cards/traveler-geo/shrug_it_off/asset.json",
+      "sourceSha256": "6dce70baa5a5c9402ec313be16df2cdbdd4a7ed33780fd251a3236d2541870f1",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2582,
+        "std": 4,
+        "mae": 4.260380497685185,
+        "maxError": 54,
+        "previewSha256": "78d7f2a33bfcca82c00c674dd5b9221b005f7b87b6878b4e16851c2c3e6c8100"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "sword_boomerang",
+      "name": "回旋连斩",
+      "manifest": "art/cards/traveler-geo/sword_boomerang/asset.json",
+      "sourceSha256": "36e775bb2a9e74cf5de34b08716899e5b420e98606422a74b4f2e110fdbc3440",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2559,
+        "std": 6,
+        "mae": 4.415834780092593,
+        "maxError": 64,
+        "previewSha256": "dcd296a8b9d44439a1a4c1c7063cb0c200c40a269cb3366dc039ba1442ae7cc0"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "thunderclap",
+      "name": "横扫破防",
+      "manifest": "art/cards/traveler-geo/thunderclap/asset.json",
+      "sourceSha256": "a6bd90525de1ae3fa3c976638e8833751ed30832c6cf3bea2e50ae3f2def9d80",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2399,
+        "std": 6,
+        "mae": 4.897822627314815,
+        "maxError": 72,
+        "previewSha256": "34e701ee19837993467547e61c645a06e1021e4386cf1624971476fc5c51fa26"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "true_grit",
+      "name": "稳住阵脚",
+      "manifest": "art/cards/traveler-geo/true_grit/asset.json",
+      "sourceSha256": "d3256b9e8b5fadf368f7805b26c19c8cb349bb935073510fc7894dddabe51dd2",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2426,
+        "std": 5,
+        "mae": 3.5941478587962963,
+        "maxError": 42,
+        "previewSha256": "a05d0b68ad55b2aee56b3428e6c378cd958d46e3fcaeb55781774000a55b3903"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "twin_strike",
+      "name": "重击",
+      "manifest": "art/cards/traveler-geo/twin_strike/asset.json",
+      "sourceSha256": "3bc5a5c926b3eb2cdcb9e760755749af8211d92f71422982a79fc30c9356b97d",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2526,
+        "std": 7,
+        "mae": 4.777922453703703,
+        "maxError": 57,
+        "previewSha256": "13d40ed411907991c3dd93ac95bd01013df1a0e0460111158b107b843abd0ed4"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "warcry",
+      "name": "调整战术",
+      "manifest": "art/cards/traveler-geo/warcry/asset.json",
+      "sourceSha256": "a3166687ab2410ac8ede91b31d650f56e669092f52659d46d688579210883da4",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2499,
+        "std": 5,
+        "mae": 4.97095630787037,
+        "maxError": 54,
+        "previewSha256": "ee9e0275ef97adb133421f3b837df6f56381b347b48d782e191f28edc81659e2"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "wild_strike",
+      "name": "猛进斩",
+      "manifest": "art/cards/traveler-geo/wild_strike/asset.json",
+      "sourceSha256": "107ba40ca01aac467a1ca18244fc06b40e805f1fa344e9553e760e96629ad937",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2513,
+        "std": 7,
+        "mae": 4.635778356481482,
+        "maxError": 77,
+        "previewSha256": "753ab9542703de395cdc9ac16eae872fcc48f6c103f5dd13bc91387aba5865a3"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "battle_trance",
+      "name": "集中精神",
+      "manifest": "art/cards/traveler-geo/battle_trance/asset.json",
+      "sourceSha256": "b43d82bd984776081fa99464803abb460f14885e8bf889e155edce36a5d32825",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2125,
+        "std": 3,
+        "mae": 3.467701099537037,
+        "maxError": 35,
+        "previewSha256": "6546fffa10101bada1bac981f54e5899a427cc8c0216387844c23caa79eb034e"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "blood_for_blood",
+      "name": "负伤反击",
+      "manifest": "art/cards/traveler-geo/blood_for_blood/asset.json",
+      "sourceSha256": "14dcbfd918aa072327858dfc3240134c8258fa43e8862739830f6cce1103855a",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2631,
+        "std": 6,
+        "mae": 4.852249710648148,
+        "maxError": 66,
+        "previewSha256": "095cd05345922de7f6c23f843b7c8f45d82e218de76c67bd6b3150407164a711"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "bloodletting",
+      "name": "透支",
+      "manifest": "art/cards/traveler-geo/bloodletting/asset.json",
+      "sourceSha256": "37ceff78295cfd6b13d3a77430becdfd83f70321ebd4bdba0baa7fc29a7f5304",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2363,
+        "std": 5,
+        "mae": 4.470811631944445,
+        "maxError": 56,
+        "previewSha256": "20a22458ae9ca8f53a5ec473fdff073c2c33d1883d8124206b2d002dd41897fa"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "burning_pact",
+      "name": "弃旧筹新",
+      "manifest": "art/cards/traveler-geo/burning_pact/asset.json",
+      "sourceSha256": "e461da57b3e6554ccf6f379ff6988f933af71ef4c57923b3e90e40f7b75b3ed6",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2491,
+        "std": 6,
+        "mae": 4.501663773148148,
+        "maxError": 155,
+        "previewSha256": "e5ca4995904452ea0c8d61eb135b0153de255a9a17390f4bb00f4b9eaca6456d"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "carnage",
+      "name": "抓住战机",
+      "manifest": "art/cards/traveler-geo/carnage/asset.json",
+      "sourceSha256": "f6a6f67d9775421be463c629c27f55a81c9a7f95f38b13c454fb606ef1b35375",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2577,
+        "std": 6,
+        "mae": 4.298213252314815,
+        "maxError": 53,
+        "previewSha256": "fcae2ce1e8eb55bc429b53d95b3f11e66a3289316379a67dde3d00079787fb93"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "combust",
+      "name": "强攻压阵",
+      "manifest": "art/cards/traveler-geo/combust/asset.json",
+      "sourceSha256": "b68711b7d61d37080598378a86a01592b875efbc25277425554d9af870b73f29",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2425,
+        "std": 6,
+        "mae": 4.535120081018518,
+        "maxError": 59,
+        "previewSha256": "bce307cdc957ea73260787800b9bfb240e630181895d3e41ed3fc29666f1bff7"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "dark_embrace",
+      "name": "临机应变",
+      "manifest": "art/cards/traveler-geo/dark_embrace/asset.json",
+      "sourceSha256": "34e073bb15b1d0658e20208640485036e0bc072a274957dfe6dcd1f5afdf0ebb",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2468,
+        "std": 6,
+        "mae": 4.511284722222222,
+        "maxError": 80,
+        "previewSha256": "dbe7e23066ec01537a7da8a48a6b9231c0e520d90ee1843586bf78d5c96ccad5"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "disarm",
+      "name": "压制攻势",
+      "manifest": "art/cards/traveler-geo/disarm/asset.json",
+      "sourceSha256": "92d421cd46144544a252594559892f650695b7d3135cd1163cf3397b62e21ce7",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2518,
+        "std": 10,
+        "mae": 5.380316840277778,
+        "maxError": 77,
+        "previewSha256": "89351f45fb09f87c4896bac284538cdd5ff94de87dcf7a6099ea44b7eddc2446"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "dropkick",
+      "name": "乘隙追击",
+      "manifest": "art/cards/traveler-geo/dropkick/asset.json",
+      "sourceSha256": "a656046b6c437a1996cb7c0f78577d88ab767d390309c012738845d1a7ebe311",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2400,
+        "std": 4,
+        "mae": 3.5974754050925926,
+        "maxError": 44,
+        "previewSha256": "eb821a01f02934381eb10fbf9512a195a67fddc42abc75078f252c7db0449bed"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "dual_wield",
+      "name": "再演剑势",
+      "manifest": "art/cards/traveler-geo/dual_wield/asset.json",
+      "sourceSha256": "974ecc21195dc0edc0b7e71a8249a220214dda737e7a84ba8b44810cfffeb731",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2505,
+        "std": 4,
+        "mae": 3.4515697337962963,
+        "maxError": 44,
+        "previewSha256": "fabf09132aa28788bec3c91dd03d1e3b046b4a34b814bcd595790239d50cee0f"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "entrench",
+      "name": "加固防线",
+      "manifest": "art/cards/traveler-geo/entrench/asset.json",
+      "sourceSha256": "17ebd5f40e86c3b20d2daf58d8cc63418b18423d3bfe2b4be357ec5ae795b584",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2561,
+        "std": 8,
+        "mae": 4.655418113425926,
+        "maxError": 73,
+        "previewSha256": "859117ee3750cf5e83ea8e9b37653adbbbbbf12e7d4272cbdbe63550723f5d26"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "evolve",
+      "name": "逆境求变",
+      "manifest": "art/cards/traveler-geo/evolve/asset.json",
+      "sourceSha256": "bd072b4eae6d81074e22306405dd2e36afed5b94b184ee4b064c95db1cc400e3",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2593,
+        "std": 3,
+        "mae": 2.891673900462963,
+        "maxError": 43,
+        "previewSha256": "6f4941bfbe578dca7b4ed08722277d084019ae502661ff13660218e581360b47"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "feel_no_pain",
+      "name": "百折不挠",
+      "manifest": "art/cards/traveler-geo/feel_no_pain/asset.json",
+      "sourceSha256": "eda3ea8a27eec5e05dcde90e4249587c67ee4573ab1b467e88ae37a8ca2a325b",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2430,
+        "std": 6,
+        "mae": 4.337854456018518,
+        "maxError": 120,
+        "previewSha256": "28e296d2797232543e325b5e66cefd98d8249f6899ad6914c143e836a2b0454d"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "fire_breathing",
+      "name": "逆势反攻",
+      "manifest": "art/cards/traveler-geo/fire_breathing/asset.json",
+      "sourceSha256": "051f38fdbd6d2c1aa398f8c00462cf26de11913bbc8c9c179cbccce8beb0d186",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2580,
+        "std": 7,
+        "mae": 4.860026041666667,
+        "maxError": 54,
+        "previewSha256": "fe16afa1c89e647f011cb6f9bd3315e6e797cd41b6b200258b58a81760cf2dea"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "flame_barrier",
+      "name": "反击架势",
+      "manifest": "art/cards/traveler-geo/flame_barrier/asset.json",
+      "sourceSha256": "8abdbe55cb86f6dda546ae49a54a9b48996406d44068a015672f9ac9b49f0584",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2520,
+        "std": 7,
+        "mae": 4.706597222222222,
+        "maxError": 70,
+        "previewSha256": "b80a216af63fa5df9a8608c04555b1f270d969de424267c1e39ffddbf8bb22b5"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "ghostly_armor",
+      "name": "及时招架",
+      "manifest": "art/cards/traveler-geo/ghostly_armor/asset.json",
+      "sourceSha256": "af03b421e138ff963ace2b89265e9e7de640848750f403ed710e8cb739159230",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2609,
+        "std": 7,
+        "mae": 5.014829282407407,
+        "maxError": 77,
+        "previewSha256": "d4cbfd3a4e3f168c0464cb465cc7fbbe37f79037f6404477290e04e8d19fc885"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "hemokinesis",
+      "name": "舍身进攻",
+      "manifest": "art/cards/traveler-geo/hemokinesis/asset.json",
+      "sourceSha256": "922fa81616629e9a74c42652807033ce5c04a40ebc284298d885ddc7a59a176e",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2607,
+        "std": 7,
+        "mae": 4.670970775462963,
+        "maxError": 73,
+        "previewSha256": "6ec4e3a0632ad16dd0e6ca711f23f0571ffe83a4c87e6e721db346f3dd4ab217"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "infernal_blade",
+      "name": "临阵试招",
+      "manifest": "art/cards/traveler-geo/infernal_blade/asset.json",
+      "sourceSha256": "67887ae642dbe6b6198b50de61561b302c7c2fe5bd8481639fe31bf180dac12b",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2587,
+        "std": 6,
+        "mae": 4.815140335648148,
+        "maxError": 51,
+        "previewSha256": "7faba9e503bffe507d35631e990f606e03d15709b41fd22f5458150fbe0746e5"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "inflame",
+      "name": "剑术精进",
+      "manifest": "art/cards/traveler-geo/inflame/asset.json",
+      "sourceSha256": "d4f7338823f718ca53d2a2b89157a38153cb42e4158e32df33d0e9a41e03ca21",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2607,
+        "std": 6,
+        "mae": 4.147099247685185,
+        "maxError": 53,
+        "previewSha256": "5c15f862097828f60808c4e56280918ac6c931d4cf36b7498e10deb72f784d94"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "intimidate",
+      "name": "威慑",
+      "manifest": "art/cards/traveler-geo/intimidate/asset.json",
+      "sourceSha256": "550652eba768202eab04c8eaaf25bc1aa4ac64c901b348612fb04e5979e7447c",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2527,
+        "std": 3,
+        "mae": 2.542064525462963,
+        "maxError": 41,
+        "previewSha256": "7c2449cd36e048a8f572cda247f031de9053628a0923736ece3f7c59001670a6"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "metallicize",
+      "name": "持续防守",
+      "manifest": "art/cards/traveler-geo/metallicize/asset.json",
+      "sourceSha256": "de4af2704de0e6327618b1ee85d4f94c5a08a0d573f6fc96027efe159c9cdc67",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2072,
+        "std": 3,
+        "mae": 3.0155888310185186,
+        "maxError": 61,
+        "previewSha256": "19cace859549aba8b6dc0785f602d85337a66473bd16c9a417e96d4dbd5da5ec"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "power_through",
+      "name": "强行固守",
+      "manifest": "art/cards/traveler-geo/power_through/asset.json",
+      "sourceSha256": "8de6f2fa52a0ce02e50348222bc5d563c4a7d4729218c00afd3023667698be4e",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2511,
+        "std": 5,
+        "mae": 4.704897280092593,
+        "maxError": 50,
+        "previewSha256": "38cab903a32a73612fa92e0036d2a58518bc60f73584ffdc62aa9e937ee43014"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "pummel",
+      "name": "疾风连斩",
+      "manifest": "art/cards/traveler-geo/pummel/asset.json",
+      "sourceSha256": "91c1baf35b1bd9addb16ec3e9d3549f47419ad04f2f8be2174768bba286e34d1",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2489,
+        "std": 8,
+        "mae": 5.160590277777778,
+        "maxError": 68,
+        "previewSha256": "d88e6ed0587325ba2f730a0536b2a47001e87e5ae89d7da34fbf76094b8c7ed8"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "rage",
+      "name": "攻守相济",
+      "manifest": "art/cards/traveler-geo/rage/asset.json",
+      "sourceSha256": "586a43fb6cba3f7f4698b631651f24b499e46ce201dae95488ba5a3a14445805",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2593,
+        "std": 7,
+        "mae": 4.481011284722222,
+        "maxError": 78,
+        "previewSha256": "1342d59f72e08e852b5f9aa88543643d6dc998e11a029eeb375a9d3e7d524fad"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "rampage",
+      "name": "越战越勇",
+      "manifest": "art/cards/traveler-geo/rampage/asset.json",
+      "sourceSha256": "c200f52a70527dfbf48c55b10864d81a460cf7ccd6e77ed56aa4eb4860540501",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2456,
+        "std": 6,
+        "mae": 4.408637152777778,
+        "maxError": 63,
+        "previewSha256": "3dfbe4fe550e1282b0b18cea26aa6504229688eb15760f36fb8b07cbd830329a"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "reckless_charge",
+      "name": "疾步突进",
+      "manifest": "art/cards/traveler-geo/reckless_charge/asset.json",
+      "sourceSha256": "db0d87aeec02e3ebb60a4a09c85f0b56c7b97fc598df4ec829c9c5aab44dce73",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2600,
+        "std": 6,
+        "mae": 4.2739076967592595,
+        "maxError": 52,
+        "previewSha256": "2ce3e00105791021088c03bfa62b88925f24216b8bb2a25691e34b6af9d6a212"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "rupture",
+      "name": "愈挫愈勇",
+      "manifest": "art/cards/traveler-geo/rupture/asset.json",
+      "sourceSha256": "8dcc23295795187e89dce228d01eb9379016ec25189a43e3ae2127c143143de8",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2509,
+        "std": 6,
+        "mae": 4.704933449074074,
+        "maxError": 67,
+        "previewSha256": "c5f212f16b0123d6e0da9e5a5ab1ba79757886f8c1076caa9a345ab128aaba35"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "searing_blow",
+      "name": "千锤一剑",
+      "manifest": "art/cards/traveler-geo/searing_blow/asset.json",
+      "sourceSha256": "9b19a1d65a7ccbd130d201c09fa305ff70f17d93841319edfa6f2f303ae6f253",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2612,
+        "std": 5,
+        "mae": 3.5653211805555554,
+        "maxError": 128,
+        "previewSha256": "0c99bc149ce047d53d66c38c72b993cd3691686de5725a438121fc94b5d3c428"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "second_wind",
+      "name": "弃繁守拙",
+      "manifest": "art/cards/traveler-geo/second_wind/asset.json",
+      "sourceSha256": "06f76388d0b79ac4ede6009f1c3d41ee70b99ee2f3fbed3e00bdecaf393b2f89",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2559,
+        "std": 4,
+        "mae": 2.7122034143518516,
+        "maxError": 107,
+        "previewSha256": "c427caed0255272f497cc109a557fc91afddf3013a59b501da0f479b8ad81de7"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "seeing_red",
+      "name": "重整旗鼓",
+      "manifest": "art/cards/traveler-geo/seeing_red/asset.json",
+      "sourceSha256": "e99b90891dbc72e09f895f2ff36cd5a345ff27f6763e638ac9b7ead2cee7f525",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2634,
+        "std": 4,
+        "mae": 3.493923611111111,
+        "maxError": 66,
+        "previewSha256": "952bd040509fa61953645281d0cdf1ca5d99ac26e29cf685b2a4593152e5f0df"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "sentinel",
+      "name": "后援守势",
+      "manifest": "art/cards/traveler-geo/sentinel/asset.json",
+      "sourceSha256": "09060a13c723dec77386a508a771875f661c257d0cc8a8eca20ae5e8015444b6",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2543,
+        "std": 7,
+        "mae": 4.192997685185185,
+        "maxError": 89,
+        "previewSha256": "5cf4ea2dc115a4ea28df47635533b9f4a129d039aae58c19757e3cd3c85b22c6"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "sever_soul",
+      "name": "弃守强攻",
+      "manifest": "art/cards/traveler-geo/sever_soul/asset.json",
+      "sourceSha256": "6a3326d09bfa0a1458eebb80f0766276e5ecd3ea640ac6f8f163d0642c103b05",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2593,
+        "std": 7,
+        "mae": 4.664424189814815,
+        "maxError": 82,
+        "previewSha256": "ee77c79f5aa3799eb2fb6eea3f1aca15a583f084db1661f3e932ea4068c6d832"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "shockwave",
+      "name": "震慑敌阵",
+      "manifest": "art/cards/traveler-geo/shockwave/asset.json",
+      "sourceSha256": "b3f1e14dc83e33d63a805f4d46a10064913e722b0d5f288a6661090589f67fb5",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2541,
+        "std": 5,
+        "mae": 4.131727430555555,
+        "maxError": 55,
+        "previewSha256": "da85b8a7aa1ba492fafee9cc23080f4355cfbff7897d572528cad387e3ac49a1"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "spot_weakness",
+      "name": "洞察破绽",
+      "manifest": "art/cards/traveler-geo/spot_weakness/asset.json",
+      "sourceSha256": "bfab01457272f4a9fcd604903146f5c7f58f62d89608755f0a8447497f93b577",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2632,
+        "std": 5,
+        "mae": 3.977683738425926,
+        "maxError": 50,
+        "previewSha256": "65f95848140beeddb6255081c0fc67bd976ac6275fac335bc62628c47849f7df"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "uppercut",
+      "name": "挑剑破势",
+      "manifest": "art/cards/traveler-geo/uppercut/asset.json",
+      "sourceSha256": "7abb088f5abaa5823b4294d58da0ed892153059a6f148eb918fd599c71ee81fa",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2441,
+        "std": 5,
+        "mae": 4.305591724537037,
+        "maxError": 72,
+        "previewSha256": "05b8bd69aade1619131b989bdd01c1c78c982b0bf231459bb444ea9e06513c44"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "whirlwind",
+      "name": "岩潮叠嶂",
+      "manifest": "art/cards/traveler-geo/whirlwind/asset.json",
+      "sourceSha256": "c5f70ec860f33958fdff025e4f729a06705a4cbfeffe72a2ea5c3239c7401af1",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2571,
+        "std": 8,
+        "mae": 5.730685763888889,
+        "maxError": 82,
+        "previewSha256": "5a3df7db81cc0a0003c0f1e1dbb8a1d585ee7f8f096aee4e4e752ec7cd967d13"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "barricade",
+      "name": "永世的磐岩",
+      "manifest": "art/cards/traveler-geo/barricade/asset.json",
+      "sourceSha256": "6572023b045ea2ab1f5344f107d6c115f7bb8d419b8f8d372689e97f62e3e3e2",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2239,
+        "std": 3,
+        "mae": 3.318721064814815,
+        "maxError": 40,
+        "previewSha256": "8b94acee5af353bc76af7cac310ed60d7d7a2fa88320ea4001d373a0fa9642e8"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "berserk",
+      "name": "背水之战",
+      "manifest": "art/cards/traveler-geo/berserk/asset.json",
+      "sourceSha256": "0108c7d2cb65f2939f284dbbed671e206742de9d333df1c2a1f9b7e129094e39",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2478,
+        "std": 7,
+        "mae": 4.173140914351852,
+        "maxError": 104,
+        "previewSha256": "bea12e8dc98b42977a13a9f88a4302eee8aa404cdaf7195d508cee135b9606cf"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "bludgeon",
+      "name": "全力一击",
+      "manifest": "art/cards/traveler-geo/bludgeon/asset.json",
+      "sourceSha256": "822b68984a0bbc800e29d33ff2927efe011cf0cafa485da6033e7412307e5731",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2623,
+        "std": 6,
+        "mae": 4.09888599537037,
+        "maxError": 46,
+        "previewSha256": "a3ad1e6f3854ebd83a7e00592a632d467a038cc63413a9f9e1f90a1241306f1b"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "brutality",
+      "name": "破釜沉舟",
+      "manifest": "art/cards/traveler-geo/brutality/asset.json",
+      "sourceSha256": "9a30cab4e654a83c5530e9446c58053fa38253ffdb02f70ecad7a62396887fe8",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2458,
+        "std": 7,
+        "mae": 4.578305844907407,
+        "maxError": 70,
+        "previewSha256": "1a3b3113d589a76c34c26b15bb862eb452fa0d0a65ae90720e1cf7748a99e6c1"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "corruption",
+      "name": "孤注一掷",
+      "manifest": "art/cards/traveler-geo/corruption/asset.json",
+      "sourceSha256": "133c0f264b0709ebb9dc92924e980508df74259e3d8d6bb47d432572462cefb8",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2521,
+        "std": 6,
+        "mae": 3.2435619212962963,
+        "maxError": 106,
+        "previewSha256": "a9301a49772bc5d7259b17f8c0960d638aeb3251e0c6ef6fd9d30ce08aca702d"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "demon_form",
+      "name": "渐入佳境",
+      "manifest": "art/cards/traveler-geo/demon_form/asset.json",
+      "sourceSha256": "3827b49c022630fc5ecf2753437376310092c1079388ade9b4bc8fdfe5c837f0",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2419,
+        "std": 4,
+        "mae": 3.6825810185185186,
+        "maxError": 65,
+        "previewSha256": "a02edac0a3566a69b710e3477743b5a69ff012253b77c876b4de1ffb89ce0243"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "double_tap",
+      "name": "叠势连击",
+      "manifest": "art/cards/traveler-geo/double_tap/asset.json",
+      "sourceSha256": "0ce4d7ce74eec1878829ba1121092d7db72cc8d43d2c0415beb4490d093aec1d",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2472,
+        "std": 7,
+        "mae": 4.6039858217592595,
+        "maxError": 133,
+        "previewSha256": "7d9cdcc86575948b39e9dde663ac78b004c4d8ffe32e5960a7ede9f2d75fa3c7"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "exhume",
+      "name": "重拾旧策",
+      "manifest": "art/cards/traveler-geo/exhume/asset.json",
+      "sourceSha256": "0bec70814030e4cbbdcfd0da2fc7e68c4956e47f4fb6ad7ffe76fef9ebe3d91e",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2406,
+        "std": 5,
+        "mae": 3.8706958912037037,
+        "maxError": 104,
+        "previewSha256": "9aff22a5370a41b42f2a457dade830b094bab4113f03689433cc83d380a7e45f"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "feed",
+      "name": "乘胜壮行",
+      "manifest": "art/cards/traveler-geo/feed/asset.json",
+      "sourceSha256": "b3ea69b6935321142db548b1228eabc66fac5832d6f04b521b9093945aca7a23",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2656,
+        "std": 5,
+        "mae": 3.9878472222222223,
+        "maxError": 90,
+        "previewSha256": "939bb7d5ce8d05ab148c6676f6a46fdfc7e7a1b5944b9d665996809361c74a47"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "fiend_fire",
+      "name": "舍尽一击",
+      "manifest": "art/cards/traveler-geo/fiend_fire/asset.json",
+      "sourceSha256": "e1d3d35e0d559a55870635d9e66a149b258331c7e821da7ae34f550d38f54afa",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2451,
+        "std": 7,
+        "mae": 4.402669270833333,
+        "maxError": 71,
+        "previewSha256": "cef0967cc255e1a4d7c9641f781335f26926642722b8f7a118427409de0118cb"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "immolate",
+      "name": "摧阵一击",
+      "manifest": "art/cards/traveler-geo/immolate/asset.json",
+      "sourceSha256": "c24ab9cc4e84b3af3f1b96704576b78725e40eeff464cd6562be1a5737f141ab",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2539,
+        "std": 6,
+        "mae": 4.418149594907407,
+        "maxError": 59,
+        "previewSha256": "10b308f14b4b4078c9d2f236777f66e3ea8a95a2317734ac03a0a9d5b9836195"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "impervious",
+      "name": "坚守",
+      "manifest": "art/cards/traveler-geo/impervious/asset.json",
+      "sourceSha256": "588d1157c55370dee77080ce930279a4e63e03ae0e91146f1a21ea1dae6c0c02",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2566,
+        "std": 5,
+        "mae": 3.873517071759259,
+        "maxError": 100,
+        "previewSha256": "e392072e3167a7d7823c0fa34c8fa61b813df13ed72e36cc46a5b584b6750e34"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "juggernaut",
+      "name": "守中有攻",
+      "manifest": "art/cards/traveler-geo/juggernaut/asset.json",
+      "sourceSha256": "a71fcd2a992e8e5750cdf66e335cb269102e0609805710c24dd58e4b8282fb94",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2451,
+        "std": 7,
+        "mae": 4.683557581018518,
+        "maxError": 99,
+        "previewSha256": "31c8ca8e94b341dc485cce267613211d247fea4f0e123465dbed9fbd1d47d9e1"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "limit_break",
+      "name": "剑意突破",
+      "manifest": "art/cards/traveler-geo/limit_break/asset.json",
+      "sourceSha256": "d1b5831bbe8435a3097a8224249170e53925251eee4487cfb408e79ec5d5260c",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2474,
+        "std": 4,
+        "mae": 3.521339699074074,
+        "maxError": 67,
+        "previewSha256": "8c31d7b015445cd6752aa0c813a0b2406136df69eed592e7cb2c6be025aab36e"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "offering",
+      "name": "奋力一搏",
+      "manifest": "art/cards/traveler-geo/offering/asset.json",
+      "sourceSha256": "10108e7937964715bb5796f81981a744350622683a350ea5fa7d7c30c6a198bc",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2591,
+        "std": 10,
+        "mae": 6.168800636574074,
+        "maxError": 119,
+        "previewSha256": "65c8285c77dddef7b207b9d542b3fb23fcd8663003e6a17617e84b24ef755de0"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    },
+    {
+      "cardId": "reaper",
+      "name": "以战养战",
+      "manifest": "art/cards/traveler-geo/reaper/asset.json",
+      "sourceSha256": "e284772dfb50f07ba51babcfb271083c7e3a52eb0828842eb2eb3b1a2968373a",
+      "sourceReview": "independent-source-design-only",
+      "nativeRedraw": null,
+      "historicalConversion": {
+        "rectangles": 2455,
+        "std": 10,
+        "mae": 6.419704861111111,
+        "maxError": 122,
+        "previewSha256": "b53be733b10d4ad957b906756eddcaa110d8848af3e72958a93d707ab3e72ae5"
+      },
+      "production": "disabled",
+      "officialAndDevice": "UNVERIFIED"
+    }
+  ]
+}
