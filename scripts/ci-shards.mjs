@@ -1,4 +1,4 @@
-import { constants, cpSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { constants, cpSync, lstatSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { spawn, spawnSync } from 'node:child_process';
 import { availableParallelism, tmpdir } from 'node:os';
 import { isAbsolute, join, relative, resolve, sep } from 'node:path';
@@ -151,9 +151,12 @@ function runInCheckout(files, cwd, env) {
 }
 
 async function runHostedPosixShard(files, root, env) {
-  const snapshot = mkdtempSync(join(tmpdir(), 'slay-ci-posix-'));
+  if (!lstatSync(join(root, '.git'), { throwIfNoEntry: false })?.isDirectory()) {
+    throw new Error('Hosted POSIX execution requires physical checkout metadata');
+  }
+  const snapshot = realpathSync(mkdtempSync(join(tmpdir(), 'slay-ci-posix-')));
   try {
-    const location = relative(root, realpathSync(snapshot));
+    const location = relative(root, snapshot);
     if (!location || !isAbsolute(location) && location !== '..' && !location.startsWith(`..${sep}`)) {
       throw new Error('Hosted POSIX snapshot must be outside the checkout');
     }
@@ -197,6 +200,7 @@ export function main(args) {
   delete env.NODE_TEST_CONTEXT;
   const root = realpathSync('.');
   if (process.platform === 'linux' && env.GITHUB_ACTIONS === 'true' && env.RUNNER_OS === 'Linux'
+      && env.RUNNER_ENVIRONMENT === 'github-hosted'
       && env.GITHUB_WORKSPACE === root && availableParallelism() >= 2 && plan.files.length >= 2) {
     return runHostedPosixShard(plan.files, root, env).then(status => { process.exitCode = status; });
   }

@@ -186,7 +186,7 @@ test('hosted POSIX execution isolates checkout writes and combines both timing r
   const parent = mkdtempSync(join(tmpdir(), 'abyss-ci-posix-executor-'));
   t.after(() => rmSync(parent, { recursive: true, force: true }));
   const root = join(parent, 'checkout'), copyTemp = join(parent, 'scratch');
-  for (const dir of ['tests', 'scripts', 'build']) mkdirSync(join(root, dir), { recursive: true });
+  for (const dir of ['.git', 'tests', 'scripts', 'build']) mkdirSync(join(root, dir), { recursive: true });
   mkdirSync(copyTemp);
   copyFileSync('scripts/ci-timing-reporter.mjs', join(root, 'scripts/ci-timing-reporter.mjs'));
   for (const label of ['a', 'b']) writeFileSync(join(root, `tests/${label}.test.mjs`), `
@@ -198,7 +198,8 @@ test('hosted POSIX execution isolates checkout writes and combines both timing r
       writeFileSync('build/checkpoint','${label}',{flag:'wx'});
       ${label === 'b' ? "throw Error('isolated failure');" : ''}
     });`);
-  const env = { ...process.env, GITHUB_ACTIONS: 'true', RUNNER_OS: 'Linux', GITHUB_WORKSPACE: root, TMPDIR: copyTemp };
+  const env = { ...process.env, GITHUB_ACTIONS: 'true', RUNNER_OS: 'Linux', RUNNER_ENVIRONMENT: 'github-hosted',
+    GITHUB_WORKSPACE: root, TMPDIR: copyTemp };
   delete env.NODE_TEST_CONTEXT;
   const result = spawnSync(process.execPath, [resolve('scripts/ci-shards.mjs'), '--shard=1/1'], {
     cwd: root, env, encoding: 'utf8', timeout: 30000,
