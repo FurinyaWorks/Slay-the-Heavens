@@ -51,9 +51,12 @@ const linuxReplayMinimumMs = Object.freeze({
 });
 
 // Completed replay cases in Windows jobs 137468791786, 137468791799,
-// 137468791818, 137468791860, 137468791861, 137468791871 and 137468791996.
+// 137468791818, 137468791851, 137468791860, 137468791861, 137468791871
+// and 137468791996.
 const windowsReplayMinimumMs = Object.freeze({
   'act1-choice-responsibilities.test.mjs': 195000,
+  // Budget the longest completed case after isolating the three cases.
+  'approved-ui-inverse.test.mjs': 1455000,
   'architecture-composition-format.test.mjs': 1190000,
   'battle-max-hp-config-inverse.test.mjs': 681000,
   'card-origin-source-inverse.test.mjs': 360000,
@@ -64,6 +67,7 @@ const windowsReplayMinimumMs = Object.freeze({
   'core-architecture-inverse.test.mjs': 321000,
   // Job 137468791861 spent over half an hour on this file before cutoff.
   'core-lifecycle-source-inverse.test.mjs': 800000,
+  'death-settlement-guard-inverse.test.mjs': 186000,
   'formal-campaign-entry.test.mjs': 233000,
   'living-wall-architecture-inverse.test.mjs': 1013000,
   'native-candidate-art.test.mjs': 113000,
