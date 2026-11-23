@@ -14,9 +14,10 @@ end
 local ui,root=F.fixture(nil,nil,nil,{CursorEnter='enter',CursorExit='exit'})
 if not STS_UI_BASELINE then
     assert(not root:GetChild('prologuePanel'),'legacy controls shipped in the official layout')
-    local details=root:GetChild('characterPanel'):GetChild('details')
-    for _,name in ipairs({'deckTitle','deckSummary'})do assert(details:GetChild(name),name)end
-    assert(not details:GetChild('deckOpen'))
+    local panel=root:GetChild('characterPanel')
+    local details=panel:GetChild('details')
+    for _,name in ipairs({'deckTitle','deckSummary','deckRule','deckOpen'})do assert(not details:GetChild(name),name)end
+    assert(not panel:GetChild('deckView'))
 end
 start(ui)
 local run=ui.run
@@ -110,6 +111,7 @@ local fadeRoot=F.Viewport.apply(F.control({children=F.Layout}),1280,720)
 local recovering,waiting
 local fade=F.GameUI.new(fadeRoot,F.Data,F.Presentation,'click',{
     seed=1,imageSource='static',prologue=not STS_UI_BASELINE,
+    characterProfile=not STS_UI_BASELINE and 'full-source' or nil,
     color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end,
     presentationReady=function(intent)
         if recovering==intent.page then return false,'fixture readiness failure'end
@@ -130,8 +132,29 @@ end
 settle()
 assert(fade:start())
 settle()
+if not STS_UI_BASELINE then
+    local panel=fadeRoot:GetChild('characterPanel')
+    local details=panel:GetChild('details')
+    assert(hit(panel:GetChild('character1')).click())
+    assert(fade.characterSelection.info.id=='hutao')
+    local first=details:GetChild('name').text
+    assert(hit(panel:GetChild('traveler')).click())
+    assert(details.visible and details:GetChild('name').text~=first)
+    assert(hit(panel:GetChild('cancel')).click())
+    settle()
+    assert(not panel.visible and not fade.characterSelection.info)
+    assert(fade:start())
+    settle()
+end
 assert(fade:selectCharacter('traveler'))
 settle()
+if not STS_UI_BASELINE then
+    local info=fade.characterSelection.info
+    local details=fadeRoot:GetChild('characterPanel'):GetChild('details')
+    assert(info.id=='ironclad' and info.deckSize==10 and details.visible)
+    assert(details:GetChild('name').text==info.name)
+    assert(details:GetChild('v25Story').visible and details:GetChild('relicText').text~='')
+end
 assert(fade:confirmCharacter())
 settle()
 waiting='battlePanel'

@@ -17,20 +17,20 @@ import {nativeTheme} from '../scripts/native-ui-theme.mjs';
 import {officialAssetsTheme} from '../scripts/official-assets-layout.mjs';
 import {attachOfficialPortraits} from '../scripts/official-portraits.mjs';
 import {applyOfficialNoncombatLayout} from '../scripts/noncombat-v25-layout.mjs';
+import {loadUiReferences} from '../scripts/check-ui-references.mjs';
 const parts=n=>n?.controls??n?.children??[],child=(n,name)=>parts(n).find(c=>c.name===name);
 const all=n=>[n,...parts(n).flatMap(all)];
 test('official menu and selection reuse live inputs with bounded native decoration',()=>{
  const theme=officialAssetsTheme(nativeTheme),layout=withViewport(gameLayout(),theme);
  attachOfficialPortraits(layout,{selectionAvatar:true,battlePortrait:true});
  const stage=child(layout,'stage')??layout,menu=child(stage,'menuPanel'),panel=child(stage,'characterPanel');
- const start=child(child(menu,'start'),'hit'),confirm=child(child(panel,'confirm'),'hit'),modal=child(panel,'deckView');
+ const start=child(child(menu,'start'),'hit'),confirm=child(child(panel,'confirm'),'hit');
  const resultLabel=structuredClone(child(child(menu,'start'),'label'));
  const oldBattle=JSON.stringify(child(stage,'battlePanel'));
  applyOfficialNoncombatLayout(layout,theme);
  assert.equal(child(child(menu,'start'),'hit'),start);
  assert.equal(child(child(panel,'confirm'),'hit'),confirm);
- assert.equal(parts(panel).at(-1),modal);
- assert.equal(modal.visible,false);assert.deepEqual(modal.children,[],'retire the duplicated selection deck; reuse the shared browser');
+ assert.equal(child(panel,'deckView'),undefined,'retire the duplicated selection deck; reuse the shared browser');
  assert.equal(JSON.stringify(child(stage,'battlePanel')),oldBattle);
  assert.equal(child(menu,'vista').visible,false);
  assert.equal(child(menu,'emblem').visible,false);
@@ -167,9 +167,24 @@ dofile('tests/lua/support/sts_ui_closeout.lua')`;
 const require=createRequire(import.meta.url),directory=mkdtempSync(join(tmpdir(),'selection-overlay-'));
 after(()=>rmSync(directory,{recursive:true,force:true}));
 buildLuaData('data',join(directory,'abyss_data.lua'));
-buildUI(directory,undefined,{officialAssets:true,nativePageLifecycle:true});
+buildUI(directory,undefined,{officialAssets:true,refinedReleaseMonsterArt:true,nativePageLifecycle:true});
 const layout=JSON.parse(readFileSync(join(directory,'game-ui.json'),'utf8'));
 const panel=child(child(layout,'stage'),'characterPanel');
+
+test('generated official character selection follows the approved details revision',()=>{
+ const revisions=loadUiReferences().filter(row=>row.targetVersion==='v2.0.0'&&
+  row.codePath==='scripts/character-selection-composition.mjs'&&row.state==='details');
+ assert.deepEqual(revisions.filter(row=>['APPROVED','CURRENT_IMPLEMENTATION'].includes(row.status))
+  .map(row=>[row.revision,row.status]),[['release-sts1-20261122','APPROVED']]);
+ assert.equal(revisions.find(row=>row.revision==='sts1-open-copy-20261119')?.status,'SUPERSEDED');
+ const details=child(panel,'details');
+ for(const name of ['name','stats','gold','v25Story','relic','relicText']){
+  assert.equal(child(details,name)?.kind,'text',name);
+ }
+ const retired=new Set(['deckTitle','deckSummary','deckRule','deckOpen','deckView']);
+ const found=all(panel).filter(node=>retired.has(node.name)||/初始牌组|查看牌组/.test(node.text?.content??''));
+ assert.deepEqual(found.map(node=>node.name),[],'obsolete starter deck controls in the official selection tree');
+});
 
 test('official generated selection retires the legacy full-screen shade above its approved artwork',()=>{
  const background=child(panel,'lumineSelectionBackground'),shade=child(panel,'officialBackdropVeil');

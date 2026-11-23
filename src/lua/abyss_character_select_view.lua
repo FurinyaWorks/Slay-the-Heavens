@@ -14,7 +14,7 @@ local function image(control,platform,entry)
         control:SetImage(platform.imageSource,entry.id)
     end
 end
--- 选角只做一眼扫读（对标 STS 选角页）：牌组按 攻击→技能→能力→其它 排好直接列出，不提供筛选。
+-- The legacy layout lists cards in type order.
 local typeOrder={attack=1,skill=2,power=3,status=4,curse=5}
 local function sortedDeck(info)
     local cards={}
@@ -27,7 +27,7 @@ local function sortedDeck(info)
     end)
     return cards
 end
--- Selection owns the summary only; the shared deck browser owns all card faces.
+-- The legacy selection summary shares no card faces with the deck browser.
 local function renderStarterDeck(details,info)
     local parts={}
     for _,card in ipairs(sortedDeck(info))do parts[#parts+1]=card.name..'×'..number(card.count)end
@@ -101,7 +101,7 @@ local function paintDetails(details,state,platform,nativeV25,info)
     for _,r in ipairs(info.relics)do relics[#relics+1]=r.name;if r.text and r.text~='' then texts[#texts+1]=r.text end end
     text(details:GetChild('relic'),#relics>0 and table.concat(relics,'、') or '无')
     text(details:GetChild('relicText'),table.concat(texts,' '))
-    if details:GetChild('deckSummary') then renderStarterDeck(details,info) end
+    if not nativeV25 and details:GetChild('deckSummary') then renderStarterDeck(details,info) end
     local large=paintPortraits(details,state,platform)
     local note=info.name
     if large and large.playable==false then note=note..' · 非本次正式角色' end
@@ -129,7 +129,7 @@ function M.render(panel,state,platform,published)
     paintCharacterButtons(panel,state,platform,originalSts,open,nativeV25 and roster and open==1)
     paintThemesAndElements(panel,state,platform,elementsOpen)
     local details=panel:GetChild('details');visible(details,info~=nil)
-    visible(panel:GetChild('deckView'),false)
+    if not nativeV25 then visible(panel:GetChild('deckView'),false) end
     if nativeV25 and roster then
         visible(roster,open==1)
         visible(panel:GetChild('title'),info==nil)

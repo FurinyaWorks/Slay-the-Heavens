@@ -32,17 +32,16 @@ export function styleCharacterFlag(button,key,theme){
  }
 }
 export function characterSelectionComposition(panel,theme){
- const modal=child(panel,'deckView');modal.visible=false;modal.children=[];
+ panel.children=panel.children.filter(n=>n.name!=='deckView');
  for(const name of ['v25HeadingEmblem','v25HeadingDivider','v25HeadingRule'])child(panel,name).visible=false;
  const title=child(panel,'title');
  Object.assign(title,frame(400,470,480,60));title.text.content='选择你的角色';
  Object.assign(title.text,{fontSize:30,minFontSize:30,align:'centre'});title.visible=true;
  const details=child(panel,'details');
  const specs={name:[[115,216,505,60],48,'#E8C75C'],stats:[[145,280,145,30],18,'#F36C65'],gold:[[328,280,160,30],18,'#DFC552'],
-  v25Story:[[115,326,475,48],17,'#F3EFDA'],relic:[[162,379,430,30],20,'#E7CA5A'],relicText:[[162,403,440,35],17,'#F3EFDA'],
-  deckTitle:[[115,430,480,25],16,'#E7CA5A'],deckSummary:[[115,455,480,47],16,'#F3EFDA']};
+  v25Story:[[115,326,475,48],17,'#F3EFDA'],relic:[[162,379,430,30],20,'#E7CA5A'],relicText:[[162,403,440,35],17,'#F3EFDA']};
  for(const [name,[box,font,colour]]of Object.entries(specs))placeText(child(details,name),box,font,colour);
- details.children=details.children.filter(n=>!['deckOpen','deckRule'].includes(n.name));
+ details.children=details.children.filter(n=>!['deckOpen','deckTitle','deckSummary','deckRule'].includes(n.name));
  const portraits=child(details,'portraits');
  portraits.children=portraits.children.filter(n=>n.name!=='traveler_ironclad');
  Object.assign(child(details,'portraitLoading'),frame(885,455,72,30));

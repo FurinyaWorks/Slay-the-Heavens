@@ -77,8 +77,7 @@ local deck=host.deckUI;local deckPanel=root:GetChild('deckPanel')
 assert(deck.browserShell and not deck.pileView and not deck.pileKind and not deck.choiceToken and not deck.battle)
 assert(deck.run.readOnlyPreview and #deck.cards==info.deckSize,'starter preview lost its read-only projection')
 assert(not panel.visible,'starter preview did not cover character selection')
-local legacyDeck=panel:GetChild('deckView')
-assert(not legacyDeck.visible and #legacyDeck:GetChildren()==0,'starter preview allocated the retired character deck')
+assert(not panel:GetChild('deckView'),'starter preview allocated the retired character deck')
 assert(host.pageReveal.localFrame and not host.pointerBlocked(),'local preparation must leave the surrounding controls reachable')
 for _,cell in ipairs(deckPanel:GetChild('pileGrid'):GetChildren())do
  assert(not cell:GetChild('hit').raycastTarget,'preparation enabled an unready card')
@@ -111,7 +110,7 @@ settle();assert(not deck.visible and not host.characterSelection.deckOpen and pa
 assert(host.characterSelection.info==info and info.deck[1].count==original.deck[1].count and created==0 and not host.run)
 -- Closing preview restores the exact caller display source, not a preview copy.
 Display.writeArt=write
-assert(F.confirmStart(host));settle();assert(created==1 and host.run)
+assert(F.confirmStart(host));settle();assert(created==1 and #host.run.deck==10)
 assert(host:openDeck());settle();assert(not deck.previewInfo and deck.browserShell and not deck.run.readOnlyPreview)
 assert(deck.listTitle:find('卡组',1,true) and deck.catalog.cards[deck.cards[1].cardId])
 local restored;for _,card in ipairs(deck.cards)do if card.cardId==previewId then restored=card;break end end
@@ -146,7 +145,18 @@ ${preloads}
 local F=dofile('tests/lua/support/game_ui_fixture.lua');local G=require('abyss_game_ui');local make=G.new
 local host,platform,portrait;local noPortraitDuringBuild=false;local P=require('abyss_traveler_portraits');local create=P.new
 P.new=function(...)portrait=create(...);return portrait end
-G.new=function(root,data,presentation,event,p)platform=p;host=make(root,data,presentation,event,p);return host end
+G.new=function(root,data,presentation,event,p)
+ local panel=root:GetChild('characterPanel');local details=panel:GetChild('details')
+ local retired={deckTitle=true,deckSummary=true,deckRule=true,deckOpen=true,deckView=true}
+ for _,control in ipairs({panel,details})do
+  local getChild=control.GetChild
+  control.GetChild=function(self,name)
+   assert(not retired[name],'official selection accessed retired control '..name)
+   return getChild(self,name)
+  end
+ end
+ platform=p;host=make(root,data,presentation,event,p);return host
+end
 package.loaded.abyss_art_features={schemaVersion=2,flags={cards=false,menuBackground=true,selectionAvatar=true,battlePortrait=false,monsters=false}}
 local Asset=require('abyss_traveler_portrait_assets')
 Asset.imagePrefabId,Asset.containerPrefabId,Asset.selectionHalfImagePrefabId=801,802,803
@@ -198,7 +208,11 @@ local Gate=require('abyss_page_reveal');local state=portrait:status().selection
 assert(state.phase=='building' and platform.presentationReady(Gate.intent(host)),'decorative selection blocked real page readiness')
 assert(not host.pageReveal:covered() and not host.root:GetChild('pageReveal').visible,'selection put up the page cover')
 local details=host.root:GetChild('characterPanel'):GetChild('details')
-assert(details.visible and details:GetChild('name').text~='' and details:GetChild('deckSummary').text~='','click lost the real loadout')
+local info=host.characterSelection.info
+assert(details.visible and details:GetChild('name').text==info.name and info.deckSize==10,'click lost the real loadout')
+for _,name in ipairs({'stats','gold','v25Story','relic','relicText'})do
+ assert(details:GetChild(name).text~='',name)
+end
 assert(not portrait:readyForPage('menu',false,'ironclad'),'negative control requires a real paused menu-scene dependency')
 OnUpdate(1/60)
 local progress=portrait:status().selection
