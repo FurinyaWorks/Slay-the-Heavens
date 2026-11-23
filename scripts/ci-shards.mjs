@@ -13,6 +13,7 @@ export const timings = JSON.parse(readFileSync(new URL('./ci-test-timings.json',
 // Build the key from a basename because this is placement metadata. A
 // repository-relative test path literal is parsed as a dependency by test-affected.
 const artFeatureInverseTest = ['tests', 'art-feature-source-inverse.test.mjs'].join('/');
+const hostLifecycleTest = ['tests', 'game-ui-host-lifecycle.test.mjs'].join('/');
 timings.js.win32[artFeatureInverseTest] = Math.max(timings.js.win32[artFeatureInverseTest] ?? timings.unknownJsMs, 431203);
 
 // Reserve the work that completed in POSIX jobs 137444936421, 137444936442,
@@ -103,8 +104,10 @@ const hostedLaneMinimumMs = {
   },
   win32: {
     'actor-presence-source.test.mjs': 573000,
+    'art-feature-source-inverse.test.mjs': 1537000,
     'battle-drag-click-compatibility.test.mjs': 592000,
     'formal-campaign-entry.test.mjs': 367000,
+    'game-ui-host-lifecycle.test.mjs': 308000,
     'max-hp-accepted-source-inverse.test.mjs': 883000,
     'mobile-qa-source-migration.test.mjs': 143000,
     'pure-source-projection-cache.test.mjs': 463000,
@@ -199,8 +202,18 @@ async function runHostedShard(files, root, env) {
       const name = file.slice('tests/'.length);
       weights[file] = Math.max(weights[file], laneMinimum[name] ?? 0);
     }
-    const original = partition(files, '1/2', weights, timings.unknownJsMs).files;
-    const copy = partition(files, '2/2', weights, timings.unknownJsMs).files;
+    // The two art workers overlapped the strict native Host VM timeouts in
+    // Windows job 137561143877. Keep those files in the same serial checkout.
+    const serial = [artFeatureInverseTest, hostLifecycleTest];
+    const together = process.platform === 'win32' && files.length > serial.length && serial.every(file => files.includes(file));
+    const remaining = together ? files.filter(file => !serial.includes(file)) : files;
+    const reserved = together ? [weights[serial[0]] + weights[serial[1]], 0] : undefined;
+    const original = partition(remaining, '1/2', weights, timings.unknownJsMs, reserved).files;
+    const copy = partition(remaining, '2/2', weights, timings.unknownJsMs, reserved).files;
+    if (together) {
+      original.push(...serial);
+      original.sort();
+    }
     const results = await Promise.allSettled([
       runInCheckout(original, root, env), runInCheckout(copy, snapshot, env),
     ]);
