@@ -363,6 +363,8 @@ local function sourceIntentView(state,index)
  if face.sourceEnum then
   face.sourceTexture,face.worldKind,face.worldVisible=SourceIntents.visual(face.sourceEnum,face.worldDamage,face.worldTimes)
   face.badge=sourceBadges[face.sourceEnum]
+ else
+  face.tooltipEnum=SourceIntents.previewTooltipEnum(actor,intent)
  end
  return face
 end

@@ -69,7 +69,7 @@ function M.install(owner, ownership, host, dependencies)
                 return true
             end
             local function inspectEnemy(target)
-                if device and not device() then return false end
+                if device and not device() and not owner:canPinPowerTips(control) then return false end
                 return owner:showStatus(target, control, false, true)
             end
             local function chooseEnemy()

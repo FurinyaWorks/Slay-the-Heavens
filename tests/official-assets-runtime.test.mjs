@@ -7,6 +7,8 @@ import {createRequire} from 'node:module';
 import {deckBrowserParts} from '../scripts/deck-ui-layout.mjs';
 import {assertNativeUiCapacity,buildUI} from '../scripts/build-ui.mjs';
 import {buildLuaData,luaString,toLua} from '../scripts/build-lua-data.mjs';
+import {capacityProblems,powerTipSnapshots,textConflicts} from './helpers/ui-readability.mjs';
+import {nativeTheme} from '../scripts/native-ui-theme.mjs';
 
 const require=createRequire(import.meta.url);
 const sharedFaceHelpers=`
@@ -28,7 +30,7 @@ local function sameColour(actual,expected,label)
  end
 end
 `;
-function runOfficial(t,body,marker,overrides={},official=true,refinedReleaseMonsterArt=false){
+function runOfficial(t,body,marker,overrides={},official=true,refinedReleaseMonsterArt=false,verifyOutput){
  const root=resolve('.artifacts/test-tmp');mkdirSync(root,{recursive:true});
  const directory=mkdtempSync(join(root,'official-runtime-'));
  t.after(()=>rmSync(directory,{recursive:true,force:true}));
@@ -142,8 +144,21 @@ print('${marker}')
  });
  assert.equal(result.status,0,result.stdout+result.stderr+String(result.error??''));
  assert.match(result.stdout,new RegExp(marker));
+ verifyOutput?.(result.stdout);
  return stage;
 }
+
+test('official refined monster layout has capacity for the live tooltip stack',t=>{
+ runOfficial(t,`assert(loadfile('tests/lua/approved_enemy_details.lua'))('capacity')`,'APPROVED_ENEMY_DETAILS_PASS 4',{},true,true,stdout=>{
+  const snapshots=powerTipSnapshots(stdout);
+  assert.equal(Object.keys(snapshots).length,5);
+  for(const [name,rows] of Object.entries(snapshots)){
+   assert.ok(rows.length>0,name);
+   assert.deepEqual(capacityProblems(rows,nativeTheme.layout.nativeText.lineHeight),[],name);
+   assert.deepEqual(textConflicts(rows,()=> 'tip'),[],name);
+  }
+ });
+});
 
 test('official run HUD keeps complete health and the same live gold balance through blessing, map and battle',t=>{
  const stage=runOfficial(t,`

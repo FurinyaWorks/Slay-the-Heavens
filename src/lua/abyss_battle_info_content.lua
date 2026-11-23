@@ -10,6 +10,39 @@ local tailStates={
     blocked_by_mark={name='绽放印记阻断',text='绽放印记阻止复活，保留本局的一次使用机会。',colour=C.danger},
 }
 
+-- AbstractMonster.updateIntentTip and the STS1 Simplified Chinese UI text.
+local attackTips = {
+    ATTACK = {"攻势", "这名敌人将要\n攻击造成 "},
+    ATTACK_BUFF = {"攻势", "这名敌人将要进行强化并攻击造成 "},
+    ATTACK_DEBUFF = {"策略", "这名敌人将要对你施加负面效果并攻击造成 "},
+    ATTACK_DEFEND = {"攻势", "这名敌人将要格挡并攻击造成 "},
+}
+local otherTips = {
+    BUFF = {"策略", "这名敌人将要进行强化。"},
+    DEBUFF = {"策略", "这名敌人将要对你施加一种负面效果。"},
+    STRONG_DEBUFF = {"策略", "这名敌人将要对你施加一种强大的负面效果。"},
+    DEFEND = {"守势", "这名敌人将要在这个回合进行格挡。"},
+    DEFEND_DEBUFF = {"守势", "这名敌人将要进行格挡并对你施加一种负面效果。"},
+    DEFEND_BUFF = {"守势", "这名敌人将要进行格挡并进行强化。"},
+    ESCAPE = {"胆小", "这名敌人将要逃跑。"},
+    MAGIC = {"魔法", "这名敌人将要在这个回合使用神秘的魔法。"},
+    SLEEP = {"熟睡", "这名敌人正在睡觉。"},
+    STUN = {"击晕", "这名敌人在这个回合被击晕了。"},
+    UNKNOWN = {"不明", "这名敌人的意图不明（但不是攻击）。"},
+}
+
+function M.intentTip(enum, damage, times)
+    if not enum or enum == 'NONE' then return end
+    local copy = attackTips[enum] or otherTips[enum]
+    local body = copy[2]
+    if attackTips[enum] then
+        body = body .. number(damage) .. ' 点伤害'
+        if times and enum ~= 'ATTACK_DEBUFF' then body = body .. ' ' .. number(times) .. ' 次' end
+        body = body .. '。'
+    end
+    return {name = copy[1], body = body}
+end
+
 -- CJK glyphs take one font size; ASCII takes about half. Count UTF-8 lead bytes.
 function M.lines(text, boxWidth, fontSize, inset)
     if not text or text == "" then return 0 end
@@ -268,18 +301,11 @@ function M.new(self, describe, lines)
         return body
     end
 
-    local function intentTip(battle, index)
-        local view = projectedIntent(battle, index)
-        if view.hidden or #view.rows == 0 then return end
-        local results = {}
-        for _, row in ipairs(view.rows) do results[#results + 1] = row.text end
-        return {name = "下一步行动", body = table.concat(results, "\n")}
-    end
-
     local function powerRows(battle, info, actor)
         local rows = {}
-        if info.index > 0 and not info.statusId and not info.offset then
-            rows[1] = intentTip(battle, info.index)
+        if info.index > 0 and not info.statusId and not info.offset
+            and not require('abyss_boss_relics').hidesIntents(self.run) then
+            rows[1] = M.intentTip(describe.displayedIntent(battle, actor.id))
         end
         for _, entry in ipairs(selectedEntries(Combat.statusView(actor), info) or {}) do
             local row = statusRow(entry, battle, actor)

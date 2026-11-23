@@ -48,14 +48,14 @@ test('P12 thrown group policy does not request a single enemy or enter productio
     assert(original and original.targetPolicy=='enemy_one')
     assert(modified and modified.targetPolicy=='enemy_all')
 end)
-test('S07 duration intent says turns before it is applied',function()
-    local h,u,p=H.setup({'bash'},{'cultist'})
-    local s=h.run.combat;s.enemies[1].ai=nil;s.enemies[1].intentIndex=1
-    -- Synthetic effect wording keeps a legal selected source move identity.
-    s.enemies[1].intents={{id='cultist_2',kind='debuff',effects={{op='applyStatus',status='weak',value=2}}}}
-    u:render();monsterControl(p,'enemy1'):GetChild('intentHit').click()
-    assert(readPowers(p):find('2 回合虚弱',1,true),'duration must not be described as intensity')
-    assert((s.player.statuses.weak or 0)==0)
+test('S07 future debuff discloses its intent category before it is applied',function()
+    local h,_,p=H.setup({'bash'},{'spike_slime_m'})
+    local s=Combat.new(H.F.Data,{deck={'bash'},enemies={'spike_slime_m'}})
+    s.enemies[1].intentIndex=2
+    h.run.combat=s
+    h:refresh();monsterControl(p,'enemy1'):GetChild('intentHit').click()
+    assert(readPowers(p)=='<color=#F5D78A>策略</color>\n这名敌人将要对你施加一种负面效果。')
+    assert((s.player.statuses.frail or 0)==0)
 end)
 test('S08 current poison detail updates amount and next tick without a stale value',function()
     local h,u,p=H.setup({'defend'},{'cultist'})

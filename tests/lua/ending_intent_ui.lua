@@ -14,9 +14,8 @@ do
  local ui,root,s=fixture({'corrupt_heart'});ui:render()
  monsterControl(root,'enemy1'):GetChild('intentHit').click()
  assert(ui.info and ui.info.powerTips and not ui.info.kind)
- local text=readPowers(root)
- for _,id in ipairs({'dazed','slimed','wound','burn','void'})do assert(text:find(s.catalog.cards[id].name,1,true))end
- assert(text:find('抽牌堆',1,true))
+ local _,rows=readPowers(root)
+ assert(rows[1]=='<color=#F5D78A>策略</color>\n这名敌人将要对你施加一种强大的负面效果。')
 end
 do
  local ui,root,s=fixture({'spire_shield','spire_spear'})
@@ -25,7 +24,17 @@ do
  ui:render();dofile('tests/lua/support/intent_face_assertion.lua')(monsterControl(root,'enemy1'),require('abyss_battle_intent_view').intentView(s,1))
  assert(monsterControl(root,'enemy1'):GetChild('intent').text=='59','detached UI preview must preserve source back-attack identity')
  monsterControl(root,'enemy1'):GetChild('intentHit').click()
- local text=readPowers(root);assert(text:find('格挡',1,true)and text:find('58',1,true))
+ local _,rows=readPowers(root)
+ assert(rows[1]=='<color=#F5D78A>攻势</color>\n这名敌人将要格挡并攻击造成 59 点伤害。')
+end
+do
+ local ui,root,s=fixture({'deca','donu'})
+ ui:render()
+ local box=monsterControl(root,'enemy1')
+ assert(s.enemies[1].definitionId=='deca' and box:GetChild('intent').text=='10x2')
+ box:GetChild('intentHit').click()
+ local _,rows=readPowers(root)
+ assert(rows[1]=='<color=#F5D78A>策略</color>\n这名敌人将要对你施加负面效果并攻击造成 10 点伤害。')
 end
 do
  local ui,root,s=fixture({'corrupt_heart'});local e=s.enemies[1]
@@ -42,4 +51,4 @@ do
  assert(Status.statusKind({id='strength',amount=-1,kind='buff'})=='debuff')
  assert(Status.statusKind({id='dexterity',amount=-1,kind='buff'})=='debuff')
 end
-print('ENDING_INTENT_UI_PASS 3 strict generated-tree cases; offline controlled, no platform acceptance')
+print('ENDING_INTENT_UI_PASS 4 strict generated-tree cases; offline controlled, no platform acceptance')

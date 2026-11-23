@@ -136,14 +136,16 @@ function M.install(owner, ownership, host, dependencies)
         return targetable == true or potionHighlighted(enemy,index,pendingTarget) or owner.acting == enemy.id
     end
     local function enemyIntentFace(frame,enemy,index)
-        local face
+        local view, face = host.monsterIntentParticles
         if IntentView.hasSourceIntent(enemy)then
-            local view=host.monsterIntentParticles
             local selected=view:needsSelected(enemy.id) and IntentView.selectedDescriptor(frame.battle,index) or nil
             face=view:face(enemy.id,selected,function(base)
                 return Combat.intentAttackAmount(frame.battle,enemy,frame.battle.player,base)
             end)
-        else face=intentView(frame.battle,index)end
+        else
+            face=intentView(frame.battle,index)
+            view:rememberPreview(enemy.id,face)
+        end
         -- Dome changes visibility, never the source selected/displayed state.
         if require('abyss_boss_relics').hidesIntents(owner.run)then face.hidden=true;face.value=''end
         return face

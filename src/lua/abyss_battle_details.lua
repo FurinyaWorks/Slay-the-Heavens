@@ -70,6 +70,11 @@ function M.install(owner, ownership, host, dependencies)
     function owner:showStatus(index, source, transient, powerTips)
         return self:openHelp({index = index, toggle = not transient and not powerTips, powerTips = powerTips}, source, transient)
     end
+    function owner:canPinPowerTips(source)
+        local info = self.info
+        return info and info.powerTips and info.source == source and (info.pages or 1) > 1
+            and not self.selected and not self.potionAim
+    end
     local function detailAvailable(spec, transient, enemyReader)
         if spec.powerTips and not enemyReader and owner.potionAim then return false end
         if spec.kind then return true end

@@ -86,6 +86,21 @@ function M.new(platform,picture,tint)
   if state.powersPending then Displayed.applyPowers(state.displayed,selected,calculate);state.powersPending=nil end
   return Displayed.face(state.displayed)
  end
+ function self.rememberPreview(_,id,face)
+  self.states[id].preview=face
+ end
+ function self.tooltip(_,battle,id)
+  local state=self.states[id]
+  if self.battle~=battle or not state then return end
+  local preview=state.preview
+  if preview then
+   local times=preview.worldTimes
+   return preview.tooltipEnum,preview.worldDamage,times and times>1 and times or nil
+  end
+  if state.intentAlphaTarget~=1 then return end
+  local shown=state.displayed
+  return shown.intent,shown.intentDmg,shown.isMultiDmg and shown.intentMultiAmt or nil
+ end
  function self.update(_,id,dt,face,g,dying,escaping)
   local state=assert(self.states[id],'missing intent instance')
   Particles.updateAlpha(state,dt)

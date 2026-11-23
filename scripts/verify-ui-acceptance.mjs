@@ -30,7 +30,7 @@ export const criticalUiChecks = {
   potions: ['effect', 'target', 'cancelWithoutConsumption', 'discard'],
   exit: ['discoverable', 'blocksUnderlyingInput', 'cancelPreservesRun', 'platformSettlement'],
   map: ['route', 'currentFloor', 'reachableNodes', 'gold', 'hpAndMaxHp'],
-  battle: ['actorHpAndMaxHp', 'block', 'energy', 'intent', 'cardText', 'enemyAction'],
+  battle: ['actorHpAndMaxHp', 'block', 'energy', 'intent', 'enemyIntentTooltip', 'cardText', 'enemyAction'],
   battleHud: ['energyOrbVisualQuality', 'energyZeroAndOvercharge', 'hudHierarchyAgainstV25'],
   battleMobileAim: ['multiEnemy', 'freeAim', 'lock', 'retarget', 'cancel', 'arrowDirection', 'visibleTipAtEndpoint'],
   rewards: ['gold', 'cardAddedOrSkipped', 'returnToMap'],

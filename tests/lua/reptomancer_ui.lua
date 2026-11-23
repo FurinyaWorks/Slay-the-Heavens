@@ -45,7 +45,9 @@ tap('endTurn',201);drain();eq(#s.enemies,4);eq(s.enemies[3].id,'snake_dagger_4')
 local rows=visible();eq(#rows,4);eq(s.enemies[3].intents[s.enemies[3].intentIndex].id,'stab')
 local explosion=View.intentView(s,1);eq(explosion.value,'25');has(explosion.text,'自毁');has(explosion.text,'无视格挡')
 local infoHit=monsterControl(panel,'enemy1'):GetChild('intentHit');infoHit.click({touchId=202})
-local info=panel:GetChild('statusInfo');assert(info.visible);has(readPowers(panel),'生命')
+local info=panel:GetChild('statusInfo');assert(info.visible)
+local _,tips=readPowers(panel)
+eq(tips[1],'<color=#F5D78A>攻势</color>\n这名敌人将要\n攻击造成 25 点伤害。')
 panel:GetChild('statusDismiss').click({touchId=203});assert(not info.visible)
 -- Component refill stresses all five slots while retaining corpses. Never
 -- rebuild actor IDs from visible positions or remove an old table from core.

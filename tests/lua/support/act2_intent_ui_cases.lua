@@ -22,7 +22,7 @@ local function same(a,b)
  for k,v in pairs(a)do same(v,b[k])end
  for k in pairs(b)do assert(a[k]~=nil)end
 end
-local function detail(id,move)
+local function detail(id,move,tipTitle,tipBody)
  local members=id=='gremlin_leader' and {'mad_gremlin','sneaky_gremlin',id}
     or id=='bronze_orb' and {'automaton',id} or {id}
  local host,ui,panel,_,tap=H.setup({'defend'},members)
@@ -34,73 +34,80 @@ local function detail(id,move)
  local before=host.run.combat;host.run.combat=C.copy(before)
  host:refresh();tap('enemy'..index,1)
  same(host.run.combat,before)
- return details(ui,panel),monsterControl(panel,'enemy'..index),require('abyss_battle_intent_view').intentView(host.run.combat,index)
+ local _,tips=details(ui,panel)
+ assert(tips[1]=='<color=#F5D78A>'..tipTitle..'</color>\n'..tipBody,tips[1])
+ local face=require('abyss_battle_intent_view').intentView(host.run.combat,index)
+ return face.text,monsterControl(panel,'enemy'..index),face
 end
+local buff='这名敌人将要进行强化。'
+local defendBuff='这名敌人将要进行格挡并进行强化。'
+local unknown='这名敌人的意图不明（但不是攻击）。'
+local stunned='这名敌人在这个回合被击晕了。'
 local cases={
 function()
-local heal=detail('mystic','heal')
+local heal=detail('mystic','heal','策略',buff)
 assert(heal:find('全体',1,true) and heal:find('16',1,true) and not heal:find('未知',1,true),'Mystic group heal intent is missing')
 
 end,
 function()
-local strength=detail('mystic','buff')
+local strength=detail('mystic','buff','策略',buff)
 assert(strength:find('全体',1,true) and strength:find('力量',1,true) and strength:find('2',1,true),'Mystic group strength intent is missing')
 
 end,
 function()
-local cleanse=detail('champ','anger')
+local cleanse=detail('champ','anger','策略',buff)
 assert(cleanse:find('移除',1,true) and cleanse:find('负面',1,true) and cleanse:find('6',1,true) and not cleanse:find('未知',1,true),'Champ cleanse intent is missing')
 
 end,
 function()
-local vampire,box=detail('shelled_parasite','life_suck')
+local vampire,box=detail('shelled_parasite','life_suck','攻势','这名敌人将要进行强化并攻击造成 10 点伤害。')
 assert(box:GetChild('intent').text=='10' and vampire:find('实际',1,true) and vampire:find('回复',1,true),'life-drain damage and healing must both be explained')
 
 end,
 function()
-local wake=detail('lagavulin','lagavulin_stunned')
+local wake=detail('lagavulin','lagavulin_stunned','击晕',stunned)
 assert(wake:find('惊醒',1,true))
 
 end,
 function()
-local stun,stunBox,stunFace=detail('automaton','stunned')
+local stun,stunBox,stunFace=detail('automaton','stunned','击晕',stunned)
 assert(not stun:find('惊醒',1,true) and stun:find('不行动',1,true))
 dofile('tests/lua/support/intent_face_assertion.lua')(stunBox,stunFace,'昏眩')
 assert(stunFace.kind=='unknown' and stunFace.sourceEnum=='STUN' and not stunBox:GetChild('intentIcon').visible,'source STUN uses particles instead of a world base glyph')
 
 end,
 function()
-local rally=detail('gremlin_leader','rally')
+local rally=detail('gremlin_leader','rally','不明',unknown)
 assert(rally:find('最多 2',1,true) and not rally:find('未知',1,true))
 
 end,
 function()
-local encourage=detail('gremlin_leader','encourage')
+local encourage=detail('gremlin_leader','encourage','守势',defendBuff)
 assert(encourage:find('3',1,true) and encourage:find('6',1,true) and encourage:find('队友',1,true))
 
 end,
 function()
-local spawn=detail('collector','spawn')
+local spawn=detail('collector','spawn','不明',unknown)
 assert(spawn:find('2',1,true) and spawn:find('随从',1,true))
 
 end,
 function()
-local revive=detail('collector','revive')
+local revive=detail('collector','revive','不明',unknown)
 assert(revive:find('复活',1,true) and revive:find('存活',1,true))
 
 end,
 function()
-local orbs=detail('automaton','spawn_orbs')
+local orbs=detail('automaton','spawn_orbs','不明',unknown)
 assert(orbs:find('2',1,true) and orbs:find('浮核',1,true),'Automaton summons must be explained')
 
 end,
 function()
-local support=detail('bronze_orb','support')
+local support=detail('bronze_orb','support','守势','这名敌人将要在这个回合进行格挡。')
 assert(support:find('青铜机枢',1,true) and support:find('12',1,true),'orb block must name the actual recipient')
 
 end,
 function()
-local stasis=detail('bronze_orb','stasis')
+local stasis=detail('bronze_orb','stasis','策略','这名敌人将要对你施加一种强大的负面效果。')
 assert(stasis:find('扣押',1,true) and stasis:find('弃牌堆',1,true) and not stasis:find('击败',1,true),
     'pending Stasis previews custody and leaves return to the active Power')
 

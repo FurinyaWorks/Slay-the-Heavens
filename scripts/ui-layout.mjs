@@ -175,12 +175,14 @@ function statusInfo() {
 
 function powerTips() {
   const tip = l.powerTips;
+  const copyHeight = 2 * l.nativeText.lineHeight;
+  const height = copyHeight + 2 * tip.padding;
   return { name: 'powerTips', kind: 'container', size: [...theme.canvas.base], visible: false,
     children: Array.from({ length: tip.rows }, (_, i) => ({
-      name: `tip${i + 1}`, kind: 'container', size: [tip.width, l.nativeText.lineHeight], visible: false, children: [
-        panel('edge', 0, 0, tip.width, l.nativeText.lineHeight, tip.border),
-        panel('face', 0, 0, tip.width, l.nativeText.lineHeight, tip.fill),
-        aligned(text('copy', 0, 0, tip.width, l.nativeText.lineHeight, '', tip.font, c.text)),
+      name: `tip${i + 1}`, kind: 'container', size: [tip.width, height], visible: false, children: [
+        panel('edge', 0, 0, tip.width, height, tip.border),
+        panel('face', 0, 0, tip.width - 2, height - 2, tip.fill),
+        aligned(text('copy', 0, 0, tip.width - 2 * tip.padding, copyHeight, '', tip.font, c.text)),
       ],
     })) };
 }

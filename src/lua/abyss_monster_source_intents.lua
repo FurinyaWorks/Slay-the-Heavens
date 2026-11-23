@@ -59,6 +59,26 @@ function M.enum(actor,intent)
  if actor.definitionId=='gremlin_nob' and intent.id=='gremlin_nob_2' and actor.canVuln==false then return 'ATTACK'end
  return value
 end
+
+-- A0 setMove overrides for later acts, whose world faces still use the
+-- legacy preview path. Keep their tooltip metadata out of hasDefinition.
+local tooltipOverrides={
+ awakened_one={sludge='ATTACK_DEBUFF'}, corrupt_heart={debilitate='STRONG_DEBUFF'},
+ deca={beam='ATTACK_DEBUFF'}, jaw_worm_hard={thrash='ATTACK_DEFEND',bellow='DEFEND_BUFF'},
+ maw={roar='STRONG_DEBUFF'}, orb_walker={laser='ATTACK_DEBUFF'},
+ reptomancer={snake_strike='ATTACK_DEBUFF'}, snake_dagger={stab='ATTACK_DEBUFF'},
+ spire_growth={constrict='STRONG_DEBUFF'}, spire_shield={bash='ATTACK_DEBUFF',smash='ATTACK_DEFEND'},
+ spire_spear={burn_strike='ATTACK_DEBUFF'}, time_eater={head_slam='ATTACK_DEBUFF',ripple='DEFEND_DEBUFF'},
+ writhing_mass={attack_block='ATTACK_DEFEND',attack_debuff='ATTACK_DEBUFF',implant='STRONG_DEBUFF'},
+}
+local simpleTooltips={attack='ATTACK',buff='BUFF',debuff='DEBUFF',defend='DEFEND',escape='ESCAPE',
+ magic='MAGIC',sleep='SLEEP',stunned='STUN',unknown='UNKNOWN',charge='UNKNOWN',split='UNKNOWN'}
+function M.previewTooltipEnum(actor,intent)
+ if not intent then return 'NONE' end
+ local overrides=tooltipOverrides[actor.definitionId]
+ return overrides and overrides[intent.id] or simpleTooltips[intent.kind]
+end
+
 local images={BUFF='BUFF',DEBUFF='DEBUFF',STRONG_DEBUFF='DEBUFF2',DEFEND='DEFEND',
  DEFEND_DEBUFF='DEFEND',DEFEND_BUFF='DEFEND_BUFF',ESCAPE='ESCAPE',MAGIC='MAGIC',SLEEP='SLEEP',UNKNOWN='UNKNOWN'}
 function M.visual(enum,damage,times)

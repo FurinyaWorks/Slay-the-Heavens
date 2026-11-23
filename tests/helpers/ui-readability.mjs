@@ -23,13 +23,21 @@ export function capacityProblems(nodes, lineHeight = 40) {
     // Chinese glyph occupies at most one em; ASCII needs only 0.6 em here.
     // This is a text-box budget, not a claim about the native font's ink.
     const font = node.minimum || node.font;
-    const rows = node.text.split('\n').reduce((sum, line) => {
+    const plain = node.text.replace(/<color=[^>]+>|<\/color>/gi, '');
+    const rows = plain.split(/\r?\n/).reduce((sum, line) => {
       const ems = [...line].reduce((n, ch) => n + (ch.codePointAt(0) > 0xff ? 1 : 0.6), 0);
       return sum + Math.max(1, Math.ceil(ems * font / node.size[0]));
     }, 0);
     return rows * lineHeight <= node.size[1] + 0.01 ? [] :
       [`${node.path}: ${JSON.stringify(node.text)} needs ${rows} native lines (${rows * lineHeight}), box height ${node.size[1]}`];
   });
+}
+export function powerTipSnapshots(stdout) {
+  return Object.fromEntries(stdout.split(/\r?\n/).filter(line => line.startsWith('UI_READABILITY\t')).map(line => {
+    const [, name, json] = line.split('\t');
+    const nodes = JSON.parse(json).nodes.filter(node => /^\/battlePanel\/statusInfo\/powerTips\/tip\d+\/copy$/.test(node.path));
+    return [name, nodes];
+  }));
 }
 export function rewardRole(path) {
   if (/^\/battlePanel\/(notice|(?:potionHelp\/)?potionReward)$/.test(path)) return 'feedback';

@@ -145,7 +145,7 @@ for _, mobile in ipairs({false, true}) do
         if target.index == 0 then
             assert(not detail.visible and not ground.visible, "a traveler without status displays nothing")
         else
-            contains(copy(opened(target.index, 1)[1]), "下一步行动")
+            contains(copy(opened(target.index, 1)[1]), "策略")
         end
         Combat.addStatus(target.actor, "strength", 2)
         ui:render()
@@ -180,7 +180,7 @@ for _, mobile in ipairs({false, true}) do
     if mobile then tap(intent, 8)
     else intent.listeners.enter(); ui:update(L.statusInfo.delay) end
     local intentTips = opened(1, 2)
-    contains(copy(intentTips[1]), "下一步行动")
+    contains(copy(intentTips[1]), "策略")
     assert(not copy(intentTips[1]):find("力量 2", 1, true))
     contains(copy(intentTips[2]), "力量 2")
     assert(ui.info.kind == nil and ui.info.powerTips and not detail:GetChild("plate").visible)
@@ -315,42 +315,54 @@ for _, mobile in ipairs({false, true}) do
     local function inspect(hit)
         if mobile then tap(hit, 91) else hit.listeners.enter() end
     end
+    local function collect(hit)
+        local pages, seen = ui.info.pages, {}
+        if pages > 1 and not mobile then tap(hit, 91) end
+        local page = panel:GetChild('statusInfo'):GetChild('page')
+        for i = 1, pages do
+            assert(ui.info.page == i)
+            for _, box in ipairs(visibleTips(panel)) do
+                checkBounds(box)
+                seen[#seen+1] = copy(box)
+            end
+            if pages > 1 then page.click({touchId=91}) end
+        end
+        if pages > 1 or mobile then panel:GetChild('statusDismiss').click({touchId=91}) end
+        return seen
+    end
     local hero = panel:GetChild("hero")
-    inspect(hero:GetChild("hit"))
-    local boxes = visibleTips(panel)
-    assert(#boxes == #Combat.statusView(battle.player), "the complete status catalog fits in the approved pool")
-    for _, box in ipairs(boxes) do checkBounds(box) end
+    local heroHit = hero:GetChild('hit')
+    inspect(heroHit)
+    assert(#collect(heroHit) == #Combat.statusView(battle.player), 'every Power fits across the existing pool pages')
     local last = L.statusIcon.perRow * L.statusIcon.rows
-    inspect(hero:GetChild("statusRow"):GetChild("hit" .. last))
-    assert(#visibleTips(panel) == #Combat.statusView(battle.player) - last + 1)
-    if mobile then panel:GetChild("statusDismiss").listeners.click({touchId = 91}) end
+    local overflow = hero:GetChild('statusRow'):GetChild('hit' .. last)
+    inspect(overflow)
+    assert(#collect(overflow) == #Combat.statusView(battle.player) - last + 1)
 
     for index, actor in ipairs(battle.enemies) do
         local monster = enemyControl(panel, "enemy" .. index)
         local hit = monster:GetChild("hit")
         inspect(hit)
         local entries = Combat.statusView(actor)
-        boxes = visibleTips(panel)
-        assert(ui.info.actor == actor and #boxes == #entries + 1, "the live actor owns its visible intent and all status tips")
+        local boxes = visibleTips(panel)
+        assert(ui.info.actor == actor and #boxes > 0, "the live actor owns the tooltip")
         local geometry = require("abyss_battle_enemy_view").geometry(actor)
         local right = geometry.hitX + geometry.hitWidth / 2
         local opensRight = right + 640 < 1544 / 1.5
             and right + 20 / 1.5 + L.powerTips.width <= 640 - Theme.canvas.safe.x
         assert((boxes[#boxes].x > boxes[1].x) == opensRight and boxes[#boxes].x ~= boxes[1].x,
             "overflow columns follow the actor's chosen side")
-        for _, box in ipairs(boxes) do checkBounds(box) end
+        assert(#collect(hit) == #entries + 1, 'each Power has its own tooltip')
         if Theme.presentationProfile == "official-assets-first" then
             local more = enemyPower(monster, "@more"):GetChild("hit")
             inspect(more)
-            boxes = visibleTips(panel)
-            assert(ui.info.offset > 1 and #boxes == #entries - ui.info.offset + 1)
-            for i, box in ipairs(boxes) do
-                local entry = entries[ui.info.offset + i - 1]
-                contains(copy(box), entry.name)
-                checkBounds(box)
+            local offset = ui.info.offset
+            local tips = collect(more)
+            assert(offset > 1 and #tips == #entries - offset + 1)
+            for i, text in ipairs(tips) do
+                contains(text, entries[offset + i - 1].name)
             end
         end
-        if mobile then panel:GetChild("statusDismiss").listeners.click({touchId = 91}) end
     end
 
     local retired = enemyPower(enemyControl(panel, "enemy5"), "strength"):GetChild("hit")

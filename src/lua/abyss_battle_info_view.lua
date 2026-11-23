@@ -7,7 +7,6 @@ local UnitView=require("abyss_battle_unit_view")
 local EnemyView=require("abyss_battle_enemy_view")
 local C, L, S = Theme.color, Theme.layout, Theme.space
 local I, A, P = L.statusInfo, L.actorDetail, L.powerTips
-local wrappedLines = require("abyss_battle_info_content").lines
 local powerTitle = string.format("<color=#%02X%02X%02X>", P.title.r, P.title.g, P.title.b)
 local function rowHeight(row, pitch)
     return I.name + (row.textLines + row.noteLines) * pitch + I.entryGap
@@ -94,68 +93,68 @@ local function cardStyle(card, anchor)
     return I.width
 end
 
+local function powerTextHeight(copy, width, font)
+    local plain = copy:gsub('<color=[^>]+>', ''):gsub('</color>', '')
+    local room, lines = math.floor(width * 10 / font), 0
+    for paragraph in (plain .. '\n'):gmatch('(.-)\n') do
+        lines = lines + 1
+        local used = 0
+        for glyph in paragraph:gmatch('[%z\1-\127\194-\244][\128-\191]*') do
+            local advance = #glyph == 1 and 6 or 10
+            if used + advance > room then
+                lines, used = lines + 1, 0
+            end
+            used = used + advance
+        end
+    end
+    -- Reserve the project's compatibility budget for each visible line.
+    return lines * L.nativeText.lineHeight
+end
+
 local function powerColumns(rows, width, font, room)
     local column, used, columns = {}, 0, {}
-    local pitch = math.ceil(font * 1.25)
-    local i = 1
-    while i <= #rows do
-        local first, count, copy = i, 0, {}
-        -- Reserve the first tooltip for its own entry. If all the native
-        -- boxes are occupied, share the later boxes between adjacent entries.
-        local groupSize = first == 1 and 1 or math.ceil((#rows - 1) / (P.rows - 1))
-        for j = first, math.min(#rows, first + groupSize - 1) do
-            local row = rows[j]
-            count = count + wrappedLines(row.name, width, font, P.padding * 2)
-            for paragraph in (row.body .. "\n"):gmatch("(.-)\n") do
-                count = count + math.max(1, wrappedLines(paragraph, width, font, P.padding * 2))
-            end
-            copy[#copy + 1] = powerTitle .. row.name .. "</color>\n" .. row.body
-            i = j + 1
-        end
-        local height = math.max(L.nativeText.lineHeight, count * pitch) + P.padding * 2
+    for _, row in ipairs(rows) do
+        local text = powerTitle .. row.name .. "</color>\n" .. row.body
+        local height = powerTextHeight(text, width - P.padding * 2, font) + P.padding * 2
         if used > 0 and used + height > room then
             columns[#columns + 1] = {rows = column, height = used - P.gap}
             column, used = {}, 0
         end
-        column[#column + 1] = {text = table.concat(copy, "\n"), height = height, y = used}
+        column[#column + 1] = {text = text, height = height, y = used}
         used = used + height + P.gap
     end
     columns[#columns + 1] = {rows = column, height = used - P.gap}
     return columns
 end
 
-local function powerLayout(rows, edge, direction)
+local function powerLayout(rows, edge, direction, info)
     -- Work in coordinates running inward from the actor, mirrored for enemies.
     local safeRight = Theme.canvas.base[1] / 2 - Theme.canvas.safe.x
-    local left = math.max(-safeRight, edge * direction)
+    local anchor = math.max(-safeRight, edge * direction)
     local top = L.battlePotions.origin[2] - L.battlePotions.size[2] / 2 - S.s
     local floor = L.battleNotice.bandTop + S.s
-    local width = P.width
-    for font = P.font, P.minFont, -1 do
-        local columns = powerColumns(rows, width, font, top - floor)
-        local fits = left + #columns * (width + P.gap) - P.gap <= safeRight
-        for _, column in ipairs(columns) do fits = fits and column.height <= top - floor end
-        if fits and (#columns == 1 or #rows > 3 or font == P.minFont) then
-            return columns, left, top, floor, width, font, 1
-        end
-        if #rows > 3 then width = math.max(P.minWidth, width - S.l) end
+    local step = P.width + P.gap
+    local perPage = math.floor((2 * safeRight + P.gap) / step)
+    local columns = powerColumns(rows, P.width, P.font, top - floor)
+    if #columns > perPage then
+        floor = floor + L.nativeText.lineHeight
+        columns = powerColumns(rows, P.width, P.font, top - floor)
     end
-    -- At the smallest size, use the whole safe battlefield for an unusually long list.
-    local columns = powerColumns(rows, width, P.minFont, top - floor)
-    local span = #columns * (width + P.gap) - P.gap
-    local scale = math.min(1, 2 * safeRight / span)
-    for _, column in ipairs(columns) do scale = math.min(scale, (top - floor) / column.height) end
-    left = math.min(left, safeRight - span * scale)
-    return columns, left, top, floor, width, P.minFont, scale
+    info.pages = math.ceil(#columns / perPage)
+    info.page = math.min(info.page or 1, info.pages)
+    local first = (info.page - 1) * perPage + 1
+    local page = {table.unpack(columns, first, math.min(#columns, first + perPage - 1))}
+    local left = math.min(anchor, safeRight - math.min(#columns, perPage) * step + P.gap)
+    return page, left, top, floor
 end
 
 -- STS TipHelper.calculateAdditionalOffset, using the measured native text heights.
-local function monsterTipTop(columns, actorY, top, floor, scale)
+local function monsterTipTop(columns, actorY, top, floor)
     local height = 0
-    for _, column in ipairs(columns) do height = math.max(height, column.height * scale) end
+    for _, column in ipairs(columns) do height = math.max(height, column.height) end
     local canvasHeight = Theme.canvas.base[2]
     local above = 0.5 - actorY / canvasHeight
-    local natural = actorY + above * height - columns[1].rows[1].height * scale / 2
+    local natural = actorY + above * height - columns[1].rows[1].height / 2
     return math.min(top, math.max(natural, floor + height))
 end
 
@@ -368,15 +367,28 @@ function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, pi
 
     local compact, shown = false, 0
     local staticFrame = {"shadow", "border", "plate", "accent", "rule"}
-    local function nativePowerBox(layer, index, geometry, entry)
-        local box = place(layer, "tip" .. index, geometry.x, geometry.y, geometry.width, entry.height)
-        place(box, "edge", 0, 0, geometry.width, entry.height)
-        place(box, "face", 0, 0, geometry.width - 2, entry.height - 2)
-        box:SetLocalScale(geometry.scale, geometry.scale, 1)
-        local copy = place(box, "copy", 0, 0, geometry.width - P.padding * 2, entry.height - P.padding * 2)
-        copy.fontSize, copy.minimumFontSize = geometry.font, geometry.font
+    local function nativePowerBox(layer, index, x, y, entry)
+        local box = place(layer, "tip" .. index, x, y, P.width, entry.height)
+        place(box, "edge", 0, 0, P.width, entry.height)
+        place(box, "face", 0, 0, P.width - 2, entry.height - 2)
+        box:SetLocalScale(1, 1, 1)
+        local copy = place(box, "copy", 0, 0, P.width - P.padding * 2, entry.height - P.padding * 2)
+        copy.fontSize, copy.minimumFontSize = P.font, P.font
         copy.text = entry.text
         box:SetVisible(true)
+    end
+
+    local function powerFooter(panel, info, x, floor)
+        local line = L.nativeText.lineHeight
+        local y = floor - line / 2
+        local label = place(panel, "more", x, y, P.width, line)
+        local page = place(panel, "page", x, y, P.width, line)
+        if info.pages > 1 then
+            local hint = not info.transient and " · 点按翻页" or self:canPinPowerTips(info.source) and " · 点击固定" or ""
+            label.text = "第 " .. info.page .. "/" .. info.pages .. " 页" .. hint
+        end
+        label:SetVisible(info.pages > 1)
+        page:SetVisible(info.pages > 1 and not info.transient)
     end
 
     local function powerAnchor(battle, info)
@@ -407,19 +419,20 @@ function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, pi
             hideUnused(panel, {sections = 0, rows = 0})
         end
         local edge, direction, actorTop = powerAnchor(battle, info)
-        local columns, left, top, floor, width, font, scale = powerLayout(rows, edge, direction)
-        local monsterTop = info.index > 0 and monsterTipTop(columns, actorTop, top, floor, scale)
+        local columns, left, top, floor = powerLayout(rows, edge, direction, info)
+        local monsterTop = info.index > 0 and monsterTipTop(columns, actorTop, top, floor)
         local index = 0
         for column, items in ipairs(columns) do
-            local y = monsterTop or math.min(top, math.max(actorTop, floor + items.height * scale))
-            local x = direction * (left + ((column - 1) * (width + P.gap) + width / 2) * scale)
+            local y = monsterTop or math.min(top, math.max(actorTop, floor + items.height))
+            local x = direction * (left + (column - 1) * (P.width + P.gap) + P.width / 2)
             for _, entry in ipairs(items.rows) do
                 index = index + 1
-                nativePowerBox(layer, index, {x=x, y=y-(entry.y+entry.height/2)*scale, width=width, font=font, scale=scale}, entry)
+                nativePowerBox(layer, index, x, y - entry.y - entry.height / 2, entry)
             end
         end
         for i = index + 1, shown do layer:GetChild("tip" .. i):SetVisible(false) end
         compact, shown = true, index
+        powerFooter(panel, info, direction * (left + P.width / 2), floor)
         layer:SetVisible(true)
         panel.disableCursorEventPassthrough = false
         panel:SetVisible(true)

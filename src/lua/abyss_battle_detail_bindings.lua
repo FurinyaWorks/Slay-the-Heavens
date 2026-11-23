@@ -80,7 +80,7 @@ function M.install(owner, _ownership, host, dependencies)
             return owner:openHelp(spec, control, transient)
         end
         local function hoverOnly(spec)
-            return spec and spec.powerTips and touchScreen and not touchScreen()
+            return spec and spec.powerTips and touchScreen and not touchScreen() and not owner:canPinPowerTips(control)
         end
         local function cancel(silent,engineDestroyed,event)
             if engineDestroyed then input.engineDestroyed=true end
@@ -259,7 +259,7 @@ function M.install(owner, _ownership, host, dependencies)
             elseif dependencies.closeInfo() then owner:renderDetailsOnly() end
         end
         info:GetChild("page"):AddCursorEventListener(host.clickEvent,function(event)
-            if Pointer.blocked(host.platform)then return false end
+            if Pointer.blocked(host.platform) or event and event.dragging then return false end
             local swallow=owner.swallow
             if swallow and swallow.touch==(event and event.touchId) then owner.swallow=nil;return end
             return infoPage()

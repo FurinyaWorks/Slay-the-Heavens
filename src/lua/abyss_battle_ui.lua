@@ -212,6 +212,7 @@ function M.new(root, data, presentation, clickEvent, platform, options)
     host.lines = InfoContent.lines
     host.infoContent = InfoContent.new(self, {
         statusDetail = statusDetail, statusKind = statusKind, intentView = intentView, potionText = potionText,
+        displayedIntent = function(battle, id) return host.monsterIntentParticles:tooltip(battle, id) end,
         temporaryOps = temporaryOps, stanceNames = stanceNames, orbNames = orbNames,
         kindNames = kindNames, intentColors = intentColors,
     }, host.lines)

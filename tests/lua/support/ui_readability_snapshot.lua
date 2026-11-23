@@ -35,7 +35,8 @@ function M.capture(name, root, layout, metadata)
             rows[#rows+1] = {path=path,kind=spec.kind,visible=visible,text=spec.text and box.text or '',
                 rect={x,y,size[1]*sx,size[2]*sy},size=size,scale={sx,sy},
                 font=spec.text and (box.fontSize or spec.text.fontSize) or 0,
-                minimum=spec.text and spec.text.minFontSize or 0}
+                minimum=spec.text and (box.minimumFontSize or spec.text.minFontSize) or 0,
+                align=spec.text and spec.text.align or '',valign=spec.text and spec.text.valign or ''}
         end
         -- Native preset buttons select a state internally; the test fixture
         -- retains all four branches. Compare the actual normal/disabled state,
