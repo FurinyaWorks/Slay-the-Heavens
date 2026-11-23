@@ -5,7 +5,8 @@ import {createHash} from 'node:crypto';
 import {existsSync,mkdirSync,mkdtempSync,readFileSync,rmSync,symlinkSync,writeFileSync,realpathSync} from 'node:fs';
 import {dirname,join} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
-import {tmpdir} from 'node:os';
+import {availableParallelism,tmpdir} from 'node:os';
+import {hasTestNameFilter,runIsolatedTest} from './helpers/isolated-historical-cases.mjs';
 import {preArtFeatureSource as currentFeature,preHistoricalArtFeatureSource as currentHistory} from './helpers/art-feature-source-inverse.mjs';
 import {projectArtPerfSource as currentArtPerf} from './helpers/art-perf-source-composition.mjs';
 import {preReadyArtSource as currentReadyArt} from './helpers/ready-art-source-inverse.mjs';
@@ -237,7 +238,21 @@ const currentTargets=Object.fromEntries([
  ...['config/architecture.json','src/lua/abyss_game_ui.lua'].map(path=>[path,gameUiExtractionProof.files[path].beforeSource]),
  ...['src/lua/abyss_ui.lua','src/lua/abyss_traveler_portraits.lua'].map(path=>[path,sourceEpoch.proof.targets.develop.files[path].source]),
 ]);
-test('current feature and history entries authenticate supported intermediates and freshly read every raw owner',()=>{
+const liveOwnerCase='current feature and history entries authenticate supported intermediates and freshly read every raw owner';
+const liveOwnerWorker='--art-feature-owner-slice';
+test(liveOwnerCase,async()=>{
+ const targets=Object.entries(currentTargets);
+ assert.equal(targets.length,4,'the feature oracle binds four present-day hosts');
+ let selected=targets;
+ if(process.argv[2]===liveOwnerWorker){
+  const index=Number(process.argv[3]);assert(index===0||index===1);
+  selected=targets.filter((_,position)=>position%2===index);
+ }else if(availableParallelism()>=2&&!hasTestNameFilter()){
+  const outcomes=await Promise.allSettled([0,1].map(index=>runIsolatedTest(import.meta.url,
+   [liveOwnerWorker,String(index)],[`--test-name-pattern=^${liveOwnerCase}$`])));
+  for(const result of outcomes)if(result.status==='rejected')throw result.reason;
+  return;
+ }
  const disk=path=>readFileSync(path,'utf8');
  assert.throws(()=>disk(retiredControllerPath),{code:'ENOENT'});
  const retired=readRetiredController(disk).source;
@@ -248,7 +263,7 @@ test('current feature and history entries authenticate supported intermediates a
   if(!inputs.has(owner))inputs.set(owner,disk(owner));
   return inputs.get(owner);
  };
- for(const [path,expected]of Object.entries(currentTargets)){
+ for(const [path,expected]of selected){
   const current=currentBytes(path).replaceAll('\r\n','\n');
   assert.notEqual(hash(expected),proof.files[path].beforeSha256,'a supported intermediate is not original feature history: '+path);
   for(const project of [currentFeature,currentHistory]){

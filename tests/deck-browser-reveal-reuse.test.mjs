@@ -137,6 +137,41 @@ assert(battleRenders==renders,'master deck sorting repainted the covered battle'
 assert(host:closeDeck());assert(battleRenders>renders,'closing the deck must refresh the returning battle');settle()
 host.battleUI.render=renderBattle
 run.combat.draw={};assert(host:openDeck('draw'));settle();assert(#deck.cards==0 and not deck.pendingGrid and not deck.calibrating,'N to EMPTY left preparation pending')
+assert(host:closeDeck());settle()
+-- Commands issued by a sibling native callback invalidate the eager cover paint.
+local Run=require('abyss_run')
+local function coveredCallback(change)
+ local mapPanel=root:GetChild('mapPanel');local mapVisible=mapPanel.SetVisible
+ local replayed,paints=false,0
+ host.battleUI.render=function(self,...)paints=paints+1;return renderOriginal(self,...)end
+ mapPanel.SetVisible=function(self,visible)
+  local result=mapVisible(self,visible)
+  if not replayed then replayed=true;change()end
+  return result
+ end
+ assert(host:openDeck('draw'));mapPanel.SetVisible=mapVisible;host.battleUI.render=renderOriginal
+ assert(replayed and paints==2,'reentrant combat command must repaint the newly covered battle')
+end
+coveredCallback(function()
+ for _,candidate in ipairs(run.combat.hand)do
+  if F.Combat.canPlay(run.combat,candidate.uid,nil)then assert(Run.play(run,candidate.uid));return end
+ end
+ error('fixture hand requires a legal no-target card')
+end)
+assert(host:closeDeck());settle()
+assert(Run.obtainPotion(run,'fire_potion'));host:refresh();assert(host.battleUI.potionSlots[1])
+local function withoutEvents(change)
+ local events=run.combat.events;local count=#events
+ assert(change());assert(run.combat.events==events and #events==count)
+end
+coveredCallback(function()withoutEvents(function()return Run.discardPotion(run,1)end)end)
+assert(not host.battleUI.potionSlots[1],'eventless discard left a stale potion control')
+assert(host:closeDeck());settle()
+local cap=run.maxHp
+coveredCallback(function()withoutEvents(function()return Run.increaseMaxHp(run,1)end)end)
+assert(run.maxHp==cap+1 and root:GetChild('battlePanel'):GetChild('player').text:match('/'..(cap+1)..'$'),
+ 'eventless max-health change left a stale HUD')
+assert(host:closeDeck());settle()
 
 -- Raiden's live rule highlighting still reads the combat snapshot, even though
 -- cards outside the hand no longer simulate a play to produce an empty preview.
@@ -359,7 +394,7 @@ do
  end
  local render=host.battleUI.render;local paints=0
  host.battleUI.render=function(self,...)paints=paints+1;return render(self,...)end
- assert(host:openDeck());assert(fired and paints==1 and run.phase=='combat' and battle.energy<energy)
+ assert(host:openDeck());assert(fired and paints==2 and run.phase=='combat' and battle.energy<energy)
  assert(host.deckUI.visible and actor.alive and not actor.visible,'successful callback uncovered a retained actor')
  page.SetVisible=visibility;assert(host:closeDeck())
  assert(actor.alive and actor.visible and panel:GetChild('energy').text==string.format('%d/%d',battle.energy,energy),

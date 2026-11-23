@@ -77,7 +77,8 @@ export function beforeCurrentHistoricalStsSource(path,source){
   return prior===text?source:Buffer.from(prior);
  }
  // New exact integration tests first continue to the entrance witness's reviewed input.
- if(path==='tests/integration-source-epoch.test.mjs')source=beforeCurrentReplayFixes(path,source);
+ if(['tests/integration-source-epoch.test.mjs','tests/helpers/combined-epoch/source-epoch-runtime.mjs',
+  'tests/session-menu-navigation.test.mjs','tests/tiny-house-pending-ui.cases.mjs'].includes(path))source=beforeCurrentReplayFixes(path,source);
  source=beforeUiEntranceWitness(path,source);
  if(path===copierPath)return beforeCurrentReplayCopier(path,source);
  if(path!==historicalStsEntry)return beforeCurrentReplayFixes(path,source);
@@ -92,7 +93,15 @@ export function beforeCurrentHistoricalStsSource(path,source){
  }),'exact historical StS runner predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
-function beforeCurrentReplayCopier(path,source){
+export function beforeCurrentReplayCopier(path,source){
+ if(path===copierPath&&matches(source,{
+  sha256:'42e01a139330ad76f74eb21a9e52f6b9def902b84e45b3916aeebe8c1cf3799c',gitBlob:'f95d0b0ab7fa996984460b508f1bb5e01a47feb5',
+ })){
+  const prior=lf(source).replace(/const entranceFiles=Object.freeze\(\{\n[\s\S]+?\n\}\);\n/,'')
+   .replace('Object.entries(entranceFiles)','Object.entries(currentReplayFiles)');
+  assert.equal(hash(prior),'98ff5c37986a48db7ec6257a537193a57156cbdcce8e20cf48f5d206ff64aa40','exact merged entrance copier predecessor');
+  source=source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+ }
  if(path===copierPath&&matches(source,{
   sha256:'69eb9c5241f43631e1e341747b0565a92b0e348ba7a9c3e9ea4479a524e98d91',gitBlob:'e39d70be38e7a42b6078c656d4624ed71d448ee5',
  })){
@@ -101,9 +110,11 @@ function beforeCurrentReplayCopier(path,source){
   assert.equal(hash(prior),'f606b9a16cf0800cdec7f8a781aaab7deca6f05e08937a3488fef86a54b6742b','exact entrance copier predecessor');
   source=source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
  }
- if(path!==copierPath||!matches(source,{
+ if(path!==copierPath||!(matches(source,{
   sha256:'f606b9a16cf0800cdec7f8a781aaab7deca6f05e08937a3488fef86a54b6742b',gitBlob:'a796a1ddf69bd0a3c19e21eb7be78d21f498e720',
- }))return source;
+ })||matches(source,{
+  sha256:'98ff5c37986a48db7ec6257a537193a57156cbdcce8e20cf48f5d206ff64aa40',gitBlob:'dfe81edcd36a45f8ffed7d42c849b7755708463b',
+ })))return source;
  const text=lf(source);
  const block='const currentReplayFiles=Object.freeze({\n';
  const start=text.indexOf(block),end=text.indexOf('const inside=',start);

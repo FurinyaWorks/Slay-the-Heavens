@@ -262,7 +262,8 @@ end
 
 function M.refreshPageVisibility(menu,self,suspendBattle,child,refreshMapResources,nativePageLifecycle)
     local syncNative=nativePageLifecycle==true and NativePages.new(child,self) or nil
-    local coveredMapRun
+    local coveredMapRun,coveredDeckBattle
+    local visibilityPass=0
     local function refreshMapVisibility(run,deckOpen,blocked)
         local onMap=self.mode=="map"
         local returningFromDeck=coveredMapRun~=nil and coveredMapRun==run
@@ -272,23 +273,55 @@ function M.refreshPageVisibility(menu,self,suspendBattle,child,refreshMapResourc
         child("mapPanel"):SetVisible(onMap)
         refreshMapResources(run)
     end
+    local function coveredPaintCheck(run,battle,pass)
+        if not self.pageReveal or not battle or run.phase~='combat' or self.battleUI.busy then return end
+        local events,epoch=battle.events,self.pageReveal.epoch
+        local eventCount=#events
+        -- Inventory and the health cap can change without a combat event.
+        local potionInventory,maxHp=battle.potionInventory,run.maxHp
+        return function()
+            return visibilityPass==pass and self.run==run and run.phase=='combat' and run.combat==battle
+                and self.deckUI.visible and not self.battleUI.active and not self.battleUI.busy
+                and self.pageReveal.epoch==epoch and battle.events==events and #events==eventCount
+                and battle.potionInventory==potionInventory and run.maxHp==maxHp
+        end
+    end
+    local function refreshBattleVisibility(run,deckOpen,potionOpen,blocked,pass)
+        -- Reuse a cover only after its eager render has committed suspension.
+        -- The active flag changes before the native setter and can survive failure.
+        local deckBattle=self.mode=='battle' and deckOpen and run and run.combat or nil
+        local deferDeckRender=deckBattle~=nil and coveredDeckBattle==deckBattle
+        local coveredPaint
+        if not deferDeckRender then
+            coveredDeckBattle=nil
+            coveredPaint=coveredPaintCheck(run,deckBattle,pass)
+        end
+        self.battleUI:setActive(self.mode == "battle" and not deckOpen and not potionOpen and not blocked,
+            suspendBattle(run,deckOpen,potionOpen),deferDeckRender)
+        if visibilityPass==pass then coveredDeckBattle=deckBattle end
+        return coveredPaint
+    end
     return function(run,inMenu,deckOpen,potionOpen,blocked)
+            visibilityPass=visibilityPass+1
+            local pass=visibilityPass
             if syncNative then syncNative(run) end
             menu:SetVisible(inMenu and not self.characterOpen and not self.easterEggOpen)
-            -- Commit activation and suspension before later native page callbacks.
-            -- The final render still observes commands committed by those callbacks.
-            self.battleUI:setActive(self.mode == "battle" and not deckOpen and not potionOpen and not blocked,
-                suspendBattle(run,deckOpen,potionOpen))
+            local coveredPaint=refreshBattleVisibility(run,deckOpen,potionOpen,blocked,pass)
             child("battlePanel"):SetVisible(self.mode == "battle")
             refreshMapVisibility(run,deckOpen,potionOpen or blocked)
             self.nodeUI:setVisible(self.mode == "node" and not deckOpen and not potionOpen and not blocked,self.mode == "node",true)
             child("nodePanel"):SetVisible(self.mode == "node")
+            return coveredPaint
         end
 end
 
 function M.renderBattlePage(self,child)
-    return function(run)
-            self.battleUI:render()
+    return function(run,coveredPaint)
+            -- Page readiness can reuse the eager deck cover, unless a native
+            -- callback advanced the page or the combat after that paint.
+            if not (coveredPaint and coveredPaint()) then
+                self.battleUI:render()
+            end
             if run.phase == "combat" and self.presentedBattle ~= run.combat then
                 self.presentedBattle = run.combat
                 local guardian = false
@@ -336,17 +369,12 @@ local function recordEntryProjection(self,platform,entry,epoch)
 end
 
 function M.renderCurrentPage(self,renderBattlePage,renderMapPage,platform)
-    return function(run,deckOpen,potionOpen,blocked,covering)
+    return function(run,deckOpen,potionOpen,blocked,covering,coveredPaint)
             local entry=self.nodeEntry
             local epoch=entry and self.pageReveal.epoch
             PageReveal.registerSource(platform,PageReveal.basePage(self.mode))
             if self.mode == "battle" then
-                -- Activation already painted and suspended this established combat.
-                -- A managed deck can postpone hidden text updates until uncover;
-                -- commands that change phase, run or combat still need the final paint.
-                local coveredCombat=self.pageReveal and deckOpen and self.deckUI.visible and run==self.run
-                    and run.phase=='combat' and self.presentedBattle==run.combat
-                if not coveredCombat then renderBattlePage(run) end
+                renderBattlePage(run,coveredPaint)
             elseif self.mode == "map" then
                 renderMapPage(run,deckOpen,potionOpen,blocked,covering)
             elseif self.mode == "node" then self.nodeUI:render() end
@@ -655,8 +683,8 @@ function M.refresh(self,finishRunFlow,syncOpening,selectMode,syncOfficialBattleS
             local blocked=overlaysBlocked() or covering
             local returnAvailable=syncRewardReturn(run,deckOpen,potionOpen,blocked,covering)
             refreshUtilities(run,inMenu,deckOpen,potionOpen,blocked,returnAvailable)
-            refreshPageVisibility(run,inMenu,deckOpen,potionOpen,blocked)
-            renderCurrentPage(run,deckOpen,potionOpen,blocked,covering)
+            local coveredPaint=refreshPageVisibility(run,inMenu,deckOpen,potionOpen,blocked)
+            renderCurrentPage(run,deckOpen,potionOpen,blocked,covering,coveredPaint)
             bgm:update(self.settlementRequested and "stop" or Bgm.scene(self.mode, run, self.battleUI.busy, bgm.cue))
             present()
             refreshForeground()

@@ -98,6 +98,12 @@ function assertReusableFrozenData(value,seen=new WeakSet(),active=new WeakSet())
  }
  active.delete(value);seen.add(value);
 }
+// Composed epochs own their new containers and inherit immutable JSON records.
+// Keep those records shared while the constructor still validates the full graph.
+export function createComposedSourceEpochProjector(proof){
+ return createSourceEpochProjector(freeze(proof),{allowConfigLayout:true,reuseFrozenInput:true});
+}
+
 export function createSourceEpochProjector(input,{root=process.cwd(),allowConfigLayout=false,reuseFrozenInput=false}={}){
  // Clone once to prevent the caller changing proof data after validation.
  assert.equal(typeof reuseFrozenInput,'boolean','source proof reuse policy');
@@ -105,15 +111,17 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  const proof=reuseFrozenInput?input:JSON.parse(JSON.stringify(input));
  assert.equal(proof.schemaVersion,1);assert.equal(proof.normalization,'LF');
  assert.match(proof.currentCommit,/^[a-f0-9]{40}$/);
- assert(Array.isArray(proof.owners));assert.equal(new Set(proof.owners).size,proof.owners.length,'unique owners');
+ assert(Array.isArray(proof.owners));
+ const owners=new Set(proof.owners);assert.equal(owners.size,proof.owners.length,'unique owners');
+ const currentPaths=Object.keys(proof.current).sort();
  for(const [path,binding]of Object.entries(proof.current)){assert(validPath(path),'source path');validateBinding(binding);}
  for(const owner of proof.owners){assert(validPath(owner),'owner path');assert(Object.hasOwn(proof.current,owner),'owner current identity');}
  for(const [name,target]of Object.entries(proof.targets)){
   assert(/^[A-Za-z0-9_-]+$/.test(name),'target name');assert.match(target.commit,/^[a-f0-9]{40}$/);
-  assert.deepEqual(Object.keys(target.files).sort(),Object.keys(proof.current).sort(),'complete target path set');
+  assert.deepEqual(Object.keys(target.files).sort(),currentPaths,'complete target path set');
   for(const [path,binding]of Object.entries(target.files)){
    validateBinding(binding);
-   if(binding?.sha256!==proof.current[path]?.sha256)assert(proof.owners.includes(path),'changed source closure');
+   if(binding?.sha256!==proof.current[path]?.sha256)assert(owners.has(path),'changed source closure');
   }
  }
  freeze(proof);

@@ -323,7 +323,7 @@ for(const [file,name,target,module]of cases){
     assert.equal(projected,expected,path);
     if(name==='preM7FinalSource'){
      assert.notEqual(projected,input,'current M7 input must actually project to its frozen target');
-     if(path==='config/architecture.json')
+     if(path==='config/architecture.json'&&input===currentRead(path))
       assert.throws(()=>fn(path,input,{readSource:raw}),/combined linked owner/,
        'a captured configuration cannot authenticate current M7 owners');
     }

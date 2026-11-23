@@ -1,9 +1,10 @@
 import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-closure.mjs';
-import test from 'node:test';
+import nodeTest from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync,copyFileSync,mkdirSync,mkdtempSync,rmSync,symlinkSync,linkSync} from 'node:fs';
 import {join,dirname,resolve,relative,isAbsolute} from 'node:path';
-import {tmpdir} from 'node:os';
+import {availableParallelism,tmpdir} from 'node:os';
+import {hasTestNameFilter,runIsolatedTest} from './helpers/isolated-historical-cases.mjs';
 import {pathToFileURL} from 'node:url';
 import {spawnSync} from 'node:child_process';
 import {gameUiExtractionProof as proof,gameUiExtractionAddedPaths as added,preGameUiExtractionSource as project,preNativePageSource,gameUiExtractionReader,prepareGameUiExtractionModuleRetirement as prepare} from './helpers/game-ui-extraction-source-inverse.mjs';
@@ -14,6 +15,8 @@ import {sourceSlice} from './helpers/closeout-source-epoch.mjs';
 import {beforePc13ThenV2UiHudSource} from './helpers/pc13-reward-cover-source.mjs';
 import {beforeLumineSource} from './helpers/lumine-portrait-source.mjs';
 import {pointerInputPath,readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';
+const cases=[];
+const test=(name,body)=>cases.push([name,body]);
 // Keep the existing two/four-owner contracts in their original source epochs.
 const nativeRead=p=>preNativePageSource(p,readFileSync(p,'utf8').replaceAll('\r\n','\n'));
 const read=p=>preRelicQuerySource(p,nativeRead(p),{readSource:nativeRead});
@@ -382,3 +385,32 @@ test('real filesystem traces distinguish foreign/old inputs from fresh equivalen
  assert.deepEqual(opens,{foreign:0,old:0,equivalent:paths.length*2+lifecycleReads*4,'warm-drift':paths.length+lifecycleReads*2,'warm-missing':paths.length+lifecycleReads*2});
  process.stdout.write('GAME_UI_EXTRACTION_FS_READS '+JSON.stringify({reads,opens})+'\n');
 });
+
+// Windows job 137561143801 spent almost 42 minutes in this one file. The
+// expensive cases and their independent filesystem fixtures can run in pairs.
+const firstLane=new Set([
+ 'actual current Host reaches every direct and transitive consumer with frozen historical results',
+ 'one complete extraction restores immutable full Host/config and authenticates each fresh owner',
+ 'portrait demand layer authenticates fresh complete owners and rejects warm drift before entering the prior epoch',
+ 'retirement verifies the full isolated destination before deleting, and revalidates deferred cleanup',
+ 'retirement rejects live Lua directories and source ancestors before any deletion',
+]);
+const lanes=[cases.filter(([name])=>firstLane.has(name)),cases.filter(([name])=>!firstLane.has(name))];
+assert.equal(lanes[0].length,firstLane.size,'all first-lane cases are registered');
+assert.equal(new Set(cases.map(([name])=>name)).size,cases.length,'every registered case is unique');
+const laneFlag='--isolated-game-ui-source-lane';
+if(process.argv[2]===laneFlag){
+ const lane=lanes[Number(process.argv[3])];assert(lane,'registered GameUI source lane');
+ for(const entry of lane)nodeTest(...entry);
+}else if(process.platform==='win32'&&process.env.GITHUB_ACTIONS==='true'&&process.env.RUNNER_ENVIRONMENT==='github-hosted'
+ &&availableParallelism()>=2&&!hasTestNameFilter()){
+ nodeTest('Windows GameUI source replays',async()=>{
+  const outcomes=await Promise.allSettled(lanes.map((lane,index)=>runIsolatedTest(import.meta.url,[laneFlag,String(index)],[],lane.length)));
+  for(const result of outcomes){
+   if(result.status==='rejected')throw result.reason;
+   process.stdout.write(result.value);
+  }
+ });
+}else{
+ for(const entry of cases)nodeTest(...entry);
+}

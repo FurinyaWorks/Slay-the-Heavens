@@ -118,6 +118,7 @@ test("native OnStart rereads wall and CPU time after script and module recreatio
         assert(#seen==i and script.updating)
         assert(seen[i]:start())
         assert(seen[i].run==nil, "opening character selection must not allocate a run or seed")
+        local host=seen[i]
         local accepted,reason=seen[i]:confirmCharacter()
         assert(not accepted and reason=='character_choice_unavailable' and seen[i].run==nil,
             'the native entry barrier must reject confirmation before real update turns')
@@ -127,7 +128,6 @@ test("native OnStart rereads wall and CPU time after script and module recreatio
         readyChoice(seen[i])
         assert(F.click(seen[i].root,'characterPanel','confirm'))
         for _=1,80 do
-            local host=seen[i]
             if not host.starting and not(host.prologue and host.prologue:covering())
                 and not(host.pageReveal and host.pageReveal:covered())then break end
             OnUpdate(0.05)

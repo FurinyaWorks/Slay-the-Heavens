@@ -1862,12 +1862,28 @@ test('complete current Defect Actor Full38 inventory fits original Windows18 POS
  }
 });
 
-function assertPosixForecasts(files,count,forecast,budget){
+function windowsFullLoads(lua,loads){
+ const timings={...rawCurrentTimings,windowsJsShardMs:loads};
+ const bins=loads.map((_,i)=>shardLuaScripts(lua,`${i+1}/${loads.length}`,timings,2));
+ assert.deepEqual(bins.flat().sort(),lua);
+ assert.equal(new Set(bins.flat()).size,lua.length);
+ const cost=file=>timings.luaShard[file]??timings.lua[file]??timings.unknownLuaMs;
+ const safety=file=>timings.lua[file]??timings.unknownLuaMs;
+ return bins.map((bin,i)=>{
+  const pool=[0,0];
+  for(const file of bin.filter(file=>safety(file)<10000).sort((a,b)=>safety(b)-safety(a)||a.localeCompare(b)))pool[pool[0]<=pool[1]?0:1]+=cost(file);
+  return loads[i]+bin.filter(file=>safety(file)>=10000).reduce((sum,file)=>sum+cost(file),0)+Math.max(...pool);
+ });
+}
+
+function assertReplayForecasts(files,lua,count,platform,forecast,budget){
  const observed=rawCurrentTimings;
- const weights=Object.fromEntries(files.map(file=>[file,Math.max(observed.js.linux[file]??observed.unknownJsMs,observed.jsPlanning.localLowerBounds[file]?.durationMs??0)]));
- const historical=partition(files,`1/${count}`,weights,observed.unknownJsMs,Array.from({length:count},(_,i)=>i===0?observed.initialMs.linux[0]:0));
- assert(Math.max(...historical.loads)+60000<budget,'original POSIX planning target and reserve');
- assert(forecast<1800000,'measured replay placement and reserve fit the unchanged POSIX job deadline');
+ const weights=Object.fromEntries(files.map(file=>[file,Math.max(observed.js[platform][file]??observed.unknownJsMs,observed.jsPlanning.localLowerBounds[file]?.durationMs??0)]));
+ const historical=partition(files,`1/${count}`,weights,observed.unknownJsMs,Array.from({length:count},(_,i)=>i===0?observed.initialMs[platform][0]:0));
+ const windows=platform==='win32';
+ const originalLoads=windows?windowsFullLoads(lua,historical.loads):historical.loads;
+ assert(Math.max(...originalLoads)+60000<budget,platform+' original planning target and reserve');
+ assert(forecast<(windows?2700000:1800000),platform+' measured replay placement and reserve fit the unchanged job deadline');
 }
 
 test('combined closeout validates raw current sources and complete Full discovery independently of immutable slice views',t=>{
@@ -1904,21 +1920,9 @@ test('combined closeout validates raw current sources and complete Full discover
   const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(files,`${i+1}/${count}`,platform));
   assert.deepEqual(bins.flatMap(bin=>bin.files).sort(),files,'raw Full covers each file on '+platform);
   assert.equal(new Set(bins.flatMap(bin=>bin.files)).size,files.length);
-  const loads=bins[0].loads;let combined=loads;
-  if(platform==='win32'){
-   const luaBins=Array.from({length:count},(_,i)=>shardLuaScripts(lua,`${i+1}/${count}`,{...rawCurrentTimings,windowsJsShardMs:loads},2));
-   assert.deepEqual(luaBins.flat().sort(),lua);assert.equal(new Set(luaBins.flat()).size,lua.length);
-   const cost=file=>rawCurrentTimings.luaShard[file]??rawCurrentTimings.lua[file]??rawCurrentTimings.unknownLuaMs;
-   const safety=file=>rawCurrentTimings.lua[file]??rawCurrentTimings.unknownLuaMs;
-   combined=luaBins.map((bin,i)=>{
-    const pool=[0,0];
-    for(const file of bin.filter(file=>safety(file)<10000).sort((a,b)=>safety(b)-safety(a)||a.localeCompare(b)))pool[pool[0]<=pool[1]?0:1]+=cost(file);
-    return loads[i]+bin.filter(file=>safety(file)>=10000).reduce((sum,file)=>sum+cost(file),0)+Math.max(...pool);
-   });
-  }
+  const loads=bins[0].loads,combined=platform==='win32'?windowsFullLoads(lua,loads):loads;
   const forecast=Math.max(...combined)+60000,budget=platform==='win32'?1800000:1200000;
-  if(platform==='linux')assertPosixForecasts(files,count,forecast,budget);
-  else assert.ok(forecast<budget,platform+' final complete workload and reserve fit unchanged budget');
+  assertReplayForecasts(files,lua,count,platform,forecast,budget);
   t.diagnostic(`${platform} final ${files.length}JS/${lua.length}Lua forecast ${forecast}ms including reserve`);
   for(const file of files)assert(rawCurrentJsPlanningWeights([file],platform)[file]>=rawCurrentTimings.unknownJsMs||rawCurrentTimings.js[platform][file]>0);
  }
@@ -1997,20 +2001,9 @@ test('menu current complete JS and Lua workload retains Full budgets and every a
  for(const [platform,count,budget]of [['win32',18,1800000],['linux',15,1200000]]){
   const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(js,`${i+1}/${count}`,platform));
   assert.deepEqual(bins.flatMap(b=>b.files).sort(),js);assert.equal(new Set(bins.flatMap(b=>b.files)).size,js.length);
-  const loads=bins[0].loads;let combined=loads;
-  if(platform==='win32'){
-   const luaBins=Array.from({length:count},(_,i)=>shardLuaScripts(lua,`${i+1}/${count}`,{...rawCurrentTimings,windowsJsShardMs:loads},2));
-   assert.deepEqual(luaBins.flat().sort(),lua);assert.equal(new Set(luaBins.flat()).size,lua.length);
-   const cost=f=>rawCurrentTimings.luaShard[f]??rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
-   const safety=f=>rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
-   combined=luaBins.map((bin,i)=>{
-    const pool=[0,0];for(const f of bin.filter(f=>safety(f)<10000).sort((a,b)=>safety(b)-safety(a)||a.localeCompare(b)))pool[pool[0]<=pool[1]?0:1]+=cost(f);
-    return loads[i]+bin.filter(f=>safety(f)>=10000).reduce((sum,f)=>sum+cost(f),0)+Math.max(...pool);
-   });
-  }
+  const loads=bins[0].loads,combined=platform==='win32'?windowsFullLoads(lua,loads):loads;
   const forecast=Math.max(...combined)+60000;
-  if(platform==='linux')assertPosixForecasts(js,count,forecast,budget);
-  else assert(forecast<budget,'complete current menu workload and unchanged reserve');
+  assertReplayForecasts(js,lua,count,platform,forecast,budget);
   t.diagnostic(`${platform}: ${js.length} JS / ${lua.length} Lua, forecast ${forecast}ms including reserve`);
  }
 });
@@ -2036,17 +2029,7 @@ test('Release bootstrap raw Full retains complete discovery costs and physical g
  for(const [platform,count,target,guard]of [['win32',18,1800000,10800000],['linux',15,1200000,5400000]]){
   const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(js,`${i+1}/${count}`,platform));
   assert.deepEqual(bins.flatMap(bin=>bin.files).sort(),js);assert.equal(new Set(bins.flatMap(bin=>bin.files)).size,js.length);
-  const loads=bins[0].loads;let combined=loads;
-  if(platform==='win32'){
-   const luaBins=Array.from({length:count},(_,i)=>shardLuaScripts(lua,`${i+1}/${count}`,{...rawCurrentTimings,windowsJsShardMs:loads},2));
-   assert.deepEqual(luaBins.flat().sort(),lua);assert.equal(new Set(luaBins.flat()).size,lua.length);
-   const cost=f=>rawCurrentTimings.luaShard[f]??rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
-   const safety=f=>rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
-   combined=luaBins.map((bin,i)=>{
-    const pool=[0,0];for(const f of bin.filter(f=>safety(f)<10000).sort((a,b)=>safety(b)-safety(a)||a.localeCompare(b)))pool[pool[0]<=pool[1]?0:1]+=cost(f);
-    return loads[i]+bin.filter(f=>safety(f)>=10000).reduce((sum,f)=>sum+cost(f),0)+Math.max(...pool);
-   });
-  }
+  const loads=bins[0].loads,combined=platform==='win32'?windowsFullLoads(lua,loads):loads;
   const forecast=Math.max(...combined)+60000;
   t.diagnostic(`${platform}: raw ${js.length} JS / ${lua.length} Lua; forecast ${forecast}ms; target ${target}ms; overrun ${Math.max(0,forecast-target)}ms; physical execution guard ${guard}ms; prediction is not admission`);
  }

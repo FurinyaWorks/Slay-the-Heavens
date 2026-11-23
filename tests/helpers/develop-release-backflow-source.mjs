@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
-import {exactSourceMatches as matches} from './source-fingerprint.mjs';
+import {exactSourceMatches as matches,sourceConfigLayoutMatches} from './source-fingerprint.mjs';
 import {authenticateInputRetirement,beforeInputRetirement,beforeInputRetirementReader,inputRetirementOwns,isCurrentInputRetirementSource,beforeCombatEvents,combatEventsOwns,beforeDevelopUiBackflows,assertPointerInputSource,pointerInputPath,retiredControllerPath,readRetiredController} from './input-retirement-source.mjs';
 import {assertRelicDetailCurrent,authenticateRelicDetail,beforeRelicDetail,relicDetailOwns} from './relic-detail-source.mjs';
 import {beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';
@@ -308,15 +308,13 @@ function authenticatePriorDevelopBackflow(path,source,read){
  return prior;
 }
 
-export const configSourceTokens=source=>source.replace(/"(?:\\.|[^"\\])*"|[ \t\r\n]+/g,token=>token.startsWith('"')?token:'');
+export {configSourceTokens} from './source-fingerprint.mjs';
 export function isSessionRelicSuccessor(path,source,{allowConfigLayout=false}={}){
  if(!Object.hasOwn(sessionRelic.files,path))return false;
  source=predecessor(roomEntry.files,path,beforeDeckPages(path,source,{allowConfigLayout}));
  const expected=sessionRelic.files[path].after;
  if(matches(source,expected))return true;
- if(!allowConfigLayout||!expected.tokensSha256||typeof source!=='string'||source.includes('\r\r\n'))return false;
- if(hash(configSourceTokens(source))!==expected.tokensSha256)return false;
- try{JSON.parse(source);return true;}catch{return false;}
+ return allowConfigLayout&&sourceConfigLayoutMatches(source,expected.tokensSha256);
 }
 function beforeSessionRelic(path,source,options){
  if(!isSessionRelicSuccessor(path,source,options))return source;

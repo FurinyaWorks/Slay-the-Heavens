@@ -8,7 +8,7 @@ import { preM7FinalSource as original } from './epochs/develop/tests/helpers/m7-
 import {sourceEpoch} from './combined-epoch/source-epoch.mjs';
 import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
-import {isCurrentInputRetirementSource} from './input-retirement-source.mjs';
+import {beforeCombatEvents,isCurrentInputRetirementSource} from './input-retirement-source.mjs';
 import {beforeUiEntrance} from './ui-entrance-source.mjs';
 const live=p=>readFileSync(new URL('../../'+p,import.meta.url),'utf8');
 const actorTarget=sourceEpoch.proof.targets.pr618,actorAnchor='config/architecture.json';
@@ -50,7 +50,10 @@ export function preM7FinalSource(path,source,{readSource=live}={}){
  const input=source;
  // Authenticate the post-Actor combat backflow against real disk owners before
  // passing an older source to the independently frozen Actor verifier.
- const actorInput=sourceEpoch.preCombinedSource(path,input,{target:'pr618',readSource});
+ const actorAdmission=(path==='src/lua/abyss_combat_queued_play.lua'&&beforeCombatEvents(path,input)!==input)
+  ||(path===actorAnchor&&beforeUiEntrance(path,input)!==input);
+ const actorInput=actorAdmission
+  ?sourceEpoch.preCombinedSource(path,input,{target:'pr618',readSource}):input;
  source=preDefectActorSource(path,actorInput,{readSource:actorReader(readSource)});
  const utility=preDefectUtilitySource(path,source);if(utility!==source)return utility;
  // Historical capability owners need the full current closure, not only the

@@ -141,8 +141,12 @@ const currentContinuationOwners = new Set([
 
 export function beforeCurrentProductionSource(path, source, read = readRaw) {
   assertCurrentUiEntrance(path,source);
+  const entranceInput=source;
   ({source,read}=entrancePredecessor(path,source,read));
-  assertCurrentDevelopUiSource(path,source,read);
+  // The entrance owner was freshly authenticated before restoring its older view.
+  // That predecessor predates the current develop cover and is not a live owner.
+  if(path!=='src/lua/abyss_game_ui_view.lua'||source===entranceInput)
+    assertCurrentDevelopUiSource(path,source,read);
   if(developBackflowOwns(path)){
     assertDevelopBackflowCurrent(path,source);
     return beforeCharacterPreparationSource(path,source,read);

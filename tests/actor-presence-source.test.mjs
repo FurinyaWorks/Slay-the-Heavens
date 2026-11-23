@@ -182,6 +182,7 @@ test('the current actor facade freshly rejects every expanded raw owner after wa
  assert.throws(()=>read(retiredControllerPath),{code:'ENOENT'});
  const {source:retired,restored}=readRetiredController(read);assert(restored,'exact live pointer witnesses the absent Controller');
  for(const path of originals){
+  const source=read(path);
   let bad=null,mode='good',seen=[];
   const raw=p=>{seen.push(p);if(p===bad){
    if(mode==='throw')throw Error('expanded reader sentinel');
@@ -191,7 +192,7 @@ test('the current actor facade freshly rejects every expanded raw owner after wa
    if(mode==='buffer')return Buffer.from(source);if(mode==='changed')return source+'\n';
   }return current[p]??read(p);};
   const wrapped=actorPresenceReader(actorPresenceReader(raw));assert.equal(actorPresenceReader(wrapped),wrapped);
-  const check=()=>assert.equal(project(path,read(path),{readSource:wrapped}),proof.files[path].beforeSource);
+  const check=()=>assert.equal(project(path,source,{readSource:wrapped}),proof.files[path].beforeSource);
   check();const first=[...seen];for(const owner of sourceEpoch.proof.owners)assert(first.includes(owner),'fresh current owner: '+owner);
   seen=[];check();assert.deepEqual(seen,first,'warm calls repeat the complete raw-read sequence');
   for(bad of [...rawOwners,retiredControllerPath])for(mode of bad===retiredControllerPath?['old','changed','buffer','throw']:['changed','missing','null','buffer','throw']){
@@ -199,7 +200,7 @@ test('the current actor facade freshly rejects every expanded raw owner after wa
    assert(seen.includes(bad));const previous=mode;mode='good';check();mode=previous;
   }
   bad=retiredControllerPath;
-  for(mode of ['missing','null']){seen=[];check();assert(seen.includes(retiredControllerPath)&&seen.includes(pointerInputPath),'absent Controller freshly requires its exact pointer');}
+  for(mode of ['missing','null']){seen=[];check();assert.deepEqual(seen,first,'retired controller still requires every current owner');assert(seen.includes(retiredControllerPath)&&seen.includes(pointerInputPath),'absent Controller freshly requires its exact pointer');}
  }
  for(const readSource of [null,{},'invalid'])for(const path of originals)assert.throws(()=>project(path,read(path),{readSource}),/linked (?:owner )?reader/);
 });

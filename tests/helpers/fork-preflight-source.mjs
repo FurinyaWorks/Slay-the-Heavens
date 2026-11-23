@@ -3,7 +3,7 @@ import {beforeInputRetirementTestInventory,readRetiredInputLuaReceipt} from './i
 import {beforeDeckPagesSuiteSource} from './input-retirement-source.mjs';
 export {beforeInputRetirementTestInventory} from './input-retirement-inventory.mjs';
 import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,beforeDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
-import {beforeCalibrationReplay} from './calibration-replay-sources.mjs';
+import {beforeCalibrationReplay,beforeCurrentReplayCopier} from './calibration-replay-sources.mjs';
 import {beforeNativeHostReplay} from './native-host-replay-source.mjs';
 import {assertNativeFixturesCurrent,beforeNativeFixtureReplay} from './native-fixture-replay-source.mjs';
 import {assertNativeFlowFixturesCurrent,beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';
@@ -119,28 +119,6 @@ for(const {before,after} of Object.values(releaseUiBuild.files)){
  assert.equal(blob(before.source),before.gitBlob);
  assert.match(after.sha256,/^[a-f0-9]{64}$/);
  assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
-}
-// Authenticate the current copier before giving old CI receipts its exact predecessor.
-function beforeUiEntranceCopier(path,source){
- if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
- const lf=normalize(source);
- if(hash(lf)!=='69eb9c5241f43631e1e341747b0565a92b0e348ba7a9c3e9ea4479a524e98d91')return source;
- const prior=lf.replace(/const entranceFiles=Object.freeze\(\{\n[\s\S]+?\n\}\);\n/,'')
-  .replace('Object.entries(entranceFiles)','Object.entries(currentReplayFiles)');
- assert.equal(hash(prior),'f606b9a16cf0800cdec7f8a781aaab7deca6f05e08937a3488fef86a54b6742b','exact entrance helper copy predecessor');
- return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
-}
-function beforeCurrentReplayCopier(path,source){
- source=beforeUiEntranceCopier(path,source);
- if(path!=='tests/helpers/copy-integration-source-closure.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
- const lf=normalize(source);
- if(hash(lf)!=='f606b9a16cf0800cdec7f8a781aaab7deca6f05e08937a3488fef86a54b6742b'||
-  blob(lf)!=='a796a1ddf69bd0a3c19e21eb7be78d21f498e720')return source;
- const prior=lf.replace(/^const currentReplayFiles=Object\.freeze\(\{\n[\s\S]*?^\}\);\n/m,'')
-  .replace('Object.entries(currentReplayFiles)','Object.entries(actionButtonFiles)');
- assert.equal(hash(prior),'848e21017bfe022dd0a5e8215ffa94aee50b328ac9d7055ef1fade4f3a170677','exact current replay copier predecessor');
- assert.equal(blob(prior),'f3005ce3dcd73c1a5bd64fc252535ee6950bc6ff');
- return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeRefinedReleaseCopier(path,source){
  if(path!=="tests/helpers/copy-integration-source-closure.mjs"||typeof source!=='string'||source.includes('\r\r\n'))return source;
@@ -347,6 +325,7 @@ function beforeReleaseUiBuildSource(path,source,read=readFileSync){
  return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
 }
 function releaseHistoricalInput(path,source){
+ source=beforeCurrentReplayCopier(path,source);
  return beforeRebasedCopier(path,source)!==source?historicalReleaseCopier(source):beforeRebasedRelease(path,source);
 }
 export function beforeReleaseTinyHouseSource(path,source,read=readFileSync){
@@ -778,7 +757,7 @@ export function beforeReviewedBuildInput(path,source,read){
  const live=owner=>reviewed(owner,read(owner,'utf8'));
  const production=authenticateDevelopBackflow(path,reviewed(path,source),live);
  const deck=beforeDeckPagesSuiteSource(path,production);
- const merged=beforeDevelopReplayMerge(path,deck);
+ const merged=beforeDevelopReplayMerge(path,beforeCurrentReplayFixes(path,deck));
  return beforeForkFirstCi(path,beforeReplayArchiveStorage(path,merged));
 }
 function beforeIntegrationSuccessor(path,source){
