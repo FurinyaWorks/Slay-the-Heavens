@@ -1,6 +1,10 @@
 name: Quick feedback
-run-name: Preflight / ${{ github.sha }} / ${{ inputs.base_sha || github.event.pull_request.base.sha }}
+run-name: Preflight / ${{ github.sha }} / ${{ inputs.base_sha || 'upstream-develop' }}
 on:
+  # Routine task pushes run only Fork A Quick (never the main-repo runner).
+  push:
+    branches: ['feature/**', 'feat/**', 'fix/**', 'refactor/**', 'perf/**', 'test/**', 'docs/**', 'chore/**', 'ci/**', 'experiment/**', 'spike/**']
+    paths-ignore: ['**/*.md']
   workflow_dispatch:
     inputs:
       base_sha:
@@ -15,6 +19,7 @@ concurrency:
 jobs:
   related:
     name: Complete affected preflight
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.repository == 'FurinyaDev/Slay-the-Heavens-Fork-A' && github.event_name == 'push' && !startsWith(github.ref, 'refs/heads/ci/full/')) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -35,10 +40,25 @@ jobs:
           cache: pip
           cache-dependency-path: .github/workflows/quality.yml
       - run: python3 -m pip install --disable-pip-version-check --retries 0 --timeout 30 Pillow==12.3.0
+      - name: Pin upstream develop comparison for Fork A pushes
+        id: comparison
+        env:
+          MANUAL_BASE_SHA: ${{ inputs.base_sha }}
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            git -c credential.helper= -c http.lowSpeedLimit=1024 -c http.lowSpeedTime=30 fetch --depth=1 --filter=blob:none --no-tags https://github.com/FurinyaWorks/Slay-the-Heavens.git refs/heads/develop
+            BASE_SHA="$(git rev-parse FETCH_HEAD)"
+          else
+            BASE_SHA="$MANUAL_BASE_SHA"
+          fi
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          printf 'sha=%s\n' "$BASE_SHA" >> "$GITHUB_OUTPUT"
+          printf 'Fork Quick HEAD: %s, comparison BASE: %s\n' "$GITHUB_SHA" "$BASE_SHA" >> "$GITHUB_STEP_SUMMARY"
       - name: Verify exact PR merge and comparison base
         timeout-minutes: 2
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha }}
+          BASE_SHA: ${{ steps.comparison.outputs.sha }}
           GIT_TERMINAL_PROMPT: '0'
         run: |
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
@@ -58,18 +78,18 @@ jobs:
         run: node scripts/check-ui-references.mjs --hosted
       - name: Enforce existing changed Lua quality ratchet
         env:
-          QUALITY_RATCHET_BASE: ${{ inputs.base_sha }}
+          QUALITY_RATCHET_BASE: ${{ steps.comparison.outputs.sha }}
         run: node scripts/check-quality-ratchet.mjs
       - name: Complete affected JS and Lua preflight
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha }}
+          BASE_SHA: ${{ steps.comparison.outputs.sha }}
           CI_LFS_TOKEN: ${{ github.token }}
           ABYSS_PYTHON: python3
         run: node scripts/test-affected.mjs --preflight --base "$BASE_SHA"
       - name: Record exact tested checkout
         run: node scripts/write-ci-receipt.mjs
         env:
-          PREFLIGHT_BASE_SHA: ${{ inputs.base_sha }}
+          PREFLIGHT_BASE_SHA: ${{ steps.comparison.outputs.sha }}
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: preflight-${{ github.run_id }}-${{ github.run_attempt }}
