@@ -8,7 +8,7 @@ on:
     types: [checks_requested]
     branches: [develop]
   push:
-    branches: [develop, master]
+    branches: [develop, master, 'ci/full/**']
   workflow_dispatch:
     inputs:
       base_sha:
@@ -27,7 +27,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
   impact:
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    # Fork B alone uses explicitly requested full-preflight pushes. Others skip.
+    if: ${{ (github.event_name != 'push' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' || (github.repository == 'v5g95m7t8m-max/Slay-the-Heavens-Fork-B' && startsWith(github.ref, 'refs/heads/ci/full/'))) && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -73,10 +74,19 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: node scripts/check-pr-history.mjs
       - run: npm ci --ignore-scripts --prefer-offline --no-audit --no-fund --fetch-retries=0 --fetch-timeout=30000
+      - name: Pin upstream comparison for explicit Fork B Full
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/ci/full/')
+        id: forkbase
+        run: |
+          set -euo pipefail
+          git -c credential.helper= -c http.lowSpeedLimit=1024 -c http.lowSpeedTime=30 fetch --depth=1 --filter=blob:none --no-tags https://github.com/FurinyaWorks/Slay-the-Heavens.git refs/heads/develop
+          BASE_SHA="$(git rev-parse FETCH_HEAD)"
+          printf 'base_sha=%s\n' "$BASE_SHA" >> "$GITHUB_OUTPUT"
+          printf 'Fork Full diagnostic HEAD: %s, comparison BASE: %s\n' "$GITHUB_SHA" "$BASE_SHA" >> "$GITHUB_STEP_SUMMARY"
       - name: Resolve exact comparison base
-        if: github.event_name == 'pull_request' || github.event_name == 'merge_group' || inputs.base_sha != ''
+        if: github.event_name == 'pull_request' || github.event_name == 'merge_group' || inputs.base_sha != '' || steps.forkbase.outputs.base_sha != ''
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || inputs.base_sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || inputs.base_sha || steps.forkbase.outputs.base_sha }}
         run: |
           [[ "$BASE_SHA" =~ ^[a-f0-9]{40}$ ]]
           if ! git cat-file -e "${BASE_SHA}^{commit}"; then
