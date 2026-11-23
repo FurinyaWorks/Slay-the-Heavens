@@ -314,11 +314,16 @@ const actionButtonFiles=Object.freeze({
  'tests/helpers/action-buttons-source.mjs':'fdb6c73f52cf92fededa3d48fded11f05e21356ec66864a43c54bdf51781d4cd',
  'tests/fixtures/action-buttons-source.json.gz':'86634a756c4085906261d4d318118bb1f7692a642479651526c1ace0fefe4487',
 });
+const silentToolsDrawFiles=Object.freeze({
+ ...actionButtonFiles,
+ [runtime]:'11398f78994cb66a92ee2949c93536f72c2960751254a1bbad4c93b3daf06809',
+ 'tests/helpers/silent-tools-draw-source.mjs':'fccfe657249e5dee3a423bf8f5d00d8d62328ac47c7a00dad851daef8e29813c',
+});
 const inside=(root,path)=>{const r=relative(root,path);return r!==''&&!isAbsolute(r)&&r!=='..'&&!r.startsWith('../')&&!r.startsWith('..\\');};
 export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()}={}){
  const destination=realpathSync.native(directory);
  assert.notEqual(destination,realpathSync.native(sourceRoot),'isolated helper copy destination');
- for(const [path,sha]of Object.entries(actionButtonFiles)){
+ for(const [path,sha]of Object.entries(silentToolsDrawFiles)){
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceRoot,path),content=integrationClosureBytes(path,readFileSync(source));assert.equal(hash(content),sha,'fresh helper copy identity: '+path);
   const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});

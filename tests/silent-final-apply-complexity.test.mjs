@@ -7,6 +7,8 @@ import {spawnSync} from 'node:child_process';
 import {requireLuaTool} from '../scripts/setup-lua-static.mjs';
 import {parseDiagnostics,reviewResponsibilityComplexity} from '../scripts/check-lua-static.mjs';
 
+import {beforeSilentToolsDrawSource} from './helpers/silent-tools-draw-source.mjs';
+
 const file='src/lua/abyss_silent_final_cards.lua';
 const names=['M.apply', ...['gainSilentFinalPower','potionShivs','trigger','choke','setup',
   'bulletTime','copyHand','distraction','doppelganger','phantasmalGain','remove','tools',
@@ -61,8 +63,8 @@ test('real pinned measurements reject old Silent apply and each helper or anonym
   }finally{rmSync(dir,{recursive:true,force:true});}
 });
 
-test('only the apply span changes; untouched choose CC18 remains an explicit residual',()=>{
-  const source=readFileSync(file,'utf8').replaceAll('\r\n','\n');
+test('only the apply span changed in the historical refactor; choose CC18 remains an explicit residual',()=>{
+  const source=beforeSilentToolsDrawSource(file,readFileSync(file,'utf8')).replaceAll('\r\n','\n');
   const before=readFileSync('tests/fixtures/silent-final-apply-before.lua','utf8').replaceAll('\r\n','\n');
   assert.equal(source.slice(0,source.indexOf('-- Action handlers')),before.slice(0,before.indexOf('function M.apply')));
   assert.equal(source.slice(source.indexOf('\nreturn M')),before.slice(before.indexOf('\nreturn M')));

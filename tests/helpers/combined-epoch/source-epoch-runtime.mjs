@@ -17,6 +17,7 @@ import {projectV2UiHudSource,authorizeV2UiHudSource} from '../v2-ui-hud-source.m
 import {projectFatalBgmSource,authorizeFatalBgmSource} from '../fatal-bgm-source-continuation.mjs';
 import {projectSelectorSource,authorizeSelectorSource} from '../character-selector-source.mjs';
 import {projectPotionTextSource,authorizePotionTextSource} from '../potion-text-source.mjs';
+import {beforeSilentToolsDrawSource,isSilentToolsDrawSuccessor} from '../silent-tools-draw-source.mjs';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {resolve} from 'node:path';
@@ -125,7 +126,8 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  function requireTarget(target){assert(Object.hasOwn(proof.targets,target),'unknown source target');return proof.targets[target];}
  function rawReader(reader){return readers.get(reader)?.raw??reader;}
  function preCombinedSource(path,source,{target,readSource=readLive}={}){
-  const rawInput=source,backflow=beforeDevelopBackflow(path,source,{allowConfigLayout}),rebased=beforeRebasedCi(path,backflow);
+  const rawInput=source,toolsPrior=beforeSilentToolsDrawSource(path,source);
+  const backflow=beforeDevelopBackflow(path,toolsPrior,{allowConfigLayout}),rebased=beforeRebasedCi(path,backflow);
   const reconciled=beforeSlimeSplitSource(path,rebased),mapPrior=beforeCardFeedbackOwner(path,beforeSts1MapSource(path,reconciled)),guidePrior=beforeReleaseGuideSource(path,mapPrior);
   const inputSource=beforePc13RewardCover(path,beforeM05ShopSource(path,beforeTinyHouseIntegratedSource(path,guidePrior)));
   source=inputSource;
@@ -145,11 +147,13 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
   const historicalOwners=!liveReaders.has(readRaw)&&backflow===rawInput
    &&(sourceHash(rawInput)===current.sha256||(path==='config/architecture.json'&&sameConfigLayout(rawInput)))?proof.current:undefined;
   const backflowReader=bindDevelopBackflow(readRaw,historicalOwners);
-  backflowReader.authenticate(path,rawInput,{allowConfigLayout});
+  if(toolsPrior!==rawInput)assert(isSilentToolsDrawSuccessor(path,readRaw(path)),
+   'combined linked owner identity: '+path+' changed during owner validation');
+  backflowReader.authenticate(path,toolsPrior,{allowConfigLayout});
   readSource=owner=>{
    const raw=backflowReader.readOwner(owner);
    if(sessionSuccessor)assertCurrentSessionRelicOwner(owner,raw);
-   return backflowReader.authenticate(owner,raw);
+   return backflowReader.authenticate(owner,beforeSilentToolsDrawSource(owner,raw));
   };
   const readRebased=owner=>beforeRebasedCi(owner,readSource(owner));
   beforeSlimeSplitReceipt(path,rebased,readRebased);

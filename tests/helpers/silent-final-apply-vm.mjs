@@ -10,6 +10,7 @@ const path='src/lua/abyss_silent_final_cards.lua';
 // Only identical error-bearing statements, exact module locations and known bodies
 // can be relocated. Table errors and all unknown messages remain unchanged.
 const sites=[
+ ["assert(s.potionRng,'missing persistent potion RNG')",'missing persistent potion RNG'],
  ["local c=actions().fresh(combat,s,e.template.cardId,e.template)","attempt to index a nil value (field 'template')"],
  ["for _=1,e.value do","'for' limit must be a number"],
  ...['nil','string'].map(type=>["local n=(e.energyOnUse or (s.pendingPlay and s.pendingPlay.energyOnUse)or 0)+e.value",`attempt to perform arithmetic on a ${type} value (field 'value')`]),
@@ -46,7 +47,13 @@ local C=require('abyss_combat');local depth=0
 for _,name in ipairs({'play','chooseCard','chooseDiscard','endTurn'})do
  local fn=assert(C[name]);C[name]=function(s,...)
   local outer=depth==0;depth=depth+1;local returned=table.pack(pcall(fn,s,...));depth=depth-1
-  if outer then SILENT_GRAPH_WRITE({state=s,returned=returned},name)end
+  if outer then
+   local observed=returned
+   if not returned[1] and type(returned[2])=='string'then
+    observed=table.pack(table.unpack(returned,1,returned.n));observed[2]=SILENT_ERROR(returned[2])
+   end
+   SILENT_GRAPH_WRITE({state=s,returned=observed},name)
+  end
   if not returned[1]then error(returned[2],0)end
   return table.unpack(returned,2,returned.n)
  end

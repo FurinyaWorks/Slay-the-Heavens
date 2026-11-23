@@ -174,7 +174,11 @@ function M.startTurn(s,post)
   end
  else
   local n=p.statuses.tools_of_the_trade or 0
-  if n>0 then actions().enqueue(s,{op='silentFinal',kind='tools',value=n})end
+  if n>0 then
+   -- Draw hooks can insert actions before the discard selection is built.
+   actions().enqueue(s,{op='draw',value=n})
+   actions().enqueue(s,{op='requestDiscard',value=n})
+  end
  end
 end
 function M.endTurn(s,actor)
