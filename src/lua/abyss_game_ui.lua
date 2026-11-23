@@ -67,12 +67,12 @@ function M.new(root, data, presentation, clickEvent, platform)
             deckPanel=Theme.layout.deckView.viewport,deckBrowser=Theme.layout.deckView.pileViewport,deckPaged=browserFrame(),
             nodePanel=Theme.layout.nativeNode.backdrop,battlePanel=Theme.layout.rewardPick.stage,
             potionPanel={0,0,Theme.layout.modal.size[1],Theme.layout.modal.size[2]},
-            choicePanel=Theme.layout.combatChoice.viewport or Theme.layout.combatChoice.panel},revealMotion(platform),
-            function()
+            choicePanel=Theme.layout.combatChoice.viewport or Theme.layout.combatChoice.panel,
+            onMapReturn=function()
                 if self.mapUI.visible and not self.exitOpen and not self.settlementRequested then
                     self.mapUI:startReturnReveal()
                 end
-            end)
+            end},revealMotion(platform))
         function self.pointerBlocked()
             local gate=self.pageReveal
             return gate:covered() and (not self.exitOpen or self.routeOpen)

@@ -180,9 +180,10 @@ end
 local function needsRecovery(gate)
     return gate.timedOut or gate.projectionError or gate.entry and gate.state=='failed'
 end
-function M.new(cover,ready,onIntent,frames,motion,onMapReturn)
+function M.new(cover,ready,onIntent,frames,motion)
     assert(cover and type(ready)=='function','page reveal requires cover and readiness source')
     local gate={epoch=0,state='preparing',tick=0,alpha=1,wait=0,stall=0}
+    local onMapReturn=frames and frames.onMapReturn
     local function trace(entry,phase,detail)
         if entry and motion and motion.entryTrace then pcall(motion.entryTrace,phase,entry.id,detail)end
     end
