@@ -341,7 +341,12 @@ function M.renderCurrentPage(self,renderBattlePage,renderMapPage,platform)
             local epoch=entry and self.pageReveal.epoch
             PageReveal.registerSource(platform,PageReveal.basePage(self.mode))
             if self.mode == "battle" then
-                renderBattlePage(run)
+                -- Activation already painted and suspended this established combat.
+                -- A managed deck can postpone hidden text updates until uncover;
+                -- commands that change phase, run or combat still need the final paint.
+                local coveredCombat=self.pageReveal and deckOpen and self.deckUI.visible and run==self.run
+                    and run.phase=='combat' and self.presentedBattle==run.combat
+                if not coveredCombat then renderBattlePage(run) end
             elseif self.mode == "map" then
                 renderMapPage(run,deckOpen,potionOpen,blocked,covering)
             elseif self.mode == "node" then self.nodeUI:render() end

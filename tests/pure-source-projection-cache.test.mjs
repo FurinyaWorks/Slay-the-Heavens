@@ -173,13 +173,16 @@ test('current view successor requires fresh raw owner bytes before historical pr
  const path='src/lua/abyss_game_ui_view.lua',source=readFileSync(path,'utf8').replaceAll('\r\n','\n');
  const prior=beforeCurrentReplayFixes(path,source);
  assert.notEqual(prior,source);assert.equal(hash(prior),'84d9fb22584a5978d5c04170f3b3b145c26ff71865acf53b36b2496f01489ed1');
+ const oldEd=source.replace(/                -- Activation already painted[\s\S]+?if not coveredCombat then renderBattlePage\(run\) end/,'                renderBattlePage(run)');
+ assert.equal(hash(oldEd),'7ceaafb63819eba11bfe133d838fcb3970f3525ae89e8af572813a8d536cf72a','complete preceding eager-only view');
+ assert.equal(beforeCurrentReplayFixes(path,oldEd),oldEd,'a prior implementation cannot impersonate current raw source');
  assert.equal(beforeUiEntrance(path,source),beforeUiEntrance(path,prior),'pure historical projections keep the exact preceding layer');
  const sameLength=source.slice(0,-1)+'!';assert.equal(sameLength.length,source.length);
  let bad,reads=[];
  const read=p=>{reads.push(p);return p===path&&bad!==undefined?bad:readFileSync(p,'utf8');};
  authenticateUiEntrance(read);const first=[...reads];assert.equal(first.length,20);
  reads=[];authenticateUiEntrance(read);assert.deepEqual(reads,first);
- for(bad of [prior,sameLength,null,Buffer.from(source)]){
+ for(bad of [prior,oldEd,sameLength,null,Buffer.from(source)]){
   reads=[];assert.throws(()=>authenticateUiEntrance(read),error=>{assert.match(error.message,/linked owner identity/);assert(error.message.includes(path));return true;});
   assert(reads.includes(path));bad=undefined;reads=[];authenticateUiEntrance(read);assert.deepEqual(reads,first,'every recovery authenticates all current owners');
  }

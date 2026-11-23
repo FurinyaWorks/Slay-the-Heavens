@@ -8,7 +8,7 @@ import { compileFunction } from 'node:vm';
 import { originalWorkflow } from './helpers/ci-runtime-workflow.mjs';
 import { beforePlatformWorkflow } from './helpers/platform-load-wiring.mjs';
 import { beforeDraftQualityWorkflow, draftQualityWorkflowEdits } from './helpers/draft-quality-workflow.mjs';
-import { beforeAutoMergeWorkflow, beforeExecutionTimeoutWorkflow, beforePosixDeadlineWorkflow, beforeWindowsDeadlineWorkflow, beforeHostedDeadlineWorkflow, beforeHostedWindowsDeadlineWorkflow } from './helpers/auto-merge-workflow.mjs';
+import { beforeAutoMergeWorkflow, beforeExecutionTimeoutWorkflow, beforePosixDeadlineWorkflow, beforeWindowsDeadlineWorkflow, beforeHostedDeadlineWorkflow, beforeHostedWindowsDeadlineWorkflow, beforeHostedWindows180Workflow } from './helpers/auto-merge-workflow.mjs';
 import {closeoutRead,closeoutInventory} from './helpers/closeout-ci-source.mjs';
 import {beforeHostedCheckoutWorkflow} from './helpers/hosted-checkout-workflow.mjs';
 
@@ -364,7 +364,7 @@ test('current hosted 105/90-minute deadlines preserve local 75 and exact complet
 
 
 test('current hosted Windows 150-minute guard retains exact ee105, local75 and POSIX90',()=>{
- const physical=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n'),deadline="timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 150 }}";
+ const physical=beforeHostedWindows180Workflow(readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n')),deadline="timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 150 }}";
  assert.ok(job('rules',physical).includes(deadline));
  assert.match(job('engineering-posix-shards',physical),/^    timeout-minutes: 90$/m);
  const previous=physical.replace(deadline,"timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 105 }}");
@@ -387,4 +387,31 @@ test('current hosted Windows 150-minute guard retains exact ee105, local75 and P
   assert.equal(beforeExecutionTimeoutWorkflow(changed),changed);
  }
  for(const changed of [physical+'# foreign\n',physical.replaceAll('\n','\r\r\n')])assert.equal(beforeHostedWindowsDeadlineWorkflow(changed),changed);
+});
+
+
+test('current hosted Windows 180-minute guard restores exact ed150 and retains local75 and POSIX90',()=>{
+ const physical=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n'),deadline="timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 180 }}";
+ assert.ok(job('rules',physical).includes(deadline));
+ assert.match(job('engineering-posix-shards',physical),/^    timeout-minutes: 90$/m);
+ const previous=physical.replace(deadline,"timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 150 }}");
+ assert.equal(digest(previous),'30df7954593676c8b42430a8142ada471a40da421092951d3d089d2a584cbe96');
+ for(const cap of [12,6,null]){
+  const variant=s=>cap===12?s:s.replace('      max-parallel: 12\n',cap===null?'':`      max-parallel: ${cap}\n`);
+  for(const eol of ['\n','\r\n']){
+   const current=variant(physical).replaceAll('\n',eol),old=variant(previous).replaceAll('\n',eol);
+   assert.equal(beforeHostedWindows180Workflow(current),old);
+   assert.equal(beforeHostedWindows180Workflow(old),old);
+   assert.equal(beforeHostedWindowsDeadlineWorkflow(current),beforeHostedWindowsDeadlineWorkflow(old));
+   assert.equal(beforeExecutionTimeoutWorkflow(current),beforeExecutionTimeoutWorkflow(old));
+  }
+ }
+ for(const [from,to]of [[deadline,deadline.replace('|| 180','|| 181')],[deadline,deadline.replace('&& 75','&& 74')],
+  ['timeout-minutes: 90','timeout-minutes: 91'],[deadline,deadline+'\n    '+deadline],
+  ['contents: read','contents: write'],['max-parallel: 12','max-parallel: 13'],['npm run check:engineering','npm run check:missing']]){
+  const changed=physical.replace(from,to);assert.notEqual(changed,physical);
+  assert.equal(beforeHostedWindows180Workflow(changed),changed);
+  assert.equal(beforeExecutionTimeoutWorkflow(changed),changed);
+ }
+ for(const changed of [physical+'# foreign\n',physical.replaceAll('\n','\r\r\n')])assert.equal(beforeHostedWindows180Workflow(changed),changed);
 });

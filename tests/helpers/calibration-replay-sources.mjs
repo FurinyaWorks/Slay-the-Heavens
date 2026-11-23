@@ -94,7 +94,7 @@ export function beforeCurrentHistoricalStsSource(path,source){
 }
 function beforeCurrentReplayCopier(path,source){
  if(path===copierPath&&matches(source,{
-  sha256:'23f80b20bcb3657bbe8dac68c74d8fdfc1762e2b86cdf5409ceaab55043bb61f',gitBlob:'1282cd330573497a6a57e159165793425aaeaa7e',
+  sha256:'69eb9c5241f43631e1e341747b0565a92b0e348ba7a9c3e9ea4479a524e98d91',gitBlob:'e39d70be38e7a42b6078c656d4624ed71d448ee5',
  })){
   const prior=lf(source).replace(/const entranceFiles=Object.freeze\(\{\n[\s\S]+?\n\}\);\n/,'')
    .replace('Object.entries(entranceFiles)','Object.entries(currentReplayFiles)');
@@ -116,7 +116,7 @@ function beforeCurrentReplayCopier(path,source){
 }
 
 function matchesCurrentReceipt(path,source,expected){
- source=beforeUiEntranceWitness(path,source);
+ source=beforeCurrentReplayFixes(path,beforeUiEntranceWitness(path,source));
  if(matches(source,expected))return true;
  const ui=beforeDevelopUiBackflows(path,source);
  const actions=beforeActionButtons(path,ui);

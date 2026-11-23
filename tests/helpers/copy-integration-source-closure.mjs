@@ -335,7 +335,7 @@ const entranceFiles=Object.freeze({
  ...currentReplayFiles,
  'tests/helpers/m7-core-final-source-inverse.mjs':'215cfae4d501c03f01c3ea773772db867058a658863be6e13e0b0507668323a5',
  'tests/helpers/release-ui-restore-source.mjs':'d2f34bef11ae4cb35c5df68556afc37d3de8d4ce7268a988bcef8fc39495b47a',
- 'tests/helpers/current-replay-fix-sources.mjs':'ceb10bbc9105db0a6bb92fc9f78acaacbd2174080c2792424c4ddd33d64e0b6c',
+ 'tests/helpers/current-replay-fix-sources.mjs':'ad994c6b4885d5d2d23e648adcbee12c7bb87ffcc6d408cf274348a5b57f6352',
  [runtime]:'278820e92b95d78ccca26cee32a353e53eaf8e87377fabe8c8dcb64f6995264d',
  [closeout]:'4f559399c631fbd0fd25ea7f1ceb8f3b8c6643e167f0116d9f151e12ee0a0ecb',
  'tests/helpers/character-preparation-source.mjs':'4d209e768d9dfcb5afa466c0224eccfd1fa8f47a22c27e5d7b8b99fd8231f5cb',
