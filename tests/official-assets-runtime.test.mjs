@@ -2028,3 +2028,7 @@ dofile('tests/lua/traveler_power_tooltip.lua')
 test('final release UI routes mobile HUD touches by screen coordinate across run pages',t=>{
  runOfficial(t,"dofile('tests/lua/support/mobile_run_hud_geometry.lua')",'HUD_GEOMETRY',{},true,true);
 });
+
+test('final release mobile event inventory follows the foreground room without blocking potion rewards',t=>{
+ runOfficial(t,"assert(loadfile('tests/lua/support/mobile_run_hud_geometry.lua'))('events')",'MOBILE_EVENT_INVENTORY_PASS',{},true,true);
+});

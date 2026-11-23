@@ -150,6 +150,63 @@ local function popupSlot(host,picture,slot,touch,path,dx,dy)
     return popupRoot
 end
 
+if ...=='events' then
+    local eventHost,eventRoot,eventPicture=create(true)
+    eventHost.run.potions={[1]='speed_potion',[3]='block_potion'}
+    assert(#eventHost.run.relics>0,'missing starter relic')
+    eventHost:refresh()
+    assert(eventRoot:GetChild('potionEntry').visible and eventRoot:GetChild('relicBar').visible)
+    eventHost.run.data.rules.events.encounterId='upgrade_shrine'
+    local eventPath=Routes.to(eventHost.map,function(n)return n.type=='event'end)
+    for i=1,#eventPath-1 do assert(Map.choose(eventHost.map,eventPath[i]))end
+    eventHost:refresh();assert(eventHost.mapUI:choose(eventPath[#eventPath]))
+    assert(eventRoot:GetChild('nodePanel'):GetChild('eventView').visible,'ordinary event not rendered')
+    local function noEventInventory()
+        assert(not eventRoot:GetChild('potionEntry').visible,'event displays shared potion entry')
+        assert(not eventRoot:GetChild('relicBar').visible,'event displays shared relic bar')
+        assert(not eventHost:openPotions(3) and not eventHost:openRelics(1),'event accepts stale inventory command')
+        local potion=eventPicture.at(sharedPath(3))
+        noPotionAt(eventPicture,potion.x,potion.y)
+        local relicHit=eventPicture.at('/relicBar/slot1/hit')
+        for _,row in ipairs(eventPicture.hits(relicHit.x,relicHit.y)) do
+            assert(not row.path:match('^/relicBar/'),'event accepts a relic hit')
+        end
+    end
+    noEventInventory()
+    assert(eventHost.run.nodeFlow.event.id=='upgrade_shrine','fixture did not open Upgrade Shrine')
+    click(eventPicture,'/nodePanel/eventView/option2/hit',70)
+    assert(eventHost.run.phase=='map' and eventHost.mode=='node' and eventHost.nodeUI:holding(),
+        'event result must stay in front after the rule phase becomes map')
+    noEventInventory()
+    click(eventPicture,'/nodePanel/confirm/hit',71)
+    assert(eventHost.mode=='map' and eventRoot:GetChild('potionEntry').visible and eventRoot:GetChild('relicBar').visible)
+    popupSlot(eventHost,eventPicture,3,72,sharedPath(3))
+    assert(eventHost:closePotions() and eventHost.run.potions[3]=='block_potion')
+
+    local lab,labRoot,labPicture=create(true)
+    lab.run.data.rules.events.encounterId='lab'
+    lab.run.potions={'speed_potion','block_potion','fire_potion'}
+    local labPath=Routes.to(lab.map,function(n)return n.type=='event'end)
+    for i=1,#labPath-1 do assert(Map.choose(lab.map,labPath[i]))end
+    lab:refresh();assert(lab.mapUI:choose(labPath[#labPath]))
+    assert(lab.run.nodeFlow.event.id=='lab' and not labRoot:GetChild('potionEntry').visible)
+    local _,hiddenHit=labPicture.at(sharedPath(3))
+    local stale={touchId=89}
+    hiddenHit.listeners.down(stale)
+    click(labPicture,'/nodePanel/eventView/option1/hit',80)
+    assert(lab.run.nodeFlow.event.stage=='potion_rewards' and not labRoot:GetChild('relicBar').visible)
+    hiddenHit.listeners.up(stale);hiddenHit.listeners.click(stale)
+    assert(not lab.potionUI.visible,'a hidden potion slot accepted a queued touch')
+    local labPopup=popupSlot(lab,labPicture,3,81,sharedPath(3))
+    click(labPicture,labPopup..'/discard',82)
+    assert(not lab.run.potions[3] and lab.nodeUI.actions['eventView/option1'].enabled,
+        'discard must free a slot in the potion reward event')
+    click(labPicture,'/nodePanel/eventView/option1/hit',83)
+    assert(lab.run.nodeFlow.event.potionOffers[1].claimed and lab.run.potions[3])
+    print('MOBILE_EVENT_INVENTORY_PASS')
+    return
+end
+
 local host,root,picture,screen=create(true)
 assert(Run.startCombat(host.run,'cultist_solo'));host:refresh();host:update(1)
 local battle,ui=root:GetChild('battlePanel'),host.battleUI
@@ -158,6 +215,15 @@ host.run.potionSlots=5
 host.run.potions={[1]='fire_potion',[2]='energy_potion',[4]='block_potion',[5]='speed_potion'}
 host:refresh()
 local hits=inspectTop(host,picture,screen,'battlePanel',5,battlePath)
+local relicIcon,relicArt=picture.at('/relicBar/slot1/icon')
+local nativeRelic,pool=picture.at('/relicBar/slot1/iconArt')
+local chrome=picture.at('/battlePanel/topBar/steel')
+assert(relicArt.visible or pool.visible,'relic art is not visible')
+near(relicIcon.x,nativeRelic.x);near(relicIcon.y,nativeRelic.y)
+assert(relicIcon.y+relicIcon.h/2<=chrome.y-chrome.h/2,'relic icon crosses mobile top bar')
+local relicHit=picture.at('/relicBar/slot1/hit')
+assert(relicHit.y+relicHit.h/2<=chrome.y-chrome.h/2,'relic hit crosses mobile top bar')
+near(relicIcon.x,relicHit.x);near(relicIcon.y,relicHit.y)
 local _,empty=picture.at(battlePath(3));assert(empty.visible and not empty.interactable)
 local opened=popupSlot(host,picture,1,1,battlePath(1))
 assert(host.run.potions[1]=='fire_potion')
@@ -237,7 +303,7 @@ assert(ui.rewardScreen=='cards')
 
 -- Independently enter each room through the real MapUI/Nodes path and
 -- keep three slots in the same physical order even with an empty middle slot.
-for _,kind in ipairs({'shop','camp','event','treasure'})do
+for _,kind in ipairs({'shop','camp','treasure'})do
     local u,_,g,s=create(true)
     u.run.potionSlots=3;u.run.potions={[1]='speed_potion',[3]='block_potion'}
     local path=Routes.to(u.map,function(n)return n.type==kind and n.roomKind~='boss_treasure'end)

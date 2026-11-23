@@ -142,12 +142,16 @@ function M.new(root, data, presentation, clickEvent, platform)
             end)
     end
     local inCombat = Overlays.inCombat(self)
+    self.inventoryAccess = Overlays.inventoryAccess(self,platform)
     local canManagePotions = Overlays.canManagePotions(inputCovered,self)
     local resourceHint = Overlays.resourceHint(self,canManagePotions,inCombat)
+    local function canManageInventoryPotions(run)
+        return self.inventoryAccess('potion',run) and canManagePotions(run)
+    end
     self.relicUI=require('abyss_relic_view_ui').new(child('relicPanel'),child('relicBar'),clickEvent,platform,
         function(run,id)return self.nodeUI:describeRelic(run,id)end,function()return self:closeDeck()end,
         function(i)return self:openRelics(i)end,function()return self.mode end)
-    self.potionUI=PotionDiscardUI.new(child("potionPanel"),clickEvent,platform,canManagePotions,changed,
+    self.potionUI=PotionDiscardUI.new(child("potionPanel"),clickEvent,platform,canManageInventoryPotions,changed,
         function()return self:closePotions()end)
     self.openPotions = Overlays.openPotions(self)
     self.closePotions = Overlays.closePotions(self)
@@ -213,7 +217,7 @@ function M.new(root, data, presentation, clickEvent, platform)
     local syncOpening = View.syncOpening(self,openingCovered)
     local openingForeground = View.openingForeground(self,child,prologuePanel,runMenu,exitPanel)
     local syncOfficialBattleScene = View.syncOfficialBattleScene(root,self)
-    self.refresh = View.refresh(self,finishRunFlow,syncOpening,selectMode,syncOfficialBattleScene,syncMenuContext,platform,syncCardChoice,closeStaleDeck,openCardChoice,canManagePotions,overlaysBlocked,syncRewardReturn,refreshUtilities,refreshPageVisibility,renderCurrentPage,bgm,present,refreshForeground,syncPortraits,openingForeground)
+    self.refresh = View.refresh(self,finishRunFlow,syncOpening,selectMode,syncOfficialBattleScene,syncMenuContext,platform,syncCardChoice,closeStaleDeck,openCardChoice,canManageInventoryPotions,overlaysBlocked,syncRewardReturn,refreshUtilities,refreshPageVisibility,renderCurrentPage,bgm,present,refreshForeground,syncPortraits,openingForeground)
     local selectionChanged = RunFlow.selectionChanged(self,owner,View.refreshSelection(self,platform,syncPortraits))
     self.closeCharacters = RunFlow.closeCharacters(self,selectionChanged)
     self.selectCharacter = RunFlow.selectCharacter(self,selectionChanged)

@@ -23,8 +23,8 @@ local function anchor(slot,mobile)
     local hud=Theme.presentationProfile=='official-assets-first' and Theme.officialAssets.battleHud
     if hud then
         hud=mobile or hud
-        local relicBar=mobile and mobile.relicBar or Theme.officialAssets.battleRelicBar
-        local bottom=relicBar.origin[2]+(relicBar.hitOffsetY or 0)-(hud.hit or relicBar.hit)/2
+        local relicBar=Theme.officialAssets.battleRelicBar
+        local bottom=mobile and mobile.potionPopupBottom or relicBar.origin[2]-relicBar.hit/2
         return hud.potionX+(slot-1)*hud.potionStep,bottom-Theme.space.s
     end
     return L.battlePotions.origin[1]+(slot-1)*L.battlePotions.step[1],P.top

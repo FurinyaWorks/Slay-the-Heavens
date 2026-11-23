@@ -207,13 +207,14 @@
       "potionX": -242,
       "potionStep": 92,
       "potionBottle": [42, 48],
+      "potionPopupBottom": 230,
       "hpShift": -29,
       "goldShift": 8,
       "routeX": 356,
       "deckX": 452,
       "menuX": 548,
       "status": [241, 272, 130, 28],
-      "relicBar": {"origin":[-554,252],"step":92,"icon":42.6666666667,"hitOffsetY":20,"count":1}
+      "relicBar": {"origin":[-458,212],"step":92,"icon":42.6666666667,"hitOffsetY":0,"count":1}
     },
     "battleHud": {
       "y": 338.5,

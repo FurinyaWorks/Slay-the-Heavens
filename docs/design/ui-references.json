@@ -1,6 +1,61 @@
 {
   "references": [
     {
+      "codePath": "src/lua/abyss_mobile_run_hud.lua",
+      "targetVersion": "v2.0.0",
+      "state": "sharedTopbar",
+      "revision": "pre-926-mobile-hitbox",
+      "status": "SUPERSEDED",
+      "backlogTask": "TASK-38.4",
+      "reference": {
+        "path": "docs/evidence/mobile-run-hud/reward-picker-before.png",
+        "sha256": "897011662160e354640321595d846df1b721d4e55542aa6bd1084ffb9b05b248"
+      },
+      "supersedes": [],
+      "note": "旧 2d979ef9 的小热区负例，仅供复盘。"
+    },
+    {
+      "codePath": "src/lua/abyss_mobile_run_hud.lua",
+      "targetVersion": "v2.0.0",
+      "state": "sharedTopbar",
+      "revision": "release-mobile-touch",
+      "status": "SUPERSEDED",
+      "backlogTask": "TASK-38.4",
+      "reference": {
+        "path": "docs/evidence/mobile-run-hud/reward-picker-after.png",
+        "sha256": "454a3ea145adfb8b5680d6781d40d1d099d783232be14f27a0f44ef6402a4c40"
+      },
+      "supersedes": [],
+      "note": "#926 的历史离线热区投影。不能作为事件显隐或战斗遗物验收。"
+    },
+    {
+      "codePath": "src/lua/abyss_mobile_run_hud.lua",
+      "targetVersion": "v2.0.0",
+      "state": "sharedTopbar",
+      "revision": "mobile-run-inventory-v2",
+      "status": "CURRENT_IMPLEMENTATION",
+      "backlogTask": "TASK-38.4",
+      "reference": {
+        "path": "docs/design/reference-assets/v2.0.0/mobile-run-inventory-v2/REFERENCE.md",
+        "sha256": "caa2d678a57b8ac2d70338ecd18ae7b143ce8d19df399a989a08da000e94e99f"
+      },
+      "supersedes": [
+        "release-mobile-touch",
+        "pre-926-mobile-hitbox"
+      ],
+      "note": "区分战斗、普通事件、药水领取；离线 Host 已核对，正式候选与真机待验。",
+      "codePaths": [
+        "src/lua/abyss_game_ui.lua",
+        "src/lua/abyss_game_ui_view.lua",
+        "src/lua/abyss_game_ui_overlays.lua",
+        "src/lua/abyss_game_ui_input.lua",
+        "src/lua/abyss_battle_potion_popup.lua"
+      ],
+      "themeKeys": [
+        "officialAssets.mobileRunHud"
+      ]
+    },
+    {
       "codePath": "scripts/v25-menu-layout.mjs",
       "targetVersion": "v2.0.0",
       "state": "menuPanel",

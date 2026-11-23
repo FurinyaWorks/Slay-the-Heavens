@@ -60,6 +60,16 @@ function M.inCombat(self)
         end
 end
 
+function M.inventoryAccess(self,platform)
+    return function(kind,run)
+        local flow=run and run.nodeFlow
+        if not platform.mobileRunHud or self.mode~='node' or not flow or flow.type~='event' then return true end
+        -- Ordinary event pages own their controls until leaving the room. The
+        -- Lab/Blue Woman bottle rewards still need a way to free a full slot.
+        return kind=='potion' and not flow.complete and flow.event and flow.event.stage=='potion_rewards'
+    end
+end
+
 function M.canManagePotions(openingCovered,self)
     return function(run)
             return not openingCovered() and not self.disabled and run~=nil and self.run==run and not self.exitOpen and not self.deckUI.visible
@@ -180,7 +190,7 @@ function M.openStarterDeck(openingCovered,self,platform,owner)
 end
 function M.openRelics(self,openingCovered,platform)
     return function(_,index)
-            if self.deckUI.visible or not canOpenDeck(openingCovered,self) then return false end
+            if not self.inventoryAccess('relic',self.run) or self.deckUI.visible or not canOpenDeck(openingCovered,self) then return false end
             PageReveal.registerSource(platform,'deckPanel')
             if not self.deckUI:inspectRelics(self.run,self.relicUI,index) then return false end
             self.battleUI.selected=nil

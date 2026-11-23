@@ -255,7 +255,8 @@ function M.installMenu(self,child,clickEvent,resourceHint,bindCommand,start,sett
         for i=1,Theme.layout.battlePotions.count do
             local box=entry:GetChild('slot'..i)
             bindCommand(box,'resource_potion',function()return self:openPotions(i)end,
-                function()return box.visible and self.run.phase~='combat' and self.run.potions[i]~=nil end,i)
+                function()return box.visible and self.inventoryAccess('potion',self.run)
+                    and self.run.phase~='combat' and self.run.potions[i]~=nil end,i)
         end
     end
     bindCommand(settlement, "settle", function() return self:settle() end)

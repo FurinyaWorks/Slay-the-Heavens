@@ -94,6 +94,7 @@ function M.closeStaleDeck(self)
                 return
             end
             if self.deckUI.visible and (inMenu or run and run.phase=='ending_proceed' or self.battleUI.busy or self.deckUI.run ~= run
+            or self.relicUI.visible and not self.inventoryAccess('relic',run)
             or self.deckUI.pileKind and (run.phase~='combat' or run.combat~=self.deckUI.battle))then self.deckUI:close()end
         end
 end
@@ -201,8 +202,8 @@ function M.refreshUtilities(child,self,inCombat,refreshPotionEntry,refreshDeckEn
             child("deckEntry"):SetVisible(utilitiesVisible)
             -- STS has no separate relic button: the discs under the HP row are the one control.
             child("relicEntry"):SetVisible(false)
-            self.relicUI:refreshBar(run,inventoryVisible,potionOpen,browser)
-            child("potionEntry"):SetVisible(not inCombat() and inventoryVisible)
+            self.relicUI:refreshBar(run,inventoryVisible and self.inventoryAccess('relic',run),potionOpen,browser)
+            child("potionEntry"):SetVisible(not inCombat() and inventoryVisible and self.inventoryAccess('potion',run))
             child("nodePanel"):GetChild("potions"):SetVisible(false)
             if browser then return end
             for _,state in ipairs({'normal','hover','pressed','disabled'})do
