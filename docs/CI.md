@@ -12,16 +12,14 @@
 
 只同步本次需要的短分支。首次使用用 `gh api /repositories/<固定ID>` 解析当前名称，再用 `gh api repos/<当前仓库名>` 核对 ID、权限及默认分支，核对 `gh workflow list -R <repo>`；仓库改名时同步 remote，不改历史证据。Fork 有工作流文件却列表为空时，管理员可用官方 `PUT /repos/<当前仓库名>/actions/permissions` 设置 `enabled=true` 并保留已读回的 allowed_actions 策略；读回工作流已登记后才 dispatch。无写权限时记录阻塞，使用有权限的另一个 Fork 互援，不请求付费或削弱主仓库保护。
 
-复用现有入口，不增加调度器、Runner 或跨仓库凭据。以下占位值须替换成已核对的仓库、任务分支及完整 SHA：
+复用现有入口，不增加调度器、Runner 或跨仓库凭据。**新任务分支从包含此配置的最新主仓 develop 创建**，推送代码自动检查，不需要 Agent 具备 Actions 写权限：
 
 ```sh
-git push fork-a <task-branch>:refs/heads/<task-branch>
-gh workflow run quick-feedback.yml -R FurinyaDev/Slay-the-Heavens-Fork-A --ref <task-branch> -f base_sha=<exact-base-sha>
-git push fork-b <task-branch>:refs/heads/<task-branch>
-gh workflow run quality.yml -R v5g95m7t8m-max/Slay-the-Heavens-Fork-B --ref <task-branch> -f runner_pool=hosted -f base_sha=<exact-base-sha>
+git push fork-a <task-branch>:refs/heads/<task-branch>       # A：自动 Quick
+git push fork-b <task-branch>:refs/heads/ci/full/<task-name>  # B：仅风险要求 Full 时使用
 ```
 
-Fork Quick 手动预检执行完整受影响 JS/Lua 和便宜治理检查，未知或空覆盖明确要求一次必要 Full；本地 fast/advisory 仍保留有界选测和延期报告。两者都不能称为双平台正式准入。Quality 的手动 dispatch 按现有路由执行 Full，仅在相关改动确实需要时分配一次；不以“互援”为由在两 Fork 同时重复跑同一验证。先查看同仓库、准确 HEAD/BASE 与模式的已有运行；保存 run URL、attempt、实际 checkout SHA、选测/延期和失败，不轮询守候。分支移动后旧成功只属于旧 SHA；跨仓库同 SHA 的诊断也不能代替正式目标组合。
+Fork A 的 Quick Push 对受影响 JS/Lua、廉价治理及现有质量棘轮进行检查；纯 Markdown 推送不运行。Fork B 的特殊 `ci/full/**` 分支 Push 自动运行完整 hosted Quality，常规任务不推 B，也不默认重复 Full。两者在运行时固定主仓 develop 比较 BASE 与 HEAD；主仓基线若已推进，Fork 结果只作为诊断，不可冒充开发起点或正式主仓准入。已有有效运行按 HEAD/BASE、模式、覆盖和 attempt 复用，新的同分支 Push 自动取消过期运行，不轮询守候。对仍不包含新工作流的旧候选，允许正常主仓 PR 自动 CI，不强改提交历史；手动 dispatch 仅作为回退。
 
 切片通过适用预检后，把所测 HEAD 同步到 origin 短分支。同步前复核实时目标基线和 Fork ref，正式 PR 正文记录 Fork 来源及验证结果。后续使用现有同仓 PR、独立 Review 和原生准入。主仓 Required Checks、队列组合及合后验证各自按实际提交执行。重建只接回 develop 仍缺且属于本版的切片，在实际合并树验证。候选的 Full 与官方容量、导入、ready、PC/手机逐项验收。合并后按既有生命周期核对和清理各仓临时 ref。
 
