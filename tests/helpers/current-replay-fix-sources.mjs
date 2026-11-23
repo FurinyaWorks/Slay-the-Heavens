@@ -1106,7 +1106,7 @@ const bindings = new Map([
  {
   "path": "tests/native-audio-release-provenance.test.mjs",
   "beforeSha256": "1e661c1eca61f3eaa762bb139ab9d18b1c507a6e9b28c5555638385ffe90f6e9",
-  "afterSha256": "f73f539e71ee68ae392239b7bfde3f31b71b7d57d48aa37509e1c34f59e35328",
+  "afterSha256": "76ad3a693920e182918eb37bc7f86066b940807e3843f447eeb1ae7d1fb47fac",
   "hunks": [
    {
     "at": 5,
@@ -1116,7 +1116,7 @@ const bindings = new Map([
    {
     "at": 17,
     "before": "function fixture(t, mutate = () => {}, {refined=false}={}) {\n  const root = mkdtempSync(join(tmpdir(), 'abyss-audio-release-'));\n  t.after(() => rmSync(root, { recursive: true, force: true }));",
-    "after": "function fixture(t, mutate = () => {}, {refined=false}={}) {\n  const root = realpathSync(mkdtempSync(join(tmpdir(), 'abyss-audio-release-')));\n  t.after(() => rmSync(root, { recursive: true, force: true }));"
+    "after": "function fixture(t, mutate = () => {}, {refined=false}={}) {\n  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'abyss-audio-release-')));\n  t.after(() => rmSync(root, { recursive: true, force: true }));"
    }
   ]
  },
@@ -1382,6 +1382,57 @@ const bindings = new Map([
     "at": 163,
     "before": "console.log('ISOLATED_REWARD_QUERY_SOURCE_PASS');`;\n  const result=spawnSync(process.execPath,['--input-type=module','-e',script],{cwd:root,encoding:'utf8',timeout:30000,maxBuffer:1024*1024});\n  assert.ifError(result.error);assert.equal(result.status,0,result.stdout+result.stderr);assert.match(result.stdout,/ISOLATED_REWARD_QUERY_SOURCE_PASS/);",
     "after": "console.log('ISOLATED_REWARD_QUERY_SOURCE_PASS');`;\n  const result=spawnSync(process.execPath,['--input-type=module','-e',script],{cwd:root,encoding:'utf8',timeout:180000,maxBuffer:1024*1024});\n  assert.ifError(result.error);assert.equal(result.status,0,result.stdout+result.stderr);assert.match(result.stdout,/ISOLATED_REWARD_QUERY_SOURCE_PASS/);"
+   }
+  ]
+ },
+ {
+  "path": "tests/actor-presence-source.test.mjs",
+  "beforeSha256": "1afcb5b218e1931363957d3fc3fa6ef3f133d5e5364c1eb43df9980b81250588",
+  "afterSha256": "ce5a1602d591efc28d501725be660bf2a63be60b447b9c687d7261efc33702db",
+  "hunks": [
+   {
+    "at": 14,
+    "before": "import {sourceEpoch} from './helpers/combined-epoch/source-epoch.mjs';\nconst read=p=>readFileSync(p,'utf8').replaceAll('\\r\\n','\\n');",
+    "after": "import {sourceEpoch} from './helpers/combined-epoch/source-epoch.mjs';\nimport {pointerInputPath,retiredControllerPath,readRetiredController} from './helpers/input-retirement-source.mjs';\nimport {addedEntranceModules} from './helpers/ui-entrance-source.mjs';\nconst read=p=>readFileSync(p,'utf8').replaceAll('\\r\\n','\\n');"
+   },
+   {
+    "at": 178,
+    "before": "test('the current actor facade freshly rejects every expanded raw owner after warm nested reads',()=>{\n const current=Object.fromEntries(sourceEpoch.proof.owners.map(p=>[p,read(p)]));\n for(const path of originals){",
+    "after": "test('the current actor facade freshly rejects every expanded raw owner after warm nested reads',()=>{\n const rawOwners=[...new Set([...sourceEpoch.proof.owners.filter(p=>p!==retiredControllerPath),pointerInputPath,...addedEntranceModules])];\n const current=Object.fromEntries(rawOwners.map(p=>[p,read(p)]));\n assert.throws(()=>read(retiredControllerPath),{code:'ENOENT'});\n const {source:retired,restored}=readRetiredController(read);assert(restored,'exact live pointer witnesses the absent Controller');\n for(const path of originals){"
+   },
+   {
+    "at": 187,
+    "before": "   if(mode==='missing')return undefined;if(mode==='null')return null;\n   if(mode==='buffer')return Buffer.from(current[p]);if(mode==='changed')return current[p]+'\\n';\n  }return current[p]??read(p);};",
+    "after": "   if(mode==='missing')return undefined;if(mode==='null')return null;\n   const source=p===retiredControllerPath?retired:current[p];\n   if(mode==='old')return retired;\n   if(mode==='buffer')return Buffer.from(source);if(mode==='changed')return source+'\\n';\n  }return current[p]??read(p);};"
+   },
+   {
+    "at": 195,
+    "before": "  seen=[];check();assert.deepEqual(seen,first,'warm calls repeat the complete raw-read sequence');\n  for(bad of sourceEpoch.proof.owners)for(mode of ['changed','missing','null','buffer','throw']){\n   seen=[];assert.throws(check,error=>{assert.match(error.message,/linked owner/);assert(error.message.includes(bad));if(mode==='throw')assert.match(error.message,/expanded reader sentinel/);return true;});\n   assert(seen.includes(bad));const previous=mode;mode='good';check();mode=previous;\n  }\n }",
+    "after": "  seen=[];check();assert.deepEqual(seen,first,'warm calls repeat the complete raw-read sequence');\n  for(bad of [...rawOwners,retiredControllerPath])for(mode of bad===retiredControllerPath?['old','changed','buffer','throw']:['changed','missing','null','buffer','throw']){\n   seen=[];assert.throws(check,error=>{assert.match(error.message,/linked owner/);assert(error.message.includes(bad===pointerInputPath?retiredControllerPath:bad));if(mode==='throw')assert.match(error.message,/expanded reader sentinel/);return true;});\n   assert(seen.includes(bad));const previous=mode;mode='good';check();mode=previous;\n  }\n  bad=retiredControllerPath;\n  for(mode of ['missing','null']){seen=[];check();assert(seen.includes(retiredControllerPath)&&seen.includes(pointerInputPath),'absent Controller freshly requires its exact pointer');}\n }"
+   }
+  ]
+ },
+ {
+  "path": "tests/integration-source-epoch.test.mjs",
+  "beforeSha256": "5ac17d80e021fb9d5ed5c1e1cf15d330e95f0c1795fdbac41afc8b7e3b497628",
+  "afterSha256": "e25807a960e7969762aef059a8985945628ec8ed5345d93370bdbbfbeaab29ac",
+  "hunks": [
+   {
+    "at": 309,
+    "before": "  const targetRead=p=>proof.targets[target].files[p]?.source??null;\n  for(const path of [`src/lua/${module}.lua`,'config/architecture.json']){\n   const expected=fn(path,targetRead(path),{readSource:targetRead});\n   assert.equal(fn(path,raw(path),{readSource:raw}),expected,path);\n  }",
+    "after": "  const targetRead=p=>proof.targets[target].files[p]?.source??null;\n  // The M7 Actor adapter authenticates its current admission against physical\n  // owners before exposing the frozen target; a captured epoch is not live IO.\n  const currentRead=name==='preM7FinalSource'?p=>readFileSync(p,'utf8'):raw;\n  for(const path of [`src/lua/${module}.lua`,'config/architecture.json']){\n   const expected=fn(path,targetRead(path),{readSource:targetRead});\n   const inputs=name==='preM7FinalSource'?new Set([raw(path),currentRead(path)]):[raw(path)];\n   for(const input of inputs){\n    const projected=fn(path,input,{readSource:currentRead});\n    assert.equal(projected,expected,path);\n    if(name==='preM7FinalSource'){\n     assert.notEqual(projected,input,'current M7 input must actually project to its frozen target');\n     if(path==='config/architecture.json')\n      assert.throws(()=>fn(path,input,{readSource:raw}),/combined linked owner/,\n       'a captured configuration cannot authenticate current M7 owners');\n    }\n   }\n  }"
+   }
+  ]
+ },
+ {
+  "path": "tests/living-wall-architecture-inverse.test.mjs",
+  "beforeSha256": "1c42ad514b88aa6a35141c9887b2cb534a7afbed8d0fefd9ded1d234238e4f5f",
+  "afterSha256": "dc13358cae7438b24465dc184f61cc99af95804cdbf248d3dcd0065cc2a6bbfa",
+  "hunks": [
+   {
+    "at": 121,
+    "before": "  const result=spawnSync(process.execPath,['--trace-event-file-pattern='+output,'--input-type=module','-e',script],\n   {encoding:'utf8',timeout:30000,maxBuffer:1024*1024,windowsHide:true});\n  assert.ifError(result.error);assert.equal(result.status,0,result.stdout+result.stderr);",
+    "after": "  const result=spawnSync(process.execPath,['--trace-event-file-pattern='+output,'--input-type=module','-e',script],\n   {encoding:'utf8',timeout:180000,maxBuffer:1024*1024,windowsHide:true});\n  assert.ifError(result.error);assert.equal(result.status,0,result.stdout+result.stderr);"
    }
   ]
  }

@@ -16,7 +16,7 @@ import { gitSourceIdentity } from '../scripts/release-notes.mjs';
 import {prepareRefinedReleaseMonsterArt,refinedReleaseMonsterRegistry} from '../scripts/refined-release-monsters.mjs';
 
 function fixture(t, mutate = () => {}, {refined=false}={}) {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), 'abyss-audio-release-')));
+  const root = realpathSync.native(mkdtempSync(join(tmpdir(), 'abyss-audio-release-')));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   mkdirSync(join(root, 'data')); writeFileSync(join(root, 'data/input.json'), '{}');
   const registryPath=join(root,refinedReleaseMonsterRegistry);

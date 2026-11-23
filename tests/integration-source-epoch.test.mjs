@@ -308,9 +308,22 @@ for(const [file,name,target,module]of cases){
  const exported=await import(`./helpers/${file}-source-inverse.mjs`),fn=exported[name];
  test(`${name}: current source and configuration match original target projection`,()=>{
   const targetRead=p=>proof.targets[target].files[p]?.source??null;
+  // The M7 Actor adapter authenticates its current admission against physical
+  // owners before exposing the frozen target; a captured epoch is not live IO.
+  const currentRead=name==='preM7FinalSource'?p=>readFileSync(p,'utf8'):raw;
   for(const path of [`src/lua/${module}.lua`,'config/architecture.json']){
    const expected=fn(path,targetRead(path),{readSource:targetRead});
-   assert.equal(fn(path,raw(path),{readSource:raw}),expected,path);
+   const inputs=name==='preM7FinalSource'?new Set([raw(path),currentRead(path)]):[raw(path)];
+   for(const input of inputs){
+    const projected=fn(path,input,{readSource:currentRead});
+    assert.equal(projected,expected,path);
+    if(name==='preM7FinalSource'){
+     assert.notEqual(projected,input,'current M7 input must actually project to its frozen target');
+     if(path==='config/architecture.json')
+      assert.throws(()=>fn(path,input,{readSource:raw}),/combined linked owner/,
+       'a captured configuration cannot authenticate current M7 owners');
+    }
+   }
   }
  });
  test(`${name}: foreign input stays opaque and performs no linked reads`,()=>{
