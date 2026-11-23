@@ -283,7 +283,6 @@ function M.new(self, describe, lines)
         if info.index > 0 and not info.statusId and not info.offset then
             rows[1] = intentTip(battle, info.index)
         end
-        if info.intentOnly then return rows[1] and rows or nil end
         for _, entry in ipairs(selectedEntries(Combat.statusView(actor), info) or {}) do
             local row = statusRow(entry, battle, actor)
             rows[#rows + 1] = {name = row.name, body = powerBody(row)}

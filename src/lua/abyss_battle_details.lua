@@ -117,8 +117,7 @@ function M.install(owner, ownership, host, dependencies)
             local help = self.help
             if help and source ~= help.source then self.help = nil end
         end
-        self.info={index=spec.index,id=actor.id,actor=actor,battle=battle,kind=spec.kind,powerTips=spec.powerTips,
-            intentOnly=spec.intentOnly,statusId=spec.statusId,
+        self.info={index=spec.index,id=actor.id,actor=actor,battle=battle,kind=spec.kind,powerTips=spec.powerTips,statusId=spec.statusId,
             offset=spec.offset,position=transient and spec.position or nil,uid=spec.uid,source=source,transient=transient==true,turn=battle.turn,
             slot=spec.slot,potionId=spec.potionId,inventory=spec.inventory,reward=reward and spec or nil}
         paintHelp(battle, transient, enemyReader, cancelled)

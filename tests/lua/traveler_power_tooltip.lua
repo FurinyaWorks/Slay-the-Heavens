@@ -179,9 +179,10 @@ for _, mobile in ipairs({false, true}) do
     local intent = monster:GetChild("intentHit")
     if mobile then tap(intent, 8)
     else intent.listeners.enter(); ui:update(L.statusInfo.delay) end
-    local intentTips = opened(1, 1)
+    local intentTips = opened(1, 2)
     contains(copy(intentTips[1]), "下一步行动")
     assert(not copy(intentTips[1]):find("力量 2", 1, true))
+    contains(copy(intentTips[2]), "力量 2")
     assert(ui.info.kind == nil and ui.info.powerTips and not detail:GetChild("plate").visible)
     assert(battle.energy == before.energy and battle.turn == before.turn and #battle.hand == #before.hand
         and #battle.events == #before.events and battle.seed == before.seed)
@@ -331,7 +332,12 @@ for _, mobile in ipairs({false, true}) do
         local entries = Combat.statusView(actor)
         boxes = visibleTips(panel)
         assert(ui.info.actor == actor and #boxes == #entries + 1, "the live actor owns its visible intent and all status tips")
-        assert(boxes[#boxes].x < boxes[1].x, "enemy overflow columns grow inward")
+        local geometry = require("abyss_battle_enemy_view").geometry(actor)
+        local right = geometry.hitX + geometry.hitWidth / 2
+        local opensRight = right + 640 < 1544 / 1.5
+            and right + 20 / 1.5 + L.powerTips.width <= 640 - Theme.canvas.safe.x
+        assert((boxes[#boxes].x > boxes[1].x) == opensRight and boxes[#boxes].x ~= boxes[1].x,
+            "overflow columns follow the actor's chosen side")
         for _, box in ipairs(boxes) do checkBounds(box) end
         if Theme.presentationProfile == "official-assets-first" then
             local more = enemyPower(monster, "@more"):GetChild("hit")

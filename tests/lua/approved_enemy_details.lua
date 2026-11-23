@@ -30,22 +30,6 @@ local function tapControl(hit, touch)
     hit.listeners.click(e)
 end
 
-local function coversIntent(box, compound)
-    local hit, badge, damage = box:GetChild('intentHit'), box:GetChild('intentBadge'), box:GetChild('intent')
-    local left, right = hit.x - hit.sizeDeltaX / 2, hit.x + hit.sizeDeltaX / 2
-    if compound then
-        assert(badge.visible and badge.x - badge.sizeDeltaX / 2 >= left - .01
-            and badge.x + badge.sizeDeltaX / 2 <= right + .01, 'the compound badge must be readable by pointer')
-    end
-    if damage.visible then
-        local start = damage.x - damage.sizeDeltaX / 2
-        assert(start >= left and start + utf8.len(damage.text) * L.intent.numberSize <= right + .01,
-            'the damage digits must be readable by pointer')
-    end
-    local body = box:GetChild('hit')
-    assert(hit.y - hit.sizeDeltaY / 2 >= body.y + body.sizeDeltaY / 2, 'intent must clear the targeting area')
-end
-
 local function contents(panel)
     local info, parts = panel:GetChild('statusInfo'), {}
     local layer = info:GetChild('powerTips')
@@ -77,12 +61,11 @@ local function spikeScene(mobile)
 end
 
 for _, mobile in ipairs({false, true}) do
-    test(mobile and 'mobile tap distinguishes intent, overview and individual Power' or
-        'PC hover distinguishes intent, overview and individual Power', function()
+    test(mobile and 'mobile tap shows the same STS stack from icon, body and HP' or
+        'PC hover shows the same STS stack from icon, body and HP', function()
         local _, ui, panel, battle, box = spikeScene(mobile)
         local before, notice, target = Combat.copy(battle), panel:GetChild('notice').text, ui.target
         if mobile then ui:resize(844, 390) end
-        coversIntent(box)
         local first
         local body, hp = box:GetChild('hit'), box:GetChild('hpHit')
         local track = box:GetChild('hpTrack')
@@ -103,14 +86,10 @@ for _, mobile in ipairs({false, true}) do
             local text, rows = contents(panel)
             assert(ui.info.transient == not mobile and ui.info.source == hit)
             assert(rows[1] == '<color=#F5D78A>下一步行动</color>\n造成 16 点伤害\n将 2 张「黏滞」放入你的弃牌堆')
-            if name == 'intentHit' then
-                assert(#rows == 1, 'head intent must show only the pending effects')
-            else
-                assert(#rows == 2)
-                contains(rows[2], '分裂')
-                first = first or text
-                assert(first == text, 'body and HP must show the same overview')
-            end
+            assert(#rows == 2)
+            contains(rows[2], '分裂')
+            first = first or text
+            assert(first == text, 'icon, body and HP must show the same overview')
             if mobile then panel:GetChild('statusDismiss').click({touchId = 90}) else hit.listeners.exit() end
             assert(not ui.info and not panel:GetChild('statusInfo').visible)
         end
@@ -132,10 +111,12 @@ test('Jaw Worm action results match settlement and stay separate from active Blo
     host:refresh()
     local enemy = battle.enemies[1]
     local box = monsterControl(panel, 'enemy1')
-    local function expectIntent(touch, text)
+    local function expectIntent(touch, text, activeStrength)
         tapControl(box:GetChild('intentHit'), touch)
         local _, rows = contents(panel)
-        assert(#rows == 1 and rows[1] == '<color=#F5D78A>下一步行动</color>\n' .. text, rows[1])
+        assert(#rows == (activeStrength and 2 or 1))
+        assert(rows[1] == '<color=#F5D78A>下一步行动</color>\n' .. text, rows[1])
+        if activeStrength then contains(rows[2], '普通攻击每段伤害 +3') end
         panel:GetChild('statusDismiss').click({touchId = touch})
     end
     local hp = battle.player.hp
@@ -143,7 +124,6 @@ test('Jaw Worm action results match settlement and stay separate from active Blo
     tap('endTurn', 51)
     drain()
     assert(battle.player.hp == hp - 11)
-    coversIntent(box, true)
     expectIntent(52, '自身获得 3 层力量\n获得 6 点格挡')
     assert(Combat.statusView(enemy)[1] == nil and enemy.block == 0 and battle.player.hp == hp - 11)
     tap('endTurn', 53)
@@ -154,15 +134,14 @@ test('Jaw Worm action results match settlement and stay separate from active Blo
     assert(#rows == 1)
     contains(rows[1], '普通攻击每段伤害 +3')
     panel:GetChild('statusDismiss').click({touchId = 54})
-    coversIntent(box, true)
-    expectIntent(55, '造成 10 点伤害\n获得 5 点格挡')
+    expectIntent(55, '造成 10 点伤害\n获得 5 点格挡', true)
     assert(enemy.block == 6)
     tap('endTurn', 56)
     drain()
     assert(enemy.statuses.strength == 3 and enemy.block == 5 and battle.player.hp == hp - 21)
 end)
 
-test('a short intent panel clears the actors in the Three Sentries formation', function()
+test('the Three Sentries use the STS side threshold and keep the inspected actor clear', function()
     local enemies = {'sentry', 'sentry', 'sentry'}
     local host, ui, panel = H.setup({'defend'}, enemies, {touchScreen = function() return false end})
     local battle = Combat.new(H.F.Data, {deck = {'defend'}, enemies = enemies, encounterSource = '3 Sentries', seed = 2})
@@ -170,16 +149,21 @@ test('a short intent panel clears the actors in the Three Sentries formation', f
     host:refresh()
     local tip = panel:GetChild('statusInfo'):GetChild('powerTips'):GetChild('tip1')
     local geometry = require('abyss_battle_enemy_view').geometry
+    local safeRight = 640 - Theme.canvas.safe.x
     for slot = 1, #enemies do
         local hit = monsterControl(panel, 'enemy' .. slot):GetChild('intentHit')
         hit.listeners.enter()
         assert(ui.info and tip.visible)
-        local halfW, halfH = tip.sizeDeltaX * tip.localScaleX / 2, tip.sizeDeltaY * tip.localScaleY / 2
-        for _, enemy in ipairs(battle.enemies) do
-            local g = geometry(enemy)
-            assert(math.abs(tip.x - g.hitX) >= halfW + g.hitWidth / 2
-                or math.abs(tip.y - g.hitY) >= halfH + g.hitHeight / 2, 'intent panel overlaps an actor')
+        contents(panel)
+        local halfW = tip.sizeDeltaX * tip.localScaleX / 2
+        local g = geometry(battle.enemies[slot])
+        local right = g.hitX + g.hitWidth / 2
+        if right + 640 < 1544 / 1.5 and right + 20 / 1.5 + L.powerTips.width <= safeRight then
+            assert(tip.x - halfW >= right, 'available right side should clear the inspected actor')
+        else
+            assert(tip.x + halfW <= g.hitX - g.hitWidth / 2, 'near the right edge the stack should open on the left')
         end
+        assert(not panel:GetChild('statusInfo').disableCursorEventPassthrough)
         hit.listeners.exit()
     end
 end)

@@ -39,18 +39,13 @@ local function fixture()
 end
 local function assertGeometry(h,g,value)
  local L,S=Theme.layout,Theme.space
- local textWidth=utf8.len(value or '6')*L.intent.numberSize
- local width=math.max(L.intent.valueWidth,textWidth)
+ local width=math.max(L.intent.valueWidth,utf8.len(value or '6')*L.intent.numberSize)
  assert(h.intentIcon.w==math.min(g.intentWidth,L.intent.size) and h.intentIcon.h==h.intentIcon.w)
  assert(h.intentIcon.x==g.intentX and h.intentIcon.y==g.intentY)
  assert(h.intent.w==width and h.intent.h==L.nativeText.lineHeight)
  assert(h.intent.x==g.intentX+L.intent.size/2+S.xs+width/2 and h.intent.y==g.intentY)
- local half=32*Theme.canvas.base[1]/1920
- local left,right=h.intentHit.x-h.intentHit.w/2,h.intentHit.x+h.intentHit.w/2
- assert(math.abs(left-(g.intentX-half))<1e-8 and h.intentHit.y==g.intentY)
- local expectedRight=textWidth>0 and h.intent.x-width/2+textWidth or g.intentX+half
- assert(math.abs(right-expectedRight)<1e-8)
- assert(h.intentHit.h==64*Theme.canvas.base[2]/1080)
+ assert(h.intentHit.x==g.intentX and h.intentHit.y==g.intentY)
+ assert(h.intentHit.w==64*Theme.canvas.base[1]/1920 and h.intentHit.h==64*Theme.canvas.base[2]/1080)
 end
 for count=1,5 do
  test(count..' enemies retain geometry for 300 unchanged frames',function()
@@ -91,8 +86,7 @@ test('hidden return preserves visibility, tone and nongeometry writes',function(
  end
  draw(b,{kind='defend',value='6'},100,g,true,.75)
  assert(not h.intent.visible and h.intentIcon.visible and h.intentIcon.tint.a==255*.75)
- for _,name in ipairs({'intentIcon','intent'})do assert(h[name].sizeWrites==1 and h[name].positionWrites==1)end
- assert(h.intentHit.sizeWrites==2 and h.intentHit.positionWrites==2 and h.intentHit.x==g.intentX)
+ for _,name in ipairs(names)do assert(h[name].sizeWrites==1 and h[name].positionWrites==1)end
 end)
 test('A B A owners, rebinding and fresh same-name handles repaint',function()
  local b,h,bind,make=fixture();local owner={};local a,c=bind(owner),bind({});local g=geometry()

@@ -149,20 +149,14 @@ local function powerLayout(rows, edge, direction)
     return columns, left, top, floor, width, P.minFont, scale
 end
 
-local function overheadIntent(battle, info, width, height, top)
-    if not info.intentOnly or #battle.enemies < 2 then return end
-    local actor = EnemyView.geometry(battle.enemies[info.index])
-    local limit = (Theme.canvas.base[1] - width) / 2 - Theme.canvas.safe.x
-    local x = math.max(-limit, math.min(limit, actor.x + actor.intentX))
-    local potions = L.battlePotions
-    local potionLeft = potions.origin[1] - potions.size[1] / 2 - S.s
-    local potionRight = potions.origin[1] + (potions.count - 1) * potions.step[1] + potions.size[1] / 2 + S.s
-    if x + width / 2 < potionLeft or x - width / 2 > potionRight then
-        top = L.topBar.y - L.topBar.height / 2 - S.s
-    end
-    local bottom = actor.y + actor.intentY + L.intent.size / 2 + S.s
-    if bottom + height > top then return end
-    return x, bottom + height
+-- STS TipHelper.calculateAdditionalOffset, using the measured native text heights.
+local function monsterTipTop(columns, actorY, top, floor, scale)
+    local height = 0
+    for _, column in ipairs(columns) do height = math.max(height, column.height * scale) end
+    local canvasHeight = Theme.canvas.base[2]
+    local above = 0.5 - actorY / canvasHeight
+    local natural = actorY + above * height - columns[1].rows[1].height * scale / 2
+    return math.min(top, math.max(natural, floor + height))
 end
 
 function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, picture)
@@ -391,8 +385,16 @@ function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, pi
             local size = L.player.portrait
             return x + size / 2 + S.l, 1, y + UnitView.noticeLift(battle.player, size, y, true) + size / 2
         end
-        local x, _, size, _, y = enemyPosition(battle, info.index)
-        return x - size / 2 - S.l, -1, y + size / 2
+        local g = EnemyView.geometry(battle.enemies[info.index])
+        local width = Theme.canvas.base[1]
+        local scale = width / 1920
+        local right = g.hitX + g.hitWidth / 2
+        local rightEdge = right + 20 * scale
+        local safeRight = width / 2 - Theme.canvas.safe.x
+        -- STS AbstractMonster.renderTip chooses a side at TIP_X_THRESHOLD.
+        -- The native tooltip is wider, so it also must fit before the safe edge.
+        if right + width / 2 < 1544 * scale and rightEdge + P.width <= safeRight then return rightEdge, 1, g.hitY end
+        return g.hitX - g.hitWidth / 2 - 60 * scale, -1, g.hitY
     end
 
     local function paintPowers(panel, info, rows, battle)
@@ -406,12 +408,11 @@ function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, pi
         end
         local edge, direction, actorTop = powerAnchor(battle, info)
         local columns, left, top, floor, width, font, scale = powerLayout(rows, edge, direction)
+        local monsterTop = info.index > 0 and monsterTipTop(columns, actorTop, top, floor, scale)
         local index = 0
         for column, items in ipairs(columns) do
-            local y = math.min(top, math.max(actorTop, floor + items.height * scale))
+            local y = monsterTop or math.min(top, math.max(actorTop, floor + items.height * scale))
             local x = direction * (left + ((column - 1) * (width + P.gap) + width / 2) * scale)
-            local headX, headTop = overheadIntent(battle, info, width * scale, items.height * scale, top)
-            x, y = headX or x, headTop or y
             for _, entry in ipairs(items.rows) do
                 index = index + 1
                 nativePowerBox(layer, index, {x=x, y=y-(entry.y+entry.height/2)*scale, width=width, font=font, scale=scale}, entry)
@@ -451,7 +452,7 @@ function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, pi
     end
     local function awaitingPowers(info, battle, actor)
         -- An empty portrait hover can gain its first Power before the pointer exits.
-        return info.transient and not info.intentOnly and not info.statusId and not info.offset and actor == info.actor
+        return info.transient and not info.statusId and not info.offset and actor == info.actor
             and Actors.isPresent(actor) and info.turn == battle.turn
     end
     local function renderPowers(panel, info, rows, battle, actor)
