@@ -1,0 +1,118 @@
+--- probe.lua
++++ probe.lua
+@@ -120,11 +120,11 @@
+         end
+     end
+     assert(host.mode=='map' and host.mapUI.navigationEnabled)
+-    local source,before=host.run.deck,{}
+-    for i=1,amount do
+-        local card=F.Combat.copy(source[(i-1)%#source+1])
+-        card.uid=1000+i
+-        before[i]=card
++    local before={}
++    local roster=dofile('roster.lua')
++    assert(amount==#roster and amount==75)
++    for i,id in ipairs(roster) do
++        before[i]={uid=1000+i,cardId=id,upgraded=false}
+     end
+     host.run.deck=before
+     host:refresh()
+@@ -228,17 +228,87 @@
+         assert(not visible(panel),'deck still visible after real back hit')
+     end
+ 
+-    measure('cold')
+-    measure('warm')
+-    local initialNodes,initialListeners,initialRoots=inventory(panel,grid)
+-    for _=1,cycleCount do
+-        assert(open.click());settle()
+-        assert(back.click());settle()
+-    end
+-    local nodes,listeners,roots=inventory(panel,grid)
+-    assert(nodes==initialNodes and listeners==initialListeners and roots==initialRoots)
+-    local columns={amount,iteration,cycleCount,nodes,listeners,roots,totals.created,totals.parts,totals.destroyed}
+-    report('RESOURCE\t'..table.concat(columns,'\t'))
++    local deck=host.deckUI
++    assert(open.click())
++    local function waitReady()
++        for i=0,120 do
++            local _,uncovered,count,blocking,hint=visual()
++            if not deck.pendingGrid and not host.pageReveal:covered() and count==10 and uncovered then
++                assert(not blocking and not hint and not deck.prepareError)
++                return i
++            end
++            OnUpdate(frame)
++            assert(script.updating and not host.disabled and not deck.prepareError)
++        end
++        error('deck not ready')
++    end
++    waitReady()
++    assert(deck.pageIndex==1 and deck.pageCount==8 and #deck.cards==75)
++    assert(back.click())
++    settle()
++    assert(open.click())
++    local warm=waitReady()
++    local pinned=host.run.deck
++    local deckRows={}
++    for i,card in ipairs(pinned) do deckRows[i]=card end
++    local beginSession=deck.openSession
++    local mapRenders,battleRenders=0,0
++    local map=host.mapUI.render
++    local battle=host.battleUI.render
++    host.mapUI.render=function(...) mapRenders=mapRenders+1;return map(...)end
++    host.battleUI.render=function(...) battleRenders=battleRenders+1;return battle(...)end
++    local originals={}
++    for _,control in pairs(grid.children) do
++        if control.name=='AbyssBattlePileCard' and control.alive~=false then originals[control]=true end
++    end
++    local function checkOriginal()
++        assert(host.run.deck==pinned and #host.run.deck==75 and deck.openSession==beginSession)
++        for i,c in ipairs(pinned)do
++            assert(c==deckRows[i] and c.uid==1000+i and c.cardId==deckRows[i].cardId)
++        end
++    end
++    report('META warm='..warm..' pages='..deck.pageCount..' roots='..totals.created..' segments='..totals.parts)
++    report('mode	ascending	callback_ms	ready_ms	updates	veil_rounds	hint_rounds	covered_rounds	blank_frames	max_visible	map_paints	battle_paints')
++    for _,mode in ipairs({'type','cost','original','cost','type','original'})do
++        local mapBefore,battleBefore=mapRenders,battleRenders
++        local c,p,d=totals.created,totals.parts,totals.destroyed
++        local hit=panel:GetChild('deckSort'):GetChild(mode):GetChild('hit')
++        assert(visible(hit) and hit.raycastTarget~=false,'actual sort input unavailable')
++        local started=os.clock()
++        assert(hit.click())
++        local cpu=(os.clock()-started)*1000
++        local v,h,k,b,m,round=0,0,0,0,0
++        for i=0,120 do
++            local _,uncovered,count,blocking,hint=visual()
++            if blocking then v=v+1 end
++            if hint then h=h+1 end
++            if host.pageReveal:covered() then k=k+1 end
++            if count==0 then b=b+1 end
++            m=math.max(m,count)
++            if not deck.pendingGrid and not host.pageReveal:covered() and count==10 and uncovered then round=i;break end
++            assert(i<120,'sort did not settle')
++            OnUpdate(frame)
++            assert(script.updating and not host.disabled and not deck.prepareError)
++        end
++        local total=(os.clock()-started)*1000
++        assert(deck.pageIndex==1 and deck.pageCount==8 and #deck.cards==75 and deck.sortMode==mode)
++        checkOriginal()
++        assert(totals.created==c and totals.parts==p and totals.destroyed==d,'sort allocated or destroyed pool resources')
++        for _,rootControl in pairs(grid.children)do
++            if rootControl.name=='AbyssBattlePileCard' and rootControl.alive~=false then assert(originals[rootControl])end
++        end
++        local byID={}
++        for _,card in ipairs(deck.cards) do assert(not byID[card.uid]);byID[card.uid]=card end
++        for _,card in ipairs(pinned)do assert(byID[card.uid])end
++        if mode=='original' then
++            for i,card in ipairs(deck.cards) do
++                assert(card.uid==1000+(deck.sortAscending and i or 76-i),'wrong original order')
++            end
++        end
++        report(table.concat({mode,tostring(deck.sortAscending),cpu,total,round,v,h,k,b,m,mapRenders-mapBefore,battleRenders-battleBefore},'	'))
++    end
++    assert(back.click());settle()
++    assert(not visible(panel),'deck still visible after actual Return')
+     OnDestroy()
+     assert(not script.updating)
+     script,game=nil,nil

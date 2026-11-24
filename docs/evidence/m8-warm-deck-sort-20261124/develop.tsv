@@ -1,0 +1,10 @@
+FIELDS	amount	iteration	phase	synthetic_clock_seconds	progressive	callback_ms	shell_frame	uncovered_frame	first_complete_frame	ready_frame	first_complete_cpu_ms	ready_cpu_ms	peak_update_ms	veil_frames	hint_frames	live_panel_nodes	live_listeners	live_deck_roots	new_roots	new_parts	live_native_art
+RESOURCE_FIELDS	amount	iteration	cycles	live_closed_panel_nodes	live_closed_listeners	live_closed_roots	created_roots	created_parts	destroyed_roots
+META warm=2 pages=8 roots=10 segments=50
+mode	ascending	callback_ms	ready_ms	updates	veil_rounds	hint_rounds	covered_rounds	blank_frames	max_visible	map_paints	battle_paints
+type	true	0.42400000000009	5.8550000000001	3	3	0	3	3	10	0	1
+cost	true	0.34400000000001	6.179	3	3	0	3	3	10	0	1
+original	true	0.12800000000002	3.9859999999999	2	2	0	2	2	10	0	1
+cost	false	0.29699999999999	6.702	3	3	0	3	3	10	0	1
+type	false	0.29500000000005	5.835	3	3	0	3	3	10	0	1
+original	false	0.27100000000002	6.46	3	3	0	3	3	10	0	1
