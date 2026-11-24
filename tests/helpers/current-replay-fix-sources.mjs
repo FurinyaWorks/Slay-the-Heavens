@@ -2364,9 +2364,93 @@ const bindings = new Map([
  }
 ].map(row=>[row.path,row]));
 
+// The Fork push workflow changes the current CI tests, while the older checkout remains a valid replay input.
+const forkPushBindings=new Map([
+ [
+  "tests/ci-complete-calibration.test.mjs",
+  [
+   {
+    "path": "tests/ci-complete-calibration.test.mjs",
+    "beforeSha256": "d24cd660204762f7083a77a62ea32724b9687434d49f2f71401c69c1bf544ad7",
+    "afterSha256": "ead97738f2ef4d35c362bee127ce73cebaea64f0628adcfacccf3141504e6863",
+    "hunks": [
+     {
+      "at": 2019,
+      "before": "  assert.match(source,path==='.github/workflows/quality.yml'?\n   /  push:\\n    branches: \\[develop, master\\]\\n/:/  push:\\n    branches: \\[develop, master, 'release\\/\\*\\*'\\]/);\n  assert.match(source,/  merge_group:\\n    types: \\[checks_requested\\]\\n    branches: \\[develop\\]/);",
+      "after": "  assert.match(source,path==='.github/workflows/quality.yml'?\n   /  push:\\n    branches: \\[develop, master, 'ci\\/full\\/\\*\\*'\\]\\n/:/  push:\\n    branches: \\[develop, master, 'release\\/\\*\\*'\\]/);\n  assert.match(source,/  merge_group:\\n    types: \\[checks_requested\\]\\n    branches: \\[develop\\]/);"
+     }
+    ]
+   }
+  ]
+ ],
+ [
+  "tests/ci-posix-shards.test.mjs",
+  [
+   {
+    "path": "tests/ci-posix-shards.test.mjs",
+    "beforeSha256": "25c6d1c3aa908e09ccef28ac8dfff77140625de0f883eab2f9489dc83dc13d4b",
+    "afterSha256": "0978158c413f093d0f6643e45696a295534f91676024de628c388c89a7e04973",
+    "hunks": [
+     {
+      "at": 88,
+      "before": "  assert.ok(shards.includes('        if: always() && matrix.shard == 1\\n'));\n  assert.match(aggregate,/^    needs: \\[impact, engineering-posix-shards, fast\\]\\n    if: \\$\\{\\{ !cancelled\\(\\) && \\(github\\.event_name != 'pull_request' \\|\\| github\\.event\\.pull_request\\.draft == false\\) \\}\\}$/m);\n});",
+      "after": "  assert.ok(shards.includes('        if: always() && matrix.shard == 1\\n'));\n});"
+     },
+     {
+      "at": 119,
+      "before": "",
+      "after": "\ntest('current Fork POSIX aggregate retains its complete push and draft scope',()=>{\n  assert.ok(aggregate.includes(\"    if: ${{ !cancelled() && (github.event_name != 'push' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' || (github.event.repository.id == 1460133275 && startsWith(github.ref, 'refs/heads/ci/full/'))) && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}\"));\n  assert.match(aggregate,/^    needs: \\[impact, engineering-posix-shards, fast\\]$/m);\n  assert.doesNotMatch(aggregate,/continue-on-error:|\\|\\| true/);\n});\n"
+     }
+    ]
+   }
+  ]
+ ],
+ [
+  "tests/ci-windows-shards.test.mjs",
+  [
+   {
+    "path": "tests/ci-windows-shards.test.mjs",
+    "beforeSha256": "6641e485e1b2fdd2841300fdf54891f59070a3a3d52ef12cc96d280afeeac515",
+    "afterSha256": "0c993d25aa38c6677554bdc91673802d0f59bcbf60beaa0e97c8bb201b0be517",
+    "hunks": [
+     {
+      "at": 107,
+      "before": "  assert.ok(rules.includes(\"node scripts/test-lua.mjs --shard ${{ matrix.shard }}/${{ strategy.job-total }} --workers ${{ inputs.runner_pool == 'local-special' && 1 || 2 }}\"));\n  assert.match(job('check'),/^    needs: \\[impact, rules, fast, presentation, engineering-posix\\]\\n    if: \\$\\{\\{ !cancelled\\(\\) && \\(github\\.event_name != 'pull_request' \\|\\| github\\.event\\.pull_request\\.draft == false\\) \\}\\}$/m);\n  assert.doesNotMatch(rules,/continue-on-error:|--test-name-pattern|--test-skip-pattern/);",
+      "after": "  assert.ok(rules.includes(\"node scripts/test-lua.mjs --shard ${{ matrix.shard }}/${{ strategy.job-total }} --workers ${{ inputs.runner_pool == 'local-special' && 1 || 2 }}\"));\n  assert.ok(job('check').includes(\"    needs: [impact, rules, fast, presentation, engineering-posix]\\n    if: ${{ !cancelled() && (github.event_name != 'push' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' || (github.event.repository.id == 1460133275 && startsWith(github.ref, 'refs/heads/ci/full/'))) && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}\\n\"));\n  assert.doesNotMatch(rules,/continue-on-error:|--test-name-pattern|--test-skip-pattern/);"
+     },
+     {
+      "at": 115,
+      "before": "  const check=job('check');\n  assert.match(check,/^    if: \\$\\{\\{ !cancelled\\(\\) && \\(github\\.event_name != 'pull_request' \\|\\| github\\.event\\.pull_request\\.draft == false\\) \\}\\}$/m);\n  assert.match(check,/^          RULES_RESULT: \\$\\{\\{ needs.rules.result \\}\\}$/m);",
+      "after": "  const check=job('check');\n  assert.ok(check.includes(\"    if: ${{ !cancelled() && (github.event_name != 'push' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' || (github.event.repository.id == 1460133275 && startsWith(github.ref, 'refs/heads/ci/full/'))) && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}\\n\"));\n  assert.match(check,/^          RULES_RESULT: \\$\\{\\{ needs.rules.result \\}\\}$/m);"
+     }
+    ]
+   },
+   {
+    "path": "tests/ci-windows-shards.test.mjs",
+    "beforeSha256": "6641e485e1b2fdd2841300fdf54891f59070a3a3d52ef12cc96d280afeeac515",
+    "afterSha256": "31f0c05f71ef3fe2ed6f2f72c5d7a313f6a5b87b0a04c241e5a1b41742dd7b51",
+    "hunks": [
+     {
+      "at": 101,
+      "before": "  assert.doesNotMatch(rules,/max-parallel:/);\n  assert.ok(rules.includes(\"timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 180 }}\"));\n  for(const gate of ['check:network','verify:backlog','check:syntax','validate:data','build:theme','check:engineering'])",
+      "after": "  assert.doesNotMatch(rules,/max-parallel:/);\n  assert.ok(rules.includes(\"timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 150 }}\"));\n  for(const gate of ['check:network','verify:backlog','check:syntax','validate:data','build:theme','check:engineering'])"
+     }
+    ]
+   }
+  ]
+ ]
+]);
+
 // Retain at most one verified byte-for-byte projection per declared path.
 const lastVerifiedProjection=new Map();
 export function beforeCurrentReplayFixes(path, source){
+ for(const continuation of forkPushBindings.get(path)??[]){
+  const prior=restoreExactFixtureHunks(continuation,path,source);
+  if(prior!==source){
+   source=source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+   break;
+  }
+ }
  const binding=bindings.get(path);
  if(!binding)return source;
  const cached=lastVerifiedProjection.get(path);

@@ -87,7 +87,6 @@ test('current POSIX matrix consumes fifteen shared shards with serial full regre
   assert.ok(shards.includes('          npm run build:data\n          npm run build:ui\n          node scripts/ci-shards.mjs --shard='));
   assert.ok(shards.includes('      - run: npm run check:engineering\n        if: matrix.shard == 1\n'));
   assert.ok(shards.includes('        if: always() && matrix.shard == 1\n'));
-  assert.match(aggregate,/^    needs: \[impact, engineering-posix-shards, fast\]\n    if: \$\{\{ !cancelled\(\) && \(github\.event_name != 'pull_request' \|\| github\.event\.pull_request\.draft == false\) \}\}$/m);
 });
 
 test('native Node four-shard selection executes every current JS file name exactly once', t => {
