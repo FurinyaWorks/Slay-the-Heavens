@@ -496,7 +496,7 @@ function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, pi
             clearPowers(panel)
             child("statusDismiss"):SetVisible(false)
             panel:SetVisible(false)
-            if info.transient then self.info=nil end
+            if info.transient and not self:hasOverflowCard(info) then self.info=nil end
         end
     end
     local function describedCard(battle,info,actor)

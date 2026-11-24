@@ -204,7 +204,7 @@ export function deckControls(theme = nativeTheme) {
       { ...text('details', l.deckView.viewport, '', f.reading, c.text), visible: false },
       { name: 'detailHit', kind: 'cursorArea', position: l.deckView.viewport.slice(0, 2),
         size: l.deckView.viewport.slice(2), visible: false },
-      { name: 'cardFocus', kind: 'container', position: [0, 30], size: [...l.card.size], scale: [1.9, 1.9],
+      { name: 'cardFocus', kind: 'container', position: [0, 30], size: [...l.card.size], scale: [l.card.reading.focusScale, l.card.reading.focusScale],
         visible: false, children: [{ ...deckCardTemplate(theme).children[0], position: [0, 0] }] },
       { ...button('upgradePreview', [0, -245, ...l.deckView.upgradePreview.slice(2)], '查看升级'), visible: false },
       button('close', closeFrame, '关闭'),

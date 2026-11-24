@@ -303,14 +303,14 @@ function M.install(owner, ownership, host, dependencies)
         owner.suppressClick,owner.selected = g,action ~= 'cancel' and g.uid or nil
         finishReleaseAction(action,target)
     end
-    local function releaseRead(event,input)
+    local function releaseRead(event,input,ended)
         local info=owner.info
         local press=info and info.press
         if not press then return false end
         if press.touch==(event and event.touchId) and (not input or input==press.input) then
             ownership.releasedDragTouch=press.touch
             dependencies.closeInfo()
-            owner:render(true)
+            if ended or not owner:openOverflowCard(info) then owner:render(true) end
         end
         return true
     end
@@ -318,7 +318,7 @@ function M.install(owner, ownership, host, dependencies)
         if owner.potionAim and owner.potionAim.moving and dependencies.releasePotionDrag then return dependencies.releasePotionDrag(event,input) end
         local g = owner.gesture
         local touch = event and event.touchId
-        if not g and releaseRead(event,input) then return end
+        if not g and releaseRead(event,input,ended) then return end
         if not g then releaseCardTap(event, input, ended) return end
         if touch ~= g.touch or input and input ~= g.input then return end
         if owner.help and owner.help.card == g then owner.help = nil end

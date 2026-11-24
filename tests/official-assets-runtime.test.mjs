@@ -2068,3 +2068,13 @@ test('final release UI routes mobile HUD touches by screen coordinate across run
 test('final release mobile event inventory follows the foreground room without blocking potion rewards',t=>{
  runOfficial(t,"assert(loadfile('tests/lua/support/mobile_run_hud_geometry.lua'))('events')",'MOBILE_EVENT_INVENTORY_PASS',{},true,true);
 });
+
+test('release typography audits every card on official faces and opens one full card for overflow',t=>{
+ runOfficial(t,`
+dofile('tests/lua/card_body_catalog.lua')
+dofile('tests/lua/card_body_focus.lua')
+`, 'OFFICIAL_CARD_BODY_CATALOG_AND_FOCUS_PASS',{},true,true,output=>{
+  assert.match(output,/CARD_BODY_CATALOG_PASS 368 cards, 2944 versions, 9568 face checks/);
+  assert.match(output,/CARD_BODY_FOCUS_PASS/);
+ });
+});
