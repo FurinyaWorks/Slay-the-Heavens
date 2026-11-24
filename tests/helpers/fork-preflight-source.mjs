@@ -96,13 +96,21 @@ for(const [path,row] of Object.entries(transport.files)){
 const normalize=s=>s.replaceAll('\r\n','\n');
 // Exact complete successor bytes preserve the existing immutable historical CI views.
 const forkPushBytes=readFileSync(new URL('../fixtures/fork-push-ci-source.json.gz',import.meta.url));
-assert.equal(hash(forkPushBytes),'567942801d64f660b9ac8d1a633408b76e7c530dbe18f4f122aaa08ad9bb0473','complete Fork push CI continuation');
+assert.equal(hash(forkPushBytes),'3e336d4dc79dc2dcb5f5d2297212034bf074aed8eea184dca73c0d02bab91f18','complete Fork push CI continuation');
 const forkPushPacket=JSON.parse(gunzipSync(forkPushBytes));
 assert.equal(forkPushPacket.baseCommit,'73c21489efaab409d4c0c46bee517d410d3427fc');
 for(const row of Object.values(forkPushPacket.files))assert.equal(hash(row.before),row.beforeSha256);
 export function beforeForkPush(path,source){
  const row=forkPushPacket.files[path];
  return row&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha256?(source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before):source;
+}
+// Receipt readers retain the actual Q1 current-source predecessor before their existing replay layers.
+for(const row of Object.values(forkPushPacket.receiptSuccessors??{}))assert.equal(hash(row.before),row.beforeSha256);
+export function beforeForkReceiptSource(path,source){
+ const row=forkPushPacket.receiptSuccessors?.[path];
+ if(row&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha256)
+  return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;
+ return beforeForkPush(path,source);
 }
 const rewardScreenBytes=readFileSync(new URL('./reward-screen-ci-source.json.gz',import.meta.url));
 assert.equal(hash(rewardScreenBytes),'04094f1942139397d7e267131fe819c49a5045b7027a4663157ccac985c5cd82');

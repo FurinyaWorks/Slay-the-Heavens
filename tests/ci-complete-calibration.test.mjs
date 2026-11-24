@@ -1,3 +1,4 @@
+import {beforeForkReceiptSource} from './helpers/fork-preflight-source.mjs';
 import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
 import {closeoutRead,closeoutInventory,preCloseoutCiSource,closeoutCiProof} from './helpers/closeout-ci-source.mjs';
 import {menuRedPriorRead,menuRedPriorLua,menuRedCiProof} from './helpers/menu-red-ci-source.mjs';
@@ -46,12 +47,16 @@ import assert from 'node:assert/strict';
 import {readFileSync as rawBootstrapReadFileSync,readdirSync} from 'node:fs';
 import {releaseBootstrapCiRead,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';
 import {assertCurrentJsInventory} from './helpers/fork-preflight-source.mjs';
-import {readCalibrationReceiptInput} from './helpers/calibration-replay-sources.mjs';
+import {readCalibrationReceiptInput,beforeCurrentHistoricalStsSource} from './helpers/calibration-replay-sources.mjs';
+const forkReceiptReadFileSync=(path,encoding)=>{
+ const value=rawBootstrapReadFileSync(path,encoding),text=typeof value==='string'?value:value.toString('utf8'),fork=beforeForkReceiptSource(path,text),prior=path==='tests/ci-windows-shards.test.mjs'?beforeCurrentHistoricalStsSource(path,fork):fork;
+ return typeof value==='string'?prior:prior===text?value:Buffer.from(prior);
+};
 const liveDiskReadFileSync=releaseBootstrapCiRead((path,encoding)=>{
- const raw=rawBootstrapReadFileSync(path,encoding);
+ const raw=forkReceiptReadFileSync(path,encoding);
  if(!['src/lua/abyss_ui.lua','src/lua/abyss_character_select_view.lua','src/lua/abyss_potion_text.lua'].includes(path))return raw;
- const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=beforeCharacterPreparationSource(path,text);
- return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
+ const preparedText=typeof raw==='string'?raw:raw.toString('utf8'),prepared=beforeCharacterPreparationSource(path,preparedText);
+ return typeof raw==='string'?prepared:prepared===preparedText?raw:Buffer.from(prepared);
 });
 import {preJoustCiSource,joustCiProof} from './helpers/joust-ci-source-inverse.mjs';
 import {sourceEpoch as joustEpoch} from './helpers/combined-epoch/source-epoch.mjs';
@@ -100,7 +105,7 @@ const readFileSync=(file,encoding)=>{
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };
 const hash=s=>createHash('sha256').update(s).digest('hex'),read=p=>originalPlanningSource(p,readFileSync(p,'utf8').replaceAll('\r\n','\n'));
-const replayInput=(file,digest,read)=>readCalibrationReceiptInput(file,digest,read,rawBootstrapReadFileSync);
+const replayInput=(file,digest,read,currentRead=rawBootstrapReadFileSync)=>readCalibrationReceiptInput(file,digest,read,(path,encoding)=>beforeForkReceiptSource(path,currentRead(path,encoding)));
 const replayHash=(file,digest,read)=>hash(replayInput(file,digest,read));
 const receiptRead=(view,file,encoding,fallback)=>{
  const value=diskReadFileSync(file,encoding),raw=typeof value==='string'?value:value.toString('utf8'),text=['officialFirstReceipt','officialFlowReceipt'].includes(view)?receiptToolingSource(file,raw,'curses'):raw;
@@ -235,6 +240,34 @@ test('component UI CI projection admits only complete current sources and preser
    assert.equal(preComponentUiCiSource(file,input),input,file);
   assert.equal(preComponentUiCiSource('foreign/'+file,source),source,file);
  }
+});
+
+test('Fork receipt self-source is exact and rechecks live bytes after warm reads',()=>{
+ const successorPath='tests/ci-windows-shards.test.mjs',successor=JSON.parse(gunzipSync(rawBootstrapReadFileSync('tests/fixtures/fork-push-ci-source.json.gz'))).receiptSuccessors[successorPath];
+ const successorSource=rawBootstrapReadFileSync(successorPath,'utf8').replaceAll('\r\n','\n');
+ assert.equal(successor.beforeCommit,'c420b02841c61d5270fd8588d072fc62ec9a5071');
+ assert.equal(hash(successor.before),successor.beforeSha256);assert.equal(hash(successorSource),successor.afterSha256);
+ for(const eol of ['\n','\r\n'])assert.equal(beforeForkReceiptSource(successorPath,successorSource.replaceAll('\n',eol)),successor.before.replaceAll('\n',eol));
+ for(const input of [successorSource+'\n',successorSource.slice(1),'x'+successorSource.slice(1),successorSource.replaceAll('\n','\r\r\n'),Buffer.from(successorSource),null,undefined])
+  assert.equal(beforeForkReceiptSource(successorPath,input),input);
+ assert.equal(beforeForkReceiptSource('foreign/'+successorPath,successorSource),successorSource);
+ const path='tests/ci-complete-calibration.test.mjs',binding=componentUiCiSourceProof.files[path];
+ const source=rawBootstrapReadFileSync(path,'utf8').replaceAll('\r\n','\n');
+ let current=source,reads=0;
+ const live=(file,encoding)=>{if(file===path){reads++;return current;}return rawBootstrapReadFileSync(file,encoding);};
+ const fallback=()=>{throw Error('registered receipt must authenticate current input before replay');};
+ const replay=()=>replayInput(path,binding.afterSha256,fallback,live);
+ for(const eol of ['\n','\r\n']){
+  current=source.replaceAll('\n',eol);const before=reads;
+  assert.equal(replay(),binding.afterSource);assert(reads>before,'warm receipt must read current bytes again');
+ }
+ for(const changed of [source+'\n',source.slice(1),'x'+source.slice(1),source.replaceAll('\n','\r\r\n')]){
+  current=changed;const before=reads;
+  assert.throws(replay,/current receipt input changed/);assert(reads>before,'foreign warm input must be freshly checked');
+ }
+ current=source;assert.equal(replay(),binding.afterSource,'restored exact input recovers after rejection');
+ const fault=Error('current receipt read failed');
+ assert.throws(()=>replayInput(path,binding.afterSha256,fallback,(file,encoding)=>{if(file===path)throw fault;return live(file,encoding);}),error=>error===fault);
 });
 
 test('post281 CI fixes preserve the immutable71-source foundation and every exact foreign-source boundary',()=>{
