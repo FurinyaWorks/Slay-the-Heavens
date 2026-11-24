@@ -136,6 +136,7 @@ function M.new(root, data, presentation, clickEvent, platform, options)
         bindEnemyPowerControl=services.bindEnemyPowerControl, unbindEnemyPowerControl=services.unbindEnemyPowerControl,
         bindEnemyDetailControls=services.bindEnemyDetailControls, unbindEnemyDetailControls=services.unbindEnemyDetailControls, bindDetailControls=services.bindDetailControls,
         potionDragTarget=services.potionDragTarget,
+        down=services.down, swallowed=services.swallowed,
         cancelCardInputs=services.cancelCardInputs, cancelActionInputs=services.cancelActionInputs,
         cancelPotionInputs=services.cancelPotionInputs, consumeReleasedDragClick=services.consumeReleasedDragClick
     }
@@ -194,7 +195,7 @@ function M.new(root, data, presentation, clickEvent, platform, options)
         statusDetail = statusDetail, statusKind = statusKind, intentView = intentView, potionText = potionText,
         temporaryOps = temporaryOps, stanceNames = stanceNames, orbNames = orbNames,
         kindNames = kindNames, intentColors = intentColors,
-    }, host.lines)
+    })
     host.paginate = InfoView.paginator(host.lines)
     host.renderInfo = InfoView.new(self, services.child, services.enemyPosition, services.describeInfo, host.paginate, services.tint, services.ink, services.picture)
     -- index 0 is the hero. Opening the same unit again closes it.
@@ -359,10 +360,12 @@ function M.new(root, data, presentation, clickEvent, platform, options)
             end
             return false
         end
-        hit:AddCursorEventListener(host.clickEvent,function()
-            if Pointer.blocked(host.platform)then return false end
+        hit:AddCursorEventListener(host.clickEvent,function(event)
+            if Pointer.blocked(host.platform) or services.swallowed(event)
+                or services.consumeReleasedDragClick(event) or self.suppressClick then return false end
             return openPile()
         end)
+        if self.dragEnabled then hit:AddCursorEventListener(host.cursor.CursorDown,services.down) end
     end
     local keys = host.platform.keyEvents
     local keyRoot = host.platform.keyRoot or host.root

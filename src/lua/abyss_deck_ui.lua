@@ -466,7 +466,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
                 definition.repeatable and (instance.upgrades or 1) or nil,face:GetChild('type'),typeNames[definition.type] or definition.type,browserFit)
             if not current() then return end
             if entry.bodyText~=model.text then
-                local _,accepted=CardDisplay.writeBody(face:GetChild('label'),model.text,face,browserFit)
+                local _,accepted=CardDisplay.writeBody(face:GetChild('label'),model.text,face,browserFit,entry.parts)
                 assert(accepted~=false,'deck browser body geometry rejected')
                 if not current() then return end
                 entry.bodyText=model.text
