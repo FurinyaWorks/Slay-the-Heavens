@@ -127,7 +127,7 @@ print('${marker}')
  return stage;
 }
 
-test('official run HUD keeps complete health through the blessing, map and battle',t=>{
+test('official run HUD keeps complete health and gold through the blessing, map and battle',t=>{
  const stage=runOfficial(t,`
 local F=H.F
 local root=F.Viewport.apply(F.control({children=F.Layout}),1280,720)
@@ -149,6 +149,25 @@ assert(host.mode=='map' and map:GetChild('hp').text=='88/88')
 assert(H.Run.increaseMaxHp(host.run,23))
 host:refresh()
 assert(map:GetChild('hp').text=='111/111')
+H.Run.gainGold(host.run,2147483647-host.run.gold)
+host:refresh()
+assert(map:GetChild('gold').text=='2147483647')
+local coinHint=root:GetChild('mapPanel'):GetChild('resourceHints'):GetChild('gold'):GetChild('hit')
+assert(coinHint.click())
+assert(root:GetChild('deckPanel'):GetChild('details').text:find('2147483647',1,true))
+assert(host:closeDeck())
+local relics,counters=host.run.relics,host.run.relicCounters
+host.run.relics,host.run.relicCounters={'circlet','burning_blood'},{circlet=2147483647}
+host:refresh()
+local bar=root:GetChild('relicBar')
+local counter=bar:GetChild('slot1'):GetChild('counter')
+assert(counter.text=='2147483647' and counter.sizeDeltaX>=128 and bar:GetChild('slot4').visible)
+assert(not bar:GetChild('slot2').visible and not bar:GetChild('slot3').visible)
+for i=3,26 do host.run.relics[i]='burning_blood' end
+host:refresh()
+local overflow=bar:GetChild('slot25'):GetChild('more')
+assert(overflow.visible and overflow.text=='+4','wide relic count must preserve the exact overflow count')
+host.run.relics,host.run.relicCounters=relics,counters
 local first=assert(F.Nodes.available(host.run,host.map)[1])
 assert(host.mapUI:choose(first.id))
 assert(host.mode=='battle' and battle:GetChild('player').text=='111/111')
@@ -156,6 +175,10 @@ local combat=host.run.combat
 C.damage(combat,combat.enemies[1],combat.player,12,true)
 host:refresh()
 assert(battle:GetChild('player').text=='99/111')
+combat.player.maxHp,combat.player.gold=125,288
+host:refresh()
+assert(battle:GetChild('player').text=='99/125' and battle:GetChild('piles').text=='288')
+assert(map:GetChild('gold').text=='288')
 `, 'OFFICIAL_RUN_HP_PASS');
  const child=(node,name)=>node.children.find(control=>control.name===name);
  const left=control=>control.position[0]-control.size[0]/2;
@@ -163,6 +186,13 @@ assert(battle:GetChild('player').text=='99/111')
  for(const [pageName,healthName] of [['nodePanel','hp'],['mapPanel','hp'],['battlePanel','player']]){
   const page=child(stage,pageName),resources=child(page,'resources')??page;
   const health=child(resources,healthName),heart=child(resources,'hpIcon'),gold=child(resources,'goldIcon');
+  const value=child(resources,pageName==='battlePanel'?'piles':'gold');
+  for(const [label,length] of [[health,21],[value,10]]){
+   assert.equal(label.text.autoSize,false,pageName);
+   assert(label.size[0]>=length*.6*label.text.fontSize+8,pageName+' full resource range must fit');
+  }
+  const firstPotion=child(child(stage,'battlePanel'),'potion1');
+  assert(right(value)<left(firstPotion),pageName+' gold clears first potion');
   assert.equal(health.text.align,'left',pageName);
   assert.equal(health.text.fontSize,18,pageName+' retains the HUD number size');
   assert(health.size[0]>='999/999'.length*.6*health.text.fontSize+4,pageName+' needs a full health line with native text padding');

@@ -8,12 +8,13 @@ export function prepareOfficialRunHud(root,theme){
  const hud=theme.officialAssets.battleHud,bar=child(root,'topBar');
  for(const [name,key,font]of [['hpIcon','hpIcon'],['player','hp',hud.numberSize],['goldIcon','goldIcon'],['piles','gold',hud.numberSize]]){
   const node=child(root,name);node.position=hud[key].slice(0,2);node.size=hud[key].slice(2);
-  if(font&&node.text)Object.assign(node.text,{fontSize:font,minFontSize:14,align:'left'});
+  if(font&&node.text)Object.assign(node.text,{fontSize:font,minFontSize:font,autoSize:false,align:'left'});
  }
  child(root,'floor').visible=false;
+ // Reserve one preferred-size line for each complete 32-bit resource value.
  const heading=clone(child(root,'player'));heading.name='officialHeroHeading';
  heading.position=hud.heading.slice(0,2);heading.position[1]-=hud.y;heading.size=hud.heading.slice(2);
- Object.assign(heading.text,{content:hud.headingText,fontSize:hud.headingSize,colour:hud.headingColour});
+ Object.assign(heading.text,{content:hud.headingText,fontSize:hud.headingSize,minFontSize:hud.headingSize,colour:hud.headingColour});
  bar.children.push(heading);
  for(let index=1;index<=theme.layout.battlePotions.count;index++){
   const x=hud.potionX+(index-1)*hud.potionStep;
@@ -42,7 +43,7 @@ export function finishOfficialRunBar(root,theme){
   {name:'topLight',kind:'container',size:[1280,hud.height],children:Array.from({length:8},(_,i)=>({name:'shade'+i,kind:'image',position:[0,hud.height/2-(i+.5)*hud.height/8],size:[1280,hud.height/8+.05],image:100001,colour:'#'+top.map((v,c)=>Math.round(v+(bottom[c]-v)*i/7).toString(16).padStart(2,'0')).join('')}))},
   {name:'barShadow',kind:'image',position:[0,-hud.height/2-1.5],size:[1280,3],image:100001,colour:'#000000',opacity:.25});
  const heading=child(bar,'officialHeroHeading');if(heading)heading.text.colour=hud.headingColour;
- const floorX=hud.potionX+(theme.layout.battlePotions.count-1)*hud.potionStep+85;
+ const floorX=hud.potionX+(theme.layout.battlePotions.count-1)*hud.potionStep+hud.floorGap;
  bar.children.push({name:'officialStairs',kind:'container',position:[floorX,0],size:[24,20],
   children:[[-7,0,7,18],[0,-3,7,12],[7,-6,7,6]].map(([x,y,width,height],index)=>({
    name:'step'+(index+1),kind:'image',image:theme.image.rect,position:[x,y],size:[width,height],colour:'#D6CBA5',
@@ -50,7 +51,7 @@ export function finishOfficialRunBar(root,theme){
  });
  const title=child(root,'title');
  title.visible=true;title.position=[floorX+33,hud.y];title.size=[34,36];
- Object.assign(title.text,{content:'',fontSize:hud.numberSize,minFontSize:14,align:'left',colour:'#D6CBA5'});
+ Object.assign(title.text,{content:'',fontSize:hud.numberSize,minFontSize:hud.numberSize,autoSize:false,align:'left',colour:'#D6CBA5'});
  const status=child(root,'floor');
  status.visible=true;status.position=hud.location.slice(0,2);status.size=hud.location.slice(2);
  mountOfficialResourceHints(root,theme);

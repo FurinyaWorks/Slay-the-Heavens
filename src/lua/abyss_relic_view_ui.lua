@@ -1,6 +1,7 @@
 -- TASK-4.7 owned-relic art slots: a top-bar disc row plus a read-only detail
 -- overlay. Each entry is icon disc + Chinese name + status chip + effect text.
 local Theme=require('abyss_theme')
+local integer=require('abyss_numbers').integer
 local Pointer = require('abyss_pointer_input')
 local Hooks=require('abyss_relic_hooks')
 local Rewards=require('abyss_relic_rewards')
@@ -61,7 +62,7 @@ function M.status(run,id)
         return v<=0 and '已耗尽' or ('剩余 '..v..' 次')
     end
     if v==-2 then return '已耗尽' end
-    if v>=0 then return '计数 '..v end
+    if v>=0 then return '计数 '..integer(v) end
     return nil
 end
 -- Pure bar plan: true = show relic i, '+N' = overflow chip, false = hidden.
@@ -81,6 +82,7 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
     local baseBar=Theme.layout.relicView.bar
     local battleBar=official and assert(Theme.officialAssets.battleRelicBar,'missing official battle relic layout')
     local boundCount=official and battleBar.count or baseBar.count
+    local barCells={}
     local tooltip=bar:GetChild('tooltip')
     local function child(name)return assert(root:GetChild(name),'missing relic control '..name)end
     function self.resetBarHover(_)
@@ -88,12 +90,36 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
         self.hoverIndex=nil
         if tooltip and tooltip.visible then tooltip:SetVisible(false)end
     end
+    local function counterWidth(value)
+        if type(value)~='number' or value<0 then return 40 end
+        return math.max(40,math.ceil(#integer(value)*Theme.font.small*.6+8))
+    end
+    local function counterCells(run,relics,style)
+        local cells,column={},1
+        for index,id in ipairs(relics)do
+            local _,value=counterValue(run,id)
+            local span=math.ceil((counterWidth(value)-20+style.hit/2+2)/style.step)
+            local last=style.count-(index<#relics and 1 or 0)
+            if column+span-1>last then
+                cells[style.count]='+'..integer(#relics-index+1)
+                break
+            end
+            cells[column]=index
+            column=column+span
+        end
+        return cells
+    end
     local function paintCounter(slot,run,id,battle)
         local key,value
         if id then key,value=counterValue(run,id)end
         local numeric=battle and type(value)=='number' and value>=0
         local counter=slot:GetChild('counter')
-        counter:SetVisible(not not numeric);counter.text=numeric and tostring(value) or ''
+        counter:SetVisible(not not numeric);counter.text=numeric and integer(value) or ''
+        if battle then
+            local width=counterWidth(value)
+            counter:SetAnchoredPosition((width-40)/2,-10)
+            counter:SetSizeDelta(width,36)
+        end
         if official and platform.color then
             local ink=battle and spentCounter(key,value) and 110 or 255
             slot:GetChild('icon').imageColor=platform.color(ink,ink,ink,255)
@@ -214,20 +240,22 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
         icon:SetVisible(not more)
         slot:GetChild('more'):SetVisible(more)
         slot:GetChild('more').text=more and cell or ''
-        if cell and not more then M.paint(icon,relics[i],style.icon,platform,run)end
-        paintCounter(slot,run,cell and not more and relics[i] or nil,official)
+        local index=cell==true and i or type(cell)=='number' and cell or nil
+        if index then M.paint(icon,relics[index],style.icon,platform,run)end
+        paintCounter(slot,run,index and relics[index] or nil,official)
     end
     function self.refreshBar(_,run,visible,inputBlocked)
         local relics=run and run.relics or {}
         local style=official and battleBar or baseBar
         self.barInteractive=official and visible and not inputBlocked and not self.visible or false
-        if not self.barInteractive or self.barRun~=run or self.hoverIndex and relics[self.hoverIndex]~=self.hoverId then
+        local cells=official and counterCells(run,relics,style) or M.barCells(#relics,style.count)
+        if not self.barInteractive or self.barRun~=run or self.hoverIndex and relics[cells[self.hoverIndex]]~=self.hoverId then
             self:resetBarHover()
         end
         self.barRun=run
         bar:SetVisible(visible and run~=nil)
         bar:GetChild('tray'):SetVisible(false) -- STS: discs float under the HP row, no tray capsule
-        local cells=M.barCells(#relics,style.count)
+        barCells=cells
         for i=1,boundCount do paintBarCell(i,cells[i] or false,relics,run,style)end
     end
     root.disableCursorEventPassthrough=true
@@ -247,8 +275,10 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
     end
     local function openSlot(i)
         -- The overflow cell represents a collection, not the relic at its index.
-        if bar:GetChild('slot'..i):GetChild('more').visible then return onSlot()end
-        return onSlot(i)
+        local cell=barCells[i]
+        if type(cell)=='string' then return onSlot()end
+        if cell then return onSlot(cell==true and i or cell)end
+        return false
     end
     for i=1,boundCount do
         local hit=bar:GetChild('slot'..i):GetChild('hit')
@@ -261,8 +291,9 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
                 self:resetBarHover();self.hoverIndex=i
                 slot:GetChild('icon'):SetLocalScale(1.25,1.25,1)
                 Art.scale(slot:GetChild('icon'),1.25)
-                if tooltip and self.barRun and self.barRun.relics[i] then
-                    local entry=self:entry(self.barRun,i)
+                local index=barCells[i]
+                if tooltip and self.barRun and self.barRun.relics[index] then
+                    local entry=self:entry(self.barRun,index)
                     self.hoverId=entry.id
                     tooltip:GetChild('name').text=entry.name
                     tooltip:GetChild('effect').text=entry.description..(entry.status and '\n'..entry.status or '')

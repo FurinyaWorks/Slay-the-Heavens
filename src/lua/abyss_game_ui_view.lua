@@ -14,6 +14,7 @@ local Acts=require('abyss_acts')
 local NativePages=require('abyss_native_pages')
 local Input=require('abyss_game_ui_input')
 local PageReveal=require('abyss_page_reveal')
+local RunHud=require('abyss_run_hud')
 local M = {}
 local function building(status)
     return status and (status.phase=='building' or status.phase=='revealing')
@@ -254,8 +255,9 @@ function M.refreshMapResources(child)
     return function(run)
             if run then
                 local resources = child("mapPanel"):GetChild("resources")
-                resources:GetChild("hp").text = number(run.hp) .. "/" .. number(run.maxHp)
-                resources:GetChild("gold").text = number(run.gold)
+                local hp,gold=RunHud.resourceText(run)
+                resources:GetChild("hp").text=hp
+                resources:GetChild("gold").text=gold
             end
         end
 end

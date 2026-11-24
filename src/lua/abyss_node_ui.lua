@@ -12,7 +12,7 @@ local EndingUI=require('abyss_node_ui_ending')
 local EventUI=require('abyss_node_ui_events')
 local RelicView=require('abyss_relic_view_ui')
 local MatchUI=require('abyss_match_event_ui')
-local number = require("abyss_numbers").integer
+local RunHud=require('abyss_run_hud')
 local C = Theme.color
 local kinds = { camp = "营地", shop = "商店", event = "未知事件", treasure = "宝箱",ending_proceed='真结局' }
 local layout = Theme.layout.nativeNode
@@ -110,8 +110,9 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
             identity:SetVisible(not node or node.type ~= 'ending_proceed')
         end
         ctx.child("title").text = nodeHeaderTitle(node, ctx.self.run.floor)
-        ctx.child("hp").text = number(ctx.self.run.hp) .. "/" .. number(ctx.self.run.maxHp)
-        ctx.child("gold").text = number(ctx.self.run.gold)
+        local hp,gold=RunHud.resourceText(ctx.self.run)
+        ctx.child("hp").text=hp
+        ctx.child("gold").text=gold
         ctx.child("deck").text = tostring(#ctx.self.run.deck)
         -- TASK-4.7: the shared top-bar disc row and 遗物 N button carry this now.
         ctx.child("relics").text = ""

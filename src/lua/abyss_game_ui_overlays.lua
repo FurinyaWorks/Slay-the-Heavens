@@ -1,4 +1,4 @@
-local number = require("abyss_numbers").integer
+local RunHud=require('abyss_run_hud')
 local PageReveal=require('abyss_page_reveal')
 local Navigation=require('abyss_game_ui_navigation')
 local M = {}
@@ -69,14 +69,14 @@ function M.canManagePotions(openingCovered,self)
         end
 end
 
-function M.resourceHint(self,canManagePotions,inCombat)
+function M.resourceHint(self,canManagePotions)
     return function(kind)
             if self.potionUI.visible or not canManagePotions(self.run) then return false end
             local run=self.run
-            local player=inCombat() and run.combat.player or run
+            local hp,gold=RunHud.resourceText(run)
             local title=kind=='hp' and '生命' or '金币'
-            local text=kind=='hp' and ('当前生命 '..number(player.hp)..'/'..number(player.maxHp)..'。\n生命归零即本局失败；战斗之间不会自动回满。')
-                or ('当前金币 '..number(run.gold)..'。\n可在商店购买卡牌、遗物、药水，或支付移除卡牌等服务。')
+            local text=kind=='hp' and ('当前生命 '..hp..'。\n生命归零即本局失败；战斗之间不会自动回满。')
+                or ('当前金币 '..gold..'。\n可在商店购买卡牌、遗物、药水，或支付移除卡牌等服务。')
             if not self.deckUI:inspectText(run,title,text) then return false end
             self.deckUI.closeOnOutside=true;self.battleUI.selected=nil;self:refresh();return true
         end

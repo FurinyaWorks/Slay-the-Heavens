@@ -138,7 +138,7 @@ function M.new(root, data, presentation, clickEvent, platform)
     end
     local inCombat = Overlays.inCombat(self)
     local canManagePotions = Overlays.canManagePotions(inputCovered,self)
-    local resourceHint = Overlays.resourceHint(self,canManagePotions,inCombat)
+    local resourceHint = Overlays.resourceHint(self,canManagePotions)
     self.relicUI=require('abyss_relic_view_ui').new(child('relicPanel'),child('relicBar'),clickEvent,platform,
         function(run,id)return self.nodeUI:describeRelic(run,id)end,function()return self:closeDeck()end,
         function(i)return self:openRelics(i)end,function()return self.mode end)
