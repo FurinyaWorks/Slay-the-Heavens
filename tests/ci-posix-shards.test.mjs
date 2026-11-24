@@ -123,3 +123,17 @@ test('current Fork POSIX aggregate retains its complete push and draft scope',()
   assert.match(aggregate,/^    needs: \[impact, engineering-posix-shards, fast\]$/m);
   assert.doesNotMatch(aggregate,/continue-on-error:|\|\| true/);
 });
+
+test('current POSIX suite retains its exact archived preflight source', async () => {
+  const { beforePreflightSource } = await import('./helpers/fork-preflight-source.mjs');
+  const path = 'tests/ci-posix-shards.test.mjs';
+  const source = readFileSync(path, 'utf8').replaceAll('\r\n', '\n');
+  const expected = '1512e7464481b1b44320ab1c78f0cd5a46f0dce36a6e7e98df947881fca3fe67';
+  for (const input of [source, source.replaceAll('\n', '\r\n')]) {
+    const archived = beforePreflightSource(path, input).replaceAll('\r\n', '\n');
+    assert.equal(createHash('sha256').update(archived).digest('hex'), expected);
+    const drift = input + '\n';
+    assert.equal(beforePreflightSource(path, drift), drift);
+    assert.equal(beforePreflightSource('foreign/' + path, input), input);
+  }
+});
