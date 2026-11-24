@@ -72,4 +72,6 @@ for _,name in ipairs(${toLua(modules)})do package.preload[name]=assert(loadfile(
   runFixture('official_choice_pagination',/OFFICIAL_CHOICE_GRID_PASS/));
  await t.test('room pickers and Match preserve their existing flows',()=>
   runFixture('official_node_picker_pagination',/OFFICIAL_NODE_PICKER_PAGINATION_PASS/));
+ await t.test('room picker text, cards and actions have disjoint resolved bounds',()=>
+  runFixture('official_node_picker_layout',/OFFICIAL_NODE_PICKER_LAYOUT_PASS/));
 });

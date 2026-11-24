@@ -223,9 +223,18 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
             ctx.merchant:enter(ctx.self.run)
         end
         ctx.merchant:setVisible(merchantVisible(ctx, node, active))
-        local message=ctx.self.notice ~= "" and ctx.self.notice or hint
-        if repeatedEventNotice(ctx,node,message)then message=''end
+        local message=ctx.self.notice ~= "" and ctx.self.notice or hint or ""
         local notice=ctx.child("notice")
+        if screen == "pickerView" and not ctx.enhancedForge(node) and not MatchUI.isBoard(node.event) then
+            -- Keep prompts and errors in the same coordinate space as the paged cards.
+            notice.text = ""
+            notice = ctx.child("pickerView"):GetChild("empty")
+            ctx.show(notice, message ~= "")
+            notice.text = message
+            ctx.ink(notice, ctx.self.failed and C.danger or C.text)
+            return
+        end
+        if repeatedEventNotice(ctx,node,message)then message=''end
         local mobile=ctx.options.mobileRunHud
         if mobile then positionNotice(notice,screen,mobile.contentTop) end
         notice.text = message
@@ -344,7 +353,7 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         backLabel,confirmLabel,confirmOk,confirmFn,skipRestReward,recallObserve=ctx.chooseFooter(result,node,view,screen,recallSource,treasureSource,confirm)
         ctx.bindFooter(back,confirm,backLabel,confirmLabel,confirmOk,skipRestReward)
         ctx.bindTreasureBack(back,node,active)
-        ctx.action("confirm", confirmOk, confirmFn, screen == "pickerView" and "请先在上方选择一张卡牌" or nil, nil, recallObserve)
+        ctx.action("confirm", confirmOk, confirmFn, screen == "pickerView" and "请先选择一张卡牌" or nil, nil, recallObserve)
         ctx.bindStagedEventActions(node);ctx.clearUnusedNativeArt(previousArt)
         self.failed = false
         ctx.roomMotion:paint()
