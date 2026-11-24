@@ -2622,8 +2622,8 @@
         "green_louse",
         "looter",
         "raven_adept",
-        "red_louse",
         "red_guard",
+        "red_louse",
         "spike_slime_m"
       ],
       "source": "src/lua/abyss_room_encounters.lua#Exordium Thugs",
@@ -2931,12 +2931,12 @@
       "id": "golden_wing",
       "originalId": "Golden Wing",
       "choices": [
-        "sacrifice",
+        "endure_damage",
         "purge",
         "take_gold",
         "leave"
       ],
-      "eligibility": "take_gold requires a base damage effect >= 10; purge follows sacrifice",
+      "eligibility": "take_gold requires a base damage effect >= 10; purge follows endure_damage",
       "source": "src/lua/abyss_event_pool.lua#contentId",
       "profile": "events",
       "channels": [
@@ -3518,8 +3518,8 @@
       "originalId": "The Joust",
       "choices": [
         "continue",
-        "back_favorite",
-        "back_challenger",
+        "support_challenger",
+        "support_owner",
         "leave"
       ],
       "stages": [
