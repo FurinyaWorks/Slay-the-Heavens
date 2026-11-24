@@ -3,7 +3,9 @@
 local Run,D,P,R,C=require('abyss_run'),require('abyss_data'),require('abyss_relic_pool'),require('abyss_sts_random'),require('abyss_combat')
 local Shop,Rewards,T=require('abyss_shop'),require('abyss_relic_rewards'),require('abyss_treasure')
 local vectors=dofile('tests/fixtures/sts1-class-relic-pool-vectors.lua')
+local currentSource={['Gambling Chip']='Tactical Badge',SlaversCollar='ArenaCollar'}
 local function same(a,b)
+ if type(b)=='string' then b=currentSource[b] or b end
  assert(type(a)==type(b),'type mismatch')
  if type(a)~='table'then assert(a==b,tostring(a)..' ~= '..tostring(b));return end
  for k,v in pairs(a)do same(v,b[k])end;for k in pairs(b)do assert(a[k]~=nil,'extra '..tostring(k))end

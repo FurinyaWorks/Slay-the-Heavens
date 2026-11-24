@@ -10,7 +10,6 @@ import { nativeBgmGraphSource, nativeBgmSignals } from './native-bgm-graph.mjs';
 import { fileRecord } from './evidence-files.mjs';
 import { nativeUiVariables } from './native-candidate-scripts.mjs';
 import {embeddedScripts} from './native-script-inventory.mjs';
-import {assertClientScriptText} from './check-release-text.mjs';
 import {runNativeClientCheck} from './native-client-check.mjs';
 import {writeScriptBatch} from './native-script-batch.mjs';
 import {assertCandidateArtReceipt} from './candidate-art-policy.mjs';
@@ -99,6 +98,7 @@ try {
       || readback.scripts.some(row => typeof row.source !== 'string'
         || createHash('sha256').update(row.source).digest('hex') !== full.moduleDigests[row.name]))
       throw new Error('Final audio script readback differs from the full candidate');
+    const {assertClientScriptText}=await import('./check-release-text.mjs');
     scriptText = assertClientScriptText(readback.scripts, 'audio/candidate.gil');
   }
   const baseAfter = hash(baseMap);

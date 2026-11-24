@@ -13,8 +13,9 @@ test('current launch ledger validates all production relics and both special cur
  const added=["raven_mask","face_of_cleric","gremlin_mask","nloths_mask","ssserpent_head","nloths_gift","bloody_idol","augmentation_core","necronomicon","enchiridion","nilrys_codex"];
  const prior=definitions.filter(row=>!added.includes(row.id));
  assert.equal(prior.length,142);
- // Exact original 1fcd321 ID inventory, checked directly against current data, not projected.
- assert.equal(createHash('sha256').update(JSON.stringify(prior.map(row=>row.id).sort())).digest('hex'),'4cbcf542495317a582b33fe066f1f77f39023099ea6998a37e11db8a10db7758');
+ // Keep the original inventory digest, translating only the two release IDs.
+ const originalId = new Map([['tactical_badge', 'gambling_chip'], ['arena_collar', 'slavers_collar']]);
+ assert.equal(createHash('sha256').update(JSON.stringify(prior.map(row=>originalId.get(row.id) ?? row.id).sort())).digest('hex'),'4cbcf542495317a582b33fe066f1f77f39023099ea6998a37e11db8a10db7758');
  const queues=JSON.parse(readFileSync('data/catalogs/sts1-relic-queues.json','utf8')).queues;
  const ordinary=['common','uncommon','rare','shop','boss'].flatMap(tier=>queues[tier]);
  assert.equal(ordinary.length,130);assert.equal(new Set(ordinary).size,130);

@@ -22,7 +22,6 @@ import { toLua } from './build-lua-data.mjs';
 import { nativeCardArtArgs, prepareNativeCardArt, nativeCardArtBuildReceipt, verifyNativeCardArtReceipt } from './card-art-samples.mjs';
 import {reusableUi} from './native-candidate-ui-cache.mjs';
 import {embeddedScripts} from './native-script-inventory.mjs';
-import {assertClientScriptText} from './check-release-text.mjs';
 import {runNativeClientCheck} from './native-client-check.mjs';
 import {assertCandidateArtPolicy,assertCandidateArtReceipt} from './candidate-art-policy.mjs';
 import {lightweightProfile} from './lightweight-2d-profile.mjs';
@@ -338,6 +337,7 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
     receipt.reusedModules=[];
     const moduleDigests={},pendingScripts=[];
     const scriptInputs=[...modules].map(([name,path])=>({name,source:readFileSync(fileRecord(path).path,'utf8').replace(/^\uFEFF/,'')}));
+    const {assertClientScriptText}=await import('./check-release-text.mjs');
     assertClientScriptText(scriptInputs,'candidate-source');
     for(const {name,source} of scriptInputs) {
       const bytes=Buffer.from(source),destination=join(payload,`${name}.lua`);

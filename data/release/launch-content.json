@@ -2077,8 +2077,8 @@
       "profile": "enemies",
       "tier": "normal",
       "channels": [
-        "encounter:raven_adept_solo",
-        "encounter:exordium_thugs"
+        "encounter:exordium_thugs",
+        "encounter:raven_adept_solo"
       ],
       "aiEntry": "src/lua/abyss_enemy_ai.lua"
     },
@@ -2619,9 +2619,9 @@
       "memberIds": [
         "acid_slime_m",
         "blue_guard",
-        "raven_adept",
         "green_louse",
         "looter",
+        "raven_adept",
         "red_louse",
         "red_guard",
         "spike_slime_m"
