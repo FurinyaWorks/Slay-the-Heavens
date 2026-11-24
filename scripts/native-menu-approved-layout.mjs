@@ -3,9 +3,9 @@ import {menuRedBackground} from './menu-red-scene.mjs';
 const logo=JSON.parse(readFileSync(new URL('../data/presentation/native-menu-sts1-logo.json',import.meta.url),'utf8'));
 const controls=node=>node.children??node.controls;
 const find=(node,name)=>controls(node).find(child=>child.name===name);
-// STS1 PC reference: x=6% text edge; first/last original menu positions.
+// STS1 PC reference for the text edge and 56-unit spacing between visible options.
 // Keep native transaction handles, shared result start and session resume logic.
-export const nativeMenuFrames={start:[-464,-114,208,48],quit:[-464,-282,208,48]};
+export const nativeMenuFrames={start:[-464,-114,208,48],quit:[-464,-170,208,48]};
 const rect=(name,x,w,colour,opacity)=>({name,kind:'image',position:[x,0],size:[w,42],image:100001,colour,opacity});
 function styleButton(button,frame){
  button.position=frame.slice(0,2);button.size=frame.slice(2);
