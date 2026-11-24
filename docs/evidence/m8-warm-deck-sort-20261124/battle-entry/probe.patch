@@ -1,0 +1,226 @@
+--- probe.lua
++++ battle-probe.lua
+@@ -79,7 +79,7 @@
+                 return factory.create(parent,part)
+             end
+             local control=actors.instantiate(index,parent)
+-            if index==actors.templateIndex then Native.decorate(assert(control:GetChild('monsterArt'))) end
++            if index==actors.templateIndex and control:GetChild('monsterArt') then Native.decorate(control:GetChild('monsterArt')) end
+             return control
+         end,
+         DestroyClientUIControl=function(control)
+@@ -120,16 +120,32 @@
+         end
+     end
+     assert(host.mode=='map' and host.mapUI.navigationEnabled)
+-    local source,before=host.run.deck,{}
+-    for i=1,amount do
+-        local card=F.Combat.copy(source[(i-1)%#source+1])
+-        card.uid=1000+i
+-        before[i]=card
++    local roster=dofile(os.getenv('DECK_ROSTER'))
++    host.run.deck={}
++    for i,id in ipairs(roster)do host.run.deck[i]={uid=1000+i,cardId=id,upgraded=false} end
++    host.run.nextDeckUid=1000+#roster+1
++    local routes=dofile('tests/lua/support/map_routes.lua')
++    local path=routes.to(host.map,function(node)return node.type=='combat' end)
++    if #path>1 then
++        host.run.nodeFlow=nil
++        for i=1,#path-1 do assert(require('abyss_map').choose(host.map,path[i])) end
++        host.run.floor=host.map.floor;host:refresh();settle()
++    end
++    local target
++    for slot,id in pairs(host.mapUI.slots)do
++        if id==path[#path] then
++            local node=F.mapControl(root:GetChild('mapPanel'),'node'..slot)
++            target=node.click and node or node:GetChild('hit')
++        end
+     end
+-    host.run.deck=before
+-    host:refresh()
++    assert(target and target.raycastTarget and target.click(),'actual map battle tap failed')
+     settle()
+-    assert(totals.created==0 and totals.parts==0,'premature deck creation before first browse')
++    local combat=host.run.combat
++    assert(#combat.draw>22 and #combat.discard==0)
++    for i=1,12 do table.insert(combat.discard,table.remove(combat.draw)) end
++    host:refresh();settle()
++    assert(host.mode=='battle' and combat.phase=='player' and host.battleUI.active)
++    assert(totals.created==0 and totals.parts==0,'allocation before first browse')
+     return host,root,totals,settle,progressive
+ end
+ 
+@@ -158,95 +174,98 @@
+     return nodes,listeners,roots
+ end
+ 
+-local function capture(amount,iteration,cycleCount)
+-    local host,root,totals,settle,progressive=makeHost(amount)
++local function capture(kind,iteration)
++    local host,root,totals,settle,progressive=makeHost(75)
++    local combat=host.run.combat
++    local battle=root:GetChild('battlePanel')
+     local panel=root:GetChild('deckPanel')
+-    local grid,chrome,returnButton=panel:GetChild('pileGrid'),panel:GetChild('pileChrome'),panel:GetChild('pileReturn')
+-    local open=root:GetChild('deckEntry'):GetChild('open'):GetChild('hit')
+-    local back=returnButton:GetChild('hit')
++    local deck=host.deckUI
++    local grid,chrome=panel:GetChild('pileGrid'),panel:GetChild('pileChrome')
++    local back=panel:GetChild('pileReturn'):GetChild('hit')
++    local entry=(kind=='permanent' and root:GetChild('deckEntry'):GetChild('open') or battle:GetChild(kind..'Icon')):GetChild('hit')
+     local cover=root:GetChild('pageReveal')
+-    local veil,message=cover:GetChild('veil'),cover:GetChild('message')
+-    local expected=math.min(amount,10)
+-
++    local veil,hint=cover:GetChild('veil'),cover:GetChild('message')
++    local source=kind=='permanent' and host.run.deck or combat[kind]
++    local expected=math.min(#source,10)
++    local function sig(list)
++        local a={}
++        for i,c in ipairs(list)do a[i]=c.uid..':'..c.cardId end
++        return table.concat(a,',')
++    end
++    local permanent,draw,discard=sig(host.run.deck),sig(combat.draw),sig(combat.discard)
++    local function unchanged()
++        assert(host.run.combat==combat and combat.phase=='player')
++        assert(permanent==sig(host.run.deck) and draw==sig(combat.draw) and discard==sig(combat.discard))
++    end
+     local function visual()
+-        local blocking=visible(veil) and (not veil.imageColor or veil.imageColor.a>0)
+-        local shell=visible(chrome) and visible(returnButton) and (not blocking or host.pageReveal.localFrame)
+-        local count=0
+-        if not blocking and visible(grid) then
+-            for _,control in pairs(grid.children) do
+-                if control.name=='AbyssBattlePileCard' and visible(control) then
+-                    assert(control:GetChild('face'):GetChild('name').text~='','exposed an unpainted face')
+-                    for _,part in ipairs(Binding.parts) do
+-                        local mount=control
+-                        for _,segment in ipairs(part.path) do mount=assert(mount:GetChild(segment)) end
+-                        assert(next(mount.children),'exposed an unmounted face segment')
++        local blocked=visible(veil) and (not veil.imageColor or veil.imageColor.a>0)
++        local shell=visible(chrome) and visible(back) and (not blocked or host.pageReveal.localFrame)
++        local count,tappable=0
++        if not blocked and visible(grid) then
++            for _,card in pairs(grid.children)do
++                if card.name=='AbyssBattlePileCard' and visible(card) then
++                    assert(card:GetChild('face'):GetChild('name').text~='','exposed unpainted face')
++                    for _,part in ipairs(Binding.parts)do
++                        local mount=card
++                        for _,segment in ipairs(part.path)do mount=assert(mount:GetChild(segment)) end
++                        assert(next(mount.children),'exposed unmounted segment')
+                     end
+                     count=count+1
++                    local hit=card:GetChild('hit')
++                    if hit and visible(hit) and hit.raycastTarget~=false then tappable=hit end
+                 end
+             end
+         end
+-        local hint=visible(message)
+-        return shell,visible(panel) and not blocking,count,blocking,hint
++        return shell,count,blocked,visible(hint),tappable
+     end
+-
+     local function measure(phase)
+-        assert(visible(open) and open.raycastTarget,'actual deck entry unavailable')
+-        local rootsBefore,partsBefore=totals.created,totals.parts
+-        local begin=os.clock()
+-        assert(open.click())
+-        local callbackMS=(os.clock()-begin)*1000
+-        local activeMS,peakUpdateMS=callbackMS,0
+-        local shellFrame,uncoveredFrame,firstFrame,fullFrame,firstCpuMs
+-        local hintFrames,veilFrames,maxVisible=0,0,0
+-        for n=0,120 do
+-            local chromeVisible,uncovered,count,covered,showHint=visual()
+-            if chromeVisible then shellFrame=shellFrame or n end
+-            if uncovered then uncoveredFrame=uncoveredFrame or n end
+-            if count>0 and not firstFrame then firstFrame,firstCpuMs=n,activeMS end
+-            if covered then veilFrames=veilFrames+1 end
+-            if showHint then hintFrames=hintFrames+1 end
+-            maxVisible=math.max(maxVisible,count)
+-            if not (host.deckUI.pendingGrid or host.pageReveal:covered()) then
+-                fullFrame=n
+-                assert(count==expected and uncovered and not showHint,'full page did not expose expected cards')
+-                break
++        assert(visible(entry) and entry.raycastTarget~=false,'HUD entry missing or not tappable '..kind)
++        local c,p=totals.created,totals.parts
++        local began=os.clock()
++        assert(entry.click(),'HUD entry rejected '..kind)
++        local sync=(os.clock()-began)*1000
++        assert(deck.visible and (deck.pileKind==kind or kind=='permanent' and deck.pileKind==nil))
++        assert(#deck.allCards==#source)
++        local shell,first,full,usable,firstCpu,fullCpu,veils,hints,checks=nil,nil,nil,nil,nil,nil,0,0,0
++        local elapsed=sync
++        for i=0,120 do
++            local shown,count,blocked,slow,hit=visual()
++            if shown then shell=shell or i end
++            if count>0 and not first then first,firstCpu=i,elapsed end
++            if blocked then veils=veils+1 end
++            if slow then hints=hints+1 end
++            local ready=not deck.pendingGrid and not host.pageReveal:covered()
++            if hit then
++                if ready then
++                    assert(count==expected)
++                    full,fullCpu=i,elapsed
++                    if not hit.click() then error('first fully ready card click failed '..kind) end
++                    assert(deck.cardDetail and deck.cardDetail.instance)
++                    usable=i
++                    break
++                end
++                assert(not hit.click() and not deck.cardDetail,'early/stale card hit accepted')
++                checks=checks+1
+             end
+-            local now=os.clock()
+-            OnUpdate(frame)
+-            local ms=(os.clock()-now)*1000
+-            activeMS,peakUpdateMS=activeMS+ms,math.max(peakUpdateMS,ms)
+-            assert(script.updating and not host.disabled and not host.deckUI.prepareError)
++            assert(i<120 and not host.disabled and not deck.prepareError)
++            local beganUpdate=os.clock();OnUpdate(frame);elapsed=elapsed+(os.clock()-beganUpdate)*1000
+         end
+-        assert(shellFrame and uncoveredFrame and firstFrame and fullFrame,'unobserved deck milestone')
+-        local nodes,listeners,roots=inventory(panel,grid)
+-        local columns={amount,iteration,phase,step,tostring(progressive),callbackMS,shellFrame,uncoveredFrame,
+-            firstFrame,fullFrame,firstCpuMs,activeMS,peakUpdateMS,veilFrames,hintFrames,nodes,listeners,roots,
+-            totals.created-rootsBefore,totals.parts-partsBefore,CardArt.status().liveControls}
+-        report('ROW\t'..table.concat(columns,'\t'))
+-        assert(back.click())
++        assert(shell and first and full and usable,'missing measured milestones')
++        report(table.concat({tostring(progressive),iteration,kind,#source,phase,shell,first,usable,full,veils,hints,checks,totals.created-c,totals.parts-p,sync,firstCpu,fullCpu},'\t'))
++        unchanged()
++        -- True card hit opened detail. Use actual pile return to close detail, then the list.
+         settle()
+-        assert(not visible(panel),'deck still visible after real back hit')
++        assert(back.click(),'detail back rejected');settle()
++        assert(deck.visible and not deck.cardDetail)
++        assert(back.click(),'list back rejected');settle()
++        assert(not deck.visible and host.battleUI.active)
++        unchanged()
+     end
+-
+-    measure('cold')
+-    measure('warm')
+-    local initialNodes,initialListeners,initialRoots=inventory(panel,grid)
+-    for _=1,cycleCount do
+-        assert(open.click());settle()
+-        assert(back.click());settle()
+-    end
+-    local nodes,listeners,roots=inventory(panel,grid)
+-    assert(nodes==initialNodes and listeners==initialListeners and roots==initialRoots)
+-    local columns={amount,iteration,cycleCount,nodes,listeners,roots,totals.created,totals.parts,totals.destroyed}
+-    report('RESOURCE\t'..table.concat(columns,'\t'))
+-    OnDestroy()
+-    assert(not script.updating)
++    measure('cold');measure('warm')
++    OnDestroy();assert(not script.updating)
+     script,game=nil,nil
+ end
+-
+-report('FIELDS\tamount\titeration\tphase\tsynthetic_clock_seconds\tprogressive\tcallback_ms\tshell_frame\tuncovered_frame\tfirst_complete_frame\tready_frame\tfirst_complete_cpu_ms\tready_cpu_ms\tpeak_update_ms\tveil_frames\thint_frames\tlive_panel_nodes\tlive_listeners\tlive_deck_roots\tnew_roots\tnew_parts\tlive_native_art')
+-report('RESOURCE_FIELDS\tamount\titeration\tcycles\tlive_closed_panel_nodes\tlive_closed_listeners\tlive_closed_roots\tcreated_roots\tcreated_parts\tdestroyed_roots')
+-local amount=assert(tonumber(os.getenv('DECK_AMOUNT')))
+-for i=1,assert(tonumber(os.getenv('DECK_SAMPLES'))) do
+-    capture(amount,i,tonumber(os.getenv('DECK_CYCLES')) or 0)
++report('progressive\titeration\tkind\tpile_size\tphase\tshell_frame\tfirst_complete\tfirst_click_accepted\tfull_ready\tveil_updates\thint_updates\tearly_rejections\tnew_roots\tnew_parts\tclick_cpu_ms\tfirst_cpu_ms\tready_cpu_ms')
++for i=1,tonumber(os.getenv('DECK_SAMPLES') or '1') do
++    for _,kind in ipairs({'draw','discard','permanent'})do capture(kind,i)end
+ end
