@@ -2,7 +2,7 @@
 -- Reviewed fixture; never regenerated from production options during tests.
 return {
  ["accursed_blacksmith"]="forge,leave,rummage",
- ["addict"]="buy,leave,steal",
+ ["traveling_merchant"]="buy,leave,steal",
  ["back_to_basics"]="elegance,simplicity",
  ["beggar"]="donate,leave",
  ["big_fish"]="banana,box,donut",
@@ -12,7 +12,7 @@ return {
  ["cursed_tome"]="leave,read",
  ["dead_adventurer"]="leave,search",
  ["designer"]="continue",
- ["drug_dealer"]="jax,mutagens,test_subject",
+ ["augmenter"]="jax,mutagens,test_subject",
  ["duplicator"]="copy,leave",
  ["face_trader"]="continue",
  ["forgotten_altar"]="offer_idol,shed_blood,smash",
