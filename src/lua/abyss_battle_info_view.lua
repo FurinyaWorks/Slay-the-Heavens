@@ -157,6 +157,44 @@ local function monsterTipTop(columns, actorY, top, floor)
     return math.min(top, math.max(natural, floor + height))
 end
 
+local function nativePowerBox(layer, index, x, y, entry)
+    local box = place(layer, "tip" .. index, x, y, P.width, entry.height)
+    place(box, "edge", 0, 0, P.width, entry.height)
+    place(box, "face", 0, 0, P.width - 2, entry.height - 2)
+    box:SetLocalScale(1, 1, 1)
+    local copy = place(box, "copy", 0, 0, P.width - P.padding * 2, entry.height - P.padding * 2)
+    copy.fontSize, copy.minimumFontSize = P.font, P.font
+    copy.text = entry.text
+    box:SetVisible(true)
+end
+
+local function paintCardTips(panel, rows, anchor, beginCompact, finishCompact)
+    local layer=panel:GetChild("powerTips")
+    beginCompact(panel)
+    panel:GetChild("more"):SetVisible(false)
+    panel:GetChild("page"):SetVisible(false)
+    local edge=Theme.canvas.base[1]/2-Theme.canvas.safe.x
+    local top=Theme.canvas.base[2]/2-L.topBar.height-S.s
+    local floor=-Theme.canvas.base[2]/2+Theme.canvas.safe.y
+    local columns=powerColumns(rows,P.width,P.font,top-floor)
+    local gap=I.cardHoverGap
+    local right,left=anchor.x+anchor.halfW+gap,anchor.x-anchor.halfW-gap
+    local width=#columns*(P.width+P.gap)-P.gap
+    local direction=right+width<=edge or left-width<-edge and anchor.x<=0
+    local index=0
+    for column,items in ipairs(columns)do
+        local offset=(column-1)*(P.width+P.gap)+P.width/2
+        local x=direction and right+offset or left-offset
+        x=math.max(-edge+P.width/2,math.min(edge-P.width/2,x))
+        local y=math.min(top,math.max(anchor.y+anchor.halfH,floor+items.height))
+        for _,entry in ipairs(items.rows)do
+            index=index+1
+            nativePowerBox(layer,index,x,y-entry.y-entry.height/2,entry)
+        end
+    end
+    finishCompact(panel,layer,index,false)
+end
+
 function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, picture)
     local textStyles={}
     local function readingSize(control,name,font)
@@ -363,17 +401,6 @@ function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, pi
 
     local compact, shown = false, 0
     local staticFrame = {"shadow", "border", "plate", "accent", "rule"}
-    local function nativePowerBox(layer, index, x, y, entry)
-        local box = place(layer, "tip" .. index, x, y, P.width, entry.height)
-        place(box, "edge", 0, 0, P.width, entry.height)
-        place(box, "face", 0, 0, P.width - 2, entry.height - 2)
-        box:SetLocalScale(1, 1, 1)
-        local copy = place(box, "copy", 0, 0, P.width - P.padding * 2, entry.height - P.padding * 2)
-        copy.fontSize, copy.minimumFontSize = P.font, P.font
-        copy.text = entry.text
-        box:SetVisible(true)
-    end
-
     local function powerFooter(panel, info, x, floor)
         local line = L.nativeText.lineHeight
         local y = floor - line / 2
@@ -443,33 +470,6 @@ function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, pi
         finishCompact(panel,layer,index,not info.transient)
     end
 
-    local function paintCardTips(panel, rows, anchor)
-        local layer=panel:GetChild("powerTips")
-        beginCompact(panel)
-        panel:GetChild("more"):SetVisible(false)
-        panel:GetChild("page"):SetVisible(false)
-        local edge=Theme.canvas.base[1]/2-Theme.canvas.safe.x
-        local top=Theme.canvas.base[2]/2-L.topBar.height-S.s
-        local floor=-Theme.canvas.base[2]/2+Theme.canvas.safe.y
-        local columns=powerColumns(rows,P.width,P.font,top-floor)
-        local gap=I.cardHoverGap
-        local right,left=anchor.x+anchor.halfW+gap,anchor.x-anchor.halfW-gap
-        local width=#columns*(P.width+P.gap)-P.gap
-        local direction=right+width<=edge or left-width<-edge and anchor.x<=0
-        local index=0
-        for column,items in ipairs(columns)do
-            local offset=(column-1)*(P.width+P.gap)+P.width/2
-            local x=direction and right+offset or left-offset
-            x=math.max(-edge+P.width/2,math.min(edge-P.width/2,x))
-            local y=math.min(top,math.max(anchor.y+anchor.halfH,floor+items.height))
-            for _,entry in ipairs(items.rows)do
-                index=index+1
-                nativePowerBox(layer,index,x,y-entry.y-entry.height/2,entry)
-            end
-        end
-        finishCompact(panel,layer,index,false)
-    end
-
     local function clearPowers(panel)
         if not compact then return end
         panel:GetChild("powerTips"):SetVisible(false)
@@ -491,7 +491,7 @@ function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, pi
             info.tips=actor and describeInfo(battle,info,actor)
         end
         info.sideAnchor=anchor
-        if info.tips and anchor then paintCardTips(panel,info.tips,anchor)
+        if info.tips and anchor then paintCardTips(panel,info.tips,anchor,beginCompact,finishCompact)
         else
             clearPowers(panel)
             child("statusDismiss"):SetVisible(false)

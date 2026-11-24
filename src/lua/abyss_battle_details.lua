@@ -137,11 +137,7 @@ function M.install(owner, ownership, host, dependencies)
         else owner:renderDetailsOnly(cancelled) end
         return owner.info==info
     end
-    function owner:openHelp(spec, source, transient)
-        if self.info and self.info.press then return false end
-        local battle, actor, reward = helpContext(spec)
-        if not actor then return false end
-        if isCard(spec) then return openCardHelp(spec,source,transient,battle,actor,reward) end
+    local function openActorHelp(self,spec,source,transient,battle,actor)
         local enemyReader = spec.powerTips and spec.index > 0
         if not detailAvailable(spec, transient, enemyReader) then return false end
         local cancelled = not enemyReader and dependencies.cancelPotionAim("已取消药水瞄准。")
@@ -156,9 +152,16 @@ function M.install(owner, ownership, host, dependencies)
         end
         self.info={index=spec.index,id=actor.id,actor=actor,battle=battle,kind=spec.kind,powerTips=spec.powerTips,statusId=spec.statusId,
             offset=spec.offset,position=transient and spec.position or nil,uid=spec.uid,source=source,transient=transient==true,turn=battle.turn,
-            slot=spec.slot,potionId=spec.potionId,inventory=spec.inventory,reward=reward and spec or nil}
+            slot=spec.slot,potionId=spec.potionId,inventory=spec.inventory}
         paintHelp(battle, transient, enemyReader, cancelled)
         return self.info ~= nil
+    end
+    function owner:openHelp(spec, source, transient)
+        if self.info and self.info.press then return false end
+        local battle, actor, reward = helpContext(spec)
+        if not actor then return false end
+        if isCard(spec) then return openCardHelp(spec,source,transient,battle,actor,reward) end
+        return openActorHelp(self,spec,source,transient,battle,actor)
     end
     function owner.queueHelp(_,spec,source,held,touch,card)
         if owner.info and owner.info.press then return end

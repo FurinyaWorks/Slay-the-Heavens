@@ -77,20 +77,31 @@ function M.install(owner, _ownership, host, dependencies)
         local function hoverOnly(spec)
             return spec and spec.powerTips and touchScreen and not touchScreen() and not owner:canPinPowerTips(control)
         end
+        local function cancelCardRead(event)
+            local info=owner.info
+            if not (hoverSlot and info and info.press) then return false end
+            if info.source==control and event and info.press.touch==event.touchId then
+                dependencies.closeInfo()
+                owner:render(true)
+            end
+            return true
+        end
+        local function enterCard()
+            local info=owner.info
+            if touchScreen and touchScreen() or info and info.press then return false end
+            if info and info.source~=control and (info.kind=='card' or info.kind=='rewardCard') then
+                dependencies.closeInfo(true)
+            end
+            owner:setHover(hoverSlot)
+            return true
+        end
         local function cancel(silent,engineDestroyed,event)
             if engineDestroyed then input.engineDestroyed=true end
             if input.engineDestroyed then forgetHelp(control,hoverSlot,input);return end
             local token = input.held or input.released
             if event and token and token.touch ~= event.touchId then return end
             input.held,input.released,input.consumed=nil,nil,nil
-            local info=owner.info
-            if hoverSlot and info and info.press then
-                if info.source==control and event and info.press.touch==event.touchId then
-                    dependencies.closeInfo()
-                    owner:render(true)
-                end
-                return
-            end
+            if cancelCardRead(event) then return end
             closeSource(owner, dependencies.closeInfo, control, silent)
             if hoverSlot and owner.hover==hoverSlot then owner:setHover(nil) end
             if owner.help and owner.help.source==control then owner.help=nil end
@@ -99,14 +110,7 @@ function M.install(owner, _ownership, host, dependencies)
         if hasCursorPair("CursorEnter","CursorExit") then
             on(host.cursor.CursorEnter,function()
                 if not current() then return false end
-                if hoverSlot then
-                    if touchScreen and touchScreen() or owner.info and owner.info.press then return end
-                    local info=owner.info
-                    if info and info.source~=control and (info.kind=='card' or info.kind=='rewardCard') then
-                        dependencies.closeInfo(true)
-                    end
-                    owner:setHover(hoverSlot)
-                end
+                if hoverSlot and not enterCard() then return end
                 local spec = describe()
                 if spec and not spec.kind then
                     if not Pointer.blocked(host.platform) and not (touchScreen and touchScreen()) then

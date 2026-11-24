@@ -687,7 +687,7 @@ GameUI.new=function(root,data,presentation,event,platform)
 end
 local Gate=require('abyss_page_reveal')
 local F=H.F
-local host,ui,battle,_,tap,_,_,root=H.setup({'bludgeon'},{'acid_slime_s'})
+local host,ui,battle,event,tap,_,_,root=H.setup({'bludgeon'},{'acid_slime_s'})
 local gate=assert(host.pageReveal)
 local cover=root:GetChild('pageReveal')
 local rewards=battle:GetChild('rewardList')
@@ -730,8 +730,21 @@ local function expectReward(listVisible,pickerVisible)
  assert(battle.visible and not actor() and not map.visible and rewards.visible==listVisible and picker.visible==pickerVisible)
 end
 for _=1,4 do frame();expectReward(true,false)end
+host.run.rewards.cards[1]='perfected_strike'
+host.run.rewards.cardUpgrades={[1]=true}
 battle:GetChild('cardReward').click();expectReward(false,true)
 for _=1,4 do frame();expectReward(false,true)end
+local card=battle:GetChild('card1')
+local label=card:GetChild('label')
+local text=require('abyss_card_display')
+assert(label.text:find('基础伤害增加3点',1,true)
+ and select(2,text.fitBody(label.text,{label.sizeDeltaX,label.sizeDeltaY})),
+ 'upgraded long reward body overflowed')
+event('card1','down',210);host:update(.36)
+assert(ui.info and ui.info.kind=='rewardCard' and not battle:GetChild('statusInfo').visible)
+event('card1','up',210);event('card1','click',210)
+assert(not ui.info and not host.run.rewards.cardResolved,'reading selected a reward')
+
 local menu,exit=root:GetChild('runMenu'),root:GetChild('exitPanel')
 local showMenu,menuShows=menu.SetVisible,0
 function menu:SetVisible(visible)
