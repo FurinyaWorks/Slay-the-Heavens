@@ -2018,7 +2018,7 @@ test('Release bootstrap raw Full retains complete discovery costs and physical g
   const source=rawBootstrapReadFileSync(path,'utf8').replaceAll('\r\n','\n');
   assert.match(source,/  pull_request:\n    branches: \[develop, master, 'release\/\*\*'\]/);
   assert.match(source,path==='.github/workflows/quality.yml'?
-   /  push:\n    branches: \[develop, master\]\n/:/  push:\n    branches: \[develop, master, 'release\/\*\*'\]/);
+   /  push:\n    branches: \[develop, master, 'ci\/full\/\*\*'\]\n/:/  push:\n    branches: \[develop, master, 'release\/\*\*'\]/);
   assert.match(source,/  merge_group:\n    types: \[checks_requested\]\n    branches: \[develop\]/);
   assert.match(source,/permissions:\n  contents: read/);
  }

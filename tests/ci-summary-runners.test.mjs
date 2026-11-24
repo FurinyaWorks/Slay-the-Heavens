@@ -1,4 +1,4 @@
-import {beforePreflightSource} from './helpers/fork-preflight-source.mjs';
+import {beforePreflightSource,beforeForkPush} from './helpers/fork-preflight-source.mjs';
 import test from 'node:test';
 import {historicalTest} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
@@ -282,8 +282,19 @@ test('combined preflight selects a complete fixed Release predecessor without ma
 });
 
 
+// Deadline inverses retain the complete immutable main-repository sources.
+// The separate raw checks below bind the actual Fork push workflow deadlines.
+function canonicalMainDeadlineWorkflow(raw){
+ const prior=beforeForkPush('.github/workflows/quality.yml',raw);
+ assert.notEqual(prior,raw,'complete current Fork source must authenticate before its reviewed predecessor');
+ const main=prior.replace("timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 45 }}","timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 180 }}")
+  .replace('    runs-on: ubuntu-24.04\n    timeout-minutes: 30\n','    runs-on: ubuntu-24.04\n    timeout-minutes: 90\n');
+ assert.equal(digest(main),'7899a7a476886cb59de684117001eba419dbfa1ba926fe5704b4549f4b422b3e','complete reviewed main deadline successor');
+ return main;
+}
+
 test('reviewed POSIX sixty-minute hard guard preserves exact thirty-minute predecessors and rejects all drift',()=>{
- const actual=beforeHostedDeadlineWorkflow(readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n'));
+ const actual=beforeHostedDeadlineWorkflow(canonicalMainDeadlineWorkflow(readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n')));
  const physical=beforeWindowsDeadlineWorkflow(actual);
  const body=job('engineering-posix-shards',actual);
  assert.match(body,/^    timeout-minutes: 60$/m);
@@ -308,7 +319,7 @@ test('reviewed POSIX sixty-minute hard guard preserves exact thirty-minute prede
 });
 
 test('reviewed Windows seventy-five-minute hard guard retains its exact forty-five-minute predecessor and rejects drift',()=>{
- const physical=beforeHostedDeadlineWorkflow(readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n'));
+ const physical=beforeHostedDeadlineWorkflow(canonicalMainDeadlineWorkflow(readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n')));
  const rules=job('rules',physical);
  const deadline="timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 75 }}";
  assert.ok(rules.includes(deadline),'ordinary and local-special Full retain explicit seventy-five-minute limits');
@@ -335,7 +346,7 @@ test('reviewed Windows seventy-five-minute hard guard retains its exact forty-fi
 
 
 test('current hosted 105/90-minute deadlines preserve local 75 and exact complete predecessor checks',()=>{
- const physical=beforeHostedWindowsDeadlineWorkflow(readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n'));
+ const physical=beforeHostedWindowsDeadlineWorkflow(canonicalMainDeadlineWorkflow(readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n')));
  const windows="timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 105 }}";
  assert.ok(job('rules',physical).includes(windows));
  assert.match(job('engineering-posix-shards',physical),/^    timeout-minutes: 90$/m);
@@ -364,7 +375,7 @@ test('current hosted 105/90-minute deadlines preserve local 75 and exact complet
 
 
 test('current hosted Windows 150-minute guard retains exact ee105, local75 and POSIX90',()=>{
- const physical=beforeHostedWindows180Workflow(readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n')),deadline="timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 150 }}";
+ const physical=beforeHostedWindows180Workflow(canonicalMainDeadlineWorkflow(readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n'))),deadline="timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 150 }}";
  assert.ok(job('rules',physical).includes(deadline));
  assert.match(job('engineering-posix-shards',physical),/^    timeout-minutes: 90$/m);
  const previous=physical.replace(deadline,"timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 105 }}");
@@ -391,7 +402,12 @@ test('current hosted Windows 150-minute guard retains exact ee105, local75 and P
 
 
 test('current hosted Windows 180-minute guard restores exact ed150 and retains local75 and POSIX90',()=>{
- const physical=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n'),deadline="timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 180 }}";
+ const raw=readFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');
+ assert.match(job('rules',raw),/timeout-minutes: \$\{\{ inputs.runner_pool == 'local-special' && 75 \|\| 180 \}\}/);
+ assert.match(job('engineering-posix-shards',raw),/^    timeout-minutes: 90$/m);
+ for(const changed of [raw,raw.replace('|| 180','|| 181'),raw.replace('timeout-minutes: 90','timeout-minutes: 91')])
+  assert.equal(beforeHostedWindows180Workflow(changed),changed,'Fork bytes cannot inherit main-only complete deadline evidence');
+ const physical=canonicalMainDeadlineWorkflow(raw),deadline="timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 180 }}";
  assert.ok(job('rules',physical).includes(deadline));
  assert.match(job('engineering-posix-shards',physical),/^    timeout-minutes: 90$/m);
  const previous=physical.replace(deadline,"timeout-minutes: ${{ inputs.runner_pool == 'local-special' && 75 || 150 }}");
