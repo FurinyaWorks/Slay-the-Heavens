@@ -1,6 +1,7 @@
 -- Read state, issue Run commands. No damage/energy/outcome rules live in this view.
 local Theme = require("abyss_theme")
 local CardInput = require("abyss_card_input")
+local Pointer = require("abyss_pointer_input")
 local Combat = require("abyss_combat")
 local M = {}
 local L = Theme.layout
@@ -310,7 +311,7 @@ function M.install(owner, ownership, host, dependencies)
         if press.touch==(event and event.touchId) and (not input or input==press.input) then
             ownership.releasedDragTouch=press.touch
             dependencies.closeInfo()
-            if ended or not owner:openOverflowCard(info) then owner:render(true) end
+            if ended or Pointer.dragged(event,L.cardDrag.threshold) or not owner:openOverflowCard(info) then owner:render(true) end
         end
         return true
     end
