@@ -97,6 +97,7 @@ export async function buildNativeAudioGame({ baseMap, output, root = process.cwd
   Object.assign(audio, { artFeatures:full.artFeatures, sourceCommit: full.sourceCommit, sourceDirty: full.sourceDirty, payloadDigest: full.payloadDigest,
     startedAt: full.startedAt, productionManifest: full.productionManifest,
     monsterActors: full.monsterActors,
+    deckBrowser: full.deckBrowser,
     ...(full.officialAssetsProfile ? {officialAssetsProfile:full.officialAssetsProfile} : {}), ...refinedOptions,
     ...(full.uiProfile ? {uiProfile:full.uiProfile} : {}),
     ...(full.toolchainIdentity ? {toolchainIdentity:full.toolchainIdentity} : {}),
