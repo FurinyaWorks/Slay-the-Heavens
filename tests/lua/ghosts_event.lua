@@ -156,7 +156,7 @@ test('malformed/repeated actions reject; accept and decline each require distinc
  end
 end)
 test('full13 source/order and real unknown selection remove Ghosts once with no action RNG draws',function()
- same(Pool.new('full',false,2).act,{'Addict','Back to Basics','Beggar','Colosseum','Cursed Tome','Drug Dealer','Forgotten Altar','Ghosts','Masked Bandits','Nest','The Library','The Mausoleum','Vampires'})
+ same(Pool.new('full',false,2).act,{'TravelingMerchant','Back to Basics','Beggar','Colosseum','Cursed Tome','Augmenter','Forgotten Altar','Ghosts','Masked Bandits','Nest','The Library','The Mausoleum','Vampires'})
  local counter
  for n=0,127 do
   local rng=R.atCounter(base.eventSeed,n);local nextRng=R.cloneState(rng)

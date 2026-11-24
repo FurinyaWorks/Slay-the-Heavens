@@ -36,7 +36,7 @@ function M.options(_run,event)
     if event.stage=='intro'then return {row('jax','研习增幅术','获得1张「元素增幅」。'),
         row('test_subject','调校卡牌','必须选择2张可清除卡牌，将它们转化。',event.canTransform),
         row('mutagens','领取增幅晶核','获得增幅晶核；已拥有时获得头环。')}end
-    if event.stage=='choose_card'then return {row('transform','转化两张卡牌','按选择顺序转化两张卡牌，不能跳过或少选。',true,'drug_dealer_transform')}end
+    if event.stage=='choose_card'then return {row('transform','转化两张卡牌','按选择顺序转化两张卡牌，不能跳过或少选。',true,'augmenter_transform')}end
     if event.stage=='result'then return {row('leave','离开','返回路线。')}end
     return {}
 end

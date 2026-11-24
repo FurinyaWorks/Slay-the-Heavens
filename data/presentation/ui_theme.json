@@ -755,7 +755,7 @@
       "explosive_potion": 111046,
       "heart_of_iron": 111048,
       "essence_of_steel": 111048,
-      "cultist_potion": 111046,
+      "raven_potion": 111046,
       "flex_potion": 111046,
       "speed_potion": 111047,
       "duplication_potion": 111047,
@@ -788,7 +788,7 @@
       "nilrys_codex": {"id": 102028, "placeholder": true, "note": "第二幕事件遗物暂沿用批准主题现有宝箱图标；专属美术与设备验收待完成。"},
 
       "nloths_gift": {"id": 102028, "placeholder": true, "note": "事件面孔遗物临时沿用批准主题现有图标；专属美术与实机显示待验。"},
-      "cultist_mask": {"id": 102028, "placeholder": true, "note": "事件面孔遗物临时沿用批准主题现有图标；专属美术与实机显示待验。"},
+      "raven_mask": {"id": 102028, "placeholder": true, "note": "事件面孔遗物临时沿用批准主题现有图标；专属美术与实机显示待验。"},
       "face_of_cleric": {"id": 102028, "placeholder": true, "note": "事件面孔遗物临时沿用批准主题现有图标；专属美术与实机显示待验。"},
       "gremlin_mask": {"id": 102028, "placeholder": true, "note": "事件面孔遗物临时沿用批准主题现有图标；专属美术与实机显示待验。"},
       "nloths_mask": {"id": 102028, "placeholder": true, "note": "事件面孔遗物临时沿用批准主题现有图标；专属美术与实机显示待验。"},

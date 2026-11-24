@@ -6,7 +6,7 @@ local M = {}
 -- and tint. Keep the full name and rules in the existing explicit-use popup.
 local shortNames={entropic_brew='熵酿',fairy_in_a_bottle='精灵',distilled_chaos='混沌',
     gamblers_brew='换牌',liquid_memories='记忆',liquid_bronze='铜液',
-    heart_of_iron='钢心',essence_of_steel='钢甲',cultist_potion='仪式',
+    heart_of_iron='钢心',essence_of_steel='钢甲',raven_potion='仪式',
     essence_of_darkness='黑暗',bottled_miracle='奇迹',ghost_in_a_jar='幽灵'}
 function M.shortName(item)
     local stop=utf8.offset(item.name,3)or #item.name+1

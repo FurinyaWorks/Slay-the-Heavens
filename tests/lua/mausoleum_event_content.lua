@@ -169,7 +169,7 @@ test('Malformed choices and picker commands cannot spend RNG or bypass source sc
 end)
 
 test('Full Act2 catalog draws Mausoleum without changing restricted seven or 13 source entries',function()
- local expected={'Addict','Back to Basics','Beggar','Colosseum','Cursed Tome','Drug Dealer','Forgotten Altar','Ghosts','Masked Bandits','Nest','The Library','The Mausoleum','Vampires'}
+ local expected={'TravelingMerchant','Back to Basics','Beggar','Colosseum','Cursed Tome','Augmenter','Forgotten Altar','Ghosts','Masked Bandits','Nest','The Library','The Mausoleum','Vampires'}
  same(Pool.new('full',false,2).act,expected)
  local counter
  for n=0,127 do

@@ -30,7 +30,7 @@ local pool={
  {'DuplicationPotion','duplication_potion','uncommon'},
  {'DistilledChaos','distilled_chaos','uncommon'},
  {'LiquidMemories','liquid_memories','uncommon'},
- {'CultistPotion','cultist_potion','rare'},
+ {'RavenPotion','raven_potion','rare'},
  {'Fruit Juice','fruit_juice','rare'},
  {'SneckoOil','snecko_oil','rare'},
  {'FairyPotion','fairy_in_a_bottle','rare'},

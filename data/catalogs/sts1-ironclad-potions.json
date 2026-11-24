@@ -835,7 +835,7 @@
       "rarity": "rare",
       "basePrice": 100,
       "basePotencyA0": 1,
-      "proposedProjectId": "cultist_potion",
+      "proposedProjectId": "raven_potion",
       "currentProjectId": null,
       "currentStatus": "missing_definition_and_effect",
       "effectGroup": "sustained_powers",

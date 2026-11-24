@@ -183,7 +183,7 @@ local function sourceDraw(counter)
 end
 
 test('Actual full-pool source draw reaches Beggar without altering the 13-entry source pool',function()
- local expected={'Addict','Back to Basics','Beggar','Colosseum','Cursed Tome','Drug Dealer','Forgotten Altar','Ghosts','Masked Bandits','Nest','The Library','The Mausoleum','Vampires'}
+ local expected={'TravelingMerchant','Back to Basics','Beggar','Colosseum','Cursed Tome','Augmenter','Forgotten Altar','Ghosts','Masked Bandits','Nest','The Library','The Mausoleum','Vampires'}
  same(Pool.new('full',false,2).act,expected)
  local counter
  for n=0,63 do if sourceDraw(n)=='Beggar' then counter=n;break end end

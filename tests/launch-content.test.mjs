@@ -438,7 +438,7 @@ test('three additional Act2 routes record only mocked-local UI wiring while nati
   const manifest=fresh();
   assert.match(manifest.profiles.events.limitation,/locally wired with mocked/);
   assert.match(manifest.profiles.events.limitation,/Actual native acceptance NOT_RUN/);
-  for(const id of ['beggar','mausoleum','addict']){
+  for(const id of ['beggar','mausoleum','traveling_merchant']){
     const row=manifest.events.find(event=>event.id===id);
     assert.deepEqual(row.channels,['explicit:Nodes.enter']);
     assert.equal(row.poolMode,'explicit-only');

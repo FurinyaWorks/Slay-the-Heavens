@@ -10,7 +10,7 @@ test('current launch ledger validates all production relics and both special cur
  const manifest=JSON.parse(readFileSync('data/release/launch-content.json','utf8'));
  const definitions=JSON.parse(readFileSync('data/relics.json','utf8')).relics;
  assert.equal(definitions.length,153);
- const added=["cultist_mask","face_of_cleric","gremlin_mask","nloths_mask","ssserpent_head","nloths_gift","bloody_idol","mutagenic_strength","necronomicon","enchiridion","nilrys_codex"];
+ const added=["raven_mask","face_of_cleric","gremlin_mask","nloths_mask","ssserpent_head","nloths_gift","bloody_idol","mutagenic_strength","necronomicon","enchiridion","nilrys_codex"];
  const prior=definitions.filter(row=>!added.includes(row.id));
  assert.equal(prior.length,142);
  // Exact original 1fcd321 ID inventory, checked directly against current data, not projected.
@@ -45,7 +45,7 @@ test('Calling Bell ledger rejects ordinary transformation channels, wrong identi
 test('current runtime retains all130 ordinary bindings and excludes eleven new SPECIAL dependencies',()=>{
  buildLuaData();writeFileSync('build/lua/current_event_relic_inventory.lua',`
 local Run,D,Rewards=require('abyss_run'),require('abyss_data'),require('abyss_relic_rewards')
-local r=Run.new(D,42);local n=0;local special={cultist_mask=true,face_of_cleric=true,gremlin_mask=true,nloths_mask=true,ssserpent_head=true,nloths_gift=true,bloody_idol=true,mutagenic_strength=true,necronomicon=true,enchiridion=true,nilrys_codex=true}
+local r=Run.new(D,42);local n=0;local special={raven_mask=true,face_of_cleric=true,gremlin_mask=true,nloths_mask=true,ssserpent_head=true,nloths_gift=true,bloody_idol=true,mutagenic_strength=true,necronomicon=true,enchiridion=true,nilrys_codex=true}
 for _,tier in ipairs({'common','uncommon','rare','shop','boss'})do
  for _,source in ipairs(r.relicPool.catalog.queues[tier])do
   local d=assert(Rewards.definition(r,source),'ordinary source binding disappeared '..source)

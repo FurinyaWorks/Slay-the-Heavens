@@ -719,7 +719,7 @@
       "trigger": "hooks",
       "effects": []
     },
-    {"id": "cultist_mask", "sourceId": "CultistMask", "name": "鸦羽面具", "description": "战斗开始时发出一声鸦鸣；没有额外属性。", "rarity": "special", "trigger": "hooks", "effects": []},
+    {"id": "raven_mask", "sourceId": "RavenMask", "name": "鸦羽面具", "description": "战斗开始时发出一声鸦鸣；没有额外属性。", "rarity": "special", "trigger": "hooks", "effects": []},
     {"id": "face_of_cleric", "sourceId": "FaceOfCleric", "name": "圣职者之脸", "description": "每场战斗结束后，生命上限增加1，并按治疗规则回复1点生命。", "rarity": "special", "trigger": "hooks", "effects": []},
     {"id": "gremlin_mask", "sourceId": "GremlinMask", "name": "地精容貌", "description": "每场战斗开始时，获得1层虚弱。", "rarity": "special", "trigger": "combat_start", "effects": [{"op": "gainStatus", "status": "weak", "value": 1}]},
     {"id": "nloths_mask", "sourceId": "NlothsMask", "name": "恩洛斯的饥饿之脸", "description": "下次打开非首领宝箱时，移除其中第一件遗物奖励；只触发一次。", "rarity": "special", "trigger": "hooks", "effects": []},

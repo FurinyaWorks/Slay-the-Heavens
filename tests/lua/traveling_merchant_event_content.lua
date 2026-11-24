@@ -15,7 +15,7 @@ end
 local function snapshot(r)return C.copy(r,{[r.data]=r.data})end
 local function fixture(unentered)
  local r,m=snapshot(base),C.copy(baseMap);local n=Map.available(m)[1]
- for _,v in ipairs(m.nodes)do if v.id==n.id then v.type='event';v.eventId=not unentered and 'addict' or nil end end
+ for _,v in ipairs(m.nodes)do if v.id==n.id then v.type='event';v.eventId=not unentered and 'traveling_merchant' or nil end end
  if not unentered then assert(Nodes.enter(r,m,n.id))end
  return r,m,n.id
 end
@@ -45,10 +45,10 @@ local function opening(id,tier)
  local r,m=fixture();frontRelics(r,tier or 'common',{id or 'Anchor'});return r,m
 end
 local count=0
-local function test(name,fn)fn();count=count+1;print('PASS addict '..count..' '..name)end
+local function test(name,fn)fn();count=count+1;print('PASS traveling_merchant '..count..' '..name)end
 
 test('Intro preserves buy85/steal/leave order, threshold and detached RNG-pure views',function()
- eq(Pool.contentId.Addict,'addict')
+ eq(Pool.contentId.TravelingMerchant,'traveling_merchant')
  for _,gold in ipairs({0,84,85,86})do
   local r,m=fixture();r.gold=gold;local before=snapshot(r);local v=Nodes.view(r,m).node.event
   eq(v.stage,'intro');eq(#v.options,3);eq(v.options[1].choice,'buy');eq(v.options[1].enabled,gold>=85)
@@ -147,13 +147,13 @@ test('Invalid permanent UID rolls back new Fish, delayed gold, queue and tier RN
 end)
 test('Equip failure after Strawberry health/RNG mutations rolls back buy cost and recovers once',function()
  local r=opening('Strawberry');local original=Hooks.onEquip;local before=snapshot(r)
- Hooks.onEquip=function(staged,id,api)original(staged,id,api);R.randomInt(staged.miscRng,99);error('Addict equip refusal witness')end
+ Hooks.onEquip=function(staged,id,api)original(staged,id,api);R.randomInt(staged.miscRng,99);error('TravelingMerchant equip refusal witness')end
  reject(r,'buy',nil,'transaction_failed');Hooks.onEquip=original
  assert(Nodes.chooseEvent(r,'buy'));eq(r.gold,before.gold-85);eq(r.maxHp,before.maxHp+7);eq(r.hp,before.hp+7)
 end)
 test('Card-hook exception rolls back newly acquired Fish/gold/UID and identical fresh choice recovers',function()
  local r=opening('CeramicFish');local original=Hooks.onObtainCard;local before=snapshot(r)
- Hooks.onObtainCard=function(staged,...)original(staged,...);error('Addict card-hook exception witness')end
+ Hooks.onObtainCard=function(staged,...)original(staged,...);error('TravelingMerchant card-hook exception witness')end
  reject(r,'steal',nil,'transaction_failed');Hooks.onObtainCard=original
  assert(Nodes.chooseEvent(r,'steal'));eq(r.gold,before.gold+9);eq(r.deck[#r.deck].uid,before.nextDeckUid)
 end)
@@ -209,18 +209,18 @@ test('Every implemented selectable source relic has same settled ordinary state 
  end
  print('ADDICT_SETTLED_EQUIP_COMMUTATION '..#mappings..' supported source relics')
 end)
-test('Full Act2 selection draws Addict without changing thirteen source entries or restricted seven',function()
- local expected={'Addict','Back to Basics','Beggar','Colosseum','Cursed Tome','Drug Dealer','Forgotten Altar','Ghosts','Masked Bandits','Nest','The Library','The Mausoleum','Vampires'}
+test('Full Act2 selection draws TravelingMerchant without changing thirteen source entries or restricted seven',function()
+ local expected={'TravelingMerchant','Back to Basics','Beggar','Colosseum','Cursed Tome','Augmenter','Forgotten Altar','Ghosts','Masked Bandits','Nest','The Library','The Mausoleum','Vampires'}
  same(Pool.new('full',false,2).act,expected);local counter
  for n=0,127 do
   local stream=R.atCounter(base.eventSeed,n);local unknown=require('abyss_unknown')
   if unknown.advancePc(unknown.newPc(),R.randomFloat(stream),{})=='event' then
    local selected=Pool.draw(Pool.new('full',false,2),{floor=18,gold=100,act=2,hp=80,relicCount=0,elapsedSeconds=0,cursed=false},R.atCounter(base.eventSeed,stream.counter))
-   if selected=='Addict' then counter=n;break end
+   if selected=='TravelingMerchant' then counter=n;break end
   end
  end
- assert(counter,'bounded complete-pool Addict input missing');local r,m,id=fixture(true);r.eventRng=R.atCounter(r.eventSeed,counter)
- assert(Nodes.enter(r,m,id));eq(r.nodeFlow.event.id,'addict');eq(r.nodeFlow.event.originalId,'Addict');eq(#r.unknown.pools.act,12)
+ assert(counter,'bounded complete-pool TravelingMerchant input missing');local r,m,id=fixture(true);r.eventRng=R.atCounter(r.eventSeed,counter)
+ assert(Nodes.enter(r,m,id));eq(r.nodeFlow.event.id,'traveling_merchant');eq(r.nodeFlow.event.originalId,'TravelingMerchant');eq(#r.unknown.pools.act,12)
  eq(r.miscRng.counter,0);eq(r.eventRng.counter,counter+1);eq(r.nodeFlow.selectionRng.counter,counter+3)
  local p=Pool.new('restricted-seven');eq(#p.act+#p.shrine+#p.once,7);eq(p.actNumber,nil);same(Pool.new('full',false,2).act,expected)
 end)

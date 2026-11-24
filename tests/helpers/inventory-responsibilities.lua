@@ -26,7 +26,7 @@ local function apply(s,effects,target,run,defer)
 end
 if group=='opening'or group=='all'then
 test('opening positions retain effects aliases and exact owner order',function()
-    local ids={'ring_of_the_snake','cracked_core','pure_water','lantern','vajra','anchor','mutagenic_strength','blood_vial','akabeko','data_disk','thread_and_needle','girya','du_vu_doll','pantograph','bag_of_marbles','pen_nib','red_skull','red_mask','fossilized_helix','mark_of_pain','cultist_mask'}
+    local ids={'ring_of_the_snake','cracked_core','pure_water','lantern','vajra','anchor','mutagenic_strength','blood_vial','akabeko','data_disk','thread_and_needle','girya','du_vu_doll','pantograph','bag_of_marbles','pen_nib','red_skull','red_mask','fossilized_helix','mark_of_pain',ABYSS_INVENTORY_MASK_ID}
     local defs={};for _,id in ipairs(ids)do defs[#defs+1]={id=id,trigger='combat_start',effects={{op='energy',value=1}}}end
     local counters={a={b=true}};local context={tier='boss'}
     local result=table.pack(I.opening(defs,ids,counters,context));local opening=result[1]

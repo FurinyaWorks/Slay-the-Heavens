@@ -2,7 +2,7 @@ package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local Copy=require('abyss_copy')
 local Combat=require('abyss_combat')
 assert(Combat.copy==Copy.copy,'legacy public copy API identity')
-local names={'abyss_node_ui_camp','abyss_node_ui_rewards','abyss_drug_dealer_event'}
+local names={'abyss_node_ui_camp','abyss_node_ui_rewards','abyss_augmenter_event'}
 -- Warm real transitive dependencies; observe only each module's own imports.
 for _,name in ipairs(names)do require(name)end
 local originalRequire=require
@@ -24,7 +24,7 @@ local function detached(clone)
  assert(clone~=card and clone.self==clone and clone.a==clone.b and clone.a~=shared,'[COPY_GRAPH] aliases/cycles/isolation')
  assert(clone.a.value==7 and card.upgraded==false and shared.value==7,'[COPY_GRAPH] values/source')
 end
-local drug=modules.abyss_drug_dealer_event
+local drug=modules.abyss_augmenter_event
 local run={deck={card,{uid=2,cardId='Necronomicurse'}},data={cards={cards={}}},miscRng={counter=9}}
 local cards=drug.transformCards(run)
 assert(#cards==1 and cards[1].uid==1);detached(cards[1]);assert(run.miscRng.counter==9)

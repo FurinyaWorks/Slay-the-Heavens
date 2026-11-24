@@ -10,7 +10,7 @@ local function choose(id,r,m)
 end
 
 test('old/new Omamori order and old/new Ceramic Fish effects through real UI commands',function()
- for _,id in ipairs({'mausoleum','addict'})do
+ for _,id in ipairs({'mausoleum','traveling_merchant'})do
   for _,variant in ipairs({'old_omamori','new_omamori','old_fish','new_fish','blocked_new_fish'})do
    local target=variant=='new_omamori' and 'Omamori' or (variant=='new_fish' or variant=='blocked_new_fish') and 'CeramicFish' or 'Anchor'
    local tier=target=='Omamori' and 'common' or 'common'
@@ -27,7 +27,7 @@ test('old/new Omamori order and old/new Ceramic Fish effects through real UI com
  end
 end)
 test('old/new Darkstone through actual UI, maxHP before heal; Omamori blocks delayed effect',function()
- for _,id in ipairs({'mausoleum','addict'})do
+ for _,id in ipairs({'mausoleum','traveling_merchant'})do
   for _,variant in ipairs({'old','new','blocked_new'})do
    local r,m=offer(id,variant=='old' and 'Anchor' or 'Darkstone Periapt',variant=='old' and 'common' or 'uncommon')
    if variant=='old' then assert(H.Run.obtainRelic(r,'Darkstone Periapt'))end
@@ -38,7 +38,7 @@ test('old/new Darkstone through actual UI, maxHP before heal; Omamori blocks del
  end
 end)
 test('both simple event source relic misses refuse without queue truncation/reroll, gold/protection/RNG/UID mutation',function()
- for _,id in ipairs({'mausoleum','addict'})do
+ for _,id in ipairs({'mausoleum','traveling_merchant'})do
   local r,m=offer(id,'Bird Faced Urn','rare');assert(H.Run.obtainRelic(r,'Omamori'))
   r.data=H.Copy(r.data)
   for i=#r.data.relics.relics,1,-1 do if r.data.relics.relics[i].sourceId=='Bird Faced Urn'then table.remove(r.data.relics.relics,i)end end
@@ -61,7 +61,7 @@ test('Beggar failed removal hook never refunds paid transaction; old callback ca
  H.unchanged(r,m,old);H.parity(r,m,'purge',7,function()return click('confirm')end);eq(r.gold,25);eq(r.maxHp,77)
 end)
 test('both simple-event equip/card exceptions rollback paid/protection/relic/curse state then fresh gesture recovers',function()
- for _,id in ipairs({'mausoleum','addict'})do
+ for _,id in ipairs({'mausoleum','traveling_merchant'})do
   for _,hook in ipairs({'onEquip','onObtainCard'})do
    local r,m=offer(id,hook=='onEquip' and 'Strawberry' or 'CeramicFish')
    if hook=='onEquip' then r.gold=85;r.hp=1 end

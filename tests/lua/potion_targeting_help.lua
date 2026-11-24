@@ -53,7 +53,7 @@ test('P12 all registered potions retain explicit independent target policies',fu
         ancient_potion='self',liquid_bronze='self',duplication_potion='self',distilled_chaos='self',
         smoke_bomb='self',snecko_oil='self',elixir='self',gamblers_brew='self',liquid_memories='self',
         blood_potion='self',fruit_juice='self',blessing_of_the_forge='self',explosive_potion='enemy_all',
-        heart_of_iron='self',essence_of_steel='self',cultist_potion='self',flex_potion='self',speed_potion='self',
+        heart_of_iron='self',essence_of_steel='self',raven_potion='self',flex_potion='self',speed_potion='self',
         entropic_brew='self',attack_potion='self',skill_potion='self',power_potion='self',colorless_potion='self',fairy_in_a_bottle='self'}
     local seen,count={},{self=0,enemy_one=0,enemy_all=0}
     for _,item in ipairs(H.F.Data.potions.potions) do
