@@ -616,11 +616,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     if pileGrid and platform.deckBrowser then
         local viewport=official and Theme.layout.deckView.pileViewport or Theme.layout.deckView.viewport
         pool=Browser.new(pileGrid,platform.deckBrowser,platform,clickEvent,viewport[4]/2-123,browserModel,paintBrowser,
-            function(instance)
-                local picked=self:showCardDetails(instance)
-                if picked and onChanged then onChanged() end
-                return picked
-            end)
+            function(instance)return self:showCardDetails(instance)end)
     end
     function self.syncRun(_,run)
         if browserRun==run then return end

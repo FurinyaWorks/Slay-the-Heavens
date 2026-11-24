@@ -695,7 +695,7 @@ for _=1,4 do frame();expectReward(false,true)end
 local card=battle:GetChild('card1')
 local label=card:GetChild('label')
 local text=require('abyss_card_display')
-assert(label.text:find('基础伤害增加3点',1,true)
+assert(label.text:find('提升3点伤害。',1,true)
  and select(2,text.fitBody(label.text,{label.sizeDeltaX,label.sizeDeltaY})),
  'upgraded long reward body overflowed')
 event('card1','down',210);host:update(.36)
@@ -1347,7 +1347,12 @@ for _,amount in ipairs({1,3,5,6,13})do
  local face=first:GetChild('face')
  local label=face:GetChild('label')
  local fit=require('abyss_card_display').fitBody
- assert(label.text:find('基础伤害增加',1,true) and select(2,fit(label.text,{label.sizeDeltaX,label.sizeDeltaY})),
+ local instance=host.run.combat.discard[1]
+ local definition=C.cardDefinition(host.run.combat,instance)
+ local preview=C.cardPreview(host.run.combat,instance)
+ local expected=require('abyss_card_display').combatText(F.Presentation[instance.cardId],definition,instance,preview,host.run.combat)
+ assert(label.text==expected and label.text:find('提升2点伤害。',1,true)
+  and select(2,fit(label.text,{label.sizeDeltaX,label.sizeDeltaY})),
   'component-bound pile face clipped its long body')
  local shared=sharedFace(face)
  assert(shared.front.visible~=false and shared.back.visible~=false and face:GetChild('stsReferenceCost'):GetChild('costMaterial').visible)
