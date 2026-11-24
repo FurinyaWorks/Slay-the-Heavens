@@ -86,7 +86,7 @@ test('every extracted card action helper is required and bounded with its nested
     'choiceActions.discardToHand','moveChoiceToDraw','choiceActions.upgradeHand',
     'choiceActions.dualWield','M.applyChoice','commitMultipleChoice','toggleChoice',
     'chooseMultiple','containsUid','chooseSingle','M.choose','applyDrainedAction','refreshDrainedHand','M.drain',
-    ...['writhingRoll','writhingParasite','giantHeadSlow','timeEater','reptomancerSuicide',
+    ...['writhingRoll','writhingParasite','giantHeadSlow','timeEater','reptomancerRetireMinion',
       'enemyAction','staticRetaliation','classPotion','silentFinal','discover','colorless','originalV4',
       'relicUpgradeRandomHand','playTop','darklingAction','heartBeat','spireDeathRemove',
       'awakenedAction','capturedSharpHide','dispose','effectBatch'].map(name=>'actionHandlers.'+name)];

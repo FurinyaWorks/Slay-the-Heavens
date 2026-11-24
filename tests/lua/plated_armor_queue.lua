@@ -309,7 +309,7 @@ test('TOP boss suicide resolves before retained Thorns and clears queued Stasis 
  local held={cardId='impervious',uid=9000};s.draw={held};C.applyEffects(s,{{op='enemyStasis',value=1}},orb,s.player)
  A.applyPower(s,boss,'thorns',1,boss);boss.hp=1;s.events={};C.damage(s,s.player,boss,1);Q.drain(C,s)
  local suicide,retaliation
- for i,ev in ipairs(s.events)do if ev.kind=='enemy_suicide'then suicide=suicide or i elseif ev.kind=='status_damage'then retaliation=i end end
+ for i,ev in ipairs(s.events)do if ev.kind=='enemy_retired'then suicide=suicide or i elseif ev.kind=='status_damage'then retaliation=i end end
  assert(suicide and retaliation and suicide<retaliation);eq(s.act2StasisCards,nil);eq(C.outcome(s),'victory')
 end)
 for _,mode in ipairs({'advanced','v4'})do

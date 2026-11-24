@@ -15,7 +15,7 @@ return {
  ["drug_dealer"]="jax,mutagens,test_subject",
  ["duplicator"]="copy,leave",
  ["face_trader"]="continue",
- ["forgotten_altar"]="offer_idol,shed_blood,smash",
+ ["forgotten_altar"]="offer_idol,accept_trial,smash",
  ["fountain"]="cleanse,leave",
  ["ghosts"]="accept,leave",
  ["golden_idol"]="leave,take",

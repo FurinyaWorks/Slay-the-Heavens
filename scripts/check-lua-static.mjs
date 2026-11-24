@@ -176,7 +176,7 @@ const responsibilityRoots = {
       'choiceActions.dualWield','M.applyChoice','commitMultipleChoice','toggleChoice',
       'chooseMultiple','containsUid','chooseSingle','M.choose',
       'applyDrainedAction','refreshDrainedHand','M.drain'].map(name=>`function '${name}'`),
-    ...['writhingRoll','writhingParasite','giantHeadSlow','timeEater','reptomancerSuicide',
+    ...['writhingRoll','writhingParasite','giantHeadSlow','timeEater','reptomancerRetireMinion',
       'enemyAction','staticRetaliation','classPotion','silentFinal','discover','colorless','originalV4',
       'relicUpgradeRandomHand','playTop','darklingAction','heartBeat','spireDeathRemove',
       'awakenedAction','capturedSharpHide','dispose','effectBatch'].map(name=>`function 'actionHandlers.${name}'`),

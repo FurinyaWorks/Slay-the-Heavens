@@ -464,7 +464,7 @@ function M.resolveDamageReactions(state, reactions, retaliate)
             if M.isActive(state.player) then M.block(state,state.player,hit.effect.value,true) end
         elseif hit.effect and hit.effect.op=='cardTriggerPoison' then
             require('abyss_card_triggers').resolveEnvenom(state,hit.effect)
-        elseif hit.effect and hit.effect.op=='reptomancerSuicide'then
+        elseif hit.effect and hit.effect.op=='reptomancerRetireMinion'then
             require('abyss_reptomancer').cleanup(M,state,hit.effect)
         elseif hit.effect and Act2Powers.supports(hit.effect.op)then
             Act2Powers.apply(M,state,hit.effect)
@@ -526,10 +526,10 @@ function M.instantKill(state,target)
     M.resolveDamageReactions(state,reactions)
 end
 
-function M.suicideReptomancerMinion(state,target)
+function M.retireReptomancerMinion(state,target)
     local before=target.hp;target.hp,target.gold=0,0
     if before<=0 then return end
-    Events.emit(state,'enemy_suicide',{enemy=target.id})
+    Events.emit(state,'enemy_retired',{enemy=target.id})
     if state.originalV4 then require('abyss_original_v4').enemyDied(state,target,before)end
     local reactions={};queueDeathPower(state,target,before,reactions)
     M.resolveDamageReactions(state,reactions)
@@ -542,10 +542,10 @@ function M.sacrificeDagger(state,target,amount)
     M.resolveDamageReactions(state,reactions)
 end
 
-function M.suicideTransient(state,target)
+function M.retireTransient(state,target)
     assert(M.isActive(target)and target.ai and target.ai.kind=='act3'and target.ai.policy=='transient','Expected a Transient exit')
     local before=target.hp;target.hp,target.gold=0,0
-    Events.emit(state,'enemy_suicide',{enemy=target.id})
+    Events.emit(state,'enemy_retired',{enemy=target.id})
     local reactions={};queueDeathPower(state,target,before,reactions)
     M.resolveDamageReactions(state,reactions)
 end

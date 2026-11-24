@@ -178,7 +178,7 @@ test('Dagger HP-loss respects Intangible and captured preattack life rather than
  local s=battle({'snake_dagger','cultist'});local e=s.enemies[1];force(e,'explode')
  s.catalog.statuses.intangible={id='intangible',name='虚体',kind='buff',stack='duration',decay='none',description='伤害至多1。'}
  A.applyPower(s,e,'intangible',1,e);local before=e.hp;assert(C.endTurn(s));eq(e.hp,before-1)
- eq(countEvents(s,'enemy_suicide',e.id),0);eq(countEvents(s,'hp_loss',e.id),1)
+ eq(countEvents(s,'enemy_retired',e.id),0);eq(countEvents(s,'hp_loss',e.id),1)
 end)
 test('player death stops Explode before self HP-loss and queued RollMove',function()
  local s=battle({'snake_dagger'},'1',nil,25);local e=s.enemies[1];force(e,'explode')
@@ -190,7 +190,7 @@ test('leader death suicides blades in reverse group order with no HP-loss or esc
  local order={};for i=#s.enemies,1,-1 do local e=s.enemies[i];if e~=leader then order[#order+1]=e.id end end
  local from=#s.events+1;C.damage(s,s.player,leader,999,true)
  local actual={};for i=from,#s.events do local ev=s.events[i]
-  if ev.kind=='enemy_suicide'then actual[#actual+1]=ev.detail.enemy end
+  if ev.kind=='enemy_retired'then actual[#actual+1]=ev.detail.enemy end
   assert(ev.kind~='enemy_escape'and ev.kind~='hp_loss')
  end;same(actual,order);eq(C.outcome(s),'victory')
  for _,e in ipairs(s.enemies)do eq(e.hp,0);if e~=leader then eq(e.gold,0)end end
@@ -225,7 +225,7 @@ test('both transactions restore self-loss and leader cleanup failures without du
   local s=battle(kind=='dagger'and {'snake_dagger','cultist'}or nil,'1',data,nil,{'bludgeon'})
   local e=kind=='dagger'and s.enemies[1]or s.enemies[2]
   if kind=='dagger'then force(e,'explode')else e.hp=1 end
-  local before=C.copy(s);local key=kind=='dagger'and 'sacrificeDagger'or 'suicideReptomancerMinion'
+  local before=C.copy(s);local key=kind=='dagger'and 'sacrificeDagger'or 'retireReptomancerMinion'
   local old=A[key];local fired=false;A[key]=function(...)old(...);fired=true;error('POST_REPTOMANCER_DEATH_FAILURE')end
   local ok
   if kind=='dagger'then ok=pcall(C.endTurn,s)else ok=pcall(C.play,s,s.hand[1].uid,2)end

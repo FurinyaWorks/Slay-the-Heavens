@@ -120,16 +120,16 @@ end
 
 -- This enemy exit is neither an attack nor an HP-loss action. Keep its death notification
 -- in Combat, which already owns the optional character ledger boundary.
-function M.suicideExploder(state,enemy)
+function M.retireExploder(state,enemy)
     assert(Actors.isActive(enemy) and enemy.ai and enemy.ai.kind=='act3' and enemy.ai.policy=='exploder',
         'Expected an Exploder exit')
     local before=enemy.hp;enemy.hp=0
-    Events.emit(state,'enemy_suicide',{enemy=enemy.id})
+    Events.emit(state,'enemy_retired',{enemy=enemy.id})
     if state.originalV4 then require('abyss_original_v4').enemyDied(state,enemy,before)end
 end
 
-function M.suicideTransient(state,enemy)
-    local before=enemy.hp;Actors.suicideTransient(state,enemy)
+function M.retireTransient(state,enemy)
+    local before=enemy.hp;Actors.retireTransient(state,enemy)
     if state.originalV4 then require('abyss_original_v4').enemyDied(state,enemy,before)end
     CardActions.drain(M,state)
 end

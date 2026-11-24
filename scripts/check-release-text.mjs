@@ -9,12 +9,13 @@ const rules = [
   ['gambling presentation', /赌博|赌徒|赌酿|赌局|赌注|赌场|下注|投注|押注|\b(?:place (?:a |your )?bet|sports betting|gambling den)\b/giu],
   ['trafficking', /奴隶贩子|奴隶买卖|贩卖人口|\b(?:slave trader|human trafficker)s?\b/giu],
   ['self-harm', /自杀|自残|割腕|服药自尽|\b(?:commit suicide|suicide attempt|self[- ]harm)\b/giu],
+  ['legacy combat and altar labels', /自毁|自爆|enemy_suicide|suicide(?:ReptomancerMinion|Exploder|Transient)|reptomancerSuicide|shed_blood/giu],
   ['graphic or coercive ritual imagery', /邪教|血祭|献祭|献血|掘尸|肢解|虐杀|\b(?:blood sacrifice|human sacrifice|dig up (?:a |the )?corpse)\b/giu],
   ['sexual or extremist content', /色情交易|强奸|儿童色情|恐怖主义宣扬|\b(?:child pornography|sexual assault|terrorist recruitment)\b/giu],
 ];
 
 // Existing technical identities are useful leads for an official retest.
-const technical = /drug[ _-]?dealer|suicid\w*|gambling[ _-]?chip|cultist[ _-]?(?:mask|potion)|colosseum[ _-]?slavers|shed_blood/giu;
+const technical = /drug[ _-]?dealer|gambling[ _-]?chip|cultist[ _-]?(?:mask|potion)|colosseum[ _-]?slavers/giu;
 const textFile = /\.(?:lua|json|[cm]?js|ts|py|ya?ml|toml|ini|txt|csv|tsv|xml|svg|html|ps1)$/i;
 
 function lineOffsets(source) {

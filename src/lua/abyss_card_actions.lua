@@ -31,7 +31,7 @@ function M.supports(op) return operations[op] == true end
 function M.reactionRetained(effect)
     if effect.op=='rareRelicDamageAll'then return true end
     if require('abyss_corrupt_heart').retained(effect)then return true end
-    if effect.op=='reptomancerSuicide'then return true end
+    if effect.op=='reptomancerRetireMinion'then return true end
     return TimeEater.retained(effect) or effect.op=='awakenedAction' and effect.kind=='heal' or PlatedArmor.retained(effect) or Act2Powers.retained(effect) or effect.op=='resolveCurlUp'
         or effect.op=='damageRandom' or effect.op=='staticRetaliation'
         or effect.op=='silentFinal' and require('abyss_silent_final_cards').allowedAfterVictory(effect)
@@ -480,7 +480,7 @@ function actionHandlers.writhingRoll(_,state,item)return require('abyss_writhing
 function actionHandlers.writhingParasite(_,state,item)return require('abyss_writhing_mass').obtainParasite(state,item.source)end
 function actionHandlers.giantHeadSlow(_,state,item)return require('abyss_giant_head').applySlow(Actors,state,item.effect)end
 function actionHandlers.timeEater(combat,state,item)return TimeEater.execute(combat,state,item.effect,item.source,M)end
-function actionHandlers.reptomancerSuicide(_,state,item)return require('abyss_reptomancer').cleanup(Actors,state,item.effect)end
+function actionHandlers.reptomancerRetireMinion(_,state,item)return require('abyss_reptomancer').cleanup(Actors,state,item.effect)end
 function actionHandlers.enemyAction(combat,state,item)return combat.resolveEnemyAction(state,item.effect,item.source)end
 function actionHandlers.staticRetaliation(combat,state,item)return combat.staticRetaliation(state,item.effect)end
 local function classPotionOrbHost()return require('abyss_orbs')end

@@ -15,7 +15,7 @@ M.enemies={{id='orb_walker',sourceId='Orb Walker',name='雷核步行机关',tier
   ai={kind='act3',policy='spiker'},intents={
    {id='attack',kind='attack',effects={{op='damage',value=7}}},
    {id='spike',kind='buff',effects={{op='gainStatus',status='thorns',value=2}}}}},
- {id='exploder',sourceId='Exploder',name='自爆浮械',tier='normal',hp=30,hpRange={min=30,max=30},
+ {id='exploder',sourceId='Exploder',name='爆鸣浮械',tier='normal',hp=30,hpRange={min=30,max=30},
   ai={kind='act3',policy='exploder'},intents={
    {id='attack',kind='attack',effects={{op='damage',value=9}}},
    {id='wait',kind='unknown',effects={}}}},
@@ -43,14 +43,14 @@ M.enemies={{id='orb_walker',sourceId='Orb Walker',name='雷核步行机关',tier
 }
 M.statuses={{id='generic_strength_up',sourceId='Generic Strength Up Power',name='成长',
  kind='buff',stack='intensity',decay='none',description='每轮结束时，获得等同层数的力量。'},
- {id='explosive',sourceId='Explosive',name='自爆',kind='buff',stack='duration',decay='none',
-  description='每次行动后倒计时减1；倒计时为1时行动后自毁，造成30点反伤类型伤害。'},
+ {id='explosive',sourceId='Explosive',name='爆鸣倒计时',kind='buff',stack='duration',decay='none',
+  description='每次行动后倒计时减1；倒计时为1时行动后退场，造成30点反伤类型伤害。'},
  {id='constricted',sourceId='Constricted',name='束缚',kind='debuff',stack='intensity',decay='none',priority=105,
   description='你的回合结束时，受到等同层数的反伤类型伤害。'},
  {id='shifting',sourceId='Shifting',name='变幻',kind='buff',stack='none',decay='none',
   description='受正伤害时，按格挡后伤害暂失力量，自身回合末归还；反伤与直接失血也触发。'},
  {id='fading',sourceId='Fading',name='消逝',kind='buff',stack='duration',decay='none',
-  description='每次攻击后倒计时减1；为1时攻击后自毁，仍获得正常战斗奖励。'}}
+  description='每次攻击后倒计时减1；为1时攻击后退场，仍获得正常战斗奖励。'}}
 M.enemies[#M.enemies+1]=require('abyss_writhing_mass').enemy
 M.statuses[#M.statuses+1]=require('abyss_writhing_mass').status
 M.enemies[#M.enemies+1]=GiantHead.enemy

@@ -308,7 +308,7 @@ local function timeEaterEffect(v,effect)
     act2Row(v,name,text,'buff')
 end
 local function daggerSacrificeEffect(v)
-    act2Row(v,'自毁','自毁：攻击后失去等于行动开始时生命的生命值（无视格挡）','debuff')
+    act2Row(v,'攻击后生命减少','攻击后失去等于行动开始时生命的生命值（无视格挡）','debuff')
 end
 local effects = { daggerSacrifice=daggerSacrificeEffect,reptomancerSummon=summonEffect,timeEater=timeEaterEffect, writhingParasite=parasiteEffect,awakenedVoid=awakenedVoidEffect,damage = attackEffect, damageAll = attackEffect, block = blockEffect,
     enemyBurnBoth=burnBothEffect,enemyDazedDraw=dazedDrawEffect,

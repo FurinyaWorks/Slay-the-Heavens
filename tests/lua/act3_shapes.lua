@@ -147,7 +147,7 @@ test('Exploder attacks twice then rolls before suicide and retained fixed THORNS
   eq(e.hp,0);eq(e.exploderTurns,3);eq(s.aiRng.counter,rng+(allies and 2 or 1))
   local damage=blasts(s,from);eq(#damage,1);eq(damage[1].amount,30);eq(damage[1].target,s.player.id)
   local deaths=0;for i=from,#s.events do local ev=s.events[i]
-   if ev.kind=='enemy_suicide'and ev.detail.enemy==e.id then deaths=deaths+1;eq(s.events[i+1].kind,'status_damage')end
+   if ev.kind=='enemy_retired'and ev.detail.enemy==e.id then deaths=deaths+1;eq(s.events[i+1].kind,'status_damage')end
   end;eq(deaths,1)
   eq(s.player.hp,s.player.maxHp-(allies and 63 or 48))
   if allies then eq(C.outcome(s),nil)else eq(C.outcome(s),'victory')end
@@ -238,7 +238,7 @@ test('real Host shows Shape actors Dazed destination and changing Explosive coun
    local name=info:GetChild('name'..i);if name.visible then names[#names+1]=name.text end
    local line=info:GetChild('text'..i);if line.visible then details[#details+1]=line.text end
   end
-  assert(table.concat(names,' '):find('自爆 '..(3-turn),1,true))
+  assert(table.concat(names,' '):find('爆鸣倒计时 '..(3-turn),1,true))
   assert(table.concat(details,' '):find('30',1,true))
   info:GetChild('hit').click({touchId=90+turn})
  end

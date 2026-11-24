@@ -49,7 +49,7 @@ test('five real attacks grow 30 to 70 without RollMove and fade only after the f
   if turn<5 then eq(e.hp,999);eq(e.statuses.fading,5-turn);eq(C.outcome(s),nil)end
  end
  eq(e.hp,0);assert(not e.escaped);eq(C.outcome(s),'victory');eq(s.turn,5)
- local suicides=0;for _,ev in ipairs(s.events)do if ev.kind=='enemy_suicide'then suicides=suicides+1 end end;eq(suicides,1)
+ local suicides=0;for _,ev in ipairs(s.events)do if ev.kind=='enemy_retired'then suicides=suicides+1 end end;eq(suicides,1)
 end)
 test('Shifting uses post-block damage for normal fixed Thorns HP_LOSS and poison',function()
  for _,kind in ipairs({'normal','fixed','thorns','hp_loss','poison'})do
@@ -108,7 +108,7 @@ test('lethal player damage and early real Transient death prevent later Fading s
  assert(C.endTurn(s));eq(C.outcome(s),'defeat');eq(s.enemies[1].hp,999)
  local t=battle();C.damage(t,t.player,t.enemies[1],999,true);assert(C.endTurn(t))
  eq(C.outcome(t),'victory');eq(t.enemies[1].transientCount,0)
- for _,ev in ipairs(t.events)do assert(ev.kind~='enemy_suicide')end
+ for _,ev in ipairs(t.events)do assert(ev.kind~='enemy_retired')end
 end)
 test('independent fixed-source vectors preserve five actions and full HP AI states',function()
  local vectors=dofile('tests/fixtures/act3-transient-vectors.lua');eq(#vectors,3)
@@ -184,13 +184,13 @@ test('late SuicideAction and public reward throw or reject restore every origina
   C.block(r.combat,r.combat.player,999,true)
   local s,e=r.combat,r.combat.enemies[1];local before=C.copy(r)
   local queue,deck,hand,events,statuses,rng=r.encounters,r.deck,s.hand,s.events,e.statuses,r.cardRng
-  local oldSuicide,oldFinish=A.suicideTransient,Run.finishCombat;local reached=false
-  if mode=='suicide'then A.suicideTransient=function(...)oldSuicide(...);reached=true;error('late suicide failure')end
+  local oldSuicide,oldFinish=A.retireTransient,Run.finishCombat;local reached=false
+  if mode=='suicide'then A.retireTransient=function(...)oldSuicide(...);reached=true;error('late suicide failure')end
   else Run.finishCombat=function(...)
    local ok,why=oldFinish(...);assert(ok,why);reached=true
    if mode=='throw'then error('late reward failure')end;return false,'late_reward_rejection'
   end end
-  local called,ok,why=pcall(Run.endTurn,r);A.suicideTransient,Run.finishCombat=oldSuicide,oldFinish
+  local called,ok,why=pcall(Run.endTurn,r);A.retireTransient,Run.finishCombat=oldSuicide,oldFinish
   assert(reached);if mode=='reject'then assert(called);eq(ok,false);eq(why,'late_reward_rejection')else assert(not called)end
   same(r,before);eq(r.combat,s);eq(s.enemies[1],e);eq(r.encounters,queue);eq(r.deck,deck)
   eq(s.hand,hand);eq(s.events,events);eq(e.statuses,statuses);eq(r.cardRng,rng)
@@ -223,7 +223,7 @@ test('real Host shows shifting intent HP and both source Power details without r
    if control and control.visible then texts[#texts+1]=control.text end end
  end
  local detail=table.concat(texts,' ');assert(detail:find('变幻',1,true)and detail:find('消逝 5',1,true))
- assert(detail:find('反伤',1,true)and detail:find('自毁',1,true)and detail:find('正常战斗奖励',1,true))
+ assert(detail:find('反伤',1,true)and detail:find('退场',1,true)and detail:find('正常战斗奖励',1,true))
  info:GetChild('hit').click({touchId=82})
  local uid;for _,c in ipairs(r.combat.hand)do if c.cardId=='strike'then uid=c.uid;break end end
  assert(Run.play(r,uid,1));host:refresh();eq(enemy:GetChild('intent').text,'24');eq(enemy:GetChild('hp').text,'993/999')

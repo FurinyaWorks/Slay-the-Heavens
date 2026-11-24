@@ -40,7 +40,7 @@ local paths={
  {'FaceTrader',1,{'continue','touch','leave'}},
  {'Cursed Tome',2,{'read','continue','continue','continue','obtain','claim','leave'}},
  {'Drug Dealer',2,{'test_subject'}},
- {'Forgotten Altar',2,{'shed_blood','leave'}},
+ {'Forgotten Altar',2,{'accept_trial','leave'}},
  {'Masked Bandits',2,{'pay','continue','continue','leave'}},
  {'Vampires',2,{'accept','leave'}},
  {'Designer',2,{'continue','full'}},

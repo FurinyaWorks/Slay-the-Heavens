@@ -93,12 +93,12 @@ function M.died(state,e,push)
  -- Reptomancer.die adds each summoned ally exit at TOP: reverse group order.
  -- Health-bar hiding is handled by the existing death presentation, not a kill.
  for _,ally in ipairs(state.enemies)do if ally~=e and ally.hp>0 and not ally.isDying then
-  push(state,{op='reptomancerSuicide',targetId=ally.id},true)
+  push(state,{op='reptomancerRetireMinion',targetId=ally.id},true)
  end end
 end
 function M.cleanup(api,state,effect)
  for _,e in ipairs(state.enemies)do if e.id==effect.targetId then
-  api.suicideReptomancerMinion(state,e);return true
+  api.retireReptomancerMinion(state,e);return true
  end end
  error('missing Reptomancer cleanup target')
 end
