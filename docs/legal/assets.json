@@ -173,7 +173,7 @@
     },
     "official-assets-offline-diagnostic": {
       "status": "Project UI geometry and text diagnostics rendered by Pillow with system Noto fonts. Unknown SDK textures are outlined and labelled by ID; no official texture images or font binaries redistributed. Referenced game identities remain their owners IP; no asset/IP sublicense or commercial clearance. Offline Host/layout evidence only, not official-client or browser screenshots, final artwork, import/ready, native font, device or performance acceptance.",
-      "evidence": "docs/evidence/official-assets-first-20261109/full-flow/README.md and artifact-index.json; scripts/official-assets-preview.lua, scripts/official-assets-preview.mjs and scripts/official-assets-preview-raster.py; full natural campaign and separately identified bounded prefixes. Initial 21-scene capture predates the Power-template diagnostic fix; later prefix captures use the fix. shop-delta is explicitly a layout-only rerender, not a fresh Host route."
+      "evidence": "docs/evidence/official-assets-first-20261109/full-flow/README.md and artifact-index.json; scripts/official-assets-preview.lua, scripts/official-assets-preview.mjs and scripts/official-assets-preview-raster.py; full natural campaign and separately identified bounded prefixes. Initial 21-scene capture predates the Power-template diagnostic fix; later prefix captures use the fix. shop-delta is explicitly a layout-only rerender, not a fresh Host route. PR #928 added 16 before/after Run HUD projections. docs/evidence/run-hud-20261124/README.md, manifest.json, capture.mjs, capture.lua, render.py and sha256.json identify the generated UI tree, Lua GameUI Host with native API mock, projected geometry and retained PNG bytes."
     },
     "character-idle-source": {
       "status": "Project AI-assisted Genshin character derivative source media. Lumine source appearance approved; Raiden candidate unapproved and disabled. No character-IP sublicense, commercial clearance, native import or device acceptance.",
@@ -253,6 +253,70 @@
     }
   },
   "files": {
+    "docs/evidence/run-hud-20261124/after/after-pc-detail-return.png": {
+      "sha256": "5639cb61c376938a6ba5a43c1136369082a5ab6c1f85b7c0e1d9d715c6e63987",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/run-hud-20261124/after/after-pc-detail.png": {
+      "sha256": "6f3d1d90a2389b6d4b2faa7be5b2c2b67c2076fdc1c08e124c3277da44b7abdc",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/run-hud-20261124/after/after-pc-event26-page1.png": {
+      "sha256": "2e72f75ab4d3d123c883df193a2be5dc1a05d3a3093b3178a9290e115bfca7b8",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/run-hud-20261124/after/after-pc-event26-page2.png": {
+      "sha256": "71bf67192b55c5d1e7088cf286fd356bf248f2f90b8f91353dbc17001b2707e8",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/run-hud-20261124/after/after-pc-event5.png": {
+      "sha256": "3bbc6f54857b1c01976b922862e75c445d9260cdda7d91a7668301c6859cae62",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/run-hud-20261124/after/after-pc-map5.png": {
+      "sha256": "22ae659fe84af1d2802c661d4496b9f40aa7723c263c098d2869bea7c4604bea",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/run-hud-20261124/after/after-phone-detail-return.png": {
+      "sha256": "eaddf678faa5cb3225ffc67a39dfc7e8ba19e0c4332173ad89e5b4a2eb3b9563",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/run-hud-20261124/after/after-phone-detail.png": {
+      "sha256": "f73aab97c271ab2bad4966d800a2e078ae7b56d142ca1504a4a4cbba54434b54",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/run-hud-20261124/after/after-phone-event26-page1.png": {
+      "sha256": "589ae2aa110914085bff9eda712673fd058c26f2d851a5385e442c18d18a8146",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/run-hud-20261124/after/after-phone-event26-page2.png": {
+      "sha256": "28eb070224cf3aa8ee7329986a6e4b1f90479d670cc60a1644d7aeac428d0db9",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/run-hud-20261124/after/after-phone-event5.png": {
+      "sha256": "749e310868dc8e419f5c4f872c33c9603d94024b6a60137b3234c6462bcd36b8",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/run-hud-20261124/after/after-phone-map5.png": {
+      "sha256": "987e7173b9bb11aa75cbed5b5d087c7796a3e630ce59dc75f28667e01a766f31",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/run-hud-20261124/before/before-pc-event5.png": {
+      "sha256": "1440a0db91c145c8c654e9fc91bac9c7ae1a90a3656feb241da5c68ee3f0dd32",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/run-hud-20261124/before/before-pc-map5.png": {
+      "sha256": "40a79416df57247e5c667cb83316f6154311f62ab1fc9a7473692ad3da042b0a",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/run-hud-20261124/before/before-phone-event5.png": {
+      "sha256": "d21f365f60a9d8594c36946aa73c6bbe3107842ae8caabab0ab684e650cae12f",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/run-hud-20261124/before/before-phone-map5.png": {
+      "sha256": "725ee2cd8ae987a00e3a64fc55b3dcfab7e744b796f616e966623c600388274f",
+      "category": "official-assets-offline-diagnostic"
+    },
     "data/presentation/event-native-controls.json": {
       "sha256": "db7a1393c4fae90fc9d7cc30b2ee762394a8ab041b19a6a9aa33973a263eeb13",
       "category": "native-event-illustrations"

@@ -112,9 +112,7 @@ end
 
 function M.openMenu(self,owner)
     return function(_)
-            if self.deckUI.visible or self.potionUI.visible or self.choiceUI and self.choiceUI.visible then return false end
-            if self.prologue and self.prologue:covering() then return false end
-            if self.disabled or self.easterEggOpen or self.exitOpen and not self.routeOpen or self.menuOpen or self.settlementRequested or self.settlementBusy then return false end
+            if not Navigation.canOpenMenu(self) then return false end
             owner.exitGeneration = owner.exitGeneration + 1
             self.exitOpen, self.menuOpen, self.exitError = true, true, nil
             Navigation.cancelNodeEntry(self)

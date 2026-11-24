@@ -85,7 +85,11 @@ function M.runMenu(self,menu,routeEnabled)
     if minimal then routeEnabled=false end
     local hasRun=Navigation.hasRun(self)
     local mainEnabled=hasRun and not self.sessionPaused
-    menu:GetChild('mainMenu'):SetVisible(mainEnabled)
+    local main=menu:GetChild('mainMenu')
+    main:SetVisible(mainEnabled)
+    local hit=main:GetChild('hit')
+    local mainAvailable=Navigation.canReturnToMainMenu(self)==true
+    hit.interactable,hit.raycastTarget=mainAvailable,mainAvailable
     menu:GetChild('quit'):SetVisible(mainEnabled and not minimal)
     for _,state in ipairs({'normal','hover','pressed','disabled'})do
         menu:GetChild('abandon'):GetChild('hit'):GetChild(state):GetChild('label').text=hasRun and '放弃本局' or '退出游戏'

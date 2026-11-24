@@ -33,7 +33,7 @@ for _,mode in ipairs({'map','battle'})do
  assert(tap(outside,6) and not host.deckUI.visible)
  emit(hp,'up',4);assert(not emit(hp,'click',4) and not host.deckUI.visible,'old resource tap reopened hint')
  assert(host:openMenu());assert(not tap(gold,7) and not host.deckUI.visible,'resource hint bypassed menu')
- assert(root:GetChild('runMenu'):GetChild('blocker').listeners.click({touchId=8}))
+ assert(tap(root:GetChild('runMenu'):GetChild('blocker'),8))
  assert(not host.exitOpen and same(before,host.run),'outside menu dismissal mutated run')
  assert(tap(gold,9) and host:closeDeck())
  assert(host:openDeck());assert(deck:GetChild('blocker').listeners.click({touchId=10}) and host.deckUI.visible,'normal deck acquired outside dismissal')

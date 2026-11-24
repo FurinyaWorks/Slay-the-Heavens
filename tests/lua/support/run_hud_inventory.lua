@@ -138,6 +138,69 @@ elseif mode=='route' then
   H.click(picture,'/mapPanel/mapRoute/hit',8)
   assert(not host.routeOpen and host.run.phase=='combat' and host.mode=='battle')
  end
+elseif mode=='route-menu' then
+ for _,mobile in ipairs({true,false})do
+  for _,room in ipairs({'battle','shop'})do
+   local host,root,picture=H.create(mobile)
+   local route=room=='battle' and '/battlePanel/topBar/battleRoute/hit' or '/nodePanel/runRoute/hit'
+   if room=='battle' then
+    assert(Run.startCombat(host.run,'cultist_solo'));host:refresh();host:update(1)
+   else
+    enter(host,'shop')
+   end
+   local run,map,caller=host.run,host.map,host.mode
+   local combat,flow=run.combat,run.nodeFlow
+   local mainMenu=root:GetChild('runMenu')
+   local _,back=picture.at('/mapPanel/mapRoute/hit')
+   local function settings(id)
+    H.click(picture,'/exitEntry/open/hit',id)
+    assert(host.menuOpen and host.routeOpen and mainMenu.visible,'visible settings touch did not open the upper menu')
+   end
+   local function originalRoom()
+    assert(host.run==run and host.map==map and host.mode==caller)
+    assert(run.combat==combat and run.nodeFlow==flow,'preview or pause replaced the caller context')
+    assert(not host.routeOpen and not host.menuOpen and not host.exitOpen)
+   end
+   H.click(picture,route,10)
+   local oldBack={touchId=11}
+   back.listeners.down(oldBack)
+   settings(12)
+   back.listeners.up(oldBack)
+   assert(not back.listeners.click(oldBack),'the old lower Back touched the top menu')
+   local coveredBack={touchId=13}
+   local previewBack=root:GetChild('mapPanel'):GetChild('previewBack'):GetChild('hit')
+   for _,control in ipairs({back,previewBack})do
+    control.listeners.down(coveredBack);control.listeners.up(coveredBack)
+    assert(not control.listeners.click(coveredBack) and host.menuOpen,'the covered Back reached the top menu')
+   end
+   local oldOutside={touchId=20}
+   local blocker=mainMenu:GetChild('blocker')
+   blocker.listeners.down(oldOutside)
+   assert(mainMenu.keyListeners.backspace() and host.routeOpen and not host.menuOpen)
+   settings(21)
+   blocker.listeners.up(oldOutside)
+   assert(blocker.listeners.click(oldOutside) and host.menuOpen,'the old outside touch dismissed a newer menu')
+   local drag={touchId=22}
+   blocker.listeners.down(drag);blocker.listeners.up(drag)
+   drag.dragging=true
+   assert(blocker.listeners.click(drag) and host.menuOpen)
+   drag.dragging=false
+   assert(blocker.listeners.click(drag) and host.menuOpen,'trailing click revived a rejected outside drag')
+   H.click(picture,'/runMenu/blocker',14,-290,-150)
+   assert(host.routeOpen and host.exitOpen and not host.menuOpen,'menu dismissal did not reveal its map caller')
+   H.click(picture,'/mapPanel/mapRoute/hit',15)
+   originalRoom()
+
+   H.click(picture,route,16)
+   settings(17)
+   H.click(picture,'/runMenu/mainMenu/hit',18)
+   assert(host.sessionPaused and host.mode=='menu','visible main-menu button did not pause the run')
+   assert(not host.routeOpen and not host.menuOpen and not host.exitOpen,'pausing left an open overlay')
+   H.click(picture,'/menuPanel/continueRun/hit',19)
+   assert(not host.sessionPaused,'visible Continue did not resume the session')
+   originalRoom()
+  end
+ end
 elseif mode=='special-potions' then
  for _,mobile in ipairs({true,false})do
   for _,id in ipairs({'blood_potion','fruit_juice','entropic_brew'})do

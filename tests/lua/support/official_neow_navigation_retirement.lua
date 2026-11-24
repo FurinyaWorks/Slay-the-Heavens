@@ -34,11 +34,12 @@ for _,action in ipairs({'abandon','new'})do
  if OFFICIAL_NEOW_RETIREMENT then
   local runMenu=root:GetChild('runMenu')
   assert(runMenu.visible and runMenu:GetChild('mainMenu').visible)
-  for _,name in ipairs({'title','resume','help','map','abandon','quit','dismissHint','catch'})do
+  assert(not runMenu:GetChild('help'),'the retired guide must be absent from the generated menu')
+  for _,name in ipairs({'title','resume','map','abandon','quit','dismissHint','catch'})do
    assert(not runMenu:GetChild(name).visible,name..' is hidden')
   end
   assert(not tap(hit(root,'runMenu','abandon'),10) and host.run==oldRun and host.menuOpen)
-  assert(runMenu:GetChild('blocker').listeners.click({touchId=11}))
+  assert(tap(runMenu:GetChild('blocker'),11))
   assert(not host.exitOpen and host.run==oldRun and host:openMenu())
   local back=assert(runMenu.keyListeners and runMenu.keyListeners.backspace,'missing native Backspace receiver')
   assert(runMenu.disableKeyEventPassthrough and back())
@@ -53,13 +54,14 @@ for _,action in ipairs({'abandon','new'})do
   assert(tap(hit(root,'menuPanel','start'),1))
  elseif OFFICIAL_NEOW_RETIREMENT then assert(host:requestNavigation('abandon'))
  else assert(tap(hit(root,'runMenu','abandon'),2))end
- assert(host.navigationAction==action)
+ local confirmation=OFFICIAL_NEOW_RETIREMENT and 'abandon' or action
+ assert(host.navigationAction==confirmation,'paused official Start must confirm abandoning the live session')
  local option=root:GetChild('nodePanel'):GetChild('eventView'):GetChild('option1')
  assert(tap(hit(root,'exitPanel','confirm'),3),'confirmation must survive nil-run hide/reset')
  assert(host.run==nil and host.nodeUI.run==nil,'retired run must not be retained to paint chrome')
  assert(signals()==0 and not host.disabled and not host.settlementRequested,'navigation must not settle or disable the host')
  if OFFICIAL_NEOW_RETIREMENT then assert(not option:GetChild('stsNeowChrome').visible,'retired Neow material must hide')end
- if action=='abandon'then
+ if confirmation=='abandon'then
   assert(host.mode=='menu');assert(tap(hit(root,'menuPanel','start'),4))
  end
  assert(host.characterOpen and F.confirmStart(host));assert(host.run~=oldRun);neow(host,root)

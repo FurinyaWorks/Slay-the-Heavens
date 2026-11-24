@@ -11,6 +11,7 @@ local EndingHistory=require('abyss_ending_history')
 local Acts=require('abyss_acts')
 local NativePages=require('abyss_native_pages')
 local Input=require('abyss_game_ui_input')
+local Navigation=require('abyss_game_ui_navigation')
 local PageReveal=require('abyss_page_reveal')
 local RunHud=require('abyss_run_hud')
 local M = {}
@@ -340,11 +341,11 @@ function M.syncPortraits(platform,self)
 end
 
 function M.exitEntryVisible(self)
+    local minimal=(Theme.presentationProfile=='official-assets-first' or Theme.presentationProfile=='v25-reference')
+        and Theme.menuPresentation and Theme.menuPresentation.minimal
     return function()
-            local minimal=(Theme.presentationProfile=='official-assets-first' or Theme.presentationProfile=='v25-reference')
-                and Theme.menuPresentation and Theme.menuPresentation.minimal
             if minimal and self.mode=='menu' and not self.characterOpen then return false end
-            return not (self.prologue and self.prologue:covering())
+            return Navigation.routeAllowsMenu(self) and not (self.prologue and self.prologue:covering())
                 and not (self.potionUI.localPanel and self.potionUI.visible)
                 and not self.easterEggOpen and not (self.exitOpen and not self.routeOpen) and not self.settlementRequested and not self.settlementBusy
         end
