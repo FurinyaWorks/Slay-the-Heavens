@@ -75,7 +75,7 @@ local function harness(deck, enemies, fast)
         h.sequence[#h.sequence + 1] = entry
     end, function(reason) h.completions[#h.completions + 1] = reason or "ok" end)
     h.feedback:setFastMode(fast == true)
-    h.battle = Combat.new(Data, {deck = deck, enemies = enemies or {"cultist", "cultist"}, seed = 119})
+    h.battle = Combat.new(Data, {deck = deck, enemies = enemies or {"raven_adept", "raven_adept"}, seed = 119})
     function h:begin(command)
         local before, first = Events.frame(self.battle), #self.battle.events + 1
         assert(command(self.battle))
@@ -177,7 +177,7 @@ test("simultaneous lethal hits keep source order and death cleanup through a res
     assert(h.battle.phase == "victory", "controlled area attack must win")
     assert(size(h.feedback.dying) == 0 and size(h.feedback.effects) == 0)
     for _, enemy in ipairs(h.battle.enemies) do assert(h.feedback.deaths[enemy.id]) end
-    local deaths, deathCue = 0, Theme.deathSound.cultist or "enemy_die"
+    local deaths, deathCue = 0, Theme.deathSound.raven_adept or "enemy_die"
     for _, cue in ipairs(h.sounds) do if cue == deathCue then deaths = deaths + 1 end end
     assert(deaths == 1, "simultaneous death group repeats audio")
 end)
@@ -185,7 +185,7 @@ end)
 test("repeated round-end and reshuffle batches reuse controls and release all transient maps", function()
     local deck = {}
     for _ = 1, 12 do deck[#deck + 1] = "defend" end
-    local h = harness(deck, {"cultist", "cultist", "cultist"})
+    local h = harness(deck, {"raven_adept", "raven_adept", "raven_adept"})
     h.battle.player.hp, h.battle.player.maxHp = 100000, 100000
     local inventory = {}
     for index, c in ipairs(h.controls) do inventory[index] = c end
@@ -208,7 +208,7 @@ end)
 test("normal and accelerated replay leave identical rules, events, destinations and random streams", function()
     local outputs = {}
     for mode = 1, 2 do
-        local h = harness({"anger", "anger", "anger", "anger", "anger", "anger"}, {"cultist", "cultist"}, mode == 2)
+        local h = harness({"anger", "anger", "anger", "anger", "anger", "anger"}, {"raven_adept", "raven_adept"}, mode == 2)
         h.battle.player.hp, h.battle.player.maxHp = 10000, 10000
         for _ = 1, 2 do
             h:begin(playFirst)

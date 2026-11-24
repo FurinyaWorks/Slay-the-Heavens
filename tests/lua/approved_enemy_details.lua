@@ -66,7 +66,7 @@ local function spikeScene(mobile)
 end
 
 test('attack and pure buff without powers replace one another on rapid PC hover', function()
-    local host, ui, panel, _, _, _, _, root = H.setup({'defend'}, {'jaw_worm','cultist'},
+    local host, ui, panel, _, _, _, _, root = H.setup({'defend'}, {'jaw_worm','raven_adept'},
         {touchScreen = function() return false end})
     local battle = host.run.combat
     local first = monsterControl(panel, 'enemy1'):GetChild('hit')
@@ -83,7 +83,7 @@ test('attack and pure buff without powers replace one another on rapid PC hover'
     assert(ui.info and ui.info.actor == battle.enemies[2])
     _, rows = contents(panel)
     assert(#rows == 1 and rows[1] == '<color=#F5D78A>策略</color>\n这名敌人将要进行强化。')
-    Snapshot.capture('cultist-buff', root, H.F.Layout)
+    Snapshot.capture('raven_adept-buff', root, H.F.Layout)
     second.listeners.exit()
     assert(not ui.info and not panel:GetChild('statusInfo').visible)
 end, true)
@@ -322,7 +322,7 @@ test('special intents and the attack-debuff multi-hit disclosure match the sourc
 end)
 
 test('intent and HP preserve card and potion aim while the portrait commits each once', function()
-    local host, ui, panel, _, tap, drain = H.setup({'strike','defend'}, {'cultist','jaw_worm'},
+    local host, ui, panel, _, tap, drain = H.setup({'strike','defend'}, {'raven_adept','jaw_worm'},
         {touchScreen = function() return true end})
     local battle = host.run.combat
     local box = monsterControl(panel, 'enemy2')

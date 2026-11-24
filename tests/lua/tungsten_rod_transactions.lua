@@ -28,7 +28,7 @@ do
  print('PASS actual Nodes trap/Fairy late failure restores complete original event, inventory, deck and RNG owners')
 end
 do
- local r=Run.new(Data,42);assert(Run.obtainRelic(r,'TungstenRod'));assert(Run.startCombat(r,'cultist_solo'));assert(Run.endTurn(r))
+ local r=Run.new(Data,42);assert(Run.obtainRelic(r,'TungstenRod'));assert(Run.startCombat(r,'raven_adept_solo'));assert(Run.endTurn(r))
  local before=C.copy(r);local battle,player,enemy,hand,rng=r.combat,r.combat.player,r.combat.enemies[1],r.combat.hand,r.miscRng
  local changed=H.hpChanged;local observed=false
  H.hpChanged=function(state,actor,hp)
@@ -43,12 +43,12 @@ do
 end
 do
  local r,m=Run.new(Data,42),Map.generate(Data,42);assert(Run.obtainRelic(r,'TungstenRod'));assert(Run.obtainPotion(r,'fire_potion'))
- r.hp=30;assert(Run.startCombat(r,'cultist_solo'));local old=r.combat;old.enemies[1].hp=1
+ r.hp=30;assert(Run.startCombat(r,'raven_adept_solo'));local old=r.combat;old.enemies[1].hp=1
  eq(C.damage(old,old.enemies[1],old.player,1,false),0);assert(Run.usePotion(r,1,1));eq(r.phase,'reward');assert(Run.leaveCombatRewards(r))
  local first=Map.available(m)[1];for _,n in ipairs(m.nodes)do if n.id==first.id then n.type='event';n.eventId='shining_light'end end
  local hp=r.hp;assert(Nodes.enter(r,m,first.id));local damage=r.nodeFlow.event.damage
  assert(Nodes.chooseEvent(r,'accept'));eq(r.hp,hp-(damage-1));eq(r.phase,'map')
- assert(Run.startCombat(r,'cultist_solo'));assert(r.combat~=old);hp=r.combat.player.hp
+ assert(Run.startCombat(r,'raven_adept_solo'));assert(r.combat~=old);hp=r.combat.player.hp
  eq(C.damage(r.combat,r.combat.enemies[1],r.combat.player,1,false),0);eq(r.combat.player.hp,hp)
  print('PASS same Rod survives actual victory/reward, real damage event and fresh second battle')
 end

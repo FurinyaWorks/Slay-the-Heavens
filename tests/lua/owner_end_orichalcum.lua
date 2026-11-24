@@ -4,7 +4,7 @@ local D=require('abyss_warrior_strength_cards').withCards(require('abyss_data'))
 local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end
 local function fresh(advanced,block)
  local s=C.new(D,{deck={'metallicize',{cardId='juggernaut',upgraded=true}},
-  enemies={'cultist'},seed=42,orbSlots=2,cardRandomSeed='42'})
+  enemies={'raven_adept'},seed=42,orbSlots=2,cardRandomSeed='42'})
  Relics.bindBattle(s,{'orichalcum'},{}) -- The same real binding used by Inventory.opening.
  s.experimentalMechanics=advanced
  for _,id in ipairs({'juggernaut','metallicize'})do for _,card in ipairs(s.hand)do
@@ -48,7 +48,7 @@ for _,advanced in ipairs({false,true})do
 end
 for _,advanced in ipairs({false,true})do
  local ok,why=pcall(function()
-  local s=C.new(D,{deck={},enemies={'cultist'},seed=42})
+  local s=C.new(D,{deck={},enemies={'raven_adept'},seed=42})
   s.experimentalMechanics=advanced;Relics.bindBattle(s,{'orichalcum'},{})
   local player,events,held=s.player,s.events,s.relics;local count=#events
   local block=C.block

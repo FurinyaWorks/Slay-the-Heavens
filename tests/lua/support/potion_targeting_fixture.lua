@@ -8,7 +8,7 @@ local function setup(pointer)
   -- Independent complete-pool first-drop vector: seed61 naturally offers Fire.
   -- Seed4 now correctly offers Flex; keep the actual victory/claim path.
   local run=Run.new(F.Data,61)
-  assert(Run.startCombat(run,'cultist_solo'))
+  assert(Run.startCombat(run,'raven_adept_solo'))
   for _=1,160 do
     if run.phase~='combat' then break end
     local uid

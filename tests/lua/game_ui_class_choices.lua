@@ -44,7 +44,7 @@ local function setup(character,card,up,physical)
     for i=1,12 do run.deck[i]={uid=i,cardId=card,upgraded=up==true} end
     run.nextDeckUid=13
     assert(Run.obtainPotion(run,"block_potion"))
-    assert(Run.startCombat(run,"cultist_solo"));ui:refresh()
+    assert(Run.startCombat(run,"raven_adept_solo"));ui:refresh()
     eq(ui.mode,"battle");eq(ui.battleUI.busy,false);eq(ui.choiceUI.visible,false)
     local s=run.combat
     local position,used

@@ -1,7 +1,7 @@
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
 local Display=require('abyss_card_display')
 local C=H.F.Combat
-local h,u,p,event=H.setup({'defend','perfected_strike','bash','shockwave','strike'},{'cultist'},
+local h,u,p,event=H.setup({'defend','perfected_strike','bash','shockwave','strike'},{'raven_adept'},
     {touchScreen=function()return true end})
 h:resize(2556,1179)
 local battle=h.run.combat

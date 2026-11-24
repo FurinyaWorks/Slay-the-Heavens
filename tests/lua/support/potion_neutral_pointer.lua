@@ -1,5 +1,5 @@
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
-local h,u,p,event,tap,drain=H.setup({'defend','defend'},{'cultist'})
+local h,u,p,event,tap,drain=H.setup({'defend','defend'},{'raven_adept'})
 local popup=p:GetChild('potionHelp'):GetChild('potionPopup')
 local plate,use=popup:GetChild('hit'),popup:GetChild('use')
 local function fire(c,kind,id)

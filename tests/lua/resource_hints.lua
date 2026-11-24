@@ -11,7 +11,7 @@ local function emit(hit,event,id)return assert(hit.listeners[event])({touchId=id
 local function tap(hit,id)emit(hit,'down',id);emit(hit,'up',id);return emit(hit,'click',id)end
 for _,mode in ipairs({'map','battle'})do
  local host,root=F.fixture(nil,nil,nil,cursor);assert(F.start(host))
- if mode=='battle'then assert(require('abyss_run').startCombat(host.run,'cultist_solo'));host:refresh()end
+ if mode=='battle'then assert(require('abyss_run').startCombat(host.run,'raven_adept_solo'));host:refresh()end
  assert(host.mode==mode)
  local panel=root:GetChild(mode=='battle' and 'battlePanel' or 'mapPanel')
  local hp=panel:GetChild('resourceHints'):GetChild('hp'):GetChild('hit')

@@ -21,7 +21,7 @@ const retiredIdentities = [
 // and asset paths have no effect on the serialized script inventory.
 const authoringUrl = ['authoring URL in client script', /https?:\/\/[^\s"']+/giu];
 const retiredClientIdentities = ['retired client identity',
-  /suicid\w*|gambl\w*|slaver\w*|cultist\w*|shed_blood|bet_for|bet_against|placeBet|betFor|steroidpotion|mutagen\w*|sacrifice(?:dagger)?|献出生命/giu];
+  /suicid\w*|gambl\w*|slaver\w*|cultist\w*|shed_blood|bet_for|bet_against|placeBet|settleBet|betFor|steroidpotion|mutagen\w*|sacrifice(?:dagger)?|献出生命/giu];
 // The upstream potion oracle and historical CI timings are never shipped.
 const identityReferences = new Set([
   'data/catalogs/sts1-ironclad-potions.json',

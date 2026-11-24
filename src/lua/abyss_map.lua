@@ -278,13 +278,13 @@ local function migratedSignature(source)
     if not header then return source end
     local entries,original,previous,changed={},{},nil,false
     for entry in body:gmatch('[^|]+') do
-        local id,configuration=entry:match('^([a-z][a-z0-9_]*)(:.*)$')
-        if not id or (previous and previous>=id) then return source end
-        previous=id
+        local encounterId,limits=entry:match('^([a-z][a-z0-9_]*)(:.*)$')
+        if not encounterId or (previous and previous>=encounterId) then return source end
+        previous=encounterId
         original[#original+1]=entry
-        local current=CheckpointIdentities.resolve(id)
-        changed=changed or current~=id
-        entries[#entries+1]=current..configuration
+        local current=CheckpointIdentities.resolve(encounterId)
+        changed=changed or current~=encounterId
+        entries[#entries+1]=current..limits
     end
     if not changed or table.concat(original,'|')~=body then return source end
     table.sort(entries)
@@ -308,7 +308,10 @@ function M.restore(data, snapshot, trustedContext)
         for key,value in pairs(original)do snapshot[key]=value end
         snapshot.sourceSignature=signature
         local boost=original.emeraldBoost
-        if type(boost)=='table' and getmetatable(boost)==nil and boost.mapSignature==original.sourceSignature then
+        if boost~=nil then
+            if type(boost)~='table' or getmetatable(boost)~=nil or boost.mapSignature~=original.sourceSignature then
+                return nil,'invalid_snapshot'
+            end
             snapshot.emeraldBoost={}
             for key,value in pairs(boost)do snapshot.emeraldBoost[key]=value end
             snapshot.emeraldBoost.mapSignature=signature

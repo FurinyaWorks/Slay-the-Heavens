@@ -3,7 +3,7 @@ local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Run=require('abyss_run')
 local Surfaces=require('abyss_monster_surfaces')
 local function fixture()
- local host,root=F.fixture();assert(F.start(host));assert(Run.startCombat(host.run,'cultist_solo'));host:refresh()
+ local host,root=F.fixture();assert(F.start(host));assert(Run.startCombat(host.run,'raven_adept_solo'));host:refresh()
  local panel=root:GetChild('battlePanel')
  return host,root,panel,F.actorControl(panel,'enemy1')
 end
@@ -80,7 +80,7 @@ if ABYSS_VISIBILITY_CASE then return end
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Run=require('abyss_run')
 for _,page in ipairs({'mapPanel','nodePanel'})do
- local host,root=F.fixture();assert(F.start(host));assert(Run.startCombat(host.run,'cultist_solo'));host:refresh()
+ local host,root=F.fixture();assert(F.start(host));assert(Run.startCombat(host.run,'raven_adept_solo'));host:refresh()
  local panel=root:GetChild('battlePanel')
  local actor=F.actorControl(panel,'enemy1')
  assert(actor.visible and actor.alive)

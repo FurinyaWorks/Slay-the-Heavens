@@ -3,7 +3,7 @@ package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Run,C,View=require('abyss_run'),require('abyss_combat'),require('abyss_battle_intent_view')
 local ui,root=F.fixture();assert(F.start(ui));assert(Run.obtainRelic(ui.run,'runic_dome'))
-assert(Run.startCombat(ui.run,'cultist_solo'));ui:refresh()
+assert(Run.startCombat(ui.run,'raven_adept_solo'));ui:refresh()
 local battle,panel=ui.run.combat,root:GetChild('battlePanel')
 assert(C.intent(battle,1),'Dome must retain the real core intent')
 local face=View.intentView(battle,1)
@@ -24,9 +24,9 @@ local frame=require('abyss_events').frame(battle);frame.catalog,frame.rules=batt
 card=content(ui.run.data,{},frame,{kind='intent',index=1},frame.enemies[1])
 assert(card.sections[1].rows[1].name=='意图已隐藏')
 -- Ordinary owners keep all icons and the core executes exactly the same enemy action.
-local plain=Run.new(require('abyss_data'),'1');assert(Run.startCombat(plain,'cultist_solo'))
+local plain=Run.new(require('abyss_data'),'1');assert(Run.startCombat(plain,'raven_adept_solo'))
 assert(not View.intentView(plain.combat,1).hidden and #View.icons(View.intentView(plain.combat,1))>0)
-local hidden=Run.new(require('abyss_data'),'1');assert(Run.obtainRelic(hidden,'runic_dome'));assert(Run.startCombat(hidden,'cultist_solo'))
+local hidden=Run.new(require('abyss_data'),'1');assert(Run.obtainRelic(hidden,'runic_dome'));assert(Run.startCombat(hidden,'raven_adept_solo'))
 for _=1,2 do assert(C.endTurn(plain.combat));assert(C.endTurn(hidden.combat))end
 assert(plain.combat.player.hp==hidden.combat.player.hp and hidden.combat.player.hp<hidden.combat.player.maxHp)
 print('LUA_BOSS_RELICS_DOME_PASS acquired source, native icon/number/hit suppression, detail/playback, unchanged real enemy damage')

@@ -309,7 +309,7 @@ test("an effect failure mid-hit-stop releases once and leaves no pose or shake b
 end)
 
 test("deaths match enemy material without random draws or additional voices", function()
-    for _, item in ipairs({{"cultist", "enemy_die_human"}, {"acid_slime_s", "enemy_die_magic"},
+    for _, item in ipairs({{"raven_adept", "enemy_die_human"}, {"acid_slime_s", "enemy_die_magic"},
         {"sentry", "enemy_die_metal"}, {"gremlin_nob", "enemy_die_large"}, {"jaw_worm", "enemy_die"}}) do
         local h = harness({"strike"}, {item[1]}, function(s) s.enemies[1].hp = 1 end)
         h.play(); h.drain()
@@ -338,9 +338,9 @@ test("one actor voice per action survives multi-hit and buff effects without per
     assert(count(h.sounds, "action_jaw_worm") == 1, "same actor keeps its sound for a non-attack action")
 end)
 test("voice identity follows each monster and sleeping or stunned actors stay silent", function()
-    local h = harness({"strike"}, {"jaw_worm", "cultist"})
+    local h = harness({"strike"}, {"jaw_worm", "raven_adept"})
     h.run(Combat.endTurn); h.drain()
-    assert(count(h.sounds, "action_jaw_worm") == 1 and count(h.sounds, "action_cultist") == 1)
+    assert(count(h.sounds, "action_jaw_worm") == 1 and count(h.sounds, "action_raven_adept") == 1)
     for _, k in ipairs({"sleep", "stunned"}) do
         h = harness({"strike"}, {"jaw_worm"}, function(s)
             s.enemies[1].intents = {{id="silent",kind=k,effects={}}}

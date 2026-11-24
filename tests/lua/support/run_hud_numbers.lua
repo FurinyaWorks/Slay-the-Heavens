@@ -72,7 +72,7 @@ assert(control.visible and control.text==host.relicUI.selected.status and status
 assert(host:closeDeck())
 run.relics,run.relicCounters=relics,counters
 
-assert(Run.startCombat(run,'cultist_solo'))
+assert(Run.startCombat(run,'raven_adept_solo'))
 run.combat.player.hp,run.combat.player.maxHp,run.combat.player.gold=123,456,288
 host:refresh()
 expectText(picture,'/battlePanel/player','123/456',scale,screen)

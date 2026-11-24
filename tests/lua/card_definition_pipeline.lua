@@ -30,7 +30,7 @@ end
 local function battle(data)
  local R=require('abyss_sts_random');local streams={}
  for _,id in ipairs({'monsterHpRng','aiRng','shuffleRng','cardRandomRng','miscRng'})do streams[id]=R.fromSeed('42')end
- return C.new(data or D,{seed=42,deck={},enemies={'cultist'},cardRandomSeed='42',shuffleSeed='17',
+ return C.new(data or D,{seed=42,deck={},enemies={'raven_adept'},cardRandomSeed='42',shuffleSeed='17',
   roomSeed='42',roomStreams=streams,cardRng=R.fromSeed('7')})
 end
 local function group(name,fn)

@@ -13,7 +13,7 @@ local function value(panel,slot)
     return tonumber(text:match('(%d+)'))
 end
 local function setup()
-    local host,ui,panel,event,tap,drain=H.setup({'strike','strike'},{'cultist','jaw_worm'})
+    local host,ui,panel,event,tap,drain=H.setup({'strike','strike'},{'raven_adept','jaw_worm'})
     F.Combat.addStatus(host.run.combat.enemies[1],'vulnerable',2)
     host:refresh()
     return host,ui,panel,event,tap,drain
@@ -58,7 +58,7 @@ test('state refresh recomputes; turn phase actor battle and inactive invalidate 
         elseif kind=='turn'then b.turn=b.turn+1
         elseif kind=='phase'then b.phase='enemy'
         elseif kind=='actor'then b.enemies[1]=F.Combat.copy(b.enemies[1])
-        elseif kind=='battle'then host.run.combat=F.Combat.new(F.Data,{deck={'strike'},enemies={'cultist'}})
+        elseif kind=='battle'then host.run.combat=F.Combat.new(F.Data,{deck={'strike'},enemies={'raven_adept'}})
         else ui.active=false end
         ui:render();assert(value(panel)==6,kind..' retained old preview')
         if kind~='status'then assert(ui.cardAim==nil,kind..' retained stale token')end

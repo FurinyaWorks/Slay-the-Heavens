@@ -49,7 +49,7 @@ test('existing competition core admission guard rejects Raiden without changing 
  assert(dev.character=='raiden' and dev.data.originalV4Role=='RD','retained development role was removed')
 end)
 test('Pear updates active combat health owner rather than stale Run ledger',function()
- local r=R.new(D,42);r.hp=30;assert(R.startCombat(r,'cultist_solo'))
+ local r=R.new(D,42);r.hp=30;assert(R.startCombat(r,'raven_adept_solo'))
  C.damage(r.combat,r.combat.enemies[1],r.combat.player,5,true)
  assert(r.combat.player.hp==25 and r.hp==30)
  assert(R.obtainRelic(r,'Pear'))

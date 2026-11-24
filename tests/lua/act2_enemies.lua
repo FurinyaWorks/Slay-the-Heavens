@@ -76,7 +76,7 @@ test('Spheric constructor does not spend HP RNG, Taskmaster spends both source r
  eq(s.monsterHpRng.counter,2);eq(s.aiRng.counter,2)
 end)
 test('Taskmaster keeps queued Wound after lethal retaliation while allies survive',function()
- local s=battle({'taskmaster','cultist'});local e=s.enemies[1]
+ local s=battle({'taskmaster','raven_adept'});local e=s.enemies[1]
  e.hp=1;A.applyPower(s,s.player,'thorns',1,s.player)
  assert(C.endTurn(s));eq(e.hp,0)
  local wounds=0;for _,pile in ipairs({s.hand,s.draw,s.discard})do for _,c in ipairs(pile)do if c.cardId=='wound'then wounds=wounds+1 end end end
@@ -359,10 +359,10 @@ test('all nineteen source queue/Boss groups construct exact actor arrays with no
   {'2 Thieves','normal','looter,mugger'}, {'Chosen and Byrds','normal','byrd,chosen'},
   {'Sentry and Sphere','normal','sentry,spheric_guardian'}, {'Snake Plant','normal','snake_plant'},
   {'Snecko','normal','snecko'}, {'Centurion and Healer','normal','centurion,mystic'},
-  {'Cultist and Chosen','normal','cultist,chosen'}, {'3 Cultists','normal','cultist,cultist,cultist'},
+  {'Raven Adept and Chosen','normal','raven_adept,chosen'}, {'3 Raven Adepts','normal','raven_adept,raven_adept,raven_adept'},
   {'Shelled Parasite and Fungi','normal','shelled_parasite,fungi_beast'},
   {'Gremlin Leader','elite','mad_gremlin,mad_gremlin,gremlin_leader'},
-  {'Slavers','elite','blue_slaver,taskmaster,red_slaver'}, {'Book of Stabbing','elite','book_of_stabbing'},
+  {'Arena Guards','elite','blue_guard,taskmaster,red_guard'}, {'Book of Stabbing','elite','book_of_stabbing'},
   {'Automaton','boss','automaton'}, {'Collector','boss','collector'}, {'Champ','boss','champ'},
  }
  for _,row in ipairs(rows)do

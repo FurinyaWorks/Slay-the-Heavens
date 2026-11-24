@@ -5,7 +5,7 @@ local available,Actions=pcall(require,'abyss_card_actions')
 if not available then print('LUA_PUZZLE_QUEUE_INTEGRATION_PENDING host CardActions absent');return end
 local C,A,H,D=require('abyss_combat'),require('abyss_actor'),require('abyss_relic_hooks'),require('abyss_data')
 local damageActors=ABYSS_PUZZLE_DAMAGE_ACTORS or A
-local s=assert(C.new(D,{seed=42,deck={'strike'},enemies={'cultist'}}))
+local s=assert(C.new(D,{seed=42,deck={'strike'},enemies={'raven_adept'}}))
 H.bindBattle(s,{'centennial_puzzle'})
 s.hand={{cardId='strike',uid=1000}}
 s.draw={{cardId='strike',uid=2000},{cardId='burn',uid=2001},{cardId='defend',uid=2002},{cardId='dazed',uid=2003}}

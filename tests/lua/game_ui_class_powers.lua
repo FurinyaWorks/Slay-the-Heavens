@@ -35,7 +35,7 @@ for _,case in ipairs(cases) do
     ui.run.deck={}
     for i=1,12 do ui.run.deck[i]={uid=i,cardId=cardId,upgraded=false} end
     ui.run.nextDeckUid=13
-    assert(Run.startCombat(ui.run,"cultist_solo"));ui:refresh()
+    assert(Run.startCombat(ui.run,"raven_adept_solo"));ui:refresh()
     local slot
     for i,instance in ipairs(ui.run.combat.hand) do if instance.cardId==cardId then slot=i;break end end
     assert(slot,"source card not in initial hand")

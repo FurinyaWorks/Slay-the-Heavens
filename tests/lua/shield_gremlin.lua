@@ -74,7 +74,7 @@ test('group preturn retains Barricade and stops entirely on poison victory',func
  for i=start,#s.events do assert(s.events[i].kind~='intent','action after all-enemy poison death') end end)
 end)
 test('later poison death makes Fat retaliation final and clears queued Weak and roll',function()
- observe(function(calls) local s=battle({'fat_gremlin','cultist'});s.enemies[1].hp=1;s.enemies[2].hp=1;C.addStatus(s.enemies[2],'poison',1);C.addStatus(s.player,'thorns',1);local before=#calls
+ observe(function(calls) local s=battle({'fat_gremlin','raven_adept'});s.enemies[1].hp=1;s.enemies[2].hp=1;C.addStatus(s.enemies[2],'poison',1);C.addStatus(s.player,'thorns',1);local before=#calls
  assert(C.endTurn(s));eq(s.phase,'victory');eq(s.enemies[1].hp,0);eq(s.enemies[2].hp,0);eq(s.player.statuses.weak or 0,0);eq(#calls,before) end)
 end)
 test('first enemy lethal attack cannot suppress a later enemy preturn poison',function()

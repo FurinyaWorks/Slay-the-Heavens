@@ -1,5 +1,5 @@
 -- Fixed-source behavior: inherited init and each completed takeTurn queue one
--- primary AI roll, even though Cultist chooses Ritual then fixed attacks.
+-- primary AI roll, even though Raven Adept chooses Ritual then fixed attacks.
 package.path = "src/lua/?.lua;build/lua/?.lua;" .. package.path
 local Combat, Run, data = require("abyss_combat"), require("abyss_run"), require("abyss_data")
 local passed, failed = 0, 0
@@ -24,7 +24,7 @@ local function observe(fn, endpoint)
     assert(ok, err)
 end
 local function battle(enemies, deck)
-    return Combat.new(data, {seed=42, enemies=enemies or {"cultist"}, deck=deck or {"defend"}})
+    return Combat.new(data, {seed=42, enemies=enemies or {"raven_adept"}, deck=deck or {"defend"}})
 end
 local function callsEqual(calls, expected)
     eq(#calls, #expected, "random request count")
@@ -37,12 +37,12 @@ for _, roll in ipairs({0, 99}) do
         observe(function(calls)
             local s = battle()
             callsEqual(calls, {7,100})
-            eq(s.enemies[1].hp, 54); eq(Combat.intent(s,1).id, "cultist_2")
+            eq(s.enemies[1].hp, 54); eq(Combat.intent(s,1).id, "raven_adept_2")
             assert(Combat.endTurn(s)); callsEqual(calls, {7,100,100})
             eq(s.player.hp,80); eq(s.enemies[1].statuses.ritual,3)
             eq(s.enemies[1].statuses.strength or 0,0)
             assert(Combat.endTurn(s)); callsEqual(calls, {7,100,100,100})
-            eq(s.player.hp,74); eq(Combat.intent(s,1).id,"cultist_1")
+            eq(s.player.hp,74); eq(Combat.intent(s,1).id,"raven_adept_1")
             eq(s.enemies[1].statuses.strength,3)
         end, roll)
     end)
@@ -64,9 +64,9 @@ test("opening roll precedes actual deck shuffle without changing card identity",
     end)
 end)
 
-test("multiple Cultists retain independent opening rolls and Ritual timing", function()
+test("multiple Raven Adepts retain independent opening rolls and Ritual timing", function()
     observe(function(calls)
-        local s = battle({"cultist","cultist"})
+        local s = battle({"raven_adept","raven_adept"})
         callsEqual(calls,{7,7,100,100})
         assert(Combat.endTurn(s)); callsEqual(calls,{7,7,100,100,100,100})
         eq(s.player.hp,80)
@@ -89,9 +89,9 @@ test("five live actions each roll while damage stays 0,6,9,12,15", function()
     end)
 end)
 
-test("dead Cultist consumes its queued roll before the surviving teammate", function()
+test("dead Raven Adept consumes its queued roll before the surviving teammate", function()
     observe(function(calls)
-        local s = battle({"cultist","sneaky_gremlin"})
+        local s = battle({"raven_adept","sneaky_gremlin"})
         assert(Combat.endTurn(s)); clear(calls)
         s.enemies[1].hp=1; Combat.addStatus(s.player,"thorns",1)
         local hp=s.player.hp
@@ -111,15 +111,15 @@ test("queued dead-owner roll changes the next teammate's actual selection", func
     end
     local s
     local prepared, preparationError=pcall(function()
-        s=battle({"cultist","blue_slaver"})
-        eq(Combat.intent(s,2).id,"blue_slaver_2")
+        s=battle({"raven_adept","blue_guard"})
+        eq(Combat.intent(s,2).id,"blue_guard_2")
         openingRoll=100; assert(Combat.endTurn(s))
-        eq(Combat.intent(s,2).id,"blue_slaver_1")
+        eq(Combat.intent(s,2).id,"blue_guard_1")
     end)
     Combat.random=original; assert(prepared,preparationError)
     s.enemies[1].hp=1; Combat.addStatus(s.player,"thorns",1)
     Combat.addStatus(s.player,"barricade",1); s.player.block=100
-    -- The dead Cultist must consume 0, leaving 99 for Blue's next move.
+    -- The dead Raven Adept must consume 0, leaving 99 for Blue's next move.
     local old, consumed = Combat.random, 0
     Combat.random=function(state,maximum)
         eq(maximum,100); old(state,maximum); consumed=consumed+1
@@ -127,12 +127,12 @@ test("queued dead-owner roll changes the next teammate's actual selection", func
     end
     local ok, err=pcall(Combat.endTurn,s); Combat.random=old; assert(ok,err)
     eq(consumed,2); eq(s.enemies[1].hp,0)
-    eq(Combat.intent(s,2).id,"blue_slaver_1")
+    eq(Combat.intent(s,2).id,"blue_guard_1")
 end)
 
-test("lethal poison before takeTurn never queues a Cultist roll", function()
+test("lethal poison before takeTurn never queues a Raven Adept roll", function()
     observe(function(calls)
-        local s=battle({"cultist","sneaky_gremlin"}); clear(calls)
+        local s=battle({"raven_adept","sneaky_gremlin"}); clear(calls)
         s.enemies[1].hp=1; Combat.addStatus(s.enemies[1],"poison",1)
         assert(Combat.endTurn(s)); callsEqual(calls,{})
         eq(s.enemies[1].hp,0); eq(s.enemies[1].statuses.ritual,nil); eq(s.player.hp,71)
@@ -150,7 +150,7 @@ end)
 
 test("player card kill before takeTurn has no post-action roll", function()
     observe(function(calls)
-        local s=battle({"cultist","sneaky_gremlin"},{"strike"}); clear(calls)
+        local s=battle({"raven_adept","sneaky_gremlin"},{"strike"}); clear(calls)
         s.enemies[1].hp=1; assert(Combat.play(s,s.hand[1].uid,1))
         callsEqual(calls,{}); assert(Combat.endTurn(s)); callsEqual(calls,{})
         eq(s.enemies[1].hp,0); eq(s.player.hp,71)
@@ -163,7 +163,7 @@ test("intent previews and rejected requests never consume a roll", function()
         clear(calls)
         for _=1,3 do
             local intent=Combat.intent(s,1); intent.id="changed"
-            eq(Combat.intent(s,1).id,"cultist_2")
+            eq(Combat.intent(s,1).id,"raven_adept_2")
             local ok,reason=Combat.play(s,s.hand[1].uid,99)
             eq(ok,false); eq(reason,"invalid_target")
         end
@@ -171,7 +171,7 @@ test("intent previews and rejected requests never consume a roll", function()
     end)
 end)
 
-test("failed card restores existing seed and Cultist bookkeeping in place", function()
+test("failed card restores existing seed and Raven Adept bookkeeping in place", function()
     observe(function(calls)
         local s=battle(nil,{"strike"}); assert(Combat.endTurn(s)); clear(calls)
         local e,hand,events=s.enemies[1],s.hand,s.events
@@ -185,11 +185,11 @@ test("failed card restores existing seed and Cultist bookkeeping in place", func
     end)
 end)
 
-test("real Run encounter and endTurn dispatch the Cultist roll policy", function()
+test("real Run encounter and endTurn dispatch the Raven Adept roll policy", function()
     observe(function(calls)
         local run=Run.new(data,42)
         run.deck={{uid=1,cardId="defend",upgraded=false}}
-        assert(Run.startCombat(run,"cultist_solo")); callsEqual(calls,{7,100})
+        assert(Run.startCombat(run,"raven_adept_solo")); callsEqual(calls,{7,100})
         eq(run.combat.seed,42944); eq(run.phase,"combat")
         assert(Run.endTurn(run)); callsEqual(calls,{7,100,100})
         eq(run.combat.seed,26841); eq(run.combat.player.hp,80)
@@ -199,4 +199,4 @@ test("real Run encounter and endTurn dispatch the Cultist roll policy", function
 end)
 
 print("CULTIST_ROLLS "..passed.." passed; "..failed.." failed")
-assert(failed==0,"Cultist roll failures: "..failed)
+assert(failed==0,"Raven Adept roll failures: "..failed)

@@ -41,7 +41,7 @@ for _,name in ipairs(${toLua(names)})do package.preload[name]=assert(loadfile(ge
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
 assert(H.F.Theme.font.cost==25 and H.F.Theme.font.hud==28)
 local deck={};for i=1,20 do deck[i]='strike'end
-local host,ui,panel=H.setup(deck,{'cultist','cultist'})
+local host,ui,panel=H.setup(deck,{'raven_adept','raven_adept'})
 H.F.Combat.draw(host.run.combat,20);assert(#host.run.combat.hand==10)
 for refresh=1,3 do
  host:refresh()

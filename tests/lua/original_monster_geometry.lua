@@ -2,7 +2,7 @@ local G=require('abyss_monster_source_geometry')
 local P=require('abyss_monster_source_positions')
 local function eq(got,want,label)assert(got==want,label..': '..tostring(got)..' ~= '..tostring(want))end
 local cases={
- {'cultist',0,-10,230,240,-8,10}, {'guardian',-50,-100,440,350,0,95},
+ {'raven_adept',0,-10,230,240,-8,10}, {'guardian',-50,-100,440,350,0,95},
  {'slime_boss',0,28,400,350,0,-30}, {'hexaghost',0,0,450,450,20,0},
  {'collector',60,135,300,390,15,-40}, {'automaton',-50,20,270,400,0,-30},
  {'champ',-90,0,400,410,0,-15}, {'book_of_stabbing',0,5,320,420,0,-10},
@@ -26,14 +26,14 @@ sentries[1].x=999;eq(P.positions('3 Sentries')[1].x,-330,'fresh immutable facts'
 local count=0;local birds=P.positions('3 Byrds',function(lo,hi)eq(lo,25,'byrd low');eq(hi,70,'byrd high');count=count+1;return 25+count end)
 eq(count,3,'one cosmetic call each');eq(birds[3].x,200,'third byrdx');eq(birds[3].y,28,'third byrdy')
 assert(not pcall(P.positions,'3 Byrds'));assert(not pcall(P.positions,'3 Byrds',function()return 71 end))
-local mixed=P.positions('Cultist and Chosen');eq(G.resolve({definitionId='chosen',sourcePosition=mixed[2]}).y,5,'chosen delta applied once')
+local mixed=P.positions('Raven Adept and Chosen');eq(G.resolve({definitionId='chosen',sourcePosition=mixed[2]}).y,5,'chosen delta applied once')
 -- Actor location never depends on count, slot, HP or other actors.
 local a={definitionId='sentry',id='sentry_2',sourcePosition={x=-85,y=10}};local before=G.resolve(a);a.hp=0;local after=G.resolve(a)
 eq(after.x,before.x,'death does not reflow');eq(after.y,before.y,'death does not reflow y')
 print('SOURCE_MONSTER_GEOMETRY passed12 default+3 delta+formation+RNG/no mutation contracts')
 
 local C,Data=require('abyss_combat'),require('abyss_data')
-local state=C.new(Data,{enemies={'acid_slime_m','wizard_gremlin','cultist'},deck={},seed=42})
+local state=C.new(Data,{enemies={'acid_slime_m','wizard_gremlin','raven_adept'},deck={},seed=42})
 for i,x in ipairs({-100,200,-300})do state.enemies[i].sourcePosition={x=x,y=0}end
 local prior={state.enemies[1],state.enemies[2],state.enemies[3]}
 prior[1].hp=0 -- Dead objects still participate in source SpawnMonsterAction drawX counting.

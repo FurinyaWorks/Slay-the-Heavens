@@ -8,7 +8,7 @@ local function eq(a,b) assert(a==b,tostring(a).." ~= "..tostring(b)) end
 local function test(name,fn) fn();count=count+1;print("ok watcher_attack_build "..count.." - "..name) end
 local function prepared() return Cards.withCards(Watcher.withFoundationCards(Data)) end
 local function battle(deck,enemies)
-    local s=Combat.new(prepared(),{seed=42,cardRandomSeed="42",enemies=enemies or {"cultist"},enableStances=true,deck=deck})
+    local s=Combat.new(prepared(),{seed=42,cardRandomSeed="42",enemies=enemies or {"raven_adept"},enableStances=true,deck=deck})
     for _,e in ipairs(s.enemies) do e.hp=1000;e.maxHp=1000 end
     return s
 end
@@ -58,7 +58,7 @@ test("eighteen independent source definitions and original data isolation",funct
     d.cards.cards[1].cost=999;assert(Data.cards.cards[1].cost~=999)
 end)
 test("Bowling preparation freezes separate hits and ignores dead or escaped enemies",function()
-    local s=battle({"bowling_bash"},{"cultist","cultist","cultist"})
+    local s=battle({"bowling_bash"},{"raven_adept","raven_adept","raven_adept"})
     s.enemies[2].hp=0;s.enemies[3].escaped=true
     local p=Cards.prepareEffect(s,{op="bowlingBash",value=7})
     eq(#p,1);eq(p[1].op,"damage");eq(p[1].value,7)
@@ -84,14 +84,14 @@ test("previous-card plan includes current card and Brilliance adds Mantra once",
 end)
 test("Consecrate and Flying Sleeves use real area and repeated attack damage",function()
     for _,up in ipairs({false,true}) do
-        local s=battle({{cardId="consecrate",upgraded=up}},{"cultist","cultist"})
+        local s=battle({{cardId="consecrate",upgraded=up}},{"raven_adept","raven_adept"})
         play(s,"consecrate");eq(s.enemies[1].hp,1000-(up and 8 or 5));eq(s.enemies[2].hp,s.enemies[1].hp)
         s=battle({{cardId="flying_sleeves",upgraded=up}});s.player.statuses.strength=2
         play(s,"flying_sleeves");eq(s.enemies[1].hp,1000-2*((up and 6 or 4)+2))
     end
 end)
 test("Bowling Bash freezes live enemy count and applies Strength to every hit",function()
-    local s=battle({"bowling_bash"},{"cultist","cultist","cultist"})
+    local s=battle({"bowling_bash"},{"raven_adept","raven_adept","raven_adept"})
     s.player.statuses.strength=2;s.enemies[3].hp=0
     play(s,"bowling_bash");eq(s.enemies[1].hp,982);eq(s.enemies[2].hp,1000)
 end)

@@ -1,5 +1,5 @@
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
-local host,ui,panel,event,tap,drain=H.setup({'defend'},{'cultist','jaw_worm'})
+local host,ui,panel,event,tap,drain=H.setup({'defend'},{'raven_adept','jaw_worm'})
 local battle=host.run.combat
 host.run.potions={'energy_potion','fire_potion','regen_potion'};host:refresh()
 local group=panel:GetChild('potionHelp')
@@ -62,12 +62,12 @@ assert(popup.disableCursorEventPassthrough==true,'modal effect card must use nat
 
 -- A native event can also reach a lower hand control. Only the popup's explicit
 -- dismiss surface may close it; either Down dispatch order must retain Use.
-local h,u,p,e,t,d=H.setup({'defend'},{'cultist','jaw_worm'})
+local h,u,p,e,t,d=H.setup({'defend'},{'raven_adept','jaw_worm'})
 local pop=p:GetChild('potionHelp'):GetChild('potionPopup')
 for _,count in ipairs({2,5,10})do
  for _,order in ipairs({'handFirst','popupFirst'})do
   local deck={};for i=1,count do deck[i]='defend' end
-  h.run.combat=H.F.Combat.new(H.F.Data,{deck=deck,enemies={'cultist','jaw_worm'}})
+  h.run.combat=H.F.Combat.new(H.F.Data,{deck=deck,enemies={'raven_adept','jaw_worm'}})
   local b=h.run.combat
   while #b.hand<count do b.hand[#b.hand+1]=table.remove(b.draw)end
   h.run.potions={'energy_potion','explosive_potion','fire_potion'};h:refresh()
@@ -118,7 +118,7 @@ end
 
 -- Forethought's real mandatory choice owns the screen. Queued top-row potion
 -- callbacks must leave it intact without scheduling another host refresh.
-h.run.combat=H.F.Combat.new(H.F.Data,{deck={'forethought','defend','defend'},enemies={'cultist'}})
+h.run.combat=H.F.Combat.new(H.F.Data,{deck={'forethought','defend','defend'},enemies={'raven_adept'}})
 h.run.potions={'energy_potion','explosive_potion','fire_potion'};h:refresh()
 local b=h.run.combat
 local slot;for i,card in ipairs(b.hand)do if card.cardId=='forethought'then slot=i end end
@@ -140,7 +140,7 @@ assert(h.run.potions[1]=='energy_potion' and h.run.potions[2]=='explosive_potion
 
 -- Click-only compatibility still owns its trailing native callbacks. A new
 -- named touch may act immediately, while a new Down can reclaim the same ID.
-local ch,cu,cp,ce,ct,cd=H.setup({'defend','defend'},{'cultist','jaw_worm'})
+local ch,cu,cp,ce,ct,cd=H.setup({'defend','defend'},{'raven_adept','jaw_worm'})
 local clickPopup=cp:GetChild('potionHelp'):GetChild('potionPopup')
 for index,name in ipairs({'use','discard','dismiss'})do
  local touch=900+index*10

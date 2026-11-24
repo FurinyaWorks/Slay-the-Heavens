@@ -8,7 +8,7 @@ local function setup(puzzle,warcry)
   local red=require('abyss_character_profiles').prepare(D,'ironclad')
   for _,card in ipairs(red.cards.cards)do if card.id=='warcry'then r.data.cards.cards[#r.data.cards.cards+1]=C.copy(card)end end
  end
- assert(Run.startCombat(r,'cultist_solo'));local s=r.combat;local c=s.hand[1]
+ assert(Run.startCombat(r,'raven_adept_solo'));local s=r.combat;local c=s.hand[1]
  for _=1,7 do s.hand[#s.hand+1]=A.fresh(C,s,'defend_blue')end
  s.draw={A.fresh(C,s,'defend_blue'),A.fresh(C,s,'defend_blue'),A.fresh(C,s,'defend_blue')}
  s.discard={A.fresh(C,s,'beam_cell'),A.fresh(C,s,'beam_cell'),A.fresh(C,s,'beam_cell')}

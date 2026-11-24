@@ -54,7 +54,7 @@ for _,id in ipairs({"silent","defect","watcher"}) do
             if c.type~="status" and c.type~="curse" and c.rarity~="special" then eq(c.color,e.color) end
             assert(c.id~="barricade" and c.id~="anger" and c.id~="offering")
         end
-        local s=Combat.new(d,{seed=42,enemies={"cultist"},enableStances=id=="watcher"})
+        local s=Combat.new(d,{seed=42,enemies={"raven_adept"},enableStances=id=="watcher"})
         eq(s.player.maxHp,e.hp);eq(s.player.hp,e.hp)
         eq(#s.hand+#s.draw,e.n)
     end)
@@ -62,7 +62,7 @@ end
 test("Neutralize source basic and upgraded Weak follow damage",function()
     local d=Characters.prepare(Data,"silent")
     for _,up in ipairs({false,true}) do
-        local s=Combat.new(d,{seed=42,enemies={"cultist"},deck={{cardId="neutralize",upgraded=up}}})
+        local s=Combat.new(d,{seed=42,enemies={"raven_adept"},deck={{cardId="neutralize",upgraded=up}}})
         s.enemies[1].hp=100; local before=s.energy
         assert(Combat.play(s,s.hand[1].uid,1));eq(s.energy,before)
         eq(s.enemies[1].hp,up and 96 or 97);eq(s.enemies[1].statuses.weak,up and 2 or 1)
@@ -71,7 +71,7 @@ end)
 test("Miracle is special retained exhausted zero-cost energy",function()
     local d=Characters.prepare(Data,"watcher")
     for _,up in ipairs({false,true}) do
-        local s=Combat.new(d,{seed=42,enemies={"cultist"},enableStances=true,deck={{cardId="miracle",upgraded=up}}})
+        local s=Combat.new(d,{seed=42,enemies={"raven_adept"},enableStances=true,deck={{cardId="miracle",upgraded=up}}})
         local card=Combat.cardDefinition(s,s.hand[1]);local uid=s.hand[1].uid
         eq(card.color,"colorless");eq(card.rarity,"special");eq(card.cost,0)
         eq(card.selfRetain,true);eq(card.exhaust,true);assert(not card.ethereal)

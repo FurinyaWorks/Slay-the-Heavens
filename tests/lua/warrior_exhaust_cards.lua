@@ -37,7 +37,7 @@ local function held(s,id)
  error('missing hand card '..id)
 end
 local function battle(deck)
- local s=C.new(data,{seed=42,deck=deck,enemies={'cultist'}})
+ local s=C.new(data,{seed=42,deck=deck,enemies={'raven_adept'}})
  s.cardRandomRng=R.fromSeed('42');return s
 end
 local function play(s,id,target)

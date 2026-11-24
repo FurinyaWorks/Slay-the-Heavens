@@ -1,7 +1,7 @@
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local host,root=F.fixture()
-assert(F.start(host));assert(require('abyss_run').startCombat(host.run,'cultist_solo'))
-local battle=F.Combat.new(F.Data,{enemies={'wizard_gremlin','cultist'},deck={'strike'},seed=42})
+assert(F.start(host));assert(require('abyss_run').startCombat(host.run,'raven_adept_solo'))
+local battle=F.Combat.new(F.Data,{enemies={'wizard_gremlin','raven_adept'},deck={'strike'},seed=42})
 local actor=battle.enemies[1];actor.aiCharge=actor.ai.chargeLimit-1
 host.run.combat=battle;host:refresh();host:update(.51)
 local manager=require('abyss_monster_surfaces').get(root:GetChild('battlePanel'))
@@ -38,7 +38,7 @@ assert(shown,'missing player_turn source boundary')
 for _=1,200 do if not host.battleUI.busy then break end;host:update(.01)end
 assert(not host.battleUI.busy,'first playback must finish before replacement fixture')
 -- Repeated exact move still receives real showIntent at the next player turn.
-local repeatBattle=F.Combat.new(F.Data,{enemies={'cultist'},deck={'strike'},seed=43})
+local repeatBattle=F.Combat.new(F.Data,{enemies={'raven_adept'},deck={'strike'},seed=43})
 local repeated=repeatBattle.enemies[1]
 for index,intent in ipairs(repeated.intents)do if intent.id==repeated.ai.attackIntent then repeated.intentIndex=index end end
 repeated.aiPhase='attacking'

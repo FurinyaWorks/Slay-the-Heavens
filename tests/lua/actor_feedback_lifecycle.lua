@@ -1,6 +1,6 @@
 package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
-local host,ui,panel=H.setup({'strike'},{'cultist'})
+local host,ui,panel=H.setup({'strike'},{'raven_adept'})
 local feedback,battle=ui.feedback,host.run.combat
 local id=battle.enemies[1].id
 feedback.deaths[id]=true
@@ -17,7 +17,7 @@ assert(portrait.x==x and portrait.y==y and portrait.localScaleX==sx and portrait
     'retired death history must not keep an invisible animation alive')
 feedback:bindIdle(battle)
 assert(feedback.deaths[id],'reactivating this battle must not forget its death history')
-local nextBattle=H.F.Combat.new(H.F.Data,{deck={'strike'},enemies={'cultist'},seed=12})
+local nextBattle=H.F.Combat.new(H.F.Data,{deck={'strike'},enemies={'raven_adept'},seed=12})
 feedback:bindIdle(nil)
 feedback:bindIdle(nextBattle)
 assert(next(feedback.deaths)==nil,'a new battle with reused IDs must not inherit old deaths')

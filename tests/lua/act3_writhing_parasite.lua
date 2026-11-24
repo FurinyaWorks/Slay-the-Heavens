@@ -52,7 +52,7 @@ test('real Run Implant obtains one permanent UID only and survives into next bat
  eq(r.nextDeckUid,uid+1);eq(s.nextMasterDeckUid,uid+1);eq(s.nextUid,combatUid)
  eq(combatParasites(s),0);eq(#s.masterDeck,#r.deck);eq(s.masterDeckObtains,nil)
  local streams={};for _,k in ipairs({'monsterHpRng','aiRng','cardRandomRng','shuffleRng'})do streams[k]=R.fromSeed('42')end
- local nextBattle=C.new(r.data,{enemies={'cultist'},deck=r.deck,masterDeck=r.deck,roomSeed='42',roomStreams=streams})
+ local nextBattle=C.new(r.data,{enemies={'raven_adept'},deck=r.deck,masterDeck=r.deck,roomSeed='42',roomStreams=streams})
  eq(combatParasites(nextBattle),1)
  local maximum=r.maxHp;r.phase,r.combat='map',nil -- explicit post-room removal boundary
  assert(Run.removeCard(r,uid));eq(r.maxHp,maximum-3);eq(#r.deck,count)
@@ -112,7 +112,7 @@ test('public active Run obtains keep the later monster UID counter and Omamori s
   eq(s.nextMasterDeckUid,r.nextDeckUid);eq(combatParasites(s),0)
  end
  -- Non-Writhing battles retain the old copied snapshot and have no new cursor.
- local s=C.new(D,{enemies={'cultist'},deck={},masterDeck={{uid=3,cardId='strike',upgraded=false}}})
+ local s=C.new(D,{enemies={'raven_adept'},deck={},masterDeck={{uid=3,cardId='strike',upgraded=false}}})
  same(s.masterDeck,{{uid=3,cardId='strike',upgraded=false}});eq(s.nextMasterDeckUid,nil)
 end)
 test('late permanent hook and publication failures restore Run battle master deck relics and aliases',function()

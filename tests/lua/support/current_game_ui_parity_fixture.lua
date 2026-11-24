@@ -36,8 +36,8 @@ function M.setup(seed,controlled,sound)
  local canvas=F.control({children=F.Layout});local root=F.Viewport.apply(canvas,1280,720)
  local host=F.GameUI.new(root,F.Data,F.Presentation,'click',{seed=seed,nativeMonsterArtEnabled=false,sound=sound,
   imageSource='static',color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end})
- root.ui=host;assert(F.start(host));assert(Run.startCombat(host.run,'cultist_solo'))
- if controlled then host.run.combat=F.Combat.new(F.Data,{deck={'strike','defend'},enemies={'cultist'},seed=seed})end
+ root.ui=host;assert(F.start(host));assert(Run.startCombat(host.run,'raven_adept_solo'))
+ if controlled then host.run.combat=F.Combat.new(F.Data,{deck={'strike','defend'},enemies={'raven_adept'},seed=seed})end
  host:refresh()
  local panel=root:GetChild('battlePanel')
  local surfaces=assert(require('abyss_monster_surfaces').get(panel))

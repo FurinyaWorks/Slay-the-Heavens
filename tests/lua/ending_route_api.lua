@@ -43,7 +43,7 @@ do
   function(r)r.keys.ruby=false end,function(r)r.endingUnlocked=false end,
   function(r)r.combat.cardActions={{effect={op='heartBeat'}}}end,
   function(r)r.combat.player.hp=0 end,function(r)r.nodeFlow.complete=true end,
-  function(r)r.endingProceed.extra=true end,function(r)r.combat.enemies[1].definitionId='cultist'end})do
+  function(r)r.endingProceed.extra=true end,function(r)r.combat.enemies[1].definitionId='raven_adept'end})do
   local run=fixture();local owner=defeated(run);mutate(run)
   local snapshot=C.copy(run,{[run.data]=run.data});local deck,flow=run.deck,run.nodeFlow
   assert(not Run.proceedEnding(run,owner));same(run,snapshot);eq(run.deck,deck);eq(run.nodeFlow,flow)

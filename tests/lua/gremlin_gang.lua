@@ -74,10 +74,10 @@ test('low-level explicit five-actor arrays retain capacity and never trigger gro
 end)
 
 local unchanged={
- cultist_solo={'cultist'},jaw_solo={'jaw_worm'},louse_pair={'red_louse','red_louse'},
+ raven_adept_solo={'raven_adept'},jaw_solo={'jaw_worm'},louse_pair={'red_louse','red_louse'},
  louse_trio={'red_louse','red_louse','green_louse'},medium_slimes={'acid_slime_m','spike_slime_m'},
  large_acid={'acid_slime_l'},large_spike={'spike_slime_l'},looter_solo={'looter'},
- blue_slaver_solo={'blue_slaver'},red_slaver_solo={'red_slaver'},fungi_pair={'fungi_beast','fungi_beast'},
+ blue_guard_solo={'blue_guard'},red_guard_solo={'red_guard'},fungi_pair={'fungi_beast','fungi_beast'},
  wildlife={'jaw_worm','green_louse'},elite_nob={'gremlin_nob'},elite_lagavulin={'lagavulin'},
  elite_sentries={'sentry','sentry','sentry'},boss_guardian={'guardian'},small_slimes={'spike_slime_s','acid_slime_m'}
 }

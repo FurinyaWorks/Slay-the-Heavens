@@ -58,7 +58,7 @@ test('opening draws enter from the draw pile while unknown generated UIDs do not
     b.hand[#b.hand+1]={uid=99,cardId='strike',upgraded=false}
     ui:render()
     near(panel:GetChild('card2').x,70);near(panel:GetChild('card2').scale[1],1)
-    host.run.combat=Combat.new(H.F.Data,{deck={'defend'},enemies={'cultist'}})
+    host.run.combat=Combat.new(H.F.Data,{deck={'defend'},enemies={'raven_adept'}})
     ui:render();near(panel:GetChild('card1').x,Theme.layout.drawPile.position[1])
     for _=1,100 do ui:update(1/60)end
     near(panel:GetChild('card1').x,0);near(panel:GetChild('card1').scale[1],1)

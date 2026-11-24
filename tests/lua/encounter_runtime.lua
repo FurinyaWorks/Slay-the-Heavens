@@ -53,13 +53,13 @@ test('normal and elite share initialization but only their accepted queue entrie
 end)
 test('three actual normal entries remain weak across floor gaps and fourth can be Gremlins at floor four',function()
  local run=Run.new(Data,'5')
- for i,source in ipairs({'Jaw Worm','Cultist','Small Slimes','Gremlin Gang'})do
+ for i,source in ipairs({'Jaw Worm','Raven Adept','Small Slimes','Gremlin Gang'})do
   run.floor=i;assert(Run.startRoomCombat(run,'normal'));eq(run.encounterSource,source)
   run.phase='map' -- isolated accepted-entry fixture, no preceding victory claim
  end
  eq(#run.encounters.normal,12);eq(#run.combat.enemies,4)
  local other=Run.new(Data,'5')
- for i,source in ipairs({'Jaw Worm','Cultist','Small Slimes'})do
+ for i,source in ipairs({'Jaw Worm','Raven Adept','Small Slimes'})do
   other.floor=({1,8,14})[i];assert(Run.startRoomCombat(other,'normal'));eq(other.encounterSource,source);other.phase='map'
  end
 end)
@@ -115,7 +115,7 @@ test('later enemy rolls keep the room AI stream and never consume HP or misc',fu
  local run=Run.new(Data,'42');run.deck={};assert(Run.startRoomCombat(run,'normal'))
  local hp,misc=R.snapshot(run.combat.monsterHpRng),R.snapshot(run.miscRng)
  local ai=R.cloneState(run.combat.aiRng);R.randomInt(ai,99)
- assert(Run.endTurn(run)) -- source Cultist Ritual queues its next ignored roll
+ assert(Run.endTurn(run)) -- source Raven Adept Ritual queues its next ignored roll
  same(R.snapshot(run.combat.aiRng),R.snapshot(ai))
  same(R.snapshot(run.combat.monsterHpRng),hp);same(R.snapshot(run.miscRng),misc)
 end)

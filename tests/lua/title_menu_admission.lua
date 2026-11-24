@@ -13,7 +13,7 @@ do
  assert(h:openMenu());state(r,false);assert(not route(r).click() and not h.routeOpen);assert(h:closeExit())
  assert(h:start());assert(h:openMenu());state(r,false);assert(not route(r).click());assert(h:closeExit());assert(h:closeCharacters())
  assert(F.start(h));assert(h:openMenu());state(r,false);assert(not route(r).click() and not h.routeOpen);assert(h:closeExit())
- assert(require('abyss_run').startCombat(h.run,'cultist_solo'));h:refresh()
+ assert(require('abyss_run').startCombat(h.run,'raven_adept_solo'));h:refresh()
  assert(h:openMenu());state(r,true);assert(route(r).click() and h.routeOpen)
  assert(h:closeExit() and not h.menuOpen and not h.exitOpen and not h.routeOpen)
 end

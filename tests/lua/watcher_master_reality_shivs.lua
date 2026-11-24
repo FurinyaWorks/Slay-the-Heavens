@@ -5,7 +5,7 @@ for _,c in ipairs(d.cards.cards)do cards[c.id]=true end;for _,s in ipairs(d.stat
 for _,c in ipairs(silent.cards.cards)do if not cards[c.id]then d.cards.cards[#d.cards.cards+1]=C.copy(c)end end
 for _,s in ipairs(silent.statuses.statuses)do if not statuses[s.id]then d.statuses.statuses[#d.statuses.statuses+1]=C.copy(s)end end
 local function battle()
- local s=C.new(d,{seed=1,enableStances=true,deck={'master_reality'},enemies={'cultist'}});assert(C.play(s,s.hand[1].uid));Shivs.applyAccuracy(s,4);return s
+ local s=C.new(d,{seed=1,enableStances=true,deck={'master_reality'},enemies={'raven_adept'}});assert(C.play(s,s.hand[1].uid));Shivs.applyAccuracy(s,4);return s
 end
 for _,up in ipairs({false,true})do
  local s=battle();local ids=Silent.generateShivs(s,11,up);assert(#ids==11 and #s.hand==10 and #s.discard==1)

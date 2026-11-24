@@ -18,7 +18,7 @@ local function hit(box)return box:GetChild('hit')end
 local function tap(box,id)local h=hit(box);emit(h,'down',id);if h.listeners.up then emit(h,'up',id)end;return emit(h,'click',id)end
 local function setup(mode)
  local h,r=F.fixture(nil,nil,nil,cursor);h.seed=42;assert(F.start(h))
- if mode=='battle'then assert(require('abyss_run').startCombat(h.run,'cultist_solo'));h:refresh()
+ if mode=='battle'then assert(require('abyss_run').startCombat(h.run,'raven_adept_solo'));h:refresh()
  elseif mode=='shop'then
   local shop
   while not shop do

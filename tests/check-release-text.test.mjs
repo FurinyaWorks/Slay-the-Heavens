@@ -31,7 +31,7 @@ test('replacement names and ordinary combat language pass the production script 
 
 test('remaining retired client identities fail in names, comments and decoded Lua', () => {
   for (const identity of ['enemy_suicide', 'reptomancerSuicide', 'GamblersBrew', 'Calculated Gamble',
-    'rareGamblingChip', 'bet_for', 'Blue Slaver', 'slavers_collar', 'cultist_solo',
+    'rareGamblingChip', 'bet_for', 'settleBet', 'Blue Slaver', 'slavers_collar', 'cultist_solo',
     'shed_blood', 'SteroidPotion', 'MutagenicStrength', 'sacrificeDagger']) {
     assert.throws(() => assertClientScriptText([{name:'probe',source:`-- ${identity}\nreturn true`}], 'candidate.gil'),
       /retired client identity/);

@@ -70,7 +70,7 @@ assert(not recovered,'mixed row feedback must not recover')
 local test,finish=H.suite('SPIKE_SPLIT_STATUS_INPUT')
 local function statusCase(name,sequence)
     test(name,function()
-        local hh,uu,pp,ee,tt,dd=H.setup({'strike'},{'jaw_worm','cultist'})
+        local hh,uu,pp,ee,tt,dd=H.setup({'strike'},{'jaw_worm','raven_adept'})
         local ss=hh.run.combat
         tt('card1',9)
         local hp,energy,hand=ss.enemies[2].hp,ss.energy,#ss.hand

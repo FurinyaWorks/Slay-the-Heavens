@@ -41,15 +41,15 @@ for _,id in ipairs({'default','unselected','ironclad','silent','defect','watcher
 end
 local extra=require('abyss_act2_enemies')
 for _,source in ipairs({Data,Colorless.withCards(Data)})do
- local first=C.new(source,{deck={},enemies={'cultist'},seed=1})
- local second=C.new(source,{deck={},enemies={'cultist'},seed=1})
+ local first=C.new(source,{deck={},enemies={'raven_adept'},seed=1})
+ local second=C.new(source,{deck={},enemies={'raven_adept'},seed=1})
  first.catalog.cards.swift_strike.effects[1].value=900;first.catalog.statuses.magnetism.name='changed'
  assert(second.catalog.cards.swift_strike.effects[1].value==7)
  assert(second.catalog.statuses.magnetism.name=='磁引')
  assert(find(Colorless.withCards(source).cards.cards,'swift_strike').effects[1].value==7)
 end
-local x=C.new(Data,{deck={},enemies={'cultist'},seed=1})
-local y=C.new(Data,{deck={},enemies={'cultist'},seed=1})
+local x=C.new(Data,{deck={},enemies={'raven_adept'},seed=1})
+local y=C.new(Data,{deck={},enemies={'raven_adept'},seed=1})
 local id=extra.enemies[1].id
 x.catalog.enemies[id].intents[1].id='changed';x.catalog.statuses[extra.statuses[1].id].description='changed'
 assert(y.catalog.enemies[id].intents[1].id~='changed'and extra.enemies[1].intents[1].id~='changed')

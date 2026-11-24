@@ -210,7 +210,7 @@ if ...=='events' then
 end
 
 local host,root,picture,screen=create(true)
-assert(Run.startCombat(host.run,'cultist_solo'));host:refresh();host:update(1)
+assert(Run.startCombat(host.run,'raven_adept_solo'));host:refresh();host:update(1)
 local battle,ui=root:GetChild('battlePanel'),host.battleUI
 host.run.combat.enemies[1].hp=99
 host.run.potionSlots=5

@@ -7,7 +7,7 @@ local function same(a,b)
  for k,v in pairs(a) do same(v,b[k]) end;for k in pairs(b) do assert(a[k]~=nil) end
 end
 local function battle()
- local r=Run.new(Data,42);assert(Run.obtainPotion(r,'distilled_chaos'));assert(Run.startCombat(r,'cultist_solo'))
+ local r=Run.new(Data,42);assert(Run.obtainPotion(r,'distilled_chaos'));assert(Run.startCombat(r,'raven_adept_solo'))
  local s=r.combat;s.hand={};s.draw={};s.discard={};s.enemies[1].hp=1000;s.enemies[1].maxHp=1000
  return r,s
 end
@@ -51,13 +51,13 @@ test('Chaos attack counters survive immediate Smoke and rebuild in the next batt
  assert(Run.obtainRelic(r,'pen_nib'));assert(Run.obtainRelic(r,'nunchaku'))
  r.relicCounters.pen_nib=8;r.relicCounters.nunchaku=8
  assert(Run.obtainPotion(r,'distilled_chaos'));assert(Run.obtainPotion(r,'smoke_bomb'))
- assert(Run.startCombat(r,'cultist_solo'))
+ assert(Run.startCombat(r,'raven_adept_solo'))
  r.combat.hand={};r.combat.draw={{cardId='strike',uid=3603},{cardId='strike',uid=3602},{cardId='strike',uid=3601}};r.combat.discard={}
- assert(Run.usePotion(r,1));assert(r.phase=='combat','normal Cultist survives the three attacks')
+ assert(Run.usePotion(r,1));assert(r.phase=='combat','normal Raven Adept survives the three attacks')
  assert(r.combat.relicCounters.pen_nib==1 and r.combat.relicCounters.nunchaku==1)
  assert(r.relicCounters.pen_nib==1 and r.relicCounters.nunchaku==1,'automatic attacks must commit persistent counters')
  assert(Run.usePotion(r,2));assert(r.phase=='map' and r.lastResult.outcome=='escaped')
- assert(Run.startCombat(r,'cultist_solo'))
+ assert(Run.startCombat(r,'raven_adept_solo'))
  assert(r.combat.relicCounters.pen_nib==1 and r.combat.relicCounters.nunchaku==1,'next encounter must retain automatic attacks')
 end)
 print('LUA_POTION_CHAOS '..passed..' passed '..failed..' failed');assert(failed==0)

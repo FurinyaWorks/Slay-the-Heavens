@@ -17,11 +17,11 @@ local function unchanged(root)
  end
 end
 local function state()
- local s=C.new(F.Data,{deck={'defend'},enemies={'cultist'}})
+ local s=C.new(F.Data,{deck={'defend'},enemies={'raven_adept'}})
  local e=s.enemies[1]
  -- Keep a real mapped ATTACK identity while supplying arithmetic edge vectors.
  -- The vectors intentionally vary damage/effects; the production source registry stays strict.
- e.intents={{id='cultist_1',kind='attack',effects={{op='damage',value=9,times=2}}}};e.intentIndex=1
+ e.intents={{id='raven_adept_1',kind='attack',effects={{op='damage',value=9,times=2}}}};e.intentIndex=1
  return s,e
 end
 local function test(name,fn)fn();passed=passed+1;print('PASS '..name)end
@@ -47,7 +47,7 @@ test('unmodified multi-hit intent shows only final damage without debug chain',f
  local source=require('abyss_monster_source_intents')
  assert(source.enum(e,e.intents[1])=='ATTACK')
  local ok,why=pcall(source.enum,e,{id='unmapped_fixture_move'})
- assert(not ok and tostring(why):find('unmapped source monster intent cultist:unmapped_fixture_move',1,true))
+ assert(not ok and tostring(why):find('unmapped source monster intent raven_adept:unmapped_fixture_move',1,true))
  local check=unchanged(s);local face=V.intentView(s,1)
  local text=notes(face)
  assert(face.value=='9×2' and text:find('攻击 2 次，每次 9 点伤害',1,true))

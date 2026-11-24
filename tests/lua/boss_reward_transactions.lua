@@ -34,7 +34,7 @@ print('ok boss reward all three claims, skip, invalid and duplicate requests pre
 
 -- Frozen reward-entry seeds/outputs protect other tiers independently of enemy
 -- AI consumption. The fourth field is the old HP+9-shuffle LCG state, not an
--- original-RNG parity claim; Cultist now also consumes its required opening roll.
+-- original-RNG parity claim; Raven Adept now also consumes its required opening roll.
 local legacy = {
     {1, 44130, 'rampage,carnage,flex', 20919},
     {42, 58063, 'iron_wave,thunderclap,carnage', 35128},
@@ -43,7 +43,7 @@ local legacy = {
 for _, tier in ipairs(part==5 and {'normal'} or part==6 and {'elite'} or {}) do
     for _, fixture in ipairs(legacy) do
         local run = Run.new(data, fixture[1])
-        assert(Run.startCombat(run, 'cultist_solo'))
+        assert(Run.startCombat(run, 'raven_adept_solo'))
         run.encounterTier = tier -- isolate reward dispatch from encounter AI.
         run.combat.seed = fixture[4]
         for _, enemy in ipairs(run.combat.enemies) do enemy.hp = 0 end

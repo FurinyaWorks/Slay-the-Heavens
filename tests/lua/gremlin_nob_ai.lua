@@ -83,11 +83,11 @@ test("forced opening and every completed action consume exactly one primary roll
     controlled(33,function() local s=battle();assert(Combat.endTurn(s));eq(Combat.intent(s,1).id,R) end)
 end)
 test("multiple living Nobs react independently; dead owners cannot gain Strength",function()
-    local s=battle(nil,{"gremlin_nob","gremlin_nob","cultist"});assert(Combat.endTurn(s));s.enemies[1].hp=0;s.events={}
+    local s=battle(nil,{"gremlin_nob","gremlin_nob","raven_adept"});assert(Combat.endTurn(s));s.enemies[1].hp=0;s.events={}
     assert(Combat.play(s,s.hand[1].uid,1));eq(s.enemies[1].statuses.strength or 0,0);eq(s.enemies[2].statuses.strength,2);eq(s.enemies[3].statuses.strength or 0,0)
 end)
 test("poison death cannot execute or advance Nob while another enemy continues",function()
-    local s=battle(nil,{"gremlin_nob","cultist"});local e=s.enemies[1];Combat.addStatus(e,"poison",99)
+    local s=battle(nil,{"gremlin_nob","raven_adept"});local e=s.enemies[1];Combat.addStatus(e,"poison",99)
     assert(Combat.endTurn(s));eq(e.hp,0);eq(e.statuses.enrage or 0,0);eq(e.nobLast,nil);eq(s.phase,"player");eq(s.enemies[2].statuses.ritual,3)
 end)
 test("Nob retains bounded history without Bellow repeats or triple Rush",function()

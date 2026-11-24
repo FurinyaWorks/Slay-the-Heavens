@@ -14,7 +14,7 @@ test('real source queue opens Nemesis as ordinary elite without pool edits',func
  e,why=resolve('Reptomancer','normal');eq(e,nil);eq(why,'encounter_tier_mismatch')
 end)
 test('Intangible alternates only after payload and lasts through all ally moves until group end',function()
- local s=H.battle('1',{}, {'nemesis','cultist'});local e=H.force(s,'fire')
+ local s=H.battle('1',{}, {'nemesis','raven_adept'});local e=H.force(s,'fire')
  eq(e.statuses.nemesis_intangible,nil);assert(C.endTurn(s));eq(e.statuses.nemesis_intangible,1)
  eq(e.nemesisIntangibleJustApplied,false);eq(e.powerScheduleOrder[1].priority,75)
  local hp=e.hp;C.damage(s,s.player,e,45);eq(e.hp,hp-1)
@@ -25,7 +25,7 @@ test('Intangible alternates only after payload and lasts through all ally moves 
  assert(C.endTurn(s));eq(e.statuses.nemesis_intangible,1)
 end)
 test('Intangible caps before block for normal THORNS HP loss poison and fixed damage but Boot acts later',function()
- local s=H.battle('1',{}, {'nemesis','cultist'});local e=s.enemies[1];local ally=s.enemies[2]
+ local s=H.battle('1',{}, {'nemesis','raven_adept'});local e=s.enemies[1];local ally=s.enemies[2]
  A.applyPower(s,e,'nemesis_intangible',1,e)
  local hp=e.hp;e.block=2;C.damage(s,s.player,e,45);eq(e.hp,hp);eq(e.block,1)
  A.retaliate(s,s.player,e,50);eq(e.hp,hp);eq(e.block,0)

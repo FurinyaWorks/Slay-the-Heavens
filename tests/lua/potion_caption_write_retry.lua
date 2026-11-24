@@ -1,5 +1,5 @@
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
-local host,ui,panel=H.setup({'defend'},{'cultist'})
+local host,ui,panel=H.setup({'defend'},{'raven_adept'})
 local caption=panel:GetChild('potionHelp'):GetChild('potionCaption1')
 host.run.potions={};ui:render()
 local visible=caption.SetVisible

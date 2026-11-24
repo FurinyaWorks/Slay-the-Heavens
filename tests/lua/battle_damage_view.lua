@@ -9,7 +9,7 @@ local function equal(a,b,seen)
  for k in pairs(b)do assert(a[k]~=nil)end
 end
 for _,id in ipairs({'strike','twin_strike','cleave','iron_wave','body_slam'})do
- local battle=Combat.new(Data,{deck={id,id,id},enemies={'cultist','cultist'}})
+ local battle=Combat.new(Data,{deck={id,id,id},enemies={'raven_adept','raven_adept'}})
  battle.player.statuses.strength=3;battle.player.statuses.weak=1
  battle.enemies[1].block=5;battle.enemies[2].statuses.vulnerable=1
  local before=Combat.copy(battle)
@@ -19,13 +19,13 @@ for _,id in ipairs({'strike','twin_strike','cleave','iron_wave','body_slam'})do
  assert(Combat.play(battle,uid,2))
  for i,enemy in ipairs(battle.enemies)do assert(result[i].hp==enemy.hp)end
 end
-local battle=Combat.new(Data,{deck={'strike'},enemies={'cultist'}})
+local battle=Combat.new(Data,{deck={'strike'},enemies={'raven_adept'}})
 assert(View.preview(battle,battle.hand[1].uid,nil)==nil)
 assert(View.preview(battle,'stale',1)==nil)
 print('LUA_BATTLE_DAMAGE_VIEW_PASS 7')
 local Run=require('abyss_run')
 local run=Run.new(Data,42)
-assert(Run.startCombat(run,'cultist_solo'))
+assert(Run.startCombat(run,'raven_adept_solo'))
 for _,card in ipairs(run.combat.hand)do
  if Combat.canPlay(run.combat,card.uid,1)then
   assert(View.preview(run.combat,card.uid,1),'formal Run preview missing')

@@ -2,7 +2,7 @@ package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local C,A,Run,Data=require('abyss_combat'),require('abyss_card_actions'),require('abyss_run'),require('abyss_data')
 local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end
 local r=Run.new(Data,42);r.deck={{uid=31,cardId='thinking_ahead'},{uid=32,cardId='defend'},{uid=33,cardId='defend'},{uid=34,cardId='defend'}}
-assert(Run.obtainPotion(r,'duplication_potion'));assert(Run.startCombat(r,'cultist_solo'));assert(Run.usePotion(r,1))
+assert(Run.obtainPotion(r,'duplication_potion'));assert(Run.startCombat(r,'raven_adept_solo'));assert(Run.usePotion(r,1))
 local s=r.combat;local original
 for _,card in ipairs(s.hand)do if card.cardId=='thinking_ahead'then original=card end end
 assert(Run.play(r,original.uid));assert(s.pendingChoice and #s.queuedCards==1)

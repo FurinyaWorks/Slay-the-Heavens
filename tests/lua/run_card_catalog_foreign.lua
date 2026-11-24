@@ -3,7 +3,7 @@ local Run,C,D,R=require('abyss_run'),require('abyss_combat'),require('abyss_data
 local Foreign=require('abyss_watcher_foreign_pool')
 for _,up in ipairs({false,true})do
  local r=Run.new(D,42,{character='watcher',experimental=true});r.deck={{uid=31,cardId='foreign_influence',upgraded=up}};r.relics={}
- assert(Run.startCombat(r,'cultist_solo'));local s=r.combat
+ assert(Run.startCombat(r,'raven_adept_solo'));local s=r.combat
  local cr,dr=R.cloneState(s.cardRandomRng),R.cloneState(s.cardRng);local expected,seen={},{}
  while #expected<3 do
   local n=R.randomInt(cr,99);local rarity=n<55 and 'common'or n<85 and'uncommon'or'rare'

@@ -23,7 +23,7 @@ local function observe(run,flow,choice,uid,label)
  return returned
 end
 for seed=0,15 do
- for _,bet in ipairs({'bet_against','bet_for'})do
+ for _,bet in ipairs({'support_challenger','support_owner'})do
   for _,gold in ipairs({0,49,50,100})do
    calls={};local run={gold=gold,miscRng=Random.fromSeed(tostring(seed))};local flow={event={}}
    run.nodeFlow=flow;Joust.prepare(run,flow.event)
@@ -37,19 +37,19 @@ for seed=0,15 do
  end
 end
 for _,stage in ipairs({'halt','explanation','pre_joust','joust','complete','unknown'})do
- for _,choice in ipairs({'continue','bet_for','bet_against','leave','invalid'})do
+ for _,choice in ipairs({'continue','support_owner','support_challenger','leave','invalid'})do
   for _,uid in ipairs({false,0,'uid'})do
    calls={};local run={gold=100,miscRng=Random.fromSeed('9')};local flow={event={stage=stage}}
    local result=observe(run,flow,choice,uid,'uid rejection')
    assert(result[1]and result[2]==false and result[3]=='invalid_event_choice','UID rejection before stage effects')
   end
-  calls={};local run={gold=100,miscRng=Random.fromSeed('9')};local flow={event={stage=stage,betFor=true,ownerWins=false}}
+  calls={};local run={gold=100,miscRng=Random.fromSeed('9')};local flow={event={stage=stage,supportsOwner=true,ownerWins=false}}
   observe(run,flow,choice,nil,'stage choice matrix')
  end
 end
 for _,win in ipairs({false,true})do
  calls={};local run={gold=20,miscRng=Random.fromSeed('9')}
- local flow={event={stage='joust',betFor=true,ownerWins=win}}
+ local flow={event={stage='joust',supportsOwner=true,ownerWins=win}}
  failing=true
  local result=observe(run,flow,'continue',nil,'payout failure')
  assert(result[1]~=win,'only winning payout calls Run')
@@ -60,7 +60,7 @@ end
 calls={};Run.gainGold=function(run,amount)
  calls[#calls+1]={kind='replacement',run=run,amount=amount};run.gold=run.gold+7;return 7
 end
-local run={gold=5,miscRng=Random.fromSeed('1')};local flow={event={stage='joust',betFor=false,ownerWins=false}}
+local run={gold=5,miscRng=Random.fromSeed('1')};local flow={event={stage='joust',supportsOwner=false,ownerWins=false}}
 observe(run,flow,'continue',nil,'dynamic payout')
 assert(flow.event.goldGained==7 and run.gold==12,'dynamic Run command')
 Random.randomBooleanChance=function(rng,chance)

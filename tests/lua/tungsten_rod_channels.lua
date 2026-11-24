@@ -39,7 +39,7 @@ do
  eq(r.nodeFlow.chest.kindRoll,52);eq(r.nodeFlow.chest.rewardRoll,93)
  eq(r.nodeFlow.chest.relicTier,'rare');eq(r.nodeFlow.reward.relicId,'tungsten_rod');assert(Nodes.claimTreasure(r))
  eq(r.relics[#r.relics],'tungsten_rod');eq(r.phase,'map')
- assert(Run.startCombat(r,'cultist_solo'));local s=r.combat;local hp=s.player.hp
+ assert(Run.startCombat(r,'raven_adept_solo'));local s=r.combat;local hp=s.player.hp
  eq(C.damage(s,s.enemies[1],s.player,1,false),0);eq(s.player.hp,hp)
  print('PASS seed91 fixed source checkpoint actual ordinary treasure claims Rare Rod and binds same-Run battle hook')
 end

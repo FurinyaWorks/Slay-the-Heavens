@@ -7,7 +7,11 @@ local function same(a,b)
  for k,v in pairs(a)do same(v,b[k])end;for k in pairs(b)do assert(a[k]~=nil)end
 end
 local function checkPotion(run,item,record)
- eq(item.id,SOURCE_POTION_IDS[record.result.sourceId]);if item.sourceId then eq(item.sourceId,record.result.sourceId)end
+ local sourceId=record.result.sourceId
+ eq(item.id,SOURCE_POTION_IDS[sourceId])
+ if item.sourceId then
+  eq(item.sourceId,({CultistPotion='RavenPotion',GamblersBrew='SwapBrew',SteroidPotion='SurgePotion'})[sourceId] or sourceId)
+ end
  local rarity=item.rarity
  if not rarity then for _,d in ipairs(run.data.potions.potions)do if d.id==item.id then rarity=d.rarity end end end
  eq(rarity,record.result.rarity);eq(item.unavailable,false)
@@ -42,7 +46,7 @@ return function(case)
  checkPotion(run,run.nodeFlow.potions[1],records[4]);same(R.snapshot(run.shopRng.potion),records[4].after)
  assert(Nodes.leaveShop(run));for slot=1,3 do assert(Run.discardPotion(run,slot))end
  assert(Run.startRoomCombat(run,'normal'));finish(run,records[5])
- assert(Run.obtainPotion(run,'entropic_brew'));assert(Run.startCombat(run,'cultist_solo'))
+ assert(Run.obtainPotion(run,'entropic_brew'));assert(Run.startCombat(run,'raven_adept_solo'))
  local card=R.snapshot(run.cardRng);local merchant=R.snapshot(run.shopRng.merchant)
  local beforeView=C.copy(run);Run.potionView(run);same(run,beforeView)
  assert(Run.usePotion(run,1));eq(Run.potionCount(run),3)

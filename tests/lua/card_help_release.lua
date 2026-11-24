@@ -22,7 +22,7 @@ local function same(a, b)
     return true
 end
 local function setup(deck)
-    local h,u,p,event,tap,drain,deckToggle = H.setup(deck or {'bash','strike','defend'}, {'cultist'})
+    local h,u,p,event,tap,drain,deckToggle = H.setup(deck or {'bash','strike','defend'}, {'raven_adept'})
     local s, slot = h.run.combat
     for i,c in ipairs(s.hand) do if c.cardId == 'bash' then slot = i; break end end
     local name = 'card' .. assert(slot)

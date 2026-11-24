@@ -2,7 +2,7 @@ local H=dofile('tests/lua/support/battle_action_fixture.lua')
 local Run,C,Theme=require('abyss_run'),require('abyss_combat'),require('abyss_theme')
 local function reward(manual)
  local h,u,p,e,t,d=H.setup();h.run=Run.new(H.F.Data,42);h.battleUI.run=h.run
- assert(Run.startCombat(h.run,'cultist_solo'))
+ assert(Run.startCombat(h.run,'raven_adept_solo'))
  -- Terminal/ledger fixture isolates the real generated controller.
  for _,enemy in ipairs(h.run.combat.enemies) do enemy.hp=0 end
  if manual then h.run.combat.stolenGoldReward=30 end

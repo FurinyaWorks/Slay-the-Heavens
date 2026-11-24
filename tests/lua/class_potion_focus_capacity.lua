@@ -7,7 +7,7 @@ local function fresh(id,bark,character)
  local r=Run.new(Data,42,character and {character=character,experimental=true}or nil)
  if bark then r.relics[#r.relics+1]='SacredBark'end
  local ok,why=Run.obtainPotion(r,id);assert(ok,why)
- assert(Run.startCombat(r,'cultist_solo'));return r
+ assert(Run.startCombat(r,'raven_adept_solo'));return r
 end
 for _,bark in ipairs({false,true})do
  local amount=bark and 4 or 2

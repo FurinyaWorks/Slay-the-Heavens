@@ -1,6 +1,6 @@
 package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local H=dofile('tests/lua/support/battle_action_fixture.lua')
-local host,ui,panel=H.setup({'defend','strike'},{'cultist'})
+local host,ui,panel=H.setup({'defend','strike'},{'raven_adept'})
 ui:playSlot(1)
 assert(ui.selected,'real selectable card')
 host.run.combat.energy=0

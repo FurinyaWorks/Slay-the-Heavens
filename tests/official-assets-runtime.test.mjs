@@ -240,7 +240,7 @@ end
 
 test('official long reward descriptions keep the same full illustration and type slots on recycled shared faces',t=>{
  runOfficial(t,`
-local h,u,p,_,_,_,_,root=H.setup({'blood_for_blood','body_slam','armaments'},{'cultist'})
+local h,u,p,_,_,_,_,root=H.setup({'blood_for_blood','body_slam','armaments'},{'raven_adept'})
 local D=require('abyss_card_display');local template=require('abyss_ui_templates')
 local faces={p:GetChild('card1'),H.F.control(template.AbyssDeckCard):GetChild('face'),
  root:GetChild('nodePanel'):GetChild('shopView'):GetChild('card1')}
@@ -276,7 +276,7 @@ test('official successful card command reuses its presented feedback frame while
  runOfficial(t,`
 local Run=require('abyss_run');local Theme=H.F.Theme
 local function setup()
- local h,u,p=H.setup({'strike','defend','strike'},{'cultist'})
+ local h,u,p=H.setup({'strike','defend','strike'},{'raven_adept'})
  local b=h.run.combat;u.selected=b.hand[1].uid;u:render()
  return h,u,p,b
 end
@@ -313,7 +313,7 @@ assert(p3:GetChild('endTurn').interactable,'startup recovery left input disabled
  // contract needs that real layout/theme pair, rather than changing the theme
  // underneath an official face whose retired legacy children no longer exist.
  runOfficial(t,`
-local h,u,p=H.setup({'strike','defend','strike'},{'cultist'})
+local h,u,p=H.setup({'strike','defend','strike'},{'raven_adept'})
 assert(H.F.Theme.presentationProfile~='official-assets-first' and p:GetChild('card1'):GetChild('skin'))
 local b=h.run.combat;u.selected=b.hand[1].uid;u:render()
 local full=u.render;local count=0;u.render=function(self,...)count=count+1;return full(self,...)end
@@ -327,7 +327,7 @@ test('official mouse targeting returns to the source centre with frame time whil
 local Theme=H.F.Theme
 local function setup(touch)
  local deck={};for i=1,10 do deck[i]='strike'end
- local h,u,p,event=H.setup(deck,{'cultist','jaw_worm'});C.draw(h.run.combat,10);u:render();h:update(2)
+ local h,u,p,event=H.setup(deck,{'raven_adept','jaw_worm'});C.draw(h.run.combat,10);u:render();h:update(2)
  local box=p:GetChild('card10');local enemy=H.F.actorControl(p,'enemy1')
  event('card10','down',64,box.x,box.y);u.gesture.touchScreen=touch
  event('card10','drag',64,enemy.x,enemy.y)
@@ -354,7 +354,7 @@ test('official real drag release preserves the drawn origin and commits through 
  runOfficial(t,`
 local Run=require('abyss_run');local Theme=H.F.Theme
 local function setup()
- local h,u,p,event,tap,drain=H.setup({'strike','defend','strike'},{'cultist'})
+ local h,u,p,event,tap,drain=H.setup({'strike','defend','strike'},{'raven_adept'})
  local b=h.run.combat;local uid=b.hand[1].uid;local enemy=H.F.actorControl(p,'enemy1')
  event('card1','down',71);local pickup=u.gesture.origin;local px,py=pickup[1],pickup[2]
  event('card1','drag',71,enemy.x,enemy.y)
@@ -392,7 +392,7 @@ event3('dragLayer','up',71,-500,0)
 assert(count>0 and not u3.busy);unchanged(b3,before3,'invalid target drop committed a card')
 `, 'OFFICIAL_REAL_DRAG_RELEASE_PASS');
  runOfficial(t,`
-local h,u,p,event=H.setup({'strike','defend','strike'},{'cultist'})
+local h,u,p,event=H.setup({'strike','defend','strike'},{'raven_adept'})
 assert(H.F.Theme.presentationProfile~='official-assets-first')
 local enemy=H.F.actorControl(p,'enemy1')
 event('card1','down',71);event('card1','drag',71,enemy.x,enemy.y);h:update(.1)
@@ -407,7 +407,7 @@ assert(count4==4,'default real drag path changed: '..count4)
 const officialSingleDamageSetup=`
 local Theme=H.F.Theme
 local function start(id,fast)
- local h,u,p=H.setup({id},{'cultist'})
+ local h,u,p=H.setup({id},{'raven_adept'})
  local battle=h.run.combat;u.fastMode=fast==true
  u.selected=battle.hand[1].uid;u:render();u:playSelected(1)
  assert(u.feedback.current.kind=='play' and u.busy)
@@ -462,7 +462,7 @@ test('official targeting keeps arrows and live HP without detached combat simula
 local Damage=require('abyss_battle_damage_view')
 Damage.preview=function()error('official card aim simulated the whole battle')end
 Damage.potionPreview=function()error('official potion aim simulated the whole battle')end
-local h,u,p,event,_,drain=H.setup({'strike','defend'},{'cultist'})
+local h,u,p,event,_,drain=H.setup({'strike','defend'},{'raven_adept'})
 h.run.potions={'fire_potion'};h:refresh()
 local enemy=assert(require('abyss_monster_surfaces').get(p):find(h.run.combat.enemies[1].id))
 local hp=h.run.combat.enemies[1].hp
@@ -478,7 +478,7 @@ assert(u.gesture and u.gesture.moving)
 assert(not enemy:GetChild('damagePreview').visible)
 assert(h.run.combat.enemies[1].hp==hp-20)
 -- Group targeting is a reticle rule, independent of simulated future HP.
-local h2,u2,p2,event2,_,drain2=H.setup({'cleave','defend'},{'cultist','cultist'})
+local h2,u2,p2,event2,_,drain2=H.setup({'cleave','defend'},{'raven_adept','raven_adept'})
 local battle=h2.run.combat
 local surfaces=require('abyss_monster_surfaces').get(p2)
 local boxes={(surfaces:find(battle.enemies[1].id)),(surfaces:find(battle.enemies[2].id))}
@@ -522,7 +522,7 @@ assert(battle.player.block==block+5,'legal self card must retain real block')
 test('official candidate preserves real ten-card dual-enemy combat through cancellation, dragging and turns',t=>{
  runOfficial(t,`
 local deck={};for i=1,12 do deck[i]='strike'end
-local h,u,p,event,tap,drain,toggle,root=H.setup(deck,{'cultist','jaw_worm'})
+local h,u,p,event,tap,drain,toggle,root=H.setup(deck,{'raven_adept','jaw_worm'})
 local b=h.run.combat
 assert(#b.hand==5 and #b.enemies==2)
 C.draw(b,20);h:refresh();h:update(1)
@@ -624,7 +624,7 @@ for _,entry in ipairs(textures)do assert(entry[1].imageId==entry[2],'hand refres
 unchanged(H.F.Data,dataBefore,'gameplay mutated generated Core data')
 -- A dead preview target must not make Clash glow when the other real target
 -- is rejected by its original only-attacks rule.
-local ch,cu,cp,_,_,_,_,cr=H.setup({'clash','defend'},{'cultist','jaw_worm'})
+local ch,cu,cp,_,_,_,_,cr=H.setup({'clash','defend'},{'raven_adept','jaw_worm'})
 local cb=ch.run.combat;cb.enemies[1].hp=0;cu.target=1;ch:refresh()
 for i,card in ipairs(cb.hand)do if card.cardId=='clash'then
  assert(not C.canPlay(cb,card.uid,1)and not C.canPlay(cb,card.uid,2))
@@ -648,7 +648,7 @@ assert(cr:GetChild('mapPanel'):GetChild('previewBack'):GetChild('label').text~='
 
 test('official map return paints four states through the existing battle route',t=>{
  runOfficial(t,`
-local host,_,panel,_,_,_,_,root=H.setup({'strike','defend'},{'cultist'})
+local host,_,panel,_,_,_,_,root=H.setup({'strike','defend'},{'raven_adept'})
 local route=panel:GetChild('topBar'):GetChild('battleRoute'):GetChild('hit')
 route.listeners.down({touchId=1});route.listeners.up({touchId=1})
 assert(route.click({touchId=1})and host.routeOpen)
@@ -839,8 +839,8 @@ assert(b.energy==before.energy-1 and b.player.block==before.player.block+5 and #
 test('official candidate keeps C-mode, repeated pile modals, real victory and return-map controls live',t=>{
  runOfficial(t,`
 local F=H.F
-local h,root=F.fixture();assert(F.start(h));assert(H.Run.startCombat(h.run,'cultist_solo'))
-h.run.combat=C.new(F.Data,{deck={'strike','strike','strike','strike','strike','strike'},enemies={'cultist','jaw_worm'}})
+local h,root=F.fixture();assert(F.start(h));assert(H.Run.startCombat(h.run,'raven_adept_solo'))
+h.run.combat=C.new(F.Data,{deck={'strike','strike','strike','strike','strike','strike'},enemies={'raven_adept','jaw_worm'}})
 h:refresh();local u,p,b=h.battleUI,root:GetChild('battlePanel'),h.run.combat
 assert(not u.dragEnabled,'C-mode must not expose drag capabilities')
 local hp=b.enemies[1].hp
@@ -905,7 +905,7 @@ test('official three-bottle HUD renders metadata while popup, drag and use valid
 local Run=require('abyss_run');local Candidate=require('abyss_run_potion_candidate')
 local deck={};for i=1,10 do deck[i]='strike'end
 deck[10]='bash' -- Automatic hover needs an actual keyword-bearing card.
-local h,u,p,event,tap,drain=H.setup(deck,{'cultist','jaw_worm'})
+local h,u,p,event,tap,drain=H.setup(deck,{'raven_adept','jaw_worm'})
 for _,id in ipairs({'fire_potion','dexterity_potion','block_potion'})do assert(Run.obtainPotion(h.run,id))end
 local battle=h.run.combat;C.draw(battle,10)
 local keyword;for i,card in ipairs(battle.hand)do if card.cardId=='bash'then keyword=i;break end end
@@ -958,7 +958,7 @@ assert(u.potionViewCache[3].id=='not_a_potion' and u.potionViewCache[3].canUse==
 h.run.potions[3]=nil;u:render()
 `, 'OFFICIAL_POTION_METADATA_PASS');
  runOfficial(t,`
-local Run=require('abyss_run');local h,u=H.setup({'strike','defend'},{'cultist'})
+local Run=require('abyss_run');local h,u=H.setup({'strike','defend'},{'raven_adept'})
 assert(H.F.Theme.presentationProfile~='official-assets-first')
 assert(Run.obtainPotion(h.run,'fire_potion'))
 local whole=Run.potionView;local views=0
@@ -971,7 +971,7 @@ Run.potionView=whole
 test('official reward card picker keeps owned relics visible when inspecting a potion',t=>{
  runOfficial(t,`
 local Run=require('abyss_run')
-local host,ui,battle,_,_,_,_,root=H.setup({'strike','defend'},{'cultist'})
+local host,ui,battle,_,_,_,_,root=H.setup({'strike','defend'},{'raven_adept'})
 assert(Run.obtainPotion(host.run,'speed_potion'))
 host.run.combat.enemies[1].hp=0;host.run.combat.phase='victory'
 assert(Run.finishCombat(host.run));host:refresh()
@@ -1018,7 +1018,7 @@ test('official hover refresh touches poses only and falls back on turn, UID and 
  runOfficial(t,`
 local deck={};for i=1,10 do deck[i]='strike'end
 deck[10]='bash' -- Slot3's delayed hover must exercise a real keyword tooltip.
-local h,u,p,event=H.setup(deck,{'cultist','jaw_worm'});local c=h.run.combat
+local h,u,p,event=H.setup(deck,{'raven_adept','jaw_worm'});local c=h.run.combat
 C.draw(c,10)
 local keyword;for i,card in ipairs(c.hand)do if card.cardId=='bash'then keyword=i;break end end
 assert(#c.hand==10 and keyword)
@@ -1059,7 +1059,7 @@ C.cardPreview=preview
 test('official local aim refresh keeps live Weak/Vulnerable numbers and both actor targets without rebuilding the other cards',t=>{
  runOfficial(t,`
 local deck={};for i=1,10 do deck[i]='strike'end
-local h,u,p,event=H.setup(deck,{'cultist','jaw_worm'});local c=h.run.combat
+local h,u,p,event=H.setup(deck,{'raven_adept','jaw_worm'});local c=h.run.combat
 C.draw(c,10);C.addStatus(c.player,'strength',4);C.addStatus(c.player,'weak',1);C.addStatus(c.enemies[2],'vulnerable',1)
 c.enemies[1].sourcePosition={x=-300,y=0};c.enemies[2].sourcePosition={x=80,y=0}
 u:render();h:update(.1)
@@ -1157,7 +1157,7 @@ assert(host.run.nodeFlow.complete and not shelf.visible,'leaving through the vis
 
 test('official draw pile return paints shared hover and press without changing the hit target',t=>{
  runOfficial(t,`
-local host,_,_,_,_,_,_,root=H.setup({'strike','defend'},{'cultist'})
+local host,_,_,_,_,_,_,root=H.setup({'strike','defend'},{'raven_adept'})
 local deck,panel=host.deckUI,root:GetChild('deckPanel')
 local button=panel:GetChild('pileReturn')
 local hit,art=button:GetChild('hit'),button:GetChild('art')
@@ -1200,7 +1200,7 @@ event('enter');event('down');event('up');assert(event('click') and not deck.visi
 
 test('official browser return rejects stale clicks across new choices and browser generations',t=>{
  runOfficial(t,`
-local host,_,_,_,_,_,_,root=H.setup({'strike','defend'},{'cultist'})
+local host,_,_,_,_,_,_,root=H.setup({'strike','defend'},{'raven_adept'})
 local deck,panel=host.deckUI,root:GetChild('deckPanel')
 assert(host:openDeck());host:update(0)
 local hit=panel:GetChild('pileReturn'):GetChild('hit')
@@ -1529,7 +1529,7 @@ assert(deck:close())
 
 test('card tips sit beside the lifted card and preserve actor details and input ownership',t=>{
  runOfficial(t,`
-local h,u,p,event=H.setup({'bash','bash','bash','bash','bash','bash','bash','bash','bash','bash'},{'cultist'})
+local h,u,p,event=H.setup({'bash','bash','bash','bash','bash','bash','bash','bash','bash','bash'},{'raven_adept'})
 local theme=H.F.Theme;local battle=h.run.combat
 C.draw(battle,5);u:render();assert(#battle.hand==10)
 local before=C.copy(battle)
@@ -1578,7 +1578,7 @@ assert(u:cancelAim() and not u.selected)
 unchanged(battle,before,'hover/detail layout changed battle state')
 -- A fresh click-only surface has never observed a Down. Automatic card help
 -- must preserve its very first Click, while normal target selection remains core-owned.
-local h2,u2,p2,event2=H.setup({'bash','bash'},{'cultist'})
+local h2,u2,p2,event2=H.setup({'bash','bash'},{'raven_adept'})
 local b2=h2.run.combat;local uid2=b2.hand[1].uid;local before2=C.copy(b2)
 event2('card1','enter',241);h2:update(.36)
 assert(u2.info and u2.info.transient)
@@ -1592,7 +1592,7 @@ unchanged(b2,before2,'click-only hover selection/cancel changed combat resources
 test('official approved static glow paints only on state changes without native animation or tick writes',t=>{
  runOfficial(t,`
 local Glow=require('abyss_battle_card_glow')
-local h,u,p=H.setup({'strike','defend','bludgeon'},{'cultist'})
+local h,u,p=H.setup({'strike','defend','bludgeon'},{'raven_adept'})
 assert(H.F.Theme.officialAssets.battleCardChrome.glow.motion=='static','official default must not emit waves')
 local box=p:GetChild('card1');local rim=box:GetChild('nativePlayableRim')
 Glow.clear(box)
@@ -1627,7 +1627,7 @@ test('official native glow owns fixed Tween handles and kills them before hidden
  runOfficial(t,`
 local Glow=require('abyss_battle_card_glow')
 H.F.Theme.officialAssets.battleCardChrome.glow.motion='raw-source-wave'
-local h,u,p=H.setup({'strike','defend'},{'cultist'})
+local h,u,p=H.setup({'strike','defend'},{'raven_adept'})
 local box=p:GetChild('card1');local rim=box:GetChild('nativePlayableRim')
 Glow.clear(box)
 local tweens,sequences={},{}
@@ -1696,7 +1696,7 @@ test('official pooled glow emits four staggered source-shaped waves and clears i
  runOfficial(t,`
 local Glow=require('abyss_battle_card_glow')
 H.F.Theme.officialAssets.battleCardChrome.glow.motion='raw-source-wave'
-local h,u,p=H.setup({'strike','defend','bludgeon'},{'cultist'})
+local h,u,p=H.setup({'strike','defend','bludgeon'},{'raven_adept'})
 local box=p:GetChild('card1');local rim=box:GetChild('nativePlayableRim')
 assert(rim.visible)
 local layers={}
@@ -1798,7 +1798,7 @@ GameUI.new=function(root,...)
  return create(root,...)
 end
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
-local h,u,p=H.setup({'strike','defend','bash','anger','inflame'},{'cultist','jaw_worm'});GameUI.new=create
+local h,u,p=H.setup({'strike','defend','bash','anger','inflame'},{'raven_adept','jaw_worm'});GameUI.new=create
 ${sharedFaceHelpers}
 local theme=H.F.Theme
 assert((theme.presentationProfile=='official-assets-first')==official)
@@ -1840,7 +1840,7 @@ print('BANNER_CONTRACT_PASS')
 
 test('official battle status and curse reuse neutral skill materials and restore the shared Geo recycled face',t=>{
  runOfficial(t,`
-local h,u,p=H.setup({'strike','defend','bash','anger','impervious'},{'cultist'})
+local h,u,p=H.setup({'strike','defend','bash','anger','impervious'},{'raven_adept'})
 local theme=H.F.Theme;local b=h.run.combat;local instance=b.hand[1]
 local box=p:GetChild('card1');local shared=sharedFace(box);local body,skin=shared.body,shared.portraits
 local reference=theme.officialAssets.stsCardReference
@@ -1913,7 +1913,7 @@ material('bash','red','attack')
 
 test('official compact exhaust entry opens the actual Offering pile without mutating combat',t=>{
  runOfficial(t,`
-local h,u,p,event,tap,drain,_,root=H.setup({'offering','defend','strike','bash','inflame'},{'cultist'})
+local h,u,p,event,tap,drain,_,root=H.setup({'offering','defend','strike','bash','inflame'},{'raven_adept'})
 assert(not p:GetChild('exhaustIcon').visible and not p:GetChild('exhaust').visible,'empty exhaust entry must stay hidden')
 local slot,uid
 for i,card in ipairs(h.run.combat.hand)do if card.cardId=='offering'then slot,uid=i,card.uid end end
@@ -1937,7 +1937,7 @@ unchanged(h.run.combat,before,'opening the compact exhaust entry changed combat'
 
 test('official hover and deliberate read share genuine keyword tips',t=>{
  runOfficial(t,`
-local h,u,p,event=H.setup({'strike','bash','offering','corruption'},{'cultist'})
+local h,u,p,event=H.setup({'strike','bash','offering','corruption'},{'raven_adept'})
 local b=h.run.combat;local panel=p:GetChild('statusInfo');local before=C.copy(b)
 local slots={};for i,c in ipairs(b.hand)do slots[c.cardId]=i end
 local function hover(id,touch)

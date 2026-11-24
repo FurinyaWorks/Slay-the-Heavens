@@ -1,6 +1,6 @@
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local host,root=F.fixture()
-assert(F.start(host));assert(require('abyss_run').startCombat(host.run,'cultist_solo'))
+assert(F.start(host));assert(require('abyss_run').startCombat(host.run,'raven_adept_solo'))
 local panel=root:GetChild('battlePanel')
 local notice=panel:GetChild('notice')
 notice.text='上场战斗的提示。'

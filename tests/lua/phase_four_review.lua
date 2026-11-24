@@ -28,7 +28,7 @@ local function play(s,id,target)local ok,why=C.play(s,find(s.hand,id).uid,target
 
 test('Divinity exit recalls Flurry after normal Draw so retained hand can fill first',function()
  local deck={'prostrate','flurry_of_blows'};for i=1,8 do deck[#deck+1]='protect'end;for i=1,5 do deck[#deck+1]='defend_purple'end
- local s=C.new(Profiles.prepare(Data,'watcher'),{seed=42,cardRandomSeed='42',enableStances=true,deck=deck,enemies={'cultist'}})
+ local s=C.new(Profiles.prepare(Data,'watcher'),{seed=42,cardRandomSeed='42',enableStances=true,deck=deck,enemies={'raven_adept'}})
  s.enemies[1].hp=1000;s.enemies[1].maxHp=1000
  local ids={'prostrate','flurry_of_blows'};for i=1,8 do ids[#ids+1]='protect'end;arrange(s,ids)
  -- Nine Mantra is a legal preexisting combat state. Apply through the real
@@ -46,7 +46,7 @@ test('Divinity exit recalls Flurry after normal Draw so retained hand can fill f
 end)
 for _,first in ipairs({'choked','sharp_hide'})do
  test(first..' acquisition controls whether Choke resolves before lethal Sharp Hide',function()
-  local s=C.new(Profiles.prepare(Data,'silent'),{seed=42,cardRandomSeed='42',deck={'strike_green'},enemies={'cultist'}})
+  local s=C.new(Profiles.prepare(Data,'silent'),{seed=42,cardRandomSeed='42',deck={'strike_green'},enemies={'raven_adept'}})
   s.player.hp=3;s.enemies[1].hp=7
   assert(A.applyPower(s,s.enemies[1],first,first=='choked' and 5 or 3,s.player))
   local second=first=='choked' and 'sharp_hide' or 'choked'

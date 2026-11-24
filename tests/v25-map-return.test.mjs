@@ -79,7 +79,7 @@ assert(h.mode=='map' and h.run.phase=='map','real reward commands did not return
 emit(hit,'up',10);assert(not emit(hit,'click',10),'late release opened Run menu after another room')
 assert(not h.exitOpen and tap(hit,11));assert(h.run==run and h:closeExit())
 -- Route preview keeps its previous non-destructive close operation.
-assert(Run.startCombat(h.run,'cultist_solo'));h:refresh();assert(h:openMenu())
+assert(Run.startCombat(h.run,'raven_adept_solo'));h:refresh();assert(h:openMenu())
 assert(tap(r:GetChild('runMenu'):GetChild('map'):GetChild('hit'),12));assert(h.routeOpen)
 assert(tap(hit,13));assert(not h.routeOpen and not h.exitOpen and not h.menuOpen and h.mode=='battle')
 print('MAP_RETURN_PASS V25 normal, guards, late room pointer, preview')
@@ -89,7 +89,7 @@ test('Legacy normal map keeps its old hidden return while route preview still cl
 local h,r,back,hit=setup()
 assert(not back.visible and not tap(hit,20) and not h.exitOpen,'Legacy gained a new normal-map action')
 local run=h.run
-assert(Run.startCombat(h.run,'cultist_solo'));h:refresh();assert(h:openMenu())
+assert(Run.startCombat(h.run,'raven_adept_solo'));h:refresh();assert(h:openMenu())
 assert(tap(r:GetChild('runMenu'):GetChild('map'):GetChild('hit'),21));assert(h.routeOpen and back.visible)
 assert(tap(hit,22));assert(h.run==run and not h.exitOpen and not h.routeOpen and h.mode=='battle')
 print('MAP_RETURN_PASS Legacy preview only')

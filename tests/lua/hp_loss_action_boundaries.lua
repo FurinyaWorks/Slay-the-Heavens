@@ -29,7 +29,7 @@ local function card(s,id)
  local c={cardId=id,uid=s.nextUid,upgraded=false};s.nextUid=s.nextUid+1;return c
 end
 local function battle(mode,owned,id)
- local s=C.new(D,{seed=42,deck={},enemies={'cultist'},enableStances=mode=='stance',
+ local s=C.new(D,{seed=42,deck={},enemies={'raven_adept'},enableStances=mode=='stance',
   orbSlots=mode=='orb'and 0 or nil,orbRandomSeed=mode=='orb'and '42'or nil})
  H.bindBattle(s,owned or {'centennial_puzzle'})
  local c=card(s,id or 'bloodletting');s.hand={c};s.draw={};s.discard={}

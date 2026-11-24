@@ -36,7 +36,7 @@ local function graph(root)
     return visit(root)
 end
 local modules={"awakened_one","nemesis","reptomancer","darklings","act3_bosses","act1_bosses",
-"guardian_ai","jaw_worm_ai","gremlin_nob_ai","blue_slaver_ai","red_slaver_ai","acid_slime_s_ai",
+"guardian_ai","jaw_worm_ai","gremlin_nob_ai","blue_guard_ai","red_guard_ai","acid_slime_s_ai",
 "sentry_ai","spike_slime_m_ai","acid_slime_m_ai","fungi_beast_ai","louse_ai","looter_ai","act2_ai",
 "act3_ai","giant_head","act2_powers","act4_enemies","event_combat_enemies"}
 for _,name in ipairs(modules)do
@@ -62,7 +62,7 @@ local function random(s,n)log("random",s,n);if fault=="random"then error("inject
 callbacks[random]="random"
 callbacks[package.loaded.abyss_actor.applyPower]="Actors.applyPower"
 local kinds={"rolled_attack","opening_roll_attack","shield_gremlin","mad_gremlin","charge_then_attack",
-"jaw_worm","gremlin_nob","blue_slaver","red_slaver","acid_slime_s","sentry","spike_slime_m","spike_slime_l",
+"jaw_worm","gremlin_nob","blue_guard","red_guard","acid_slime_s","sentry","spike_slime_m","spike_slime_l",
 "acid_slime_m","acid_slime_l","fungi_beast","louse","ritual_then_attack","guardian","sleep_then_cycle",
 "giant_head","nemesis","act3_boss","act1_boss","act3","act2","looter","unknown",false}
 local count=0

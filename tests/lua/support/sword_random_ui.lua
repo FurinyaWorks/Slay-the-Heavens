@@ -2,7 +2,7 @@
 return function(f)
  local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
  local R=require('abyss_sts_random')
- local h,u,_,e,tap,drain=H.setup({'sword_boomerang','defend'},{'cultist','cultist','cultist'})
+ local h,u,_,e,tap,drain=H.setup({'sword_boomerang','defend'},{'raven_adept','raven_adept','raven_adept'})
  local s=h.run.combat;local sword,defend
  for _,c in ipairs(s.hand)do if c.cardId=='sword_boomerang'then sword=c else defend=c end end
  assert(sword and defend);s.hand={sword,defend};s.draw={};s.discard={};s.energy=3

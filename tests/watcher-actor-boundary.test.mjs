@@ -132,7 +132,7 @@ test('Halt retains two dynamic method reads, raw failure identity, return arity 
 test('real queued Halt rolls back a late arithmetic failure and retries through the current dynamic slot',()=>pass({body:`
  local C=require('abyss_combat');local A=require('abyss_actor')
  local P=require('abyss_character_profiles');local D=require('abyss_data')
- local s=C.new(P.prepare(D,'watcher'),{seed=42,cardRandomSeed='42',enableStances=true,deck={'halt'},enemies={'cultist'}})
+ local s=C.new(P.prepare(D,'watcher'),{seed=42,cardRandomSeed='42',enableStances=true,deck={'halt'},enemies={'raven_adept'}})
  local stateBefore=WATCHER_GRAPH(s);local player,hand,card=s.player,s.hand,s.hand[1]
  local original=A.blockAmount;local calls=0;local failure={tag='late Halt amount failure'}
  A.blockAmount=function(...)calls=calls+1;if calls==2 then error(failure,0)end;return original(...)end
@@ -165,7 +165,7 @@ test('frozen protocol and complete frozen planner agree with current host for Ha
  const setup=`
  local C=require('abyss_combat');local Q=require('abyss_action_queue')
  local P=require('abyss_character_profiles');local D=require('abyss_data')
- local s=C.new(P.prepare(D,'watcher'),{seed=42,cardRandomSeed='42',enableStances=true,deck={'halt'},enemies={'cultist'}})
+ local s=C.new(P.prepare(D,'watcher'),{seed=42,cardRandomSeed='42',enableStances=true,deck={'halt'},enemies={'raven_adept'}})
  s.player.statuses.dexterity=2;s.player.statuses.frail=1
  local card=s.hand[1];local definition=C.cardDefinition(s,card)
  local hooks={event=function(_,kind,detail)require('abyss_events').emit(s,kind,detail)end,

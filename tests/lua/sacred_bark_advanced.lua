@@ -10,7 +10,7 @@ end
 local function test(name,fn)fn();n=n+1;print('PASS Bark advanced '..name)end
 local function fresh(id,character)
  local r=Run.new(D,42,character and {character=character,experimental=true}or nil)
- assert(Run.obtainRelic(r,'SacredBark'));assert(Run.obtainPotion(r,id));assert(Run.startCombat(r,'cultist_solo'))
+ assert(Run.obtainRelic(r,'SacredBark'));assert(Run.obtainPotion(r,id));assert(Run.startCombat(r,'raven_adept_solo'))
  r.combat.enemies[1].hp,r.combat.enemies[1].maxHp=1000,1000;return r,r.combat
 end
 test('Swift draws six, Snecko draws ten but randomises once, Chaos queues six original target rolls',function()
@@ -30,7 +30,7 @@ test('Memories returns two real identities; arbitrary-discard and exhaust choice
  assert(Run.usePotion(r,1));assert(Run.chooseCard(r,b.pendingChoice.token,2201));assert(Run.chooseCard(r,b.pendingChoice.token,2202))
  eq(b.pendingChoice.required,2);assert(Run.chooseCard(r,b.pendingChoice.token,0))
  eq(#b.hand,2);eq(#b.discard,1);eq(b.hand[1].costForTurn,0);eq(b.hand[2].costForTurn,0);eq(b.pendingChoice,nil)
- for _,id in ipairs({'elixir','gamblers_brew'})do
+ for _,id in ipairs({'elixir','swap_brew'})do
   local owner,state=fresh(id);local size=#state.hand;assert(Run.usePotion(owner,1))
   assert(Run.chooseCard(owner,state.pendingChoice.token,0));eq(state.pendingChoice,nil);eq(#state.hand,size);eq(owner.potions[1],nil)
  end
@@ -44,7 +44,7 @@ test('invalid, overflow and late failure retain all owners; Bark does not double
  local fire,state=fresh('fire_potion');local prior=C.copy(fire,{[fire.data]=fire.data});local physical=fire.potions
  eq(Run.usePotion(fire,1,1,function()error('late potion fixture failure')end),false);same(fire,prior);eq(fire.potions,physical)
  local heal=Run.new(D,42);assert(Run.obtainRelic(heal,'SacredBark'));assert(Run.obtainRelic(heal,'Toy Ornithopter'))
- assert(Run.obtainPotion(heal,'energy_potion'));heal.hp=20;assert(Run.startCombat(heal,'cultist_solo'))
+ assert(Run.obtainPotion(heal,'energy_potion'));heal.hp=20;assert(Run.startCombat(heal,'raven_adept_solo'))
  assert(Run.usePotion(heal,1));eq(heal.combat.energy,7);eq(heal.hp,25)
 end)
 test('all eight injected class potions use true Bark ownership without repeating stance changes',function()

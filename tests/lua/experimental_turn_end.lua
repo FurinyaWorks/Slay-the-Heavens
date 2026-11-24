@@ -28,7 +28,7 @@ local function test(name,fn)
  fn();count=count+1;print('ok experimental end '..count..' '..name)
 end
 local function battle(data)
- local s=C.new(data or D,{seed=42,deck={},enemies={'cultist'},cardRandomSeed='42'})
+ local s=C.new(data or D,{seed=42,deck={},enemies={'raven_adept'},cardRandomSeed='42'})
  s.experimentalMechanics=true;s.events={}
  for _,e in ipairs(s.enemies)do e.ai=nil;e.intentIndex=1;e.intents={{id='wait',effects={{op='block',value=0}}}}end
  s.auditAliases={hand=s.hand,draw=s.draw,discard=s.discard,exhaust=s.exhaust,player=s.player,enemies=s.enemies}
@@ -69,7 +69,7 @@ test('vault-skips-entire-enemy-phase',function()
  local data=require('abyss_silent_tactics_cards').withCardDefinitions(require('abyss_character_profiles').prepare(D,'watcher'))
  local R=require('abyss_sts_random');local streams={}
  for _,id in ipairs({'aiRng','monsterHpRng','shuffleRng','cardRandomRng'})do streams[id]=R.fromSeed('42')end
- local s=C.new(data,{seed=42,deck={'vault'},enemies={'cultist'},enableStances=true,cardRandomSeed='42',roomSeed='42',roomStreams=streams})
+ local s=C.new(data,{seed=42,deck={'vault'},enemies={'raven_adept'},enableStances=true,cardRandomSeed='42',roomSeed='42',roomStreams=streams})
  s.experimentalMechanics=true;s.events={};local enemy=s.enemies[1]
  enemy.block=23;enemy.statuses.poison=4;enemy.statuses.weak=2;enemy.statuses.choked=3
  local vault=s.hand[1];local before,aiBefore

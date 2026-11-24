@@ -5,7 +5,7 @@ local Events=require('abyss_events')
 local count=0
 local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end
 local function test(name,fn)fn();count=count+1;print('PASS '..name)end
-local function battle(id)return C.new(D,{enemies={id or 'cultist'},deck={},seed=42,hp=500,maxHp=500})end
+local function battle(id)return C.new(D,{enemies={id or 'raven_adept'},deck={},seed=42,hp=500,maxHp=500})end
 local function ids(e)local out={};for _,p in ipairs(A.statusView(e))do out[#out+1]=p.id end;return table.concat(out,',')end
 local function order(e)return table.concat(e.powerOrder or {},',')end
 
@@ -128,7 +128,7 @@ test('specialized enemy Focus path records creation and zero-stack removal',func
 end)
 test('Lock On direct expiry removes position before source-priority reacquisition',function()
  local Engine=require('abyss_defect_engine_cards')
- local s=C.new(Engine.withCards(D),{enemies={'cultist'},deck={},seed=42});local e=s.enemies[1]
+ local s=C.new(Engine.withCards(D),{enemies={'raven_adept'},deck={},seed=42});local e=s.enemies[1]
  Engine.applyLockOn(s,e,1);A.applyPower(s,e,'strength',1,e)
  Engine.endRound(s);eq(ids(e),'strength');eq(e.statuses.lock_on,nil)
  Engine.applyLockOn(s,e,1);eq(ids(e),'strength,lock_on')
@@ -136,7 +136,7 @@ end)
 test('real incoming card debuffs use verified source priorities and amount flags',function()
  local Silent=require('abyss_silent_tactics_cards');local Watcher=require('abyss_watcher_flow_cards')
  for _,entry in ipairs({{Silent.withCardDefinitions(D),'choked'}, {Watcher.withCards(D),'mark'}, {Watcher.withCards(D),'block_return'}})do
-  local s=C.new(entry[1],{enemies={'cultist'},deck={},seed=42});local e=s.enemies[1]
+  local s=C.new(entry[1],{enemies={'raven_adept'},deck={},seed=42});local e=s.enemies[1]
   A.applyPower(s,e,'weak',1,s.player);A.applyPower(s,e,entry[2],2,s.player)
   eq(ids(e),entry[2]..',weak')
   local row=A.statusView(e)[1];eq(row.canGoNegative,false);eq(row.isTurnBased,false);eq(row.sourceVerified,true)

@@ -74,7 +74,7 @@ test('ramp damage obeys Strength and Weak but not its own incoming Slow',functio
 end)
 test('queued RollMove survives lethal retaliation only while an ally remains',function()
  for _,ally in ipairs({false,true})do
-  local s=battle('1',ally and {'giant_head','cultist'}or nil);local e=s.enemies[1]
+  local s=battle('1',ally and {'giant_head','raven_adept'}or nil);local e=s.enemies[1]
   AI.initialize(s,e,primary(50));A.applyPower(s,s.player,'thorns',999,s.player)
   local old=s.aiRng.counter;assert(C.endTurn(s));eq(e.hp,0)
   eq(s.aiRng.counter,old+(ally and 2 or 0))

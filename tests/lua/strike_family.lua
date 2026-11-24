@@ -15,7 +15,7 @@ for _,id in ipairs(ids)do expected[id]=true end
 local function battle(character)
     local options=character~='ironclad' and {character=character,experimental=true} or nil
     local run=Run.new(Data,42,options)
-    assert(Run.startCombat(run,'cultist_solo'))
+    assert(Run.startCombat(run,'raven_adept_solo'))
     local s=run.combat
     s.hand,s.draw,s.discard,s.exhaust={},{},{},{}
     s.energy=20

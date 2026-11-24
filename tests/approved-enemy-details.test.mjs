@@ -8,7 +8,7 @@ test('approved unit details retain complete information and command priority',()
  assert.equal(result.status,0,result.stdout+result.stderr);
  assert.match(result.stdout,/APPROVED_ENEMY_DETAILS_PASS 11/);
  const snapshots = powerTipSnapshots(result.stdout);
- assert.deepEqual(Object.keys(snapshots), ['jaw-worm-attack', 'cultist-buff', 'narrow-power-list', 'long-power-list', 'multi-hit-with-power']);
+ assert.deepEqual(Object.keys(snapshots), ['jaw-worm-attack', 'raven_adept-buff', 'narrow-power-list', 'long-power-list', 'multi-hit-with-power']);
  for (const [name, rows] of Object.entries(snapshots)) {
    assert.ok(rows.length > 0, name);
    assert.deepEqual(capacityProblems(rows, nativeTheme.layout.nativeText.lineHeight), [], name);

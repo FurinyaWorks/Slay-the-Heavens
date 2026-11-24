@@ -7,7 +7,7 @@ assert(not N.chooseEvent(run,'leave'))
 assert(N.chooseEvent(run,'continue'));assert(N.chooseEvent(run,'fight'))
 assert(run.phase=='combat'and run.eventCombat.rewardAllowed==false and run.encounterTier=='normal')
 assert(run.combat.monsterHpRng.counter==2)
-assert(run.combat.enemies[1].definitionId=='blue_slaver'and run.combat.enemies[2].definitionId=='red_slaver')
+assert(run.combat.enemies[1].definitionId=='blue_guard'and run.combat.enemies[2].definitionId=='red_guard')
 local card=R.snapshot(run.cardRng)
 local Cards,Potion=require('abyss_card_pool'),require('abyss_potion_rewards')
 local oldCard,oldPotion=Cards.prepareRewards,Potion.prepare;local potionCount

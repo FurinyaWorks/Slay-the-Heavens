@@ -161,7 +161,7 @@ for(const payloadErrorTool of ['scene_add_signal','scene_add_client_ui'])test(`$
   assert.ok(!calls.some(c=>c.name==='write_graphs'||c.name==='scene_check_client'));
 }));
 
-const staleScripts=['abyss_red_slaver_ai','abyss_sentry_ai'].map(name=>({name,file:name+'.lua',on:[]}));
+const staleScripts=['abyss_red_guard_ai','abyss_sentry_ai'].map(name=>({name,file:name+'.lua',on:[]}));
 test('rebuild removes only stale owned modules after replacing their old UI and verifies exact final inventory',()=>run({scripts:staleScripts},(result,calls)=>{
   success(result);
   assert.deepEqual(calls.filter(c=>c.name==='scene_remove_client').map(c=>c.args.script),staleScripts.map(s=>s.name));

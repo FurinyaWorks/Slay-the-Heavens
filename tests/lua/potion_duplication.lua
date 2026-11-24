@@ -3,7 +3,7 @@ local Run,C,A,Data=require('abyss_run'),require('abyss_combat'),require('abyss_a
 local passed,failed=0,0
 local function test(name,fn)local ok,why=pcall(fn);if ok then passed=passed+1;print('PASS '..name)else failed=failed+1;print('FAIL '..name..': '..tostring(why))end end
 local function battle(card)
- local r=Run.new(Data,42);assert(Run.obtainPotion(r,'duplication_potion'));assert(Run.startCombat(r,'cultist_solo'))
+ local r=Run.new(Data,42);assert(Run.obtainPotion(r,'duplication_potion'));assert(Run.startCombat(r,'raven_adept_solo'))
  local s=r.combat;s.hand={{cardId=card,uid=4001}};s.draw={};s.discard={};s.enemies[1].hp=1000;s.enemies[1].maxHp=1000
  assert(Run.usePotion(r,1));return r,s
 end

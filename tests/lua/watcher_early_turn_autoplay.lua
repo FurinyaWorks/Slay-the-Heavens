@@ -1,7 +1,7 @@
 package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local C,P,D,A=require('abyss_combat'),require('abyss_character_profiles'),require('abyss_data'),require('abyss_card_actions')
 for _,id in ipairs({'conclude','vault'})do
- local s=C.new(P.prepare(D,'watcher'),{seed=1,cardRandomSeed='1',enableStances=true,deck={id},enemies={'cultist'}})
+ local s=C.new(P.prepare(D,'watcher'),{seed=1,cardRandomSeed='1',enableStances=true,deck={id},enemies={'raven_adept'}})
  s.enemies[1].hp=1000;s.enemies[1].maxHp=1000
  local c=table.remove(s.hand,1);s.draw={c}
  -- A real native action precedes the queued experimental card, leaving an

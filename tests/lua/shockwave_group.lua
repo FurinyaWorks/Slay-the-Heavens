@@ -12,7 +12,7 @@ local function pair(n)
         {op='applyStatusAll',status='vulnerable',value=n or 3,targetGroup='weak_then_vulnerable'}}
 end
 local function battle(upgraded)
-    return C.new(data,{seed=42,deck={{cardId='shockwave',upgraded=upgraded}},enemies={'cultist','cultist'}})
+    return C.new(data,{seed=42,deck={{cardId='shockwave',upgraded=upgraded}},enemies={'raven_adept','raven_adept'}})
 end
 local function snapshot(root)
     local seen={}
@@ -34,8 +34,8 @@ local function statusOrder(s)
     for _,e in ipairs(s.events) do if e.kind=='status' then result[#result+1]=e.detail.target..':'..e.detail.status end end
     return table.concat(result,',')
 end
-local grouped='cultist_1:weak,cultist_1:vulnerable,cultist_2:weak,cultist_2:vulnerable'
-local legacy='cultist_1:weak,cultist_2:weak,cultist_1:vulnerable,cultist_2:vulnerable'
+local grouped='raven_adept_1:weak,raven_adept_1:vulnerable,raven_adept_2:weak,raven_adept_2:vulnerable'
+local legacy='raven_adept_1:weak,raven_adept_2:weak,raven_adept_1:vulnerable,raven_adept_2:vulnerable'
 local bad={
     {'single first',function() local p=pair();p[2]=nil;return p end},
     {'single second',function() local p=pair();p[1].targetGroup=nil;return p end},
@@ -183,10 +183,10 @@ end
 for _,mode in ipairs({'dead','escaped'}) do
     test('target '..mode..' between applications skips second and continues next enemy',function()
         local s,calls=interrupted(mode,'target');eq(calls,3)
-        eq(statusOrder(s),'cultist_1:weak,cultist_2:weak,cultist_2:vulnerable');eq(s.enemies[1].statuses.vulnerable,nil)
+        eq(statusOrder(s),'raven_adept_1:weak,raven_adept_2:weak,raven_adept_2:vulnerable');eq(s.enemies[1].statuses.vulnerable,nil)
     end)
     test('source '..mode..' between applications stops all remaining targets',function()
-        local s,calls=interrupted(mode,'source');eq(calls,1);eq(statusOrder(s),'cultist_1:weak')
+        local s,calls=interrupted(mode,'source');eq(calls,1);eq(statusOrder(s),'raven_adept_1:weak')
     end)
     test('initial source '..mode..' skips legal group',function()
         local s=battle();if mode=='dead' then s.player.hp=0 else s.player.escaped=true end

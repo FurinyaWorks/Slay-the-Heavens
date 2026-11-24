@@ -122,7 +122,7 @@ test("Run defeat from real HP-pay cards preserves gold and deck and emits no rew
         run.deck = { { uid = 1, cardId = id, upgraded = false } }
         run.hp = 1
         local gold, deck = run.gold, Combat.copy(run.deck)
-        assert(Run.startCombat(run, "cultist_solo"))
+        assert(Run.startCombat(run, "raven_adept_solo"))
         assert(Run.play(run, run.combat.hand[1].uid, 1))
         equal(run.phase, "defeat"); equal(run.hp, 0); equal(run.gold, gold)
         equal(run.rewards, nil); equal(#Run.rewardOptions(run), 0); same(run.deck, deck)
@@ -151,7 +151,7 @@ end)
 
 local function win(seed)
     local run = Run.new(data, seed)
-    assert(Run.startCombat(run, "cultist_solo"))
+    assert(Run.startCombat(run, "raven_adept_solo"))
     for _ = 1, 100 do
         if run.phase ~= "combat" then break end
         for _ = 1, 10 do
@@ -187,7 +187,7 @@ test(id .. " is acquired via its legal reward tier and played next battle", func
     for i, card in ipairs(oldDeck) do same(selected.deck[i], card) end
     equal(selected.deck[#selected.deck].cardId, id)
     selected.floor=1 -- next-battle unit fixture, not a natural boss route
-    assert(Run.startCombat(selected, "cultist_solo"))
+    assert(Run.startCombat(selected, "raven_adept_solo"))
     for _ = 1, 20 do
         assert(selected.phase == "combat", "battle ended before acquired card could play")
         for _, instance in ipairs(selected.combat.hand) do

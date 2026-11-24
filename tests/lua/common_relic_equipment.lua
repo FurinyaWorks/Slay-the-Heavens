@@ -13,7 +13,7 @@ test('RegalPillow adds fifteen only to rest recovery; healing still clamps at ma
 end)
 test('ToyOrnithopter heals five in current battle and in noncombat, clamped',function()
  local r=R.new(data,42);r.relics={'toy_ornithopter'};r.hp=30
- assert(R.startCombat(r,'cultist_solo'));H.onUsePotion(r,r.combat);assert(r.combat.player.hp==30)
+ assert(R.startCombat(r,'raven_adept_solo'));H.onUsePotion(r,r.combat);assert(r.combat.player.hp==30)
  require('abyss_card_actions').drain(C,r.combat);assert(r.combat.player.hp==35 and r.hp==30)
  r.combat.player.hp=79;H.onUsePotion(r,r.combat);require('abyss_card_actions').drain(C,r.combat);assert(r.combat.player.hp==80)
  r.phase='map';H.onUsePotion(r);assert(r.hp==35)

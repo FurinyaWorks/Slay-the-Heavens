@@ -10,7 +10,7 @@ local function test(name,fn)local ok,why=pcall(fn);if ok then passed=passed+1 el
 local function force(e,id)for i,v in ipairs(e.intents)do if v.id==id then e.intentIndex=i;return end end;error('missing intent '..id)end
 local function battle(mode,hp,sourceHp,extra)
  local data=mode=='V4'and Profiles.prepare(D,'AR')or D
- local s=C.new(data,{enemies=extra and {'shelled_parasite','cultist'}or{'shelled_parasite'},deck={},seed=42,hp=hp or 80,maxHp=80,enableStances=mode=='advanced'})
+ local s=C.new(data,{enemies=extra and {'shelled_parasite','raven_adept'}or{'shelled_parasite'},deck={},seed=42,hp=hp or 80,maxHp=80,enableStances=mode=='advanced'})
  local e=s.enemies[1];force(e,'life_suck');e.hp=sourceHp or 1;e.block=0;s.events={};return s,e
 end
 local function power(s,id,n)A.applyPower(s,s.player,id,n,s.player)end

@@ -23,7 +23,7 @@ local function query(s,p,target,label)
  records[#records+1]=graph({label=label,state=s,instance=p,result=result})
  return table.unpack(result,1,result.n)
 end
-local real=C.new(D,{seed=79,deck={},enemies={'cultist','cultist'}})
+local real=C.new(D,{seed=79,deck={},enemies={'raven_adept','raven_adept'}})
 local function streams(state)
  for _,name in ipairs({'monsterHpRng','aiRng','shuffleRng','cardRandomRng','miscRng','cardRng'})do
   state[name]=require('abyss_sts_random').fromSeed('42')

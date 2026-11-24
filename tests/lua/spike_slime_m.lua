@@ -73,16 +73,16 @@ test('a genuinely drawn Slimed costs one and exhausts without an enemy target',f
  assert(C.canPlay(s,slimed.uid));assert(C.play(s,slimed.uid));eq(s.energy,2);eq(s.exhaust[1],slimed);eq(s.player.hp,hp);eq(s.player.block,block);eq(s.seed,seed);eq(s.enemies[1].statuses.strength or 0,strength)
 end)
 test('zero energy rejects Slimed atomically and Dazed is still unplayable',function()
- local s=battle({'cultist'},{'slimed','dazed'});s.energy=0;local before=C.copy(s)
+ local s=battle({'raven_adept'},{'slimed','dazed'});s.energy=0;local before=C.copy(s)
  for _,c in ipairs(s.hand)do local ok,why=C.play(s,c.uid);eq(ok,false);eq(why,c.cardId=='slimed' and 'insufficient_energy' or 'unplayable_card')end;same(s,before)
 end)
 test('unplayed Slimed discards and reshuffles instead of ethereal exhaust',function()
- local s=battle({'cultist'},{'slimed'});local card=s.hand[1];assert(C.endTurn(s));eq(#s.exhaust,0);eq(#s.hand,1);eq(s.hand[1],card)
+ local s=battle({'raven_adept'},{'slimed'});local card=s.hand[1];assert(C.endTurn(s));eq(#s.exhaust,0);eq(#s.hand,1);eq(s.hand[1],card)
 end)
 test('no arbitrary empty effects become legal through the Slimed exception',function()
  eq(Effects.supported({}),false)
  for _,change in ipairs({{id='other'},{type='skill'},{cost=0},{cost=2},{exhaust=false},{ethereal=true},{upgrade={cost=0}},{effects={junk=true}},{effects={{op='block',value=1}}},{effects={{op='not_real'}}}})do
-  local s=battle({'cultist'},{'slimed'});for k,v in pairs(change)do s.catalog.cards.slimed[k]=v end
+  local s=battle({'raven_adept'},{'slimed'});for k,v in pairs(change)do s.catalog.cards.slimed[k]=v end
   local before=C.copy(s);eq(C.play(s,s.hand[1].uid),false);same(s,before)
  end
  local s=battle();s.catalog.cards.defend.effects={};eq(C.play(s,s.hand[1].uid),false)
@@ -91,7 +91,7 @@ test('status type remains excluded from rewards and shop even with a supported p
  local data=C.copy(Data)
  local found=false;for _,c in ipairs(data.cards.cards)do if c.id=='slimed' then found=true end end;assert(found)
  for _,c in ipairs(data.cards.cards)do if c.id=='slimed' then c.effects={{op='block',value=1}};c.rarity='rare' end end
- local r=Run.new(data,42);assert(Run.startCombat(r,'cultist_solo'));C.applyEffects(r.combat,{{op='damage',value=999}},r.combat.player,r.combat.enemies[1]);assert(Run.finishCombat(r));eq(#Run.rewardOptions(r),3);for _,id in ipairs(Run.rewardOptions(r))do assert(id~='slimed')end;assert(Run.claimCardReward(r,0)); dofile('tests/lua/support/finish_combat_rewards.lua')(r)
+ local r=Run.new(data,42);assert(Run.startCombat(r,'raven_adept_solo'));C.applyEffects(r.combat,{{op='damage',value=999}},r.combat.player,r.combat.enemies[1]);assert(Run.finishCombat(r));eq(#Run.rewardOptions(r),3);for _,id in ipairs(Run.rewardOptions(r))do assert(id~='slimed')end;assert(Run.claimCardReward(r,0)); dofile('tests/lua/support/finish_combat_rewards.lua')(r)
  local map=Map.generate(data,42);for _=1,17 do local available=Map.available(map);for _,node in ipairs(available)do if node.type=='shop' then assert(Nodes.enter(r,map,node.id));eq(#r.nodeFlow.cards,7);for _,o in ipairs(r.nodeFlow.cards) do assert(o.id~='slimed') end;return end end;assert(Map.choose(map,available[1].id))end;error('expected shop fixture')
 end)
 test('camp and upgrade shrine reject Slimed without spending their choice',function()

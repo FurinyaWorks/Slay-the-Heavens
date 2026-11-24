@@ -26,7 +26,7 @@ local function location(state, card, destination)
     end
 end
 local function battle(id, upgraded)
-    local s = Combat.new(data, {seed=42, deck={{cardId=id, upgraded=upgraded}}, enemies={"cultist"}})
+    local s = Combat.new(data, {seed=42, deck={{cardId=id, upgraded=upgraded}}, enemies={"raven_adept"}})
     return s, s.hand[1]
 end
 local function find(pile, id)
@@ -77,7 +77,7 @@ for _, upgraded in ipairs({false, true}) do
             {uid=2,cardId="bludgeon",upgraded=false},{uid=3,cardId="bludgeon",upgraded=false}}
         run.nextDeckUid = 4
         local permanent = run.deck[1]
-        assert(Run.startCombat(run, "cultist_solo"))
+        assert(Run.startCombat(run, "raven_adept_solo"))
         local used = assert(find(run.combat.hand, fixture.id))
         assert(used ~= permanent); assert(Run.play(run, used.uid))
         location(run.combat, used, nil)
@@ -87,7 +87,7 @@ for _, upgraded in ipairs({false, true}) do
         end
         equal(run.phase, "reward"); equal(#run.deck, 3); equal(run.deck[1], permanent)
         equal(permanent.upgraded, upgraded); equal(run.nextDeckUid, 4)
-        assert(Run.claimCardReward(run, 0)); dofile('tests/lua/support/finish_combat_rewards.lua')(run); assert(Run.startCombat(run, "cultist_solo"))
+        assert(Run.claimCardReward(run, 0)); dofile('tests/lua/support/finish_combat_rewards.lua')(run); assert(Run.startCombat(run, "raven_adept_solo"))
         local fresh = assert(find(run.combat.hand, fixture.id))
         assert(fresh ~= used and fresh ~= permanent); equal(fresh.upgraded, upgraded)
         equal(#run.combat.exhaust, 0); equal(run.combat.player.statuses[fixture.status], nil)
@@ -114,7 +114,7 @@ test("native battle counter distinguishes used Power from true Exhaust cards", f
     assert(testStart(ui))
     ui.run.deck = {{uid=1,cardId="inflame",upgraded=false},{uid=2,cardId="impervious",upgraded=false}}
     ui.run.nextDeckUid = 3
-    assert(Run.startCombat(ui.run, "cultist_solo")); ui:refresh()
+    assert(Run.startCombat(ui.run, "raven_adept_solo")); ui:refresh()
     local panel = root:GetChild("battlePanel")
     local function play(id)
         local slot

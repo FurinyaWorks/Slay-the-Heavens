@@ -5,7 +5,7 @@ local count=0
 for _,combat in ipairs({false,true}) do
  for _,spec in ipairs({{'blood_potion',80,20,36,80},{'fruit_juice',80,20,25,85}}) do
   local run=Run.new(Data,42);run.maxHp,run.hp=spec[2],spec[3]
-  assert(Run.obtainPotion(run,spec[1]));if combat then assert(Run.startCombat(run,'cultist_solo')) end
+  assert(Run.obtainPotion(run,spec[1]));if combat then assert(Run.startCombat(run,'raven_adept_solo')) end
   local old=run.potions;local preview=Run.potionView(run)[1];assert(preview.canUse and run.potions==old)
   assert(Run.usePotion(run,1));eq(run.hp,spec[4]);eq(run.maxHp,spec[5]);eq(run.potions[1],nil)
   if combat then eq(run.combat.player.hp,run.hp);eq(run.combat.player.maxHp,run.maxHp) end
@@ -28,11 +28,11 @@ local flowerData=C.copy(Data)
 flowerData.relics.relics[#flowerData.relics.relics+1]={id='magic_flower',name='Magic Flower',rarity='rare',trigger='passive',effects={}}
 local flower=Run.new(flowerData,42);flower.hp=10
 flower.relics[#flower.relics+1]='magic_flower'
-assert(Run.obtainPotion(flower,'blood_potion'));assert(Run.startCombat(flower,'cultist_solo'))
+assert(Run.obtainPotion(flower,'blood_potion'));assert(Run.startCombat(flower,'raven_adept_solo'))
 assert(Run.usePotion(flower,1));eq(flower.hp,34)
 local flowerHooks=Run.new(flowerData,42);flowerHooks.hp=10
 assert(Run.obtainRelic(flowerHooks,'Toy Ornithopter'));flowerHooks.relics[#flowerHooks.relics+1]='magic_flower'
-assert(Run.obtainPotion(flowerHooks,'blood_potion'));assert(Run.startCombat(flowerHooks,'cultist_solo'))
+assert(Run.obtainPotion(flowerHooks,'blood_potion'));assert(Run.startCombat(flowerHooks,'raven_adept_solo'))
 assert(Run.usePotion(flowerHooks,1,nil,function(candidate)
  eq(candidate.player.hp,10);eq(candidate.cardActions[1].effect.value,16)
  eq(candidate.cardActions[2].effect.value,5)
@@ -47,7 +47,7 @@ for _,slot in ipairs({4,5})do
   run.hp=id=='blood_potion' and 30 or 39
   for i=1,slot-1 do assert(Run.obtainPotion(run,'block_potion'))end
   local obtained,at=Run.obtainPotion(run,id);assert(obtained);eq(at,slot)
-  assert(Run.startCombat(run,'cultist_solo'));local s=run.combat
+  assert(Run.startCombat(run,'raven_adept_solo'));local s=run.combat
   eq(s.player.statuses.strength,3);s.events={};local hookCalls=0;local observed
   assert(Run.usePotion(run,slot,nil,function(candidate)
    hookCalls=hookCalls+1
@@ -77,7 +77,7 @@ for _,slot in ipairs({4,5})do
 end
 for _,id in ipairs({'blood_potion','fruit_juice'})do
  local run=Run.new(Data,42);assert(Run.obtainRelic(run,'Red Skull'));run.hp=id=='blood_potion' and 30 or 39
- assert(Run.obtainPotion(run,id));assert(Run.startCombat(run,'cultist_solo'));assert(Run.usePotion(run,1))
+ assert(Run.obtainPotion(run,id));assert(Run.startCombat(run,'raven_adept_solo'));assert(Run.usePotion(run,1))
  eq(run.combat.player.statuses.strength or 0,0);eq(run.combat.relicCombat.redSkullActive,false)
  count=count+1
 end
@@ -93,6 +93,6 @@ end
 local current=Run.new(Data,42);current.hp=20;current.phase='node'
 current.node={eventId='WeMeetAgain'};current.nodeFlow={type='event',event={id='cleric'}}
 assert(Run.obtainPotion(current,'blood_potion'));assert(Run.usePotion(current,1));eq(current.hp,36);count=count+1
-local capped=Run.new(Data,42);capped.hp=79;assert(Run.obtainPotion(capped,'blood_potion'));assert(Run.startCombat(capped,'cultist_solo'))
+local capped=Run.new(Data,42);capped.hp=79;assert(Run.obtainPotion(capped,'blood_potion'));assert(Run.startCombat(capped,'raven_adept_solo'))
 assert(Run.usePotion(capped,1,nil,function(staged)eq(staged.player.hp,79);eq(staged.cardActions[1].effect.value,16)end));eq(capped.hp,80);count=count+1
 print('LUA_POTION_HEALTH_PASS '..(count+4))

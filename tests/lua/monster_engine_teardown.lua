@@ -22,7 +22,7 @@ local function run(kind,trigger)
   assert(engineDestroyed==true or trigger=='clear','teardown retirement mode missing');retired=retired+1
  end)
  if trigger and trigger~='retire' and trigger~='clear' then hook=function(name)if name==trigger then hook=nil;dead=true;manager:onEngineDestroy()end end end
- local rows={{id='one',actor={id='one',definitionId='cultist'}}}
+ local rows={{id='one',actor={id='one',definitionId='raven_adept'}}}
  local ok=pcall(manager.select,manager,rows,{})
  if trigger=='clear' then
   assert(ok);hook=function(name)if name=='SetVisible' then hook=nil;dead=true;manager:onEngineDestroy()end end

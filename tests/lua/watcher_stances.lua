@@ -6,7 +6,7 @@ local count=0
 local function equal(a,b) assert(a==b,tostring(a).." ~= "..tostring(b)) end
 local function test(label,fn) fn(); count=count+1; print("ok watcher_stances "..count.." - "..label) end
 local function battle()
-    return Combat.new(Data,{seed=42,enemies={"cultist"},deck={"strike","defend"}})
+    return Combat.new(Data,{seed=42,enemies={"raven_adept"},deck={"strike","defend"}})
 end
 test("normal outgoing and incoming Wrath are distinct from fixed damage",function()
     local s=battle(); local e=s.enemies[1]

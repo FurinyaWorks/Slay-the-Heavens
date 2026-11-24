@@ -9,7 +9,7 @@ assert(run.gold==gold and run.hp==hp and run.victories==wins and run.rewards==ni
 assert(R.snapshot(run.cardRng).counter==card.counter)
 assert(Nodes.completeCombat(run,map));assert(run.nodeFlow.complete and run.nodeFlow.result=='escaped')
 assert(#Nodes.available(run,map)>0)
-local back=Run.new(Data,42);assert(Run.obtainPotion(back,'smoke_bomb'));assert(Run.startCombat(back,'cultist_solo'))
+local back=Run.new(Data,42);assert(Run.obtainPotion(back,'smoke_bomb'));assert(Run.startCombat(back,'raven_adept_solo'))
 back.combat.enemies[1].statuses.back_attack=1
 local ok,why=Run.usePotion(back,1);assert(not ok and why=='smoke_not_allowed' and back.potions[1]=='smoke_bomb')
 local boss=Run.new(Data,42);boss.floor=16;assert(Run.obtainPotion(boss,'smoke_bomb'));assert(Run.startCombat(boss,'boss_guardian'))

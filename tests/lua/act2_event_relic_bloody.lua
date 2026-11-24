@@ -6,7 +6,7 @@ local function idolBattle(extra)
  local originals={};for _,card in ipairs(r.deck)do originals[#originals+1]=card.uid end
  for _,uid in ipairs(originals)do assert(H.Run.removeCard(r,uid))end
  assert(H.Run.obtainCard(r,'bludgeon',{upgraded=true}));assert(H.Run.obtainCard(r,'hand_of_greed'))
- assert(H.Run.startCombat(r,'cultist_solo'));return r,r.combat
+ assert(H.Run.startCombat(r,'raven_adept_solo'));return r,r.combat
 end
 test('real HandOfGreed kill gains gold and BloodyIdol heals5 through actual combat heal action',function()
  local r,s=idolBattle();assert(H.play(r,'bludgeon'));assert(H.Run.endTurn(r));local hp=s.player.hp;local gold=s.player.gold

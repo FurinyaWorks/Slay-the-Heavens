@@ -38,7 +38,7 @@ local function run(name,setup,check,fullCatalog)
     rareQueries.owns=original.owns;rare.onRefreshHand=original.refresh;silent.allowedAfterVictory=original.allowed;require=original.require
     -- Constructor is real, but its opening drain is outside the controlled
     -- observation. Guard it so semantic mutants reach the tested invocation.
-    local s=C.new(data,{seed=42,deck={'strike'},enemies={'cultist'},cardRandomSeed='42',beforeFirstTurn=function(state)state.drainingCardActions=true;return true end})
+    local s=C.new(data,{seed=42,deck={'strike'},enemies={'raven_adept'},cardRandomSeed='42',beforeFirstTurn=function(state)state.drainingCardActions=true;return true end})
     s.drainingCardActions=nil;s.cardActions=nil;s.queuedCards=nil;s.resolvingCard=nil
     -- These controlled battles use only the real strike/defend definitions.
     -- Keep their complete definitions and all statuses/RNG/actors/pools while

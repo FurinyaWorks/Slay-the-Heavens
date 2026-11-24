@@ -4,7 +4,7 @@ local test,finish=H.suite('LUA_BATTLE_UI_POTION_INDEPENDENCE')
 local function reward()
     local h,u,p,emit,tap=H.setup()
     h.run=Run.new(H.F.Data,42);h.battleUI.run=h.run
-    assert(Run.startCombat(h.run,'cultist_solo'))
+    assert(Run.startCombat(h.run,'raven_adept_solo'))
     for _,enemy in ipairs(h.run.combat.enemies) do enemy.hp=0 end
     assert(Run.finishCombat(h.run));h:refresh()
     return h,u,p,emit,tap

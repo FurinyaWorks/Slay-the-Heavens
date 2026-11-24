@@ -1,6 +1,6 @@
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local host,root=F.fixture()
-assert(F.start(host));assert(require('abyss_run').startCombat(host.run,'cultist_solo'))
+assert(F.start(host));assert(require('abyss_run').startCombat(host.run,'raven_adept_solo'))
 local state=F.Combat.new(F.Data,{enemies={'collector','byrd'},deck={'strike'},seed=42})
 local function move(actor,id)
  for index,intent in ipairs(actor.intents)do if intent.id==id then actor.intentIndex=index;return end end

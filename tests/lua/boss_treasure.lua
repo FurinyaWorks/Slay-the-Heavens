@@ -78,14 +78,14 @@ test('eligibility excludes owned relics and Black Blood without its starter',fun
     local run,map=beforeChest();run.relics={'sozu'}
     -- Isolate eligibility against a full owned-source snapshot, not a seed
     -- claim: Sozu was consumed earlier; all other 21 identities remain.
-    Source.stageQueue(run,{'Black Blood','SlaversCollar'},{'Sozu'})
+    Source.stageQueue(run,{'Black Blood','ArenaCollar'},{'Sozu'})
     assert(Nodes.enter(run,map,Nodes.available(run,map)[1].id))
-    equal(#run.nodeFlow.reward.relics,3);equal(run.nodeFlow.reward.relics[1],'slavers_collar')
+    equal(#run.nodeFlow.reward.relics,3);equal(run.nodeFlow.reward.relics[1],'arena_collar')
     for _,id in ipairs(run.nodeFlow.reward.relics)do assert(id~='sozu' and id~='black_blood')end
-    assert(Nodes.claimBossTreasure(run,1));same(run.relics,{'sozu','slavers_collar'})
+    assert(Nodes.claimBossTreasure(run,1));same(run.relics,{'sozu','arena_collar'})
 end)
 test('an exhausted source pool uses Circlet fallback and remains skippable without fabricated gold',function()
-    local run,map=beforeChest();run.relics={'black_blood','sozu','slavers_collar'}
+    local run,map=beforeChest();run.relics={'black_blood','sozu','arena_collar'}
     run.relicPool.queues.boss={} -- Explicit consumed-all-source component boundary.
     local gold=run.gold
     assert(Nodes.enter(run,map,Nodes.available(run,map)[1].id));equal(#run.nodeFlow.reward.relics,3)
@@ -125,7 +125,7 @@ test('ordinary relic rooms never offer Boss relics',function()
                 local ids=kind=='shop' and run.nodeFlow.relics or run.nodeFlow.reward.items
                 for _,offer in ipairs(ids) do
                     if kind=='shop' or offer.kind=='relic'then
-                        assert(offer.id~='black_blood' and offer.id~='sozu' and offer.id~='slavers_collar')
+                        assert(offer.id~='black_blood' and offer.id~='sozu' and offer.id~='arena_collar')
                         for _,id in ipairs(run.relicPool.catalog.queues.boss)do assert(id~=(offer.sourceId or offer.id))end
                     end
                 end

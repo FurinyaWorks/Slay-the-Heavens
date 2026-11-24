@@ -120,7 +120,7 @@ end)
 
 test("exhausted source pool shows actual Circlet fallback without fabricated gold",function()
     local ui,root=enterTreasure(nil,function(run)
-        run.relics={"black_blood","slavers_collar","sozu"};run.relicPool.queues.boss={}
+        run.relics={"black_blood","arena_collar","sozu"};run.relicPool.queues.boss={}
     end,true)
     assert(#ui.run.nodeFlow.reward.relics==3)
     for _,id in ipairs(ui.run.nodeFlow.reward.relics)do assert(id=='circlet')end

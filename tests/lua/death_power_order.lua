@@ -16,7 +16,7 @@ local function test(name,fn)
 end
 local function fixture(mode,order,lethal)
  local data=C.copy(D);data.statuses=SF.withCardDefinitions(D).statuses
- local s=C.new(data,{enemies={'bronze_orb','cultist'},deck={'strike'},seed=42,enableStances=mode=='advanced'})
+ local s=C.new(data,{enemies={'bronze_orb','raven_adept'},deck={'strike'},seed=42,enableStances=mode=='advanced'})
  eq(s.experimentalMechanics==true,mode=='advanced','actual dispatcher')
  local orb=s.enemies[1];orb.hp=1;orb.block=0;s.enemies[2].hp=lethal and 1 or 1000
  s.draw={{uid=901,cardId='defend',upgraded=false,damageBonus=3}}

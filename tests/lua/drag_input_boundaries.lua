@@ -41,8 +41,8 @@ local function setup()
         cursorEvents={CursorDown="down",CursorDrag="drag",CursorUp="up",CursorEndDrag="endDrag"}
     }),{embedded=true})
     ui.run = Run.new(Data,1)
-    assert(Run.startCombat(ui.run,"cultist_solo"))
-    ui.run.combat = Combat.new(Data,{deck={"defend","defend"},enemies={"cultist"}})
+    assert(Run.startCombat(ui.run,"raven_adept_solo"))
+    ui.run.combat = Combat.new(Data,{deck={"defend","defend"},enemies={"raven_adept"}})
     ui:resize(1280,720) ui:render()
     local function event(name,kind,x,y,touch)
         local box = assert(F.actorControl(panel,name))
@@ -70,7 +70,7 @@ test("stationary release from an old battle cannot click the replacement hand",f
     local old = ui.run.combat
     local x,y = panel:GetChild("card1").x,panel:GetChild("card1").y
     event("card1","down",x,y)
-    local current = Combat.new(Data,{deck={"defend","defend"},enemies={"cultist"}})
+    local current = Combat.new(Data,{deck={"defend","defend"},enemies={"raven_adept"}})
     ui.run.combat = current -- No render between replacement and queued release.
     event("card1","up",x,y)
     event("card1","click",x,y)
@@ -90,7 +90,7 @@ test("stationary cancellation guards turn, run, phase, inactive and busy changes
         if kind == "turn" then battle.turn = battle.turn+1
         elseif kind == "run" then
             local replacement = Run.new(Data,9)
-            assert(Run.startCombat(replacement,"cultist_solo"))
+            assert(Run.startCombat(replacement,"raven_adept_solo"))
             replacement.combat = battle
             ui.run = replacement
         elseif kind == "phase" then battle.phase = "enemy"
@@ -174,7 +174,7 @@ end)
 
 test("targeted drag pulled back to the hand cancels and commits only the aimed living enemy",function()
     local ui,panel,event = setup()
-    local battle = Combat.new(Data,{deck={"strike"},enemies={"cultist","jaw_worm"}})
+    local battle = Combat.new(Data,{deck={"strike"},enemies={"raven_adept","jaw_worm"}})
     for index,actor in ipairs(battle.enemies) do actor.sourcePosition={x=-600+(index-1)*500,y=0} end
     ui.run.combat = battle ui:render()
     local x,y = panel:GetChild("card1").x,panel:GetChild("card1").y

@@ -62,7 +62,7 @@ local function checkCrystal(host,size)
 end
 if official then checkCrystal(bar:GetChild('slot1'),Theme.officialAssets.battleRelicBar.icon)end
 for i,id in ipairs(h.run.relics)do assert(bar:GetChild('slot'..i):GetChild('icon').imageId==runIcon(id),'shared run map icon')end
-assert(require('abyss_run').startCombat(h.run,'cultist_solo'));h:refresh()
+assert(require('abyss_run').startCombat(h.run,'raven_adept_solo'));h:refresh()
 if official then checkCrystal(bar:GetChild('slot1'),Theme.officialAssets.battleRelicBar.icon)end
 for i,id in ipairs(h.run.relics)do assert(bar:GetChild('slot'..i):GetChild('icon').imageId==V.icon(id,true),'battle HUD icon')end
 local hp,energy,turn=h.run.hp,h.run.combat.energy,h.run.combat.turn
@@ -87,7 +87,7 @@ if official then
  assert(h:closeDeck())
  local battleHost,root=F.fixture();assert(F.start(battleHost))
  local run=battleHost.run
- assert(require('abyss_run').startCombat(run,'cultist_solo'))
+ assert(require('abyss_run').startCombat(run,'raven_adept_solo'))
  run.phase='reward'
  run.rewards={manualContinue=true,gold=0,goldClaimed=true,cards={},cardResolved=true,
   relics={{id='blue_candle',sourceId='Blue Candle',claimed=false},

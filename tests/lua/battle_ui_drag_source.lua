@@ -25,7 +25,7 @@ local function test(name, fn)
     else failed=failed+1; print("FAIL "..name..": "..tostring(why)) end
 end
 local function setup(deck)
-    local host,ui,panel,event,tap,drain,openClose = sourceSetup(deck or {"strike","strike"},{"cultist","jaw_worm"})
+    local host,ui,panel,event,tap,drain,openClose = sourceSetup(deck or {"strike","strike"},{"raven_adept","jaw_worm"})
     require('abyss_actor').applyPower(host.run.combat,host.run.combat.enemies[2],'vulnerable',2,host.run.combat.enemies[2])
     host:refresh()
     return host,ui,panel,event,tap,drain,openClose
@@ -158,7 +158,7 @@ test("old battle and turn are rejected before gesture coordinates mutate",functi
         local g=ui.gesture; local x,y=g.x,g.y
         local enemy=actorBox(panel,host.run.combat,2) -- captured original actor surface
         if kind=="turn" then g.battle.turn=g.battle.turn+1
-        else host.run.combat=H.F.Combat.new(H.F.Data,{deck={"strike","strike"},enemies={"cultist","jaw_worm"}}) end
+        else host.run.combat=H.F.Combat.new(H.F.Data,{deck={"strike","strike"},enemies={"raven_adept","jaw_worm"}}) end
         event("card1","drag",7,enemy.x,enemy.y)
         assert(g.x==x and g.y==y and not g.moving,kind.." stale generation mutated")
         event("card1","up",7,enemy.x,enemy.y)

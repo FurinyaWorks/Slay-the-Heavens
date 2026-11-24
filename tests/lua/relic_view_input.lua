@@ -49,7 +49,7 @@ print('RELIC_POINTER_PASS next previous close bar')
 do
     local h2,r2=F.fixture()
     assert(F.start(h2))
-    assert(require('abyss_run').startCombat(h2.run,'cultist_solo'))
+    assert(require('abyss_run').startCombat(h2.run,'raven_adept_solo'))
     h2.run.relics={'anchor','burning_blood','maw_bank'}
     h2.run.combat.relicCounters.maw_bank=-2
     h2:refresh()
@@ -100,7 +100,7 @@ if require('abyss_theme').presentationProfile=='official-assets-first' then
     local Theme=require('abyss_theme')
     local events={CursorEnter='nativeRelicEnter',CursorExit='nativeRelicExit'}
     local h4,r4=F.fixture(nil,nil,nil,events)
-    assert(F.start(h4));assert(require('abyss_run').startCombat(h4.run,'cultist_solo'))
+    assert(F.start(h4));assert(require('abyss_run').startCombat(h4.run,'raven_adept_solo'))
     h4.run.relics={'burning_blood','ancient_tea_set','maw_bank','omamori'}
     h4.run.relicCounters={burning_blood=1,ancient_tea_set=-2,maw_bank=-2,omamori=0}
     h4.run.combat.relicCounters={burning_blood=3}

@@ -5,7 +5,7 @@ local C,Theme=H.F.Combat,H.F.Theme
 local expected={
     looter=112030,
     guardian=112046,
-    cultist=112022,
+    raven_adept=112022,
     jaw_worm=112038,
     red_louse=112013,
     green_louse=112014,
@@ -15,8 +15,8 @@ local expected={
     spike_slime_s=112007,
     spike_slime_m=112007,
     spike_slime_l=112008,
-    blue_slaver=112031,
-    red_slaver=112050,
+    blue_guard=112031,
+    red_guard=112050,
     fungi_beast=112033,
     mad_gremlin=112022,
     sneaky_gremlin=112025,
@@ -46,7 +46,7 @@ local expected={
     bronze_orb=112026,
     champ=112018,
 }
-local host,ui,panel=H.setup({'defend'},{'cultist'})
+local host,ui,panel=H.setup({'defend'},{'raven_adept'})
 local catalog=host.run.combat.catalog.enemies
 local ids={}
 for _,definition in ipairs(H.F.Data.enemies.enemies)do ids[#ids+1]=definition.id end
@@ -86,14 +86,14 @@ for _,pair in ipairs({{'collector','torch_head'},{'automaton','bronze_orb'},{'gr
 end
 -- Missing portrait mappings keep the tier fallback on a legal source actor.
 -- An unknown combat definition has no constructor geometry to render.
-local cultistImage=Theme.icon.enemy.cultist
-Theme.icon.enemy.cultist=nil
+local raven_adeptImage=Theme.icon.enemy.raven_adept
+Theme.icon.enemy.raven_adept=nil
 for _,tier in ipairs({'normal','elite','boss'})do
-    local battle=C.new(H.F.Data,{deck={'defend'},enemies={'cultist'}})
+    local battle=C.new(H.F.Data,{deck={'defend'},enemies={'raven_adept'}})
     battle.enemies[1].tier=tier
     host.run.combat=battle;host:refresh()
     assert(monsterControl(panel,'enemy1'):GetChild('portrait').imageId==Theme.icon.node[tier=='normal' and 'combat' or tier],tier..' fallback')
 end
-Theme.icon.enemy.cultist=cultistImage
+Theme.icon.enemy.raven_adept=raven_adeptImage
 assert(Theme.icon.enemy.verify==true,'device verification remains pending')
 print('LUA_NATIVE_ENEMY_PORTRAITS_PASS 42 + summons + unknown fallbacks')

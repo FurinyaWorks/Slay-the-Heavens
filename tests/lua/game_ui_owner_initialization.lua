@@ -36,7 +36,7 @@ assert(a.data.cards.cards~=b.data.cards.cards and a.data.rules~=b.data.rules)
 a.data.rules.player.maxHp=99;assert(data.rules.player.maxHp==91 and b.data.rules.player.maxHp==91)
 local function strike(bundle)for _,card in ipairs(bundle.cards.cards)do if card.id=='strike'then return card end end end
 strike(a.data).effects[1].value=17;assert(strike(data).effects[1].value==6 and strike(b.data).effects[1].value==6)
-assert(Run.startCombat(a,'cultist_solo'));assert(Run.startCombat(b,'cultist_solo'))
+assert(Run.startCombat(a,'raven_adept_solo'));assert(Run.startCombat(b,'raven_adept_solo'))
 assert(a.combat~=b.combat and a.combat.player~=b.combat.player and a.combat.catalog.cards.strike~=b.combat.catalog.cards.strike)
 a.combat.player.hp=1;assert(b.combat.player.hp==91 and data.rules.player.maxHp==91)
 a.combat.catalog.cards.strike.effects[1].value=23;assert(b.combat.catalog.cards.strike.effects[1].value==6 and strike(data).effects[1].value==6)

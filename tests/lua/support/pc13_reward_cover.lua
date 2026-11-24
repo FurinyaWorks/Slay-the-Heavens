@@ -24,7 +24,7 @@ local veil=cover:GetChild('veil')
 local function tick()host:update(1/60);host.pageReveal:step(Gate.intent(host));host:refresh()end
 local function settle()for _=1,4 do tick()end;assert(not cover.visible)end
 settle();assert(host:start());settle();assert(F.confirmStart(host));settle()
-assert(Run.startCombat(host.run,'cultist_solo'));host:refresh();settle()
+assert(Run.startCombat(host.run,'raven_adept_solo'));host:refresh();settle()
 local run,oldCombat=host.run,host.run.combat
 -- Stage the map phase without publishing it, then let the real Run command
 -- create the next battle. The ready Host still owns the old page until refresh.

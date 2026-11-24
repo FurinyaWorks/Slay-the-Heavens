@@ -12,7 +12,7 @@ end
 local function setup(begin,confirm,base,cardId)
  local deck={};for i=1,30 do deck[i]=cardId or 'defend'end
  local data=cardId and require('abyss_warrior_cards').withFoundationCards(F.Data) or F.Data
- local battle=Combat.new(data,{deck=deck,enemies={'cultist'},seed=42,enableStances=true})
+ local battle=Combat.new(data,{deck=deck,enemies={'raven_adept'},seed=42,enableStances=true})
  local run={phase='combat',combat=battle,combatGeneration=7}
  begin(battle)
  local root=F.control(assert(spec))

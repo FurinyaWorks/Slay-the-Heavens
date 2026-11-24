@@ -6,7 +6,7 @@ for _,kind in ipairs({'ironclad','silent','defect','watcher','hutao'})do
  assert(eligible,kind..' must have a real upgradeable starter Attack')
  local rng=F.C.copy(r.cardRng);local ok,uid=F.Run.obtainCard(r,eligible);assert(ok,uid)
  F.eq(r.deck[#r.deck].upgraded,true);F.eq(r.deck[#r.deck].upgrades,1);F.same(r.cardRng,rng)
- assert(F.Run.startCombat(r,'cultist_solo'));local found
+ assert(F.Run.startCombat(r,'raven_adept_solo'));local found
  for _,pile in ipairs({r.combat.hand,r.combat.draw,r.combat.discard})do for _,c in ipairs(pile)do if c.deckUid==uid then found=c end end end
  assert(found and found.upgraded);F.eq(found.upgrades,1)
  if kind=='watcher'then
@@ -21,7 +21,7 @@ end
 do
  local r=F.Run.new(F.D,42,{character='silent',experimental=true})
  r.deck={{uid=1,cardId='blade_dance',upgraded=false}}
- assert(F.Run.obtainRelic(r,'Molten Egg 2'));assert(F.Run.startCombat(r,'cultist_solo'))
+ assert(F.Run.obtainRelic(r,'Molten Egg 2'));assert(F.Run.startCombat(r,'raven_adept_solo'))
  assert(F.Run.play(r,r.combat.hand[1].uid));F.eq(#r.combat.hand,3)
  for _,c in ipairs(r.combat.hand)do F.eq(c.cardId,'shiv');assert(not c.upgraded and not c.deckUid);assert(F.C.canUpgrade(r.combat,c))end
 end

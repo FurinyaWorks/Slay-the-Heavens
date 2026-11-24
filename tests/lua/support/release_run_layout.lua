@@ -168,7 +168,7 @@ else
     for _,mobile in ipairs({true,false})do
         local host,_,picture=H.create(mobile)
         local limit=mobile and picture.at(relic..'slot1/hit')
-        assert(Run.startCombat(host.run,'cultist_solo'))
+        assert(Run.startCombat(host.run,'raven_adept_solo'))
         host:refresh();host:update(1)
         for _,enemy in ipairs(host.run.combat.enemies)do enemy.hp=0 end
         host.run.combat.phase='victory';assert(Run.finishCombat(host.run));host:refresh()

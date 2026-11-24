@@ -1,6 +1,6 @@
 -- Independent sts@319009d5 constructor facts. Do not call the UI geometry owner.
 local facts={
- cultist={0,-10,0,0,-8,10,230,240},gremlin_nob={0,0,0,0,-70,-10,270,380},
+ raven_adept={0,-10,0,0,-8,10,230,240},gremlin_nob={0,0,0,0,-70,-10,270,380},
  guardian={-50,-100,0,0,0,95,440,350},automaton={-50,20,0,0,0,-30,270,400},
  bronze_orb={0,0,0,0,0,0,160,160},collector={60,135,0,0,15,-40,300,390},
  torch_head={0,0,0,0,-5,-20,145,240},awakened_one={100,15,0,0,40,-30,460,250},

@@ -10,7 +10,7 @@ local function eq(a,b) assert(a==b,tostring(a).." ~= "..tostring(b)) end
 local function test(name,fn) fn();count=count+1;print("ok watcher_retain_build "..count.." - "..name) end
 local function prepared() return Retained.withCards(Watcher.withFoundationCards(Data)) end
 local function battle(id,up)
-    local s=Combat.new(prepared(),{seed=42,enemies={"cultist"},enableStances=true,deck={{cardId=id,upgraded=up}}})
+    local s=Combat.new(prepared(),{seed=42,enemies={"raven_adept"},enableStances=true,deck={{cardId=id,upgraded=up}}})
     s.enemies[1].hp=1000;s.enemies[1].maxHp=1000
     return s,s.hand[1]
 end
@@ -20,7 +20,7 @@ local function adapted(s,instance)
     return Retained.adaptDefinition(s,instance,card)
 end
 local function composite(deck)
-    local s=Combat.new(WarriorExhaust.withCards(prepared()),{seed=42,enemies={"cultist"},enableStances=true,deck=deck})
+    local s=Combat.new(WarriorExhaust.withCards(prepared()),{seed=42,enemies={"raven_adept"},enableStances=true,deck=deck})
     s.enemies[1].hp=1000;s.enemies[1].maxHp=1000
     return s
 end
@@ -171,7 +171,7 @@ test("real endTurn reduces Sands cost then shared play pays that cost",function(
     eq(s.enemies[1].hp,980)
 end)
 test("real retained growth and delayed cost reduction finish before enemy actions",function()
-    local s=Combat.new(prepared(),{seed=42,enemies={"cultist"},enableStances=true,deck={"windmill_strike","sands_of_time"}})
+    local s=Combat.new(prepared(),{seed=42,enemies={"raven_adept"},enableStances=true,deck={"windmill_strike","sands_of_time"}})
     local wind,sands
     for _,c in ipairs(s.hand) do if c.cardId=="windmill_strike" then wind=c else sands=c end end
     assert(Combat.endTurn(s))
@@ -191,7 +191,7 @@ test("real retained growth and delayed cost reduction finish before enemy action
 end)
 test("real retain occupies all ten slots and stops the next draw",function()
     local deck={};for i=1,11 do deck[i]="protect" end
-    local s=Combat.new(prepared(),{seed=42,enemies={"cultist"},enableStances=true,deck=deck})
+    local s=Combat.new(prepared(),{seed=42,enemies={"raven_adept"},enableStances=true,deck=deck})
     assert(Combat.endTurn(s));eq(#s.hand,10);eq(#s.draw,1)
     local refs={};for _,card in ipairs(s.hand) do refs[card.uid]=card end
     assert(Combat.endTurn(s));eq(#s.hand,10);eq(#s.draw,1)
@@ -199,7 +199,7 @@ test("real retain occupies all ten slots and stops the next draw",function()
     eq(#s.discard,0);eq(#s.exhaust,0)
 end)
 test("late retain growth failure rolls back earlier retained instances and complete end turn",function()
-    local s=Combat.new(prepared(),{seed=42,enemies={"cultist"},enableStances=true,deck={"perseverance","windmill_strike"}})
+    local s=Combat.new(prepared(),{seed=42,enemies={"raven_adept"},enableStances=true,deck={"perseverance","windmill_strike"}})
     local first,second
     for _,c in ipairs(s.hand) do if c.cardId=="perseverance" then first=c else second=c end end
     -- Preserve actual instances, arrange deterministic callback order. Both

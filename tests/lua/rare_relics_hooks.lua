@@ -4,7 +4,7 @@ local A=require('abyss_actor')
 local S=require('abyss_sts_random')
 local data=require('abyss_data')
 local function battle(relics)
- local s=C.new(data,{seed=19,deck={'strike','defend'},enemies={'cultist'},hp=40})
+ local s=C.new(data,{seed=19,deck={'strike','defend'},enemies={'raven_adept'},hp=40})
  s.relics=relics;s.relicCounters={};R.bindBattle(s)
  return s
 end
@@ -50,13 +50,13 @@ R.atTurnStart(s);assert(R.onRefreshHand(s,true));s.cardActions={}
 s.player.noDraw=true;assert(not R.onRefreshHand(s,true));s.player.noDraw=false
 R.disableTop(s);assert(not R.onRefreshHand(s,true));R.atTurnStart(s);assert(R.onRefreshHand(s,true))
 R.onPlayerEndTurn(s);assert(not R.onRefreshHand(s,true))
-s=battle({'gambling_chip'});s.cardActions={};s.phase='player'
+s=battle({'tactical_badge'});s.cardActions={};s.phase='player'
 s.hand={{uid=90,cardId='strike',upgraded=false},{uid=91,cardId='defend',upgraded=false}}
 s.draw={{uid=92,cardId='strike',upgraded=false}};s.discard={}
 R.postDraw(s);flush(s);local token=s.pendingChoice.token
-assert(not R.chooseGambling(C,s,{90,90},token));assert(#s.hand==2)
-assert(R.chooseGambling(C,s,{90},token));flush(s);assert(#s.hand==2 and s.discard[1].uid==90)
-assert(not R.chooseGambling(C,s,{},token))
+assert(not R.chooseTacticalExchange(C,s,{90,90},token));assert(#s.hand==2)
+assert(R.chooseTacticalExchange(C,s,{90},token));flush(s);assert(#s.hand==2 and s.discard[1].uid==90)
+assert(not R.chooseTacticalExchange(C,s,{},token))
 s.cardActions={};R.postDraw(s);assert(#s.cardActions==0)
 local run={relics={'Girya','WingedGreaves','Du-Vu Doll','Prayer Wheel','Shovel','Peace Pipe'},
  data={cards={cards={{id='curse',type='curse'},{id='attack',type='attack'}}}},deck={{cardId='curse'},{cardId='attack'}}}

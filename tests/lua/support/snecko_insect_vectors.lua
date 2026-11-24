@@ -20,7 +20,7 @@ function M.snecko(sample,deck)
   local before=R.snapshot(owner);local value=raw(owner,maximum,...)
   trace[#trace+1]={maximum=maximum,value=value,before=before,after=R.snapshot(owner)};return value
  end
- assert(Run.startCombat(run,'cultist_solo'));local s=run.combat
+ assert(Run.startCombat(run,'raven_adept_solo'));local s=run.combat
  assert(#s.hand==7 and s.player.statuses.confusion==1)
  local function check(step,start)
   same(R.snapshot(s.cardRandomRng),step.after,step.phase..' full stream')
@@ -45,13 +45,13 @@ end
 function M.insect(samples)
  for _,e in ipairs(samples)do
   local d=C.copy(D)
-  for _,enemy in ipairs(d.enemies.enemies)do if enemy.id=='cultist'then enemy.hp=e.maximum;enemy.hpRange=nil end end
-  for _,encounter in ipairs(d.enemies.encounters)do if encounter.id=='cultist_solo'then
+  for _,enemy in ipairs(d.enemies.enemies)do if enemy.id=='raven_adept'then enemy.hp=e.maximum;enemy.hpRange=nil end end
+  for _,encounter in ipairs(d.enemies.encounters)do if encounter.id=='raven_adept_solo'then
    encounter.tier=e.tier;encounter.eliteTrigger=e.eliteTrigger;encounter.minFloor=1
   end end
   local run=Run.new(d,'42',{experimental=true,character='ironclad'})
   if e.neow then assert(Run.obtainRelic(run,'neows_lament'))end
-  assert(Run.obtainRelic(run,'preserved_insect'));assert(Run.startCombat(run,'cultist_solo'))
+  assert(Run.obtainRelic(run,'preserved_insect'));assert(Run.startCombat(run,'raven_adept_solo'))
   local enemy=run.combat.enemies[1]
   assert(enemy.hp==e.hp,'source binary32 HP '..e.maximum..' '..e.tier..': '..enemy.hp..' ~= '..e.hp)
   assert(enemy.maxHp==e.maximum,'Insect must preserve max HP')

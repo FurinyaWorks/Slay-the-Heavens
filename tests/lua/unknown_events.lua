@@ -88,8 +88,8 @@ test('Golden Wing requires single hit base damage ten; sacrifice is a committed 
     for _,c in ipairs(run.deck) do c.cardId=data.cards.starter_deck.cards[1];c.upgraded=false end
     assert(Nodes.enter(run,map,id));local before=C.copy(run)
     assert(not Nodes.chooseEvent(run,'take_gold'));same(before,run)
-    local hp=run.hp;assert(Nodes.chooseEvent(run,'sacrifice'));assert(run.hp==hp-7 and not run.nodeFlow.complete)
-    assert(not Nodes.chooseEvent(run,'sacrifice'));local uid=run.deck[1].uid
+    local hp=run.hp;assert(Nodes.chooseEvent(run,'endure_damage'));assert(run.hp==hp-7 and not run.nodeFlow.complete)
+    assert(not Nodes.chooseEvent(run,'endure_damage'));local uid=run.deck[1].uid
     assert(Nodes.chooseEvent(run,'purge',uid));assert(#run.deck==#before.deck-1)
 end)
 test('floor14 unknown combat has eligible ordinary encounters and can finish with normal rewards',function()

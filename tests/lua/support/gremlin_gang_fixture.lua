@@ -21,7 +21,7 @@ local function sameRunCombat(run,expected)
  eq(expected.combatGeneration,nil,'standalone Core generation')
  local reference=C.copy(expected)
  reference.combatGeneration=generation
- reference.rareRelicCombat={firstPocketTurn=true,gamblingActivated=false,topCanDraw=true,topDisabled=false}
+ reference.rareRelicCombat={firstPocketTurn=true,tacticalBadgeActivated=false,topCanDraw=true,topDisabled=false}
  reference.shopRelicCombat={pellets={}}
  same(run.combat,reference)
 end

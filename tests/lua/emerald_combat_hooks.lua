@@ -5,9 +5,9 @@ local count=0
 local function test(name,fn)fn();count=count+1;print('PASS emerald combat '..count..' '..name)end
 test('constructor applies each source boost after preBattle and before opening draw callbacks',function()
  for roll=0,3 do
-  local plain=assert(C.new(D,{seed=42,enemies={'cultist','cultist'}}))
+  local plain=assert(C.new(D,{seed=42,enemies={'raven_adept','raven_adept'}}))
   local observed=false
-  local s=assert(C.new(D,{seed=42,enemies={'cultist','cultist'},emeraldBoost=boost(roll),beforeFirstTurn=function(state)
+  local s=assert(C.new(D,{seed=42,enemies={'raven_adept','raven_adept'},emeraldBoost=boost(roll),beforeFirstTurn=function(state)
    observed=true
    for i,e in ipairs(state.enemies)do
     if roll==0 then assert(e.statuses.strength==2)
@@ -23,7 +23,7 @@ test('constructor applies each source boost after preBattle and before opening d
  end
 end)
 test('ordinary monster Regen heals at group end without decay or player Mark interference',function()
- local s=assert(C.new(D,{seed=42,enemies={'cultist'},emeraldBoost=boost(3)}))
+ local s=assert(C.new(D,{seed=42,enemies={'raven_adept'},emeraldBoost=boost(3)}))
  s.relics={'mark_of_bloom'};local e=s.enemies[1];e.hp=e.maxHp-5
  assert(C.endTurn(s));assert(e.hp==e.maxHp-2 and e.statuses.regenerate_monster==3)
 end)
@@ -34,7 +34,7 @@ test('Awakened native Regen plus elite boost is resolved once',function()
 end)
 test('generic Regen retains its source owner-end order before later Shackled',function()
  local A=require('abyss_actor')
- local s=assert(C.new(D,{seed=42,enemies={'cultist'},emeraldBoost=boost(3)}))
+ local s=assert(C.new(D,{seed=42,enemies={'raven_adept'},emeraldBoost=boost(3)}))
  local e=s.enemies[1];e.hp=e.maxHp-5
  assert(A.applyPower(s,e,'strength',-2,s.player));assert(A.applyPower(s,e,'shackled',2,s.player))
  local first=#s.events;assert(C.endTurn(s))
@@ -48,9 +48,9 @@ test('generic Regen retains its source owner-end order before later Shackled',fu
 end)
 test('invalid or failed construction rejects without publishing a battle',function()
  local bad=boost(3);bad.act=4
- local called,result=pcall(C.new,D,{seed=42,enemies={'cultist'},emeraldBoost=bad})
+ local called,result=pcall(C.new,D,{seed=42,enemies={'raven_adept'},emeraldBoost=bad})
  assert(not called or result==nil)
- local accepted,why=C.new(D,{seed=42,enemies={'cultist'},emeraldBoost=boost(3),beforeFirstTurn=function()return false,'late_setup_fault'end})
+ local accepted,why=C.new(D,{seed=42,enemies={'raven_adept'},emeraldBoost=boost(3),beforeFirstTurn=function()return false,'late_setup_fault'end})
  assert(accepted==nil and why=='late_setup_fault')
 end)
 print('EMERALD_COMBAT_HOOKS_PASS '..count..' real constructor/end-turn; controlled boost, not natural key acceptance')

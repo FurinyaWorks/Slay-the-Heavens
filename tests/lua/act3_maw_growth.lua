@@ -86,7 +86,7 @@ test('Maw odd counters floor the real Nom hit count and stop normal hits after l
   local hp=s.player.hp;assert(C.endTurn(s));eq(s.player.hp,hp-times*5)
  end
  for _,allies in ipairs({false,true})do
-  local s=battle(allies and {'maw','cultist'}or {'maw'});local e=s.enemies[1]
+  local s=battle(allies and {'maw','raven_adept'}or {'maw'});local e=s.enemies[1]
   e.mawRoared=true;e.mawTurn=5;e.act3Last='drool';AI.advance(s,e,primary(49))
   A.applyPower(s,s.player,'thorns',999,s.player)
   local hp,ai=s.player.hp,s.aiRng.counter;assert(C.endTurn(s));eq(e.hp,0);eq(s.player.hp,hp-5)
@@ -122,7 +122,7 @@ test('Constricted respects Artifact and stacked Power retains its first real sou
  eq(first.sourceId,'Serpent');assert(first~=second and first.id~=second.id)
 end)
 test('dead source with a living teammate still owns the retained Constricted THORNS hit',function()
- local s=battle({'spire_growth','cultist'});local source=s.enemies[1]
+ local s=battle({'spire_growth','raven_adept'});local source=s.enemies[1]
  assert(bind(s,source));C.damage(s,s.player,source,170,true);eq(source.hp,0)
  eq(s.player.statuses.constricted,10);eq(s.constrictedSource,source)
  local hp,from=s.player.hp,#s.events+1;assert(C.endTurn(s));eq(s.player.hp,hp-10)
@@ -279,7 +279,7 @@ test('real Host reads Maw Roar and Growth Constricted source without mutating ru
 end)
 test('owner-end extension captures the real dead-capable actor and rejects a same-ID clone',function()
  local powers=require('abyss_act3_powers');assert(powers.ownerEndIds.constricted)
- local s=battle({'spire_growth','cultist'});assert(bind(s));local source=s.enemies[1]
+ local s=battle({'spire_growth','raven_adept'});assert(bind(s));local source=s.enemies[1]
  local plan=powers.ownerEndPlan(s,'constricted',10);eq(#plan.bottom,1)
  eq(plan.bottom[1].op,'ownerEndThorns');eq(plan.bottom[1].source,source);eq(plan.bottom[1].value,10)
  C.damage(s,s.player,source,170,true)

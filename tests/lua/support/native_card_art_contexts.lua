@@ -28,7 +28,7 @@ local function root()
  return Native.decorate(r)
 end
 local run=Run.new(F.Data,42);run.deck={{uid=91,cardId='cleave',upgraded=true}}
-assert(Run.startCombat(run,'cultist_solo'))
+assert(Run.startCombat(run,'raven_adept_solo'))
 local BattleUI=require('abyss_battle_ui')
 local r=root();local battle=BattleUI.new(r:GetChild('battlePanel'),run.data,F.Presentation,'click',platform,{embedded=true})
 battle.run=run;battle:render()

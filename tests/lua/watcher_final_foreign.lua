@@ -11,7 +11,7 @@ local function combined()
  return d
 end
 for _,up in ipairs({false,true})do
- local s=C.new(combined(),{seed=1,cardRandomSeed='1',cardSeed='1',shuffleSeed='1',enableStances=true,deck={{cardId='foreign_influence',upgraded=up}},enemies={'cultist'}})
+ local s=C.new(combined(),{seed=1,cardRandomSeed='1',cardSeed='1',shuffleSeed='1',enableStances=true,deck={{cardId='foreign_influence',upgraded=up}},enemies={'raven_adept'}})
  local before=s.nextUid;assert(C.play(s,s.hand[1].uid));local p=assert(s.pendingChoice)
  -- Independent Python64 oracle supplied from fixed source, not this helper.
  local expected={'melter','immolate','compile_driver'}
@@ -22,11 +22,11 @@ for _,up in ipairs({false,true})do
  -- Foreign retrieval does not regenerate Discovery's unused second group.
  eq(R.snapshot(s.cardRandomRng).counter,6);eq(R.snapshot(s.cardRng).counter,3)
 end
-local missing=C.new(P.prepare(D,'watcher'),{seed=1,cardRandomSeed='1',cardSeed='1',shuffleSeed='1',enableStances=true,deck={'foreign_influence'},enemies={'cultist'}})
+local missing=C.new(P.prepare(D,'watcher'),{seed=1,cardRandomSeed='1',cardSeed='1',shuffleSeed='1',enableStances=true,deck={'foreign_influence'},enemies={'raven_adept'}})
 local original=missing.hand[1];local energy,nextUid=missing.energy,missing.nextUid
 local ok,why=pcall(C.play,missing,original.uid);eq(ok,false);assert(tostring(why):find('missing Foreign Influence definition: Melter',1,true))
 eq(missing.hand[1],original);eq(missing.energy,energy);eq(missing.nextUid,nextUid);eq(R.snapshot(missing.cardRandomRng).counter,0);eq(R.snapshot(missing.cardRng).counter,0)
-local r=Run.new(D,1);r.deck={{uid=31,cardId='defend'}};r.relics={};assert(Run.startCombat(r,'cultist_solo'))
+local r=Run.new(D,1);r.deck={{uid=31,cardId='defend'}};r.relics={};assert(Run.startCombat(r,'raven_adept_solo'))
 local old=r.cardRng.counter;R.randomInt(r.combat.cardRng,0);assert(not Run.play(r,999));eq(r.cardRng.counter,old)
 assert(Run.play(r,r.combat.hand[1].uid));eq(r.cardRng.counter,old+1);assert(r.cardRng~=r.combat.cardRng)
 print('WATCHER_FINAL_FOREIGN fixed independent choices/counters, two versions, missing-definition rollback and persistent boundary passed')

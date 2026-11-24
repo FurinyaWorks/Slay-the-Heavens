@@ -1,7 +1,7 @@
 local H = dofile('tests/lua/support/potion_gesture_fixture.lua')
 local test, finish = H.suite('LUA_POTION_TARGET_INPUT_OWNERSHIP')
 local function setup()
-    local h,u,p,e,t,d,deck,r,emit,tap = H.setup({'bash','defend'}, {'cultist','jaw_worm'})
+    local h,u,p,e,t,d,deck,r,emit,tap = H.setup({'bash','defend'}, {'raven_adept','jaw_worm'})
     assert(H.Run.discardPotion(h.run, 1))
     assert(H.Run.obtainPotion(h.run, 'fire_potion'))
     h:refresh()

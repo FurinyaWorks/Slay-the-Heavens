@@ -78,7 +78,7 @@ local ui,liveRoot=F.fixture(nil,nil,nil,cursor)
 assert(F.start(ui,'raiden'))
 local run=ui.run
 local presentation=Presentation.prepare(F.Presentation,run.data)
-assert(Run.startCombat(run,'cultist_solo'))
+assert(Run.startCombat(run,'raven_adept_solo'))
 ui:refresh()
 for _,enemy in ipairs(run.combat.enemies)do enemy.hp=0 end
 assert(Run.finishCombat(run))
@@ -121,7 +121,7 @@ do
  local host,view,panel,emit=H.setup()
  local live=Run.new(F.Data,1,{character='raiden'})
  live.deck={{uid=1,cardId='RD2-001'}}
- assert(Run.startCombat(live,'cultist_solo'))
+ assert(Run.startCombat(live,'raven_adept_solo'))
  host.run=live;view.run=live;view:setData(live.data,Presentation.prepare(F.Presentation,live.data));host:refresh()
  local enemy=monsterControl(panel,'enemy1')
  emit('card1','down',81);emit('card1','drag',81,enemy.x,enemy.y)

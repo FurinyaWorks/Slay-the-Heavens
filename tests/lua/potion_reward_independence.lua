@@ -2,7 +2,7 @@ package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local Run,C,Data=require('abyss_run'),require('abyss_combat'),require('abyss_data')
 local function won()
     local run=Run.new(Data,42)
-    assert(Run.startCombat(run,'cultist_solo'))
+    assert(Run.startCombat(run,'raven_adept_solo'))
     for _,enemy in ipairs(run.combat.enemies) do enemy.hp=0 end
     assert(Run.finishCombat(run));assert(run.rewards.potion)
     return run

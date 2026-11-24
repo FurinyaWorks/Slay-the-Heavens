@@ -44,7 +44,7 @@ test('three separate attacks use each hit block and actual retaliation cancellat
  local s=H.battle();local e=H.force(s,'fire');s.player.block=8
  local hp=s.player.hp;assert(C.endTurn(s));eq(s.player.hp,hp-10);eq(e.statuses.nemesis_intangible,1)
  for _,ally in ipairs({false,true})do
-  s=H.battle('1',{},ally and {'nemesis','cultist'}or nil);e=H.force(s,'fire')
+  s=H.battle('1',{},ally and {'nemesis','raven_adept'}or nil);e=H.force(s,'fire')
   A.applyPower(s,s.player,'thorns',999,s.player)
   hp=s.player.hp;local ai=s.aiRng.counter;assert(C.endTurn(s));eq(e.hp,0);eq(s.player.hp,hp-6)
   eq(e.statuses.nemesis_intangible,nil);eq(s.aiRng.counter,ai+(ally and 3 or 0))

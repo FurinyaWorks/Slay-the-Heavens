@@ -37,7 +37,7 @@ end)
 test('discard is independent of combat use legality and does not execute an effect',function()
     for _,phase in ipairs({'map','node','reward','combat'}) do
         local run=belt()
-        if phase=='combat' then assert(Run.startCombat(run,'cultist_solo'));run.combat.phase='enemy' end
+        if phase=='combat' then assert(Run.startCombat(run,'raven_adept_solo'));run.combat.phase='enemy' end
         run.phase=phase
         local before=Combat.copy(run)
         assert(Run.discardPotion(run,1));before.potions[1]=nil
@@ -56,7 +56,7 @@ test('invalid empty and unknown slots reject without changing inventory or rando
 end)
 
 test('full reward belt can discard an old bottle then claim into the same vacancy once',function()
-    local run=belt();assert(Run.startCombat(run,'cultist_solo'))
+    local run=belt();assert(Run.startCombat(run,'raven_adept_solo'))
     -- Completed-battle fixture isolates the reward/discard transaction; it is
     -- not evidence of a normal-data victory or a full-run playthrough.
     for _,enemy in ipairs(run.combat.enemies) do enemy.hp=0 end

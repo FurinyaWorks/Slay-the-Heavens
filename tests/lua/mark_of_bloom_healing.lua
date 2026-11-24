@@ -17,7 +17,7 @@ local function room(id,extra)
  return {hp=20,maxHp=80,gold=0,relics=ids,relicCounters={}}
 end
 local function state(id)
- local s=C.new(Data,{hp=20,maxHp=80,deck={'strike'},enemies={'cultist'}})
+ local s=C.new(Data,{hp=20,maxHp=80,deck={'strike'},enemies={'raven_adept'}})
  H.bindBattle(s,owned(id),{});return s
 end
 for _,id in ipairs({'none','mark_of_bloom','Mark of the Bloom'})do

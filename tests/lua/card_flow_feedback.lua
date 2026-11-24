@@ -38,7 +38,7 @@ local function test(id,destination)
  local stage,platform,bind=nativeStage()
  local completions=0
  local feedback=Feedback.new(stage,platform,function()end,function(failure)assert(not failure,tostring(failure));completions=completions+1 end)
- local battle=Combat.new(Data,{deck={id},enemies={'cultist'},seed=11})
+ local battle=Combat.new(Data,{deck={id},enemies={'raven_adept'},seed=11})
  bind(battle)
  local before,first=Events.frame(battle),#battle.events+1
  local uid=battle.hand[1].uid
@@ -78,7 +78,7 @@ test('inflame','power')
 -- A normal owner turn discards every old hand UID before the shuffle brings them back.
 local stage,platform,bind=nativeStage()
 local feedback=Feedback.new(stage,platform,function()end,function(failure)assert(not failure,tostring(failure))end)
-local battle=Combat.new(Data,{deck={'strike','defend','strike','defend','strike'},enemies={'cultist'},seed=11})
+local battle=Combat.new(Data,{deck={'strike','defend','strike','defend','strike'},enemies={'raven_adept'},seed=11})
 bind(battle)
 local before,first=Events.frame(battle),#battle.events+1
 assert(Combat.endTurn(battle))

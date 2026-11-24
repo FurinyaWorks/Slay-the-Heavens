@@ -39,7 +39,7 @@ test('unupgraded source constructor count remains count-only without Egg, normal
  assert(Run.obtainRelic(r,'Molten Egg 2'));local before=C.copy(r.deck)
  H.onPreviewObtainCard(r,c,F.definition(r,c.cardId));F.same(r.deck,before)
  -- Real play resolves constructor-copy baseDamage, not ordinary count2 damage21.
- local state=C.new(r.data,{seed=42,deck={{uid=99,cardId='searing_blow',upgraded=true,upgrades=2,searingBlowCopyUpgrades=1}},enemies={'cultist'}})
+ local state=C.new(r.data,{seed=42,deck={{uid=99,cardId='searing_blow',upgraded=true,upgrades=2,searingBlowCopyUpgrades=1}},enemies={'raven_adept'}})
  local card=state.hand[1];local hp=state.enemies[1].hp;assert(C.play(state,card.uid,1));F.eq(state.enemies[1].hp,hp-17)
 end)
 test('invalid constructor states reject before publication through prepare/commit and Combat initialization',function()
@@ -51,7 +51,7 @@ test('invalid constructor states reject before publication through prepare/commi
   local ok=Run.obtainCard(r,spec[1],options);F.eq(ok,false);F.same(r,before)
   local offer={cardId=spec[1],searingBlowCopyUpgrades=spec[2],upgrades=spec[3],upgraded=spec[4]}
   F.eq(Run.commitCard(r,offer),false);F.same(r,before)
-  local built=pcall(C.new,r.data,{seed=42,deck={offer},enemies={'cultist'}});F.eq(built,false)
+  local built=pcall(C.new,r.data,{seed=42,deck={offer},enemies={'raven_adept'}});F.eq(built,false)
  end
 end)
 test('late hook failure restores constructor state offers UID gold and source streams for a real retry',function()

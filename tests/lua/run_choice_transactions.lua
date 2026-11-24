@@ -31,7 +31,7 @@ local function fresh(kind,fairy)
  local run=Run.new(D,42,{experimental=true,character='watcher'})
  if kind=='pile'then assert(Run.obtainRelic(run,'lizard_tail'))end
  assert(Run.obtainPotion(run,fairy and 'fairy_in_a_bottle'or 'block_potion'));assert(Run.obtainPotion(run,'fire_potion'))
- assert(Run.startCombat(run,'cultist_solo'))
+ assert(Run.startCombat(run,'raven_adept_solo'))
  run.maxHp,run.hp=fairy and 3 or 7,1
  local s=C.new(run.data,{seed=42,enemies={'corrupt_heart'},deck={},hp=1,maxHp=run.maxHp,enableStances=true,
   beforeOpeningDraw=function(state)Hooks.bindBattle(state,run.relics,run.relicCounters);return true end})

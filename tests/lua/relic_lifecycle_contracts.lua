@@ -1,6 +1,6 @@
 local F=dofile('tests/helpers/relic-lifecycle-baseline-support.lua')
 do
- local s=F.C.new(F.D,{seed=42,deck={'defend'},enemies={'cultist'}})
+ local s=F.C.new(F.D,{seed=42,deck={'defend'},enemies={'raven_adept'}})
  F.hooks.bindBattle(s,{'orichalcum'});local root=F.root(s)
  F.call(root,'public owner-end hook exact fixed block',F.hooks.onPlayerEndTurn,s)
  F.eq(s.player.block,6,'Orichalcum public hook')

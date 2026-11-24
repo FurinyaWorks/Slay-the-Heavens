@@ -24,7 +24,7 @@ local function test(name,fn)
 end
 local function setup(pointer)
     local host,root=F.fixture(nil,nil,nil,pointer and cursor or nil)
-    assert(testStart(host));assert(Run.startCombat(host.run,'cultist_solo'))
+    assert(testStart(host));assert(Run.startCombat(host.run,'raven_adept_solo'))
     -- These are explicitly staged reward offers for API/UI ownership tests.
     -- They are not a natural elite win or an oracle for elite drop probabilities.
     host.run.phase='reward'

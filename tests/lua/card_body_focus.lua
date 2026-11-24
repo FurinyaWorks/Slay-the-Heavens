@@ -1,6 +1,6 @@
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
 local D=require('abyss_card_display')
-local h,u,p,event,_,_,_,root=H.setup({'defend','strike'},{'cultist'},{touchScreen=function()return true end})
+local h,u,p,event,_,_,_,root=H.setup({'defend','strike'},{'raven_adept'},{touchScreen=function()return true end})
 h:resize(2556,1179)
 local battle=h.run.combat
 local instance=battle.hand[1]
@@ -52,7 +52,7 @@ battle.turn=battle.turn+1;h:update(.05)
 assert(not h.deckUI.visible and not u.info,'old turn retained the full card')
 event('card1','click',73)
 assert(battle.energy==before.energy and #battle.hand==#before.hand and u.selected==nil)
-local desktop,ui,desktopPanel,mouse=H.setup({'strike'},{'cultist'},
+local desktop,ui,desktopPanel,mouse=H.setup({'strike'},{'raven_adept'},
     {keyEvents={KeyboardSprintKeyDown='right'}})
 local display=ui.presentation.strike
 display.text,display.combatText=complete,complete

@@ -6,7 +6,7 @@ local count = 0
 local function eq(a,b,label) assert(a==b,(label or "value")..": expected "..tostring(b)..", got "..tostring(a)) end
 local function test(name,fn) fn(); count=count+1; print("ok "..count.." - "..name) end
 local function battle(enemies,seed)
- return Combat.new(data,{enemies=enemies or {"cultist"},deck={"defend"},seed=seed or 42})
+ return Combat.new(data,{enemies=enemies or {"raven_adept"},deck={"defend"},seed=seed or 42})
 end
 
 test("opening intent grants Ritual rather than immediate Strength or an attack",function()
@@ -27,7 +27,7 @@ test("source-derived five action trajectory is 0,6,9,12,15",function()
 end)
 
 test("Ritual grows only after all living enemies finish",function()
- local s=battle({"cultist","jaw_worm"}); local e=s.enemies[1]
+ local s=battle({"raven_adept","jaw_worm"}); local e=s.enemies[1]
  assert(Combat.endTurn(s)); s.events={}; assert(Combat.endTurn(s))
  local lastIntent,growth=0,nil
  for i,event in ipairs(s.events) do
@@ -37,8 +37,8 @@ test("Ritual grows only after all living enemies finish",function()
  assert(growth and growth>lastIntent,"Ritual must follow the teammate's action")
 end)
 
-test("multiple Cultists have independent first-round suppression",function()
- local s=battle({"cultist","cultist"}); assert(Combat.endTurn(s))
+test("multiple Raven Adepts have independent first-round suppression",function()
+ local s=battle({"raven_adept","raven_adept"}); assert(Combat.endTurn(s))
  eq(s.enemies[1].statuses.strength or 0,0); eq(s.enemies[2].statuses.strength or 0,0)
  assert(Combat.endTurn(s)); eq(s.player.hp,68)
  eq(s.enemies[1].statuses.strength,3); eq(s.enemies[2].statuses.strength,3)
@@ -46,12 +46,12 @@ test("multiple Cultists have independent first-round suppression",function()
 end)
 
 test("lethal poison prevents opening Ritual",function()
- local s=battle({"cultist","jaw_worm"}); local e=s.enemies[1]; e.hp=1
+ local s=battle({"raven_adept","jaw_worm"}); local e=s.enemies[1]; e.hp=1
  Combat.addStatus(e,"poison",1); assert(Combat.endTurn(s)); eq(e.hp,0); eq(e.statuses.ritual,nil)
 end)
 
 test("lethal Thorns prevents round-end growth while a teammate survives",function()
- local s=battle({"cultist","jaw_worm"}); local e=s.enemies[1]
+ local s=battle({"raven_adept","jaw_worm"}); local e=s.enemies[1]
  assert(Combat.endTurn(s)); e.hp=1; Combat.addStatus(s.player,"thorns",1)
  assert(Combat.endTurn(s)); eq(e.hp,0); eq(e.statuses.strength or 0,0)
  eq(s.phase,"player"); eq(s.enemies[2].hp>0,true)
@@ -76,7 +76,7 @@ test("sampled HP endpoints and maxHp are inclusive and reproducible",function()
 end)
 
 test("failed card restores Ritual and phase bookkeeping atomically",function()
- local s=Combat.new(data,{enemies={"cultist"},deck={"strike"},seed=42}); assert(Combat.endTurn(s))
+ local s=Combat.new(data,{enemies={"raven_adept"},deck={"strike"},seed=42}); assert(Combat.endTurn(s))
  local e=s.enemies[1]; local before=Combat.copy(e)
  s.catalog.cards.strike.effects={{op="damage",value=6},{op="gainStatus",status="strength",value=2147483647}}
  s.player.statuses.strength=1
@@ -84,4 +84,4 @@ test("failed card restores Ritual and phase bookkeeping atomically",function()
  eq(e.hp,before.hp); eq(e.statuses.ritual,3); eq(e.aiPhase,before.aiPhase)
  eq(e.ritualSkipRound,before.ritualSkipRound)
 end)
-print("Cultist runtime: "..count.." groups passed")
+print("Raven Adept runtime: "..count.." groups passed")

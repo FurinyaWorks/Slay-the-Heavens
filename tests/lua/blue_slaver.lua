@@ -5,7 +5,7 @@ local data=require('abyss_data')
 local passed,failed=0,0
 local function eq(a,b,label) assert(a==b,(label or 'value')..': expected '..tostring(b)..', got '..tostring(a)) end
 local function test(name,fn) local ok,err=pcall(fn); if ok then passed=passed+1; print('ok - '..name) else failed=failed+1; print('not ok - '..name..': '..err) end end
-local function battle(seed,enemies) return Combat.new(data,{enemies=enemies or {'blue_slaver'},deck={'defend'},seed=seed or 42}) end
+local function battle(seed,enemies) return Combat.new(data,{enemies=enemies or {'blue_guard'},deck={'defend'},seed=seed or 42}) end
 local function rake(s) s.enemies[1].intentIndex=2; s.events={}; assert(Combat.endTurn(s)) end
 
 test('Stab remains 12 damage without Weak',function()
@@ -43,8 +43,8 @@ test('Rake state and preview are isolated across instances',function()
  local a,b=battle(),battle(); a.enemies[1].intentIndex=2
  local i=Combat.intent(a,1); i.effects[1].value=100; rake(a); eq(a.player.hp,73); eq(b.player.hp,80); eq(b.enemies[1].intentIndex,1); eq(b.player.statuses.weak,nil)
 end)
-test('two Blue Slavers each resolve their own Rake',function()
- local s=battle(42,{'blue_slaver','blue_slaver'}); s.enemies[1].intentIndex=2;s.enemies[2].intentIndex=2
+test('two Blue Guards each resolve their own Rake',function()
+ local s=battle(42,{'blue_guard','blue_guard'}); s.enemies[1].intentIndex=2;s.enemies[2].intentIndex=2
  assert(Combat.endTurn(s));eq(s.player.hp,66);eq(s.player.statuses.weak,2)
 end)
-print(passed..' passed, '..failed..' failed'); assert(failed==0,'Blue Slaver regressions failed')
+print(passed..' passed, '..failed..' failed'); assert(failed==0,'Blue Guard regressions failed')

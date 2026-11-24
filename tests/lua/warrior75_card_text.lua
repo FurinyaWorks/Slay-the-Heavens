@@ -2,7 +2,7 @@
 package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local D,C,T=require('abyss_card_display'),require('abyss_combat'),require('abyss_theme')
 local data,P=require('abyss_data'),require('abyss_presentation')
-local s=C.new(data,{deck={},enemies={'cultist'},seed=1})
+local s=C.new(data,{deck={},enemies={'raven_adept'},seed=1})
 local n=0
 for _,definition in ipairs(data.cards.cards)do
  for _,up in ipairs({false,true})do

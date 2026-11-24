@@ -8,7 +8,7 @@ local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end
 local function fresh(id,bark)
  local r=Run.new(Data,42,{character='silent',experimental=true})
  if bark then r.relics[#r.relics+1]='SacredBark'end
- assert(Run.obtainPotion(r,id));assert(Run.startCombat(r,'cultist_solo'));r.combat.enemies[1].hp=300;r.combat.enemies[1].maxHp=300
+ assert(Run.obtainPotion(r,id));assert(Run.startCombat(r,'raven_adept_solo'));r.combat.enemies[1].hp=300;r.combat.enemies[1].maxHp=300
  return r
 end
 for _,bark in ipairs({false,true})do

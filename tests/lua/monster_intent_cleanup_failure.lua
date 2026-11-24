@@ -10,7 +10,7 @@ local canvas=F.control({children=F.Layout});local root=F.Viewport.apply(canvas,1
 local host=F.GameUI.new(root,F.Data,F.Presentation,'click',{seed=1,monsterActors=api,imageSource='static',
  color=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end})
 root.ui=host
-assert(F.start(host));assert(require('abyss_run').startCombat(host.run,'cultist_solo'))
+assert(F.start(host));assert(require('abyss_run').startCombat(host.run,'raven_adept_solo'))
 host.run.combat=F.Combat.new(F.Data,{enemies={'wizard_gremlin'},deck={'strike'},seed=42});host:refresh();host:update(.51)
 local manager=require('abyss_monster_surfaces').get(root:GetChild('battlePanel'))
 local box=assert(manager:find(host.run.combat.enemies[1].id));local target=box:GetChild('hit');local intent=box:GetChild('intentHit')

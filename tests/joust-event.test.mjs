@@ -24,7 +24,9 @@ const prefix='return function(first,last)\n';
 const summary="print('JOUST_EVENT '..n..' passed')\n";
 const suffix="assert(registered==6,'all six original Joust groups must remain registered')\n"
  +"assert(n==last-first+1,'Joust slice group coverage')\n"+summary+'end\n';
+const retiredJoustIds=[['bet_against','support_challenger'],['bet_for','support_owner'],['betFor','supportsOwner']];
 function assertOriginalJoust(source){
+ for(const [before,after] of retiredJoustIds) source=source.replaceAll(after,before);
  source=source.replaceAll('\r\n','\n');
  assert.ok(source.startsWith(prefix)&&source.endsWith(suffix),'Joust extraction envelope');
  assert.equal(source.split(slicedDispatcher).length,2,'Joust has one range-only dispatcher');
@@ -58,7 +60,7 @@ test('original Joust identity rejects seed, assertion, helper and group-order dr
  const mutations=[
   source.replace('for seed=0,31 do','for seed=0,30 do'),
   source.replace('for seed=0,15 do','for seed=0,14 do'),
-  source.replace("{'bet_against','bet_for'}","{'bet_against'}"),
+  source.replace("{'support_challenger','support_owner'}","{'support_challenger'}"),
   source.replace("eq(why,'transaction_failed');same(r,before)","eq(why,'transaction_failed')"),
   source.replace('eq(r.nodeFlow,flow);eq(r.nodeFlow.event,event)','eq(r.nodeFlow,flow)'),
   source.replace('r.gold=100','r.gold=101'),
@@ -113,7 +115,7 @@ const releaseCopy=[
 const joustBeforeWithReleaseCopy=releaseCopy.reduce((source,[before,after])=>{
  assert(source.includes(before),before);
  return source.replaceAll(before,after);
-},joustBefore);
+},retiredJoustIds.reduce((source,[before,after])=>source.replaceAll(before,after),joustBefore));
 
 const joustErrors=(source,rows)=>reviewResponsibilityComplexity(rows,{[joustPath]:source}).errors.filter(e=>e.file===joustPath);
 function measureJoust(source){
@@ -157,7 +159,7 @@ test('Joust real semantic mutations change the trace or fail a named assertion',
  for(const [from,to]of [
   ['math.max(0,run.gold-50)','math.max(0,run.gold-49)'],
   ['Random.randomBooleanChance(run.miscRng,OWNER_CHANCE)','not Random.randomBooleanChance(run.miscRng,OWNER_CHANCE)'],
-  ['event.betFor and 250 or 100','event.betFor and 251 or 100'],
+  ['event.supportsOwner and 250 or 100','event.supportsOwner and 251 or 100'],
   ["event.stage='complete'","event.stage='halt'"],
   ['uid~=nil','uid'],
  ]){

@@ -66,7 +66,7 @@ test('real bash restores damage, block, thorns and earlier events before status 
 end)
 
 test('real shockwave rolls back first enemy and earlier status on later enemy overflow', function()
-    local s = battle('shockwave', {'cultist', 'jaw_worm'})
+    local s = battle('shockwave', {'raven_adept', 'jaw_worm'})
     Combat.addStatus(s.enemies[2], 'vulnerable', 2147483647)
     rejected(s, nil, 'status stack overflow')
 end)

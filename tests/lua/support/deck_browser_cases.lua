@@ -121,7 +121,7 @@ for _,amount in ipairs({10,75})do
     assert(host:closeDeck());settle()
 end
 
-assert(Run.startCombat(run,'cultist_solo'))
+assert(Run.startCombat(run,'raven_adept_solo'))
 run.relics={'frozen_eye'}
 run.combat.draw=roster(20)
 run.combat.draw[20].costForTurn=0

@@ -28,7 +28,7 @@ local function prepare(s,id,pile)
 end
 local function battle(id,upgraded,companion,pile)
     local s=Combat.new(data,{seed=42,deck={{cardId=id,upgraded=upgraded},"strike","defend","defend"},
-        enemies=companion and {"cultist","cultist"} or {"cultist"}})
+        enemies=companion and {"raven_adept","raven_adept"} or {"raven_adept"}})
     return s,prepare(s,id,pile)
 end
 local function reshuffles(s,first)
@@ -162,7 +162,7 @@ for _,id in ipairs({"pommel_strike","dropkick"}) do
         run.deck={{uid=1,cardId=id,upgraded=false},{uid=2,cardId="strike",upgraded=false},
             {uid=3,cardId="defend",upgraded=false},{uid=4,cardId="defend",upgraded=false}}
         run.nextDeckUid=5
-        assert(Run.startCombat(run,"cultist_solo")); local s=run.combat
+        assert(Run.startCombat(run,"raven_adept_solo")); local s=run.combat
         local c=prepare(s,id,"discard"); s.enemies[1].hp=1
         if id=="dropkick" then Combat.addStatus(s.enemies[1],"vulnerable",1) end
         local seed,deck=s.seed,Combat.copy(run.deck)

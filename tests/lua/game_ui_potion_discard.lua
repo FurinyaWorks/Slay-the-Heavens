@@ -26,7 +26,7 @@ test('reward claim refreshes every counter state while Proceed preserves the pen
     for _,action in ipairs({'claimPotion','continue'})do
         local h,r=F.fixture();assert(testStart(h))
         h.run=Run.new(F.Data,42);h.battleUI.run=h.run;h.nodeUI.run=h.run
-        assert(Run.startCombat(h.run,'cultist_solo'))
+        assert(Run.startCombat(h.run,'raven_adept_solo'))
         for _,enemy in ipairs(h.run.combat.enemies)do enemy.hp=0 end
         assert(Run.finishCombat(h.run));assert(h.run.rewards.potion);h:refresh()
         local offered=h.run.rewards.potion
@@ -64,7 +64,7 @@ end)
 test('full reward can discard an old bottle then claim the offered bottle in its exact vacancy',function()
     local h,r=setup();h.run=Run.new(F.Data,42);h.battleUI.run=h.run;h.nodeUI.run=h.run
     for _,id in ipairs({'fire_potion','block_potion','regen_potion'})do assert(Run.obtainPotion(h.run,id))end
-    assert(Run.startCombat(h.run,'cultist_solo'))
+    assert(Run.startCombat(h.run,'raven_adept_solo'))
     for _,enemy in ipairs(h.run.combat.enemies)do enemy.hp=0 end
     -- Complete33-potion source vector seed42 selects Colorless Potion.
     assert(Run.finishCombat(h.run));h:refresh();equal(h.run.rewards.potion.id,'colorless_potion')
@@ -142,7 +142,7 @@ end)
 
 test('phase changes invalidate the old selection while a fresh enemy-phase selection may discard',function()
     local h,r=setup();open(r);assert(click(r,'potionPanel','slot2'))
-    assert(Run.startCombat(h.run,'cultist_solo'))
+    assert(Run.startCombat(h.run,'raven_adept_solo'))
     equal(click(r,'potionPanel','discard'),false);equal(h.run.potions[2],'block_potion')
     h.run.combat.phase='enemy';h:refresh()
     assert(click(r,'potionPanel','slot2'));assert(click(r,'potionPanel','discard'));equal(h.run.potions[2],nil)

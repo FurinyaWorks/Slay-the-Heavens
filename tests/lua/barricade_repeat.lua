@@ -23,7 +23,7 @@ end
 local function battle(first, second)
     local deck = {{cardId="barricade", upgraded=first}}
     if second ~= nil then deck[2] = {cardId="barricade", upgraded=second} end
-    local s = Combat.new(Data, {seed=42, deck=deck, enemies={"cultist"}})
+    local s = Combat.new(Data, {seed=42, deck=deck, enemies={"raven_adept"}})
     s.energy = 6
     return s
 end
@@ -82,7 +82,7 @@ for _, second in ipairs({false, true}) do
         equal(s.player, player); equal(s.player.statuses, statuses); equal(s.hand, hand); equal(s.events, events)
         equal(#s.hand, 0); equal(#s.draw, 0); equal(#s.discard, 0); equal(#s.exhaust, 0)
         equal(statuses.barricade, 1); equal(player.block, 17); equal(player.hp, hp); equal(s.seed, seed)
-        assert(Combat.endTurn(s)) -- Cultist's first turn only buffs; Block must survive the real turn boundary.
+        assert(Combat.endTurn(s)) -- Raven Adept's first turn only buffs; Block must survive the real turn boundary.
         equal(player.block, 17); equal(statuses.barricade, 1); equal(s.energy, 3)
         gone(s, a); gone(s, b); equal(gained.frame.player.statuses.barricade, 1)
     end)

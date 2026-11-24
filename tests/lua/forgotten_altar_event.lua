@@ -4,21 +4,21 @@ test('Altar caches round25percent and has no generic Leave',function()
     for _,row in ipairs({{1,0},{2,1},{3,1},{5,1},{6,2},{80,20}})do
         local r,m=H.fixture('forgotten_altar',function(s)s.maxHp=row[1];s.hp=row[1]end)
         local before=H.snapshot(r);local event=H.Nodes.view(r,m).node.event;eq(event.hpLoss,row[2]);eq(#event.options,3)
-        eq(event.options[1].enabled,false);eq(event.options[2].choice,'shed_blood');eq(event.options[3].choice,'smash');same(r,before)
+        eq(event.options[1].enabled,false);eq(event.options[2].choice,'accept_trial');eq(event.options[3].choice,'smash');same(r,before)
         H.reject(r,'leave',nil,'invalid_event_choice');H.reject(r,'offer_idol',nil,'event_condition_unmet')
     end
 end)
 test('Altar increases/heals5 before cached NORMAL damage and constructor survives real Fruit Juice',function()
     local r=H.fixture('forgotten_altar',function(s)s.hp=10 end);local before=H.snapshot(r)
-    assert(H.Nodes.chooseEvent(r,'shed_blood'));eq(r.maxHp,85);eq(r.hp,0);eq(r.phase,'defeat');same(r.miscRng,before.miscRng)
+    assert(H.Nodes.chooseEvent(r,'accept_trial'));eq(r.maxHp,85);eq(r.hp,0);eq(r.phase,'defeat');same(r.miscRng,before.miscRng)
     r=H.fixture('forgotten_altar',function(s)s.hp=20;s.potions={'fruit_juice'}end)
     assert(H.Run.usePotion(r,1));eq(r.maxHp,85);eq(r.hp,25);eq(r.nodeFlow.event.hpLoss,20)
-    assert(H.Nodes.chooseEvent(r,'shed_blood'));eq(r.maxHp,90);eq(r.hp,10);eq(r.nodeFlow.event.stage,'result')
-    H.reject(r,'shed_blood',nil,'invalid_event_choice');assert(H.Nodes.chooseEvent(r,'leave'));eq(r.phase,'map')
+    assert(H.Nodes.chooseEvent(r,'accept_trial'));eq(r.maxHp,90);eq(r.hp,10);eq(r.nodeFlow.event.stage,'result')
+    H.reject(r,'accept_trial',nil,'invalid_event_choice');assert(H.Nodes.chooseEvent(r,'leave'));eq(r.phase,'map')
 end)
 test('Altar healing blocked by Mark and damage reduced by Tungsten; maxHP gain still applied',function()
     local r=H.fixture('forgotten_altar',function(s)s.hp=30;s.relics={'mark_of_bloom','tungsten_rod'}end)
-    assert(H.Nodes.chooseEvent(r,'shed_blood'));eq(r.maxHp,85);eq(r.hp,11)
+    assert(H.Nodes.chooseEvent(r,'accept_trial'));eq(r.maxHp,85);eq(r.hp,11)
 end)
 test('Altar smash obtains exact Decay through Omamori/Darkstone/Fish hooks',function()
     local r=H.fixture('forgotten_altar',function(s)s.relics={'omamori','darkstone_periapt','ceramic_fish'};s.relicCounters={omamori=1}end)
@@ -31,8 +31,8 @@ test('Altar missing Decay and late damage failures roll back all maxHP/gold/deck
     local r=H.fixture('forgotten_altar');H.removeDefinition(r,'cards','decay');H.reject(r,'smash',nil,'card_content_unavailable')
     r=H.fixture('forgotten_altar');local old=H.Run.eventNormalDamage
     H.Run.eventNormalDamage=function(s,n)local ok,why=old(s,n);assert(ok,why);H.R.randomInt(s.miscRng,99);error('late Altar')end
-    local before=H.snapshot(r);local ok,why=H.Nodes.chooseEvent(r,'shed_blood');H.Run.eventNormalDamage=old
-    eq(ok,false);eq(why,'transaction_failed');same(r,before);assert(H.Nodes.chooseEvent(r,'shed_blood'));eq(r.maxHp,85);eq(r.hp,65)
+    local before=H.snapshot(r);local ok,why=H.Nodes.chooseEvent(r,'accept_trial');H.Run.eventNormalDamage=old
+    eq(ok,false);eq(why,'transaction_failed');same(r,before);assert(H.Nodes.chooseEvent(r,'accept_trial'));eq(r.maxHp,85);eq(r.hp,65)
 end)
 test('Altar unavailable Bloody Idol refuses intact, while already-owned branch retains Golden and gives Circlet',function()
     local r=H.fixture('forgotten_altar',function(s)s.relics={'anchor','golden_idol','lantern'}end)

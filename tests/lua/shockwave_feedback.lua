@@ -11,7 +11,7 @@ local function test(name, fn)
 end
 for _,upgraded in ipairs({false,true}) do
     test('Shockwave text, detail and area flight '..tostring(upgraded),function()
-        local h,u,p,event,tap,drain=H.setup({{cardId='shockwave',upgraded=upgraded}},{'cultist','cultist'})
+        local h,u,p,event,tap,drain=H.setup({{cardId='shockwave',upgraded=upgraded}},{'raven_adept','raven_adept'})
         local s=h.run.combat;local amount=upgraded and 5 or 3
         local card=p:GetChild('card1')
         assert(card:GetChild('label').text:find('每个敌人',1,true))
@@ -25,12 +25,12 @@ for _,upgraded in ipairs({false,true}) do
         assert(info:GetChild('name3').text:find('消耗',1,true))
         event('card1','exit',7)
         local first=s.enemies[1]
-        eq(first.definitionId,'cultist','controlled front actor')
+        eq(first.definitionId,'raven_adept','controlled front actor')
         sourceGeometry(assert(monsterControl(p,'enemy1')),first)
         tap('card1',8);tap('playArea',8);assert(u.busy)
         -- Area x remains the source zone center; y follows its first front-row actor.
         local sourceX=(1010+1850)/2/1.5-640
-        -- Independent sts@319009d5 Cultist constructor facts, also checked on
+        -- Independent sts@319009d5 Raven Adept constructor facts, also checked on
         -- the real native box above: drawY=-10, hitbox230x240, source anchor340.
         local sourceY=(require('abyss_battle_enemy_view').floorY-10+math.max(230,240)/2)*(720/1080)-720/2
         eq(math.abs(u.feedback.flight.tx-sourceX)<1e-8,true,'area flight center')
@@ -51,12 +51,12 @@ for _,upgraded in ipairs({false,true}) do
             if not u.busy then break end
             h:update(0.01)
         end
-        assert(not u.busy);eq(table.concat(observed,','),'cultist_1:weak,cultist_1:vulnerable,cultist_2:weak,cultist_2:vulnerable')
+        assert(not u.busy);eq(table.concat(observed,','),'raven_adept_1:weak,raven_adept_1:vulnerable,raven_adept_2:weak,raven_adept_2:vulnerable')
         eq(#s.events,0,'playback releases events once')
     end)
 end
 test('rule refusal is shown separately from a rolled back internal exception',function()
-    local h,u,p,_,tap=H.setup({'shockwave'},{'cultist'})
+    local h,u,p,_,tap=H.setup({'shockwave'},{'raven_adept'})
     local s=h.run.combat
     s.energy=1
     tap('card1',8)

@@ -256,7 +256,7 @@ test("real upgraded pommel strike via Run uses the slot freed by playing", funct
     for i = 1, 15 do
         run.deck[i] = {uid=i, cardId=i == 1 and "pommel_strike" or "strike", upgraded=i == 1}
     end
-    assert(Run.startCombat(run, "cultist_solo"))
+    assert(Run.startCombat(run, "raven_adept_solo"))
     local s = run.combat
     local played
     for _, pile in ipairs({s.hand, s.draw}) do

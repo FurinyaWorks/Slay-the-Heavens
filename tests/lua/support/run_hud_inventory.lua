@@ -120,7 +120,7 @@ elseif mode=='potions' then
 elseif mode=='route' then
  for _,mobile in ipairs({true,false})do
   local host,root,picture=H.create(mobile)
-  assert(Run.startCombat(host.run,'cultist_solo'));host.run.potions={'fire_potion','energy_potion','blood_potion'}
+  assert(Run.startCombat(host.run,'raven_adept_solo'));host.run.potions={'fire_potion','energy_potion','blood_potion'}
   host:refresh();host:update(1)
   H.click(picture,'/battlePanel/topBar/battleRoute/hit',1)
   assert(host.routeOpen and visible(root,'potionEntry'))
@@ -145,7 +145,7 @@ elseif mode=='route-menu' then
    local host,root,picture=H.create(mobile)
    local route=room=='battle' and '/battlePanel/topBar/battleRoute/hit' or '/nodePanel/runRoute/hit'
    if room=='battle' then
-    assert(Run.startCombat(host.run,'cultist_solo'));host:refresh();host:update(1)
+    assert(Run.startCombat(host.run,'raven_adept_solo'));host:refresh();host:update(1)
    else
     enter(host,'shop')
    end

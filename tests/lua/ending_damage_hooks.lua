@@ -3,7 +3,7 @@ local C,A,H=require('abyss_combat'),require('abyss_actor'),require('abyss_corrup
 local D=require('abyss_data');local count=0
 local function check(name,fn)fn();count=count+1;print('PASS ending damage '..count..' '..name)end
 local function fresh()
- local s=assert(C.new(D,{seed=42,enemies={'cultist'}}))
+ local s=assert(C.new(D,{seed=42,enemies={'raven_adept'}}))
  if not s.catalog.enemies.corrupt_heart then H.register(s.catalog,C.copy)end
  local e=s.enemies[1];e.definitionId,e.ai,e.hp,e.maxHp='corrupt_heart',{kind='corrupt_heart'},750,750
  e.statuses={};A.bindStatuses(e,s.catalog.statuses)

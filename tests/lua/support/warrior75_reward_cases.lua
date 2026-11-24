@@ -5,7 +5,7 @@ local targets=dofile('tests/fixtures/warrior75-reward-targets.lua')
 local seeds=dofile('tests/fixtures/warrior75-reward-seeds.lua')
 local function equal(a,b,why) assert(a==b,(why or 'value')..': '..tostring(a)..' ~= '..tostring(b)) end
 local function victory(run)
-    assert(Run.startCombat(run,'cultist_solo'))
+    assert(Run.startCombat(run,'raven_adept_solo'))
     for _=1,100 do
         if run.phase~='combat' then break end
         local chosen
@@ -58,7 +58,7 @@ return function(rarity,first,last)
                 equal(run.deck[11].cardId,id);equal(run.deck[11].uid,uid);assert(not run.deck[11].upgraded)
                 assert(not Run.claimCardReward(run,slot),'card reward claimed twice')
                 equal(#run.deck,11);equal(run.nextDeckUid,uid+1)
-                finish(run);assert(Run.startCombat(run,'cultist_solo'))
+                finish(run);assert(Run.startCombat(run,'raven_adept_solo'))
                 local found=0
                 for _,pile in ipairs({run.combat.hand,run.combat.draw}) do for _,card in ipairs(pile) do
                     if card.cardId==id then found=found+1;equal(card.uid,uid,'permanent identity');assert(not card.upgraded) end

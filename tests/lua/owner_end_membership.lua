@@ -6,7 +6,7 @@ local passed,failed=0,0
 local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end
 local function test(name,fn)local ok,why=pcall(fn);if ok then passed=passed+1 else failed=failed+1 end;print((ok and 'PASS 'or 'FAIL ')..name..(ok and ''or ': '..tostring(why)))end
 local function fresh(advanced)
- local s=C.new(D,{deck={'study','combust'},enemies={'cultist'},seed=42,orbSlots=0,enableStances=true,cardRandomSeed='42'})
+ local s=C.new(D,{deck={'study','combust'},enemies={'raven_adept'},seed=42,orbSlots=0,enableStances=true,cardRandomSeed='42'})
  s.experimentalMechanics=advanced;return s
 end
 local function play(s,id)

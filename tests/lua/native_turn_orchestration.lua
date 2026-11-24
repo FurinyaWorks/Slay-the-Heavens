@@ -21,7 +21,7 @@ A.enqueue=function(s,e,...)
  return enqueue(s,e,...)
 end
 local function battle()
- local s=C.new(Data,{seed=42,deck={'strike','defend','bash'},enemies={'cultist'},shuffleSeed='42',cardRandomSeed='42'})
+ local s=C.new(Data,{seed=42,deck={'strike','defend','bash'},enemies={'raven_adept'},shuffleSeed='42',cardRandomSeed='42'})
  s.experimentalMechanics=false;s.turn=1;s.phase='enemy';s.events={};s.cardActions=nil
  s.hand={};s.draw={{uid=101,cardId='strike'},{uid=102,cardId='defend'},{uid=103,cardId='bash'}}
  s.discard={{uid=201,cardId='defend'},{uid=202,cardId='strike'}};s.exhaust={}
@@ -127,7 +127,7 @@ test('start-effect-defeat',function()
 end)
 test('original-v4',function()
  local Profiles=require('abyss_original_v4_profiles')
- local s=C.new(Profiles.prepare(Data,'RD'),{seed=42,deck={},enemies={'cultist'}})
+ local s=C.new(Profiles.prepare(Data,'RD'),{seed=42,deck={},enemies={'raven_adept'}})
  s.experimentalMechanics=false;s.events={};s.turn=1;s.phase='enemy';s.player.block=10
  s.originalV4.nextEnergy=2;s.originalV4.nextBlock=4;s.originalV4.nextDraw=2
  s.originalV4.chargedUsed=1;s.originalV4.musouRefunded=1;trace={}

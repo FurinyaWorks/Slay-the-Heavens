@@ -19,12 +19,12 @@ local function setup(options)
     if options.fairy then assert(Run.obtainPotion(ui.run, 'fairy_in_a_bottle')) end
     if options.tail then assert(Run.obtainRelic(ui.run, 'lizard_tail')) end
     ui.run.hp = 3
-    assert(Run.startCombat(ui.run, 'cultist_solo'))
+    assert(Run.startCombat(ui.run, 'raven_adept_solo'))
     local battle = ui.run.combat
     local enemy = battle.enemies[1]
     enemy.ai, enemy.intentIndex = nil, 1
     -- Isolate the lethal value while retaining an admitted source attack ID.
-    enemy.intents = {{id = 'cultist_1', kind = 'attack', effects = {{op = 'damage', value = 12}}}}
+    enemy.intents = {{id = 'raven_adept_1', kind = 'attack', effects = {{op = 'damage', value = 12}}}}
     if options.thorns then F.Combat.addStatus(enemy, 'thorns', 5) end
     ui:refresh()
     return ui, root, battle, sounds, function() return settlements end, music
@@ -134,7 +134,7 @@ test('cancel clears the death veil and player pose before another battle', funct
     assert(F.start(ui))
     -- Restart may legitimately open Neow; this fixture isolates new battle presentation.
     ui.run.phase, ui.run.floor = 'map', 1
-    assert(Run.startCombat(ui.run, 'cultist_solo')); ui:refresh()
+    assert(Run.startCombat(ui.run, 'raven_adept_solo')); ui:refresh()
     assert(panel:GetChild('hero').visible and not ui.battleUI.feedback.deaths.player)
 end)
 

@@ -44,9 +44,9 @@ local function carry(card,origin)
  assert(math.abs(card.x-expected)<1e-6,'carry must preserve original column except minimal safe translation')
  if math.abs(expected-origin)<1e-6 then unchanged=unchanged+1 else shifted=shifted+1 end
 end
-local host,ui,panel,event=H.setup({'strike','strike'},{'cultist'})
+local host,ui,panel,event=H.setup({'strike','strike'},{'raven_adept'})
 for count=1,5 do
- local enemies={};for i=1,count do enemies[i]='cultist' end
+ local enemies={};for i=1,count do enemies[i]='raven_adept' end
  host.run.combat=H.F.Combat.new(H.F.Data,{deck={'strike','strike'},enemies=enemies,seed=11})
  -- Explicit separated source offsets isolate targeting for repeated test actors;
  -- raw C.new IDs do not invoke a MonsterHelper encounter formation.
@@ -54,7 +54,7 @@ for count=1,5 do
  host:refresh()
  local battle=host.run.combat
  local before=H.F.Combat.copy(host.run)
- -- Cultist constructor: hitbox230x240, hb(-8,10), source canvas1920x1080.
+ -- Raven Adept constructor: hitbox230x240, hb(-8,10), source canvas1920x1080.
  local origin=panel:GetChild('card1').x
  event('card1','down',7)
  for i=1,count do

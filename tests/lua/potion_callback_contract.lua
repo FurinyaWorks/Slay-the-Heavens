@@ -120,7 +120,7 @@ local Inventory,Actions=require('abyss_inventory'),require('abyss_card_actions')
 local base=Run.new(Data,42);base.hp=20
 assert(Run.obtainRelic(base,'Toy Ornithopter'))
 assert(Run.obtainPotion(base,'blood_potion'))
-assert(Run.startCombat(base,'cultist_solo'))
+assert(Run.startCombat(base,'raven_adept_solo'))
 -- Complete roots include every RNG, catalog, event, queue and persistent field.
 observe(base,'live base before potion')
 for _,relic in ipairs({'none','magic_flower','mark_of_bloom'})do

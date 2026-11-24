@@ -71,7 +71,7 @@ test('route preview cannot bury pending gold return before the next room',functi
     assert(tap(back,33));assert(not Run.claimGoldReward(h.run) and h.run.gold==gold+amount)
     assert(not rewards.cardResolved,'returning must preserve the unclaimed card offer')
     click('continue',34)
-    assert(Run.startCombat(h.run,'cultist_solo'));h:refresh()
+    assert(Run.startCombat(h.run,'raven_adept_solo'));h:refresh()
     assert(not back.visible and h.run.pendingCombatRewards==nil)
     assert(not tap(back,35) and h.run.phase=='combat','expired return cannot reopen rewards in the next room')
 end)

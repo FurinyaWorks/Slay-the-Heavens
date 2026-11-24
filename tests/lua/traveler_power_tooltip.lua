@@ -17,7 +17,7 @@ local function contains(text, needle)
 end
 
 local function setup(mobile)
-    local host, ui, panel, event, namedTap, drain = G.setup({"strike", "defend", "defend"}, {"cultist", "cultist"},
+    local host, ui, panel, event, namedTap, drain = G.setup({"strike", "defend", "defend"}, {"raven_adept", "raven_adept"},
         {touchScreen = function() return mobile end})
     local battle = host.run.combat
     Combat.addStatus(battle.player, "strength", 3)
@@ -53,7 +53,7 @@ local function checkBounds(box)
 end
 
 do
-    local host, ui, panel = G.setup({"defend"}, {"cultist"}, {touchScreen = function() return false end})
+    local host, ui, panel = G.setup({"defend"}, {"raven_adept"}, {touchScreen = function() return false end})
     local actor = host.run.combat.player
     Combat.addStatus(actor, "frail", 1)
     Combat.addStatus(actor, "strength", 4)
@@ -284,7 +284,7 @@ do
     local touch = {touchId = 43}
     hit.listeners.down(touch)
     local run = G.Run.new(G.F.Data, 43)
-    assert(G.Run.startCombat(run, "cultist_solo"))
+    assert(G.Run.startCombat(run, "raven_adept_solo"))
     run.character = "silent"
     Combat.addStatus(run.combat.player, "weak", 2)
     host.run, ui.run = run, run
@@ -369,7 +369,7 @@ for _, mobile in ipairs({false, true}) do
     local event = {touchId = 92}
     if mobile then retired.listeners.down(event) else retired.listeners.enter() end
     local replacement = G.Run.new(G.F.Data, 92)
-    assert(G.Run.startCombat(replacement, "cultist_solo"))
+    assert(G.Run.startCombat(replacement, "raven_adept_solo"))
     Combat.addStatus(replacement.combat.enemies[1], "strength", 42)
     host.run, ui.run = replacement, replacement
     host:refresh()

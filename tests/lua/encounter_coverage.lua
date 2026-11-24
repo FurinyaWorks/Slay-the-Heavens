@@ -118,8 +118,8 @@ for _, definition in ipairs(data.enemies.enemies) do
     end
 end
 
-test("configured cultist strength persists into its next natural attack", function()
-    local s = Combat.new(data, { enemies = { "cultist" }, seed = 42 })
+test("configured raven_adept strength persists into its next natural attack", function()
+    local s = Combat.new(data, { enemies = { "raven_adept" }, seed = 42 })
     local enemy = s.enemies[1]
     local attack, buff = enemy.intents[1], enemy.intents[2]
     equal(attack.effects[1].op, "damage", "configured first intent")

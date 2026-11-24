@@ -18,18 +18,18 @@ test('real Jaw Thrash stops queued self Block on player death',function()
  local s=battle('jaw_worm');force(s.enemies[1],'jaw_worm_2');s.player.hp=1;assert(C.endTurn(s));eq(s.phase,'defeat');eq(s.enemies[1].block,0)
 end)
 test('player defeat preserves prior effects but stops every subsequent action including Block',function()
- local s=battle('cultist');local e=s.enemies[1];s.player.hp=1;local uid=s.nextUid
+ local s=battle('raven_adept');local e=s.enemies[1];s.player.hp=1;local uid=s.nextUid
  C.applyEffects(s,{{op='gainStatus',status='strength',value=2},{op='damage',value=1},{op='block',value=7},
   {op='gainStatus',status='strength',value=3},{op='makeTempCardInDiscard',card='dazed',value=1},{op='energy',value=2}},e,s.player)
  eq(C.outcome(s),'defeat');eq(e.statuses.strength,2);eq(e.block,0);eq(s.nextUid,uid);eq(s.energy,3)
 end)
 test('nonlethal enemy attack retains its queued payload and fixed Block',function()
- local s=battle('cultist');local e=s.enemies[1]
+ local s=battle('raven_adept');local e=s.enemies[1]
  C.applyEffects(s,{{op='damage',value=1},{op='block',value=7},{op='makeTempCardInDiscard',card='slimed',value=2}},e,s.player)
  eq(s.player.hp,79);eq(e.block,7);eq(#s.discard,2);eq(C.outcome(s),nil)
 end)
 test('victory still retains Block while clearing status-card tail',function()
- local s=battle('cultist');local e=s.enemies[1];e.hp=1
+ local s=battle('raven_adept');local e=s.enemies[1];e.hp=1
  C.applyEffects(s,{{op='damage',value=6},{op='block',value=7},{op='makeTempCardInDiscard',card='slimed',value=2}},s.player,e)
  eq(C.outcome(s),'victory');eq(s.player.block,7);eq(#s.discard,0)
 end)

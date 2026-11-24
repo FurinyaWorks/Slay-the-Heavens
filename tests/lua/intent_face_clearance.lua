@@ -3,7 +3,7 @@ local H=dofile('tests/lua/support/battle_action_fixture.lua')
 local C,Theme=H.F.Combat,require('abyss_theme')
 local Source=require('abyss_monster_source_intents')
 local sourceGeometry=dofile('tests/lua/support/source_intent_geometry.lua')
-local host,ui,panel=H.setup({'defend'},{'cultist'})
+local host,ui,panel=H.setup({'defend'},{'raven_adept'})
 local attackBadges={ATTACK_DEBUFF='debuff',ATTACK_BUFF='buff',ATTACK_DEFEND='defend'}
 -- Native text keeps its 40-high transparent compatibility box. Safety covers
 -- the entire visible value at the declared native font, not transparent padding.
@@ -100,16 +100,16 @@ local function checkNatural(members)
   enemy.intentIndex=initial
  end
 end
-for _,first in ipairs({'cultist','gremlin_nob','guardian'})do
+for _,first in ipairs({'raven_adept','gremlin_nob','guardian'})do
  -- Natural boss groups have at most three actors; five-actor groups are normal
  -- or elite encounters. Do not create an unsupported Guardian plus four adds.
  for count=1,first=='guardian' and 3 or 5 do
-  local members={first};for i=2,count do members[i]='cultist'end;check(members)
+  local members={first};for i=2,count do members[i]='raven_adept'end;check(members)
  end
 end
 for _,members in ipairs({
  {'automaton','bronze_orb','bronze_orb'}, {'collector','torch_head','torch_head'},
- {'awakened_one','cultist','cultist'}, {'spike_slime_l','acid_slime_l'},
+ {'awakened_one','raven_adept','raven_adept'}, {'spike_slime_l','acid_slime_l'},
  {'spike_slime_m','spike_slime_m','acid_slime_m','acid_slime_m'},
  {'gremlin_leader','mad_gremlin','sneaky_gremlin'},
  {'reptomancer','snake_dagger','snake_dagger','snake_dagger','snake_dagger'},

@@ -111,7 +111,7 @@ for _, case in ipairs({
 end
 local function win(seed)
     local run = Run.new(data, seed)
-    assert(Run.startCombat(run, "cultist_solo"))
+    assert(Run.startCombat(run, "raven_adept_solo"))
     for _ = 1, 100 do
         if run.phase ~= "combat" then break end
         for _ = 1, 10 do
@@ -145,7 +145,7 @@ test("real starter reward body_slam joins permanent deck and plays after defend 
     for i, instance in ipairs(oldDeck) do same(selected.deck[i], instance) end
     equal(selected.deck[#selected.deck].cardId, "body_slam")
     dofile('tests/lua/support/finish_combat_rewards.lua')(selected)
-    assert(Run.startCombat(selected, "cultist_solo"))
+    assert(Run.startCombat(selected, "raven_adept_solo"))
     for _ = 1, 10 do
         assert(selected.phase == "combat", "battle ended before card was played")
         local slam, defend

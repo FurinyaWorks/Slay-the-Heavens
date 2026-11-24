@@ -43,7 +43,7 @@ for (const id of ['louse_pair','louse_trio']) for (const [name, mutate, pattern]
   const d=setup();mutate(get(d,id));assert.match(validateContent(d).join('\n'),pattern);
 });
 test('louse fields cannot silently become generic encounter options', () => {
-  for (const id of ['cultist_solo','small_slimes','gremlin_gang']) for (const field of ['lousePool','louseCount']) {
+  for (const id of ['raven_adept_solo','small_slimes','gremlin_gang']) for (const field of ['lousePool','louseCount']) {
     const d=setup();get(d,id)[field]=field==='lousePool'?[...pool]:2;
     assert.match(validateContent(d).join('\n'),new RegExp(field+'.*louse_pair.*louse_trio'));
   }

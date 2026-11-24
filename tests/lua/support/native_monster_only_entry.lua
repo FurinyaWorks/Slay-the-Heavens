@@ -79,7 +79,7 @@ assert(captured.run.phase=='map' and captured.run.neowStatus=='complete')
 local Nodes=require('abyss_nodes')
 assert(Nodes.enter(captured.run,captured.map,Nodes.available(captured.run,captured.map)[1].id))
 assert(captured.run.phase=='combat')
-captured.run.combat=F.Combat.new(F.Data,{deck={'strike','defend'},enemies={'cultist','acid_slime_m'},seed=11})
+captured.run.combat=F.Combat.new(F.Data,{deck={'strike','defend'},enemies={'raven_adept','acid_slime_m'},seed=11})
 captured:refresh()
 local grass=captured.run.combat.enemies[2]
 local actor=assert(Surfaces.get(panel):find(grass.id),'source instance must own a complete dynamic actor')

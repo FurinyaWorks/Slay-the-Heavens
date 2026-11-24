@@ -39,7 +39,7 @@ test('desecrate appends one permanent fresh-UID curse and exactly 275 gold',func
  eq(run.gold,before.gold+275);eq(#run.deck,#before.deck+1);local c=run.deck[#run.deck]
  eq(c.uid,before.nextDeckUid);eq(c.cardId,'regret');eq(c.upgraded,false);eq(run.nextDeckUid,before.nextDeckUid+1)
  eq(run.nodeFlow.event.obtainedCardUid,c.uid);same(run.miscRng,before.miscRng);same(run.eventRng,before.eventRng);eq(run.seed,before.seed)
- assert(Run.startCombat(run,'cultist_solo'));local found=0
+ assert(Run.startCombat(run,'raven_adept_solo'));local found=0
  for _,pile in ipairs({run.combat.hand,run.combat.draw,run.combat.discard,run.combat.exhaust})do for _,v in ipairs(pile)do if v.cardId=='regret'then found=found+1 end end end;eq(found,1)
 end)
 test('leave and invalid options preserve all assets streams and UIDs',function()
@@ -97,7 +97,7 @@ test('curse never enters upgrade, reward, or shop pools but purifier removes its
  for _,card in ipairs(Nodes.view(run,map).node.upgradeCards)do assert(card.cardId~='regret')end
  assert(not Nodes.upgrade(run,curse.uid));assert(Nodes.rest(run));run.nodeFlow=nil
  map=Map.generate(Data,42);map.nodes[1].type='shop';assert(Nodes.enter(run,map,map.nodes[1].id));for _,card in ipairs(run.nodeFlow.cards)do assert(card.id~='regret')end;assert(Nodes.leaveShop(run));run.nodeFlow=nil
- assert(Run.startCombat(run,'cultist_solo'));run.combat.enemies[1].hp=0;assert(Run.finishCombat(run));for _,id in ipairs(Run.rewardOptions(run))do assert(id~='regret')end;assert(Run.claimCardReward(run,0)); dofile('tests/lua/support/finish_combat_rewards.lua')(run)
+ assert(Run.startCombat(run,'raven_adept_solo'));run.combat.enemies[1].hp=0;assert(Run.finishCombat(run));for _,id in ipairs(Run.rewardOptions(run))do assert(id~='regret')end;assert(Run.claimCardReward(run,0)); dofile('tests/lua/support/finish_combat_rewards.lua')(run)
  map=Map.generate(Data,42);map.nodes[1].type='event';map.nodes[1].eventId='purifier';assert(Nodes.enter(run,map,map.nodes[1].id));assert(Nodes.chooseEvent(run,'pray',curse.uid));for _,card in ipairs(run.deck)do assert(card.uid~=curse.uid)end
 end)
 test('normal unknown-room selection reaches Golden Shrine and records one consumed shrine',function()
@@ -129,7 +129,7 @@ test('Regret loss ignores supported attack modifiers without triggering retaliat
 end)
 test('real node battle defeat preserves permanent curse and blocks route advancement',function()
  local run,map=enter();assert(Nodes.chooseEvent(run,'desecrate'));local permanent=C.copy(run.deck)
- run.nodeFlow=nil;map=Map.generate(Data,42);map.nodes[1].type='combat';map.nodes[1].encounterId='cultist_solo'
+ run.nodeFlow=nil;map=Map.generate(Data,42);map.nodes[1].type='combat';map.nodes[1].encounterId='raven_adept_solo'
  assert(Nodes.enter(run,map,map.nodes[1].id));local s=run.combat;s.hand={{uid=500,cardId='regret',upgraded=false}};s.player.hp=1
  assert(C.endTurn(s));assert(Run.finishCombat(run));eq(run.phase,'defeat');eq(run.hp,0);same(run.deck,permanent)
  eq(#Nodes.available(run,map),0);local ok,reason=Nodes.completeCombat(run,map);eq(ok,false);eq(reason,'run_defeated')

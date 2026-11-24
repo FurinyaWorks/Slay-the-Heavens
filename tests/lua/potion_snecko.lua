@@ -1,6 +1,6 @@
 package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local Run,C,R,Data=require('abyss_run'),require('abyss_combat'),require('abyss_sts_random'),require('abyss_data')
-local run=Run.new(Data,42);assert(Run.obtainPotion(run,'snecko_oil'));assert(Run.startCombat(run,'cultist_solo'))
+local run=Run.new(Data,42);assert(Run.obtainPotion(run,'snecko_oil'));assert(Run.startCombat(run,'raven_adept_solo'))
 local s=run.combat;s.player.noDraw=true
 s.hand={{cardId='bash',uid=1000,costForTurn=0},{cardId='burn',uid=1001},{cardId='whirlwind',uid=1002},
  {cardId='defend',uid=1003},{cardId='blood_for_blood',uid=1004,costReduction=2}}
@@ -18,7 +18,7 @@ assert(C.cardDefinition(s,original).cost==(pre==0 and 0 or 1))
 local discounted={cardId='blood_for_blood',uid=1900,costOverride=2,costForTurn=2,costReduction=0}
 assert(C.upgrade(s,discounted));assert(C.cardDefinition(s,discounted).cost==1,'upgrade reduces actual randomized BloodForBlood cost by one')
 assert(run.deck[1].costOverride==nil)
-local drawn=Run.new(Data,43);assert(Run.obtainPotion(drawn,'snecko_oil'));assert(Run.startCombat(drawn,'cultist_solo'))
+local drawn=Run.new(Data,43);assert(Run.obtainPotion(drawn,'snecko_oil'));assert(Run.startCombat(drawn,'raven_adept_solo'))
 local ds=drawn.combat;ds.hand={{cardId='defend',uid=2000}};ds.draw={}
 for i=1,5 do ds.draw[i]={cardId='defend',uid=2000+i} end
 ds.discard={};local expect=R.cloneState(ds.cardRandomRng);local costs={}
