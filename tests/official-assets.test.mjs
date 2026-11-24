@@ -196,6 +196,7 @@ test('approved pages keep live input identities while unrelated pages retain the
    assert.deepEqual(node[key],expected,path+' '+key);
   }
    if(node.text){const actual={...node.text},expected={...before.text};delete actual.colour;delete expected.colour;
+    if(/^\/SlayTheAbyss\/relicBar\/slot\d+\/counter$/.test(path))expected.autoSize=false;
     if(cardText.has(node))for(const key of ['outline','outlineColour','outlineOpacity']){
      const canonical=child(child(child(layout,'battlePanel'),'card1'),cardText.get(node)).text;
      assert.deepEqual(actual[key],canonical[key],path+' shared '+key);expected[key]=canonical[key];
@@ -258,6 +259,9 @@ test('approved pages keep live input identities while unrelated pages retain the
     if(relicSlot&&key==='position'){
      const bar=theme.officialAssets.battleRelicBar;
      assert.deepEqual(node.position,[bar.origin[0]+bar.step*(Number(relicSlot[1])-1),bar.origin[1]],path+' canonical position');continue;
+    }
+    if(key==='size'&&/^\/SlayTheAbyss\/deckEntry\/open\/hit\/(?:normal|hover|pressed|disabled)$/.test(path)){
+     assert.deepEqual(node.size,[104,before.size[1]],path+' room for the fixed-size deck amount');continue;
     }
     assert.deepEqual(node[key],key==='size'&&cardHosts.has(node)?theme.layout.card.size:before[key],path+' '+key);
    }
