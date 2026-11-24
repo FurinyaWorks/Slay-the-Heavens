@@ -1125,7 +1125,7 @@ local count,first=visible()
 assert(count==7 and host.deckUI.pageIndex==2)
 assert(first:GetChild('hit').click() and host.deckUI.cardDetail.instance.uid==211)
 assert(panel:GetChild('pileReturn'):GetChild('hit').click());settle()
-assert(grid.visible and host.deckUI.pageIndex==2 and visible()==7 and not host.deckUI.detailPages)
+assert(grid.visible and host.deckUI.pageIndex==2 and visible()==7 and not host.deckUI.cardDetail)
 assert(panel:GetChild('pileReturn'):GetChild('hit').click())
 assert(not host.deckUI.visible and host.mode=='node' and host.nodeUI.visible and host.run.nodeFlow.id==shop.id)
 assert(not grid.visible and visible()==0 and #grid:GetChildren()==10)
@@ -1186,12 +1186,13 @@ for _,origin in ipairs({0,1})do
   local late=grid.refreshCallback;local hit=first:GetChild('hit')
   grid.scrollProgress=.45
   assert(hit.listeners.drag==nil and hit.listeners.endDrag==nil)
-  assert(not hit.click({dragging=true}) and not deck.detailPages and grid.scrollProgress==.45)
+  assert(not hit.click({dragging=true}) and not deck.cardDetail and grid.scrollProgress==.45)
   assert(hit.click() and deck.cardDetail.instance.uid==uid and not grid.visible)
   assert(not panel:GetChild('deckSort').visible and not tool('cost'),'detail cannot sort the hidden list')
-  assert(panel:GetChild('details').text:find('左下角返回',1,true))
+  assert(panel:GetChild('cardFocus').visible and panel:GetChild('pileReturn').visible)
+  assert(not hit.click(),'hidden list receiver replaced the active detail')
   assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update();grid:flush()
-  assert(not deck.detailPages and grid.visible and grid.scrollProgress==.45)
+  assert(not deck.cardDetail and grid.visible and grid.scrollProgress==.45)
   local fresh=grid.items[0];local freshUid=deck.bindings[fresh].uid
   late(fresh,origin+amount-1)
   assert(deck.bindings[fresh].uid==freshUid,'late list callback rebound the returned detail list')
@@ -1244,7 +1245,7 @@ local function permanent()
 end
 assert(deck:open(host.run));deck:update();permanent()
 assert(grid.items[3]:GetChild('hit').click())
-assert(not deck.cardDetail.combat and not panel:GetChild('details').text:find('131',1,true))
+assert(not deck.cardDetail.combat and not panel:GetChild('cardFocus'):GetChild('face'):GetChild('label').text:find('131',1,true))
 assert(deck:toggleUpgradePreview() and deck.cardDetail.preview and not deck.cardDetail.combat)
 assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update();permanent()
 assert(not deck:setSort('name'))
@@ -1263,7 +1264,7 @@ assert(face:GetChild('cost').text=='0' and scopes[face]=='battle','pile lost tra
 assert(plain(grid.items[2]:GetChild('face'):GetChild('label').text):find('131',1,true),'pile lost temporary Rampage growth')
 stale(grid.items[0],3);assert(deck.bindings[grid.items[0]].uid==uid,'permanent callback rebound a combat pile')
 assert(grid.items[2]:GetChild('hit').click() and deck.cardDetail.combat)
-assert(panel:GetChild('details').text:find('131',1,true),'pile detail lost its current combat instance')
+assert(panel:GetChild('cardFocus'):GetChild('face'):GetChild('label').text:find('131',1,true),'pile detail lost its current combat instance')
 assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update()
 assert(not tool('cost') and not tool('type') and order()=='201,202,203,204')
 local pileLate=grid.refreshCallback
@@ -1360,10 +1361,10 @@ for _,amount in ipairs({1,3,5,6,13})do
  local page=deck.pageIndex
  local _,current=visible()
  local hit=current:GetChild('hit')
- assert(not hit.click({dragging=true}) and not deck.detailPages)
+ assert(not hit.click({dragging=true}) and not deck.cardDetail)
  assert(hit.click() and deck.cardDetail.instance.uid==101+(page-1)*10)
  assert(panel:GetChild('pileReturn'):GetChild('hit').click());settle()
- assert(not deck.detailPages and grid.visible and deck.pageIndex==page)
+ assert(not deck.cardDetail and grid.visible and deck.pageIndex==page)
  assert(panel:GetChild('pileReturn'):GetChild('hit').click())
  assert(not grid.visible and visible()==0 and not panel:GetChild('pileChrome').visible)
  unchanged(host.run,before,'official pile inspection changed state or RNG')
@@ -2093,4 +2094,17 @@ for _=1,40 do tick()end
 assert(not art.visible and landscape.visible and landscape.imageColor.a==255 and not shade.visible)
 print('OFFICIAL_SELECTION_ENTRANCE_PASS')
 `, 'OFFICIAL_SELECTION_ENTRANCE_PASS', {}, true, {experimentalCharacters:false});
+});
+
+test('release typography audits every card on official faces',t=>{
+ runOfficial(t,"dofile('tests/lua/card_body_catalog.lua')",
+  'OFFICIAL_CARD_BODY_CATALOG_PASS',{},true,true,output=>{
+   assert.match(output,/CARD_BODY_CATALOG_PASS 368 cards, 2944 versions, 9568 face checks/);
+  });
+});
+
+test('true overflow opens the existing full card on official faces',t=>{
+ runOfficial(t,"dofile('tests/lua/card_body_focus.lua')",'OFFICIAL_CARD_BODY_FOCUS_PASS',{},true,true,output=>{
+  assert.match(output,/CARD_BODY_FOCUS_PASS/);
+ });
 });

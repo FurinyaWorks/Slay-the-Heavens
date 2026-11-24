@@ -221,8 +221,9 @@ end
 -- Treating every glyph as a free break point under-counted lines, so long
 -- dynamic bodies (e.g. 格挡反击「（当前 N 点）」) passed fit and were clipped.
 local closing={['，']=1,['。']=1,['、']=1,['；']=1,['：']=1,['）']=1,['」']=1,['！']=1,['？']=1,['》']=1,['』']=1,
+    ['】']=1,['”']=1,['’']=1,['％']=1,
     [',']=1,['.']=1,[')']=1,[';']=1,[':']=1,['!']=1,['?']=1}
-local opening={['（']=1,['「']=1,['《']=1,['『']=1,['(']=1}
+local opening={['（']=1,['「']=1,['《']=1,['『']=1,['【']=1,['“']=1,['‘']=1,['(']=1}
 local function atoms(text)
     local out,glue={},false
     for ch in text:gmatch('[%z\1-\127\194-\244][\128-\191]*') do
@@ -381,10 +382,10 @@ local function bodyFrame(box,extra)
 end
 -- Body budget keeps the reviewed 1.3x line step; wrapping itself now follows
 -- native kinsoku/Latin-run breaks (see lines above).
-local bodyLine,bodyAdvance=1.3,1
+local reading=Theme.layout.card.reading
 function M.fitBody(text,box,fitText)
     local fit=fitText or M.fit
-    return fit(text,Theme.font.card,box[1],box[2],bodyLine,bodyAdvance)
+    return fit(text,Theme.font.card,box[1],box[2],reading.lineScale,1)
 end
 local function bodyLayout(text,reference,fitText)
     local card=Theme.layout.card
@@ -393,8 +394,8 @@ local function bodyLayout(text,reference,fitText)
     if fits then return box,font,true end
     if reference then
         -- Give a long description extra lines inside the same card.
-        for _,height in ipairs({96,116,132}) do
-            box={128,height}
+        for _,height in ipairs(reading.referenceHeights) do
+            box={reading.referenceWidth,height}
             font,fits=M.fitBody(text,box,fitText)
             if fits then return box,font,true,height-reference.body.size[2] end
         end
@@ -402,11 +403,11 @@ local function bodyLayout(text,reference,fitText)
         box=card.longTextBox
         font,fits=M.fitBody(text,box,fitText)
         if fits then return box,font,true,0 end
-        box={box[1],box[2]+16}
+        box={box[1],box[2]+reading.legacyExtraHeight}
         font,fits=M.fitBody(text,box,fitText)
-        if fits then return box,font,true,16 end
+        if fits then return box,font,true,reading.legacyExtraHeight end
     end
-    return reference and reference.body.size or card.textBox,font,false
+    return box,font,false,reference and box[2]-reference.body.size[2] or reading.legacyExtraHeight
 end
 local function referenceBodyFrame(box,reference,rise,parts)
     if (bodyFrames[box] or 0)==rise then return end
@@ -449,23 +450,51 @@ local function bodyPosition(box,reference,compact)
     if position then return position end
     return {0,-card.size[2]/2+box[2]/2+(compact and Theme.space.xs or Theme.space.border)}
 end
-local function placeBody(control,box,reference,compact)
+local bodyStates=setmetatable({},{__mode='k'})
+local function placeBody(control,box,reference,compact,scale)
     if control.SetSizeDelta then
-        local sized=control:SetSizeDelta(box[1],box[2])~=false
+        local sized=control:SetSizeDelta(box[1]*scale,box[2]*scale)~=false
         local position=bodyPosition(box,reference,compact)
-        return control:SetAnchoredPosition(position[1],position[2])~=false and sized
+        local placed=control:SetAnchoredPosition(position[1],position[2])~=false
+        local old=bodyStates[control]
+        if control.SetLocalScale and (scale~=1 or old and old.scale~=1) then
+            placed=control:SetLocalScale(1/scale,1/scale,1)~=false and placed
+        end
+        return sized and placed
     end
     return true
 end
-function M.writeBody(control,text,face,fitText,referenceParts)
+local function focusedFit(text,box,fitText)
+    local scale=reading.focusScale
+    local fit=fitText or M.fit
+    return fit(text,math.floor(Theme.font.card*scale),box[1]*scale,box[2]*scale,reading.lineScale,1)
+end
+local function publishBody(control,text,face,fitText,referenceParts,focus)
     local reference=face and CardSkin.referenceGeometry(face)
     local box,font,fits,compact=bodyLayout(text,reference,fitText)
-    local placed=placeBody(control,box,reference,compact)
+    local scale=1
+    if not fits and focus then
+        font,fits=focusedFit(text,box,fitText)
+        if not fits then return false,false end
+        scale=reading.focusScale
+    end
+    local placed=placeBody(control,box,reference,compact,scale)
     if reference then referenceBodyFrame(face,reference,compact or 0,referenceParts)
     elseif face then bodyFrame(face,compact or false)end
     control.adaptiveFontSize=false
-    control.text,control.fontSize=fits and text or '',font
+    control.text,control.fontSize=fits and text or '查看卡牌',font
+    bodyStates[control]={over=not fits,scale=scale}
     return fits,placed
+end
+function M.writeBody(control,text,face,fitText,referenceParts)
+    return publishBody(control,text,face,fitText,referenceParts,false)
+end
+function M.writeFocusedBody(control,text,face,fitText)
+    return publishBody(control,text,face,fitText,nil,true)
+end
+function M.bodyOverflows(control)
+    local state=bodyStates[control]
+    return state and state.over==true
 end
 local valueStyles = {
     up = { arrow = '↑', colourKey = 'cardValueIncrease' },

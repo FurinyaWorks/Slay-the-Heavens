@@ -373,8 +373,10 @@ function M.new(root, data, presentation, clickEvent, platform, options)
         -- The official sprint binding defaults to RMB. Listen on the persistent UI root.
         keyRoot:AddKeyEventListener(keys.KeyboardSprintKeyDown, function()
             local run, gesture = self.run, self.gesture or self.carry
+            if host.root.visible==false then return false end
+            if not (gesture or self.selected) then return self:openOverflowCard(self.info) end
             if not self.active or self.busy or not run or run.phase ~= 'combat' or run.combat.phase ~= 'player'
-                or not (gesture or self.selected) or host.root.visible == false then return false end
+                then return false end
             services.cancelCardInputs()
             services.cancelActionInputs()
             services.cancelPotionInputs()

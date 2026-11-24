@@ -1,5 +1,6 @@
 -- Read state, issue Run commands. No damage/energy/outcome rules live in this view.
 local Actors = require("abyss_actor")
+local CardDisplay = require("abyss_card_display")
 local Run = require("abyss_run")
 local RewardOwner = require("abyss_battle_reward_owner")
 local RewardLayout = require("abyss_battle_reward_layout")
@@ -112,13 +113,23 @@ function M.install(owner, ownership, host, dependencies)
     local function handSlot(battle,uid)
         for slot,instance in ipairs(battle.hand)do if instance.uid==uid then return slot end end
     end
-    function owner:cardHelpReady(info)
+    function owner:cardHelpReady(info,covered)
         local run=self.run
-        if not isCard(info) or not run or not self.active or self.busy or run~=info.run or run.combat~=info.battle then return false end
-        if info.reward then return RewardOwner.ready(self,info.reward) end
+        if not isCard(info) or not run or not (self.active or covered) or self.busy or run~=info.run or run.combat~=info.battle then return false end
+        if info.reward then
+            return RewardOwner.ready(self,info.reward,covered) and Run.rewardOptions(run)[info.slot]==info.reward.cardId
+        end
         if run.phase~="combat" or run.combat.phase~="player" or run.combat.turn~=info.turn then return false end
         local instance=run.combat.hand[info.slot]
         return instance and instance.uid==info.uid
+    end
+    function owner.hasOverflowCard(_,info)
+        return isCard(info) and CardDisplay.bodyOverflows(dependencies.child('card'..info.slot):GetChild('label'))
+    end
+    function owner:openOverflowCard(info)
+        return host.options.onCardFocus and self:cardHelpReady(info) and self:hasOverflowCard(info)
+            and not (self.gesture or self.carry or self.selected or self.potionAim or self.potionMenu)
+            and host.options.onCardFocus(info)
     end
     local function openCardHelp(spec,source,transient,battle,actor,reward)
         local slot=spec.slot or handSlot(battle,spec.uid)
