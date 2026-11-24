@@ -530,7 +530,12 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         if not self.focusRead and Combat.upgrade(state,upgraded)then context.upgraded=detailVersion(upgraded,display,state,self.battle)end
         if not paintCardDetail(context,context.current) then return false end
         self.cardDetail=context
-        if self.paged then pool:cancel();self.pendingGrid=false end
+        if self.paged then
+            pool:cancel();self.pendingGrid=false
+        elseif self.browserShell then
+            self.generation=self.generation+1
+            self.pending,self.pendingGrid,self.gridReady=false,false,nil
+        end
         details:SetAnchoredPosition(360,30);details:SetSizeDelta(noteWidth,noteHeight)
         detailHit:SetAnchoredPosition(360,30);detailHit:SetSizeDelta(noteWidth,noteHeight)
         for _,name in ipairs({'previous','next','pageHint'})do root:GetChild(name):SetVisible(false)end
@@ -905,8 +910,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
             end
             return
         end
-        if not self.visible then liveFaces();return end
-        if self.detailPages then liveFaces();return end
+        if not self.visible or inDetail() then liveFaces();return end
         if self.browserShell then liveFaces()
         else liveFaces(function(face)CardSkin.tick(face,dt or 0)end) end
         if not self.pending then return end
@@ -916,7 +920,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         liveFaces()
     end
     function self.stepPage(_,delta)
-        if not self.paged or self.detailPages then return false end
+        if not self.paged or inDetail() then return false end
         local page=self.pageIndex+delta
         if page<1 or page>self.pageCount then return false end
         self.pageIndex=page
@@ -1019,7 +1023,9 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         if self.cardDetail then
             hideCardDetail();details:SetVisible(false);detailHit:SetVisible(false);grid:SetVisible(not self.paged)
             closeLabel('关闭');paintBrowse()
-            if self.paged then browserRequest() else self:update(0) end
+            if self.paged then browserRequest()
+            elseif self.browserShell then self.pending=true
+            else self:update(0) end
             if onChanged then onChanged()end
             return true
         end
