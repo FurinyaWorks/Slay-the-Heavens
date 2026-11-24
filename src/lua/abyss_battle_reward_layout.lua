@@ -85,8 +85,8 @@ function M.mobileLayouts(hud)
  local mobile=hud.rewardList
  local function fit(layout,slots)
   local titleY=hud.contentTop-layout.title[4]/2-4
-  local top=mobile.rowY+base.rowSize[2]/2+12
-  local bottom=top-base.rowSize[2]-24-(slots-1)*mobile.rowStep
+  local top=mobile.rowY+base.rowSize[2]/2+8
+  local bottom=top-base.rowSize[2]-16-(slots-1)*mobile.rowStep
   return setmetatable({
    title={layout.title[1],titleY,layout.title[3],layout.title[4]},
    subtitle={layout.subtitle[1],titleY-38,layout.subtitle[3],28},
@@ -151,6 +151,8 @@ function M.banner(dependencies,mobile)
  local battle,animation
  local veil=Theme.officialAssets.backdropVeil
  local rise=mobile and 0 or Theme.space.xl
+ local official=Theme.presentationProfile=='official-assets-first'
+ local colour=official and Theme.color.panelSunken or Theme.color.text
  local function paint(view,progress)
   local ease=1-(1-progress)^3
   local y=view.y+(1-ease)*rise
@@ -158,8 +160,7 @@ function M.banner(dependencies,mobile)
   view.paper:SetAnchoredPosition(view.x,y)
   view.title:SetAnchoredPosition(view.x,y)
   view.title:SetLocalScale(scale,scale,1)
-  local colour=Theme.color.text
-  dependencies.ink(view.title,{r=colour.r,g=colour.g,b=colour.b,a=math.floor(colour.a*ease+.5)})
+  dependencies.ink(view.title,{r=colour.r,g=colour.g,b=colour.b,a=math.floor(colour.a*(official and 1 or ease)+.5)})
   dependencies.tint(view.dim,{r=veil.r,g=veil.g,b=veil.b,a=math.floor(veil.a*(.5+.5*ease)+.5)})
  end
  local function show(frame,active)

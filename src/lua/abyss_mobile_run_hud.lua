@@ -66,6 +66,8 @@ end
 local function contentGeometry(child,mobile)
     local top=mobile.contentTop
     local node=child('nodePanel')
+    -- A room's opaque scenery must not paint over its relocated notice.
+    node:GetChild('notice'):SetAsLastSibling()
     for _,name in ipairs({'pickerView','shopView','campView','treasureView'})do
         node:GetChild(name):SetAnchoredPosition(0,mobile.roomY)
     end
@@ -79,6 +81,7 @@ local function contentGeometry(child,mobile)
         belowBand(dark,top)
     end
     rewardStageGeometry(battle:GetChild('rewardStage'),top)
+    battle:GetChild('skip'):SetSizeDelta(Theme.layout.rewardPick.skip[3],mobile.hit)
 end
 
 local function pageGeometry(child,kind,desk,mobile)

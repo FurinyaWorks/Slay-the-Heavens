@@ -75,7 +75,17 @@ local function alignEventBody(body, neow, alignment)
     body.horizontalAlignment = neow and alignment.horizontal.Middle or alignment.horizontal.Left
     body.verticalAlignment = neow and alignment.vertical.Middle or alignment.vertical.Top
 end
-local function renderEventFigure(event, id, alignment, bubbleText)
+local function renderEventText(event,neow,alignment)
+    if not NEOW then return end
+    local body=event:GetChild('body')
+    event:GetChild('name'):SetVisible(not neow)
+    if not neow or not NEOW.stsChoice then
+        place(body,neow and NEOW.bubbleText or layout.event.body)
+    end
+    alignEventBody(body,neow,alignment)
+end
+
+local function renderEventFigure(event, id, alignment)
     local neow = id == 'neow' and NEOW ~= nil
     local figure, art = event:GetChild('neowFigure'), event:GetChild('art')
     if figure then figure:SetVisible(neow) end
@@ -86,26 +96,12 @@ local function renderEventFigure(event, id, alignment, bubbleText)
     end
     if neow then event:GetChild('caption').text = '七天神像' end
     local bubble = event:GetChild('bubble'); if bubble then bubble:SetVisible(neow) end
-    if not NEOW then return end
-    local name, body = event:GetChild('name'), event:GetChild('body')
-    name:SetVisible(not neow)
-    -- talk(): Neow's line lives in the InfiniteSpeechBubble, dark ink on the light bubble.
-    place(body, neow and bubbleText or layout.event.body)
-    alignEventBody(body, neow, alignment)
+    renderEventText(event,neow,alignment)
 end
 local function renderEventLayout(event,id,options)
     local mobile=options.mobileRunHud
-    local dialog=NEOW and NEOW.bubbleText
-    if mobile then
-        local neow=id=='neow'
-        event:SetAnchoredPosition(0,neow and 0 or mobile.roomY)
-        if neow then
-            local x,y,w,h=table.unpack(dialog)
-            dialog={x,y+mobile.neowOptions.bubbleLift,w,h}
-            event:GetChild('bubble'):SetAnchoredPosition(dialog[1],dialog[2])
-        end
-    end
-    renderEventFigure(event,id,options.textAlignments,dialog)
+    if mobile then event:SetAnchoredPosition(0,id=='neow' and 0 or mobile.roomY) end
+    renderEventFigure(event,id,options.textAlignments)
 end
 -- LargeDialogOptionButton.calculateY (ROOM): bottom-aligned stack, -82px per slot, x = 620.
 local function inlineLines(text)
@@ -138,13 +134,32 @@ local function sizeOptionInput(box, w, h, neow, mobile)
     end
 end
 
+local function neowFrame(mobile)
+    local n=NEOW.options
+    if not mobile then return n.bottom,n.spacing,n.size[2] end
+    local frame=mobile.neowOptions
+    return -Theme.canvas.base[2]/2+frame.bottomInset+mobile.hit/2,frame.spacing,frame.faceHeight
+end
+
+local function placeNeowDialog(event,count,mobile)
+    if not NEOW.stsChoice then return end
+    local bottom,spacing,height=neowFrame(mobile)
+    local x,preferred,w,h=table.unpack(NEOW.bubbleText)
+    if mobile then preferred=preferred+mobile.neowOptions.bubbleLift end
+    local bubble=event:GetChild('bubble')
+    local optionTop=bottom+(count-1)*spacing+height/2
+    -- Keep sparse dialogue near its next action while retaining the full
+    -- figure and an uncluttered lane for the four-choice stack.
+    local y=math.min(preferred,math.max(-56,optionTop+bubble.sizeDeltaY/2+56))
+    bubble:SetAnchoredPosition(x,y)
+    place(event:GetChild('body'),{x,y,w,h})
+end
+
 local function neowOption(box, index, count, mobile)
     local n=NEOW.options
-    local bottom,spacing,height=n.bottom,n.spacing,n.size[2]
+    local bottom,spacing,height=neowFrame(mobile)
     if mobile then
         local frame=mobile.neowOptions
-        bottom=-Theme.canvas.base[2]/2+frame.bottomInset+mobile.hit/2
-        spacing,height=frame.spacing,frame.faceHeight
         box:GetChild('stsNeowChrome'):SetLocalScale(1,height/n.size[2],1)
         local caption=box:GetChild('stsNeowText')
         caption:SetSizeDelta(n.title[3],height)
@@ -160,6 +175,7 @@ local function placeOptions(event, neow, rows, mobile)
     local o = layout.event.options
     local count = math.min(#rows, OPTIONS)
     local frames = layout.event.reference and not neow and compactFrames(rows)
+    if neow then placeNeowDialog(event,count,mobile) end
     for i = 1, OPTIONS do
         local box = event:GetChild('option' .. i)
         if box then

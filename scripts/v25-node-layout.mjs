@@ -343,10 +343,11 @@ function styleRewards(battle,theme){
   }
   proceedFlag(must(battle,'continue'),theme);
  }
- must(list,'title').text.colour=theme.color.text;must(list,'subtitle').text.colour='#D6D5C5';
+ const ink=theme.presentationProfile==='official-assets-first'?theme.color.panelSunken:null;
+ must(list,'title').text.colour=ink??theme.color.text;must(list,'subtitle').text.colour='#D6D5C5';
  setRect(must(stage,'title'),relative(r.title));setRect(must(stage,'subtitle'),relative(r.subtitle));
  if(theme.presentationProfile){
-  type(must(stage,'title'),29,'#EFE8D4');type(must(stage,'subtitle'),16,'#D6D5C5');
+  type(must(stage,'title'),29,ink??'#EFE8D4');type(must(stage,'subtitle'),16,'#D6D5C5');
   const skip=must(battle,'skip');setRect(skip,r.skip);for(const state of parts(skip))state.size=r.skip.slice(2);stylePreset(skip);
  }
 }

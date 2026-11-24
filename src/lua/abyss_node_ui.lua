@@ -35,11 +35,14 @@ local function positionNotice(control,screen,top)
     -- The old position was hidden by the taller mobile chrome. Room notes
     -- now sit in the content area, clear of the role-specific heading or choices.
     if screen=='treasureView' then
-        control:SetAnchoredPosition(-350,top-30)
-        control:SetSizeDelta(400,52)
+        control:SetAnchoredPosition(-366,top-36)
+        control:SetSizeDelta(460,64)
     elseif screen=='eventView' then
         control:SetAnchoredPosition(-365,-225)
         control:SetSizeDelta(400,52)
+    elseif screen=='campView' then
+        control:SetAnchoredPosition(0,-305)
+        control:SetSizeDelta(760,52)
     else
         control:SetAnchoredPosition(0,top-30)
         control:SetSizeDelta(760,52)

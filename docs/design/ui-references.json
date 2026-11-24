@@ -9,7 +9,7 @@
       "backlogTask": "TASK-4.12",
       "reference": {
         "path": "docs/design/reference-assets/v2.0.0/release-layout-20261124.md",
-        "sha256": "036f61ba190bbb4495ef902a43d0e06e6ef4f8bf8ee9c16d4c87501bce968813"
+        "sha256": "dac3dcf996bf04a0452917c98a6de18255839d526a042ac679aaa543705b7837"
       },
       "supersedes": [],
       "source": "https://mitadmissions.org/wp-content/uploads/2021/02/1613924743.png",
@@ -32,7 +32,7 @@
       "backlogTask": "TASK-4.12",
       "reference": {
         "path": "docs/evidence/release-layout-20261124/README.md",
-        "sha256": "f8f69fd4b7fef85ecea242a5828944f9feaafa82e18cd9c1daecb2cbe5cc450c"
+        "sha256": "0ee0a7840b95a2f5dc590e7351e53eff82c20145a7e2320d955218cdf58bb79c"
       },
       "supersedes": [],
       "source": "https://mitadmissions.org/wp-content/uploads/2021/02/1613924743.png",
@@ -55,7 +55,7 @@
       "backlogTask": "TASK-38.4",
       "reference": {
         "path": "docs/design/reference-assets/v2.0.0/release-layout-20261124.md",
-        "sha256": "036f61ba190bbb4495ef902a43d0e06e6ef4f8bf8ee9c16d4c87501bce968813"
+        "sha256": "dac3dcf996bf04a0452917c98a6de18255839d526a042ac679aaa543705b7837"
       },
       "supersedes": [
         "run-hud-pd-20261124",
@@ -81,7 +81,7 @@
       "backlogTask": "TASK-38.4",
       "reference": {
         "path": "docs/evidence/release-layout-20261124/README.md",
-        "sha256": "f8f69fd4b7fef85ecea242a5828944f9feaafa82e18cd9c1daecb2cbe5cc450c"
+        "sha256": "0ee0a7840b95a2f5dc590e7351e53eff82c20145a7e2320d955218cdf58bb79c"
       },
       "supersedes": [],
       "source": "https://developer.apple.com/design/human-interface-guidelines/designing-for-games",
@@ -104,7 +104,7 @@
       "backlogTask": "TASK-38.4",
       "reference": {
         "path": "docs/design/reference-assets/v2.0.0/release-layout-20261124.md",
-        "sha256": "036f61ba190bbb4495ef902a43d0e06e6ef4f8bf8ee9c16d4c87501bce968813"
+        "sha256": "dac3dcf996bf04a0452917c98a6de18255839d526a042ac679aaa543705b7837"
       },
       "supersedes": [],
       "source": "https://images.steamusercontent.com/ugc/957481092836729609/B9E28A64F2A7481684562684F4E09FA8E7F88970/",
@@ -125,7 +125,7 @@
       "backlogTask": "TASK-38.4",
       "reference": {
         "path": "docs/evidence/release-layout-20261124/README.md",
-        "sha256": "f8f69fd4b7fef85ecea242a5828944f9feaafa82e18cd9c1daecb2cbe5cc450c"
+        "sha256": "0ee0a7840b95a2f5dc590e7351e53eff82c20145a7e2320d955218cdf58bb79c"
       },
       "supersedes": [],
       "source": "https://images.steamusercontent.com/ugc/957481092836729609/B9E28A64F2A7481684562684F4E09FA8E7F88970/",
@@ -146,7 +146,7 @@
       "backlogTask": "TASK-103.2",
       "reference": {
         "path": "docs/design/reference-assets/v2.0.0/release-layout-20261124.md",
-        "sha256": "036f61ba190bbb4495ef902a43d0e06e6ef4f8bf8ee9c16d4c87501bce968813"
+        "sha256": "dac3dcf996bf04a0452917c98a6de18255839d526a042ac679aaa543705b7837"
       },
       "supersedes": [],
       "source": "https://mitadmissions.org/wp-content/uploads/2021/02/1613925089.png",
@@ -174,7 +174,7 @@
       "backlogTask": "TASK-103.2",
       "reference": {
         "path": "docs/evidence/release-layout-20261124/README.md",
-        "sha256": "f8f69fd4b7fef85ecea242a5828944f9feaafa82e18cd9c1daecb2cbe5cc450c"
+        "sha256": "0ee0a7840b95a2f5dc590e7351e53eff82c20145a7e2320d955218cdf58bb79c"
       },
       "supersedes": [],
       "source": "https://mitadmissions.org/wp-content/uploads/2021/02/1613925089.png",

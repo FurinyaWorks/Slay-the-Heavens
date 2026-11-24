@@ -46,6 +46,11 @@ local function openingChoices(host,picture,screen,count,mobile)
             local required=mobile and 21*3 or 20*screen[2]/720
             assert(bottom>=required,'Neow bottom clearance is '..bottom..'px')
             assert(above(prior,hit),'Neow options overlap the speech bubble or each other')
+            if i==1 then
+                local face=picture.at(base..'/stsNeowChrome')
+                assert(bubble.y-bubble.h/2-(face.y+face.h/2)<=125*screen[2]/720,
+                    'Neow speech is too far above its first option')
+            end
             local text,caption=picture.at(base..'/stsNeowText')
             local copy=caption.text:gsub('<[^>]+>','')
             assert(contains(hit,text),'Neow caption exceeds its touch bounds')
@@ -62,6 +67,7 @@ end
 local function heading(picture,base,title,expected,reference)
     local text,control=picture.at(base..title)
     assert(control.visible~=false and control.text==expected,'wrong reward heading: '..tostring(control.text))
+    assert(not control.fontColor or control.fontColor.a==255,'visible reward paper has a faded title')
     local paper,material=picture.at(base..'/v25RewardPaper/paperCore')
     assert(material.visible~=false,'reward banner is hidden')
     near(text.x,paper.x,'banner/title X')
@@ -81,7 +87,7 @@ if mode=='opening-layout' then
             assert(#host.run.nodeFlow.event.rewards==count)
             if count==4 then
                 -- Longest combined drawback/reward wording, using the real Neow text writer.
-                host.run.nodeFlow.event.rewards[3]={type='RANDOM_COLORLESS_2',drawback='TEN_PERCENT_HP_LOSS'}
+                host.run.nodeFlow.event.rewards[3]={type='RANDOM_COLORLESS_2',drawback='CURSE'}
                 host:refresh()
             end
             openingChoices(host,picture,screen,count,mobile)
@@ -165,9 +171,11 @@ else
         assert(Run.startCombat(host.run,'cultist_solo'))
         host:refresh();host:update(1)
         for _,enemy in ipairs(host.run.combat.enemies)do enemy.hp=0 end
-        host.run.combat.phase='victory';assert(Run.finishCombat(host.run));host:refresh();host:update(1)
+        host.run.combat.phase='victory';assert(Run.finishCombat(host.run));host:refresh()
         local list=battle..'rewardList'
         if mode=='reward-list-layout' then
+            heading(picture,list,'/title','战斗胜利',limit)
+            host:update(1)
             heading(picture,list,'/title','战斗胜利',limit)
             H.click(picture,battle..'goldReward',1)
             assert(host.run.rewards.goldClaimed)
@@ -193,6 +201,7 @@ else
                 end
             end
         else
+            host:update(1)
             H.click(picture,battle..'cardReward',1)
             host:update(1)
             local pick=battle..'rewardStage'
@@ -200,6 +209,11 @@ else
             for i=1,3 do
                 local card,control=picture.at(battle..'card'..i)
                 assert(control.visible and above(picture.at(pick..'/subtitle'),card),'missing or occluded card '..i)
+            end
+            if mobile then
+                local skip=target(picture,battle..'skip')
+                for i=1,3 do assert(above(picture.at(battle..'card'..i),skip),'skip overlaps a card')end
+                reachable(picture,battle..'skip')
             end
             H.click(picture,battle..'skip',2)
             assert(host.run.phase=='reward' and select(2,picture.at(list)).visible)

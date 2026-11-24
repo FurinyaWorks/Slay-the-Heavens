@@ -10276,245 +10276,245 @@
       "sha256": "9a7fe4b3ff1d734752afbe9038f2b6bf8e766e8d2a8de571191fcd8563f3429e",
       "category": "deck-browser-host-evidence"
     },
-      "docs/evidence/release-layout-20261124/screens/after/iphone-camp.png": {
-        "sha256": "235f9d30c75ba6218bf295bf85e09eb102fd6da6b94cb2259be6037961a13dac",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/iphone-combat.png": {
-        "sha256": "8c6303687e0ebda630404a6018fed12437c04477f607cb289ec8170c30b74c41",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/iphone-event.png": {
-        "sha256": "a9f5ab949535396d659ffa6457403bdcfc1f41d12a6e98874d5d56a3ccc9b4be",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/iphone-map-relic-detail.png": {
-        "sha256": "c9698dc152a6dd61665036bfbd131d04f58edaf296bdb8066b697038caad9136",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/iphone-map-relics-page2.png": {
-        "sha256": "faeca0cf042f5597c70c82d4258fa844c97d34722a920f8365ac9673d468a4c8",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/iphone-map-relics.png": {
-        "sha256": "33595aa5d3174c6689f4aa5ac647e034cfca1c8d088a8e448c6b509ca09156fa",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/iphone-map.png": {
-        "sha256": "501b4179464d69d8b90159bcab544e1822aa6c7959b79dfcfe8bfd9c5d92ac70",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/iphone-neow-2.png": {
-        "sha256": "26082e6ce610971d001fe19a1763f1c9841dac4936a1643e6b8ef4a929e6833e",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/iphone-neow-4.png": {
-        "sha256": "08651dc7762517264a3712877c36dc1ed4bed9cf82f4f46b7ed78e755243b464",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/iphone-neow-continue.png": {
-        "sha256": "489a84a5efaf34a3be1c1f9ae91cf583149c1e185b2be4dea8b1d21af0f96998",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/iphone-reward-list.png": {
-        "sha256": "4809caf248f531870929b25b70133883141a3950d88d51b6e3708521076d190f",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/iphone-reward-pick.png": {
-        "sha256": "8e44c51aa2fa06c76561c15d064f1a4502bac66b219ab2b0ed39c157f60ce553",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/iphone-shop.png": {
-        "sha256": "842b19cdb72a7ff246be8744e08e6bcc11c3255b9b1141f157700075d9d499a6",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/iphone-treasure-closed.png": {
-        "sha256": "5436f9dcd19e2e96fe2af8a0d659e0ed1396995529300495e7edc6a3b4e80222",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/iphone-treasure-rewards.png": {
-        "sha256": "758e8fa20d3d3790a5b199be8d067a262fcdaf7588e1255c53eadf42948cbf78",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/pc-camp.png": {
-        "sha256": "731d35f912e0e854ac041e568af1c5544e822525ca1989ff21e8c55fabb8869c",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/pc-combat.png": {
-        "sha256": "5f311d328755d6e956ce77af52c5b6af40376a06d071b53451fb8ae047a7ef10",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/pc-event.png": {
-        "sha256": "995088a5cb7243631a75fbbb324921ede262bbebef4d401606d61beddc4b831b",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/pc-map-relic-detail.png": {
-        "sha256": "315ae978f46395196fb35d5ccfc144bc6151bf78525d8e5d30e99accd17a85fe",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/pc-map-relics-page2.png": {
-        "sha256": "43feb114d9fd4791ba1a9c1c2fa4e72f7b0feb8a0ca7e8d59c1d19dff75b1af9",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/pc-map-relics.png": {
-        "sha256": "796a102588bd9e8ad1779021b8c8582d2c83d2ae7db0b20b11be9d30813bed2f",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/pc-map.png": {
-        "sha256": "86d0601d91b0659e9e5cc22d30d7932a3701f150a69968eed2326219387d4fab",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/pc-neow-2.png": {
-        "sha256": "83cd76d1f905315622be4af44fe3670064f1ffafb89d5043a2b13ab0b9a10dee",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/pc-neow-4.png": {
-        "sha256": "5c1ba1b17351978e49d3a85bd00d9ebe57325d40ee12af33a682e6ebe45d786a",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/pc-neow-continue.png": {
-        "sha256": "f58f301a8e64620632f3328df1cae141b9a84b5bf9834f847b53b48ab704332f",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/pc-reward-list.png": {
-        "sha256": "6e897e69309038aef89cd5d3ee3cdfdef98324c5102fcec2f5d03c0258b58d82",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/pc-reward-pick.png": {
-        "sha256": "bb496eda744f9eab4a509e47d88e52d58654cb6311f87ae25233204e29ce28e8",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/pc-shop.png": {
-        "sha256": "22ffdb322f45c176c190e3464e94b1b6b107d9a4be88612a9bbbe30f2d7859f2",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/pc-treasure-closed.png": {
-        "sha256": "52bbb42740ea24c613626fd9fc1211037f5efd27e9dbd9f41499f4b455d3cbc1",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/after/pc-treasure-rewards.png": {
-        "sha256": "5bd56c157362a5d4e521f1f8f221d5f928471ee4f2a8c4a3a9854abc0f2e37c0",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/iphone-camp.png": {
-        "sha256": "30e31e33ff377f93103ea229f9f73e15542c588821cf0f7fbc4cb40432cf5194",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/iphone-combat.png": {
-        "sha256": "95a2e435f4fcd6d66a52ea380436eccde814bc6427c9149513b3bc1814b5065f",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/iphone-event.png": {
-        "sha256": "87811721e785eb28284e88c061e9a35800ac32e562c6a219843317ffa39c6c18",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/iphone-map-relic-detail.png": {
-        "sha256": "258356c2f2f07497ce81c7a5ad686e529ab4e4494f2e5e2cb56ec925eedf5325",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/iphone-map-relics-page2.png": {
-        "sha256": "dac883fb251b0b80b840159babeea4de7ba2d87dbb18fe85a2ea1a869d92e5f7",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/iphone-map-relics.png": {
-        "sha256": "87463ca4280cc036b10a777b405a64d412404d7f805621c0b9666bd2b51b16ba",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/iphone-map.png": {
-        "sha256": "26febad96c109efbe150db576b0d3545f89cdd951793f6dd000cf9299d4f5bb0",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/iphone-neow-2.png": {
-        "sha256": "4b9f04a625e0401e5f3c700e63417370e07d3c341c9cacf199954b2f90732503",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/iphone-neow-4.png": {
-        "sha256": "ff0f9820339d79f905dfde3e3caad587f7a90c724ab4d42cd10666f003aa4ff0",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/iphone-neow-continue.png": {
-        "sha256": "9f2eee6b6aec2d76cad77978eec2eb10c43f9c5c360f4282ed62d27c5bf51845",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/iphone-reward-list.png": {
-        "sha256": "f55c8939389b5eb90746c9b85fd97f8050e995fa52f1a10a85b66377b9837cb5",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/iphone-reward-pick.png": {
-        "sha256": "9c62e8999e1d1ac1f8a261c70f26b00209c3d7ba983a939d09f871c23a47b945",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/iphone-shop.png": {
-        "sha256": "a866ca3efe805d4eb7a85b8e74a721d6140af66e9ba2d54ad1352ec57b2acd83",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/iphone-treasure-closed.png": {
-        "sha256": "68bd90e4351788496f0451ba6b73c453abddd0a1894da9bbae77864847d3e74c",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/iphone-treasure-rewards.png": {
-        "sha256": "a20433fc41ae8a2708bf3df41bd212ca6ef9ac530545985d416eca52ceb47405",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/pc-camp.png": {
-        "sha256": "0e88e04f83c3c995a9d15f8786cc8aea1087001c5dca2d37ba1d526f52f35390",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/pc-combat.png": {
-        "sha256": "eac678fb2d2a738b4c4aadce54fd76066f435639e89dbc560a19282c12c80332",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/pc-event.png": {
-        "sha256": "4ca98c6810944c9ca0a3d77b5240bafd6426884ef1ba030589a12ff2ed2c33f5",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/pc-map-relic-detail.png": {
-        "sha256": "585166a8c9f53595b5751c02972773843df772174aea923158132e4a81c6236c",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/pc-map-relics-page2.png": {
-        "sha256": "c80da876316cbf3f3e0dfb7543afc52e44ce0066e61814341700c46425a86175",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/pc-map-relics.png": {
-        "sha256": "96406df1fa841e0d79568193669992a69839c5ca4e393213f0c9967e736cfa09",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/pc-map.png": {
-        "sha256": "701a2cbc2db8427077f6f9729d794e0c7975f5e7011b41de2e5e9f9fb5d3e8fc",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/pc-neow-2.png": {
-        "sha256": "8f7dbc6c3023fff1eef61c3ea5105ad17e8f0dc601138bca42f3c976e6d7a831",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/pc-neow-4.png": {
-        "sha256": "8ef267fa8513a5989cb699fd11a3f6958ef0cf10a81c85cfdd2fc408f8a34833",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/pc-neow-continue.png": {
-        "sha256": "0a48ae3d856b1b4cbcccebb4244dc6037cdedbf7bcd711d837ef689656e34a8d",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/pc-reward-list.png": {
-        "sha256": "783d4195c76603e6b82997b2a98db6c52bcf3f9f7402e6df52691a0a10e148b1",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/pc-reward-pick.png": {
-        "sha256": "44a0da3acee71b623d95785698801442c09a392e6ac078bf75acf5537233d9f2",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/pc-shop.png": {
-        "sha256": "d001256c644f1e1961bf9be4089ee338346565244c7c308a1948d68ba828cf56",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/pc-treasure-closed.png": {
-        "sha256": "cdd562de36bd38e72ba954632298f352f5cba582597e305d9628393f754f46ac",
-        "category": "official-assets-offline-diagnostic"
-      },
-      "docs/evidence/release-layout-20261124/screens/before/pc-treasure-rewards.png": {
-        "sha256": "ad4f514335901b6509a4e93dca846ea2f92b4157263fc669aa769f2069d498b0",
-        "category": "official-assets-offline-diagnostic"
-      }
+    "docs/evidence/release-layout-20261124/screens/after/iphone-camp.png": {
+      "sha256": "d6ea99eacc6ac818dc4ccd2e422284baf96c58074e0477727ddfd3403ff6bb36",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/iphone-combat.png": {
+      "sha256": "8c6303687e0ebda630404a6018fed12437c04477f607cb289ec8170c30b74c41",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/iphone-event.png": {
+      "sha256": "a9f5ab949535396d659ffa6457403bdcfc1f41d12a6e98874d5d56a3ccc9b4be",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/iphone-map-relic-detail.png": {
+      "sha256": "c9698dc152a6dd61665036bfbd131d04f58edaf296bdb8066b697038caad9136",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/iphone-map-relics-page2.png": {
+      "sha256": "faeca0cf042f5597c70c82d4258fa844c97d34722a920f8365ac9673d468a4c8",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/iphone-map-relics.png": {
+      "sha256": "33595aa5d3174c6689f4aa5ac647e034cfca1c8d088a8e448c6b509ca09156fa",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/iphone-map.png": {
+      "sha256": "501b4179464d69d8b90159bcab544e1822aa6c7959b79dfcfe8bfd9c5d92ac70",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/iphone-neow-2.png": {
+      "sha256": "80a1d4dc8480c91b12972300d3da3c876a2b7a5cbafe85702310ebf73288d504",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/iphone-neow-4.png": {
+      "sha256": "2caacd71f0dbd7e0dfd63ed63b716757b9d1e3b257e7b03059912db9091cba7f",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/iphone-neow-continue.png": {
+      "sha256": "2660d3059b73c014750011ababa2d36d4740bc1e718424388ef2b2915aaf5d45",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/iphone-reward-list.png": {
+      "sha256": "819a3ad589af442042458d40405298a1d93a5f7b50ba2d3c1193878dfb837ea0",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/iphone-reward-pick.png": {
+      "sha256": "d623084974792eb5e7862ab92ba310d2698bc1a91ec00f6b8b4357003acd7936",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/iphone-shop.png": {
+      "sha256": "842b19cdb72a7ff246be8744e08e6bcc11c3255b9b1141f157700075d9d499a6",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/iphone-treasure-closed.png": {
+      "sha256": "730de0e0e4efb9420e973115083f593f77eb6ca85388d4cc24b152d1599bc36b",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/iphone-treasure-rewards.png": {
+      "sha256": "9c06f296147d2aa9b710841270c1ca6c1f6a2824a0dbe9068f1351de11f2f028",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/pc-camp.png": {
+      "sha256": "731d35f912e0e854ac041e568af1c5544e822525ca1989ff21e8c55fabb8869c",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/pc-combat.png": {
+      "sha256": "5f311d328755d6e956ce77af52c5b6af40376a06d071b53451fb8ae047a7ef10",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/pc-event.png": {
+      "sha256": "995088a5cb7243631a75fbbb324921ede262bbebef4d401606d61beddc4b831b",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/pc-map-relic-detail.png": {
+      "sha256": "315ae978f46395196fb35d5ccfc144bc6151bf78525d8e5d30e99accd17a85fe",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/pc-map-relics-page2.png": {
+      "sha256": "43feb114d9fd4791ba1a9c1c2fa4e72f7b0feb8a0ca7e8d59c1d19dff75b1af9",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/pc-map-relics.png": {
+      "sha256": "796a102588bd9e8ad1779021b8c8582d2c83d2ae7db0b20b11be9d30813bed2f",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/pc-map.png": {
+      "sha256": "86d0601d91b0659e9e5cc22d30d7932a3701f150a69968eed2326219387d4fab",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/pc-neow-2.png": {
+      "sha256": "625176d18f683aa6d2bcc408380c0746c5573abc9f9dd80a6a7248086d17e815",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/pc-neow-4.png": {
+      "sha256": "2ba42ac90771f9c2455af94135e57cef628573b669911e2388f4af06d511df1a",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/pc-neow-continue.png": {
+      "sha256": "00defec522690c61ffc0dace039e6c685a5647df4e97ee1aa1e479de7911cff0",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/pc-reward-list.png": {
+      "sha256": "20a99cfea30d9b25ee4ded8f0ee82a9feb043baf6b203bf554dd8363f74b4b9a",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/pc-reward-pick.png": {
+      "sha256": "37869554971febf89daf50f5cb66a85c647ffe9f7aa98559cc8ed555bec316e6",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/pc-shop.png": {
+      "sha256": "22ffdb322f45c176c190e3464e94b1b6b107d9a4be88612a9bbbe30f2d7859f2",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/pc-treasure-closed.png": {
+      "sha256": "52bbb42740ea24c613626fd9fc1211037f5efd27e9dbd9f41499f4b455d3cbc1",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/after/pc-treasure-rewards.png": {
+      "sha256": "5bd56c157362a5d4e521f1f8f221d5f928471ee4f2a8c4a3a9854abc0f2e37c0",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/iphone-camp.png": {
+      "sha256": "30e31e33ff377f93103ea229f9f73e15542c588821cf0f7fbc4cb40432cf5194",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/iphone-combat.png": {
+      "sha256": "95a2e435f4fcd6d66a52ea380436eccde814bc6427c9149513b3bc1814b5065f",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/iphone-event.png": {
+      "sha256": "87811721e785eb28284e88c061e9a35800ac32e562c6a219843317ffa39c6c18",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/iphone-map-relic-detail.png": {
+      "sha256": "258356c2f2f07497ce81c7a5ad686e529ab4e4494f2e5e2cb56ec925eedf5325",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/iphone-map-relics-page2.png": {
+      "sha256": "dac883fb251b0b80b840159babeea4de7ba2d87dbb18fe85a2ea1a869d92e5f7",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/iphone-map-relics.png": {
+      "sha256": "87463ca4280cc036b10a777b405a64d412404d7f805621c0b9666bd2b51b16ba",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/iphone-map.png": {
+      "sha256": "26febad96c109efbe150db576b0d3545f89cdd951793f6dd000cf9299d4f5bb0",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/iphone-neow-2.png": {
+      "sha256": "4b9f04a625e0401e5f3c700e63417370e07d3c341c9cacf199954b2f90732503",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/iphone-neow-4.png": {
+      "sha256": "717e8588c31728194b47c79662b5b1a3e94bbebe91818a61b7babc75caa0a17f",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/iphone-neow-continue.png": {
+      "sha256": "9f2eee6b6aec2d76cad77978eec2eb10c43f9c5c360f4282ed62d27c5bf51845",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/iphone-reward-list.png": {
+      "sha256": "f55c8939389b5eb90746c9b85fd97f8050e995fa52f1a10a85b66377b9837cb5",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/iphone-reward-pick.png": {
+      "sha256": "9c62e8999e1d1ac1f8a261c70f26b00209c3d7ba983a939d09f871c23a47b945",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/iphone-shop.png": {
+      "sha256": "a866ca3efe805d4eb7a85b8e74a721d6140af66e9ba2d54ad1352ec57b2acd83",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/iphone-treasure-closed.png": {
+      "sha256": "68bd90e4351788496f0451ba6b73c453abddd0a1894da9bbae77864847d3e74c",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/iphone-treasure-rewards.png": {
+      "sha256": "a20433fc41ae8a2708bf3df41bd212ca6ef9ac530545985d416eca52ceb47405",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/pc-camp.png": {
+      "sha256": "0e88e04f83c3c995a9d15f8786cc8aea1087001c5dca2d37ba1d526f52f35390",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/pc-combat.png": {
+      "sha256": "eac678fb2d2a738b4c4aadce54fd76066f435639e89dbc560a19282c12c80332",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/pc-event.png": {
+      "sha256": "4ca98c6810944c9ca0a3d77b5240bafd6426884ef1ba030589a12ff2ed2c33f5",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/pc-map-relic-detail.png": {
+      "sha256": "585166a8c9f53595b5751c02972773843df772174aea923158132e4a81c6236c",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/pc-map-relics-page2.png": {
+      "sha256": "c80da876316cbf3f3e0dfb7543afc52e44ce0066e61814341700c46425a86175",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/pc-map-relics.png": {
+      "sha256": "96406df1fa841e0d79568193669992a69839c5ca4e393213f0c9967e736cfa09",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/pc-map.png": {
+      "sha256": "701a2cbc2db8427077f6f9729d794e0c7975f5e7011b41de2e5e9f9fb5d3e8fc",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/pc-neow-2.png": {
+      "sha256": "8f7dbc6c3023fff1eef61c3ea5105ad17e8f0dc601138bca42f3c976e6d7a831",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/pc-neow-4.png": {
+      "sha256": "41681b2be7560cd1cc5c0ec1fa54f0ab238082cf869f013aca004482c6818065",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/pc-neow-continue.png": {
+      "sha256": "0a48ae3d856b1b4cbcccebb4244dc6037cdedbf7bcd711d837ef689656e34a8d",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/pc-reward-list.png": {
+      "sha256": "783d4195c76603e6b82997b2a98db6c52bcf3f9f7402e6df52691a0a10e148b1",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/pc-reward-pick.png": {
+      "sha256": "44a0da3acee71b623d95785698801442c09a392e6ac078bf75acf5537233d9f2",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/pc-shop.png": {
+      "sha256": "d001256c644f1e1961bf9be4089ee338346565244c7c308a1948d68ba828cf56",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/pc-treasure-closed.png": {
+      "sha256": "cdd562de36bd38e72ba954632298f352f5cba582597e305d9628393f754f46ac",
+      "category": "official-assets-offline-diagnostic"
+    },
+    "docs/evidence/release-layout-20261124/screens/before/pc-treasure-rewards.png": {
+      "sha256": "ad4f514335901b6509a4e93dca846ea2f92b4157263fc669aa769f2069d498b0",
+      "category": "official-assets-offline-diagnostic"
+    }
   }
 }

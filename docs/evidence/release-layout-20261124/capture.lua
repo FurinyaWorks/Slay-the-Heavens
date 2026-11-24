@@ -123,7 +123,7 @@ for _,mobile in ipairs({false,true})do
         if count==2 then capture(prefix..'neow-continue',root,picture,screen)end
         H.click(picture,'/nodePanel/eventView/option1/hit',1)
         if count==4 then
-            host.run.nodeFlow.event.rewards[3]={type='RANDOM_COLORLESS_2',drawback='TEN_PERCENT_HP_LOSS'}
+            host.run.nodeFlow.event.rewards[3]={type='RANDOM_COLORLESS_2',drawback='CURSE'}
             host:refresh()
         end
         capture(prefix..'neow-'..count,root,picture,screen)

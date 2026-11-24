@@ -31,3 +31,22 @@ test('generated map bar precedes resource values and floor groups',()=>{
  const bar=p.children.findIndex(c=>c.name==='officialRunBar');
  for(const [index,part]of p.children.entries())if(part.name==='resources'||/^mapGroup/.test(part.name))assert(bar<index,'map bar covers '+part.name);
 });
+
+test('generated reward title ink maintains readable contrast across the three parchment layouts',()=>{
+ const data=JSON.parse(readFileSync(join(dir,'game-ui.json')));
+ const stage=data.controls.find(c=>c.name==='stage');
+ const child=(node,name)=>node.children.find(part=>part.name===name);
+ const battle=child(stage,'battlePanel'),node=child(stage,'nodePanel');
+ const luminance=hex=>[0.2126,0.7152,0.0722].reduce((sum,weight,i)=>{
+  const srgb=parseInt(hex.slice(1+i*2,3+i*2),16)/255;
+  return sum+weight*(srgb<=.04045?srgb/12.92:((srgb+.055)/1.055)**2.4);
+ },0);
+ for(const [parent,name,heading] of [[battle,'rewardStage','title'],[battle,'rewardList','title'],[node,'treasureView','page']]){
+  const screen=child(parent,name);
+  const paper=child(child(screen,'v25RewardPaper'),'paperCore');
+  const ink=luminance(child(screen,heading).text.colour);
+  const background=luminance(paper.colour);
+  const ratio=(Math.max(ink,background)+.05)/(Math.min(ink,background)+.05);
+  assert(ratio>=4.5,name+' title against its scroll: '+ratio.toFixed(2)+':1');
+ }
+});
