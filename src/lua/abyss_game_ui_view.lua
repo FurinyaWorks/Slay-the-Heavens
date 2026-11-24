@@ -229,9 +229,9 @@ function M.refreshMapResources(child)
     return function(run)
             if run then
                 local resources = child("mapPanel"):GetChild("resources")
-                local player=run.phase=='combat' and run.combat and run.combat.player or run
-                resources:GetChild("hp").text = number(player.hp) .. "/" .. number(player.maxHp)
-                resources:GetChild("gold").text = number(run.gold)
+                local hp,gold=RunHud.resourceText(run)
+                resources:GetChild("hp").text=hp
+                resources:GetChild("gold").text=gold
             end
         end
 end

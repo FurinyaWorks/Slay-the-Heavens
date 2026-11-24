@@ -185,6 +185,7 @@ function relicSurfaces(stage,theme){
    const slot=required(bar,'slot'+i);slot.position=[style.origin[0]+style.step*(i-1),style.origin[1]];
    required(slot,'icon').size=[style.icon,style.icon];required(slot,'hit').size=[style.hit,style.hit];
    required(slot,'rim').visible=false;required(slot,'face').visible=false;
+   required(slot,'counter').text.autoSize=false;
   }
  }
  if(panel)for(const host of [panel,...children(panel).filter(n=>/^row\d+$/.test(n.name))]){

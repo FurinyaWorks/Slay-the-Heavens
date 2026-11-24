@@ -46,7 +46,11 @@ test('official HUD shows a fanned stack of cards alongside the count in every de
    assert.deepEqual(card.children.map(part=>part.image),[theme.image.rect,theme.image.rect]);
    assert(card.children.every(part=>part.raycastTarget===false));
   }
-  assert.deepEqual(child(overlay,'count').position,[10,0]);
+  const count=child(overlay,'count');
+  assert.equal(count.text.align,'left');
+  assert.equal(count.text.autoSize,false);
+  assert(count.size[0]>=4*.6*count.text.fontSize+8,'four-digit count fits at the preferred size');
+  assert(count.position[0]+count.size[0]/2<=overlay.size[0]/2,'count must stay within its visual container');
  }
 });
 

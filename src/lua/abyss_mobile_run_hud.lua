@@ -12,8 +12,8 @@ local function barGeometry(bar,desk,mobile)
     bar:GetChild('steel'):SetSizeDelta(width,mobile.height)
     bar:GetChild('topLight'):SetLocalScale(1,mobile.height/desk.height,1)
     bar:GetChild('barShadow'):SetAnchoredPosition(0,-mobile.height/2-1.5)
-    bar:GetChild('officialHeroHeading'):SetAnchoredPosition(desk.heading[1],mobile.y-y)
-    local floorX=mobile.potionX+(Theme.layout.battlePotions.count-1)*mobile.potionStep+85
+    bar:GetChild('officialHeroHeading'):SetAnchoredPosition(desk.heading[1],mobile.headingY-y)
+    local floorX=mobile.potionX+(Theme.layout.battlePotions.count-1)*mobile.potionStep+mobile.floorGap
     bar:GetChild('officialStairs'):SetAnchoredPosition(floorX,mobile.y-y)
     return floorX+33,y
 end

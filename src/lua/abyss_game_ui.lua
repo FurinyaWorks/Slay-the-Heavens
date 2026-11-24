@@ -144,7 +144,7 @@ function M.new(root, data, presentation, clickEvent, platform)
     end
     local inCombat = Overlays.inCombat(self)
     local canManagePotions = Overlays.canManagePotions(inputCovered,self)
-    local resourceHint = Overlays.resourceHint(self,canManagePotions,inCombat)
+    local resourceHint = Overlays.resourceHint(self,canManagePotions)
     platform.previewingRoute=function()return self.routeOpen==true end
     platform.hudAlive=function()return not self.disabled end
     platform.hudInputContext=function()return {self.run,self.mode,self.run and self.run.phase,

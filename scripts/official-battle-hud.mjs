@@ -29,18 +29,21 @@ function deckSymbol(variant,colour){
   child(card,'border').colour=colour;
   return card;
  });
- return {name:'symbol',kind:'container',position:[-16,0],size:[30,30],scale:[1.15,1.15],children:cards};
+ return {name:'symbol',kind:'container',position:[-19,0],size:[30,30],scale:[1.15,1.15],children:cards};
 }
 export function officialBattleUtilityFaces(stage,theme){
  for(const entry of ['deckEntry','exitEntry']){
   const hit=child(child(child(stage,entry),'open'),'hit');if(!hit)continue;
   for(const variant of hit.children){
    const deck=entry==='deckEntry',colour=variant.name==='hover'?'#FFF3CE':variant.name==='disabled'?'#8F918B':'#D6CBA5';
+   const count=text('count',[26,0],[52,36],'',18,colour);
+   Object.assign(count.text,{autoSize:false,align:'left'});
+   if(deck)variant.size=[104,variant.size[1]];
    variant.children.push({name:'officialBattleHud',kind:'container',size:[...variant.size],visible:false,children:[
     ...(deck?[deckSymbol(variant,colour)]:[
      {name:'symbol',kind:'image',position:[0,0],size:[28,28],image:theme.icon.settings,colour},
     ]),
-    ...(deck?[text('count',[10,0],[34,36],'',18,colour)]:[]),
+    ...(deck?[count]:[]),
    ]});
   }
  }

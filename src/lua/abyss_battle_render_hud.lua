@@ -1,5 +1,6 @@
 -- Read state, issue Run commands. No damage/energy/outcome rules live in this view.
 local Combat = require("abyss_combat")
+local RunHud=require('abyss_run_hud')
 local RewardLayout=require('abyss_battle_reward_layout')
 local Run = require("abyss_run")
 local Theme = require("abyss_theme")
@@ -149,19 +150,13 @@ function M.install(owner, _ownership, host, dependencies)
         dependencies.show("resultPlate", not frame.fighting and not frame.reward)
         dependencies.show("hero", (frame.fighting or frame.reward) and not owner.feedback.deaths.player)
     end
-    local function playerHealthText(frame)
-        local player, run = frame.player, frame.run
-        return number(player and player.hp or run and run.hp or owner.data.rules.player.maxHp)
-            .. "/" .. number(run and run.maxHp or owner.data.rules.player.maxHp)
-    end
     local function renderPlayerTotals(frame)
         frame.player = frame.battle and frame.battle.player
-        dependencies.label("player", playerHealthText(frame))
-        local player, run = frame.player, frame.run
-        -- Render the current rule owner directly: a render-only counter cannot
-        -- finish during idle frames and must not leak a balance across runs.
-        local gold = player and player.gold or run and run.gold or 0
-        dependencies.label("piles", number(gold))
+        -- Explicit playback frames retain their own snapshot. At rest both
+        -- HUD and detail read the same live combat or run state.
+        local hp,gold=RunHud.resourceText(frame.run,frame.player,owner.data.rules.player.maxHp)
+        dependencies.label("player",hp)
+        dependencies.label("piles",gold)
         dependencies.ink(dependencies.child("piles"), C.topPanelGold)
     end
     local function stanceHeading(frame)
@@ -255,7 +250,7 @@ function M.install(owner, _ownership, host, dependencies)
     return {
         renderStartControls=renderStartControls, rewardNavigation=rewardNavigation, renderRewardRows=renderRewardRows, renderRelicRewards=renderRelicRewards, renderRewardButtons=renderRewardButtons,
         rewardPotionDefinition=rewardPotionDefinition, rewardPotionCaption=rewardPotionCaption, renderPotionReward=renderPotionReward, renderRewardStage=renderRewardStage, fieldCardSelected=fieldCardSelected,
-        renderPlayArea=renderPlayArea, renderHudVisibility=renderHudVisibility, playerHealthText=playerHealthText, renderPlayerTotals=renderPlayerTotals, stanceHeading=stanceHeading,
+        renderPlayArea=renderPlayArea, renderHudVisibility=renderHudVisibility, renderPlayerTotals=renderPlayerTotals, stanceHeading=stanceHeading,
         orbHeading=orbHeading, discardHeading=discardHeading, originalHeading=originalHeading, renderSceneHeading=renderSceneHeading, renderEnergy=renderEnergy,
         renderPilesAndTurn=renderPilesAndTurn, renderResult=renderResult
     }

@@ -1,5 +1,6 @@
 -- TASK-4.7 owned-relic art slots: a top-bar disc row plus a read-only detail
 -- overlay. Each entry is icon disc + Chinese name + status chip + effect text.
+local integer=require('abyss_numbers').integer
 local Theme=require('abyss_theme')
 local Pointer = require('abyss_pointer_input')
 local Hooks=require('abyss_relic_hooks')
@@ -61,7 +62,7 @@ function M.status(run,id)
         return v<=0 and '已耗尽' or ('剩余 '..v..' 次')
     end
     if v==-2 then return '已耗尽' end
-    if v>=0 then return '计数 '..v end
+    if v>=0 then return '计数 '..integer(v) end
     return nil
 end
 -- Physical cells map to actual owned indices on a bounded horizontal page.
@@ -85,7 +86,7 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
     local hitSize=platform.mobileRunHud and platform.mobileRunHud.hit or style.hit or style.step
     local capacity=style.count
     self.barCapacity=capacity
-    local barCells={}
+    local barCells,barPages={},1
     local function context()return platform.hudInputContext and platform.hudInputContext() or {}end
     local function same(a,b)
         for k,v in pairs(a)do if b[k]~=v then return false end end
@@ -99,12 +100,38 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
         self.hoverIndex=nil
         if tooltip and tooltip.visible then tooltip:SetVisible(false)end
     end
-    local function paintCounter(slot,run,id,battle)
+    local function counterWidth(value)
+        if type(value)~='number' or value<0 then return 40 end
+        return math.max(40,math.ceil(#integer(value)*Theme.font.small*.6+8))
+    end
+    -- Let a long counter use adjacent empty cells on the same strip. Normal
+    -- counters retain the original one-cell position and hit target.
+    local function counterPages(run,relics)
+        local pages={{}}
+        local page,column=pages[1],1
+        for index,id in ipairs(relics)do
+            local _,value=counterValue(run,id)
+            local width=counterWidth(value)
+            local span=math.ceil((width-20+hitSize/2+2)/style.step)
+            if column+span-1>capacity then
+                page,column={},1
+                pages[#pages+1]=page
+            end
+            page[column]={index=index,width=width}
+            column=column+span
+        end
+        return pages
+    end
+    local function paintCounter(slot,run,id,battle,width)
         local key,value
         if id then key,value=counterValue(run,id)end
         local numeric=battle and type(value)=='number' and value>=0
         local counter=slot:GetChild('counter')
-        counter:SetVisible(not not numeric);counter.text=numeric and tostring(value) or ''
+        counter:SetVisible(not not numeric);counter.text=numeric and integer(value) or ''
+        if battle then
+            counter:SetSizeDelta(width,36)
+            counter:SetAnchoredPosition((width-40)/2,-10)
+        end
         if official and platform.color then
             local ink=battle and spentCounter(key,value) and 110 or 255
             slot:GetChild('icon').imageColor=platform.color(ink,ink,ink,255)
@@ -136,7 +163,7 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
         -- Native art is a sibling of the atlas image and needs the same anchor.
         if art then art:SetAnchoredPosition(x,y)end
         for name,frame in pairs({name={55,91,350,40},rarity={55,53,350,32},
-            description={55,-18,350,104},status={55,-86,350,24}})do
+            description={55,-18,350,104},status={55,-90,350,36}})do
             local control=view:GetChild(name)
             control:SetAnchoredPosition(frame[1],frame[2]);control:SetSizeDelta(frame[3],frame[4])
         end
@@ -236,7 +263,7 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
         if not self.visible or self:pages()<2 then return false end
         self.page=(self.page-1+step)%self:pages()+1;self:render();return true
     end
-    local function paintBarCell(i,index,relics,run)
+    local function paintBarCell(i,index,relics,run,width)
         local slot=bar:GetChild('slot'..i)
         slot:SetVisible(index~=false)
         slot:SetAnchoredPosition(style.origin[1]+style.step*(i-1),style.origin[2])
@@ -249,14 +276,22 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
         slot:GetChild('more'):SetVisible(false)
         icon:SetVisible(index~=false)
         if index then M.paint(icon,relics[index],style.icon,platform,run)else Art.hide(icon)end
-        paintCounter(slot,run,index and relics[index] or nil,official)
+        paintCounter(slot,run,index and relics[index] or nil,official,width)
     end
     local function renderBar(run)
         local relics=run and run.relics or {}
-        local pages=math.max(1,math.ceil(#relics/capacity))
-        self.barPage=math.max(1,math.min(self.barPage,pages))
-        barCells=M.barCells(#relics,capacity,self.barPage)
-        for i=1,boundCount do paintBarCell(i,barCells[i] or false,relics,run)end
+        local pages=official and counterPages(run,relics)
+        barPages=pages and #pages or math.max(1,math.ceil(#relics/capacity))
+        self.barPage=math.max(1,math.min(self.barPage,barPages))
+        local page=pages and pages[self.barPage]
+        local cells=M.barCells(official and 0 or #relics,capacity,self.barPage)
+        for i=1,boundCount do
+            local cell=page and page[i]
+            cells[i]=cell and cell.index or cells[i] or false
+            paintBarCell(i,cells[i],relics,run,cell and cell.width or 40)
+        end
+        barCells=cells
+        if self.hoverIndex and relics[barCells[self.hoverIndex]]~=self.hoverId then self:resetBarHover()end
         local right=style.origin[1]+style.step*capacity
         local gap=official and not platform.mobileRunHud and 4 or 0
         -- Official paging reserves two cells after the fixed slot pool so
@@ -267,13 +302,13 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
             local control=bar:GetChild(name)
             control:SetAnchoredPosition(name=='previous' and left or right,style.origin[2])
             control:GetChild('hit'):SetSizeDelta(hitSize,platform.mobileRunHud and hitSize or 44)
-            control:SetVisible(pages>1 and (name=='previous' and self.barPage>1 or name=='next' and self.barPage<pages))
+            control:SetVisible(barPages>1 and (name=='previous' and self.barPage>1 or name=='next' and self.barPage<barPages))
         end
     end
     function self.turnBar(_,step)
         if not self.barInteractive or step~=1 and step~=-1 then return false end
         local target=self.barPage+step
-        if target<1 or target>math.ceil(#self.barRun.relics/capacity)then return false end
+        if target<1 or target>barPages then return false end
         self:resetBarHover();self.barPage=target;renderBar(self.barRun);return true
     end
     function self.refreshBar(_,run,visible,inputBlocked,deferHiddenPaint)
