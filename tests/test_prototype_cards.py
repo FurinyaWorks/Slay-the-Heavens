@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class PrototypeCardTests(unittest.TestCase):
     def test_embedded_cards_match_source_and_presentation(self):
-        html = (ROOT / 'docs/design/prototype/index.html').read_text(encoding='utf-8')
+        html = (ROOT / 'docs/design/prototype/current-v2.0.0.html').read_text(encoding='utf-8')
         declarations = list(re.finditer(r'\bconst\s+CARDS\s*=\s*', html))
         self.assertEqual(len(declarations), 1, 'expected one embedded CARDS declaration')
         tail = html[declarations[0].end():]
