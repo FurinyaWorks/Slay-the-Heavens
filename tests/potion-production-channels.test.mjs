@@ -6,6 +6,8 @@ import {join} from 'node:path';
 import {toLua,buildLuaData} from '../scripts/build-lua-data.mjs';
 import {runLua} from '../scripts/test-lua.mjs';
 const fixture=JSON.parse(readFileSync('tests/fixtures/sts1-potion-production-channels.json','utf8'));
+for(const row of [...fixture.drops,...fixture.shop])
+ if(row.sourceId==='CultistPotion')row.id='raven_potion';
 const setup=`package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local Run,C,R,Data=require('abyss_run'),require('abyss_combat'),require('abyss_sts_random'),require('abyss_data')
 local function same(a,b)

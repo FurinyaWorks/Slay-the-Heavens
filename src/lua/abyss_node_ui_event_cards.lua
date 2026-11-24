@@ -3,7 +3,7 @@
 local Theme=require('abyss_theme')
 local Copy=require('abyss_combat')
 local M={}
-local ids={designer=true,drug_dealer=true}
+local ids={designer=true,augmenter=true}
 local layout=Theme.layout.nativeNode.picker
 local count=#layout.columns
 local function index(list,uid)

@@ -6,7 +6,7 @@ local Display=require('abyss_card_display')
 local M={}
 -- First/two-act events and the starter/fallback, outside the normal relic queues.
 local specialRelics={'burning_blood','circlet','neows_lament','warped_tongs','spirit_poop',
- 'red_mask','golden_idol','odd_mushroom','cultist_mask','face_of_cleric','gremlin_mask',
+ 'red_mask','golden_idol','odd_mushroom','raven_mask','face_of_cleric','gremlin_mask',
  'nloths_mask','ssserpent_head','nloths_gift','bloody_idol','mutagenic_strength',
  'necronomicon','enchiridion','nilrys_codex'}
 -- Event specials (Acts 1/2), then dependencies created by obtainable cards.

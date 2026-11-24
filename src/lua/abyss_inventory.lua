@@ -82,7 +82,7 @@ local openingPosition = { ring_of_the_snake="battle_bottom", cracked_core="pre_b
 local battleTopHooks={mutagenic_strength=true,blood_vial=true,akabeko=true,
     data_disk=true,thread_and_needle=true,girya=true,du_vu_doll=true}
 local battleBottomHooks={bag_of_marbles=true,pen_nib=true,red_skull=true,
-    red_mask=true,fossilized_helix=true,mark_of_pain=true,cultist_mask=true}
+    red_mask=true,fossilized_helix=true,mark_of_pain=true,raven_mask=true}
 local function appendOpening(relic,id,context,turnTop,battleTop,bottom,preBattle,preDraw)
     if battleTopHooks[id] or id=='pantograph' and context and context.tier=='boss' then
         table.insert(battleTop,1,{{op='relic_hook',id=id}})

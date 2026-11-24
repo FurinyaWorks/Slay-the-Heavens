@@ -25,18 +25,18 @@ const specialRelicEvents = {
   neows_lament: ['explicit:Nodes.beginNeow:THREE_ENEMY_KILL'],
   red_mask: ['explicit_event:tomb_red_mask:pay', 'explicit_event:masked_bandits:fight'],
   bloody_idol: ['explicit_event:forgotten_altar:offer_idol'],
-  mutagenic_strength: ['explicit_event:drug_dealer:mutagens'],
+  mutagenic_strength: ['explicit_event:augmenter:mutagens'],
   necronomicon: ['explicit_event:cursed_tome:claim'],
   enchiridion: ['explicit_event:cursed_tome:claim'],
   nilrys_codex: ['explicit_event:cursed_tome:claim'],
-  cultist_mask: ['explicit_event:face_trader:trade'],
+  raven_mask: ['explicit_event:face_trader:trade'],
   face_of_cleric: ['explicit_event:face_trader:trade'],
   gremlin_mask: ['explicit_event:face_trader:trade'],
   nloths_mask: ['explicit_event:face_trader:trade'],
   ssserpent_head: ['explicit_event:face_trader:trade'],
   nloths_gift: ['explicit_event:nloth:trade_1', 'explicit_event:nloth:trade_2'],
   warped_tongs: ['explicit_event:accursed_blacksmith:rummage'],
-    spirit_poop: ['explicit_event:bonfire:curse_offer'], circlet: ['explicit_event:bonfire:repeat_curse_offer', 'explicit_event:golden_idol:repeat_take', 'explicit_event:mushrooms:repeat_fight', 'explicit_event:cursed_tome:claim', 'explicit_event:forgotten_altar:offer_idol', 'explicit_event:drug_dealer:mutagens', 'explicit_event:face_trader:trade', 'explicit_event:nloth:trade_1', 'explicit_event:nloth:trade_2', 'explicit_event:masked_bandits:fight'],
+    spirit_poop: ['explicit_event:bonfire:curse_offer'], circlet: ['explicit_event:bonfire:repeat_curse_offer', 'explicit_event:golden_idol:repeat_take', 'explicit_event:mushrooms:repeat_fight', 'explicit_event:cursed_tome:claim', 'explicit_event:forgotten_altar:offer_idol', 'explicit_event:augmenter:mutagens', 'explicit_event:face_trader:trade', 'explicit_event:nloth:trade_1', 'explicit_event:nloth:trade_2', 'explicit_event:masked_bandits:fight'],
     golden_idol: ['explicit_event:golden_idol:take'],
     odd_mushroom: ['explicit_event:mushrooms:fight'],
 };
@@ -202,7 +202,7 @@ export function validateLaunchContent(manifest, { root = process.cwd(), runtime 
     check(card.rarity === definition?.rarity, `cards/${card.id}: rarity drift`);
     const channels = definition?.rarity === 'basic'
       ? ['starter_deck', 'camp_upgrade', 'event_upgrade']
-      : ['combat_card_reward', 'shop_colored_card', 'camp_upgrade', 'event_upgrade', 'explicit_event:drug_dealer:transform'];
+      : ['combat_card_reward', 'shop_colored_card', 'camp_upgrade', 'event_upgrade', 'explicit_event:augmenter:transform'];
     same(card.channels, channels, `cards/${card.id} channels`);
     check(card.bossReward === (definition?.rarity === 'rare'), `cards/${card.id}: Boss reward rarity drift`);
   }
@@ -214,7 +214,7 @@ export function validateLaunchContent(manifest, { root = process.cwd(), runtime 
     const channels = card.id === 'necronomicurse' ? ["explicit_event:cursed_tome:claim", "explicit_event:duplicator:select", "explicit:Run.obtainCard", "permanent_remove:necronomicurse:rebirth", "combat_exhaust:necronomicurse:rebirth"]
       : bellCurse ? ['relic:calling_bell', 'explicit:Run.obtainCard']
       : card.type === 'curse' ? [...(curseEvents[card.id] ?? []),
-      'explicit_event:transmogrifier:change', 'explicit_event:living_wall:change', 'explicit:Run.obtainCard', 'explicit_event:drug_dealer:transform']
+      'explicit_event:transmogrifier:change', 'explicit_event:living_wall:change', 'explicit:Run.obtainCard', 'explicit_event:augmenter:transform']
       : [...data.enemies.enemies.filter(enemy => enemy.intents.some(intent => intent.effects.some(effect => effect.card === card.id)))
         .map(enemy => `enemy:${enemy.id}:intent`),
         ...data.cards.cards.filter(c => [c.effects,c.upgrade?.effects ?? []].some(list=>list.some(e=>e.card===card.id)))
@@ -252,9 +252,9 @@ export function validateLaunchContent(manifest, { root = process.cwd(), runtime 
     same(card.versions,['base','upgraded'],`sharedCards/${card.id} versions`);
     check(card.rarity===actual?.rarity&&card.type===actual?.type&&card.rarity===reference?.rarity.toLowerCase(),`sharedCards/${card.id}: classification drift`);
     check(actual?.supported===true,`sharedCards/${card.id}: unsupported runtime effect`);
-    same(card.channels,card.rarity==='special'?['explicit:Run.obtainCard',...(card.id==='apparition'?['explicit_event:ghosts:accept']:[]),...(card.id==='ritual_dagger'?['explicit_event:nest:dagger']:[]),...(card.id==='bite'?['explicit_event:vampires:accept','explicit_event:vampires:give_vial']:[]),...(card.id==='jax'?['explicit_event:drug_dealer:jax']:[])]:
+    same(card.channels,card.rarity==='special'?['explicit:Run.obtainCard',...(card.id==='apparition'?['explicit_event:ghosts:accept']:[]),...(card.id==='ritual_dagger'?['explicit_event:nest:dagger']:[]),...(card.id==='bite'?['explicit_event:vampires:accept','explicit_event:vampires:give_vial']:[]),...(card.id==='jax'?['explicit_event:augmenter:jax']:[])]:
       ['shop_colorless_card',...(reference?.tags.includes('HEALING')?[]:['shared_card_generation']),
-        'explicit_event:sensory_stone:card_reward','explicit_event:drug_dealer:transform',...(card.rarity==='uncommon'?['explicit_event:knowing_skull:card']:[])],`sharedCards/${card.id} channels`);
+        'explicit_event:sensory_stone:card_reward','explicit_event:augmenter:transform',...(card.rarity==='uncommon'?['explicit_event:knowing_skull:card']:[])],`sharedCards/${card.id} channels`);
     check(Boolean(card.naturalAcquisitionLimitation),`sharedCards/${card.id}: missing natural acceptance boundary`);
   }
   for (const [field, value] of Object.entries({ nodeEntry: 'abyss_nodes.enter', roomEntry: 'abyss_run.startRoomCombat', sourcePool: 'abyss_encounter_queue.rules' }))

@@ -159,7 +159,7 @@ for _, viewport in ipairs({{1920,1080,false},{2556,1179,true}}) do
     assert(ui:press('pickerView/card1')); check('event purge selected'..suffix)
     assert(ui:press('confirm'))
 
-    run,map=H.fixture('drug_dealer')
+    run,map=H.fixture('augmenter')
     assert(H.Nodes.chooseEvent(run,'test_subject'))
     ui,root,check=mount(run,map,width,height,touch,false)
     check('mandatory transform'..suffix)

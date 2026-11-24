@@ -12,16 +12,16 @@ local function refuse(r,fn,reason)
 end
 F.test('all six source SPECIAL relics obtain through real API without pool or RNG draws',function()
  local r=run();local before=F.snapshot(r)
- for _,id in ipairs({'CultistMask','FaceOfCleric','GremlinMask','NlothsMask','SsserpentHead',"Nloth's Gift"})do assert(Run.obtainRelic(r,id))end
+ for _,id in ipairs({'RavenMask','FaceOfCleric','GremlinMask','NlothsMask','SsserpentHead',"Nloth's Gift"})do assert(Run.obtainRelic(r,id))end
  eq(#r.relics,7);eq(r.relicCounters.nloths_mask,1)
  for _,name in ipairs({'eventRng','miscRng','cardRng','treasureRng','relicPool'})do same(r[name],before[name])end
  refuse(r,function()return Run.obtainRelic(r,'NlothsMask')end,'relic_already_owned')
 end)
 F.test('Gremlin gives one weak and Cultist only emits its cosmetic cue in real opening order',function()
- local r=run();assert(Run.obtainRelic(r,'CultistMask'));assert(Run.obtainRelic(r,'GremlinMask'))
+ local r=run();assert(Run.obtainRelic(r,'RavenMask'));assert(Run.obtainRelic(r,'GremlinMask'))
  assert(Run.startCombat(r,'cultist_solo'));eq(r.combat.player.statuses.weak,1)
  eq(r.combat.player.statuses.strength,nil);local cue=0
- for _,event in ipairs(r.combat.events)do if event.kind=='relic_flavor'and event.detail.relic=='cultist_mask'then cue=cue+1 end end
+ for _,event in ipairs(r.combat.events)do if event.kind=='relic_flavor'and event.detail.relic=='raven_mask'then cue=cue+1 end end
  eq(cue,1);eq(r.combat.turn,1);eq(r.combat.energy,3)
 end)
 local function victor(relics)

@@ -1,4 +1,4 @@
--- Separately composed Darkstone dependency; not part of Addict-only patch.
+-- Separately composed Darkstone dependency; not part of TravelingMerchant-only patch.
 local C,Run,Map,Nodes=require('abyss_combat'),require('abyss_run'),require('abyss_map'),require('abyss_nodes')
 local Pool,R,Relics=require('abyss_event_pool'),require('abyss_sts_random'),require('abyss_relic_pool')
 local Hooks,Data=require('abyss_relic_hooks'),require('abyss_data')
@@ -12,7 +12,7 @@ end
 local function copy(r)return C.copy(r,{[r.data]=r.data})end
 local function fixture(source,tier)
  tier=tier or 'common';local r,m=copy(base),C.copy(map);local n=Map.available(m)[1]
- for _,v in ipairs(m.nodes)do if v.id==n.id then v.type='event';v.eventId='addict' end end;assert(Nodes.enter(r,m,n.id))
+ for _,v in ipairs(m.nodes)do if v.id==n.id then v.type='event';v.eventId='traveling_merchant' end end;assert(Nodes.enter(r,m,n.id))
  local selected=false
  for n=0,31 do local s=R.atCounter(r.eventSeed,n);local t=R.cloneState(s)
   if Relics.rarity('event',R.randomInt(t,99))==tier then r.relicPool.rng=s;selected=true;break end end
@@ -21,7 +21,7 @@ local function fixture(source,tier)
  r.hp=30;return r
 end
 local count=0
-local function test(name,fn)fn();count=count+1;print('PASS addict-darkstone '..count..' '..name)end
+local function test(name,fn)fn();count=count+1;print('PASS traveling_merchant-darkstone '..count..' '..name)end
 
 test('New Darkstone receives previously prepared Shame after acquisition and old Fish precedes health hook',function()
  local r=fixture('Darkstone Periapt','uncommon');assert(Run.obtainRelic(r,'CeramicFish'));local hp,maxHp,gold=r.hp,r.maxHp,r.gold
@@ -56,8 +56,8 @@ end)
 test('Health-hook refusal after old Fish rolls back gold, new Darkstone ownership, card, RNG and aliases',function()
  local r=fixture('Darkstone Periapt','uncommon');assert(Run.obtainRelic(r,'CeramicFish'));local before=copy(r)
  local deck,pool,flow=r.deck,r.relicPool,r.nodeFlow;local original=Run.increaseMaxHp
- Run.increaseMaxHp=function(owner,amount)original(owner,amount);return false,'addict_dependency_health_refusal'end
- local ok,why=Nodes.chooseEvent(r,'steal');Run.increaseMaxHp=original;eq(ok,false);eq(why,'addict_dependency_health_refusal')
+ Run.increaseMaxHp=function(owner,amount)original(owner,amount);return false,'traveling_merchant_dependency_health_refusal'end
+ local ok,why=Nodes.chooseEvent(r,'steal');Run.increaseMaxHp=original;eq(ok,false);eq(why,'traveling_merchant_dependency_health_refusal')
  same(r,before);eq(r.deck,deck);eq(r.relicPool,pool);eq(r.nodeFlow,flow)
  assert(Nodes.chooseEvent(r,'steal'));eq(r.gold,before.gold+9);eq(r.maxHp,before.maxHp+6)
 end)

@@ -159,7 +159,7 @@
           {"id":"$/M.prepare#1","name":"M.prepare","kind":"function","constructorName":false,"line":15,"column":1,"endLine":24,"lines":10,"complexity":9},
           {"id":"$/row#1","name":"row","kind":"function","constructorName":false,"line":26,"column":7,"endLine":28,"lines":3,"complexity":1},
           {"id":"$/M.options#1","name":"M.options","kind":"function","constructorName":false,"line":30,"column":1,"endLine":63,"lines":34,"complexity":16},
-          {"id":"$/chooseAddict#1","name":"chooseAddict","kind":"function","constructorName":false,"line":65,"column":7,"endLine":97,"lines":33,"complexity":22},
+          {"id":"$/chooseTravelingMerchant#1","name":"chooseTravelingMerchant","kind":"function","constructorName":false,"line":65,"column":7,"endLine":97,"lines":33,"complexity":22},
           {"id":"$/chooseMausoleum#1","name":"chooseMausoleum","kind":"function","constructorName":false,"line":99,"column":7,"endLine":136,"lines":38,"complexity":19},
           {"id":"$/M.view#1","name":"M.view","kind":"function","constructorName":false,"line":141,"column":1,"endLine":148,"lines":8,"complexity":5},
           {"id":"$/M.choose#1","name":"M.choose","kind":"function","constructorName":false,"line":150,"column":1,"endLine":193,"lines":44,"complexity":28}

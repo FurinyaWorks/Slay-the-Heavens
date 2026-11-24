@@ -14,7 +14,17 @@ const rules = [
 ];
 
 // Existing technical identities are useful leads for an official retest.
-const technical = /drug[ _-]?dealer|suicid\w*|gambling[ _-]?chip|cultist[ _-]?(?:mask|potion)|colosseum[ _-]?slavers|shed_blood/giu;
+const technical = /suicid\w*|gambling[ _-]?chip|colosseum[ _-]?slavers|shed_blood/giu;
+const retiredIdentities = [
+  ['retired client identity', /drug[ _-]?dealer|cultist[ _-]?(?:mask|potion)|(?<![\p{L}\p{N}])addict(?![\p{L}\p{N}])/giu],
+  ['retired client identity', /(?<=[a-z0-9])Addict(?![a-z0-9])/gu],
+];
+// The upstream potion oracle and historical CI timings are never shipped.
+const identityReferences = new Set([
+  'data/catalogs/sts1-ironclad-potions.json',
+  'scripts/ci-test-timings.json',
+  'tools/oracles/sts1_potion_pool.py',
+]);
 const textFile = /\.(?:lua|json|[cm]?js|ts|py|ya?ml|toml|ini|txt|csv|tsv|xml|svg|html|ps1)$/i;
 
 function lineOffsets(source) {
@@ -33,10 +43,14 @@ function position(offsets, index) {
   return { line: start + 1, column: index - offsets[start] + 1 };
 }
 
-export function inspectReleaseText(path, source, { decodeLua = false, advisories = false } = {}) {
+export function inspectReleaseText(path, source, { decodeLua = false, advisories = false, namesOnly = false } = {}) {
   const offsets = lineOffsets(source);
   const hits = [];
-  const selected = advisories ? [...rules, ['technical identity', technical]] : rules;
+  const selected = [
+    ...(namesOnly ? [] : rules),
+    ...(identityReferences.has(path) ? [] : retiredIdentities),
+    ...(advisories ? [['technical identity', technical]] : []),
+  ];
   for (const [reason, pattern] of selected) {
     for (const match of source.matchAll(pattern)) {
       hits.push({ path, ...position(offsets, match.index), text: match[0], reason, decoded: false });
@@ -68,7 +82,10 @@ export function inspectReleaseText(path, source, { decodeLua = false, advisories
 }
 
 function assertClean(entries, options) {
-  const hits = entries.flatMap(([path, source]) => inspectReleaseText(path, source, options));
+  const hits = entries.flatMap(([path, source, names = []]) => [
+    ...inspectReleaseText(path, source, options),
+    ...names.flatMap(([label, name]) => inspectReleaseText(`${path} (${label})`, name, {namesOnly: true})),
+  ]);
   const format = ({path, line, column, text, reason, decoded}) =>
     `${path}:${line}:${column}: ${reason}: ${JSON.stringify(text)}${decoded ? ' (decoded Lua literal)' : ''}`;
   const blocked = hits.filter(hit => hit.reason !== 'technical identity');
@@ -79,9 +96,11 @@ function assertClean(entries, options) {
 }
 
 export function assertClientScriptText(scripts, location, options) {
-  return assertClean(scripts.map(({ name, source }) => {
+  return assertClean(scripts.map(({ name, file, source }) => {
     if (typeof source !== 'string') throw new Error(`Missing Lua source: ${location}/${name}.lua`);
-    return [`${location}/${name}.lua`, source];
+    const names = [['module name', name]];
+    if (typeof file === 'string' && file !== `${name}.lua`) names.push(['serialized filename', file]);
+    return [`${location}/${name}.lua`, source, names];
   }), { ...options, decodeLua: true });
 }
 
@@ -102,7 +121,11 @@ export async function checkReleaseText({ root = process.cwd(), generated, adviso
     // prompts are audit references, not input to the client build.
     .filter(([path]) => path !== 'scripts/check-release-text.mjs'
       && path !== 'data/reference/warrior75.json' && !/^art\/.*\/prompt\.txt$/.test(path));
-  const source = assertClean(paths.map(([path, file]) => [path, readFileSync(file, 'utf8')]), { advisories });
+  const source = assertClean(paths.map(([path, file]) => [
+    path,
+    readFileSync(file, 'utf8'),
+    identityReferences.has(path) ? [] : [['path', path]],
+  ]), { advisories });
   console.log(`Release text: ${source.files} source files checked.`);
   if (!generated) return;
 

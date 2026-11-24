@@ -5,7 +5,7 @@ local UI=dofile('tests/helpers/event_cards_native_ui.lua')
 local function click(tap,path,n)assert(tap(path,n),path)end
 local function slot(i)return 'pickerView/card'..i end
 H.test('Augmenter pair stays UI-local until one ordered mandatory command',function()
- local r,m=H.fixture('drug_dealer');local ui,get,shown,tap=UI.setup(r,m)
+ local r,m=H.fixture('augmenter');local ui,get,shown,tap=UI.setup(r,m)
  click(tap,'eventView/option2',1);assert(r.nodeFlow.event.stage=='choose_card')
  assert(shown('pickerView')and not shown('eventView')and not shown('back')and shown('confirm'))
  assert(not ui:press('confirm'));local deck=H.C.copy(r.deck);local rng=H.C.copy(r.miscRng)
@@ -30,7 +30,7 @@ H.test('Duplicator presents bottles, preserves misc and upgrade, and emits a fre
  assert(ui.view.node.event.stage=='result')
 end)
 H.test('ordered selection toggles without RNG and old callbacks retire on hide resize and deck mutation',function()
- local r,m=H.fixture('drug_dealer');local ui,_,_,tap=UI.setup(r,m);click(tap,'eventView/option2',1)
+ local r,m=H.fixture('augmenter');local ui,_,_,tap=UI.setup(r,m);click(tap,'eventView/option2',1)
  local before=H.snapshot(r);click(tap,slot(1),2);click(tap,slot(1),3);H.same(r,before)
  local old=ui.actions[slot(1)].handler;ui:setVisible(false);assert(not old());ui:setVisible(true)
  old=ui.actions[slot(1)].handler;ui:resize(1280,720);assert(not old())
@@ -40,7 +40,7 @@ H.test('ordered selection toggles without RNG and old callbacks retire on hide r
  assert(not ui:press('back'));assert(r.nodeFlow.event.stage=='choose_card')
 end)
 H.test('late second obtain refuses exact ordered UI selection then retries the same original outcomes',function()
- local r,m=H.fixture('drug_dealer');local ui,get,_,tap=UI.setup(r,m)
+ local r,m=H.fixture('augmenter');local ui,get,_,tap=UI.setup(r,m)
  click(tap,'eventView/option2',1);click(tap,slot(2),2);click(tap,slot(1),3)
  local before={run=H.snapshot(r),map=H.C.copy(m)}
  local owners={flow=r.nodeFlow,event=r.nodeFlow.event,deck=r.deck,misc=r.miscRng,cards=r.cardRng}

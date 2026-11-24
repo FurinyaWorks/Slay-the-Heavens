@@ -26,7 +26,7 @@ test('actual obtained Bark doubles damage block energy and ordinary statuses onc
   {'strength_potion','strength',4},{'dexterity_potion','dexterity',4},{'poison_potion','poison',12},
   {'weak_potion','weak',6},{'fear_potion','vulnerable',6},{'regen_potion','regen',10},
   {'ancient_potion','artifact',2},{'liquid_bronze','thorns',6},{'duplication_potion','duplication',2},
-  {'heart_of_iron','metallicize',12},{'essence_of_steel','plated_armor',8},{'cultist_potion','ritual',2},
+  {'heart_of_iron','metallicize',12},{'essence_of_steel','plated_armor',8},{'raven_potion','ritual',2},
   {'flex_potion','strength',10},{'speed_potion','dexterity',10}}
  for _,case in ipairs(cases)do
   local r,b=battle(case[1]);assert(Run.usePotion(r,1,1));eq(r.potions[1],nil)
