@@ -198,7 +198,7 @@ const bindings = new Map([
  {
   "path": "tests/helpers/m7-core-final-source-inverse.mjs",
   "beforeSha256": "96eae58fe74ee798a8c87be865a3640508e983e43e98b55e0ccd8756516ba768",
-  "afterSha256": "b3241b337c46b03a0efa107fcbb367a17b0610d54845ff82dbfe2b60d7cca959",
+  "afterSha256": "8e0d432cd1ecf668bad14a614a61772e495e13cce67ab0168babcaac5bfda1e6",
   "hunks": [
    {
     "at": 9,
@@ -213,7 +213,7 @@ const bindings = new Map([
    {
     "at": 33,
     "before": "}\n// Explicit compatibility readers share this same full-current admission gate.\nexport {actorReader as currentDefectActorReader};\nexport function preM7FinalSource(path,source,{readSource=live}={}){\n readSource=readers.get(readSource)??readSource;\n const input=source;source=preDefectActorSource(path,source,{readSource:actorReader(readSource)});\n const utility=preDefectUtilitySource(path,source);if(utility!==source)return utility;",
-    "after": "}\n// Explicit live compatibility readers start with the exact current architecture\n// before authenticating the complete current graph and exposing an earlier view.\nexport function currentDefectActorReader(raw){\n if(typeof raw!=='function')return raw;\n return path=>{\n  const source=raw(actorAnchor);\n  assert(isCurrentInputRetirementSource(actorAnchor,beforeUiEntrance(actorAnchor,source)),'combined linked owner identity: '+actorAnchor);\n  assert.equal(sourceEpoch.preCombinedSource(actorAnchor,source,{target:'pr618',readSource:raw}),\n   actorTarget.files[actorAnchor].source,'exact current Actor admission target');\n  assert(Object.hasOwn(defectActorEpoch.proof.current,path),'known Actor owner');\n  return actorTarget.files[path].source;\n };\n}\nexport function preM7FinalSource(path,source,{readSource=live}={}){\n readSource=readers.get(readSource)??readSource;\n const input=source;\n // Authenticate the post-Actor combat backflow against real disk owners before\n // passing an older source to the independently frozen Actor verifier.\n const actorAdmission=(path==='src/lua/abyss_combat_queued_play.lua'&&beforeCombatEvents(path,input)!==input)\n  ||(path===actorAnchor&&beforeUiEntrance(path,input)!==input);\n const actorInput=actorAdmission\n  ?sourceEpoch.preCombinedSource(path,input,{target:'pr618',readSource}):input;\n source=preDefectActorSource(path,actorInput,{readSource:actorReader(readSource)});\n const utility=preDefectUtilitySource(path,source);if(utility!==source)return utility;"
+    "after": "}\n// Explicit live compatibility readers start with the exact current architecture\n// before authenticating the complete current graph and exposing an earlier view.\nexport function currentDefectActorReader(raw){\n if(typeof raw!=='function')return raw;\n return path=>{\n  const source=raw(actorAnchor);\n  assert(isCurrentInputRetirementSource(actorAnchor,beforeUiEntrance(actorAnchor,source)),'combined linked owner identity: '+actorAnchor);\n  assert.equal(sourceEpoch.preCombinedSource(actorAnchor,source,{target:'pr618',readSource:raw}),\n   actorTarget.files[actorAnchor].source,'exact current Actor admission target');\n  assert(Object.hasOwn(defectActorEpoch.proof.current,path),'known Actor owner');\n  return actorTarget.files[path].source;\n };\n}\nexport function preM7FinalSource(path,source,{readSource=live}={}){\n readSource=readers.get(readSource)??readSource;\n const input=source;\n // Authenticate the post-Actor combat backflow against real disk owners before\n // passing an older source to the independently frozen Actor verifier.\n const actorAdmission=(path==='src/lua/abyss_combat_queued_play.lua'&&beforeCombatEvents(path,input)!==input)\n  ||path===actorAnchor;\n const actorInput=actorAdmission\n  ?sourceEpoch.preCombinedSource(path,input,{target:'pr618',readSource}):input;\n source=preDefectActorSource(path,actorInput,{readSource:actorReader(readSource)});\n const utility=preDefectUtilitySource(path,source);if(utility!==source)return utility;"
    }
   ]
  },
@@ -2006,22 +2006,22 @@ const bindings = new Map([
  {
   "path": "tests/lua/game_ui_potion_discard.lua",
   "beforeSha256": "ca97350d058d00e0e94ac00bedc6b7f534c976e9471edcdfa777992af3f49707",
-  "afterSha256": "db23a9d7d356d9e27c53f6e26c20c552353a718c0ea25ae23dd85ec7c005e127",
+  "afterSha256": "ae6d080e05d5ccf3a4179e1598fa9ba825b82150c385a496043074813f64f3a8",
   "hunks": [
    {
     "at": 0,
     "before": "local testStart=dofile('tests/lua/support/game_ui_fixture.lua').start\npackage.path='src/lua/?.lua;build/lua/?.lua;'..package.path",
-    "after": "local advanceShop = dofile('tests/lua/support/shop_timeline.lua')\nlocal testStart=dofile('tests/lua/support/game_ui_fixture.lua').start\nlocal advanceShop=dofile('tests/lua/support/shop_timeline.lua')\npackage.path='src/lua/?.lua;build/lua/?.lua;'..package.path"
+    "after": "local testStart=dofile('tests/lua/support/game_ui_fixture.lua').start\nlocal advanceShop=dofile('tests/lua/support/shop_timeline.lua')\npackage.path='src/lua/?.lua;build/lua/?.lua;'..package.path"
    },
    {
-    "at": 90,
+    "at": 89,
     "before": "    h.run.gold=1000;h:refresh()\n    local offer",
     "after": "    h.run.gold=1000;h:refresh()\n    assert(F.click(r,'nodePanel','merchant/talk'));advanceShop(h)\n    local offer"
    },
    {
-    "at": 94,
+    "at": 93,
     "before": "    assert(offer);local gold=h.run.gold\n    local tile=r:GetChild('nodePanel'):GetChild('shopView'):GetChild('potion'..offer.slot)\n    equal(tile:GetChild('hit').click(),false);equal(h.run.gold,gold);counter(r,3)",
-    "after": "    assert(offer);local gold=h.run.gold\n    local tile=r:GetChild('nodePanel'):GetChild('shopView'):GetChild('goods'):GetChild('potion'..offer.slot)\n    assert(F.click(r,'nodePanel','merchant/talk'));advanceShop(h)\n    equal(tile:GetChild('hit').click(),false);equal(h.run.gold,gold);counter(r,3)"
+    "after": "    assert(offer);local gold=h.run.gold\n    local tile=r:GetChild('nodePanel'):GetChild('shopView'):GetChild('goods'):GetChild('potion'..offer.slot)\n    equal(tile:GetChild('hit').click(),false);equal(h.run.gold,gold);counter(r,3)"
    }
   ]
  },

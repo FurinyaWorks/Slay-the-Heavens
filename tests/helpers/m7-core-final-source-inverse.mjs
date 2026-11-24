@@ -51,7 +51,7 @@ export function preM7FinalSource(path,source,{readSource=live}={}){
  // Authenticate the post-Actor combat backflow against real disk owners before
  // passing an older source to the independently frozen Actor verifier.
  const actorAdmission=(path==='src/lua/abyss_combat_queued_play.lua'&&beforeCombatEvents(path,input)!==input)
-  ||(path===actorAnchor&&beforeUiEntrance(path,input)!==input);
+  ||path===actorAnchor;
  const actorInput=actorAdmission
   ?sourceEpoch.preCombinedSource(path,input,{target:'pr618',readSource}):input;
  source=preDefectActorSource(path,actorInput,{readSource:actorReader(readSource)});
