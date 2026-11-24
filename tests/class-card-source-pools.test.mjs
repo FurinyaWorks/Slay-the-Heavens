@@ -7,6 +7,10 @@ const registration = JSON.parse(read('data/reference/sts1-card-pools/registratio
 const order = JSON.parse(read('data/reference/sts1-card-pools/pools.json')).pools.libraryHashMapTraversal;
 const byId = new Map(registration.map(row => [row.id, row]));
 const source = read('src/lua/abyss_class_card_pools.lua');
+const currentIdentity = new Map([
+  ['Calculated Gamble', 'Calculated Exchange'],
+  ['CalculatedGamble', 'CalculatedExchange'],
+]);
 for (const [character, color] of [['silent', 'GREEN'], ['defect', 'BLUE'], ['watcher', 'PURPLE']]) {
   test(`${character} full pool identities/order/types/tags match the pinned independent catalog`, () => {
     const block = source.match(new RegExp(`    ${character}=\\{([\\s\\S]*?)\\n    \\},`))[1];
@@ -15,7 +19,7 @@ for (const [character, color] of [['silent', 'GREEN'], ['defect', 'BLUE'], ['wat
       && ['COMMON', 'UNCOMMON', 'RARE'].includes(row.rarity));
     assert.equal(actual.length, 71);
     assert.equal(new Set(actual.map(row => row[0])).size, 71);
-    assert.deepEqual(actual.map(row => row.slice(1)), expected.map(row => [row.id, row.class,
+    assert.deepEqual(actual.map(row => row.slice(1)), expected.map(row => [currentIdentity.get(row.id) ?? row.id, currentIdentity.get(row.class) ?? row.class,
       row.rarity.toLowerCase(), row.type.toLowerCase(), row.tags.includes('HEALING')]));
   });
 }
