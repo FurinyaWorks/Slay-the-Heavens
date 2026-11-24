@@ -4,7 +4,7 @@ local D=require('abyss_silent_final_cards').withCardDefinitions(require('abyss_w
 local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end
 local function play(s,id)for _,c in ipairs(s.hand)do if c.cardId==id then assert(C.play(s,c.uid));return end end;error('missing real Power')end
 for _,advanced in ipairs({false,true})do
- local s=C.new(D,{deck={'combust','establishment','well_laid_plans'},enemies={'cultist'},seed=42,enableStances=true,orbSlots=0,cardRandomSeed='42'})
+ local s=C.new(D,{deck={'combust','establishment','well_laid_plans'},enemies={'raven_adept'},seed=42,enableStances=true,orbSlots=0,cardRandomSeed='42'})
  s.experimentalMechanics=advanced
  for _,id in ipairs({'combust','establishment','well_laid_plans'})do play(s,id)end
  local cards={};for _,id in ipairs({'defend_purple','protect','sands_of_time','dazed'})do local c=Actions.fresh(C,s,id);Actions.toHand(s,c);cards[id]=c end

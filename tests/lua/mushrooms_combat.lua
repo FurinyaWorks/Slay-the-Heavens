@@ -20,7 +20,7 @@ F.eq(table.concat(order,','),'potion,cards');F.eq(r.phase,'reward');F.eq(r.rewar
 assert(not F.owned(r,'odd_mushroom'));assert(Run.claimRelicReward(r,1));assert(F.owned(r,'odd_mushroom'));assert(not Run.claimRelicReward(r,1))
 assert(Run.claimGoldReward(r));assert(Run.claimCardReward(r,0));assert(Run.leaveCombatRewards(r));assert(N.completeCombat(r,m));F.eq(r.phase,'map')
 -- Public next battle publishes actual held SPECIAL into the Actor modifier.
-assert(Run.startCombat(r,'cultist_solo'));local A=require('abyss_actor');r.combat.player.statuses.vulnerable=2
+assert(Run.startCombat(r,'raven_adept_solo'));local A=require('abyss_actor');r.combat.player.statuses.vulnerable=2
 F.eq(A.attackAmount(r.combat,r.combat.enemies[1],r.combat.player,10,false),12)
 F.eq(A.attackAmount(r.combat,r.combat.enemies[1],r.combat.player,10,true),10)
 r.combat.enemies[1].statuses.vulnerable=2;F.eq(A.attackAmount(r.combat,r.combat.player,r.combat.enemies[1],10,false),15)

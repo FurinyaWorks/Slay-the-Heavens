@@ -122,7 +122,7 @@ test("Dazed uses existing status art disabled theme blank cost and cannot comman
     local ui,stage,click=setup()
     ui.run=Run.new(Data,42)
     ui.run.deck={{uid=1,cardId="dazed",upgraded=false}}
-    assert(Run.startCombat(ui.run,"cultist_solo"));ui:render()
+    assert(Run.startCombat(ui.run,"raven_adept_solo"));ui:render()
     local card=stage.children.card1.children
     assert(card.name.text==Presentation.dazed.name and card.cost.text=="" and card.type.text=="状态")
     assert(card.art.imageId==Theme.icon.cardArt.status)
@@ -151,7 +151,7 @@ test("menu starts a real battle with shared-theme cards, energy and current inte
     assert(row.icon1.visible and row.icon1.imageId == Theme.icon.status.ritual and row.count1.text == "3")
     assert(row.icon1.imageColor.r == Theme.color.text.r and not row.icon2.visible and not row.count2.visible)
     assert(stage.children.enemy1.children.intent.text == "6")
-    assert(stage.children.enemy1.children.portrait.imageId == Theme.icon.enemy.cultist)
+    assert(stage.children.enemy1.children.portrait.imageId == Theme.icon.enemy.raven_adept)
     assert(stage.children.hero.children.hpFill.fillAmount == 1)
 end)
 test("Jaw Worm real encounter presents combined Thrash and Bellow effects without changing rules", function()
@@ -315,7 +315,7 @@ test("runtime ten-card poses keep complete rotated and selected hit regions insi
 end)
 test("five enemies retain separate touch targets and a boss uses the approved larger portrait", function()
     local ui, stage, click = setup() click("start")
-    ui.run.combat = Combat.new(Data, {enemies={"cultist","red_louse","green_louse","jaw_worm","sentry"}})
+    ui.run.combat = Combat.new(Data, {enemies={"raven_adept","red_louse","green_louse","jaw_worm","sentry"}})
     ui:render()
     local previous
     for i = 1, 5 do
@@ -475,7 +475,7 @@ test("potion slots stay fixed after consumption and repeated queued clicks canno
     local ui, stage, click = setup()
     ui.run = Run.new(Data, 1)
     ui.run.potions = {"fire_potion", "energy_potion", "fire_potion"}
-    assert(Run.startCombat(ui.run, "cultist_solo")) ui:render()
+    assert(Run.startCombat(ui.run, "raven_adept_solo")) ui:render()
     local battle = ui.run.combat
     local hp, energy = battle.enemies[1].hp, battle.energy
     assert(stage.children.potion1.children.normal.children.label.text == "火焰药水\n单敌·固定20")
@@ -495,7 +495,7 @@ test("refilling a middle potion slot refreshes only its physical button", functi
     local ui, stage, click = setup()
     ui.run = Run.new(Data, 1)
     ui.run.potions = {"fire_potion", "energy_potion", "regen_potion"}
-    assert(Run.startCombat(ui.run, "cultist_solo")) ui:render()
+    assert(Run.startCombat(ui.run, "raven_adept_solo")) ui:render()
     usePotion(ui,stage,click,2)
     assert(ui.run.potions[1] == "fire_potion" and ui.run.potions[3] == "regen_potion")
     assert(stage.children.potion2.children.normal.children.label.text == "空药水槽")
@@ -512,7 +512,7 @@ end)
 test("potion victory commits rewards and relic healing then hides combat potion input", function()
     local ui, stage, click = setup()
     ui.run = Run.new(Data, 1) ui.run.potions = {"fire_potion"}
-    assert(Run.startCombat(ui.run, "cultist_solo"))
+    assert(Run.startCombat(ui.run, "raven_adept_solo"))
     ui.run.combat.enemies[1].hp, ui.run.combat.player.hp = 20, 30
     ui:render() usePotion(ui,stage,click,1) click("enemy1")
     assert(ui.run.phase == "reward" and ui.run.hp == 36 and #ui.run.potions == 0)
@@ -531,7 +531,7 @@ test("embedded battle uses host controls and scaling and reports each successful
     assert(root == stage and not root.children.start.visible and not root.children.continue.visible)
     root.children.start.click() assert(not ui.run)
     ui.run = Run.new(Data, 1) ui.run.potions = {"energy_potion", "fire_potion"}
-    assert(Run.startCombat(ui.run, "cultist_solo")) ui:render()
+    assert(Run.startCombat(ui.run, "raven_adept_solo")) ui:render()
     ui:resize(1920, 1080)
     assert(ui.canvasWidth == 1920 and root.localScaleX == nil)
     click("card1") assert(changes == 0)
@@ -575,11 +575,11 @@ end)
 test("host run replacement clears selected UID target and consumed potion mapping before restart", function()
     local ui, stage, click = setup({embedded=true})
     ui.run = Run.new(Data, 1) ui.run.potions = {"energy_potion", "fire_potion"}
-    assert(Run.startCombat(ui.run, "cultist_solo")) ui:render()
+    assert(Run.startCombat(ui.run, "raven_adept_solo")) ui:render()
     usePotion(ui,stage,click,1) click("card1") ui.target = 5
     assert(ui.selected and not ui.potionSlots[1])
     ui.run = Run.new(Data, 1) ui.run.potions = {"energy_potion"}
-    assert(Run.startCombat(ui.run, "cultist_solo"))
+    assert(Run.startCombat(ui.run, "raven_adept_solo"))
     ui:render()
     assert(not ui.selected and ui.target == 1 and ui.potionSlots[1].slot == 1)
     assert(stage.children.potion1.interactable and not stage.children.card1.children.glow.visible)
@@ -592,7 +592,7 @@ test("runtime potion touch regions clear boss and five-enemy portraits intents a
         return math.abs(ax - bx) < (a.sizeDeltaX + b.sizeDeltaX) / 2
             and math.abs(ay - by) < (a.sizeDeltaY + b.sizeDeltaY) / 2
     end
-    for _, enemies in ipairs({{"guardian"}, {"cultist", "red_louse", "green_louse", "jaw_worm", "sentry"}}) do
+    for _, enemies in ipairs({{"guardian"}, {"raven_adept", "red_louse", "green_louse", "jaw_worm", "sentry"}}) do
         ui.run.combat = Combat.new(Data, {enemies=enemies}) ui:render()
         for i = 1, 5 do
             local potion = stage.children["potion" .. i] or stage.children.potionHelp.children["potion" .. i]
@@ -617,8 +617,8 @@ end)
 test("targeted potion shows its effect and current enemy selection before damaging only that enemy", function()
     local ui, stage, click = setup()
     ui.run = Run.new(Data, 1) ui.run.potions = {"fire_potion"}
-    assert(Run.startCombat(ui.run, "cultist_solo"))
-    ui.run.combat = Combat.new(Data, {enemies={"cultist", "jaw_worm"}})
+    assert(Run.startCombat(ui.run, "raven_adept_solo"))
+    ui.run.combat = Combat.new(Data, {enemies={"raven_adept", "jaw_worm"}})
     ui:render()
     local battle = ui.run.combat
     local hp1, hp2, energy, hand, events = battle.enemies[1].hp, battle.enemies[2].hp, battle.energy, #battle.hand, #battle.events
@@ -654,8 +654,8 @@ end)
 test("a targeted bottle in slot three remains selectable when both earlier slots are empty", function()
     local ui, stage, click = setup()
     ui.run = Run.new(Data, 1) ui.run.potions = { [3] = "fire_potion" }
-    assert(Run.startCombat(ui.run, "cultist_solo"))
-    ui.run.combat = Combat.new(Data, {enemies={"cultist", "jaw_worm"}})
+    assert(Run.startCombat(ui.run, "raven_adept_solo"))
+    ui.run.combat = Combat.new(Data, {enemies={"raven_adept", "jaw_worm"}})
     ui:render()
     assert(ui.potionTargetAvailable and not stage.children.potion1.interactable and not stage.children.potion2.interactable)
     assert(stage.children.potion3.interactable)
@@ -702,13 +702,13 @@ local function feedbackBattle(deck, enemies, options)
     options = options or {} options.manualPlayback = true
     local ui, stage, click = setup(options)
     ui.run = Run.new(Data, 11)
-    assert(Run.startCombat(ui.run, "cultist_solo"))
+    assert(Run.startCombat(ui.run, "raven_adept_solo"))
     ui.run.combat = Combat.new(Data, {deck=deck, enemies=enemies, seed=11})
     ui:render()
     return ui, stage, click, ui.run.combat
 end
 test("Block badges reserve native glyph width for every digit from 1 through 999", function()
-    local ui, stage, _, battle = feedbackBattle({"defend"}, {"cultist", "cultist", "cultist", "cultist", "cultist"})
+    local ui, stage, _, battle = feedbackBattle({"defend"}, {"raven_adept", "raven_adept", "raven_adept", "raven_adept", "raven_adept"})
     for _, enemy in ipairs(battle.enemies) do enemy.hp, enemy.maxHp = 999, 999 end
     local healthPositions = {}
     ui:render()
@@ -750,7 +750,7 @@ end)
 test("animated block badges keep HP and neighbouring columns clear for player, one to five enemies and boss", function()
     for count = 1, 6 do
         local enemies = {}
-        for i = 1, math.min(count, 5) do enemies[i] = "cultist" end
+        for i = 1, math.min(count, 5) do enemies[i] = "raven_adept" end
         if count == 6 then enemies = {"guardian"} end
         -- Both standalone click-only fallback and embedded/drag-capable hosts use this feedback path.
         local ui, stage, click, battle = feedbackBattle({"defend"}, enemies,
@@ -814,8 +814,8 @@ test("animated block badges keep HP and neighbouring columns clear for player, o
     end
 end)
 test("block gain and absorption have blue shield feedback without HP shake on a fully blocked hit", function()
-    local ui, stage, click, battle = feedbackBattle({"defend"}, {"cultist"})
-    -- This feedback fixture needs a six-damage attack, independent of Cultist's opening Ritual.
+    local ui, stage, click, battle = feedbackBattle({"defend"}, {"raven_adept"})
+    -- This feedback fixture needs a six-damage attack, independent of Raven Adept's opening Ritual.
     battle.enemies[1].ai=nil; battle.enemies[1].intentIndex=1
     battle.player.block = 2 ui:render()
     click("card1") click("playArea")
@@ -845,7 +845,7 @@ test("block gain and absorption have blue shield feedback without HP shake on a 
     assert(hits == 1 and battle.player.hp == hp and battle.player.block == 0)
 end)
 test("cancelling block playback resets every badge part without hiding the committed value", function()
-    local ui, stage, click, battle = feedbackBattle({"defend"}, {"cultist"})
+    local ui, stage, click, battle = feedbackBattle({"defend"}, {"raven_adept"})
     click("card1") click("playArea")
     local c = stage.children.hero.children
     for _ = 1, 50 do
@@ -860,7 +860,7 @@ test("cancelling block playback resets every badge part without hiding the commi
     end
 end)
 test("multiple enemies and multi-hit intents show each actor and actual HP in order, even after a long frame", function()
-    local ui, stage, click, battle = feedbackBattle({"defend"}, {"jaw_worm", "cultist"})
+    local ui, stage, click, battle = feedbackBattle({"defend"}, {"jaw_worm", "raven_adept"})
     battle.enemies[1].intents = {{id="multi",kind="attack",effects={{op="damage",value=2,times=3}}}}
     battle.enemies[1].ai=nil; battle.enemies[1].intentIndex=1 -- explicit custom intent fixture
     battle.enemies[2].intents = {{id="cast",kind="defend",effects={{op="block",value=5},{op="applyStatus",status="weak",value=2}}}}
@@ -896,7 +896,7 @@ test("multiple enemies and multi-hit intents show each actor and actual HP in or
 end)
 test("multi-hit player cards, area damage, ability and debuff cards use real events and distinct feedback", function()
     for _, id in ipairs({"twin_strike", "cleave", "inflame", "thunderclap"}) do
-        local ui, stage, click, battle = feedbackBattle({id}, {"jaw_worm", "cultist"})
+        local ui, stage, click, battle = feedbackBattle({id}, {"jaw_worm", "raven_adept"})
         click("card1")
         local _, reason = Combat.canPlay(battle, battle.hand[1].uid, nil)
         click(reason == "invalid_target" and "enemy1" or "playArea")
@@ -919,7 +919,7 @@ test("multi-hit player cards, area damage, ability and debuff cards use real eve
     end
 end)
 test("poison identifies its source and killed enemies never act; retaliation shows the defender as source", function()
-    local ui, stage, click, battle = feedbackBattle({"strike"}, {"jaw_worm", "cultist"})
+    local ui, stage, click, battle = feedbackBattle({"strike"}, {"jaw_worm", "raven_adept"})
     battle.enemies[1].hp = 1 Combat.addStatus(battle.enemies[1], "poison", 2)
     ui:render() click("endTurn")
     local poison, death, intent = 0, 0, 0
@@ -937,7 +937,7 @@ test("poison identifies its source and killed enemies never act; retaliation sho
     assert(survivor.visible and survivor.children.name.text == battle.enemies[2].name)
     assert(survivor.children.hp.text == battle.enemies[2].hp .. "/" .. battle.enemies[2].maxHp)
     for i = 2, 5 do assert(not stage.children["enemy" .. i].visible) end
-    ui, stage, click, battle = feedbackBattle({"strike"}, {"cultist"})
+    ui, stage, click, battle = feedbackBattle({"strike"}, {"raven_adept"})
     Combat.addStatus(battle.enemies[1], "thorns", 3)
     ui:render() click("card1") click("enemy1")
     local retaliation = 0
@@ -986,7 +986,7 @@ test("playback preserves every rule field and RNG against direct commands and ca
 end)
 test("effect setter failure restores final HP and input, and idle failure cannot repeat host notifications", function()
     local changes = 0
-    local ui, stage, click, battle = feedbackBattle({"strike"},{"cultist"},{onChange=function() changes=changes+1 end})
+    local ui, stage, click, battle = feedbackBattle({"strike"},{"raven_adept"},{onChange=function() changes=changes+1 end})
     click("card1") click("enemy1")
     local impact = stage.children.enemy1.children.impact
     local setter = impact.SetVisible
@@ -1002,9 +1002,9 @@ test("effect setter failure restores final HP and input, and idle failure cannot
 end)
 test("a replacement run cancels stale playback and late updates cannot change or lock the new run", function()
     local changes = 0
-    local ui, stage, click = feedbackBattle({"strike"},{"cultist"},{onChange=function() changes=changes+1 end})
+    local ui, stage, click = feedbackBattle({"strike"},{"raven_adept"},{onChange=function() changes=changes+1 end})
     click("card1") click("enemy1") assert(ui.busy)
-    ui.run = Run.new(Data,17) assert(Run.startCombat(ui.run,"cultist_solo"))
+    ui.run = Run.new(Data,17) assert(Run.startCombat(ui.run,"raven_adept_solo"))
     local energy, hp = ui.run.combat.energy, ui.run.combat.enemies[1].hp
     ui:render()
     assert(not ui.busy and changes == 0 and stage.children.endTurn.interactable)
@@ -1012,7 +1012,7 @@ test("a replacement run cancels stale playback and late updates cannot change or
     assert(ui.run.combat.energy == energy and ui.run.combat.enemies[1].hp == hp and not ui.busy)
 end)
 test("prepare failure does not execute a command and sound failure cannot interrupt feedback", function()
-    local ui, stage, click, battle = feedbackBattle({"strike"},{"cultist"})
+    local ui, stage, click, battle = feedbackBattle({"strike"},{"raven_adept"})
     click("card1")
     local energy, hp, seed = battle.energy, battle.enemies[1].hp, battle.seed
     local oldRender = ui.render
@@ -1035,10 +1035,10 @@ test("prepare failure does not execute a command and sound failure cannot interr
     assert(finished == 1 and not feedback.busy)
 end)
 test("idle effect cleanup cannot paint the prior encounter into a replacement battle", function()
-    local ui, stage, click = feedbackBattle({"strike"},{"cultist"})
+    local ui, stage, click = feedbackBattle({"strike"},{"raven_adept"})
     click("card1") click("enemy1") drain(ui)
     assert(not ui.busy and next(ui.feedback.effects))
-    ui.run = Run.new(Data,19) assert(Run.startCombat(ui.run,"cultist_solo")) ui:render()
+    ui.run = Run.new(Data,19) assert(Run.startCombat(ui.run,"raven_adept_solo")) ui:render()
     ui:update(0.02)
     assert(next(ui.feedback.effects) == nil and not stage.children.enemy1.children.floating.visible)
     assert(stage.children.enemy1.children.hpGhost.fillAmount == 1 and stage.x == 0)
@@ -1046,7 +1046,7 @@ end)
 local function dragBattle(deck, enemies)
     local ui, stage, click = setup({manualPlayback=true, dragEvents=true})
     click("start")
-    ui.run.combat = Combat.new(Data,{deck=deck or {"defend","defend"},enemies=enemies or {"cultist"}})
+    ui.run.combat = Combat.new(Data,{deck=deck or {"defend","defend"},enemies=enemies or {"raven_adept"}})
     ui:resize(1280,720) ui:render()
     local function event(control, kind, x, y, touch)
         local hit = stage.children[control]
@@ -1079,7 +1079,7 @@ test("native drag releases representative no-target rule cards into open ground 
     end
 end)
 test("targeted drags cancel in hand and hit the explicitly aimed enemy",function()
-    local ui,stage,click,event,grab,battle = dragBattle({"strike"},{"cultist","jaw_worm"})
+    local ui,stage,click,event,grab,battle = dragBattle({"strike"},{"raven_adept","jaw_worm"})
     local energy,hp1,hp2 = battle.energy,battle.enemies[1].hp,battle.enemies[2].hp
     grab(1) event("card1","drag",-200,0) event("card1","drag",0,-240) event("card1","up",0,-240)
     assert(#battle.hand == 1 and battle.energy == energy and not ui.busy)
@@ -1120,7 +1120,7 @@ end)
 test("open ground, hand, top bar and outside canvas never auto-target or commit",function()
     -- Open gap between the player and the newly widened enemy row.
     for _,point in ipairs({{-285,40},{0,-240},{0,280},{512,-206},{700,0},{0,350}}) do
-        local ui,stage,click,event,grab,battle = dragBattle({"strike"},{"cultist","jaw_worm"})
+        local ui,stage,click,event,grab,battle = dragBattle({"strike"},{"raven_adept","jaw_worm"})
         grab(1) event("card1","drag",0,0) event("dragLayer","up",point[1],point[2])
         if point[2] <= require('abyss_theme').layout.hand.y + require('abyss_theme').motion.hoverLift then
             assert(battle.energy == 3 and #battle.hand == 1 and ui.selected == nil and ui.carry == nil)
@@ -1252,7 +1252,7 @@ test("Guardian shows real mode budget and switches visible intention before its 
     assert(box.children.intent.text=="9")
 end)
 test("committed encounter identity preserves target across real animation frames", function()
-    local ui, stage, click, battle = feedbackBattle({"defend","strike"}, {"cultist","cultist"})
+    local ui, stage, click, battle = feedbackBattle({"defend","strike"}, {"raven_adept","raven_adept"})
     click("enemy2")
     assert(inspectDetails(ui,stage)~="")
     local slot
@@ -1272,10 +1272,10 @@ test("committed encounter identity preserves target across real animation frames
     assert(not ui.busy and frames > 0)
 end)
 test("same-run battle replacement clears valid-looking old selection and target", function()
-    local ui, stage, click, battle = feedbackBattle({"strike"}, {"cultist","cultist"})
+    local ui, stage, click, battle = feedbackBattle({"strike"}, {"raven_adept","raven_adept"})
     click("enemy2"); assert(inspectDetails(ui,stage)~=""); click("card1")
     assert(ui.target == 2 and ui.selected)
-    ui.run.combat = Combat.new(Data, {deck={"strike"}, enemies={"cultist","cultist"}})
+    ui.run.combat = Combat.new(Data, {deck={"strike"}, enemies={"raven_adept","raven_adept"}})
     ui:render()
     assert(ui.target == 1 and ui.selected == nil, "old encounter selection retained")
 end)

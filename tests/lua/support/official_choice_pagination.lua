@@ -9,7 +9,7 @@ local spec
 for _,layer in ipairs(F.Layout)do for _,panel in ipairs(layer.children or {})do if panel.name=='choicePanel'then spec=panel end end end
 local function setup()
  local deck={};for i=1,15 do deck[i]='defend'end
- local battle=Combat.new(F.Data,{deck=deck,enemies={'cultist'},seed=42})
+ local battle=Combat.new(F.Data,{deck=deck,enemies={'raven_adept'},seed=42})
  Combat.draw(battle,10-#battle.hand);assert(#battle.hand==10)
  -- count==10 auto-discards in Core, so the largest genuine pending choice is nine.
  assert(Discard.begin(battle,9));assert(battle.pendingDiscard and battle.pendingDiscard.count==9)
@@ -63,7 +63,7 @@ for _,change in ipairs({'generation','candidate','pending'})do
 end
 local function sourceChoice(module,begin,confirm)
  local deck={};for i=1,25 do deck[i]='defend'end
- local b=Combat.new(F.Data,{deck=deck,enemies={'cultist'},seed=42})
+ local b=Combat.new(F.Data,{deck=deck,enemies={'raven_adept'},seed=42})
  local run={phase='combat',combat=b,combatGeneration=7}
  assert(begin(module,b)=='pause')
  local r=F.control(spec)

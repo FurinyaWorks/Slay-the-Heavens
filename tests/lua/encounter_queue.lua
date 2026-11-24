@@ -20,14 +20,14 @@ local function controlled(values,fn)
 end
 
 test('weak pool strict thresholds preserve source declaration order',function()
-    for _,v in ipairs({{0,'Cultist'},{0.25-2^-24,'Cultist'},{0.25,'Jaw Worm'},
+    for _,v in ipairs({{0,'Raven Adept'},{0.25-2^-24,'Raven Adept'},{0.25,'Jaw Worm'},
         {0.5,'2 Louse'},{0.75,'Small Slimes'},{1-2^-24,'Small Slimes'}})do
         controlled({v[1]},function()eq(Q.new('42').normal[1],v[2])end)
     end
 end)
 test('strong pool sorts stably by weight and retains all ten strict thresholds',function()
-    local values={{0,'Gremlin Gang'},{0.0625,'Lots of Slimes'},{0.125,'Red Slaver'},
-        {0.1875,'Exordium Thugs'},{0.28125,'Exordium Wildlife'},{0.375,'Blue Slaver'},
+    local values={{0,'Gremlin Gang'},{0.0625,'Lots of Slimes'},{0.125,'Red Guard'},
+        {0.1875,'Exordium Thugs'},{0.28125,'Exordium Wildlife'},{0.375,'Blue Guard'},
         {0.5,'Looter'},{0.625,'Large Slime'},{0.75,'3 Louse'},{0.875,'2 Fungi Beasts'},
         {1-2^-24,'2 Fungi Beasts'}}
     for _,v in ipairs(values)do
@@ -38,10 +38,10 @@ test('normal rejection consumes draws and excludes the previous two source names
     -- Weak C, repeated C, Jaw, C again (two-back), repeated Jaw, Louse.
     controlled({0,0,0.25,0,0.25,0.5,0,0,0.5,0,0.5,0.125},function()
         local s=Q.new('42')
-        same({s.normal[1],s.normal[2],s.normal[3]},{'Cultist','Jaw Worm','2 Louse'})
+        same({s.normal[1],s.normal[2],s.normal[3]},{'Raven Adept','Jaw Worm','2 Louse'})
         -- First strong Gremlins, rejected Gremlins, Looter, both rejected,
-        -- then Red Slaver. Rejected values still advanced the shared stream.
-        same({s.normal[4],s.normal[5],s.normal[6]},{'Gremlin Gang','Looter','Red Slaver'})
+        -- then Red Guard. Rejected values still advanced the shared stream.
+        same({s.normal[4],s.normal[5],s.normal[6]},{'Gremlin Gang','Looter','Red Guard'})
         assert(s.monsterRng.counter>=30)
     end)
 end)
@@ -116,9 +116,9 @@ test('malformed snapshots and invalid seed encodings fail before caller state ch
         assert(not pcall(Q.new,seed))
     end
     local changes={function(x)x.version=2 end,function(x)x.extra=true end,
-        function(x)x.normal[1]='not an encounter'end,function(x)x.normal[17]='Cultist'end,
-        function(x)x.normal[2]=nil end,function(x)x.elite[1]='Cultist'end,
-        function(x)x.normal[8]='Cultist'end,function(x)x.normal[2]=x.normal[1]end,
+        function(x)x.normal[1]='not an encounter'end,function(x)x.normal[17]='Raven Adept'end,
+        function(x)x.normal[2]=nil end,function(x)x.elite[1]='Raven Adept'end,
+        function(x)x.normal[8]='Raven Adept'end,function(x)x.normal[2]=x.normal[1]end,
         function(x)x.elite[2]=x.elite[1]end,
         function(x)x.monsterRng.counter=1.5 end,function(x)x.monsterRng.words={'0000000000000000','0000000000000000'}end,
         function(x)x.rawSeed='01'end,function(x)setmetatable(x,{__index=function()error('must not run')end})end}
@@ -130,6 +130,6 @@ test('published pool descriptions cannot alter future draws or hide missing cont
     local rules=Q.rules();eq(#rules.weak,4);eq(#rules.strong,10);eq(#rules.elite,3)
     rules.weak[1][1]='invalid';rules.strong[1][2]=100;rules.normalized.elite[1][2]=1
     local a,b=Q.new('42'),Q.new('42');same(Q.snapshot(a),Q.snapshot(b))
-    eq(Q.rules().weak[1][1],'Cultist');eq(Q.rules().strong[1][2],2)
+    eq(Q.rules().weak[1][1],'Raven Adept');eq(Q.rules().strong[1][2],2)
 end)
 print('ENCOUNTER_QUEUE_CORE_PASS '..count)

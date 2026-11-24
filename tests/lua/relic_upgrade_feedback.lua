@@ -32,7 +32,7 @@ assert(Names.upgradeFeedback(r,seq,presentation,'war_paint')=='','unchanged rece
 print('LUA_RELIC_UPGRADE_NODE_FEEDBACK_PASS')
 -- Existing battle reward controls exercise the same committed receipt path.
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
-local host,root=F.fixture();assert(F.start(host));assert(Run.startCombat(host.run,'cultist_solo'))
+local host,root=F.fixture();assert(F.start(host));assert(Run.startCombat(host.run,'raven_adept_solo'))
 host.run.phase='reward';host.run.deck={{uid=99,cardId='bash',upgraded=false}}
 host.run.rewards={manualContinue=true,gold=0,goldClaimed=true,cards={},cardResolved=true,
  relics={{id='whetstone',sourceId='Whetstone',claimed=false},{id='war_paint',sourceId='War Paint',claimed=false}}}

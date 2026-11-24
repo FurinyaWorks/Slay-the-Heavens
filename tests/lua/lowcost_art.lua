@@ -86,7 +86,7 @@ for id in pairs(Theme.lowCostArt.relic.assets)do
 end
 -- Exercise the actual battle renderer and then its independent feedback writer.
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
-local host,ui,panel,event=H.setup({'strike','strike','strike'},{'cultist','jaw_worm'})
+local host,ui,panel,event=H.setup({'strike','strike','strike'},{'raven_adept','jaw_worm'})
 event('card1','down',7);event('card1','drag',7,-300,100)
 assert(ui.gesture and ui.gesture.moving and ui.selected,'real drag must be active')
 ui:render()

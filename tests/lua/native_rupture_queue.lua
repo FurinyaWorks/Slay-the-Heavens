@@ -29,7 +29,7 @@ local function card(s,id,up)
  local c={cardId=id,uid=s.nextUid,upgraded=up or false};s.nextUid=s.nextUid+1;return c
 end
 local function battle(mode,id,up)
- local s=C.new(D,{seed=42,deck={},enemies={'cultist'},enableStances=mode=='shared',
+ local s=C.new(D,{seed=42,deck={},enemies={'raven_adept'},enableStances=mode=='shared',
   orbSlots=mode=='orb'and 0 or nil,orbRandomSeed=mode=='orb'and '42'or nil})
  H.bindBattle(s,{'centennial_puzzle'})
  A.applyPower(s,s.player,'rupture',2,s.player)

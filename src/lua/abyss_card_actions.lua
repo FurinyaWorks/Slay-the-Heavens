@@ -25,13 +25,13 @@ local operations = { timeEater=true, writhingRoll=true,writhingParasite=true, cl
     discardToDraw=true, handToDraw=true, dualWield=true, generateAttack=true,
     makeTempCardInHand=true, makeTempCardInDraw=true, doubleStrength=true,
     spotWeakness=true, feed=true, reaper=true, playTop=true, damageRandom=true }
-for _,op in ipairs({'rareGamblingChip','rareRelicGenerate','rareRelicDamageAll','rareRelicWeak','shopRelic'})do operations[op]=true end
+for _,op in ipairs({'rareTacticalBadge','rareRelicGenerate','rareRelicDamageAll','rareRelicWeak','shopRelic'})do operations[op]=true end
 function M.supports(op) return operations[op] == true end
 
 function M.reactionRetained(effect)
     if effect.op=='rareRelicDamageAll'then return true end
     if require('abyss_corrupt_heart').retained(effect)then return true end
-    if effect.op=='reptomancerSuicide'then return true end
+    if effect.op=='reptomancerDismissal'then return true end
     return TimeEater.retained(effect) or effect.op=='awakenedAction' and effect.kind=='heal' or PlatedArmor.retained(effect) or Act2Powers.retained(effect) or effect.op=='resolveCurlUp'
         or effect.op=='damageRandom' or effect.op=='staticRetaliation'
         or effect.op=='silentFinal' and require('abyss_silent_final_cards').allowedAfterVictory(effect)
@@ -470,7 +470,7 @@ local actionHandlers={
     recoverExhaust=selection,discardToDraw=selection,handToDraw=selection,dualWield=selection,
     resolveCurlUp=resolveCurlUp,obtainPotion=obtainPotion,doubleStrength=doubleStrength,
     spotWeakness=spotWeakness,damageRandom=damageRandom,feed=feed,reaper=reaper,heal=heal,block=block,
-    rareGamblingChip=rareRelic,rareRelicGenerate=rareRelic,rareRelicDamageAll=rareRelic,rareRelicWeak=rareRelic,
+    rareTacticalBadge=rareRelic,rareRelicGenerate=rareRelic,rareRelicDamageAll=rareRelic,rareRelicWeak=rareRelic,
 }
 function actionHandlers.shopRelic(combat,state,item)
     if item.effect.kind=='toolbox'then return require('abyss_relic_family_combat').shop.beginToolbox(combat,state)end
@@ -480,7 +480,7 @@ function actionHandlers.writhingRoll(_,state,item)return require('abyss_writhing
 function actionHandlers.writhingParasite(_,state,item)return require('abyss_writhing_mass').obtainParasite(state,item.source)end
 function actionHandlers.giantHeadSlow(_,state,item)return require('abyss_giant_head').applySlow(Actors,state,item.effect)end
 function actionHandlers.timeEater(combat,state,item)return TimeEater.execute(combat,state,item.effect,item.source,M)end
-function actionHandlers.reptomancerSuicide(_,state,item)return require('abyss_reptomancer').cleanup(Actors,state,item.effect)end
+function actionHandlers.reptomancerDismissal(_,state,item)return require('abyss_reptomancer').cleanup(Actors,state,item.effect)end
 function actionHandlers.enemyAction(combat,state,item)return combat.resolveEnemyAction(state,item.effect,item.source)end
 function actionHandlers.staticRetaliation(combat,state,item)return combat.staticRetaliation(state,item.effect)end
 local function classPotionOrbHost()return require('abyss_orbs')end

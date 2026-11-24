@@ -14,7 +14,7 @@ local count=0
 local function eq(a,b) assert(a==b,tostring(a).." ~= "..tostring(b)) end
 local function test(name,fn) fn(); count=count+1; print("ok watcher_powers "..count.." - "..name) end
 local function battle(deck)
-    local s=Combat.new(Cards.withFoundationCards(Data),{seed=42,enemies={"cultist"},enableStances=true,deck=deck})
+    local s=Combat.new(Cards.withFoundationCards(Data),{seed=42,enemies={"raven_adept"},enableStances=true,deck=deck})
     s.enemies[1].hp=1000;s.enemies[1].maxHp=1000;s.energy=20
     return s
 end
@@ -72,7 +72,7 @@ test("Inner Peace already Calm draws exactly 3 or 4 without stance hooks",functi
         local s
         -- Select a reproducible seed where the real opening hand has the card.
         for seed=1,100 do
-            local candidate=Combat.new(Cards.withFoundationCards(Data),{seed=seed,enemies={"cultist"},enableStances=true,deck=deck})
+            local candidate=Combat.new(Cards.withFoundationCards(Data),{seed=seed,enemies={"raven_adept"},enableStances=true,deck=deck})
             for _,c in ipairs(candidate.hand) do if c.cardId=="inner_peace" then s=candidate;break end end
             if s then break end
         end
@@ -84,7 +84,7 @@ test("Inner Peace already Calm draws exactly 3 or 4 without stance hooks",functi
     end
 end)
 test("Rushdown can draw the triggering Eruption after real card disposal",function()
-    local s=Combat.new(Cards.withFoundationCards(Data),{seed=42,enemies={"cultist"},enableStances=true,
+    local s=Combat.new(Cards.withFoundationCards(Data),{seed=42,enemies={"raven_adept"},enableStances=true,
         deck={"rushdown",{cardId="eruption",upgraded=true},"inner_peace"}})
     -- Durable enemy fixture bounds ten loops; real initial energy stays three.
     s.enemies[1].hp=1000;s.enemies[1].maxHp=1000

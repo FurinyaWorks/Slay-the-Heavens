@@ -2,7 +2,7 @@ package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local Run,C,R,Data=require('abyss_run'),require('abyss_combat'),require('abyss_sts_random'),require('abyss_data')
 local function setup()
  local r=Run.new(Data,42);r.deck={{uid=31,cardId='defend'},{uid=32,cardId='thinking_ahead'}};r.relics={}
- assert(Run.startCombat(r,'cultist_solo'));return r,r.combat
+ assert(Run.startCombat(r,'raven_adept_solo'));return r,r.combat
 end
 local r,s=setup()
 assert(s.masterDeck and #s.masterDeck==2,'combat needs ordered private permanent-deck snapshot')

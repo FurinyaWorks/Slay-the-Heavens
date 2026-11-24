@@ -62,7 +62,7 @@ test('acquired passive shop relics publish real combat owners and opening effect
  local run=R.new(data,42)
  for _,id in ipairs({'hand_drill','chemical_x','orange_pellets','clockwork_souvenir',
   'frozen_eye','the_abacus','medical_kit','strange_spoon','brimstone'})do assert(R.obtainRelic(run,id))end
- assert(R.startCombat(run,'cultist_solo'));local s=run.combat
+ assert(R.startCombat(run,'raven_adept_solo'));local s=run.combat
  for _,id in ipairs(run.relics)do assert(Shop.owns(s,id))end
  assert(s.player.statuses.artifact==1)
  assert(s.player.statuses.strength==2 and s.enemies[1].statuses.strength==1)

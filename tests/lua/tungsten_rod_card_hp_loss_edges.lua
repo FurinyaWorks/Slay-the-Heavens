@@ -55,7 +55,7 @@ do
  for _,c in ipairs(r.deck)do uids[#uids+1]=c.uid end
  for _,uid in ipairs(uids)do assert(Run.removeCard(r,uid))end
  assert(Run.obtainCard(r,'bloodletting'));assert(Run.obtainRelic(r,'tungsten_rod'))
- assert(Run.startCombat(r,'cultist_solo'))
+ assert(Run.startCombat(r,'raven_adept_solo'))
  local s=r.combat;local card=s.hand[1];local before=C.copy(r)
  local player,hand,rng,misc,deck=s.player,s.hand,s.cardRandomRng,r.miscRng,r.deck
  local hook,observed=H.hpChanged,false

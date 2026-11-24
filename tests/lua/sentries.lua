@@ -30,7 +30,7 @@ test("outer Bolt2 Dazed and middle Beam9 are source-specific opening intents",fu
     eq(C.intent(s,2).effects[1].value,9);bolt.effects[1].value=99;eq(C.intent(s,1).effects[1].value,2)
 end)
 test("initial parity is the whole monster-list slot, not the Sentry-only ordinal",function()
-    local s=battle({"cultist","sentry","sentry"})
+    local s=battle({"raven_adept","sentry","sentry"})
     eq(C.intent(s,2).id,"sentry_1");eq(C.intent(s,3).id,"sentry_2")
 end)
 test("three natural rounds alternate actual Bolt and Beam effects without fake Weak",function()

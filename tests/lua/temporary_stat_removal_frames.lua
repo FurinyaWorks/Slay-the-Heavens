@@ -2,7 +2,7 @@ package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local C,A,D=require('abyss_combat'),require('abyss_actor'),require('abyss_data')
 local count,failed=0,0
 local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end
-local base=C.new(D,{deck={'defend'},enemies={'cultist'},seed=42})
+local base=C.new(D,{deck={'defend'},enemies={'raven_adept'},seed=42})
 for _,advanced in ipairs({false,true})do
  for _,stat in ipairs({'strength','dexterity'})do
   for _,artifact in ipairs({false,true})do

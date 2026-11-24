@@ -21,7 +21,7 @@ function M.options(_run,event)
     if event.stage=='result'then return {row('leave','离开','返回路线。')}end
     if event.stage~='intro'then return {}end
     return {row('offer_idol','交换黄金神像','以黄金神像换取赤晶神像。',event.hasIdol),
-        row('shed_blood','接受试炼','获得5点最大生命，然后受到 '..event.hpLoss..' 点普通伤害。'),
+        row('accept_trial','接受试炼','获得5点最大生命，然后受到 '..event.hpLoss..' 点普通伤害。'),
         row('smash','破坏机关','获得诅咒「腐朽」。')}
 end
 local function gainChalice(run,event)
@@ -44,7 +44,7 @@ function M.choose(run,flow,choice,uid)
     if event.stage~='intro'then return false,'invalid_event_choice'end
     local ok,why
     if choice=='offer_idol'then ok,why=gainChalice(run,event)
-    elseif choice=='shed_blood'then
+    elseif choice=='accept_trial'then
         ok,why=Run.increaseMaxHp(run,5);if not ok then return false,why end
         ok,why=Run.eventNormalDamage(run,event.hpLoss)
     elseif choice=='smash'then

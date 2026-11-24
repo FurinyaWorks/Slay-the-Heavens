@@ -18,12 +18,12 @@ test('new acquisition outside battle never rewrites a retained victory or pendin
  end
 end)
 test('active source healing removes Red Skull only when actual heal crosses its current maximum threshold',function()
- local r=F.R.new(F.D,42);r.hp=40;r.relics={'red_skull'};assert(F.R.startCombat(r,'cultist_solo'))
+ local r=F.R.new(F.D,42);r.hp=40;r.relics={'red_skull'};assert(F.R.startCombat(r,'raven_adept_solo'))
  F.eq(r.combat.player.statuses.strength,3);assert(F.R.obtainRelic(r,'Pear'))
  F.eq(r.hp,50);F.eq(r.maxHp,90);F.eq(r.combat.player.statuses.strength,0);assert(not r.combat.relicCombat.redSkullActive)
 end)
 test('Waffle emits detached ordered health frames and never queues an invented heal action',function()
- local r=F.R.new(F.D,42);r.hp=30;assert(F.R.startCombat(r,'cultist_solo'))
+ local r=F.R.new(F.D,42);r.hp=30;assert(F.R.startCombat(r,'raven_adept_solo'))
  local events=#r.combat.events;assert(F.R.obtainRelic(r,"Lee's Waffle"));local s=r.combat
  F.eq(#s.events,events+2);local first,last=s.events[events+1],s.events[events+2]
  F.eq(first.kind,'heal');F.eq(first.frame.player.maxHp,87);F.eq(first.frame.player.hp,37)

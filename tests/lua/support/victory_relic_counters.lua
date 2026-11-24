@@ -31,7 +31,7 @@ local function start(encounter,formal)
  r.hp=40 -- explicit pre-battle health precondition for healing-order boundary
  if encounter then r.floor=4 end
  if formal then assert(Run.startRoomCombat(r,'normal'));assert(r.combat.roomSeed,'real source-room transaction')
- else assert(Run.startCombat(r,encounter or 'cultist_solo'))end
+ else assert(Run.startCombat(r,encounter or 'raven_adept_solo'))end
  assert(r.combat.enemies[1].hp==1,'actual Neow effect provides lethal public encounter')
  play(r,'defend');play(r,'deep_breath')
  assert(r.combat.relicCounters.sundial==1,'actual Deep Breath shuffle advances permanent Sundial')
@@ -60,7 +60,7 @@ function M.lifecycle()
  assert(Run.claimCardReward(r,0));dofile('tests/lua/support/finish_combat_rewards.lua')(r)
  assert(r.phase=='map');hidden(r);persistent(r,r.relicCounters)
  stable=unchanged(r);assert(not Run.finishCombat(r));stable()
- assert(Run.startCombat(r,'cultist_solo'))
+ assert(Run.startCombat(r,'raven_adept_solo'))
  local counters=r.combat.relicCounters
  for _,id in ipairs({'letter_opener','kunai','shuriken','ornamental_fan','pocketwatch'})do assert(counters[id]==0 and View.status(r,id)=='计数 0','next battle resets '..id)end
  assert(counters.stone_calendar==1 and counters.captains_wheel==1,'real first-turn hooks follow battle reset')

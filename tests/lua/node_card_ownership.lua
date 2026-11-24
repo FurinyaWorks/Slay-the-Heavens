@@ -91,7 +91,7 @@ test("old shop card cannot buy in a restarted run",function()
     emit(h,"down",11)
     F.click(root,"nodePanel","back");ui:update(.7);F.click(root,"nodePanel","back")
     local Run=require("abyss_run")
-    assert(Run.startCombat(ui.run,"cultist_solo")); ui:refresh()
+    assert(Run.startCombat(ui.run,"raven_adept_solo")); ui:refresh()
     ui.run.combat.player.hp=1 -- isolate defeat routing, not combat balance
     for i=1,3 do if ui.mode~="defeat" then F.click(root,"battlePanel","endTurn") end end
     assert(ui.mode=="defeat")

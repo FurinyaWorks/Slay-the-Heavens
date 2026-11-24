@@ -8,7 +8,7 @@ local count,executed=0,0
 local function selected()count=count+1;if count<first or count>last then return false end;executed=executed+1;return true end
 for _,valid in ipairs({false,true})do for _,anonymous in ipairs({false,true})do
  if selected()then
- local h,u,p,event,tap,drain=H.setup({'defend','defend'},{'cultist','jaw_worm'})
+ local h,u,p,event,tap,drain=H.setup({'defend','defend'},{'raven_adept','jaw_worm'})
  -- Explicit source formation keeps the independently targeted test actors apart.
  for i,actor in ipairs(h.run.combat.enemies)do actor.sourcePosition={x=-850+(i-1)*750,y=0}end;h:refresh()
  assert(Run.obtainPotion(h.run,'fire_potion'));h:refresh()
@@ -38,7 +38,7 @@ for _,valid in ipairs({false,true})do for _,anonymous in ipairs({false,true})do
 end end
 assert(count==4)
 if selected()then
- local h,u,p,event,tap,drain=H.setup({'defend','defend'},{'cultist','jaw_worm'})
+ local h,u,p,event,tap,drain=H.setup({'defend','defend'},{'raven_adept','jaw_worm'})
  -- Explicit source formation keeps the independently targeted test actors apart.
  for i,actor in ipairs(h.run.combat.enemies)do actor.sourcePosition={x=-850+(i-1)*750,y=0}end;h:refresh()
  assert(Run.obtainPotion(h.run,'fire_potion')and Run.obtainPotion(h.run,'poison_potion'));h:refresh()
@@ -68,7 +68,7 @@ end
 assert(count==5)
 for _,surface in ipairs({'potion2','dragLayer'})do for _,release in ipairs({'up','endDrag'})do
  if selected()then
- local h,u,p,event,tap,drain=H.setup({'defend','defend'},{'cultist','jaw_worm'})
+ local h,u,p,event,tap,drain=H.setup({'defend','defend'},{'raven_adept','jaw_worm'})
  -- Explicit source formation keeps the independently targeted test actors apart.
  for i,actor in ipairs(h.run.combat.enemies)do actor.sourcePosition={x=-850+(i-1)*750,y=0}end;h:refresh()
  assert(Run.obtainPotion(h.run,'fire_potion')and Run.obtainPotion(h.run,'poison_potion'));h:refresh()

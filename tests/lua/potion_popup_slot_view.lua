@@ -1,7 +1,7 @@
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Run=require('abyss_run');local Candidate=require('abyss_run_potion_candidate')
 local function setup()
- local h,root=F.fixture();assert(F.start(h));assert(Run.startCombat(h.run,'cultist_solo'))
+ local h,root=F.fixture();assert(F.start(h));assert(Run.startCombat(h.run,'raven_adept_solo'))
  for _,id in ipairs({'block_potion','energy_potion','fire_potion'})do assert(Run.obtainPotion(h.run,id))end
  h:refresh();assert(h.battleUI:openPotionMenu(1))
  local panel=root:GetChild('battlePanel');local stage=panel:GetChild('stage')or panel

@@ -41,8 +41,8 @@ function M.withCardDefinitions(data)
             upgrade={effects={{op="damage",value=16},{op="gainEnergyIfDiscard",value=2}}}},
         {id="eviscerate",sourceId="Eviscerate",type="attack",rarity="uncommon",cost=3,
             effects={{op="damage",value=7,times=3}},upgrade={effects={{op="damage",value=9,times=3}}}},
-        {id="calculated_gamble",sourceId="Calculated Gamble",type="skill",rarity="uncommon",cost=0,
-            exhaust=true,effects={{op="calculatedGamble"}},upgrade={exhaust=false}},
+        {id="calculated_exchange",sourceId="Calculated Exchange",type="skill",rarity="uncommon",cost=0,
+            exhaust=true,effects={{op="calculatedExchange"}},upgrade={exhaust=false}},
     }
     for _, card in ipairs(additions) do
         for _, existing in ipairs(result.cards.cards) do assert(existing.id ~= card.id, "discard card already registered") end
@@ -95,12 +95,12 @@ function M.gainEnergyIfDiscard(state, value)
     return true
 end
 
--- Expand only when CalculatedGambleAction executes, after the played card has
+-- Expand only when CalculatedExchangeAction executes, after the played card has
 -- left hand. The caller pushes these actions ahead of existing UseCard cleanup
 -- in this order. Manual discard hooks add Tactician at TOP, Reflex at BOTTOM.
-function M.gambleActions(state)
+function M.exchangeActions(state)
     local n = #state.hand
-    assert(integer(n) and n <= 10, "unsupported Gamble hand size")
+    assert(integer(n) and n <= 10, "unsupported Exchange hand size")
     if n == 0 then return {} end
     return {
         {kind="effect",effect={op="requestDiscard",value=n}},

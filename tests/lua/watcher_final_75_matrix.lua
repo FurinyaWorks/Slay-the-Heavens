@@ -28,7 +28,7 @@ for _,card in ipairs(normal)do for _,up in ipairs({false,true})do
  local ok,why=pcall(function()
   assert(Capability.isImplemented(card),'card is not implemented')
   local s=C.new(data,{seed=1,cardRandomSeed='1',cardSeed='1',shuffleSeed='1',miscRng=R.fromSeed('1'),enableStances=true,
-   masterDeck={{uid=71,cardId='empty_fist',upgraded=false}},deck={{cardId=card.id,upgraded=up}},enemies={'cultist'}})
+   masterDeck={{uid=71,cardId='empty_fist',upgraded=false}},deck={{cardId=card.id,upgraded=up}},enemies={'raven_adept'}})
   s.enemies[1].hp=10000;s.enemies[1].maxHp=10000;s.enemies[1].ai=nil;s.enemies[1].intents={{id='wait',effects={}}};s.enemies[1].intentIndex=1;s.energy=20
   if card.id=='deus_ex_machina' then
    assert(#s.exhaust==1 and #s.hand==(up and 3 or 2),'true drawn Deus lifecycle missing')

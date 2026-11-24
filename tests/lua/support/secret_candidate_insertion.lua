@@ -11,7 +11,7 @@ return function(kind,upgraded,samples)
   local id=kind=='skill'and'secret_technique'or'secret_weapon'
   local run=Run.new(D,sample.seed);assert(Run.obtainCard(run,id));local master=run.deck[#run.deck]
   if upgraded then assert(Run.upgradeCard(run,master.uid))end
-  assert(run.floor==1);assert(Run.startCombat(run,'cultist_solo'));local s=run.combat
+  assert(run.floor==1);assert(Run.startCombat(run,'raven_adept_solo'));local s=run.combat
   local originals={};for _,pile in ipairs({s.hand,s.draw,s.discard})do for _,c in ipairs(pile)do originals[#originals+1]=c end end
   table.sort(originals,function(a,b)return a.uid<b.uid end)
   local used,secret,candidates={},{},{}

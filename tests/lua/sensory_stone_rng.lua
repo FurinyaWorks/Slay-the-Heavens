@@ -28,7 +28,7 @@ F.eq(r.deck[#r.deck-1].cardId,'bandage_up');F.eq(r.deck[#r.deck].cardId,'bandage
 local rng=F.R.snapshot(r.cardRng);assert(F.Nodes.chooseEvent(r,'proceed'));assert(F.Nodes.chooseEvent(r,'leave'))
 -- Keep the independent constructor ownership control, without consuming the
 -- real Run's source encounter queue or its persistent card reward stream.
-local replay=F.C.new(r.data,{deck=r.deck,enemies={'cultist'},seed=139,cardRng=r.cardRng})
+local replay=F.C.new(r.data,{deck=r.deck,enemies={'raven_adept'},seed=139,cardRng=r.cardRng})
 local seen={};for _,pile in ipairs({replay.hand,replay.draw})do for _,c in ipairs(pile)do if c.cardId=='bandage_up'then seen[c.deckUid]=true end end end
 assert(seen[uid]and seen[uid+1]);F.same(F.R.snapshot(r.cardRng),rng)
 -- The original source encounter is now implemented. Preserve the late-setup

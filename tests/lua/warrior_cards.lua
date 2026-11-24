@@ -74,7 +74,7 @@ for _,up in ipairs({false,true}) do
   eq(#s.exhaust,1);eq(s.exhaust[1].cardId,'warcry');eq(s.cardRandomRng.counter,1)
  end)
  test('Demon Form gains only after the next player draw '..tostring(up),function()
-  local s=battle({inst('demon_form',up),'strike'},{'cultist'})
+  local s=battle({inst('demon_form',up),'strike'},{'raven_adept'})
   assert(C.play(s,uid(s,'demon_form')));eq(s.energy,0);eq(s.player.statuses.strength or 0,0)
   eq(#s.discard,0);eq(#s.exhaust,0)
   assert(C.endTurn(s));eq(s.player.statuses.strength,up and 3 or 2)
@@ -86,7 +86,7 @@ for _,up in ipairs({false,true}) do
   assert(#s.events[strengthIndex].frame.hand>0,'post-draw Strength must see the new hand')
  end)
  test('Metallicize fixed block precedes Regret and ignores Dexterity/Frail '..tostring(up),function()
-  local s=battle({inst('metallicize',up),'regret'},{'cultist'})
+  local s=battle({inst('metallicize',up),'regret'},{'raven_adept'})
   assert(C.play(s,uid(s,'metallicize')));eq(s.player.block,0)
   s.player.statuses.dexterity=10;s.player.statuses.frail=1
   assert(C.endTurn(s))
@@ -163,7 +163,7 @@ for _,up in ipairs({false,true}) do
  test('Warcry draws its source amount before offering hand selection '..tostring(up),function()
   local s,w
   for seed=1,16 do
-   local candidate=C.new(data,{seed=seed,deck={inst('warcry',up),'strike','defend','bash','strike','defend','strike','defend'},enemies={'cultist'}})
+   local candidate=C.new(data,{seed=seed,deck={inst('warcry',up),'strike','defend','bash','strike','defend','strike','defend'},enemies={'raven_adept'}})
    for _,c in ipairs(candidate.hand) do if c.cardId=='warcry' then s,w=candidate,c.uid;break end end
    if s then break end
   end
@@ -223,7 +223,7 @@ test('failed hand-choice resume restores the current phase without replaying blo
    s=battle({inst(id,true),'strike','defend'});using=uid(s,id)
   else
    for seed=1,16 do
-    local candidate=C.new(data,{seed=seed,deck={'warcry','strike','defend','bash','strike','defend','strike','defend'},enemies={'cultist'}})
+    local candidate=C.new(data,{seed=seed,deck={'warcry','strike','defend','bash','strike','defend','strike','defend'},enemies={'raven_adept'}})
     for _,c in ipairs(candidate.hand) do if c.cardId==id then s,using=candidate,c.uid;break end end
     if s then break end
    end

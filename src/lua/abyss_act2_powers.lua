@@ -27,7 +27,7 @@ function M.apply(api,s,entry)
  if entry.targetId==s.player.id then target=s.player end
   if entry.op=='stasis_return'then Stasis.release(api,s,entry)
   elseif entry.op=='boss_dead'then
-   for _,e in ipairs(s.enemies)do if api.isActive(e)then e.hp=0;Events.emit(s,'enemy_suicide',{enemy=e.id})end end
+   for _,e in ipairs(s.enemies)do if api.isActive(e)then e.hp=0;Events.emit(s,'enemy_self_exit',{enemy=e.id})end end
    s.act2StasisCards=nil
   elseif entry.op=='leader_dead'then
    for _,e in ipairs(s.enemies)do if api.isActive(e)then e.escaped=true;Events.emit(s,'enemy_escape',{enemy=e.id})end end

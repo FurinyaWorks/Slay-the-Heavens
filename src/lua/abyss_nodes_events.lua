@@ -62,7 +62,7 @@ return function(M)
             if e.stage=='purge' then
                 option('purge','移除卡牌','已支付 '..r.damage..' 点生命；选择一张卡牌移除',deckOk,'wing_purge');return rows
             end
-            option('sacrifice','献出生命','受到 '..r.damage..' 点伤害，然后选择移除一张卡牌')
+            option('endure_damage','承受伤害','受到 '..r.damage..' 点伤害，然后选择移除一张卡牌')
             option('take_gold','击碎雕像','获得 '..r.goldMin..'–'..r.goldMax..' 金币；需要基础伤害至少 '..r.attackThreshold..' 的攻击牌',e.canAttack)
         end,
     }
@@ -167,7 +167,7 @@ return function(M)
             end
             run.miscRng=rng
          end},
-        {matches=function(id,choice,_flow)return choice=='sacrifice' and id=='golden_wing' end,
+        {matches=function(id,choice,_flow)return choice=='endure_damage' and id=='golden_wing' end,
          apply=function(run,flow,_uid,rules)
             damage(run,rules.damage);flow.event.stage='purge'
             -- An empty purge group cannot keep the event waiting for a nonexistent UID.

@@ -1,11 +1,11 @@
 package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local Run,C,A,R,P=require('abyss_run'),require('abyss_combat'),require('abyss_actor'),require('abyss_sts_random'),require('abyss_class_potions')
 local D=C.copy(require('abyss_data'))
-D.enemies.encounters[#D.enemies.encounters+1]={id='darkness_pair_fixture',tier='normal',minFloor=1,maxFloor=16,enemies={'cultist','cultist'}}
+D.enemies.encounters[#D.enemies.encounters+1]={id='darkness_pair_fixture',tier='normal',minFloor=1,maxFloor=16,enemies={'raven_adept','raven_adept'}}
 local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end
 local function fresh(pair)
  local r=Run.new(D,42,{character='defect',experimental=true});r.relics[#r.relics+1]='toy_ornithopter'
- assert(Run.obtainPotion(r,'essence_of_darkness'));assert(Run.startCombat(r,pair and 'darkness_pair_fixture'or 'cultist_solo'))
+ assert(Run.obtainPotion(r,'essence_of_darkness'));assert(Run.startCombat(r,pair and 'darkness_pair_fixture'or 'raven_adept_solo'))
  r.hp=r.hp-10;r.combat.player.hp=r.hp;return r
 end
 local r=fresh();local s=r.combat;local hp,energy,rng=s.player.hp,s.energy,s.cardRandomRng.counter

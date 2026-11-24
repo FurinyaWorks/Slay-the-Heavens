@@ -33,7 +33,7 @@ for _,name in ipairs({'apply','enqueue'})do
     end
 end
 local function battle(size,hooks)
-    local s=C.new(data,{seed=42,deck={'strike'},enemies={'cultist'},cardRandomSeed='42'})
+    local s=C.new(data,{seed=42,deck={'strike'},enemies={'raven_adept'},cardRandomSeed='42'})
     s.hand={};s.draw={};s.discard={};s.exhaust={};s.cardActions=nil
     for i=1,size do s.hand[i]={uid=100+i,cardId=i%2==0 and 'strike'or'defend'}end
     if hooks then

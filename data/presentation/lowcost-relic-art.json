@@ -1934,7 +1934,7 @@
         }
       ]
     },
-    "gambling_chip": {
+    "tactical_badge": {
       "name": "战术徽记",
       "shapes": [
         {
@@ -5426,7 +5426,7 @@
         }
       ]
     },
-    "slavers_collar": {
+    "arena_collar": {
       "name": "缚岩项圈",
       "shapes": [
         {
@@ -6689,7 +6689,7 @@
         }
       ]
     },
-    "mutagenic_strength": {
+    "augmentation_core": {
       "name": "增幅晶核",
       "shapes": [
         {

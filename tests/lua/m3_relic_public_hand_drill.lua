@@ -4,7 +4,7 @@ local Run=require('abyss_run');local D=require('abyss_data')
 local function fixture(block,owned)
  local r=Run.new(D,42);if owned then assert(Run.obtainRelic(r,'HandDrill'))end
  r.deck={};for i=1,10 do r.deck[i]={uid=i,cardId='strike',upgraded=false}end;r.nextDeckUid=11
- assert(Run.startCombat(r,'cultist_solo'));r.combat.enemies[1].block=block;return r
+ assert(Run.startCombat(r,'raven_adept_solo'));r.combat.enemies[1].block=block;return r
 end
 local function attack(r)
  local uid;for _,c in ipairs(r.combat.hand)do if c.cardId=='strike'then uid=c.uid;break end end

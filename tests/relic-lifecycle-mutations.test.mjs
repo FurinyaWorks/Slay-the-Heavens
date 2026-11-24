@@ -13,7 +13,7 @@ const puzzle="require('abyss_combat_reactions').enqueueReaction(state,{op='draw'
 const cardSetup=`
 local C,A,H,Q,D=require('abyss_combat'),require('abyss_actor'),require('abyss_relic_hooks'),require('abyss_card_actions'),require('abyss_data')
 local function battle(shared)
- local s=C.new(D,{seed=42,deck={},enemies={'cultist'},enableStances=shared})
+ local s=C.new(D,{seed=42,deck={},enemies={'raven_adept'},enableStances=shared})
  H.bindBattle(s,{'centennial_puzzle'})
  local card=Q.fresh(C,s,'bloodletting');s.hand={card};s.draw={};s.discard={}
  for _=1,6 do s.draw[#s.draw+1]=Q.fresh(C,s,'defend')end
@@ -60,7 +60,7 @@ check(observed and s.player.statuses.strength==2,'both reactions resolved in rea
 local R,C,H,D=require('abyss_run'),require('abyss_combat'),require('abyss_relic_hooks'),require('abyss_data')
 local r=R.new(D,42);assert(R.obtainRelic(r,'happy_flower'))
 local original=r.relicCounters;local before=original.happy_flower
-local s=C.new(D,{seed=42,deck={'defend'},enemies={'cultist'}})
+local s=C.new(D,{seed=42,deck={'defend'},enemies={'raven_adept'}})
 H.bindBattle(s,r.relics,original);H.atTurnStart(s)
 check(not rawequal(s.relicCounters,original),'Combat counter projection is a separate table')
 check(r.relicCounters==original and original.happy_flower==before,'Combat turn cannot mutate persistent owner counters')
@@ -71,7 +71,7 @@ check(s.relicCounters.happy_flower==1,'real Happy Flower turn advanced combat co
   after:"local capturedOnSpawnMonster=M.onSpawnMonster\nfunction M.battleStart(state,id)\n id=M.localId(id)\n if id=='philosophers_stone'then for _,enemy in ipairs(state.enemies)do capturedOnSpawnMonster(state,enemy)end",
   probe:`
 local C,H,B,D=require('abyss_combat'),require('abyss_relic_hooks'),require('abyss_boss_relics'),require('abyss_data')
-local s=C.new(D,{seed=42,deck={'defend'},enemies={'cultist'}})
+local s=C.new(D,{seed=42,deck={'defend'},enemies={'raven_adept'}})
 H.bindBattle(s,{'philosophers_stone'})
 local original=B.onSpawnMonster;local calls=0
 B.onSpawnMonster=function(state,enemy)check(state==s,'actual battle owner');calls=calls+1;return original(state,enemy)end
@@ -83,7 +83,7 @@ check(calls==#s.enemies,'battleStart dynamically reads the public onSpawnMonster
   after:"if require('abyss_potion_health').blocked(run.relics)and false then return end",
   probe:`
 local C,H,P,D=require('abyss_combat'),require('abyss_relic_hooks'),require('abyss_character_profiles'),require('abyss_data')
-local s=C.new(P.prepare(D,'watcher'),{seed=1,cardRandomSeed='1',shuffleSeed='1',enableStances=true,deck={'wish'},enemies={'cultist'}})
+local s=C.new(P.prepare(D,'watcher'),{seed=1,cardRandomSeed='1',shuffleSeed='1',enableStances=true,deck={'wish'},enemies={'raven_adept'}})
 H.bindBattle(s,{'bloody_idol','mark_of_bloom'});s.energy=20
 local card=s.hand[1];assert(C.play(s,card.uid,1));local choice=assert(s.pendingChoice);local gold=s.player.gold
 local ok,accepted=pcall(C.chooseCard,s,choice.token,2)

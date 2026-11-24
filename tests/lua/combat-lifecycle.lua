@@ -41,7 +41,7 @@ local function invoke(root,label,fn)
  root.result=result;emit(label,root);return table.unpack(result,1,result.n)
 end
 local function battle(options)
- options=options or {};options.seed=42;options.cardRandomSeed='42';options.enemies=options.enemies or {'cultist'}
+ options=options or {};options.seed=42;options.cardRandomSeed='42';options.enemies=options.enemies or {'raven_adept'}
  options.deck=options.deck or {'strike','defend'}
  local s=C.new(D,options);s.events={};return s,s.enemies[1]
 end
@@ -138,7 +138,7 @@ end
 if not COMBAT_LIFECYCLE_GROUP or COMBAT_LIFECYCLE_GROUP=='owners'then
  test('public Run potion keeps Evolve below initial draws and transactional rollback',function()
   for _,invalid in ipairs({false,true})do
-   local run=Run.new(D,42);assert(Run.obtainPotion(run,'snecko_oil'));assert(Run.startCombat(run,'cultist_solo'))
+   local run=Run.new(D,42);assert(Run.obtainPotion(run,'snecko_oil'));assert(Run.startCombat(run,'raven_adept_solo'))
    local s=run.combat;zones(s,{invalid and 'invalid_draw_fixture'or 'defend','defend','defend','defend','defend','dazed'})
    require('abyss_warrior_status_cards').applyPower(s,'evolve',1)
    local root=refs(s);root.run=run;local energy=s.energy

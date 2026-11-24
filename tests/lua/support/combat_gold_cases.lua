@@ -156,7 +156,7 @@ test('parked rewards and independent stolen gold never redraw or multiply the ro
 end)
 
 test('legacy explicit-ID fixture retains fixed amounts without a source-parity claim',function()
- local run=Run.new(Data,'42');assert(Run.startCombat(run,'cultist_solo'))
+ local run=Run.new(Data,'42');assert(Run.startCombat(run,'raven_adept_solo'))
  for _,e in ipairs(run.combat.enemies)do e.hp=0 end
  local before=C.copy(run.treasureRng);assert(Run.finishCombat(run));eq(run.rewards.gold,15);eq(run.combat.roomSeed,nil)
  same(run.treasureRng,before)

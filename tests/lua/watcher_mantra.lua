@@ -10,7 +10,7 @@ local function eq(a,b) assert(a==b,tostring(a).." ~= "..tostring(b)) end
 local function test(name,fn) fn();count=count+1;print("ok watcher_mantra "..count.." - "..name) end
 local function prepared() return Watcher.withFoundationCards(Data) end
 local function battle(deck)
-    local s=Combat.new(prepared(),{seed=42,enemies={"cultist"},enableStances=true,deck=deck or {"defend"}})
+    local s=Combat.new(prepared(),{seed=42,enemies={"raven_adept"},enableStances=true,deck=deck or {"defend"}})
     s.enemies[1].hp=1000;s.enemies[1].maxHp=1000
     return s
 end

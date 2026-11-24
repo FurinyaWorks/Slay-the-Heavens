@@ -103,7 +103,7 @@ local function close(a,b,label)assert(math.abs(a-b)<1e-8,(label or 'value')..': 
 for _,life in ipairs({1.8,1.0})do
  local box=control({name='creature',children={{name='portrait'},{name='impact',visible=false},{name='shield'},{name='floating'},{name='hpGhost'}}})
  local state={dying={enemy={age=0,alpha=1,lifetime=life}},effects={},poses={},escaping={}}
- local unit={hp=0,id='enemy',definitionId='cultist'}
+ local unit={hp=0,id='enemy',definitionId='raven_adept'}
  local ctx={state=state,actor=function()return unit,box end,platform={color=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end}}
  Painter.paint(ctx,'enemy',0,{})
  local portrait=box:GetChild('portrait')
@@ -130,7 +130,7 @@ do
  Painter.advanceDeaths(ctx,1.31);assert(not state.dying.enemy)
 end
 local function deathHarness(fast,allDead)
- local h=harness({'strike'},allDead and {'cultist'}or{'cultist','cultist','cultist'},function(s)s.enemies[allDead and 1 or 2].hp=1 end)
+ local h=harness({'strike'},allDead and {'raven_adept'}or{'raven_adept','raven_adept','raven_adept'},function(s)s.enemies[allDead and 1 or 2].hp=1 end)
  h.feedback:setFastMode(fast)
  local target=allDead and 1 or 2
  h.play(target);h.until_(kind('death'))
@@ -158,7 +158,7 @@ end
 
 -- The timer begins at the lethal contact, while DamageAction is still waiting.
 for _,fast in ipairs({false,true})do
- local h=harness({'strike'},{'cultist','cultist'},function(s)s.enemies[1].hp=1 end)
+ local h=harness({'strike'},{'raven_adept','raven_adept'},function(s)s.enemies[1].hp=1 end)
  h.feedback:setFastMode(fast);h.play(1);h.until_(kind('damage'))
  local id=h.battle.enemies[1].id
  local dying=assert(h.feedback.dying[id],'lethal damage contact starts death before the queued death cue')
@@ -177,7 +177,7 @@ for _,fast in ipairs({false,true})do
 end
 -- Area victims enter independently at their own contact, not the later grouped cue.
 do
- local h=harness({'cleave'},{'cultist','cultist','cultist'},function(s)for _,a in ipairs(s.enemies)do a.hp=1 end end)
+ local h=harness({'cleave'},{'raven_adept','raven_adept','raven_adept'},function(s)for _,a in ipairs(s.enemies)do a.hp=1 end end)
  h.play();h.until_(kind('damage'))
  local first=assert(h.feedback.dying[h.battle.enemies[1].id])
  assert(not h.feedback.dying[h.battle.enemies[2].id],'future committed victim is not yet presented')
@@ -192,7 +192,7 @@ do
 end
 -- A real previous hit supplies a non-white current tint; lethal contact snapshots it.
 do
- local h=harness({'twin_strike'},{'cultist','cultist'},function(s)s.enemies[1].hp=7 end)
+ local h=harness({'twin_strike'},{'raven_adept','raven_adept'},function(s)s.enemies[1].hp=7 end)
  h.feedback:setFastMode(true);h.play(1);h.until_(kind('damage'))
  local id=h.battle.enemies[1].id
  assert(not h.feedback.dying[id])
@@ -209,7 +209,7 @@ end
 
 -- A delayed duplicate cue after disposal must never resurrect a previously dying actor.
 do
- local h=harness({'strike'},{'cultist','cultist'},function(s)s.enemies[1].hp=1 end)
+ local h=harness({'strike'},{'raven_adept','raven_adept'},function(s)s.enemies[1].hp=1 end)
  h.play(1);h.until_(kind('damage'))
  local id=h.battle.enemies[1].id
  local pos=h.feedback.index+1

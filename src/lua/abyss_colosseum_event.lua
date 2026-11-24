@@ -20,7 +20,7 @@ function M.choose(run,flow,choice,uid)
  if event.stage=='post_combat'and choice=='leave'then event.stage='leave';return true,'complete'end
  if (event.stage~='fight'and event.stage~='post_combat')or choice~='fight'then return false,'invalid_event_choice'end
  local second=event.stage=='post_combat'
- local source=second and'Colosseum Nobs'or'Colosseum Slavers'
+ local source=second and'Colosseum Nobs'or'Colosseum Guards'
  local prepared,why=Routes.prepare(run,source,run.floor,Run.roomStreams,run.miscRng,event.roomContinuation)
  if not prepared then return false,why end
  event.preparedCombat=prepared

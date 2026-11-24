@@ -28,7 +28,7 @@ local function same(a,b,seen)
  for k,v in pairs(a)do same(v,b[k],seen)end;for k in pairs(b)do assert(a[k]~=nil,'preview added rule state')end
 end
 local function setup(id)
- local h,u,p,event,tap,drain=sourceSetup({'defend','defend'},{'cultist','jaw_worm'})
+ local h,u,p,event,tap,drain=sourceSetup({'defend','defend'},{'raven_adept','jaw_worm'})
  assert(Run.obtainPotion(h.run,id or 'fire_potion'));h:refresh()
  local function emit(name,kind,touch,x,y)
   local index=name:match('^enemy(%d+)$')
@@ -95,7 +95,7 @@ test('turn battle and inventory replacement retire old drag releases',function()
  for _,change in ipairs({'turn','battle','inventory','resize','inactive'})do
   local h,u,p,e,pos,start=setup();local x,y=start('potion1',7,2)
   if change=='turn'then h.run.combat.turn=h.run.combat.turn+1
-  elseif change=='battle'then h.run.combat=Combat.new(H.F.Data,{deck={'defend'},enemies={'cultist','jaw_worm'}})
+  elseif change=='battle'then h.run.combat=Combat.new(H.F.Data,{deck={'defend'},enemies={'raven_adept','jaw_worm'}})
   elseif change=='inventory'then h.run.potions=Combat.copy(h.run.potions)
   elseif change=='resize'then u:resize(1600,900)
   else u:setActive(false)end

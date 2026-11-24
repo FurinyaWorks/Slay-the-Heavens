@@ -1,6 +1,6 @@
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
 local Surfaces=require('abyss_monster_surfaces')
-local host,ui,panel,event,tap=H.setup({'strike','defend'},{'cultist'})
+local host,ui,panel,event,tap=H.setup({'strike','defend'},{'raven_adept'})
 local manager=assert(Surfaces.get(panel));local state=host.run.combat
 local box=assert(manager:find(state.enemies[1].id));local hp=state.enemies[1].hp
 local strike
@@ -19,7 +19,7 @@ assert(state.enemies[1].hp<hp,'fresh input must still play after resume')
 host:disable()
 -- Native rejection must not leak retained handles; explicit refresh can recover.
 for _,mode in ipairs({'false','throw'})do
- local game,battleUI,battlePanel=H.setup({'strike'},{'cultist'})
+ local game,battleUI,battlePanel=H.setup({'strike'},{'raven_adept'})
  local surfaces=assert(Surfaces.get(battlePanel));local id=game.run.combat.enemies[1].id
  local actor=assert(surfaces:find(id));local visible=actor.SetVisible;local failed=false
  actor.SetVisible=function(self,value)
@@ -33,7 +33,7 @@ for _,mode in ipairs({'false','throw'})do
  assert(game:openDeck());game:closeDeck();assert(surfaces:find(id)==resumed,'recovery must remain reusable')
  game:disable();assert(not resumed.alive)
 end
-local game,_,battlePanel=H.setup({'strike'},{'cultist','jaw_worm'})
+local game,_,battlePanel=H.setup({'strike'},{'raven_adept','jaw_worm'})
 local surfaces=assert(Surfaces.get(battlePanel));local state=game.run.combat
 local dead=assert(surfaces:find(state.enemies[1].id));local survivor=assert(surfaces:find(state.enemies[2].id))
 assert(game:openDeck());state.enemies[1].hp=0;game:refresh()

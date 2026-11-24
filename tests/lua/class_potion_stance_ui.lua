@@ -22,7 +22,7 @@ local function start(replace)
  else assert(testStart(host,'watcher'))end
  local r=host.run;r.relics[#r.relics+1]='toy_ornithopter'
  assert(Run.obtainPotion(r,'stance_potion'));assert(Run.obtainPotion(r,'stance_potion'))
- assert(Run.startCombat(r,'cultist_solo'));r.hp=r.hp-20;r.combat.player.hp=r.hp
+ assert(Run.startCombat(r,'raven_adept_solo'));r.hp=r.hp-20;r.combat.player.hp=r.hp
  if replace then
   -- Keep the old controller/touch alive until it attempts the new core owner.
   assert(Run.usePotion(r,1));return r

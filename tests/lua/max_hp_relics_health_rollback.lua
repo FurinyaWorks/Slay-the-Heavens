@@ -4,7 +4,7 @@ local function test(name,fn)local ok,why=pcall(fn);count=count+1;if not ok then 
 test('late nested failure rolls HP, maximum, battle, queues, public owners and external entropy back',function()
  local External=require('abyss_external_random');local original=H.onEquip
  for _,id in ipairs({'strawberry','pear','mango','lees_waffle'})do
-  local r=F.R.new(F.D,42);r.hp=20;assert(F.R.startCombat(r,'cultist_solo'))
+  local r=F.R.new(F.D,42);r.hp=20;assert(F.R.startCombat(r,'raven_adept_solo'))
   local beforeEntropy=External.snapshot();local reached=false
   H.onEquip=function(staged,relic,...)
    original(staged,relic,...);reached=true;assert(staged.maxHp>80);error('POST_MAX_HP_ON_EQUIP')

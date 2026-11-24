@@ -1,6 +1,6 @@
 package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local Run,C,A,Data=require('abyss_run'),require('abyss_combat'),require('abyss_actor'),require('abyss_data')
-local run=Run.new(Data,42);assert(Run.obtainPotion(run,'explosive_potion'));assert(Run.startCombat(run,'cultist_solo'))
+local run=Run.new(Data,42);assert(Run.obtainPotion(run,'explosive_potion'));assert(Run.startCombat(run,'raven_adept_solo'))
 local s=run.combat;local e=s.enemies[1]
 local second=C.copy(e);second.id='second';s.enemies[2]=second
 A.applyPower(s,s.player,'strength',20);A.applyPower(s,s.player,'weak',2)

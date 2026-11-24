@@ -125,7 +125,7 @@ test("next player turn resets lock and energy, processes enemy intent and preser
     equal(s.energy, 2); equal(s.player.noDraw, true)
     local hp = s.player.hp
     assert(Combat.endTurn(s))
-    equal(s.player.hp, hp) -- Cultist's opening Ritual deals no damage.
+    equal(s.player.hp, hp) -- Raven Adept's opening Ritual deals no damage.
     equal(s.turn, 2); equal(s.phase, "player"); equal(s.player.noDraw, false)
     equal(s.energy, s.rules.player.energyPerTurn); equal(#s.hand, s.rules.player.drawPerTurn)
     equal(Combat.intent(s,1).kind, "attack"); equal(s.enemies[1].noDraw, nil)
@@ -140,7 +140,7 @@ end)
 
 local function win(seed)
     local run = Run.new(data, seed)
-    assert(Run.startCombat(run, "cultist_solo"))
+    assert(Run.startCombat(run, "raven_adept_solo"))
     for _ = 1, 100 do
         if run.phase ~= "combat" then break end
         for _ = 1, 10 do
@@ -177,7 +177,7 @@ test("real starter victory awards trance and next battle uses it without state e
     local before = Combat.copy(selected)
     equal(Run.claimCardReward(selected, choice), false); same(selected, before)
     dofile('tests/lua/support/finish_combat_rewards.lua')(selected)
-    assert(Run.startCombat(selected, "cultist_solo"))
+    assert(Run.startCombat(selected, "raven_adept_solo"))
     equal(selected.combat.player.noDraw, false)
     for _ = 1, 10 do
         assert(selected.phase == "combat", "battle ended before trance was played")

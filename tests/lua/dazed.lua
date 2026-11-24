@@ -17,7 +17,7 @@ local function test(name,fn)
  count=count+1;local ok,err=pcall(fn);if not ok then failed=failed+1 end
  print((ok and "ok " or "not ok ")..count.." - "..name..(ok and "" or ": "..tostring(err)))
 end
-local function battle() return C.new(Data,{enemies={"cultist"},deck={"defend"},seed=42}) end
+local function battle() return C.new(Data,{enemies={"raven_adept"},deck={"defend"},seed=42}) end
 local function generate(s,n,card)
  return C.applyEffects(s,{{op="makeTempCardInDiscard",card=card or "dazed",value=n}},s.enemies[1],s.player)
 end
@@ -26,7 +26,7 @@ test("catalog retains original status common -2 ethereal and empty use",function
  eq(d.type,"status");eq(d.rarity,"common");eq(d.cost,-2);eq(d.ethereal,true);eq(#d.effects,0);eq(d.upgrade,nil)
 end)
 test("Dazed cannot play and leaves all combat state unchanged",function()
- local s=C.new(Data,{enemies={"cultist"},deck={"dazed"},seed=42})
+ local s=C.new(Data,{enemies={"raven_adept"},deck={"dazed"},seed=42})
  local before=C.copy(s);local uid=s.hand[1].uid
  local ok,reason=C.canPlay(s,uid,1);eq(ok,false);eq(reason,"unplayable_card")
  ok,reason=C.play(s,uid,1);eq(ok,false);eq(reason,"unplayable_card");same(before,s)
@@ -48,7 +48,7 @@ end)
 test("real endTurn resolves generation before next enemy's queued damage",function()
  local data=C.copy(Data);local e=data.enemies.enemies[1]
  e.ai=nil;e.intents={{id="generation_fixture",kind="debuff",effects={{op="makeTempCardInDiscard",card="dazed",value=2}}}}
- local s=C.new(data,{enemies={e.id,"blue_slaver"},deck={"defend"},seed=42})
+ local s=C.new(data,{enemies={e.id,"blue_guard"},deck={"defend"},seed=42})
  s.enemies[2].intentIndex=1;s.events={};assert(C.endTurn(s))
  local created,attack
  for i,event in ipairs(s.events) do
@@ -59,7 +59,7 @@ test("real endTurn resolves generation before next enemy's queued damage",functi
  local n=0;for _,card in ipairs(s.hand) do if card.cardId=="dazed" then n=n+1 end end;eq(n,2)
 end)
 test("held Dazed exhausts at player turn end while discard Dazed is retained",function()
- local s=C.new(Data,{enemies={"cultist"},deck={"dazed"},seed=42});local held=s.hand[1]
+ local s=C.new(Data,{enemies={"raven_adept"},deck={"dazed"},seed=42});local held=s.hand[1]
  generate(s,1);s.player.noDraw=true;assert(C.endTurn(s));eq(s.exhaust[1],held)
  -- noDraw resets at turn start; the other Dazed can be drawn, but never exhausted early.
  eq(#s.exhaust,1);eq(#s.hand+#s.discard+#s.draw,1)
@@ -101,7 +101,7 @@ test("status type stays outside reward and shop pools even with a supported fixt
   if card.id=="dazed" then card.effects={{op="block",value=1}};card.rarity='rare' end
  end
  assert(not pcall(Run.new,data,42),'complete catalog must reject a forged Dazed lifecycle')
- local run=Run.new(Data,42);assert(Run.startCombat(run,"cultist_solo"))
+ local run=Run.new(Data,42);assert(Run.startCombat(run,"raven_adept_solo"))
  C.applyEffects(run.combat,{{op="damage",value=999}},run.combat.player,run.combat.enemies[1]);assert(Run.finishCombat(run))
  eq(#Run.rewardOptions(run),3)
  for _,id in ipairs(Run.rewardOptions(run)) do assert(id~='dazed') end
@@ -121,11 +121,11 @@ test("status type stays outside reward and shop pools even with a supported fixt
  error("fixture route must reach a shop")
 end)
 test("temporary Dazed never enters permanent run deck or next combat",function()
- local run=Run.new(Data,42);assert(Run.startCombat(run,"cultist_solo"));local deck=C.copy(run.deck)
+ local run=Run.new(Data,42);assert(Run.startCombat(run,"raven_adept_solo"));local deck=C.copy(run.deck)
  generate(run.combat,2);same(deck,run.deck)
  C.applyEffects(run.combat,{{op="damage",value=999}},run.combat.player,run.combat.enemies[1]);assert(Run.finishCombat(run))
  for _,id in ipairs(Run.rewardOptions(run)) do assert(id~="dazed") end
- assert(Run.claimCardReward(run,0)); dofile('tests/lua/support/finish_combat_rewards.lua')(run);assert(Run.startCombat(run,"cultist_solo"));same(deck,run.deck)
+ assert(Run.claimCardReward(run,0)); dofile('tests/lua/support/finish_combat_rewards.lua')(run);assert(Run.startCombat(run,"raven_adept_solo"));same(deck,run.deck)
  for _,pile in ipairs({run.combat.hand,run.combat.draw,run.combat.discard,run.combat.exhaust}) do
   for _,card in ipairs(pile) do assert(card.cardId~="dazed") end
  end

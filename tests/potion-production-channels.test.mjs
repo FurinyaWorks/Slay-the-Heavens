@@ -7,7 +7,7 @@ import {toLua,buildLuaData} from '../scripts/build-lua-data.mjs';
 import {runLua} from '../scripts/test-lua.mjs';
 const fixture=JSON.parse(readFileSync('tests/fixtures/sts1-potion-production-channels.json','utf8'));
 for(const row of [...fixture.drops,...fixture.shop])
- if(row.sourceId==='CultistPotion')row.id='raven_potion';
+ row.id=({CultistPotion:'raven_potion', GamblersBrew:'swap_brew'})[row.sourceId] ?? row.id;
 const setup=`package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local Run,C,R,Data=require('abyss_run'),require('abyss_combat'),require('abyss_sts_random'),require('abyss_data')
 local function same(a,b)
@@ -33,11 +33,11 @@ test('fixed independent oracle freezes every original potion in both acquisition
 });
 for(let offset=0;offset<33;offset+=6)test(`unchanged starter combat awards, carries and uses full-pool bottles ${offset+1}-${Math.min(offset+6,33)}`,()=>{
  lua(`for _,row in ipairs(${toLua(fixture.drops.slice(offset,offset+6))})do
- local run=Run.new(Data,row.seed);assert(Run.startCombat(run,'cultist_solo'));win(run)
+ local run=Run.new(Data,row.seed);assert(Run.startCombat(run,'raven_adept_solo'));win(run)
  assert(run.rewards.potion.id==row.id,row.id);same(R.snapshot(run.shopRng.potion),row.after)
  assert(Run.claimPotionReward(run));assert(run.potions[1]==row.id);assert(Run.claimCardReward(run,0))
  dofile('tests/lua/support/finish_combat_rewards.lua')(run);assert(run.phase=='map');assert(run.potions[1]==row.id)
- assert(Run.startCombat(run,'cultist_solo'))
+ assert(Run.startCombat(run,'raven_adept_solo'))
  if row.id=='fairy_in_a_bottle'then
   for _=1,20 do if not run.potions[1]then break end;assert(Run.endTurn(run))end
   assert(run.potions[1]==nil and run.combat.player.hp>0)

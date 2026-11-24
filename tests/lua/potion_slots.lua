@@ -20,7 +20,7 @@ end
 local function battle(potions)
     local run = Run.new(data, 42)
     run.potions = potions
-    assert(Run.startCombat(run, "cultist_solo"))
+    assert(Run.startCombat(run, "raven_adept_solo"))
     return run
 end
 local function rejected(run, slot, target, reason)
@@ -90,7 +90,7 @@ test("last-enemy fire kill and defeat preserve untouched slot identity", functio
     equal(run.phase, "reward"); equal(run.hp, 46)
     equal(run.potions[2], nil); equal(run.potions[3], "regen_potion")
     rejected(run, 3, nil, "not_in_combat")
-    assert(Run.claimCardReward(run, 0)); dofile('tests/lua/support/finish_combat_rewards.lua')(run); assert(Run.startCombat(run, "cultist_solo"))
+    assert(Run.claimCardReward(run, 0)); dofile('tests/lua/support/finish_combat_rewards.lua')(run); assert(Run.startCombat(run, "raven_adept_solo"))
     equal(run.potions[3], "regen_potion")
     run.combat.player.hp = 1
     for _ = 1, 10 do if run.phase ~= "combat" then break end; assert(Run.endTurn(run)) end

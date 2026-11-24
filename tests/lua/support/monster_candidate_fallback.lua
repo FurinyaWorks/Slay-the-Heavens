@@ -23,7 +23,7 @@ platform.monsterActors.instantiate=function(index,parent)
 end
 local surfaces=assert(require('abyss_monster_surfaces').get(panel))
 local function boxFor(actor)return assert(surfaces:find(actor.id),'actor surface missing')end
-root.ui=host;assert(F.start(host));assert(Run.startCombat(host.run,'cultist_solo'))
+root.ui=host;assert(F.start(host));assert(Run.startCombat(host.run,'raven_adept_solo'))
 local data=require('abyss_monster_art_data')
 local assets,bindings=0,0
 for id in pairs(data.assets)do assets=assets+1;assert(id=='acid_slime_m')end

@@ -1,4 +1,4 @@
-local AI = dofile('tools/candidates/cultist_ai.lua')
+local AI = dofile('tools/candidates/raven_adept_ai.lua')
 local n = 0
 local function eq(a,b) assert(a == b, tostring(a)..' ~= '..tostring(b)) end
 local function test(name,fn) fn(); n=n+1; print('ok '..n..' - '..name) end
@@ -27,7 +27,7 @@ test('teammate action gap does not trigger Ritual growth',function()
  local s=AI.endRound(AI.act(AI.new(48)))
  local acted,action=AI.act(s)
  eq(action.baseDamage,6); eq(acted.strength,0)
- -- Other enemies act here. No Cultist transition should be invoked.
+ -- Other enemies act here. No Raven Adept transition should be invoked.
  eq(acted.strength,0); eq(AI.endRound(acted).strength,3)
 end)
 
@@ -60,4 +60,4 @@ test('candidate preserves externally supplied HP without RNG or range substituti
  assert(not pcall(AI.new,-1)); assert(not pcall(AI.new,1.5)); assert(not pcall(AI.new,'50'))
 end)
 
-print('Cultist candidate: '..n..' tests passed; no runtime integration or parity certification')
+print('Raven Adept candidate: '..n..' tests passed; no runtime integration or parity certification')

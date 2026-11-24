@@ -11,7 +11,7 @@ local chestRules={small={common=75,uncommon=100,goldChance=50,goldAmount=25},
 local sourceAliases={burning_blood='Burning Blood',anchor='Anchor',vajra='Vajra',
  bag_of_preparation='Bag of Preparation',lantern='Lantern',oddly_smooth_stone='Oddly Smooth Stone',
  bronze_scales='Bronze Scales',membership_card='Membership Card',courier='The Courier',
- smiling_mask='Smiling Mask',black_blood='Black Blood',slavers_collar='SlaversCollar',sozu='Sozu',
+ smiling_mask='Smiling Mask',black_blood='Black Blood',arena_collar='ArenaCollar',sozu='Sozu',
  matryoshka='Matryoshka',nloths_mask='NlothsMask',cursed_key='Cursed Key'}
 local curseOrder={'Regret','Injury','Shame','Parasite','Normality','Doubt','Writhe','Pain','Decay','Clumsy'}
 local function copy(value)

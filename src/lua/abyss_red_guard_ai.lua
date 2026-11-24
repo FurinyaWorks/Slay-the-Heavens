@@ -1,10 +1,10 @@
--- Act 1 / A0; fixed evidence and RNG limits: TASK-15-red-slaver-ai.md.
+-- Act 1 / A0; fixed evidence and RNG limits: TASK-15-red-guard-ai.md.
 local M = {}
 local function select(enemy, id)
     for i, intent in ipairs(enemy.intents) do
         if intent.id == id then enemy.intentIndex = i; return end
     end
-    error("unknown Red Slaver intent: " .. tostring(id))
+    error("unknown Red Guard intent: " .. tostring(id))
 end
 
 function M.choose(ai, usedEntangle, last, previous, roll)

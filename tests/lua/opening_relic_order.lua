@@ -15,7 +15,7 @@ local function battle(relics)
     local run = Run.new(data, 42)
     -- An owned-relic fixture, not a claim about natural acquisition RNG.
     run.relics = relics
-    assert(Run.startCombat(run, 'cultist_solo'))
+    assert(Run.startCombat(run, 'raven_adept_solo'))
     return run.combat
 end
 local function statuses(state)
@@ -106,7 +106,7 @@ local function same(a,b)
 end
 local function rejected(run,reason)
     local before=Combat.copy(run)
-    local ok,actual=Run.startCombat(run,'cultist_solo')
+    local ok,actual=Run.startCombat(run,'raven_adept_solo')
     equal(ok,false); equal(actual,reason); same(run,before)
 end
 
@@ -144,7 +144,7 @@ end)
 test('a second real battle gets a fresh opening queue exactly once',function()
     local run=Run.new(data,42)
     run.relics={'burning_blood','lantern','vajra','anchor','bag_of_preparation'}
-    assert(Run.startCombat(run,'cultist_solo'))
+    assert(Run.startCombat(run,'raven_adept_solo'))
     for _=1,200 do
         if run.phase~='combat' then break end
         local chosen
@@ -157,7 +157,7 @@ test('a second real battle gets a fresh opening queue exactly once',function()
         if chosen then assert(Run.play(run,chosen.uid,1)) else assert(Run.endTurn(run)) end
     end
     equal(run.phase,'reward'); assert(Run.claimCardReward(run,0)); dofile('tests/lua/support/finish_combat_rewards.lua')(run)
-    assert(Run.startCombat(run,'cultist_solo'))
+    assert(Run.startCombat(run,'raven_adept_solo'))
     local state=run.combat; local events=statuses(state)
     equal(#events,1); equal(events[1].frame.energy,1); equal(#events[1].frame.hand,0)
     equal(#state.hand,7); equal(state.energy,4); equal(state.player.block,10)

@@ -120,7 +120,7 @@ assert(failures==0,tostring(failures)..' focused render cache regressions failed
 -- The real battle adapter must propagate a rejected native SetImage result.
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local ui,root=F.fixture();assert(F.start(ui,'ironclad'))
-assert(require('abyss_run').startCombat(ui.run,'cultist_solo'));ui:refresh()
+assert(require('abyss_run').startCombat(ui.run,'raven_adept_solo'));ui:refresh()
 local actor=F.actorControl(root:GetChild('battlePanel'),'enemy1')
 local icon=actor:GetChild('intentIcon');local attempts=0;local original=icon.SetImage
 icon.SetImage=function(self,...)

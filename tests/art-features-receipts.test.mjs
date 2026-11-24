@@ -102,7 +102,7 @@ test('monster receipt binds the independent bounded inventory and every exact so
  const receipt={artFeatures:artFeatureReceipt(flags),nativeMonsterArt};
  assert.doesNotThrow(()=>auditUiBuildArgs(receipt));
  assert.deepEqual(auditAssetInputs(receipt).paths,monsterPaths);
- const malformed=[undefined,{...nativeMonsterArt,enabled:false},{...nativeMonsterArt,enemyId:'cultist'},
+ const malformed=[undefined,{...nativeMonsterArt,enabled:false},{...nativeMonsterArt,enemyId:'raven_adept'},
   {...nativeMonsterArt,capacity:599},{...nativeMonsterArt,staticControls:610},
   {...nativeMonsterArt,assetCount:nativeMonsterArt.assetCount+1},{...nativeMonsterArt,bindingCount:nativeMonsterArt.bindingCount-1},
   {...nativeMonsterArt,allocation:'shared-pool'},

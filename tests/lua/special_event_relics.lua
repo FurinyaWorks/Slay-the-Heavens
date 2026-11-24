@@ -17,9 +17,9 @@ F.test('all six source SPECIAL relics obtain through real API without pool or RN
  for _,name in ipairs({'eventRng','miscRng','cardRng','treasureRng','relicPool'})do same(r[name],before[name])end
  refuse(r,function()return Run.obtainRelic(r,'NlothsMask')end,'relic_already_owned')
 end)
-F.test('Gremlin gives one weak and Cultist only emits its cosmetic cue in real opening order',function()
+F.test('Gremlin gives one weak and Raven Adept only emits its cosmetic cue in real opening order',function()
  local r=run();assert(Run.obtainRelic(r,'RavenMask'));assert(Run.obtainRelic(r,'GremlinMask'))
- assert(Run.startCombat(r,'cultist_solo'));eq(r.combat.player.statuses.weak,1)
+ assert(Run.startCombat(r,'raven_adept_solo'));eq(r.combat.player.statuses.weak,1)
  eq(r.combat.player.statuses.strength,nil);local cue=0
  for _,event in ipairs(r.combat.events)do if event.kind=='relic_flavor'and event.detail.relic=='raven_mask'then cue=cue+1 end end
  eq(cue,1);eq(r.combat.turn,1);eq(r.combat.energy,3)
@@ -28,7 +28,7 @@ local function victor(relics)
  local r=run();r.deck={};r.hp=30;r.relics={}
  for _,id in ipairs(relics)do assert(Run.obtainRelic(r,id))end
  for _=1,5 do assert(Run.obtainCard(r,'bludgeon',{upgraded=true}))end
- assert(Run.obtainPotion(r,'fire_potion'));assert(Run.startCombat(r,'cultist_solo'))
+ assert(Run.obtainPotion(r,'fire_potion'));assert(Run.startCombat(r,'raven_adept_solo'))
  assert(Run.usePotion(r,1,1));return r
 end
 F.test('Face Cleric real fatal card command increases max HP once before rewards and respects Bloom',function()
@@ -134,7 +134,7 @@ F.test('bottle unequip clears only matching physical flag and refuses ambiguous 
  local ok,why=H.onUnequip(r,'bottled_tornado');eq(ok,false);eq(why,'bottled_card_identity_unavailable');same(r,before)
 end)
 F.test('active source energy relic removal changes next-turn master but does not revoke spent opening effects',function()
- local r=run();assert(Run.obtainRelic(r,'Sozu'));assert(Run.startCombat(r,'cultist_solo'))
+ local r=run();assert(Run.obtainRelic(r,'Sozu'));assert(Run.startCombat(r,'raven_adept_solo'))
  eq(r.combat.rules.player.energyPerTurn,4);local current=r.combat.energy
  local hook=H.onUnequip;local observed=false
  H.onUnequip=function(staged,id)
@@ -143,8 +143,8 @@ F.test('active source energy relic removal changes next-turn master but does not
  end
  local ok,why=Run.loseRelic(r,'Sozu');H.onUnequip=hook;assert(ok,why);assert(observed)
  eq(r.combat.rules.player.energyPerTurn,3);eq(r.combat.energy,current);assert(not H.owns(r.combat,'sozu'))
- r=run();assert(Run.obtainRelic(r,'SlaversCollar'));assert(Run.startCombat(r,'cultist_solo'))
- refuse(r,function()return Run.loseRelic(r,'SlaversCollar')end,'active_relic_unequip_content_unavailable')
- r=run();assert(Run.obtainRelic(r,'SlaversCollar'));assert(Run.loseRelic(r,'SlaversCollar'))
+ r=run();assert(Run.obtainRelic(r,'ArenaCollar'));assert(Run.startCombat(r,'raven_adept_solo'))
+ refuse(r,function()return Run.loseRelic(r,'ArenaCollar')end,'active_relic_unequip_content_unavailable')
+ r=run();assert(Run.obtainRelic(r,'ArenaCollar'));assert(Run.loseRelic(r,'ArenaCollar'))
 end)
 print('SPECIAL_EVENT_RELICS '..F.count..' passed')

@@ -12,7 +12,7 @@ local groups={
  ['Gremlin Nob']={act=1,id='event_dead_nob',enemies={'gremlin_nob'},positions={{0,0}},eliteTrigger=true},
  ['Lagavulin Event']={act=1,id='event_dead_lagavulin',enemies={'lagavulin_awake'},positions={{0,20}},eliteTrigger=true},
  ['Masked Bandits']={act=2,id='event_masked_bandits',enemies={'bandit_pointy','bandit_leader','bandit_bear'},positions={{-320,0},{-75,-6},{150,-6}}},
- ['Colosseum Slavers']={act=2,id='event_colosseum_slavers',enemies={'blue_slaver','red_slaver'},positions={{-270,15},{130,0}}},
+ ['Colosseum Guards']={act=2,id='event_colosseum_guards',enemies={'blue_guard','red_guard'},positions={{-270,15},{130,0}}},
  ['Colosseum Nobs']={act=2,id='event_colosseum_nobs',enemies={'taskmaster','gremlin_nob'},positions={{-270,15},{130,0}},eliteTrigger=true},
 }
 local events={dead_adventurer=true,masked_bandits=true,colosseum=true}
@@ -56,7 +56,7 @@ local function validRequest(event,request)
    and request.gold%1==0 and request.gold>=25 and request.gold<=35
    and(request.fixedRelicId=='red_mask'or request.fixedRelicId=='circlet')
  end
- return event.id=='colosseum'and(request.round==1 and event.stage=='combat_first'and request.sourceEncounter=='Colosseum Slavers'
+ return event.id=='colosseum'and(request.round==1 and event.stage=='combat_first'and request.sourceEncounter=='Colosseum Guards'
   or request.round==2 and event.stage=='combat_second'and request.sourceEncounter=='Colosseum Nobs')
 end
 local function addRelic(run,api,result,options)

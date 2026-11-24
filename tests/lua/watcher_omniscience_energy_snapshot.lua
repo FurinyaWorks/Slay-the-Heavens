@@ -5,7 +5,7 @@ for _,c in ipairs(data.cards.cards)do cards[c.id]=true end;for _,s in ipairs(dat
 for _,c in ipairs(defect.cards.cards)do if not cards[c.id]then data.cards.cards[#data.cards.cards+1]=C.copy(c)end end
 for _,s in ipairs(defect.statuses.statuses)do if not statuses[s.id]then data.statuses.statuses[#data.statuses.statuses+1]=C.copy(s)end end
 for _,up in ipairs({false,true})do
- local s=C.new(data,{seed=1,cardRandomSeed='1',enableStances=true,orbSlots=1,orbRandomSeed='1',deck={{cardId='omniscience',upgraded=up}},enemies={'cultist'}})
+ local s=C.new(data,{seed=1,cardRandomSeed='1',enableStances=true,orbSlots=1,orbRandomSeed='1',deck={{cardId='omniscience',upgraded=up}},enemies={'raven_adept'}})
  s.enemies[1].hp=1000;s.enemies[1].maxHp=1000;local original=A.fresh(C,s,'tempest');s.draw={original};O.channel(s,'plasma',C);s.energy=up and 5 or 6
  assert(C.play(s,s.hand[1].uid));local p=assert(s.pendingPileChoice);assert(C.choosePile(s,{original.uid},p.token,p.generation))
  assert(s.enemies[1].hp==976,'both NewQueue actions capture X2 before Plasma changes current energy')

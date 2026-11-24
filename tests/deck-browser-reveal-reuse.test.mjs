@@ -51,7 +51,7 @@ end
 local F=dofile('tests/lua/support/game_ui_fixture.lua');local root;host,root=F.fixture(nil,function()return true end,nil,{CursorDown='down',CursorUp='up'})
 local Gate=require('abyss_page_reveal');local function tick()host:update(1/60);Art.update();host.pageReveal:step(Gate.intent(host));host:refresh()end
 local function settle()for _=1,5 do tick()end;assert(not host.pageReveal:covered())end
-settle();assert(host:start());settle();assert(F.confirmStart(host));settle();assert(require('abyss_run').startCombat(host.run,'cultist_solo'));host:refresh();settle()
+settle();assert(host:start());settle();assert(F.confirmStart(host));settle();assert(require('abyss_run').startCombat(host.run,'raven_adept_solo'));host:refresh();settle()
 local run=host.run;local card=F.Combat.copy(run.deck[1]);run.combat.draw={}
 -- EMPTY does not calibrate. The first later nonempty list still probes its real base.
 local panel=root:GetChild('deckPanel');local pile=panel:GetChild('pileGrid');local browser=panel:GetChild('grid');pile.indexBase=0;browser.indexBase=1
@@ -177,7 +177,7 @@ assert(host:closeDeck());settle()
 -- cards outside the hand no longer simulate a play to produce an empty preview.
 host,root=F.fixture(nil,function()return true end)
 settle();assert(F.start(host,'raiden'));settle()
-local v4=host.run;assert(require('abyss_run').startCombat(v4,'cultist_solo'));host:refresh();settle()
+local v4=host.run;assert(require('abyss_run').startCombat(v4,'raven_adept_solo'));host:refresh();settle()
 local CardDisplay=require('abyss_card_display')
 local preview=F.Combat.cardPreview;local pilePreviews=0
 local grid=root:GetChild('deckPanel'):GetChild('pileGrid')

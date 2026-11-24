@@ -68,14 +68,14 @@ test('Lots retains all 120 ordered index paths and interleaves every constructor
  equal(paths,120);equal(firstSpike,72);equal(firstAcid,48)
 end)
 test('Thugs constructs every weak then humanoid candidate before selection and keeps selected objects',function()
- for weak=0,2 do for strong=0,2 do for _,redLouse in ipairs({false,true})do for _,redSlaver in ipairs({false,true})do
-  local boundary,log,created,done=adapter({redLouse,redSlaver},{{0,2,weak},{0,2,strong}},{-20,20,5,-5})
+ for weak=0,2 do for strong=0,2 do for _,redLouse in ipairs({false,true})do for _,redGuard in ipairs({false,true})do
+  local boundary,log,created,done=adapter({redLouse,redGuard},{{0,2,weak},{0,2,strong}},{-20,20,5,-5})
   local group=F.assemble('Exordium Thugs',boundary);done();equal(#created,6)
   equal(group[1],created[weak+1]);equal(group[2],created[strong+4])
   equal(group[1].x,-180);equal(group[1].y,40);equal(group[2].x,135);equal(group[2].y,15)
   equal(table.concat(log,','),table.concat({'offset','offset','bool','new:'..(redLouse and 'red_louse' or 'green_louse'),
-   'new:spike_slime_m','new:acid_slime_m','index:0:2','offset','offset','new:cultist','bool',
-   'new:'..(redSlaver and 'red_slaver' or 'blue_slaver'),'new:looter','index:0:2'},','))
+   'new:spike_slime_m','new:acid_slime_m','index:0:2','offset','offset','new:raven_adept','bool',
+   'new:'..(redGuard and 'red_guard' or 'blue_guard'),'new:looter','index:0:2'},','))
  end end end end
 end)
 test('Wildlife is fixed two slots, strong then weak, with all five eager candidates',function()
@@ -88,7 +88,7 @@ test('Wildlife is fixed two slots, strong then weak, with all five eager candida
  end end end
 end)
 test('eager discarded candidates retain HP and Louse Bite draws on the independent constructor stream',function()
- local ranges={green_louse={11,17},spike_slime_m={28,32},acid_slime_m={28,32},cultist={48,54},blue_slaver={46,50},looter={44,48}}
+ local ranges={green_louse={11,17},spike_slime_m={28,32},acid_slime_m={28,32},raven_adept={48,54},blue_guard={46,50},looter={44,48}}
  local boundary,log,_,done=adapter({false,false},{{0,2,2},{0,2,2}},{0,0,0,0})
  local hpCalls={};boundary.construct=function(id,x,y)
   log[#log+1]='new:'..id;local range=assert(ranges[id]);hpCalls[#hpCalls+1]={id,range[1],range[2]}

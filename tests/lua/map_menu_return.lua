@@ -36,7 +36,7 @@ end)
 test('battle and node previews return in one Back with read-only state and expired menu taps',function()
  for _,context in ipairs({'battle','node'})do
   local h,r=F.fixture(nil,nil,nil,cursor);assert(F.start(h))
-  if context=='battle'then assert(Run.startCombat(h.run,'cultist_solo'));h:refresh()
+  if context=='battle'then assert(Run.startCombat(h.run,'raven_adept_solo'));h:refresh()
   else
    local routes=dofile('tests/lua/support/map_routes.lua')
    local path=routes.to(h.map,function(node)return node.type=='camp'end)

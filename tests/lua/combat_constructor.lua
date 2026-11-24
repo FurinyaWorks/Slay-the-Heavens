@@ -54,7 +54,7 @@ local function test(name,fn)
  if ABYSS_CONSTRUCTOR_CASE and ABYSS_CONSTRUCTOR_CASE~=name then return end
  fn();count=count+1;print('ok constructor '..count..' '..name)
 end
-local function opts()return {seed=42,deck={'strike','defend','bash'},enemies={'cultist'}}end
+local function opts()return {seed=42,deck={'strike','defend','bash'},enemies={'raven_adept'}}end
 
 test('defaults-and-registration',function()
  local s=state(Data,nil);eq(s.turn,1,'default first turn');eq(s.phase,'player','default phase')
@@ -77,20 +77,20 @@ test('independent-streams',function()
  eq(s.aiRng==streams.aiRng,false,'AI stream cloned');eq(s.shuffleRng==streams.shuffleRng,false,'shuffle stream cloned')
  eq(s.cardRandomRng==streams.cardRandomRng,false,'card random stream cloned');eq(s.cardRng==o.cardRng,false,'cardRng cloned')
  eq(s.miscRng==streams.miscRng,false,'room misc cloned');eq(graph({streams=streams,cardRng=o.cardRng,miscRng=o.miscRng}),before,'all caller streams untouched')
- eq(table.concat(records[#records].order,','),'initialize:cultist_1,shuffle,preBattle:cultist_1,shuffle','AI/shuffle/prebattle then empty draw reshuffle order')
+ eq(table.concat(records[#records].order,','),'initialize:raven_adept_1,shuffle,preBattle:raven_adept_1,shuffle','AI/shuffle/prebattle then empty draw reshuffle order')
 end)
 test('prepared-adoption',function()
  local run=Run.new(Data,'42');local streams=Run.roomStreams(run,1)
- local prepared=C.prepareEncounter(Data,{enemies={'cultist'},roomSeed=streams.seed,roomStreams=streams})
+ local prepared=C.prepareEncounter(Data,{enemies={'raven_adept'},roomSeed=streams.seed,roomStreams=streams})
  local before=graph(prepared)
  local o={seed=42,deck={'strike'},roomSeed=streams.seed,roomStreams=streams,preparedEncounter=prepared}
  local s=state(Data,o);eq(s.enemies==prepared.actors,false,'prepared actors detached');eq(s.enemies[1]==prepared.actors[1],false,'prepared actor detached')
- eq(s.enemies[1].definitionId,'cultist','prepared identity');eq(graph(prepared),before,'prepared input not initialized in place')
+ eq(s.enemies[1].definitionId,'raven_adept','prepared identity');eq(graph(prepared),before,'prepared input not initialized in place')
  prepared.version=2;local called=call(Data,o);eq(called,false,'invalid prepared identity rejected rather than reconstructed')
 end)
 test('permanent-card-identity',function()
  local d=require('abyss_original_v4_profiles').prepare(Data,'RD')
- local o={seed=42,enemies={'cultist'},deck={{cardId=d.cards.starter_deck.cards[1],uid=19},{cardId=d.cards.starter_deck.cards[2],uid=7}}}
+ local o={seed=42,enemies={'raven_adept'},deck={{cardId=d.cards.starter_deck.cards[1],uid=19},{cardId=d.cards.starter_deck.cards[2],uid=7}}}
  -- Profile starter entries may already be instance descriptors.
  for _,v in ipairs(o.deck)do if type(v.cardId)=='table'then v.cardId=v.cardId.cardId end end
  local s=state(d,o);eq(s.nextUid,21,'permanent UID allocation keeps original max/increment rule')
@@ -120,7 +120,7 @@ test('opening-callbacks',function()
   return true
  end
  local s=state(Data,o);eq(#s.hand,7,'all innate cards opened')
- eq(table.concat(records[#records].order,','),'initialize:cultist_1,preBattle:cultist_1,beforeFirstTurn,beforeOpeningDraw','callback placement without source shuffle')
+ eq(table.concat(records[#records].order,','),'initialize:raven_adept_1,preBattle:raven_adept_1,beforeFirstTurn,beforeOpeningDraw','callback placement without source shuffle')
  eq(s.beforeFirstTurn,nil,'constructor callback not saved');eq(s.beforeOpeningDraw,nil,'opening callback not saved')
 end)
 test('callback-refusal',function()
@@ -149,7 +149,7 @@ test('emerald-placement',function()
 end)
 test('invalid-boundaries',function()
  for _,o in ipairs({{seed=0.5},{hp=0},{gold=-1},{deck='invalid'},{enableStances='invalid'},
-  {sourceEncounter='unknown'},{enemies={'cultist'},roomStreams={},roomSeed=5},
+  {sourceEncounter='unknown'},{enemies={'raven_adept'},roomStreams={},roomSeed=5},
   {deck={{cardId='searing_blow',upgraded=false,upgrades=1,searingBlowCopyUpgrades=3}}}})do
   local called=call(Data,o);eq(called,false,'invalid options fail')
  end

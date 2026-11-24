@@ -4,7 +4,7 @@ local Data=require('abyss_data')
 local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end
 local function fresh()
  local r=Run.new(Data,42,{character='watcher',experimental=true})
- r.relics[#r.relics+1]='toy_ornithopter';assert(Run.obtainPotion(r,'ambrosia'));assert(Run.startCombat(r,'cultist_solo'))
+ r.relics[#r.relics+1]='toy_ornithopter';assert(Run.obtainPotion(r,'ambrosia'));assert(Run.startCombat(r,'raven_adept_solo'))
  r.hp=r.hp-10;r.combat.player.hp=r.hp;return r
 end
 local r=fresh();local s=r.combat;local before=#s.events;local hp=s.player.hp;local energy=s.energy

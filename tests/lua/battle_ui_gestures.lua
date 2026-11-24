@@ -77,7 +77,7 @@ test("deck: cancelled old click cannot confirm fresh touch selection",function()
 end)
 
 test("target death: held attack never redirects to surviving enemy",function()
-    local host,ui,panel,event,tap=setup({"strike"},{"cultist","jaw_worm"})
+    local host,ui,panel,event,tap=setup({"strike"},{"raven_adept","jaw_worm"})
     local battle=host.run.combat
     -- Independent physical targets require an explicit source formation when
     -- constructing raw actor IDs outside MonsterHelper.

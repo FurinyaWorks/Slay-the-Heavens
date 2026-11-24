@@ -98,7 +98,7 @@ test("temporary strength has gain and removal frames after complete mutations",f
 end)
 for _,id in ipairs({"body_slam","anger"}) do
 test(id.." flies to selected enemy and releases committed frames once",function()
- local ui,stage,click,play=setup();ui.run=Run.new(Data,42);assert(Run.startCombat(ui.run,"cultist_solo"))
+ local ui,stage,click,play=setup();ui.run=Run.new(Data,42);assert(Run.startCombat(ui.run,"raven_adept_solo"))
  local s=state(id);s.player.block=7;ui.run.combat=s;ui:render()
  local hp=s.enemies[2].hp;local events=s.events;play(1,2);assert(ui.busy)
  -- Pinned Jaw Worm constructor: width260/height170, source canvas1920x1080.
@@ -113,7 +113,7 @@ test(id.." flies to selected enemy and releases committed frames once",function(
 end)
 end
 test("growth scalar in a captured frame stays detached while actual text grows",function()
- local ui,stage,click,play=setup();ui.run=Run.new(Data,42);assert(Run.startCombat(ui.run,"cultist_solo"))
+ local ui,stage,click,play=setup();ui.run=Run.new(Data,42);assert(Run.startCombat(ui.run,"raven_adept_solo"))
  local s=state("rampage");ui.run.combat=s;ui:render();play(1,1);drain(ui)
  Combat.draw(s,1);ui:render();assert(stage:GetChild("card1"):GetChild("label").text:find("13",1,true))
  local frame=Events.frame(s);eq(frame.hand[1].damageBonus,5)
@@ -122,7 +122,7 @@ test("growth scalar in a captured frame stays detached while actual text grows",
  assert(stage:GetChild("card1"):GetChild("label").text:find("18",1,true))
 end)
 test("HP payment playback shows its own exact frame before later attack",function()
- local ui,stage,click,play=setup();ui.run=Run.new(Data,42);assert(Run.startCombat(ui.run,"cultist_solo"))
+ local ui,stage,click,play=setup();ui.run=Run.new(Data,42);assert(Run.startCombat(ui.run,"raven_adept_solo"))
  local s=state("hemokinesis");s.player.block=20;ui.run.combat=s;ui:render()
  local hp,enemyHp=s.player.hp,s.enemies[1].hp;play(1,1)
  eq(ui.feedback.current.kind,"play");eq(ui.displayBattle.player.hp,hp)
@@ -135,7 +135,7 @@ test("HP payment playback shows its own exact frame before later attack",functio
  drain(ui);eq(s.player.hp,hp-2);eq(#s.events,0)
 end)
 test("UI command exception restores state and unlocks without replaying frames",function()
- local ui,stage,click,play=setup();ui.run=Run.new(Data,42);assert(Run.startCombat(ui.run,"cultist_solo"))
+ local ui,stage,click,play=setup();ui.run=Run.new(Data,42);assert(Run.startCombat(ui.run,"raven_adept_solo"))
  local s=state("rampage");ui.run.combat=s
  s.catalog.cards.rampage.effects[#s.catalog.cards.rampage.effects+1]={op="gainStatus",status="missing",value=1}
  ui:render();local before=Combat.copy(s);play(1,1)

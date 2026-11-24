@@ -3,7 +3,7 @@ package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local C=require('abyss_combat')
 local H=dofile('tests/lua/support/battle_action_fixture.lua')
 local inspectDetails=dofile('tests/lua/support/status_detail_fixture.lua')
-local host,ui,panel,emit,tap,drain=H.setup({'defend'},{'cultist'})
+local host,ui,panel,emit,tap,drain=H.setup({'defend'},{'raven_adept'})
 local old,n=C.random,0
 C.random=function(s,max)local value=old(s,max);if max==100 then return 100 elseif max==3 then n=n+1;return n==1 and 1 or 3 end;return value end
 local ok,s=pcall(C.new,H.F.Data,{deck={'defend'},enemies={'red_louse','green_louse'}})

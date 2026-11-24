@@ -22,7 +22,7 @@ for _,spec in ipairs({{'abyss_warrior_cards','withFoundationCards'},{'abyss_warr
 -- supplies priority20; this test fixture does not modify repository definitions.
 for _,def in ipairs(data.statuses.statuses)do if def.id=='draw_next_turn'then def.priority=20 end end
 local function state(deck)
- return C.new(data,{seed=42,cardRandomSeed='42',deck=deck or {},enemies={'cultist','jaw_worm','jaw_worm'},orbSlots=3,enableStances=true})
+ return C.new(data,{seed=42,cardRandomSeed='42',deck=deck or {},enemies={'raven_adept','jaw_worm','jaw_worm'},orbSlots=3,enableStances=true})
 end
 local function recorded(actor,id)
  for _,entry in ipairs(actor.powerScheduleOrder or {})do if entry.id==id then return entry end end

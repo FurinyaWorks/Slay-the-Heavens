@@ -58,7 +58,7 @@ test('replacing a battle closes its old pile snapshot while permanent deck acces
     local host,ui,panel,event,tap,drain,close,root=H.setup()
     assert(panel:GetChild('discardIcon'):GetChild('hit').click({touchId=7}))
     local old=host.run.combat
-    host.run.combat=Combat.new(H.F.Data,{deck={'defend'},enemies={'cultist'}})
+    host.run.combat=Combat.new(H.F.Data,{deck={'defend'},enemies={'raven_adept'}})
     host:refresh()
     assert(not host.deckUI.visible and ui.active and host.run.combat~=old)
     assert(host:openDeck() and host.deckUI.pileKind==nil)

@@ -17,7 +17,7 @@ end
 local function battle(relics,hp)
  local r=fresh(hp)
  for _,id in ipairs(relics or {})do assert(Run.obtainRelic(r,id))end
- assert(Run.startCombat(r,'cultist_solo'));return r
+ assert(Run.startCombat(r,'raven_adept_solo'));return r
 end
 local function fatal(r,amount)local s=r.combat;return C.damage(s,s.enemies[1],s.player,amount or 999,true)end
 
@@ -61,7 +61,7 @@ test('outside damage uses Run owner, survives retained combat, preserves spent a
  local r=fresh();r.phase='node'
  r.combat={player={hp=0,maxHp=999,statuses={}},relics={'mark_of_bloom'},relicCounters={lizard_tail=-1}}
  local old=C.copy(r.combat);assert(Run.eventNormalDamage(r,5));eq(r.hp,40);eq(r.relicCounters.lizard_tail,-2);same(r.combat,old)
- r.combat=nil;r.phase='map';assert(Run.startCombat(r,'cultist_solo'))
+ r.combat=nil;r.phase='map';assert(Run.startCombat(r,'raven_adept_solo'))
  eq(r.combat.relicCounters.lizard_tail,-2);fatal(r);eq(r.combat.player.hp,0)
 end)
 test('outside Fairy first, no combat Flower, and failure rolls back all live owners',function()
@@ -75,7 +75,7 @@ test('outside Fairy first, no combat Flower, and failure rolls back all live own
  assert(Run.eventDamage(r,5));eq(r.hp,40);eq(r.relicCounters.lizard_tail,-2)
 end)
 test('obtained during combat initializes that live counter and a failed command cannot consume it',function()
- local r=Run.new(Data,42);assert(Run.startCombat(r,'cultist_solo'));assert(Run.obtainRelic(r,'lizard_tail'))
+ local r=Run.new(Data,42);assert(Run.startCombat(r,'raven_adept_solo'));assert(Run.obtainRelic(r,'lizard_tail'))
  eq(r.combat.relicCounters.lizard_tail,-1);assert(Tail.has(r.combat))
  local s=r.combat;local before=C.copy(r,{[r.data]=r.data});eq(Run.play(r,-1,1),false);eq(r.combat,s);same(r,before)
  s.player.hp=1;fatal(r);eq(s.player.hp,40);eq(s.relicCounters.lizard_tail,-2)

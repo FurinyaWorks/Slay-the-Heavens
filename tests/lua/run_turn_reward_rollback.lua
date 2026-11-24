@@ -1,5 +1,5 @@
 -- Public-command component fixture. Cards/potion are obtained through Run;
--- the source Cultist's52 HP, energy costs and random streams are unchanged.
+-- the source Raven Adept's52 HP, energy costs and random streams are unchanged.
 local Run=require('abyss_run')
 local P=require('abyss_potion_rewards')
 local D=require('abyss_data')

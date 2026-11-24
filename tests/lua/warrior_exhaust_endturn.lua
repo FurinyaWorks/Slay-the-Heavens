@@ -18,7 +18,7 @@ local function play(s,id)
  local ok,reason=C.play(s,held(s,id).uid);assert(ok,reason)
 end
 local function battle(deck)
- local s=C.new(data,{seed=42,deck=deck,enemies={'cultist'},cardRandomSeed='42'})
+ local s=C.new(data,{seed=42,deck=deck,enemies={'raven_adept'},cardRandomSeed='42'})
  s.energy=20;return s
 end
 -- Only fixture positions are changed; every UID comes from Combat.new.

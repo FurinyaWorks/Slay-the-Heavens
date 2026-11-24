@@ -19,8 +19,8 @@ end
 local function battle(relics, hp)
     local run = Run.new(data, 42)
     run.relics, run.hp = relics or { "burning_blood" }, hp or 40
-    assert(Run.startCombat(run, "cultist_solo"))
-    -- Inventory tests install neutral/attack fixtures, not the Cultist decision state.
+    assert(Run.startCombat(run, "raven_adept_solo"))
+    -- Inventory tests install neutral/attack fixtures, not the Raven Adept decision state.
     run.combat.enemies[1].ai=nil; run.combat.enemies[1].intentIndex=1
     return run
 end
@@ -87,7 +87,7 @@ test("six opening relics apply their published amounts once and reset next comba
     state.enemies[1].hp = 20; run.potions = { "fire_potion" }
     assert(Run.usePotion(run, 1, 1)); assert(Run.claimCardReward(run, 0)); dofile('tests/lua/support/finish_combat_rewards.lua')(run)
     run.floor = 1
-    assert(Run.startCombat(run, "cultist_solo"))
+    assert(Run.startCombat(run, "raven_adept_solo"))
     equal(run.combat.player.block, 10); equal(#run.combat.hand, 7); equal(run.combat.energy, 4)
     equal(run.combat.player.statuses.strength, 1); equal(run.combat.player.statuses.dexterity, 1)
     equal(run.combat.player.statuses.thorns, 3)

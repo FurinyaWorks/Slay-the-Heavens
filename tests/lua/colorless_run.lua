@@ -12,10 +12,10 @@ for _,source in ipairs({data,r.data})do
  eq(source.cards.sourcePools.src.common[1],id);eq(b.sourcePools.src.common[1],id)
 end
 r.deck={{cardId='ritual_dagger',uid=31,upgraded=false}};r.relics={}
-assert(Run.startCombat(r,'cultist_solo'));local c=r.combat.hand[1];eq(c.deckUid,31)
+assert(Run.startCombat(r,'raven_adept_solo'));local c=r.combat.hand[1];eq(c.deckUid,31)
 r.combat.enemies[1].hp=1;assert(Run.play(r,c.uid,1));eq(r.deck[1].misc,18)
 assert(not Run.finishCombat(r));eq(r.deck[1].misc,18)
-r.phase='map';assert(Run.startCombat(r,'cultist_solo'));c=r.combat.hand[1];eq(C.cardDefinition(r.combat,c).effects[1].damage,18)
+r.phase='map';assert(Run.startCombat(r,'raven_adept_solo'));c=r.combat.hand[1];eq(C.cardDefinition(r.combat,c).effects[1].damage,18)
 local duplicate=Actions.fresh(C,r.combat,c.cardId,c);assert(duplicate.deckUid==nil)
 r.combat.hand[#r.combat.hand+1]=duplicate;r.combat.enemies[1].hp=1
 assert(Run.play(r,duplicate.uid,1));eq(r.deck[1].misc,18)

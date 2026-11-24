@@ -130,7 +130,7 @@ local function battle(ui,root,finishFeedback,competition)
     if competition then
         local first=require('abyss_map').available(ui.map)[1]
         assert(first and first.floor==1 and ui.mapUI:choose(first.id))
-    else assert(Run.startCombat(ui.run,"cultist_solo"))end
+    else assert(Run.startCombat(ui.run,"raven_adept_solo"))end
     ui:refresh();finishReveal(ui)
     local slot
     for i,c in ipairs(ui.run.combat.hand) do if c.cardId==card then slot=i;break end end

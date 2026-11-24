@@ -24,9 +24,9 @@ test('death and escape cannot be overwritten by hit or attack or idle',function(
     assert(Motion.state({hp=10,halfDead=true},nil,nil,nil,nil)=='death')
     assert(Motion.state(nil,nil,nil,nil,nil)=='inactive')
 end)
-test('traveler, cultist and jaw worm have different bounded living motion',function()
+test('traveler, raven_adept and jaw worm have different bounded living motion',function()
     local seen={}
-    for _,id in ipairs({'player','cultist','jaw_worm','book_of_stabbing'})do
+    for _,id in ipairs({'player','raven_adept','jaw_worm','book_of_stabbing'})do
         local unit={hp=20,definitionId=id}
         local moved=false
         for i=0,360 do
@@ -38,7 +38,7 @@ test('traveler, cultist and jaw worm have different bounded living motion',funct
         end
         assert(moved,id..' should breathe')
     end
-    assert(seen.player~=seen.cultist and seen.cultist~=seen.jaw_worm)
+    assert(seen.player~=seen.raven_adept and seen.raven_adept~=seen.jaw_worm)
 end)
 test('active poses, hits, death and escape return neutral transforms',function()
     for _,state in ipairs({'action','hit','death','escape','inactive'})do

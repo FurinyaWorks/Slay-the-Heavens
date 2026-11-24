@@ -4,7 +4,7 @@ local Profiles=require('abyss_original_v4_profiles')
 local data=require('abyss_data')
 function M.state(role,hp,count)
     local prepared=Profiles.prepare(data,role)
-    local enemies={};for _=1,count or 1 do enemies[#enemies+1]='cultist'end
+    local enemies={};for _=1,count or 1 do enemies[#enemies+1]='raven_adept'end
     local s=C.new(prepared,{seed=79,deck={},hp=hp,enemies=enemies})
     for _,e in ipairs(s.enemies)do e.hp=500;e.maxHp=500 end
     return s

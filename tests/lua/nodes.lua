@@ -275,7 +275,7 @@ end)
 test("real starter wins a map-dispatched encounter without combat or content state edits", function()
     local run, map = Run.new(data, 42), Map.generate(data, 42)
     local selected=Map.available(map)[1]
-    equal(require('abyss_encounter_queue').peek(run.encounters,'normal'),'Cultist')
+    equal(require('abyss_encounter_queue').peek(run.encounters,'normal'),'Raven Adept')
     assert(Nodes.enter(run, map, selected.id)); finishBattle(run)
     assert(run.hp > 0); equal(run.lastResult.outcome, "victory"); equal(#run.deck, 10)
     assert(Run.claimCardReward(run, 1)); dofile('tests/lua/support/finish_combat_rewards.lua')(run); assert(Nodes.completeCombat(run, map))
@@ -345,7 +345,7 @@ test("lost battle never completes or unlocks a node", function()
     local run, map, node = before("combat"); run.hp = 1
     assert(Nodes.enter(run, map, node.id))
     for _=1,3 do if run.phase=='combat'then assert(Run.endTurn(run))end end
-    equal(run.phase, "defeat") -- Cultist's first source move is Ritual, then Attack.
+    equal(run.phase, "defeat") -- Raven Adept's first source move is Ritual, then Attack.
     rejected(run, map, function() return Nodes.completeCombat(run, map) end, "run_defeated")
     equal(#Nodes.available(run, map), 0)
 end)

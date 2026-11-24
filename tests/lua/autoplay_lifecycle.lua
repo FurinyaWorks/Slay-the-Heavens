@@ -5,7 +5,7 @@ local function test(name,fn)local ok,why=pcall(fn);if not ok then failed=failed+
 local function setup(card,relics,character)
  local r=Run.new(Data,42,{character=character or 'defect',experimental=true});r.deck={{uid=31,cardId=card}}
  r.relics=relics or {};r.relicCounters={nunchaku=9}
- assert(Run.startCombat(r,'cultist_solo'));return r,r.combat,r.combat.hand[1]
+ assert(Run.startCombat(r,'raven_adept_solo'));return r,r.combat,r.combat.hand[1]
 end
 test('Chaos auto attack updates Nunchaku once through both use and after-card hooks',function()
  local r,s,card=setup('strike_blue',{'nunchaku'});s.hand={};s.draw={card}

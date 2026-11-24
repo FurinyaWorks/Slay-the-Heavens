@@ -8,7 +8,7 @@ local function fresh(bark,character)
  local r=Run.new(D,42,options)
  if bark then r.relics[#r.relics+1]='SacredBark'end
  local ok,why=Run.obtainPotion(r,'essence_of_darkness');assert(ok,why)
- assert(Run.startCombat(r,'cultist_solo'));return r
+ assert(Run.startCombat(r,'raven_adept_solo'));return r
 end
 for _,bark in ipairs({false,true})do
  local r=fresh(bark);local s=r.combat;local enemy=s.enemies[1];local hp=enemy.hp

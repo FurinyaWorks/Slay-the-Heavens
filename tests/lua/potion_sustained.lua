@@ -5,7 +5,7 @@ local count=0
 local function test(name,fn) fn();count=count+1;print('ok sustained '..count..' '..name) end
 local base=Run.new(Data,42)
 local function battle(id)
- local run=C.copy(base);assert(Run.obtainPotion(run,id));assert(Run.startCombat(run,'cultist_solo'));return run
+ local run=C.copy(base);assert(Run.obtainPotion(run,id));assert(Run.startCombat(run,'raven_adept_solo'));return run
 end
 test('Iron heart grants six fixed block before end-turn Burn, stacks, and survives turns',function()
  local run=battle('heart_of_iron');local s=run.combat
@@ -14,7 +14,7 @@ test('Iron heart grants six fixed block before end-turn Burn, stacks, and surviv
  s.hand={{cardId='burn',uid=1000}};local hp=s.player.hp
  assert(Run.endTurn(run));eq(s.player.hp,hp);eq(s.player.statuses.metallicize,6)
 end)
-test('Cultist applies player Ritual with immediate first owner-end trigger, no enemy hook double trigger',function()
+test('Raven Adept applies player Ritual with immediate first owner-end trigger, no enemy hook double trigger',function()
  local run=battle('raven_potion');local s=run.combat
  assert(Run.usePotion(run,1));eq(s.player.statuses.ritual,1)
  assert(Run.endTurn(run));eq(s.player.statuses.strength,1)

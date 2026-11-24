@@ -39,11 +39,11 @@ for _,character in ipairs(selected and{selected}or{'ironclad','raiden'})do
   F.eq(r.relics[#r.relics],id);F.snapshotFailure(r,function()return F.R.obtainRelic(r,id)end)
  end
  F.same(r.relicPool,pool);F.same(External.snapshot(),entropy)
- assert(F.R.startCombat(r,'cultist_solo'));F.eq(r.combat.player.maxHp,maximum);F.eq(r.combat.player.hp,hp)
+ assert(F.R.startCombat(r,'raven_adept_solo'));F.eq(r.combat.player.maxHp,maximum);F.eq(r.combat.player.hp,hp)
  if character=='raiden'then F.eq(r.combat.originalV4.role,'RD');F.eq(r.combat.originalV4.healUsed,0)
  else assert(not r.combat.originalV4)end
  count=count+1;print('PASS actual '..character..' four outside obtains and next-combat inheritance')
- r=new(character);r.hp=30;assert(F.R.startCombat(r,'cultist_solo'))
+ r=new(character);r.hp=30;assert(F.R.startCombat(r,'raven_adept_solo'))
  for _,id in ipairs(ids)do
   F.C.damage(r.combat,r.combat.enemies[1],r.combat.player,1,true)
   assert(r.combat.player.hp<r.hp,'actual combat injury must leave stale permanent health')

@@ -25,7 +25,7 @@ end
 local count=0
 for _,id in ipairs({'strawberry','pear','mango','lees_waffle'})do
  local r=F.R.new(F.D,42);r.hp=30
- assert(F.R.obtainRelic(r,'lizard_tail'));assert(F.R.startCombat(r,'cultist_solo'))
+ assert(F.R.obtainRelic(r,'lizard_tail'));assert(F.R.startCombat(r,'raven_adept_solo'))
  F.C.damage(r.combat,r.combat.enemies[1],r.combat.player,5,true)
  F.eq(r.combat.player.hp,25);F.eq(r.hp,30)
  local before=F.C.copy(r);local refs=references(r);local entropy=External.snapshot()

@@ -9,7 +9,7 @@ local function same(a,b)
 end
 local base=Run.new(Data,42)
 assert(Run.obtainPotion(base,'block_potion'))
-assert(Run.startCombat(base,'cultist_solo'))
+assert(Run.startCombat(base,'raven_adept_solo'))
 local cases={
     {function(r)r.nodeFlow={event={id='WeMeetAgain'}}end,0,'potion_event_restricted'},
     {function(r)r.combat.phase='enemy'end,0,'not_player_turn'},

@@ -7,6 +7,9 @@ import { createHash } from 'node:crypto';
 import { runLua } from '../scripts/test-lua.mjs';
 import { toLua } from '../scripts/build-lua-data.mjs';
 
+const currentName = name => ({Cultist:'Raven Adept', 'Blue Slaver':'Blue Guard', 'Red Slaver':'Red Guard',
+  cultist:'raven_adept', blue_slaver:'blue_guard', red_slaver:'red_guard',
+  cultist_solo:'raven_adept_solo', blue_slaver_solo:'blue_guard_solo', red_slaver_solo:'red_guard_solo'})[name] ?? name;
 const vectors = JSON.parse(readFileSync('tests/fixtures/sts1-encounter-queue-vectors.json', 'utf8'));
 test('encounter vectors retain their independent generator and fixed source identity', () => {
   assert.equal(createHash('sha256').update(readFileSync('tools/oracles/sts1_encounter_queue.py')).digest('hex'), vectors.generatorSha256);
@@ -24,7 +27,7 @@ local function same(a,b,path)
  for k,v in pairs(a)do same(v,b[k],path..'.'..tostring(k))end
  for k in pairs(b)do assert(a[k]~=nil,path..' missing '..tostring(k))end
 end
-for _,v in ipairs(${toLua(vectors.cases)})do
+for _,v in ipairs(${toLua(vectors.cases.map(row=>({...row,normal:row.normal.map(currentName),elite:row.elite.map(currentName),eliteRefill:row.eliteRefill.map(currentName)})))})do
  local draw,trace=R.randomFloat,{}
  R.randomFloat=function(s)local n=draw(s);trace[#trace+1]={value=n,after=R.snapshot(s)};return n end
  local s=Q.new(v.seed)
@@ -63,6 +66,8 @@ test('all seventeen source pool entries retain explicit bindings or blockers wit
   assert.deepEqual(audit.bindings.filter(row => row.status === 'blocked').map(row => row.source).sort(),
     ['2 Louse', '3 Louse', 'Large Slime', 'Lots of Slimes', 'Exordium Thugs', 'Exordium Wildlife'].sort());
   for (const binding of audit.bindings) {
+    binding.source=currentName(binding.source);
+    for(const key of ['ids','enemies','enemiesOnTrue','gremlinPool']) if(binding[key]) binding[key]=binding[key].map(currentName);
     for (const id of binding.ids) assert(data.encounters.some(row => row.id === id), id);
     if (binding.status !== 'bound') { assert(binding.reason); continue; }
     assert.equal(binding.ids.length, 1);

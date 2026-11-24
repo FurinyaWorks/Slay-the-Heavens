@@ -13,12 +13,15 @@ const rules = [
   ['sexual or extremist content', /色情交易|强奸|儿童色情|恐怖主义宣扬|\b(?:child pornography|sexual assault|terrorist recruitment)\b/giu],
 ];
 
-// Existing technical identities are useful leads for an official retest.
-const technical = /suicid\w*|gambling[ _-]?chip|colosseum[ _-]?slavers|shed_blood/giu;
 const retiredIdentities = [
   ['retired client identity', /drug[ _-]?dealer|cultist[ _-]?(?:mask|potion)|(?<![\p{L}\p{N}])addict(?![\p{L}\p{N}])/giu],
   ['retired client identity', /(?<=[a-z0-9])Addict(?![a-z0-9])/gu],
 ];
+// Apply these rules at the client boundary. Upstream names in historical oracles
+// and asset paths have no effect on the serialized script inventory.
+const authoringUrl = ['authoring URL in client script', /https?:\/\/[^\s"']+/giu];
+const retiredClientIdentities = ['retired client identity',
+  /suicid\w*|gambl\w*|slaver\w*|cultist\w*|shed_blood|bet_for|bet_against|placeBet|settleBet|betFor|steroidpotion|mutagen\w*|sacrifice(?:dagger)?|献出生命/giu];
 // The upstream potion oracle and historical CI timings are never shipped.
 const identityReferences = new Set([
   'data/catalogs/sts1-ironclad-potions.json',
@@ -43,13 +46,13 @@ function position(offsets, index) {
   return { line: start + 1, column: index - offsets[start] + 1 };
 }
 
-export function inspectReleaseText(path, source, { decodeLua = false, advisories = false, namesOnly = false } = {}) {
+export function inspectReleaseText(path, source, { decodeLua = false, client = false, namesOnly = false } = {}) {
   const offsets = lineOffsets(source);
   const hits = [];
   const selected = [
     ...(namesOnly ? [] : rules),
     ...(identityReferences.has(path) ? [] : retiredIdentities),
-    ...(advisories ? [['technical identity', technical]] : []),
+    ...(client ? [retiredClientIdentities, authoringUrl] : []),
   ];
   for (const [reason, pattern] of selected) {
     for (const match of source.matchAll(pattern)) {
@@ -83,15 +86,12 @@ export function inspectReleaseText(path, source, { decodeLua = false, advisories
 
 function assertClean(entries, options) {
   const hits = entries.flatMap(([path, source, names = []]) => [
-    ...inspectReleaseText(path, source, options),
-    ...names.flatMap(([label, name]) => inspectReleaseText(`${path} (${label})`, name, {namesOnly: true})),
+    ...inspectReleaseText(path, source, { ...options, client: options.client || path.startsWith('src/lua/') }),
+    ...names.flatMap(([label, name]) => inspectReleaseText(`${path} (${label})`, name, {namesOnly: true, client: options.client || path.startsWith('src/lua/')})),
   ]);
   const format = ({path, line, column, text, reason, decoded}) =>
     `${path}:${line}:${column}: ${reason}: ${JSON.stringify(text)}${decoded ? ' (decoded Lua literal)' : ''}`;
-  const blocked = hits.filter(hit => hit.reason !== 'technical identity');
-  const advisories = hits.filter(hit => hit.reason === 'technical identity');
-  for (const hit of advisories) console.log(format(hit));
-  if (blocked.length) throw new Error(`Release text check failed (${blocked.length}):\n${blocked.map(format).join('\n')}`);
+  if (hits.length) throw new Error(`Release text check failed (${hits.length}):\n${hits.map(format).join('\n')}`);
   return { files: entries.length };
 }
 
@@ -101,7 +101,7 @@ export function assertClientScriptText(scripts, location, options) {
     const names = [['module name', name]];
     if (typeof file === 'string' && file !== `${name}.lua`) names.push(['serialized filename', file]);
     return [`${location}/${name}.lua`, source, names];
-  }), { ...options, decodeLua: true });
+  }), { ...options, client: true, decodeLua: true });
 }
 
 function sourceFiles(directory) {

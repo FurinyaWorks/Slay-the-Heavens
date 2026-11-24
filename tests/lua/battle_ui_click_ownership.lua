@@ -106,7 +106,7 @@ test("click-only hosts remain usable even when pointer enums are available",func
 end)
 
 test("selected attack and fresh target click still hit only that living target",function()
-    local host,ui,panel,event,tap=setup({"strike"},{"cultist","jaw_worm"})
+    local host,ui,panel,event,tap=setup({"strike"},{"raven_adept","jaw_worm"})
     local battle=host.run.combat
     local hp1,hp2=battle.enemies[1].hp,battle.enemies[2].hp
     tap("card1",7)
@@ -127,7 +127,7 @@ test("cancelled click cannot fall back through a different unobserved card slot"
 end)
 
 test("reward card after a real killing play requires a fresh pointer but remains claimable",function()
-    local host,ui,panel,event,tap,drain=setup({"strike"},{"cultist"})
+    local host,ui,panel,event,tap,drain=setup({"strike"},{"raven_adept"})
     -- Isolated one-HP enemy setup; the play, victory and reward are real commands.
     host.run.combat.enemies[1].hp=1; ui:render()
     tap("card1",7); event("enemy1","down",8); event("enemy1","click",8); drain()

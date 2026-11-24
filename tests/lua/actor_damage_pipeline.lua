@@ -21,7 +21,7 @@ for _,name in ipairs({'damage','retaliate','resolveDamageReactions'})do
  end
 end
 local function battle(enemies)
- local s=C.new(D,{seed=42,cardRandomSeed='42',enemies=enemies or {'cultist'},deck={'strike','defend'}})
+ local s=C.new(D,{seed=42,cardRandomSeed='42',enemies=enemies or {'raven_adept'},deck={'strike','defend'}})
  s.events={};return s,s.enemies[1]
 end
 local function test(name,fn)fn();count=count+1;print('ok actor damage '..count..' '..name)end
@@ -67,7 +67,7 @@ test('Buffer Torii and Tungsten keep distinct normal and fixed last-loss stages'
  end end
 end)
 test('shared area retains owner reaction identity and reverse TOP before Curl FIFO',function()
- local s=battle({'cultist','cultist'});local a,b=s.enemies[1],s.enemies[2]
+ local s=battle({'raven_adept','raven_adept'});local a,b=s.enemies[1],s.enemies[2]
  a.hp,a.block,b.hp,b.block=2,0,20,0
  A.applyPower(s,a,'thorns',2,a);A.applyPower(s,a,'spore_cloud',1,a)
  A.applyPower(s,b,'thorns',3,b);A.applyPower(s,b,'angry',1,b);A.applyPower(s,b,'curl_up',4,b)

@@ -11,7 +11,7 @@ local function fixture(ids)
 end
 test('Girya uses one camp action and grants its accumulated battle strength',function()
  local r,m=fixture({'Girya'});assert(Nodes.lift(r));assert(r.relicCounters.girya==1 and r.phase=='map')
- assert(not Nodes.rest(r));assert(not Nodes.lift(r));assert(Run.startCombat(r,'cultist_solo'))
+ assert(not Nodes.rest(r));assert(not Nodes.lift(r));assert(Run.startCombat(r,'raven_adept_solo'))
  assert(r.combat.player.statuses.strength==1)
 end)
 test('Peace Pipe removes a chosen permanent UID and excludes bottled cards',function()

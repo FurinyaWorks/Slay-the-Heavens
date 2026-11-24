@@ -69,7 +69,7 @@ local cases={
 
 local errorObject={test='captured failure identity'}
 local function prepare(case)
-    local state=Combat.new(data,{deck={'strike','pain','defend'},enemies={'jaw_worm','cultist'},seed=42,experimentalMechanics=true})
+    local state=Combat.new(data,{deck={'strike','pain','defend'},enemies={'jaw_worm','raven_adept'},seed=42,experimentalMechanics=true})
     state.energy=case.energy or 3
     state.player.block=5
     state.catalog.statuses.rage=require('abyss_card_triggers').definition('rage')

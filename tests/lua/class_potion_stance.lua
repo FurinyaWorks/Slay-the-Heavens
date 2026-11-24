@@ -7,7 +7,7 @@ local function fresh(bark)
  local r=Run.new(D,42,{character='watcher',experimental=true});r.relics[#r.relics+1]='toy_ornithopter'
  if bark then r.relics[#r.relics+1]='SacredBark'end
  local ok,why=Run.obtainPotion(r,'stance_potion');assert(ok,why)
- assert(Run.obtainPotion(r,'block_potion'));assert(Run.startCombat(r,'cultist_solo'))
+ assert(Run.obtainPotion(r,'block_potion'));assert(Run.startCombat(r,'raven_adept_solo'))
  r.hp=r.hp-20;r.combat.player.hp=r.hp;return r
 end
 for _,bark in ipairs({false,true})do for _,stance in ipairs({'Wrath','Calm'})do

@@ -7,7 +7,7 @@ local function same(a,b)
  for k,v in pairs(a) do same(v,b[k]) end;for k in pairs(b) do assert(a[k]~=nil) end
 end
 local function reward(stolen)
- local run=Run.new(Data,42);assert(Run.startCombat(run,'cultist_solo'))
+ local run=Run.new(Data,42);assert(Run.startCombat(run,'raven_adept_solo'))
  -- Completed-battle/registered-ledger fixture isolates reward transactions.
  for _,enemy in ipairs(run.combat.enemies) do enemy.hp=0 end
  run.combat.stolenGoldReward=stolen or 0;assert(Run.finishCombat(run));assert(run.rewards.potion)
@@ -63,7 +63,7 @@ test('new run resets provider history after an escape',function()
  local run=Run.new(Data,42);assert(run.shopRng==nil and run.potionChanceModifier==nil)
 end)
 test('terminal potion failure restores preexisting shared potion RNG by identity',function()
- local run=reward();assert(Run.claimCardReward(run,0));assert(Run.skipPotionReward(run));assert(Run.leaveCombatRewards(run));assert(Run.startCombat(run,'cultist_solo'))
+ local run=reward();assert(Run.claimCardReward(run,0));assert(Run.skipPotionReward(run));assert(Run.leaveCombatRewards(run));assert(Run.startCombat(run,'raven_adept_solo'))
  assert(Run.obtainPotion(run,'fire_potion'));local slot
  for i=1,3 do if run.potions[i]=='fire_potion' then slot=i end end
  -- One-HP terminal fixture and injected commit failure test existing transaction scope.

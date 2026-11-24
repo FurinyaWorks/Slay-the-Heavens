@@ -5,7 +5,7 @@ local failures={}
 local function check(ok,message)if not ok then failures[#failures+1]=message end end
 local cursorX,cursorY
 local host,root=F.fixture(nil,nil,nil,nil,nil,nil,{position=function()return cursorX,cursorY end})
-assert(F.start(host));assert(require('abyss_run').startCombat(host.run,'cultist_solo'))
+assert(F.start(host));assert(require('abyss_run').startCombat(host.run,'raven_adept_solo'))
 local panel=root:GetChild('battlePanel')
 for _,floor in ipairs({2,12})do
  host.run.nodeFlow={type='combat',floor=floor};host:refresh()

@@ -7,7 +7,7 @@ local data=require('abyss_data')
 local n=0
 local function test(name,f)f();n=n+1;print('PASS '..name)end
 local function battle(ids)
- local run=R.new(data,42);assert(R.startCombat(run,'cultist_solo'))
+ local run=R.new(data,42);assert(R.startCombat(run,'raven_adept_solo'))
  local s=run.combat;s.relics=ids;s.shopRelicCombat={};return s
 end
 test('source aliases and owners are exact',function()
@@ -86,7 +86,7 @@ test('Toolbox offers three distinct source cards and preserves real costs',funct
  assert(not Shop.chooseToolbox(C,s,p.token,1,Actions))
 end)
 test('Battle Trance attack and power clear real NoDraw and permit subsequent draw',function()
- local s=C.new(data,{seed=42,deck={'battle_trance','strike','inflame','defend','defend','defend','defend','defend','defend','defend'},enemies={'cultist'}})
+ local s=C.new(data,{seed=42,deck={'battle_trance','strike','inflame','defend','defend','defend','defend','defend','defend','defend'},enemies={'raven_adept'}})
  s.relics={'orange_pellets'};s.shopRelicCombat={}
  local cards={};for _,pile in ipairs({s.hand,s.draw,s.discard})do for _,c in ipairs(pile)do cards[#cards+1]=c end end
  s.hand={};s.draw={};s.discard={};local uid={}

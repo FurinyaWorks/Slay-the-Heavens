@@ -9,9 +9,9 @@ card(source,'strike').cost=2
 local second=Run.new(source,42);assert(card(first.data,'strike').cost==1 and card(second.data,'strike').cost==2,'same input identity must not cache stale content')
 card(first.data,'cold_snap').effects[1].value=999;assert(card(second.data,'cold_snap').effects[1].value==6)
 first.data.catalogTestA.extra=1;assert(not graph.extra and not second.data.catalogTestA.extra)
-assert(Run.startCombat(second,'cultist_solo'));local battle=second.combat;local before=card(second.data,'strike').effects[1].value
+assert(Run.startCombat(second,'raven_adept_solo'));local battle=second.combat;local before=card(second.data,'strike').effects[1].value
 battle.catalog.cards.strike.effects[1].value=777;assert(card(second.data,'strike').effects[1].value==before)
-assert(Run.obtainPotion(second,'smoke_bomb'));assert(Run.usePotion(second,1));assert(Run.startCombat(second,'cultist_solo'))
+assert(Run.obtainPotion(second,'smoke_bomb'));assert(Run.usePotion(second,1));assert(Run.startCombat(second,'raven_adept_solo'))
 assert(second.combat~=battle and second.combat.catalog.cards.strike.effects[1].value==before)
 assert(card(source,'strike').cost==2 and card(source,'strike').effects[1].value==before)
 local registered=require('abyss_colorless_cards').withCards(D)

@@ -3,7 +3,7 @@ local Run=H.Run
 local specs={{'attack_potion','攻击','0'},{'skill_potion','技能','0'},{'power_potion','能力','0'},
  {'colorless_potion','无色','0'},{'entropic_brew','槽','果汁'},{'fairy_in_a_bottle','致命','30'}}
 for _,spec in ipairs(specs)do
- local host,ui,panel,event=H.setup({'defend'},{'cultist'})
+ local host,ui,panel,event=H.setup({'defend'},{'raven_adept'})
  assert(Run.obtainPotion(host.run,spec[1]));ui:render()
  local group=panel:GetChild('potionHelp')
  local label=group:GetChild('potionCaption1')

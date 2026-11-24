@@ -46,7 +46,7 @@ assert(box:GetChild('intentIcon').imageId==F.Theme.icon.intent.attack)
 local attack=V.intentView(battle,1)
 assert(box:GetChild('intent').text==attack.value:gsub('×','x'),'source attack damage and multiplier remain exact')
 -- A replacement source actor cannot inherit the old composite badge.
-host.run.combat=C.new(F.Data,{enemies={'cultist'},deck={'defend'},seed=42});host:refresh()
+host.run.combat=C.new(F.Data,{enemies={'raven_adept'},deck={'defend'},seed=42});host:refresh()
 box=actor();assert(box:GetChild('intentIcon').visible and not box:GetChild('intentBadge').visible)
 assert(box:GetChild('intentIcon').imageId==F.Theme.icon.intent.buff,'ordinary BUFF remains a single icon')
 -- Hide a new, real DEFEND_BUFF through Runic Dome, then restore via a fresh owner.

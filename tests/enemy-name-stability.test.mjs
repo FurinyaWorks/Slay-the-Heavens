@@ -50,7 +50,7 @@ print('ENEMY_NAME_DOMAIN_PASS')
 
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
 local mx,my=-10000,-10000
-local h,u,p,event,tap,drain,deck,root=H.setup(nil,{'cultist','cultist'},{position=function()return mx,my end})
+local h,u,p,event,tap,drain,deck,root=H.setup(nil,{'raven_adept','raven_adept'},{position=function()return mx,my end})
 local battle=h.run.combat;local hp,turn,energy=battle.player.hp,battle.turn,battle.energy
 local controls={};local writes=0;local reentered=false
 for index=1,2 do

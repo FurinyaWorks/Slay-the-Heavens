@@ -18,7 +18,7 @@ local function fixtureData(energy)
     return d
 end
 local function setup(deck,energy)
-    return Combat.new(fixtureData(energy),{seed=42,cardRandomSeed="42",enemies={"cultist"},deck=deck})
+    return Combat.new(fixtureData(energy),{seed=42,cardRandomSeed="42",enemies={"raven_adept"},deck=deck})
 end
 local function held(s,id)
     for _,c in ipairs(s.hand) do if c.cardId==id then return c end end

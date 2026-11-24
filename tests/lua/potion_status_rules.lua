@@ -6,20 +6,20 @@ local Presentation = require('abyss_presentation')
 local count=0
 local function test(name,fn) fn();count=count+1;print('PASS '..name) end
 test('S03/S04 poison 6 loses 6..1 HP across six owner turns, bypassing retained block and attack modifiers',function()
-    local s=Combat.new(H.F.Data,{deck={'defend'},enemies={'cultist'}})
+    local s=Combat.new(H.F.Data,{deck={'defend'},enemies={'raven_adept'}})
     local e=s.enemies[1];e.hp,e.maxHp,e.block=100,100,10
     for id,n in pairs({poison=6,barricade=1,weak=2,vulnerable=2}) do Combat.addStatus(e,id,n) end
     for n=6,1,-1 do local hp=e.hp;Actor.startTurn(s,e);assert(e.hp==hp-n and e.block==10 and e.statuses.poison==n-1) end
     assert(e.hp==79)
 end)
 test('S05 poison stacks before the next owner turn without immediate HP loss',function()
-    local h,u,p=H.setup({'defend'},{'cultist','jaw_worm'})
+    local h,u,p=H.setup({'defend'},{'raven_adept','jaw_worm'})
     local s=h.run.combat;local hp=s.enemies[2].hp
     Combat.addStatus(s.enemies[2],'poison',4);assert(Run.obtainPotion(h.run,'poison_potion'))
     assert(Run.usePotion(h.run,1,2));assert(s.enemies[2].hp==hp and s.enemies[2].statuses.poison==10)
 end)
 test('S06 weak2 and vulnerable2 change duration rather than percentage stacking',function()
-    local s=Combat.new(H.F.Data,{deck={'defend'},enemies={'cultist'}})
+    local s=Combat.new(H.F.Data,{deck={'defend'},enemies={'raven_adept'}})
     Combat.addStatus(s.player,'weak',2);local hp=s.enemies[1].hp
     Combat.damage(s,s.player,s.enemies[1],8);assert(s.enemies[1].hp==hp-6)
     s.player.statuses.weak=0;Combat.addStatus(s.enemies[1],'vulnerable',2);hp=s.enemies[1].hp
@@ -27,7 +27,7 @@ test('S06 weak2 and vulnerable2 change duration rather than percentage stacking'
 end)
 test('S09/S10 frail applies to card block, dexterity precedes percentage, fixed bottle stays12',function()
     for _,dex in ipairs({0,2}) do
-        local h,u,p=H.setup({'defend'},{'cultist'})
+        local h,u,p=H.setup({'defend'},{'raven_adept'})
         local s=h.run.combat;Combat.addStatus(s.player,'frail',1)
         if dex>0 then Combat.addStatus(s.player,'dexterity',dex) end
         Combat.block(s,s.player,5);assert(s.player.block==(dex==0 and 3 or 5))
@@ -39,7 +39,7 @@ test('P12 thrown group policy does not request a single enemy or enter productio
     for _,item in ipairs(source.potions.potions) do
         if item.id=='fire_potion' then item.targetPolicy='enemy_all';item.isThrown=true end
     end
-    local run=Run.new(source,1);assert(Run.startCombat(run,'cultist_solo'));assert(Run.obtainPotion(run,'fire_potion'))
+    local run=Run.new(source,1);assert(Run.startCombat(run,'raven_adept_solo'));assert(Run.obtainPotion(run,'fire_potion'))
     assert(not Run.potionView(run)[1].needTarget,'throwing must not imply selecting one enemy')
     local original,modified
     for _,item in ipairs(H.F.Data.potions.potions) do if item.id=='fire_potion' then original=item end end
@@ -57,14 +57,14 @@ test('S07 duration intent says turns before it is applied',function()
     assert((s.player.statuses.weak or 0)==0)
 end)
 test('S08 current poison detail updates amount and next tick without a stale value',function()
-    local h,u,p=H.setup({'defend'},{'cultist'})
+    local h,u,p=H.setup({'defend'},{'raven_adept'})
     local s=h.run.combat;Combat.addStatus(s.enemies[1],'poison',6);u:showStatus(1)
     local info=p:GetChild('statusInfo');assert(info:GetChild('text2').text:find('6 点生命',1,true))
     Actor.startTurn(s,s.enemies[1]);u:render()
     assert(info:GetChild('text2').text:find('5 点生命',1,true) and info:GetChild('note2').text:find('4 层',1,true))
 end)
 test('S07 card faces share one keyword definition and retain printed duration before play',function()
-    local h,u,p=H.setup({'inflame','flex'},{'cultist'})
+    local h,u,p=H.setup({'inflame','flex'},{'raven_adept'})
     for slot,instance in ipairs(h.run.combat.hand) do
         u:openHelp(u:cardHelpSpec(slot),nil,false)
         local panel=p:GetChild('statusInfo')
@@ -84,7 +84,7 @@ test('S07 basic and upgraded printed cards name duration in turns, never intensi
     end
 end)
 test('S05 Artifact gives visible blocked-status feedback rather than implying poison landed',function()
-    local h,u,p=H.setup({'defend'},{'cultist','jaw_worm'})
+    local h,u,p=H.setup({'defend'},{'raven_adept','jaw_worm'})
     assert(Run.obtainPotion(h.run,'poison_potion'));Combat.addStatus(h.run.combat.enemies[2],'artifact',1);h:refresh()
     p:GetChild('potion1').click();dofile('tests/lua/support/confirm_potion_popup.lua')(u,p,99)
     monsterControl(p,'enemy2'):GetChild('hit').click()

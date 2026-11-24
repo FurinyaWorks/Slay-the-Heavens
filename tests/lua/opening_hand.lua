@@ -16,7 +16,7 @@ local function fixture(n,innateCount)
     return list,catalog
 end
 local function drawState(list,catalog)
-    local s=Combat.new(Data,{seed=42,enemies={"cultist"},deck={"defend"}})
+    local s=Combat.new(Data,{seed=42,enemies={"raven_adept"},deck={"defend"}})
     s.catalog.cards=catalog;s.hand={};s.draw=list;s.discard={};s.exhaust={}
     return s
 end

@@ -2,7 +2,7 @@ local F=dofile('tests/helpers/relic-lifecycle-baseline-support.lua')
 local C,H,R=F.C,F.hooks,F.R
 local P=require('abyss_character_profiles')
 for _,ids in ipairs({{}, {'ectoplasm'}, {'bloody_idol'}, {'bloody_idol','mark_of_bloom'}, {'bloody_idol','magic_flower'}})do
- local s=C.new(P.prepare(F.D,'watcher'),{seed=1,cardRandomSeed='1',shuffleSeed='1',enableStances=true,deck={'wish'},enemies={'cultist'}})
+ local s=C.new(P.prepare(F.D,'watcher'),{seed=1,cardRandomSeed='1',shuffleSeed='1',enableStances=true,deck={'wish'},enemies={'raven_adept'}})
  H.bindBattle(s,ids);s.energy=20;local card=s.hand[1];local root=F.root(s);root.playing=card
  assert(C.play(s,card.uid,1));local token=assert(s.pendingChoice).token;local gold=s.player.gold
  local ok=F.call(root,'real Wish temporary gainGold owner '..table.concat(ids,','),C.chooseCard,s,token,2)
@@ -19,7 +19,7 @@ do
  local card=r.deck[#r.deck];F.eq(card.upgraded,true,'Egg upgraded actual permanent card');assert(card.lastUpgradeOrigin,'real origin record')
 end
 do
- local r=R.new(F.D,42);assert(R.obtainRelic(r,'darkstone_periapt'));assert(R.startCombat(r,'cultist_solo'))
+ local r=R.new(F.D,42);assert(R.obtainRelic(r,'darkstone_periapt'));assert(R.startCombat(r,'raven_adept_solo'))
  local root=F.root(r);F.call(root,'ordinary Run refuses unmatched combat health',R.obtainCard,r,'parasite')
  local card={uid=r.nextDeckUid,cardId='parasite',upgraded=false};local d=r.combat.catalog.cards.parasite
  local health=function()error('health adapter must not run',0)end

@@ -135,16 +135,16 @@ end
 
 -- This enemy exit is neither an attack nor an HP-loss action. Keep its death notification
 -- in Combat, which already owns the optional character ledger boundary.
-function M.suicideExploder(state,enemy)
+function M.detonateExploder(state,enemy)
     assert(Actors.isActive(enemy) and enemy.ai and enemy.ai.kind=='act3' and enemy.ai.policy=='exploder',
         'Expected an Exploder exit')
     local before=enemy.hp;enemy.hp=0
-    Events.emit(state,'enemy_suicide',{enemy=enemy.id})
+    Events.emit(state,'enemy_self_exit',{enemy=enemy.id})
     if state.originalV4 then require('abyss_original_v4').enemyDied(state,enemy,before)end
 end
 
-function M.suicideTransient(state,enemy)
-    local before=enemy.hp;Actors.suicideTransient(state,enemy)
+function M.expireTransient(state,enemy)
+    local before=enemy.hp;Actors.expireTransient(state,enemy)
     if state.originalV4 then require('abyss_original_v4').enemyDied(state,enemy,before)end
     CardActions.drain(M,state)
 end
@@ -1019,10 +1019,10 @@ local function finishQueuedPlay(state)
 end
 function M.chooseDiscard(state,uids,token,_generation,rollbackOwner)
     local discard,snapshot=require('abyss_discard'),require('abyss_snapshot')
-    if state.pendingChoice and state.pendingChoice.op=='rareGamblingChip'then
+    if state.pendingChoice and state.pendingChoice.op=='rareTacticalBadge'then
         local restore=rollbackOwner and snapshot.ownedRestore(rollbackOwner,state)or snapshot.capture(state)
         local called,ok,why=pcall(function()
-            local accepted,reason=Rare.chooseGambling(M,state,uids,token)
+            local accepted,reason=Rare.chooseTacticalExchange(M,state,uids,token)
             if not accepted then return false,reason end
             if state.actionQueue then
                 local result=require('abyss_action_queue').resume(state,queuedHandlers)
@@ -1571,7 +1571,7 @@ local function queueEnemyTurn(state,enemy,intent,advanced)
             local count=(effect.op=='damage' or effect.op=='damageAll') and (effect.times or 1) or 1
             for _=1,count do
                 local payload=copy(effect)
-                if effect.op=='daggerSacrifice'then payload.value=enemy.hp end
+                if effect.op=='daggerExpenditure'then payload.value=enemy.hp end
                 if effect.op=='damage' or effect.op=='damageAll'then payload.times=nil end
                 append('payload',payload)
             end

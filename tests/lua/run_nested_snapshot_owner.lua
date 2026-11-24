@@ -49,7 +49,7 @@ local function fixture(choice)
  local r=Run.new(D,'42',choice and {character='silent',experimental=true}or nil)
  local ids=choice and {'survivor','strike_green','defend_green'}or {'strike','defend'}
  r.deck={};for i,id in ipairs(ids)do r.deck[i]={uid=i,cardId=id,upgraded=false}end;r.nextDeckUid=#ids+1
- assert(Run.startCombat(r,'cultist_solo'));local s=r.combat
+ assert(Run.startCombat(r,'raven_adept_solo'));local s=r.combat
  if choice then assert(Run.play(r,held(s,'survivor').uid));assert(s.pendingDiscard)end
  return r,s
 end
@@ -157,10 +157,10 @@ local function terminalFixture(kind)
  local r=Run.new(D,'42',{character='watcher',experimental=true})
  if kind=='turn'then
   r.deck={{uid=1,cardId='omega',upgraded=true},{uid=2,cardId='defend_purple',upgraded=false}};r.nextDeckUid=3
-  assert(Run.startCombat(r,'cultist_solo'));assert(Run.play(r,held(r.combat,'omega').uid))
+  assert(Run.startCombat(r,'raven_adept_solo'));assert(Run.play(r,held(r.combat,'omega').uid))
   return r,r.combat,function()return Run.endTurn(r)end
  end
- assert(Run.startCombat(r,'cultist_solo'));r.hp,r.maxHp=1,7
+ assert(Run.startCombat(r,'raven_adept_solo'));r.hp,r.maxHp=1,7
  local s=C.new(r.data,{seed=42,enemies={'corrupt_heart'},deck={},hp=1,maxHp=7,enableStances=true,
   beforeOpeningDraw=function(state)Hooks.bindBattle(state,r.relics,r.relicCounters);return true end})
  r.combat=s;s.combatGeneration=r.combatGeneration
@@ -199,7 +199,7 @@ for _,kind in ipairs({'discard','turn'})do
  end,'finish')
 end
 test('real first-form revival remains nonterminal across a parent-owned Run end turn',function()
- local r=Run.new(D,'42',{experimental=true});assert(Run.startCombat(r,'cultist_solo'))
+ local r=Run.new(D,'42',{experimental=true});assert(Run.startCombat(r,'raven_adept_solo'))
  local s=C.new(r.data,{seed=42,cardRandomSeed='42',enemies={'awakened_one'},deck={},hp=500,maxHp=500})
  r.combat=s;r.hp,r.maxHp=500,500;s.combatGeneration=r.combatGeneration
  local enemy=s.enemies[1];C.damage(s,s.player,enemy,1000,true);assert(enemy.halfDead);eq(C.outcome(s),nil)

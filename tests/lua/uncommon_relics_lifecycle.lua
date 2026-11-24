@@ -7,7 +7,7 @@ local function begin(ids,deck)
  local r=Run.new(Data,42)
  for _,id in ipairs(ids)do assert(Run.obtainRelic(r,id),'cannot obtain '..id)end
  if deck then r.deck={};for i,id in ipairs(deck)do r.deck[i]={uid=i,cardId=id,upgraded=false}end;r.nextDeckUid=#deck+1 end
- assert(Run.startCombat(r,'cultist_solo'));return r,r.combat
+ assert(Run.startCombat(r,'raven_adept_solo'));return r,r.combat
 end
 local function find(s,id)
  for _,c in ipairs(s.hand)do if c.cardId==id then return c end end
@@ -79,7 +79,7 @@ end)
 test('Meat triggers before Burning Blood once at the exact half-HP boundary',function()
  local function win(hp,bloom)
   local r=Run.new(Data,42);assert(Run.obtainRelic(r,'Meat on the Bone'));if bloom then assert(Run.obtainRelic(r,'Mark of the Bloom'))end
-  r.hp=hp;r.maxHp=80;assert(Run.startCombat(r,'cultist_solo'));local s=r.combat;s.enemies[1].hp=1
+  r.hp=hp;r.maxHp=80;assert(Run.startCombat(r,'raven_adept_solo'));local s=r.combat;s.enemies[1].hp=1
   local card=find(s,'strike');assert(Run.play(r,card.uid,1));return r,card
  end
  local r,card=win(40);assert(r.hp==58 and r.phase=='reward')

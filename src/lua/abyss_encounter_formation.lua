@@ -44,8 +44,8 @@ function M.assemble(source,boundary)
  end
  local function humanoid(x,y)
   local candidates={}
-  candidates[1]=make('cultist',x,y)
-  candidates[2]=make(boolean() and 'red_slaver' or 'blue_slaver',x,y)
+  candidates[1]=make('raven_adept',x,y)
+  candidates[2]=make(boolean() and 'red_guard' or 'blue_guard',x,y)
   candidates[3]=make('looter',x,y)
   return candidates[integer(2)]
  end
@@ -76,8 +76,8 @@ function M.assemble(source,boundary)
    result[2]=make('darkling',-140,30)
    result[3]=make('darkling',180,-5)
   elseif source=='Awakened One'then
-   result[1]=make('cultist',-590,10)
-   result[2]=make('cultist',-298,-10)
+   result[1]=make('raven_adept',-590,10)
+   result[2]=make('raven_adept',-298,-10)
    result[3]=make('awakened_one',100,15)
   elseif source=='Reptomancer'then
    result[1]=make('snake_dagger',-220,115)

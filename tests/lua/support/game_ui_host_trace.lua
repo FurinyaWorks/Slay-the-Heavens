@@ -156,7 +156,7 @@ if variant:sub(1,6)=='short-' then
  Map.generate=generate
  if variant=='short-disable-live' then
   step('real active combat with pending playback',function()
-   assert(require('abyss_run').startCombat(host.run,'cultist_solo'));host:refresh()
+   assert(require('abyss_run').startCombat(host.run,'raven_adept_solo'));host:refresh()
    local result=button('battlePanel','endTurn').click()
    assert(host.battleUI.active and host.battleUI.busy,'requires real active pending playback')
    return result
@@ -233,7 +233,7 @@ if variant:sub(1,6)=='short-' then
   print('GAME_UI_HOST_TRACE_PASS checkpoints='..count);return
  end
  if variant=='short-overlays' then
-  step('combat',function()local ok,why=require('abyss_run').startCombat(host.run,'cultist_solo');host:refresh();return ok,why end)
+  step('combat',function()local ok,why=require('abyss_run').startCombat(host.run,'raven_adept_solo');host:refresh();return ok,why end)
   step('menu',function()return host:openMenu()end)
   step('help',function()return button('runMenu','help').click()end)
   step('close help',function()return host:closeExit()end)
@@ -295,7 +295,7 @@ local firstSync,secondSync=host.controller.sync,second.controller.sync
 host.controller.sync=function(...)record('first controller');return firstSync(...)end
 second.controller.sync=function(...)record('second controller');return secondSync(...)end
 step('first captured controller',function()return host:syncController()end)
-step('begin combat',function()local ok,why=require('abyss_run').startCombat(host.run,'cultist_solo');host:refresh();return ok,why end)
+step('begin combat',function()local ok,why=require('abyss_run').startCombat(host.run,'raven_adept_solo');host:refresh();return ok,why end)
 step('combat tick',function()return host:update(.05)end)
 step('open exit',function()return host:openExit()end)
 platform.settle=function(victory)record('settle',victory);record('reentry',host:confirmExit());return false end

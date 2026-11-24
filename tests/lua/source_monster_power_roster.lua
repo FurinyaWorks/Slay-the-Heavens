@@ -1,6 +1,6 @@
 -- Current 42 enemy roster; normal constructor and three actual turn boundaries.
 local C,A,D=require('abyss_combat'),require('abyss_actor'),require('abyss_data')
-local ids={'cultist','jaw_worm','red_louse','green_louse','acid_slime_s','acid_slime_m','acid_slime_l','spike_slime_s','spike_slime_m','spike_slime_l','red_slaver','blue_slaver','looter','fungi_beast','mad_gremlin','fat_gremlin','sneaky_gremlin','shield_gremlin','wizard_gremlin','gremlin_nob','sentry','lagavulin','guardian','slime_boss','hexaghost','centurion','mystic','spheric_guardian','taskmaster','book_of_stabbing','snake_plant','chosen','shelled_parasite','byrd','snecko','mugger','gremlin_leader','torch_head','collector','automaton','bronze_orb','champ'}
+local ids={'raven_adept','jaw_worm','red_louse','green_louse','acid_slime_s','acid_slime_m','acid_slime_l','spike_slime_s','spike_slime_m','spike_slime_l','red_guard','blue_guard','looter','fungi_beast','mad_gremlin','fat_gremlin','sneaky_gremlin','shield_gremlin','wizard_gremlin','gremlin_nob','sentry','lagavulin','guardian','slime_boss','hexaghost','centurion','mystic','spheric_guardian','taskmaster','book_of_stabbing','snake_plant','chosen','shelled_parasite','byrd','snecko','mugger','gremlin_leader','torch_head','collector','automaton','bronze_orb','champ'}
 local function check(e)
  local rows=A.statusView(e)
  for _,row in ipairs(rows)do

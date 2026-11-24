@@ -1,5 +1,5 @@
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
-local host,ui,panel,event,tap,drain=H.setup({'defend'},{'cultist','jaw_worm'})
+local host,ui,panel,event,tap,drain=H.setup({'defend'},{'raven_adept','jaw_worm'})
 local battle=host.run.combat
 host.run.potions={'energy_potion','fire_potion','regen_potion'};host:refresh()
 local group=panel:GetChild('potionHelp')

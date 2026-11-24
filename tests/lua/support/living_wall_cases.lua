@@ -156,7 +156,7 @@ test('Grow increments repeatable Searing Blow and persists the third upgrade dam
  local run=enter({{uid=1,cardId='searing_blow',upgraded=true,upgrades=2}})
  assert(Nodes.chooseEvent(run,'grow'));assert(Nodes.chooseLivingWallCard(run,1))
  eq(run.phase,'map');eq(run.deck[1].upgrades,3);eq(run.deck[1].uid,1)
- local battle=C.new(data,{deck=run.deck,enemies={'cultist'},seed=1})
+ local battle=C.new(data,{deck=run.deck,enemies={'raven_adept'},seed=1})
  eq(C.cardDefinition(battle,battle.hand[1]).effects[1].value,27)
 end)
 assert(registered==11,'all eleven original Living Wall cases must remain registered')

@@ -14,7 +14,7 @@ local function execute(case, upgraded, run)
     if run then
         -- Deck acquisition/upgrade was performed by the public node commands.
         run.floor, run.phase = 1, "map"
-        assert(Run.startCombat(run, "cultist_solo")); s = run.combat
+        assert(Run.startCombat(run, "raven_adept_solo")); s = run.combat
     else
         local deck = {{cardId=case.id, upgraded=upgraded}}
         for _ = 1, 12 do deck[#deck+1] = "defend" end

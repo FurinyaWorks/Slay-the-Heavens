@@ -12,7 +12,7 @@ local function test(name,fn)
     end
 end
 local function setup(ids, enemies)
-    local h,u,p,e,t,d,deck,r,emit,tap=H.setup({'bash','defend'},enemies or {'cultist','jaw_worm'})
+    local h,u,p,e,t,d,deck,r,emit,tap=H.setup({'bash','defend'},enemies or {'raven_adept','jaw_worm'})
     h.run.potions={}
     for slot,id in pairs(ids or {'fire_potion'}) do h.run.potions[slot]=id end
     h:refresh()

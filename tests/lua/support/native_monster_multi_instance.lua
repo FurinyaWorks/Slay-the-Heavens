@@ -11,7 +11,7 @@ local function setup(fast)
  if ui then ui.active=false;ui:render()end
  host,root=F.fixture(nil,nil,nil,{CursorDown='down',CursorUp='up',CursorDrag='drag',CursorEndDrag='endDrag',CursorEnter='enter',CursorExit='exit'})
  assert(host:setFastMode(fast),'fast mode must be selected through the real menu setting')
- assert(F.start(host));assert(Run.startCombat(host.run,'cultist_solo'))
+ assert(F.start(host));assert(Run.startCombat(host.run,'raven_adept_solo'))
  ui,stage=host.battleUI,root:GetChild('battlePanel')
  surfaces=assert(require('abyss_monster_surfaces').get(stage))
 end

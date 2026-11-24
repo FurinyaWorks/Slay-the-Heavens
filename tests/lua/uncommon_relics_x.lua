@@ -7,7 +7,7 @@ local function start(character,id)
  local r=Run.new(Data,42,{character=character,experimental=true})
  assert(Run.obtainRelic(r,'Chemical X'))
  r.deck={{uid=31,cardId=id,upgraded=false}};r.nextDeckUid=32
- assert(Run.startCombat(r,'cultist_solo'));local s=r.combat
+ assert(Run.startCombat(r,'raven_adept_solo'));local s=r.combat
  s.enemies[1].hp=1000;s.enemies[1].maxHp=1000;s.energy=0
  for _,card in ipairs(s.hand)do if card.cardId==id then return r,s,card end end
  error('X card missing '..id)

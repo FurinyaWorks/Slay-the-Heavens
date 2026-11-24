@@ -5,7 +5,7 @@ local Display = require('abyss_card_display')
 local count = 0
 local function eq(a,b) assert(a==b,tostring(a)..' ~= '..tostring(b)) end
 local function state(id, statuses, upgraded)
- local s=Combat.new(Data,{deck={{cardId=id,upgraded=upgraded}},enemies={'jaw_worm','cultist'}})
+ local s=Combat.new(Data,{deck={{cardId=id,upgraded=upgraded}},enemies={'jaw_worm','raven_adept'}})
  for k,v in pairs(statuses or {}) do Combat.addStatus(s.player,k,v) end
  return s,s.hand[1]
 end

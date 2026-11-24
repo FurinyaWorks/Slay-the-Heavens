@@ -138,21 +138,21 @@ test('SnakeStrike is two modified attacks then Weak and spends Artifact only aft
  end
 end)
 test('Dagger Stab adds Wound even fully blocked and changes to Explode with one roll',function()
- local s=battle({'snake_dagger','cultist'});local e=s.enemies[1]
+ local s=battle({'snake_dagger','raven_adept'});local e=s.enemies[1]
  A.block(s,s.player,99,true);local ai=s.aiRng.counter;assert(C.endTurn(s))
  eq(s.player.hp,5000);eq(countEvents(s,'cards_created'),1);eq(intent(e),'explode');eq(s.aiRng.counter,ai+2)
  local found=false;for _,pile in ipairs({s.hand,s.draw,s.discard})do for _,c in ipairs(pile)do if c.cardId=='wound'then found=true end end end;assert(found)
 end)
 test('Stab Wound and RollMove survive caster retaliation death only while teammates live',function()
  for _,allies in ipairs({false,true})do
-  local s=battle(allies and {'snake_dagger','cultist'}or {'snake_dagger'});local e=s.enemies[1]
+  local s=battle(allies and {'snake_dagger','raven_adept'}or {'snake_dagger'});local e=s.enemies[1]
   A.applyPower(s,s.player,'thorns',99,s.player);local ai=s.aiRng.counter
   assert(C.endTurn(s));eq(e.hp,0);eq(s.player.hp,4991)
   eq(countEvents(s,'cards_created'),allies and 1 or 0);eq(s.aiRng.counter,ai+(allies and 2 or 0))
  end
 end)
 test('Explode uses normal attack then captured self HP_LOSS ignoring its Block',function()
- local s=battle({'snake_dagger','cultist'});local e=s.enemies[1];force(e,'explode')
+ local s=battle({'snake_dagger','raven_adept'});local e=s.enemies[1];force(e,'explode')
  A.applyPower(s,e,'strength',5,e);A.applyPower(s,e,'weak',2,s.player)
  A.applyPower(s,s.player,'vulnerable',2,e);e.block=100
  local hp=e.hp;assert(C.endTurn(s));eq(s.player.hp,4967);eq(e.hp,0);eq(e.block,0)
@@ -161,24 +161,24 @@ test('Explode uses normal attack then captured self HP_LOSS ignoring its Block',
  assert(loss);eq(loss.amount,hp);eq(loss.source,e.id);eq(loss.blocked,0);eq(intent(e),'explode')
 end)
 test('Explode captures self HP before its attack and HP_LOSS never consumes later Block',function()
- local s=battle({'snake_dagger','cultist'});local e=s.enemies[1];force(e,'explode')
- local hp=e.hp;local damage=C.damage;local sacrifice=A.sacrificeDagger;local seen=false
+ local s=battle({'snake_dagger','raven_adept'});local e=s.enemies[1];force(e,'explode')
+ local hp=e.hp;local damage=C.damage;local sacrifice=A.expendDagger;local seen=false
  C.damage=function(st,source,target,...)
   local lost=damage(st,source,target,...)
   if source==e and target==st.player then e.hp=e.hp+10;e.block=100 end
   return lost
  end
- A.sacrificeDagger=function(st,target,amount)
+ A.expendDagger=function(st,target,amount)
   eq(amount,hp);seen=true;return sacrifice(st,target,amount)
  end
- local ok,why=pcall(C.endTurn,s);C.damage=damage;A.sacrificeDagger=sacrifice
+ local ok,why=pcall(C.endTurn,s);C.damage=damage;A.expendDagger=sacrifice
  assert(ok,why);assert(seen);eq(e.hp,10);eq(e.block,100)
 end)
 test('Dagger HP-loss respects Intangible and captured preattack life rather than Suicide',function()
- local s=battle({'snake_dagger','cultist'});local e=s.enemies[1];force(e,'explode')
+ local s=battle({'snake_dagger','raven_adept'});local e=s.enemies[1];force(e,'explode')
  s.catalog.statuses.intangible={id='intangible',name='虚体',kind='buff',stack='duration',decay='none',description='伤害至多1。'}
  A.applyPower(s,e,'intangible',1,e);local before=e.hp;assert(C.endTurn(s));eq(e.hp,before-1)
- eq(countEvents(s,'enemy_suicide',e.id),0);eq(countEvents(s,'hp_loss',e.id),1)
+ eq(countEvents(s,'enemy_self_exit',e.id),0);eq(countEvents(s,'hp_loss',e.id),1)
 end)
 test('player death stops Explode before self HP-loss and queued RollMove',function()
  local s=battle({'snake_dagger'},'1',nil,25);local e=s.enemies[1];force(e,'explode')
@@ -190,7 +190,7 @@ test('leader death suicides blades in reverse group order with no HP-loss or esc
  local order={};for i=#s.enemies,1,-1 do local e=s.enemies[i];if e~=leader then order[#order+1]=e.id end end
  local from=#s.events+1;C.damage(s,s.player,leader,999,true)
  local actual={};for i=from,#s.events do local ev=s.events[i]
-  if ev.kind=='enemy_suicide'then actual[#actual+1]=ev.detail.enemy end
+  if ev.kind=='enemy_self_exit'then actual[#actual+1]=ev.detail.enemy end
   assert(ev.kind~='enemy_escape'and ev.kind~='hp_loss')
  end;same(actual,order);eq(C.outcome(s),'victory')
  for _,e in ipairs(s.enemies)do eq(e.hp,0);if e~=leader then eq(e.gold,0)end end
@@ -222,10 +222,10 @@ end)
 test('both transactions restore self-loss and leader cleanup failures without duplicate callbacks',function()
  for _,advanced in ipairs({false,true})do for _,kind in ipairs({'dagger','leader'})do
   local data=advanced and require('abyss_character_profiles').prepare(D,'ironclad')or D
-  local s=battle(kind=='dagger'and {'snake_dagger','cultist'}or nil,'1',data,nil,{'bludgeon'})
+  local s=battle(kind=='dagger'and {'snake_dagger','raven_adept'}or nil,'1',data,nil,{'bludgeon'})
   local e=kind=='dagger'and s.enemies[1]or s.enemies[2]
   if kind=='dagger'then force(e,'explode')else e.hp=1 end
-  local before=C.copy(s);local key=kind=='dagger'and 'sacrificeDagger'or 'suicideReptomancerMinion'
+  local before=C.copy(s);local key=kind=='dagger'and 'expendDagger'or 'dismissReptomancerMinion'
   local old=A[key];local fired=false;A[key]=function(...)old(...);fired=true;error('POST_REPTOMANCER_DEATH_FAILURE')end
   local ok
   if kind=='dagger'then ok=pcall(C.endTurn,s)else ok=pcall(C.play,s,s.hand[1].uid,2)end

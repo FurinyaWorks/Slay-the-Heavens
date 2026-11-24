@@ -2,7 +2,7 @@ package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local C,A,Orbs,Actions=require('abyss_combat'),require('abyss_actor'),require('abyss_orbs'),require('abyss_card_actions')
 local D=require('abyss_warrior_strength_cards').withCards(require('abyss_character_profiles').prepare(require('abyss_data'),'watcher'))
 for _,advanced in ipairs({false,true})do
- local s=C.new(D,{deck={'combust','burn'},enemies={'cultist'},seed=42,orbSlots=1,enableStances=true,cardRandomSeed='42'})
+ local s=C.new(D,{deck={'combust','burn'},enemies={'raven_adept'},seed=42,orbSlots=1,enableStances=true,cardRandomSeed='42'})
  s.experimentalMechanics=advanced
  for _,c in ipairs(s.hand)do if c.cardId=='combust'then assert(C.play(s,c.uid));break end end
  s.player.stance='Calm';A.applyPower(s,s.player,'like_water',5,s.player);A.applyPower(s,s.player,'metallicize',3,s.player);A.applyPower(s,s.player,'plated_armor',4,s.player)

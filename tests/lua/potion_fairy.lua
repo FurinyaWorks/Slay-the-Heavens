@@ -4,7 +4,7 @@ local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end
 local function battle(hp)
  local r=Run.new(Data,42);r.hp=hp or 1
  assert(Run.obtainPotion(r,'fairy_in_a_bottle'))
- assert(Run.startCombat(r,'cultist_solo'));return r
+ assert(Run.startCombat(r,'raven_adept_solo'));return r
 end
 local n=0
 local function test(name,f)f();n=n+1;print('ok fairy '..n..' - '..name)end

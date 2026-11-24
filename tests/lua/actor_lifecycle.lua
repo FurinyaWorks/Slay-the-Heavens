@@ -34,7 +34,7 @@ end
 local trace={}
 local function eq(a,b,label)assert(a==b,'[ACTOR_LIFECYCLE] '..label..': '..tostring(a)..' ~= '..tostring(b))end
 local function fresh()
- local s=C.new(D,{seed=42,cardRandomSeed='42',enemies={'cultist'},deck={'strike','defend'}})
+ local s=C.new(D,{seed=42,cardRandomSeed='42',enemies={'raven_adept'},deck={'strike','defend'}})
  s.events={};return s,s.enemies[1]
 end
 local function rootFor(s)
@@ -92,7 +92,7 @@ do
  step(root,'bad constricted source',function()return A.applyPower(s,s.player,'constricted',2,e)end)
  e.ai.policy='spire_growth'
  step(root,'first constricted',function()return A.applyPower(s,s.player,'constricted',2,e)end)
- local first=s.constrictedSource;e.ai.policy='cultist'
+ local first=s.constrictedSource;e.ai.policy='raven_adept'
  local e2={id='other',name='other',ai={policy='spire_growth'}}
  step(root,'stack constricted keeps source',function()return A.applyPower(s,s.player,'constricted',1,e2)end)
  eq(s.constrictedSource,first,'Constricted owner link')

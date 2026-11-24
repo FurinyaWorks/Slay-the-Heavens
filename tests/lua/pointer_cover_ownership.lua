@@ -38,7 +38,7 @@ local function title()
 end
 local function endTurn()
     local host,root,settle,cover=hostFixture()
-    settle();assert(F.start(host));settle();assert(Run.startCombat(host.run,'cultist_solo'))
+    settle();assert(F.start(host));settle();assert(Run.startCombat(host.run,'raven_adept_solo'))
     host:refresh();settle();assert(host.mode=='battle' and host.battleUI.active)
     local battle=host.run.combat;local beforePhase,turn=battle.phase,battle.turn
     cover()
@@ -54,7 +54,7 @@ local function discardChoice()
     local data=require('abyss_silent').withFoundationCards(F.Data)
     local state
     for seed=1,100 do
-        local battle=F.Combat.new(data,{seed=seed,enemies={'cultist'},deck={'survivor','defend','defend','defend','defend'}})
+        local battle=F.Combat.new(data,{seed=seed,enemies={'raven_adept'},deck={'survivor','defend','defend','defend','defend'}})
         for _,card in ipairs(battle.hand)do
             if card.cardId=='survivor' then assert(F.Combat.play(battle,card.uid));state=battle;break end
         end

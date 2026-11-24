@@ -1,5 +1,5 @@
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
-local host,ui,panel,event,tap,drain=H.setup({'inflame'},{'cultist'})
+local host,ui,panel,event,tap,drain=H.setup({'inflame'},{'raven_adept'})
 assert(H.Run.obtainPotion(host.run,'duplication_potion'));host:refresh()
 tap('potion1',1);dofile('tests/lua/support/confirm_potion_popup.lua')(ui,panel,1)
 drain();assert(host.run.combat.player.statuses.duplication==1)

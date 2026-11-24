@@ -9,7 +9,7 @@ local function newCard(s,id,up)
     local c={uid=s.nextUid,cardId=id,upgraded=up==true};s.nextUid=s.nextUid+1;return c
 end
 local function battle(ids)
-    local s=C.new(data,{deck={},hp=50,enemies={'cultist'},seed=99})
+    local s=C.new(data,{deck={},hp=50,enemies={'raven_adept'},seed=99})
     s.hand={};s.draw={};s.discard={};s.exhaust={};s.events={};s.energy=20
     s.enemies[1].hp=500;s.enemies[1].maxHp=500;s.enemies[1].ai=nil;s.enemies[1].statuses={}
     s.enemies[1].intents={{id='hit',kind='attack',effects={{op='damage',value=1}}}};s.enemies[1].intentIndex=1

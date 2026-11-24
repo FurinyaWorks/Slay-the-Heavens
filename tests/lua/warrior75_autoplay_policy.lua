@@ -3,7 +3,7 @@ local P=dofile('scripts/warrior75-autoplay-policy.lua')
 local C=require('abyss_combat')
 local data=require('abyss_data')
 local function run(id,hp)
- local b=C.new(data,{deck={id},hp=hp or 60,enemies={'cultist'},seed=42})
+ local b=C.new(data,{deck={id},hp=hp or 60,enemies={'raven_adept'},seed=42})
  return {phase='combat',combat=b,deck={{cardId=id}}}
 end
 local r=run('whirlwind');r.combat.energy=3

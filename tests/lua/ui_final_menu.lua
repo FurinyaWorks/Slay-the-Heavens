@@ -1,7 +1,7 @@
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local host,root=F.fixture()
 assert(F.start(host))
-assert(require('abyss_run').startCombat(host.run,'cultist_solo'));host:refresh()
+assert(require('abyss_run').startCombat(host.run,'raven_adept_solo'));host:refresh()
 local run,battle,map=host.run,host.run.combat,host.map
 local hp,gold,energy=run.hp,run.gold,battle.energy
 local function click(box)return box:GetChild('hit').click()end

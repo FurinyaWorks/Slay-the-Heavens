@@ -69,7 +69,7 @@ test("new encounter resets stale target before the first attack-card tap", funct
     click(root, "battlePanel", "cardReward");click(root, "battlePanel", "skip")
     leavePotionRewards(ui, root)
     assert(run.phase == "map")
-    assert(Run.startCombat(run, "cultist_solo"))
+    assert(Run.startCombat(run, "raven_adept_solo"))
     ui:refresh() -- This is the same host refresh used after Nodes.enter.
     local battle = run.combat
     local slot

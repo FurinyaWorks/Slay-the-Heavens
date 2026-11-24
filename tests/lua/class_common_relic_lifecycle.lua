@@ -12,13 +12,13 @@ local function test(name,fn)local ok,why=pcall(fn);count=count+1;if not ok then 
 local function run(character,ids)
  local r=R.new(D,'42',character and {experimental=true,character=character}or nil)
  for _,id in ipairs(ids or {})do assert(R.obtainRelic(r,id))end
- assert(R.startCombat(r,'cultist_solo'));local s=r.combat;s.enemies[1].hp=10000;s.enemies[1].maxHp=10000
+ assert(R.startCombat(r,'raven_adept_solo'));local s=r.combat;s.enemies[1].hp=10000;s.enemies[1].maxHp=10000
  return r,s
 end
 local function nextBattle(r)
  local old=r.combat
  C.damage(old,old.player,old.enemies[1],20000,true)
- assert(R.finishCombat(r));assert(R.leaveCombatRewards(r));assert(R.startCombat(r,'cultist_solo'))
+ assert(R.finishCombat(r));assert(R.leaveCombatRewards(r));assert(R.startCombat(r,'raven_adept_solo'))
  assert(r.combat~=old);return r.combat
 end
 

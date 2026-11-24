@@ -5,7 +5,7 @@ local Choice=require('abyss_choice_ui')
 local root=F.Viewport.apply(F.control({children=F.Layout}),1280,720):GetChild('choicePanel')
 local platform={imageSource='static',color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end,
  cursorEvents={CursorDown='down',CursorUp='up',CursorExit='exit',CursorEndDrag='endDrag'}}
-local s=Combat.new(require("abyss_warrior_cards").withFoundationCards(F.Data),{seed=42,enemies={'cultist'},deck={'warcry','defend','defend','defend','defend'}})
+local s=Combat.new(require("abyss_warrior_cards").withFoundationCards(F.Data),{seed=42,enemies={'raven_adept'},deck={'warcry','defend','defend','defend','defend'}})
 local warcry
 for _,c in ipairs(s.hand)do if c.cardId=='warcry'then warcry=c.uid end end
 for _,c in ipairs(s.hand)do if c.cardId=='defend'then c.upgraded=true;c.costForTurn=0 end end

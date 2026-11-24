@@ -23,7 +23,7 @@ test('enemy Artifact blocks Weak or Fear as a successful consumed use, then the 
  end
 end)
 test('Ancient stacks one Artifact per bottle and blocks one debuff per stack without end-turn decay',function()
- local run=battle({'ancient_potion','ancient_potion'},nil,'cultist_solo');local s=run.combat
+ local run=battle({'ancient_potion','ancient_potion'},nil,'raven_adept_solo');local s=run.combat
  use(run,1);use(run,2);eq(s.player.statuses.artifact,2)
  assert(not A.applyPower(s,s.player,'weak',3,s.enemies[1],true));eq(s.player.statuses.artifact,1)
  eq(s.player.statuses.weak or 0,0);assert(Run.endTurn(run));eq(s.player.statuses.artifact,1)
@@ -31,7 +31,7 @@ test('Ancient stacks one Artifact per bottle and blocks one debuff per stack wit
  assert(A.applyPower(s,s.player,'weak',3,s.enemies[1],true));eq(s.player.statuses.weak,3)
 end)
 test('Liquid Bronze stacks three persistent Thorns and retaliates on each blocked attack without recursion',function()
- local run=battle({'liquid_bronze','liquid_bronze'},nil,'cultist_solo');local s=run.combat
+ local run=battle({'liquid_bronze','liquid_bronze'},nil,'raven_adept_solo');local s=run.combat
  use(run,1);eq(s.player.statuses.thorns,3);use(run,2);eq(s.player.statuses.thorns,6)
  C.addStatus(s.enemies[1],'thorns',20);s.player.block=20
  local hp,enemyHp=s.player.hp,s.enemies[1].hp

@@ -15,7 +15,7 @@ local function oracle(state,kind,rng)
  return result
 end
 for _,case in ipairs({{148,'skill_potion','skill'},{38,'attack_potion','attack'}})do
- local run=Run.new(D,tostring(case[1]),{character='watcher',experimental=true});assert(Run.startCombat(run,'cultist_solo'))
+ local run=Run.new(D,tostring(case[1]),{character='watcher',experimental=true});assert(Run.startCombat(run,'raven_adept_solo'))
  local state=run.combat;local mother=C.copy(state.sourcePools.src);local expectedRng=R.cloneState(state.cardRandomRng)
  local expected=oracle(state,case[3],expectedRng);assert(Run.obtainPotion(run,case[2]));assert(Run.usePotion(run,1))
  local p=assert(state.pendingChoice)

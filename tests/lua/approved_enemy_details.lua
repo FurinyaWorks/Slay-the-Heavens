@@ -47,7 +47,7 @@ test('one ordinary portrait click lists all intent effects and all statuses with
 end)
 
 test('target card and potion clicks retain priority over inspection',function()
- local host,ui,p,event,tap,drain=H.setup({'strike','defend'},{'cultist','jaw_worm'})
+ local host,ui,p,event,tap,drain=H.setup({'strike','defend'},{'raven_adept','jaw_worm'})
  local battle=host.run.combat;local hp=battle.enemies[2].hp
  local slot;for i,c in ipairs(battle.hand)do if c.cardId=='strike'then slot=i end end
  tap('card'..slot,92);tap('enemy2',92);drain()

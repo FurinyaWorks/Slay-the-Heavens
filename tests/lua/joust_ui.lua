@@ -10,7 +10,7 @@ test('Joust five pages use the generated event controls and return to map only a
  local start=H.Random.snapshot(r.miscRng).counter
  H.parity(r,m,'continue',nil,function()return click('eventView/option1')end)
  eq(r.nodeFlow.event.stage,'explanation');eq(r.gold,100)
- H.parity(r,m,'bet_for',nil,function()return click('eventView/option2')end)
+ H.parity(r,m,'support_owner',nil,function()return click('eventView/option2')end)
  eq(r.gold,50);eq(r.nodeFlow.event.stage,'pre_joust');eq(r.miscRng.counter,start)
  H.parity(r,m,'continue',nil,function()return click('eventView/option1')end)
  eq(r.nodeFlow.event.stage,'joust');eq(r.miscRng.counter,start+1)

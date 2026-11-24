@@ -26,7 +26,7 @@ local function eq(a,b) assert(a == b, tostring(a) .. ' ~= ' .. tostring(b)) end
 for _, case in ipairs(cases) do
 for _, upgraded in ipairs({false, true}) do
     local id, cost, kind, target = case[1], case[upgraded and 3 or 2], case[4], case[5]
-    local state = C.new(data, {seed = 42, deck = {{cardId = id, upgraded = upgraded}}, enemies = {'cultist','jaw_worm'}})
+    local state = C.new(data, {seed = 42, deck = {{cardId = id, upgraded = upgraded}}, enemies = {'raven_adept','jaw_worm'}})
     local card = state.hand[1]
     eq(C.cardDefinition(state, card).type, kind)
     state.energy = cost

@@ -15,7 +15,7 @@ local function serialize(v,seen)
     return '{'..table.concat(out,';')..'}'
 end
 local function battle()
-    local s=C.new(data,{seed=42,deck={'strike'},enemies={'cultist'},cardRandomSeed='42'})
+    local s=C.new(data,{seed=42,deck={'strike'},enemies={'raven_adept'},cardRandomSeed='42'})
     s.hand={{uid=101,cardId='strike',upgraded=false},{uid=102,cardId='defend',upgraded=false}}
     s.draw={};s.discard={};s.exhaust={};s.cardActions=nil
     return s

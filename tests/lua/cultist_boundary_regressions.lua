@@ -3,8 +3,8 @@ local Combat=require('abyss_combat')
 local Data=require('abyss_data')
 local n=0
 local function eq(a,b,name) assert(a==b,(name or 'value')..': '..tostring(a)..' ~= '..tostring(b)) end
-local function test(name,fn) fn();n=n+1;print('ok Cultist '..n..' - '..name) end
-local function battle(enemies,deck,seed) return Combat.new(Data,{enemies=enemies or {'cultist'},deck=deck or {'defend'},seed=seed or 42}) end
+local function test(name,fn) fn();n=n+1;print('ok Raven Adept '..n..' - '..name) end
+local function battle(enemies,deck,seed) return Combat.new(Data,{enemies=enemies or {'raven_adept'},deck=deck or {'defend'},seed=seed or 42}) end
 local function strength(e) return e.statuses.strength or 0 end
 local function same(a,b)
  if type(b)~='table' then eq(a,b);return end
@@ -13,7 +13,7 @@ local function same(a,b)
 end
 
 test('both enemies finish actions and owner end-turn before any Ritual growth',function()
- local s=battle({'cultist','cultist'});assert(Combat.endTurn(s))
+ local s=battle({'raven_adept','raven_adept'});assert(Combat.endTurn(s))
  Combat.addStatus(s.enemies[2],'regen',1);s.enemies[2].hp=s.enemies[2].hp-1
  local start=#s.events;assert(Combat.endTurn(s));local damage,lastOwnerEnd,firstGrowth=0,0,nil
  for i=start+1,#s.events do local ev=s.events[i]
@@ -35,17 +35,17 @@ end)
 
 
 test('player death from either attacker prevents round-end growth',function()
- local s=battle({'cultist','jaw_worm'});assert(Combat.endTurn(s));s.player.hp=1
+ local s=battle({'raven_adept','jaw_worm'});assert(Combat.endTurn(s));s.player.hp=1
  assert(Combat.endTurn(s));eq(s.phase,'defeat');eq(strength(s.enemies[1]),0)
  do
- local s=battle({'cultist','cultist'});assert(Combat.endTurn(s));s.player.hp=7
+ local s=battle({'raven_adept','raven_adept'});assert(Combat.endTurn(s));s.player.hp=7
  assert(Combat.endTurn(s));eq(s.phase,'defeat');eq(strength(s.enemies[1]),0);eq(strength(s.enemies[2]),0)
  end
 end)
 
 
-test('mixed Lagavulin retains three sleeps and Cultist round growth',function()
- local s=battle({'cultist','lagavulin'})
+test('mixed Lagavulin retains three sleeps and Raven Adept round growth',function()
+ local s=battle({'raven_adept','lagavulin'})
  for _=1,3 do assert(Combat.endTurn(s)) end
  eq(strength(s.enemies[1]),6);eq(Combat.intent(s,2).kind,'attack');eq(s.enemies[2].statuses.ritual,nil)
  eq(s.player.hp,65)
@@ -71,4 +71,4 @@ test('failed card restores live Ritual AI, statuses, identities and events',func
  eq(pcall(Combat.play,s,s.hand[1].uid,1),false);same(s,before);eq(s.enemies[1],e);eq(e.statuses,statuses);eq(s.events,events)
 end)
 
-print('Cultist boundary regressions: '..n..' groups passed')
+print('Raven Adept boundary regressions: '..n..' groups passed')

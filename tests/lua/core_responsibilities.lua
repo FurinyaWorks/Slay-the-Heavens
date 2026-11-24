@@ -5,10 +5,10 @@ local Data=require('abyss_data')
 local count=0
 local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end
 local function test(name,fn)fn();count=count+1;print('ok core '..count..' - '..name)end
-local function battle(enemies)return C.new(Data,{enemies=enemies or {'cultist'},deck={'strike'},seed=42})end
+local function battle(enemies)return C.new(Data,{enemies=enemies or {'raven_adept'},deck={'strike'},seed=42})end
 test('synchronous continuation rejection keeps its exact owner',function()
  local s=battle()
- for _,effect in ipairs({{op='scry',value=1},{op='handChoice',mode='exhaust',value=1},{op='calculatedGamble'}})do
+ for _,effect in ipairs({{op='scry',value=1},{op='handChoice',mode='exhaust',value=1},{op='calculatedExchange'}})do
   local ok,why=pcall(C.applyEffects,s,{effect},s.player,s.enemies[1])
   eq(ok,false);assert(tostring(why):find('requires the continuation queue',1,true))
   eq(s.actionQueue,nil);eq(s.resolvingEffects,nil)
@@ -29,7 +29,7 @@ test('queue extension nil is a handled completion',function()
  assert(ok,why);eq(calls,1);eq(s.actionQueue,nil)
 end)
 test('target-first paired debuffs preserve Artifact consumption and event order',function()
- local s=battle({'cultist','cultist'});local a,b=s.enemies[1],s.enemies[2]
+ local s=battle({'raven_adept','raven_adept'});local a,b=s.enemies[1],s.enemies[2]
  C.addStatus(a,'artifact',1);C.addStatus(b,'artifact',2);s.events={}
  C.applyEffects(s,{{op='applyStatusAll',status='weak',value=1,targetGroup='weak_then_vulnerable'},
   {op='applyStatusAll',status='vulnerable',value=1,targetGroup='weak_then_vulnerable'}},s.player)

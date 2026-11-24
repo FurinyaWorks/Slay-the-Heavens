@@ -298,10 +298,10 @@ local function timeEaterEffect(v,effect)
     else name,text='加速治疗','回复至 '..number(math.floor(v.enemy.maxHp/2))..' 点生命（行动时确定治疗量）'end
     act2Row(v,name,text,'buff')
 end
-local function daggerSacrificeEffect(v)
+local function daggerExpenditureEffect(v)
     act2Row(v,'自毁','自毁：攻击后失去等于行动开始时生命的生命值（无视格挡）','debuff')
 end
-local effects = { daggerSacrifice=daggerSacrificeEffect,reptomancerSummon=summonEffect,timeEater=timeEaterEffect, writhingParasite=parasiteEffect,awakenedVoid=awakenedVoidEffect,damage = attackEffect, damageAll = attackEffect, block = blockEffect,
+local effects = { daggerExpenditure=daggerExpenditureEffect,reptomancerSummon=summonEffect,timeEater=timeEaterEffect, writhingParasite=parasiteEffect,awakenedVoid=awakenedVoidEffect,damage = attackEffect, damageAll = attackEffect, block = blockEffect,
     enemyBurnBoth=burnBothEffect,enemyDazedDraw=dazedDrawEffect,
     enemyVampireDamage=vampireEffect,enemyStasis=stasisEffect,
     enemyRally=summonEffect,enemyTorchSpawn=summonEffect,enemyTorchRevive=summonEffect,

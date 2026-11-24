@@ -2072,12 +2072,12 @@
   ],
   "enemies": [
     {
-      "id": "cultist",
-      "source": "data/enemies.json#cultist",
+      "id": "raven_adept",
+      "source": "data/enemies.json#raven_adept",
       "profile": "enemies",
       "tier": "normal",
       "channels": [
-        "encounter:cultist_solo",
+        "encounter:raven_adept_solo",
         "encounter:exordium_thugs"
       ],
       "aiEntry": "src/lua/abyss_enemy_ai.lua"
@@ -2197,26 +2197,26 @@
       "aiEntry": "src/lua/abyss_looter_ai.lua"
     },
     {
-      "id": "blue_slaver",
-      "source": "data/enemies.json#blue_slaver",
+      "id": "blue_guard",
+      "source": "data/enemies.json#blue_guard",
       "profile": "enemies",
       "tier": "normal",
       "channels": [
-        "encounter:blue_slaver_solo",
+        "encounter:blue_guard_solo",
         "encounter:exordium_thugs"
       ],
-      "aiEntry": "src/lua/abyss_blue_slaver_ai.lua"
+      "aiEntry": "src/lua/abyss_blue_guard_ai.lua"
     },
     {
-      "id": "red_slaver",
-      "source": "data/enemies.json#red_slaver",
+      "id": "red_guard",
+      "source": "data/enemies.json#red_guard",
       "profile": "enemies",
       "tier": "normal",
       "channels": [
         "encounter:exordium_thugs",
-        "encounter:red_slaver_solo"
+        "encounter:red_guard_solo"
       ],
-      "aiEntry": "src/lua/abyss_red_slaver_ai.lua"
+      "aiEntry": "src/lua/abyss_red_guard_ai.lua"
     },
     {
       "id": "fungi_beast",
@@ -2322,9 +2322,9 @@
   ],
   "encounters": [
     {
-      "id": "cultist_solo",
-      "runtimeId": "cultist_solo",
-      "sourceName": "Cultist",
+      "id": "raven_adept_solo",
+      "runtimeId": "raven_adept_solo",
+      "sourceName": "Raven Adept",
       "tier": "normal",
       "queuePools": [
         "weak"
@@ -2332,13 +2332,13 @@
       "formation": {
         "kind": "fixed",
         "members": [
-          "cultist"
+          "raven_adept"
         ]
       },
       "memberIds": [
-        "cultist"
+        "raven_adept"
       ],
-      "source": "src/lua/abyss_room_encounters.lua#Cultist",
+      "source": "src/lua/abyss_room_encounters.lua#Raven Adept",
       "profile": "encounters",
       "channels": [
         "map:combat",
@@ -2438,9 +2438,9 @@
       ]
     },
     {
-      "id": "blue_slaver_solo",
-      "runtimeId": "blue_slaver_solo",
-      "sourceName": "Blue Slaver",
+      "id": "blue_guard_solo",
+      "runtimeId": "blue_guard_solo",
+      "sourceName": "Blue Guard",
       "tier": "normal",
       "queuePools": [
         "strong"
@@ -2448,13 +2448,13 @@
       "formation": {
         "kind": "fixed",
         "members": [
-          "blue_slaver"
+          "blue_guard"
         ]
       },
       "memberIds": [
-        "blue_slaver"
+        "blue_guard"
       ],
-      "source": "src/lua/abyss_room_encounters.lua#Blue Slaver",
+      "source": "src/lua/abyss_room_encounters.lua#Blue Guard",
       "profile": "encounters",
       "channels": [
         "map:combat",
@@ -2604,11 +2604,11 @@
           },
           {
             "candidates": [
-              "cultist",
+              "raven_adept",
               {
                 "boolean": [
-                  "blue_slaver",
-                  "red_slaver"
+                  "blue_guard",
+                  "red_guard"
                 ]
               },
               "looter"
@@ -2618,12 +2618,12 @@
       },
       "memberIds": [
         "acid_slime_m",
-        "blue_slaver",
-        "cultist",
+        "blue_guard",
+        "raven_adept",
         "green_louse",
         "looter",
         "red_louse",
-        "red_slaver",
+        "red_guard",
         "spike_slime_m"
       ],
       "source": "src/lua/abyss_room_encounters.lua#Exordium Thugs",
@@ -2680,9 +2680,9 @@
       ]
     },
     {
-      "id": "red_slaver_solo",
-      "runtimeId": "red_slaver_solo",
-      "sourceName": "Red Slaver",
+      "id": "red_guard_solo",
+      "runtimeId": "red_guard_solo",
+      "sourceName": "Red Guard",
       "tier": "normal",
       "queuePools": [
         "strong"
@@ -2690,13 +2690,13 @@
       "formation": {
         "kind": "fixed",
         "members": [
-          "red_slaver"
+          "red_guard"
         ]
       },
       "memberIds": [
-        "red_slaver"
+        "red_guard"
       ],
-      "source": "src/lua/abyss_room_encounters.lua#Red Slaver",
+      "source": "src/lua/abyss_room_encounters.lua#Red Guard",
       "profile": "encounters",
       "channels": [
         "map:combat",
@@ -3518,8 +3518,8 @@
       "originalId": "The Joust",
       "choices": [
         "continue",
-        "bet_against",
-        "bet_for",
+        "back_favorite",
+        "back_challenger",
         "leave"
       ],
       "stages": [
@@ -3713,8 +3713,8 @@
     {"id": "colosseum", "originalId": "Colosseum", "choices": ["continue", "fight", "leave"], "stages": ["intro", "fight", "combat_first", "post_combat", "combat_second", "leave"], "eligibility": "Original full-source availability predicates are unchanged; source membership below does not bypass them.", "source": "src/lua/abyss_colosseum_event.lua", "profile": "originalEventGaps", "channels": ["explicit:Nodes.enter"], "poolMode": "explicit-only", "naturalAcquisitionLimitation": "Legacy noncampaign explicit-only classification. Public campaign uses the unchanged full source pool; controlled Nodes/source RNG fixtures are not natural gameplay or native/device acceptance. Real relic dependencies and mandatory undersized-grid source limitations remain tracked; no reroll or substitute reward.", "publicSourceMembership": [{"act": 2, "pool": "ordinary"}], "publicChannels": ["unknown_room:event"], "act": 2},
     {"id": "masked_bandits", "originalId": "Masked Bandits", "choices": ["pay", "fight", "continue", "leave"], "stages": ["intro", "paid_1", "paid_2", "paid_3", "combat"], "eligibility": "Original full-source availability predicates are unchanged; source membership below does not bypass them.", "source": "src/lua/abyss_masked_bandits_event.lua", "profile": "originalEventGaps", "channels": ["explicit:Nodes.enter"], "poolMode": "explicit-only", "naturalAcquisitionLimitation": "Legacy noncampaign explicit-only classification. Public campaign uses the unchanged full source pool; controlled Nodes/source RNG fixtures are not natural gameplay or native/device acceptance. Real relic dependencies and mandatory undersized-grid source limitations remain tracked; no reroll or substitute reward.", "publicSourceMembership": [{"act": 2, "pool": "ordinary"}], "publicChannels": ["unknown_room:event"], "act": 2},
     {"id": "cursed_tome", "originalId": "Cursed Tome", "choices": ["read", "continue", "obtain", "stop", "claim", "skip", "leave"], "stages": ["intro", "page_1", "page_2", "page_3", "last_page", "reward", "result"], "eligibility": "Original full-source availability predicates are unchanged; source membership below does not bypass them.", "source": "src/lua/abyss_cursed_tome_event.lua", "profile": "originalEventGaps", "channels": ["explicit:Nodes.enter"], "poolMode": "explicit-only", "naturalAcquisitionLimitation": "Legacy noncampaign explicit-only classification. Public campaign uses the unchanged full source pool; controlled Nodes/source RNG fixtures are not natural gameplay or native/device acceptance. Real relic dependencies and mandatory undersized-grid source limitations remain tracked; no reroll or substitute reward.", "publicSourceMembership": [{"act": 2, "pool": "ordinary"}], "publicChannels": ["unknown_room:event"], "act": 2},
-    {"id": "forgotten_altar", "originalId": "Forgotten Altar", "choices": ["offer_idol", "shed_blood", "smash", "leave"], "stages": ["intro", "result"], "eligibility": "Original full-source availability predicates are unchanged; source membership below does not bypass them.", "source": "src/lua/abyss_forgotten_altar_event.lua", "profile": "originalEventGaps", "channels": ["explicit:Nodes.enter"], "poolMode": "explicit-only", "naturalAcquisitionLimitation": "Legacy noncampaign explicit-only classification. Public campaign uses the unchanged full source pool; controlled Nodes/source RNG fixtures are not natural gameplay or native/device acceptance. Real relic dependencies and mandatory undersized-grid source limitations remain tracked; no reroll or substitute reward.", "publicSourceMembership": [{"act": 2, "pool": "ordinary"}], "publicChannels": ["unknown_room:event"], "act": 2},
-    {"id": "augmenter", "originalId": "Augmenter", "choices": ["jax", "test_subject", "mutagens", "transform", "leave"], "stages": ["intro", "choose_card", "result"], "eligibility": "Original full-source availability predicates are unchanged; source membership below does not bypass them.", "source": "src/lua/abyss_augmenter_event.lua", "profile": "originalEventGaps", "channels": ["explicit:Nodes.enter"], "poolMode": "explicit-only", "naturalAcquisitionLimitation": "Legacy noncampaign explicit-only classification. Public campaign uses the unchanged full source pool; controlled Nodes/source RNG fixtures are not natural gameplay or native/device acceptance. Real relic dependencies and mandatory undersized-grid source limitations remain tracked; no reroll or substitute reward.", "publicSourceMembership": [{"act": 2, "pool": "ordinary"}], "publicChannels": ["unknown_room:event"], "act": 2},
+    {"id": "forgotten_altar", "originalId": "Forgotten Altar", "choices": ["offer_idol", "accept_trial", "smash", "leave"], "stages": ["intro", "result"], "eligibility": "Original full-source availability predicates are unchanged; source membership below does not bypass them.", "source": "src/lua/abyss_forgotten_altar_event.lua", "profile": "originalEventGaps", "channels": ["explicit:Nodes.enter"], "poolMode": "explicit-only", "naturalAcquisitionLimitation": "Legacy noncampaign explicit-only classification. Public campaign uses the unchanged full source pool; controlled Nodes/source RNG fixtures are not natural gameplay or native/device acceptance. Real relic dependencies and mandatory undersized-grid source limitations remain tracked; no reroll or substitute reward.", "publicSourceMembership": [{"act": 2, "pool": "ordinary"}], "publicChannels": ["unknown_room:event"], "act": 2},
+    {"id": "augmenter", "originalId": "Augmenter", "choices": ["jax", "test_subject", "claim_core", "transform", "leave"], "stages": ["intro", "choose_card", "result"], "eligibility": "Original full-source availability predicates are unchanged; source membership below does not bypass them.", "source": "src/lua/abyss_augmenter_event.lua", "profile": "originalEventGaps", "channels": ["explicit:Nodes.enter"], "poolMode": "explicit-only", "naturalAcquisitionLimitation": "Legacy noncampaign explicit-only classification. Public campaign uses the unchanged full source pool; controlled Nodes/source RNG fixtures are not natural gameplay or native/device acceptance. Real relic dependencies and mandatory undersized-grid source limitations remain tracked; no reroll or substitute reward.", "publicSourceMembership": [{"act": 2, "pool": "ordinary"}], "publicChannels": ["unknown_room:event"], "act": 2},
     {"id": "vampires", "originalId": "Vampires", "choices": ["accept", "give_vial", "leave"], "stages": ["intro", "result"], "eligibility": "Original full-source availability predicates are unchanged; source membership below does not bypass them.", "source": "src/lua/abyss_vampires_event.lua", "profile": "originalEventGaps", "channels": ["explicit:Nodes.enter"], "poolMode": "explicit-only", "naturalAcquisitionLimitation": "Legacy noncampaign explicit-only classification. Public campaign uses the unchanged full source pool; controlled Nodes/source RNG fixtures are not natural gameplay or native/device acceptance. Real relic dependencies and mandatory undersized-grid source limitations remain tracked; no reroll or substitute reward.", "publicSourceMembership": [{"act": 2, "pool": "ordinary"}], "publicChannels": ["unknown_room:event"], "act": 2, "entryFixture": {"obtainRelics": ["blood_vial"]}},
     {"id": "designer", "originalId": "Designer", "choices": ["continue", "adjust", "cleanup", "full", "punch", "upgrade", "remove", "full_remove", "transform", "leave"], "stages": ["intro", "choice", "choose_card", "result"], "eligibility": "Original full-source availability predicates are unchanged; source membership below does not bypass them.", "source": "src/lua/abyss_designer_event.lua", "profile": "originalEventGaps", "channels": ["explicit:Nodes.enter"], "poolMode": "explicit-only", "naturalAcquisitionLimitation": "Legacy noncampaign explicit-only classification. Public campaign uses the unchanged full source pool; controlled Nodes/source RNG fixtures are not natural gameplay or native/device acceptance. Real relic dependencies and mandatory undersized-grid source limitations remain tracked; no reroll or substitute reward.", "publicSourceMembership": [{"act": 1, "pool": "once"}, {"act": 2, "pool": "once"}], "publicChannels": ["unknown_room:event"], "act": 2},
     {"id": "face_trader", "originalId": "FaceTrader", "choices": ["continue", "touch", "trade", "leave"], "stages": ["intro", "choice", "result"], "eligibility": "Original full-source availability predicates are unchanged; source membership below does not bypass them.", "source": "src/lua/abyss_face_trader_event.lua", "profile": "originalEventGaps", "channels": ["explicit:Nodes.enter"], "poolMode": "explicit-only", "naturalAcquisitionLimitation": "Legacy noncampaign explicit-only classification. Public campaign uses the unchanged full source pool; controlled Nodes/source RNG fixtures are not natural gameplay or native/device acceptance. Real relic dependencies and mandatory undersized-grid source limitations remain tracked; no reroll or substitute reward.", "publicSourceMembership": [{"act": 1, "pool": "once"}, {"act": 2, "pool": "once"}], "publicChannels": ["unknown_room:event"]},
@@ -4191,8 +4191,8 @@
       "sourceId": "Incense Burner"
     },
     {
-      "id": "gambling_chip",
-      "source": "data/relics.json#gambling_chip",
+      "id": "tactical_badge",
+      "source": "data/relics.json#tactical_badge",
       "profile": "relicCompletion",
       "rarity": "rare",
       "channels": [
@@ -4200,7 +4200,7 @@
         "shop_relic"
       ],
       "naturalExecutionLimitation": "Controlled offline acquisition and effect coverage only; natural acquisition and native platform/live acceptance remain pending.",
-      "sourceId": "Gambling Chip"
+      "sourceId": "Tactical Badge"
     },
     {
       "id": "peace_pipe",
@@ -4844,8 +4844,8 @@
       "prerequisite": "burning_blood"
     },
     {
-      "id": "slavers_collar",
-      "source": "data/relics.json#slavers_collar",
+      "id": "arena_collar",
+      "source": "data/relics.json#arena_collar",
       "profile": "relics",
       "rarity": "boss",
       "channels": [
@@ -5174,7 +5174,7 @@
       "naturalAcquisitionLimitation": "Only the listed explicit event is a legal acquisition channel; absent from ordinary treasure/shop pools. Treasure candidates exclude SPECIAL; no legal relic retains the existing gold fallback.",
       "naturalExecutionLimitation": "Obtaining and displaying Spirit Poop is wired; scoreAdjustment exposes -1 but no production total-score system consumes it. The source total-score deduction remains unintegrated."
     },
-    {"id": "circlet", "source": "data/relics.json#circlet", "profile": "relics", "rarity": "special", "channels": ["explicit_event:bonfire:repeat_curse_offer", "explicit_event:golden_idol:repeat_take", "explicit_event:mushrooms:repeat_fight", "explicit_event:cursed_tome:claim", "explicit_event:forgotten_altar:offer_idol", "explicit_event:augmenter:mutagens", "explicit_event:face_trader:trade", "explicit_event:nloth:trade_1", "explicit_event:nloth:trade_2", "explicit_event:masked_bandits:fight"], "sourceId": "Circlet", "naturalAcquisitionLimitation": "Only the listed explicit event is a legal acquisition channel; absent from ordinary treasure/shop pools. Treasure candidates exclude SPECIAL; no legal relic retains the existing gold fallback. Repeated Bonfire curse offerings increment its counter without a second slot. The finite source relic queue can also return Circlet on exhaustion; treasure/shop are not yet wired to this queue. Golden Idol repeat take also yields/increments the actual Circlet before trap choice."},
+    {"id": "circlet", "source": "data/relics.json#circlet", "profile": "relics", "rarity": "special", "channels": ["explicit_event:bonfire:repeat_curse_offer", "explicit_event:golden_idol:repeat_take", "explicit_event:mushrooms:repeat_fight", "explicit_event:cursed_tome:claim", "explicit_event:forgotten_altar:offer_idol", "explicit_event:augmenter:claim_core", "explicit_event:face_trader:trade", "explicit_event:nloth:trade_1", "explicit_event:nloth:trade_2", "explicit_event:masked_bandits:fight"], "sourceId": "Circlet", "naturalAcquisitionLimitation": "Only the listed explicit event is a legal acquisition channel; absent from ordinary treasure/shop pools. Treasure candidates exclude SPECIAL; no legal relic retains the existing gold fallback. Repeated Bonfire curse offerings increment its counter without a second slot. The finite source relic queue can also return Circlet on exhaustion; treasure/shop are not yet wired to this queue. Golden Idol repeat take also yields/increments the actual Circlet before trap choice."},
     {
       "id": "darkstone_periapt",
       "source": "data/relics.json#darkstone_periapt",
@@ -5333,7 +5333,7 @@
     {"id": "ssserpent_head", "sourceId": "SsserpentHead", "rarity": "special", "source": "data/relics.json#ssserpent_head", "profile": "originalEventRelicDependencies", "channels": ["explicit_event:face_trader:trade"], "naturalAcquisitionLimitation": "Only the listed source-exact event branch is implemented; SPECIAL remains outside ordinary treasure/shop pools. Controlled command coverage is not natural acquisition or native-device acceptance."},
     {"id": "nloths_gift", "sourceId": "Nloth's Gift", "rarity": "special", "source": "data/relics.json#nloths_gift", "profile": "originalEventRelicDependencies", "channels": ["explicit_event:nloth:trade_1", "explicit_event:nloth:trade_2"], "naturalAcquisitionLimitation": "Only the listed source-exact event branch is implemented; SPECIAL remains outside ordinary treasure/shop pools. Controlled command coverage is not natural acquisition or native-device acceptance."},
     {"id": "bloody_idol", "sourceId": "Bloody Idol", "rarity": "special", "source": "data/relics.json#bloody_idol", "profile": "originalEventRelicDependencies", "channels": ["explicit_event:forgotten_altar:offer_idol"], "naturalAcquisitionLimitation": "Only the listed source-exact event branch is implemented; SPECIAL remains outside ordinary treasure/shop pools. Controlled command coverage is not natural acquisition or native-device acceptance."},
-    {"id": "mutagenic_strength", "sourceId": "MutagenicStrength", "rarity": "special", "source": "data/relics.json#mutagenic_strength", "profile": "originalEventRelicDependencies", "channels": ["explicit_event:augmenter:mutagens"], "naturalAcquisitionLimitation": "Only the listed source-exact event branch is implemented; SPECIAL remains outside ordinary treasure/shop pools. Controlled command coverage is not natural acquisition or native-device acceptance."},
+    {"id": "augmentation_core", "sourceId": "AugmentationCore", "rarity": "special", "source": "data/relics.json#augmentation_core", "profile": "originalEventRelicDependencies", "channels": ["explicit_event:augmenter:claim_core"], "naturalAcquisitionLimitation": "Only the listed source-exact event branch is implemented; SPECIAL remains outside ordinary treasure/shop pools. Controlled command coverage is not natural acquisition or native-device acceptance."},
     {"id": "necronomicon", "sourceId": "Necronomicon", "rarity": "special", "source": "data/relics.json#necronomicon", "profile": "originalEventRelicDependencies", "channels": ["explicit_event:cursed_tome:claim"], "naturalAcquisitionLimitation": "Only the listed source-exact event branch is implemented; SPECIAL remains outside ordinary treasure/shop pools. Controlled command coverage is not natural acquisition or native-device acceptance."},
     {"id": "enchiridion", "sourceId": "Enchiridion", "rarity": "special", "source": "data/relics.json#enchiridion", "profile": "originalEventRelicDependencies", "channels": ["explicit_event:cursed_tome:claim"], "naturalAcquisitionLimitation": "Only the listed source-exact event branch is implemented; SPECIAL remains outside ordinary treasure/shop pools. Controlled command coverage is not natural acquisition or native-device acceptance."},
     {"id": "nilrys_codex", "sourceId": "Nilry's Codex", "rarity": "special", "source": "data/relics.json#nilrys_codex", "profile": "originalEventRelicDependencies", "channels": ["explicit_event:cursed_tome:claim"], "naturalAcquisitionLimitation": "Only the listed source-exact event branch is implemented; SPECIAL remains outside ordinary treasure/shop pools. Controlled command coverage is not natural acquisition or native-device acceptance."}
@@ -5428,8 +5428,8 @@
       "naturalExecutionLimitation": ""
     },
     {
-      "id": "gamblers_brew",
-      "source": "data/potions.json#gamblers_brew",
+      "id": "swap_brew",
+      "source": "data/potions.json#swap_brew",
       "profile": "potions",
       "rarity": "uncommon",
       "channels": ["combat_potion_reward", "shop_potion", "explicit_event:knowing_skull:potion"],
@@ -5789,14 +5789,14 @@
     "role": "explicit-id-development-replay-not-formal-source-pool",
     "encounters": [
       {
-        "id": "cultist_solo",
+        "id": "raven_adept_solo",
         "tier": "normal",
         "enemies": [
-          "cultist"
+          "raven_adept"
         ],
         "minFloor": 1,
         "maxFloor": 14,
-        "source": "data/enemies.json#encounters/cultist_solo",
+        "source": "data/enemies.json#encounters/raven_adept_solo",
         "profile": "legacyEncounters",
         "channels": [
           "explicit:Run.startCombat"
@@ -5925,28 +5925,28 @@
         ]
       },
       {
-        "id": "blue_slaver_solo",
+        "id": "blue_guard_solo",
         "tier": "normal",
         "enemies": [
-          "blue_slaver"
+          "blue_guard"
         ],
         "minFloor": 4,
         "maxFloor": 14,
-        "source": "data/enemies.json#encounters/blue_slaver_solo",
+        "source": "data/enemies.json#encounters/blue_guard_solo",
         "profile": "legacyEncounters",
         "channels": [
           "explicit:Run.startCombat"
         ]
       },
       {
-        "id": "red_slaver_solo",
+        "id": "red_guard_solo",
         "tier": "normal",
         "enemies": [
-          "red_slaver"
+          "red_guard"
         ],
         "minFloor": 4,
         "maxFloor": 14,
-        "source": "data/enemies.json#encounters/red_slaver_solo",
+        "source": "data/enemies.json#encounters/red_guard_solo",
         "profile": "legacyEncounters",
         "channels": [
           "explicit:Run.startCombat"

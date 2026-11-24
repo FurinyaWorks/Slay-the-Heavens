@@ -10,7 +10,7 @@ end
 
 -- This entry is deliberately outside the old-fixture settlement allowlist.
 -- Real fixed screen coordinates must not follow the moving card automatically.
-local host,ui,panel,event = H.setup({'strike'},{'cultist'})
+local host,ui,panel,event = H.setup({'strike'},{'raven_adept'})
 local battle,card = host.run.combat,panel:GetChild('card1')
 local uid,x,y = battle.hand[1].uid,card.x,card.y
 assert(card.localScaleX<1,'new hand must still be entering during this live test')
@@ -21,7 +21,7 @@ assert(ui.selected==uid and not ui.busy,'fixed-position first tap during entry w
 same(battle,before)
 print('PASS live opening input fixed screen tap preserves entering UID and rules')
 
-host,ui,panel,event = H.setup({'defend'},{'cultist'})
+host,ui,panel,event = H.setup({'defend'},{'raven_adept'})
 battle,card = host.run.combat,panel:GetChild('card1')
 uid,x,y = battle.hand[1].uid,card.x,card.y
 assert(card.localScaleX<1)
@@ -34,7 +34,7 @@ event('dragLayer','up',72,0,80)
 assert(battle.energy==2 and #battle.discard==1,'late release replayed first entry drag')
 print('PASS live opening input entering drag commands one captured UID')
 
-host,ui,panel,event = H.setup({'strike'},{'cultist'})
+host,ui,panel,event = H.setup({'strike'},{'raven_adept'})
 battle,card = host.run.combat,panel:GetChild('card1')
 assert(card.localScaleX<1)
 for _=1,80 do host:update(1/60)end

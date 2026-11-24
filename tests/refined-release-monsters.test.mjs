@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { prepareRefinedReleaseMonsterArt } from '../scripts/refined-release-monsters.mjs';
 
-const ids = ('acid_slime_s acid_slime_m acid_slime_l spike_slime_s spike_slime_m spike_slime_l red_louse green_louse cultist looter mugger blue_slaver red_slaver taskmaster sneaky_gremlin shield_gremlin wizard_gremlin mad_gremlin fat_gremlin gremlin_nob jaw_worm fungi_beast lagavulin sentry spheric_guardian guardian slime_boss hexaghost centurion mystic chosen book_of_stabbing snake_plant shelled_parasite byrd snecko torch_head collector automaton bronze_orb champ gremlin_leader').split(' ');
+const ids = ('acid_slime_s acid_slime_m acid_slime_l spike_slime_s spike_slime_m spike_slime_l red_louse green_louse raven_adept looter mugger blue_guard red_guard taskmaster sneaky_gremlin shield_gremlin wizard_gremlin mad_gremlin fat_gremlin gremlin_nob jaw_worm fungi_beast lagavulin sentry spheric_guardian guardian slime_boss hexaghost centurion mystic chosen book_of_stabbing snake_plant shelled_parasite byrd snecko torch_head collector automaton bronze_orb champ gremlin_leader').split(' ');
 const sha = value => createHash('sha256').update(value).digest('hex');
 function fixture() {
   return { schemaVersion: 1, canvas: [106, 106], assets: ids.map((enemyId,index) => {
@@ -36,7 +36,7 @@ test('exact curated roster compiles to identity bindings and no legacy payload',
 for(const [label,mutate,error] of [
   ['missing enemy',r=>r.assets.pop(),/42/],
   ['duplicate enemy',r=>r.assets[1]=r.assets[0],/duplicate/],
-  ['wrong enemy',r=>r.assets[0].enemyId='cultist_alt',/unknown/i],
+  ['wrong enemy',r=>r.assets[0].enemyId='raven_adept_alt',/unknown/i],
   ['duplicate asset',r=>{r.assets[1].slots=r.assets[0].slots;r.assets[1].provenance=r.assets[0].provenance;},/duplicate/],
   ['capacity overflow',r=>r.assets[0].slots=Array(116).fill(r.assets[0].slots[0]),/115/],
   ['empty slots',r=>r.assets[0].slots=[],/115/],

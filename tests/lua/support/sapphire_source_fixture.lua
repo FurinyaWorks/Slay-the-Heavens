@@ -24,7 +24,7 @@ function M.stage(run,options)
   run.relics[#run.relics+1]='matryoshka';run.relicCounters=run.relicCounters or {};run.relicCounters.matryoshka=2
  end
  if options.boss then
-  for _,id in ipairs({'Sozu','SlaversCollar','Black Blood'})do front(snap.queues.boss,id)end
+  for _,id in ipairs({'Sozu','ArenaCollar','Black Blood'})do front(snap.queues.boss,id)end
  end
  run.relicPool=P.restore(snap,run.relicPool.catalog)
  -- Independent RandomXS128 source values: seed39 => 45,69 (Small/Common,

@@ -35,7 +35,7 @@ local function setup(pointer)
 end
 local function boundary(hp,deck,enemies,pointer)
     local u,p,e,t,d=setup(pointer)
-    u.run=Run.new(F.Data,1);assert(Run.startCombat(u.run,"cultist_solo"))
+    u.run=Run.new(F.Data,1);assert(Run.startCombat(u.run,"raven_adept_solo"))
     u.run.combat=F.Combat.new(F.Data,{hp=hp,deck=deck,enemies=enemies});u:render()
     return u,p,e,t,d
 end

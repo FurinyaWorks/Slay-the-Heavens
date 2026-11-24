@@ -59,7 +59,7 @@ assert(ui:settle())
 for _=1,60 do ui:update(1/60)end
 expect(menu:GetChild('settle').x==0,'settlement slide must paint its final centre position')
 -- Stage shake is owned by feedback: idle must not repeatedly set the same zero.
-local host,canvas=F.fixture();assert(F.start(host));assert(Run.startCombat(host.run,'cultist_solo'));host:refresh()
+local host,canvas=F.fixture();assert(F.start(host));assert(Run.startCombat(host.run,'raven_adept_solo'));host:refresh()
 local feedback=host.battleUI.feedback
 local panel=canvas:GetChild('battlePanel')
 local stage=panel:GetChild('stage') or panel

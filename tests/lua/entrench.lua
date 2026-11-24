@@ -135,7 +135,7 @@ end)
 
 local function win(seed)
     local run = Run.new(data, seed)
-    assert(Run.startCombat(run, "cultist_solo"))
+    assert(Run.startCombat(run, "raven_adept_solo"))
     for _ = 1, 100 do
         if run.phase ~= "combat" then break end
         for _ = 1, 10 do
@@ -172,7 +172,7 @@ test("real starter victory can award entrench and play it next battle without st
     local before = Combat.copy(selected)
     equal(Run.claimCardReward(selected, choice), false); same(selected, before)
     dofile('tests/lua/support/finish_combat_rewards.lua')(selected)
-    assert(Run.startCombat(selected, "cultist_solo"))
+    assert(Run.startCombat(selected, "raven_adept_solo"))
     for _ = 1, 20 do
         assert(selected.phase == "combat", "battle ended before entrench was played")
         local entrench, defend

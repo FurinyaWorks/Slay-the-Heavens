@@ -1,7 +1,7 @@
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
 local View=require('abyss_battle_potion_view')
 local Pool=require('abyss_potion_random')
-local host,ui,panel,event,tap=H.setup({'defend'},{'cultist'})
+local host,ui,panel,event,tap=H.setup({'defend'},{'raven_adept'})
 local data=host.run.data
 data.characterId='watcher'
 require('abyss_class_potions').register(data)

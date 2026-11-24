@@ -10,7 +10,7 @@ local function fresh(potion,character)
  return run
 end
 local function battle(potion,character)
- local r=fresh(potion,character);assert(Run.startCombat(r,'cultist_solo'))
+ local r=fresh(potion,character);assert(Run.startCombat(r,'raven_adept_solo'))
  r.combat.enemies[1].hp,r.combat.enemies[1].maxHp=500,500;return r,r.combat
 end
 test('basic battle and shop wording reflect the held potency without changing source definitions',function()
@@ -37,14 +37,14 @@ test('actual obtained Bark doubles damage block energy and ordinary statuses onc
 end)
 test('outside and battle health doses and automatic Fairy use true doubled potency',function()
  for _,inside in ipairs({false,true})do for _,case in ipairs({{'blood_potion',42,80},{'fruit_juice',20,90}})do
-  local r=fresh(case[1]);r.hp=10;if inside then assert(Run.startCombat(r,'cultist_solo'))end
+  local r=fresh(case[1]);r.hp=10;if inside then assert(Run.startCombat(r,'raven_adept_solo'))end
   assert(Run.usePotion(r,1));eq(r.hp,case[2]);eq(r.maxHp,case[3]);eq(r.potions[1],nil)
  end end
  local r,b=battle('fairy_in_a_bottle');b.player.hp,b.player.maxHp=1,83
  C.damage(b,b.enemies[1],b.player,99,true);eq(b.player.hp,49);eq(b.potionInventory[1],nil)
 end)
 test('Discovery duplicates selected card while its three candidates and RNG count stay unchanged',function()
- local r,b=battle('attack_potion');local plain=Run.new(D,42);assert(Run.obtainPotion(plain,'attack_potion'));assert(Run.startCombat(plain,'cultist_solo'))
+ local r,b=battle('attack_potion');local plain=Run.new(D,42);assert(Run.obtainPotion(plain,'attack_potion'));assert(Run.startCombat(plain,'raven_adept_solo'))
  assert(Run.usePotion(plain,1));assert(Run.usePotion(r,1));local request=b.pendingChoice;eq(#request.cards,3)
  for i,c in ipairs(request.cards)do eq(c.cardId,plain.combat.pendingChoice.cards[i].cardId)end
  eq(R.snapshot(b.cardRandomRng).counter,R.snapshot(plain.combat.cardRandomRng).counter)
@@ -59,7 +59,7 @@ end)
 test('Forge upgrades each card once and Smoke remains one escape action',function()
  local r,b=battle('blessing_of_the_forge');b.hand={{uid=999,cardId='searing_blow',upgraded=false}}
  assert(Run.usePotion(r,1));eq(b.hand[1].upgrades,1)
- local smoke=fresh('smoke_bomb');assert(Run.startCombat(smoke,'cultist_solo'));assert(Run.usePotion(smoke,1));eq(smoke.phase,'map');eq(smoke.potions[1],nil)
+ local smoke=fresh('smoke_bomb');assert(Run.startCombat(smoke,'raven_adept_solo'));assert(Run.usePotion(smoke,1));eq(smoke.phase,'map');eq(smoke.potions[1],nil)
 end)
 assert(failed==0,tostring(failed)..' Sacred Bark potion regressions failed')
 print('SACRED_BARK_POTIONS_PASS '..count)

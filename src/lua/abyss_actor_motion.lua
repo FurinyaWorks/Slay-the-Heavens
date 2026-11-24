@@ -20,9 +20,15 @@ function M.state(actor,posed,effect,dying,escaping)
     return 'idle'
 end
 
-local function phase(id)
-    local hash=0
-    for i=1,#id do hash=(hash*31+id:byte(i))%360 end
+-- Preserve the phase seeds for the three renamed actor definitions.
+local phaseSeeds={raven_adept=176,blue_guard=32,red_guard=313}
+local function phase(id,definition)
+    local hash,first=0,1
+    local seed=phaseSeeds[definition]
+    if seed and (id==definition or id:sub(1,#definition+1)==definition..'_') then
+        hash,first=seed,#definition+1
+    end
+    for i=first,#id do hash=(hash*31+id:byte(i))%360 end
     return hash/360*TAU
 end
 
@@ -31,9 +37,9 @@ end
 -- Four scalar returns avoid one transform allocation per actor per frame.
 function M.idle(actor,id,clock,state,config)
     if state~='idle' then return 0,0,1,1 end
-    local wave=math.sin(clock/config.period*TAU+phase(id))
     local definition=actor.definitionId or id
-    if definition=='cultist' then
+    local wave=math.sin(clock/config.period*TAU+phase(id,definition))
+    if definition=='raven_adept' then
         return config.sway*wave,config.lift*wave/2,1,1+config.scale*wave/2
     elseif definition=='jaw_worm' or definition:find('slime',1,true) then
         return 0,config.lift*wave/2,1-config.scale*wave,1+config.scale*wave

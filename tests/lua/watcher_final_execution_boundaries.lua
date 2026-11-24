@@ -1,7 +1,7 @@
 package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local W,C,P,D=require('abyss_watcher_final_cards'),require('abyss_combat'),require('abyss_character_profiles'),require('abyss_data')
 local function state()
- local s=C.new(P.prepare(D,'watcher'),{seed=1,cardRandomSeed='1',shuffleSeed='1',enableStances=true,deck={'empty_body'},enemies={'cultist'}})
+ local s=C.new(P.prepare(D,'watcher'),{seed=1,cardRandomSeed='1',shuffleSeed='1',enableStances=true,deck={'empty_body'},enemies={'raven_adept'}})
  s.enemies[1].hp=1000;s.enemies[1].maxHp=1000;s.energy=10
  return s
 end

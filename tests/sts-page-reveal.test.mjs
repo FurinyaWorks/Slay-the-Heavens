@@ -156,7 +156,7 @@ for i=1,4 do host:update(1/60);reveal:step(require('abyss_page_reveal').intent(h
 local deckEpoch=reveal.epoch;local deckGeneration=host.deckUI.generation
 for i=1,20 do host:update(1/60);reveal:step(require('abyss_page_reveal').intent(host));host:refresh()
  assert(not reveal:covered()and reveal.epoch==deckEpoch and host.deckUI.generation==deckGeneration,'idle deck generation repeatedly covered page')end
-assert(host:closeDeck());assert(require('abyss_run').startCombat(host.run,'cultist_solo'));host:refresh()
+assert(host:closeDeck());assert(require('abyss_run').startCombat(host.run,'raven_adept_solo'));host:refresh()
 for i=1,3 do host:update(1/60);reveal:step(require('abyss_page_reveal').intent(host));host:refresh()end
 local battleEpoch=reveal.epoch;local played=false
 for _,card in ipairs(host.run.combat.hand)do if F.Combat.canPlay(host.run.combat,card.uid,1)then

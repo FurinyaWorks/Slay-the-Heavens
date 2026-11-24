@@ -29,7 +29,7 @@ test('real outside Blood Potion and Fruit Juice consume bottles without healing'
 end)
 test('real source opening Blood Vial and automatic Fairy cannot bypass the Mark',function()
  local r=fresh();assert(Run.obtainRelic(r,'Blood Vial'));assert(Run.obtainPotion(r,'fairy_in_a_bottle'))
- assert(Run.startCombat(r,'cultist_solo'));eq(r.combat.player.hp,20)
+ assert(Run.startCombat(r,'raven_adept_solo'));eq(r.combat.player.hp,20)
  local s=r.combat;C.damage(s,s.enemies[1],s.player,999,true)
  eq(s.player.hp,0);eq(s.potionInventory[1],'fairy_in_a_bottle');eq(r.potions[1],'fairy_in_a_bottle')
 end)

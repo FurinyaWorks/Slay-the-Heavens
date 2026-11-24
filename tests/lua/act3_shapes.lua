@@ -139,7 +139,7 @@ test('real double Dazed draw and Ethereal exhaustion preserve placement then emp
 end)
 test('Exploder attacks twice then rolls before suicide and retained fixed THORNS damage',function()
  for _,allies in ipairs({false,true})do
-  local s=battle(allies and {'cultist','exploder'}or {'exploder'});local e=s.enemies[#s.enemies]
+  local s=battle(allies and {'raven_adept','exploder'}or {'exploder'});local e=s.enemies[#s.enemies]
   eq(e.hp,30);eq(e.statuses.explosive,3);eq(intent(e),'attack')
   assert(C.endTurn(s));eq(e.statuses.explosive,2);eq(e.exploderTurns,1);eq(intent(e),'attack')
   assert(C.endTurn(s));eq(e.statuses.explosive,1);eq(e.exploderTurns,2);eq(intent(e),'wait')
@@ -147,7 +147,7 @@ test('Exploder attacks twice then rolls before suicide and retained fixed THORNS
   eq(e.hp,0);eq(e.exploderTurns,3);eq(s.aiRng.counter,rng+(allies and 2 or 1))
   local damage=blasts(s,from);eq(#damage,1);eq(damage[1].amount,30);eq(damage[1].target,s.player.id)
   local deaths=0;for i=from,#s.events do local ev=s.events[i]
-   if ev.kind=='enemy_suicide'and ev.detail.enemy==e.id then deaths=deaths+1;eq(s.events[i+1].kind,'status_damage')end
+   if ev.kind=='enemy_self_exit'and ev.detail.enemy==e.id then deaths=deaths+1;eq(s.events[i+1].kind,'status_damage')end
   end;eq(deaths,1)
   eq(s.player.hp,s.player.maxHp-(allies and 63 or 48))
   if allies then eq(C.outcome(s),nil)else eq(C.outcome(s),'victory')end
@@ -180,7 +180,7 @@ test('player death from the last explosion takes precedence over simultaneous fi
 end)
 test('killed or poisoned Exploders never queue their later suicide and explosion',function()
  for _,poison in ipairs({false,true})do
-  local s=battle({'exploder','cultist'});local e=s.enemies[1];assert(C.endTurn(s));assert(C.endTurn(s))
+  local s=battle({'exploder','raven_adept'});local e=s.enemies[1];assert(C.endTurn(s));assert(C.endTurn(s))
   local ai=s.aiRng.counter
   if poison then A.applyPower(s,e,'poison',30,s.player)else C.damage(s,s.player,e,30,true)end
   local from=#s.events+1;assert(C.endTurn(s));eq(e.hp,0);eq(#blasts(s,from),0)

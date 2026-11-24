@@ -30,7 +30,7 @@ local function fixture(ids)
         r.deck[i]={uid=i,cardId=id,upgraded=false}
     end
     r.nextDeckUid=#r.deck+1
-    assert(Run.startCombat(r,'cultist_solo'))
+    assert(Run.startCombat(r,'raven_adept_solo'))
     local s=r.combat;local enemy=s.enemies[1]
     enemy.hp=500;enemy.maxHp=500;enemy.ai=nil;enemy.intentIndex=1
     enemy.intents={{id='verification_idle',effects={{op='block',value=0}}}}
@@ -127,7 +127,7 @@ test('Musou refunds once per turn, expires after two ends and cannot leak into n
     s.enemies[1].hp=1;play(r,'RD2-001','finish')
     eq(r.phase,'reward');assert(Run.leaveCombatRewards(r));eq(r.phase,'map')
     local oldDeck=C.copy(r.deck);local nextUid=r.nextDeckUid;local commands=r.originalCommands
-    assert(Run.startCombat(r,'cultist_solo'));eq(r.combatGeneration,2)
+    assert(Run.startCombat(r,'raven_adept_solo'));eq(r.combatGeneration,2)
     local fresh=r.combat.originalV4
     for _,key in ipairs({'resolve','resolveGained','nextEnergy','nextDraw','nextBlock','musouRefunded'})do eq(fresh[key],0,key)end
     eq(fresh.eye.uses,0);eq(fresh.eye.ends,0);eq(fresh.musou.uses,0);eq(fresh.musou.ends,0)

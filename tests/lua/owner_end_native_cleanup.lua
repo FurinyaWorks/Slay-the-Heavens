@@ -2,7 +2,7 @@ package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local C,Actions=require('abyss_combat'),require('abyss_card_actions')
 local D=require('abyss_silent_final_cards').withCardDefinitions(require('abyss_warrior_strength_cards').withCards(require('abyss_character_profiles').prepare(require('abyss_data'),'watcher')))
 for _,advanced in ipairs({false,true})do
- local s=C.new(D,{deck={'well_laid_plans'},enemies={'cultist'},seed=42,enableStances=true,orbSlots=0,cardRandomSeed='42'});s.experimentalMechanics=advanced
+ local s=C.new(D,{deck={'well_laid_plans'},enemies={'raven_adept'},seed=42,enableStances=true,orbSlots=0,cardRandomSeed='42'});s.experimentalMechanics=advanced
  for _,c in ipairs(s.hand)do if c.cardId=='well_laid_plans'then assert(C.play(s,c.uid));break end end
  C.applyEffects(s,{{op='gainExhaustPower',status='dark_embrace',value=2}},s.player)
  for i=1,9 do Actions.toHand(s,Actions.fresh(C,s,'protect'))end;Actions.toHand(s,Actions.fresh(C,s,'dazed'))

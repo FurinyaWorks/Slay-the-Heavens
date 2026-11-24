@@ -107,7 +107,7 @@ local function check(name,body)
 end
 
 check('FINAL_CONTENT_GEOMETRY',function()
- local h,u,p=setup({'strike','defend','inflame','strike','defend','inflame'},{'cultist'})
+ local h,u,p=setup({'strike','defend','inflame','strike','defend','inflame'},{'raven_adept'})
  F.Combat.draw(h.run.combat,20);h:refresh()
  local Display=require('abyss_card_display');local seen={}
  local function picture(control,id)control:SetImage('static',id)end
@@ -143,7 +143,7 @@ end)
 
 check('TEN_CARDS_COST_RESTORE',function()
  local deck={};for i=1,20 do deck[#deck+1]='defend'end;for i=1,10 do deck[#deck+1]='strike'end
- local h,u,p,event,tap,drain=setup(deck,{'cultist'})
+ local h,u,p,event,tap,drain=setup(deck,{'raven_adept'})
  F.Combat.draw(h.run.combat,20);assert(#h.run.combat.hand==10,'legal hand cap not exercised')
  local hp,energy,turn=h.run.combat.player.hp,h.run.combat.energy,h.run.combat.turn
  local names,hits={},{}
@@ -175,7 +175,7 @@ end)
 
 check('PILE_REOPEN',function()
  local deck={};for i=1,8 do deck[#deck+1]='defend';deck[#deck+1]='strike'end
- local h,u,p,event,tap,drain,toggle,root=setup(deck,{'cultist'})
+ local h,u,p,event,tap,drain,toggle,root=setup(deck,{'raven_adept'})
  for round=1,2 do
   assert(p:GetChild('drawIcon'):GetChild('hit').click({touchId=30+round}));h:update(0)
   local grid=root:GetChild('deckPanel'):GetChild('grid');assert(h.deckUI.visible and grid.itemCount>0)
@@ -190,7 +190,7 @@ check('PILE_REOPEN',function()
 end)
 
 check('SORT_DESTROY_RELEASE',function()
- local h,u,p,event,tap,drain,toggle,root=setup({'strike','defend','strike','defend','strike','defend'},{'cultist'})
+ local h,u,p,event,tap,drain,toggle,root=setup({'strike','defend','strike','defend','strike','defend'},{'raven_adept'})
  assert(h:openDeck());h.deckUI:update(0)
  local grid=root:GetChild('deckPanel'):GetChild('grid')
  local first=assert(grid.items[0]):GetChild('face');local previous=roots(first)
@@ -207,7 +207,7 @@ check('SORT_DESTROY_RELEASE',function()
 end)
 
 check('FAILURE_FALLBACK',function()
- local h,u,p=setup({'defend','defend','defend','defend','defend','defend'},{'cultist'})
+ local h,u,p=setup({'defend','defend','defend','defend','defend','defend'},{'raven_adept'})
  local face=p:GetChild('card1');assert(#roots(face)==2)
  Skin.configureSurface(config,api);failMana=true;h:refresh()
  assert(living()==0 and not face:GetChild('v25Surface').visible,'partial template survived')
@@ -239,7 +239,7 @@ end)
 
 check('DEAD_TEMPLATE_CACHED_FACE',function()
  local deck={};for i=1,8 do deck[#deck+1]='defend';deck[#deck+1]='strike'end
- local h,u,p,event,tap,drain,toggle,root=setup(deck,{'cultist'})
+ local h,u,p,event,tap,drain,toggle,root=setup(deck,{'raven_adept'})
  assert(p:GetChild('drawIcon'):GetChild('hit').click({touchId=701}));h:update(0)
  local face=assert(root:GetChild('deckPanel'):GetChild('grid').items[0]):GetChild('face')
  local before=roots(face);assert(#before==2 and face.alive)
@@ -254,7 +254,7 @@ end)
 
 check('WRAPPER_RELEASE_RETRY',function()
  for _,method in ipairs({'configure','destroy'})do
-  local h,u,p=setup({'defend','defend','defend','defend','defend','defend'},{'cultist'})
+  local h,u,p=setup({'defend','defend','defend','defend','defend','defend'},{'raven_adept'})
   local face=p:GetChild('card1');local before,allocations=living(),#created
   assert(before>0)
   local original=api.destroy

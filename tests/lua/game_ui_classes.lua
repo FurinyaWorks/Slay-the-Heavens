@@ -43,7 +43,7 @@ for _,id in ipairs({'hutao','arlecchino','furina','raiden','ironclad','silent','
     for i,relic in ipairs(info.relics)do assert(run.relics[i]==relic.id)end
     assert(F.Data.rules.player.maxHp==before.rules.player.maxHp and #F.Data.cards.cards==#before.cards.cards)
     assert(ui:openDeck());ui.deckUI:update();assert(ui:closeDeck())
-    assert(Run.startCombat(run,'cultist_solo'));ui:refresh();assert(ui.mode=='battle' and #run.combat.hand>0)
+    assert(Run.startCombat(run,'raven_adept_solo'));ui:refresh();assert(ui.mode=='battle' and #run.combat.hand>0)
     for i=1,#run.combat.hand do
         local card=root:GetChild('battlePanel'):GetChild('card'..i)
         assert(card:GetChild('name').text~='' and card:GetChild('label').text~='')

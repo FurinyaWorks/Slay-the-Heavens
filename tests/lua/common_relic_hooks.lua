@@ -35,18 +35,18 @@ test('BloodVial TOP healing and BagOfMarbles BOTTOM status use actual opening AP
  assert(r.combat.relics[1]=='blood_vial')
 end)
 test('BagOfMarbles respects Artifact and ignores dead actors',function()
- local r=R.new(data,42);assert(R.startCombat(r,'cultist_solo'));local s=r.combat;local e=s.enemies[1]
+ local r=R.new(data,42);assert(R.startCombat(r,'raven_adept_solo'));local s=r.combat;local e=s.enemies[1]
  C.addStatus(e,'artifact',1);H.battleStart(s,'bag_of_marbles');assert(e.statuses.artifact==0 and not e.statuses.vulnerable)
  e.hp=0;H.battleStart(s,'bag_of_marbles');assert(not e.statuses.vulnerable)
 end)
 test('Orichalcum fixed six ignores Dexterity/Frail; existing block suppresses',function()
- local r=R.new(data,42);r.relics={'orichalcum'};assert(R.startCombat(r,'cultist_solo'));local s=r.combat
+ local r=R.new(data,42);r.relics={'orichalcum'};assert(R.startCombat(r,'raven_adept_solo'));local s=r.combat
  C.addStatus(s.player,'dexterity',50);C.addStatus(s.player,'frail',2)
  H.onPlayerEndTurn(s);assert(s.player.block==6)
  s.player.block=1;H.onPlayerEndTurn(s);assert(s.player.block==1)
 end)
 test('Combat.endTurn actually dispatches Orichalcum before enemy turn',function()
- local r=R.new(data,42);r.relics={'orichalcum'};assert(R.startCombat(r,'cultist_solo'))
+ local r=R.new(data,42);r.relics={'orichalcum'};assert(R.startCombat(r,'raven_adept_solo'))
  local s=r.combat;local before=#s.events;assert(R.endTurn(r));local blockAt,enemyAt
  for i=before+1,#s.events do
   if s.events[i].kind=='block' and s.events[i].detail.amount==6 then blockAt=i end

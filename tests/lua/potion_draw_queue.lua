@@ -27,7 +27,7 @@ local function frozen(root)
  end
 end
 local function battle(id,top,extra)
- local run=Run.new(Data,42);assert(Run.obtainPotion(run,id));assert(Run.startCombat(run,'cultist_solo'))
+ local run=Run.new(Data,42);assert(Run.obtainPotion(run,id));assert(Run.startCombat(run,'raven_adept_solo'))
  local s=run.combat;s.hand={};s.draw={};s.discard={}
  if extra then s.draw[#s.draw+1]={cardId=extra,uid=2000} end
  for i=1,(id=='swift_potion' and 2 or 4) do s.draw[#s.draw+1]={cardId='defend',uid=2000+i} end
@@ -62,7 +62,7 @@ for _,id in ipairs({'swift_potion','snecko_oil'}) do
   assert(run.phase=='reward' and #run.rewards.cards==3 and run.potions[1]==nil)
   assert(not s.cardActions and not s.queuedCards and not s.pendingChoice);same(R.snapshot(s.cardRandomRng),R.snapshot(rng))
   assert(Run.claimCardReward(run,0));dofile('tests/lua/support/finish_combat_rewards.lua')(run)
-  assert(run.phase=='map');assert(Run.startCombat(run,'cultist_solo'));assert(Run.endTurn(run))
+  assert(run.phase=='map');assert(Run.startCombat(run,'raven_adept_solo'));assert(Run.endTurn(run))
  end)
  test(id..' triggered draw failure rolls back every live value and reference',function()
   local run,s=battle(id,'dazed','invalid_draw_fixture');StatusPowers.applyPower(s,'evolve',1)

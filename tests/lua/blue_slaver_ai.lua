@@ -4,8 +4,8 @@ local Data=require("abyss_data")
 local count,failed=0,0
 local function eq(a,b,label) assert(a==b,(label or "value")..": expected "..tostring(b)..", got "..tostring(a)) end
 local function test(name,fn) count=count+1;local ok,err=pcall(fn);if not ok then failed=failed+1 end;print((ok and "ok " or "not ok ")..count.." - "..name..(ok and "" or ": "..tostring(err))) end
-local S,R="blue_slaver_1","blue_slaver_2"
-local function battle(enemies,seed) return Combat.new(Data,{enemies=enemies or {"blue_slaver"},deck={"defend"},seed=seed or 42}) end
+local S,R="blue_guard_1","blue_guard_2"
+local function battle(enemies,seed) return Combat.new(Data,{enemies=enemies or {"blue_guard"},deck={"defend"},seed=seed or 42}) end
 local function controlled(roll,fn)
     local old=Combat.random;local calls={}
     Combat.random=function(s,n) calls[#calls+1]=n;return n==100 and roll+1 or 1 end
@@ -14,7 +14,7 @@ end
 
 test("A0 Blue declares a dedicated decision policy retaining HP46–50",function()
     local s=battle();local e=s.enemies[1]
-    assert(e.ai,"Blue Slaver decision policy missing");eq(e.ai.kind,"blue_slaver");eq(e.hpRange.min,46);eq(e.hpRange.max,50)
+    assert(e.ai,"Blue Guard decision policy missing");eq(e.ai.kind,"blue_guard");eq(e.hpRange.min,46);eq(e.hpRange.max,50)
 end)
 test("first move is random: 0–39 Rake and 40–99 Stab, one roll after HP",function()
     for _,roll in ipairs({0,39,40,99}) do controlled(roll,function(calls)
@@ -23,7 +23,7 @@ test("first move is random: 0–39 Rake and 40–99 Stab, one roll after HP",fun
     end) end
 end)
 test("900 controlled choices cover both boundaries and both repeat limits",function()
-    local Blue=require("abyss_blue_slaver_ai");local a=battle().enemies[1].ai
+    local Blue=require("abyss_blue_guard_ai");local a=battle().enemies[1].ai
     for _,last in ipairs({"none",S,R}) do for _,previous in ipairs({"none",S,R}) do for roll=0,99 do
         local expected
         if last==S and previous==S then expected=R
@@ -61,11 +61,11 @@ test("natural Rake resolves damage7 then Weak1; natural Stab is damage12",functi
     controlled(40,function() local s=battle();assert(Combat.endTurn(s));eq(s.player.hp,68);eq(s.player.statuses.weak or 0,0) end)
 end)
 test("dead Blue cannot act or advance while another enemy completes the turn",function()
-    local s=battle({"blue_slaver","cultist"});local e=s.enemies[1];local intent=Combat.intent(s,1).id
+    local s=battle({"blue_guard","raven_adept"});local e=s.enemies[1];local intent=Combat.intent(s,1).id
     Combat.addStatus(e,"poison",99);assert(Combat.endTurn(s));eq(e.hp,0);eq(e.blueLast,nil);eq(e.intents[e.intentIndex].id,intent);eq(s.enemies[2].statuses.ritual,3)
 end)
 test("multiple instances keep independent bounded history",function()
-    for seed=1,16 do local s=battle({"blue_slaver","blue_slaver"},seed);s.player.hp=10000
+    for seed=1,16 do local s=battle({"blue_guard","blue_guard"},seed);s.player.hp=10000
         for _=1,12 do
             local executed={Combat.intent(s,1).id,Combat.intent(s,2).id};assert(Combat.endTurn(s))
             for i,e in ipairs(s.enemies) do eq(e.blueLast,executed[i]);assert(not(e.blueLast==e.bluePrevious and Combat.intent(s,i).id==e.blueLast),"third repeated move") end

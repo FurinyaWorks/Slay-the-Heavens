@@ -9,7 +9,7 @@ local supported = { classPotion=true, silentGhost=true, silentShivs=true, genera
     exhaustMany=true,discardRedraw=true,discardToHand=true,randomizeHandCost=true,escape=true,playTopCards=true,
     gainStatus = true, applyStatus = true, gainTemporaryStrength = true, gainTemporaryDexterity = true }
 local maximum = 2147483647
-local bossRelics = { black_blood = true, slavers_collar = true, sozu = true, coffee_dripper=true, fusion_hammer=true, sacred_bark=true,
+local bossRelics = { black_blood = true, arena_collar = true, sozu = true, coffee_dripper=true, fusion_hammer=true, sacred_bark=true,
  velvet_choker=true,runic_dome=true,snecko_eye=true,pandoras_box=true,cursed_key=true,busted_crown=true,
  ectoplasm=true,tiny_house=true,philosophers_stone=true,astrolabe=true,empty_cage=true,runic_pyramid=true,
  calling_bell=true,mark_of_pain=true,runic_cube=true }
@@ -37,7 +37,7 @@ local function findRelic(definitions, id)
     for _, entry in ipairs(definitions) do if entry.id == id then return entry end end
 end
 
-local turnEnergyRelics={sozu=true,slavers_collar=true,coffee_dripper=true,fusion_hammer=true}
+local turnEnergyRelics={sozu=true,arena_collar=true,coffee_dripper=true,fusion_hammer=true}
 local function turnEnergy(relic, id, tier, bonus)
     if relic.trigger ~= "turn_start" then return bonus end
     if not turnEnergyRelics[id] then
@@ -79,7 +79,7 @@ local openingPosition = { ring_of_the_snake="battle_bottom", cracked_core="pre_b
     anchor = "battle_bottom", bag_of_preparation = "battle_bottom",gremlin_mask="battle_bottom" }
 
 -- Hook-only relics still bind their original ordered owner at apply time.
-local battleTopHooks={mutagenic_strength=true,blood_vial=true,akabeko=true,
+local battleTopHooks={augmentation_core=true,blood_vial=true,akabeko=true,
     data_disk=true,thread_and_needle=true,girya=true,du_vu_doll=true}
 local battleBottomHooks={bag_of_marbles=true,pen_nib=true,red_skull=true,
     red_mask=true,fossilized_helix=true,mark_of_pain=true,raven_mask=true}

@@ -11,7 +11,7 @@ end
 local function test(name,fn) fn();count=count+1;print('ok potion rewards '..count..' - '..name) end
 local function won(seed,tier,source)
     local run=Run.new(source or Data,seed or 42)
-    assert(Run.startCombat(run,'cultist_solo'))
+    assert(Run.startCombat(run,'raven_adept_solo'))
     -- Explicit completed-battle fixture tests reward ownership only. Normal-data
     -- traversal and real card combat are scripts/m2-resource-evidence.mjs.
     for _,enemy in ipairs(run.combat.enemies) do enemy.hp=0 end
@@ -86,7 +86,7 @@ end)
 test('existing shared potion stream continues and new run resets counters',function()
     local run=won(42);assert(Run.claimCardReward(run,0));assert(Run.skipPotionReward(run));assert(Run.leaveCombatRewards(run))
     local before=run.shopRng.potion.counter
-    assert(Run.startCombat(run,'cultist_solo'))
+    assert(Run.startCombat(run,'raven_adept_solo'))
     for _,enemy in ipairs(run.combat.enemies) do enemy.hp=0 end
     assert(Run.finishCombat(run));assert(run.shopRng.potion.counter>before)
     local fresh=Run.new(Data,42);assert(fresh.shopRng==nil and fresh.potionChanceModifier==nil)

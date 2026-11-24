@@ -13,7 +13,7 @@ end)
 -- treasure and the unchanged complete source Rare queue are checked separately.
 for _,kind in ipairs({'NORMAL','THORNS','HP_LOSS'})do
  test(kind..' positive one is reduced to zero and zero stays zero',function()
-  local r=Run.new(Data,42);assert(Run.obtainRelic(r,'TungstenRod'));assert(Run.startCombat(r,'cultist_solo'))
+  local r=Run.new(Data,42);assert(Run.obtainRelic(r,'TungstenRod'));assert(Run.startCombat(r,'raven_adept_solo'))
   local s=r.combat;local hp=s.player.hp
   local function hit(n)if kind=='NORMAL'then return A.damage(s,s.enemies[1],s.player,n,false)
    elseif kind=='THORNS'then return A.retaliate(s,s.enemies[1],s.player,n)

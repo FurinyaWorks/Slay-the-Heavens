@@ -12,7 +12,7 @@ function M.run(role,upgraded,scenario,vectors)
     local frozen=require('abyss_original_v4_data')
     assert(vectors.version==frozen.version and #vectors.cases==75)
     local prepared=Profiles.prepare(require('abyss_data'),role)
-    local template=C.new(prepared,{seed=73,deck={},hp=40,enemies={'cultist','cultist'}})
+    local template=C.new(prepared,{seed=73,deck={},hp=40,enemies={'raven_adept','raven_adept'}})
     local count=0
     for _,sample in ipairs(vectors.cases)do if sample.role==role and sample.upgraded==upgraded and sample.scenario==scenario then
         local s=C.copy(template,{[template.catalog]=template.catalog,[template.rules]=template.rules,[template.originalV4Rules]=template.originalV4Rules,[template.events]={}})

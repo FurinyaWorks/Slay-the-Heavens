@@ -29,7 +29,7 @@ for _,row in ipairs(rows)do
  local data=Profiles.prepare(Data,row[1]);Pools.apply(data,row[1])
  local metadata=data.cards.sourcePools.cardSourceMetadata
  assert(metadata[row[2]].sourceId==row[3] and metadata[row[4]].sourceId==row[5])
- local s=C.new(data,{enemies={'bronze_orb','cultist'},deck={},seed=42,cardRandomSeed='42'})
+ local s=C.new(data,{enemies={'bronze_orb','raven_adept'},deck={},seed=42,cardRandomSeed='42'})
  local first={cardId=row[2],uid=700,upgraded=false}
  local second={cardId=row[4],uid=701,upgraded=true}
  s.draw={second,first}

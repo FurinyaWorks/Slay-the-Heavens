@@ -4,7 +4,7 @@ local Data=require('abyss_data')
 local count=0
 for _,id in ipairs({'strike','mind_blast','ritual_dagger'})do
  for _,kind in ipairs({'nil','false','non_table_entry'})do
-  local s=C.new(Data,{deck={id},enemies={'cultist'},seed=42,cardRandomSeed='17'})
+  local s=C.new(Data,{deck={id},enemies={'raven_adept'},seed=42,cardRandomSeed='17'})
   if kind=='nil' then s.catalog.cards[id].effects=nil
   elseif kind=='false' then s.catalog.cards[id].effects=false
   else s.catalog.cards[id].effects={false} end

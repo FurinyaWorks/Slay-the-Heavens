@@ -9,7 +9,7 @@ local same=C.copy(card);r.combat.draw[#r.combat.draw+1]=same
 assert(Run.play(r,card.uid,1));eq(r.deck[1].misc,18);eq(same.misc,18)
 assert(not Run.play(r,card.uid,1));eq(r.deck[1].misc,18)
 assert(Run.obtainPotion(r,'smoke_bomb'));assert(Run.usePotion(r,1));eq(r.phase,'map');eq(r.deck[1].misc,18)
-assert(Run.startCombat(r,'cultist_solo'));eq(C.cardDefinition(r.combat,r.combat.hand[1]).effects[1].damage,18)
+assert(Run.startCombat(r,'raven_adept_solo'));eq(C.cardDefinition(r.combat,r.combat.hand[1]).effects[1].damage,18)
 local function chaos(choice)
  local run=Run.new(data,42);run.relics={}
  run.deck={{uid=31,cardId='ritual_dagger',upgraded=false}}

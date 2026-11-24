@@ -80,7 +80,7 @@ test('all MindBloom Boss constructors can prepare explicitly and enter the same 
 end)
 test('wrong room source explicit/formation mixtures and initialized caches are refused without mutation',function()
  local options=sphere();local prepared=C.prepareEncounter(Data,options);local before=C.copy(prepared)
- for _,change in ipairs({{roomSeed='43'},{sourceEncounter='3 Shapes'},{enemies={'cultist'}}})do
+ for _,change in ipairs({{roomSeed='43'},{sourceEncounter='3 Shapes'},{enemies={'raven_adept'}}})do
   local altered={};for k,v in pairs(options)do altered[k]=v end;for k,v in pairs(change)do altered[k]=v end
   altered.preparedEncounter=prepared
   if change.roomSeed then altered.enemies,altered.sourceEncounter,altered.encounterBoundary=nil,nil,nil end

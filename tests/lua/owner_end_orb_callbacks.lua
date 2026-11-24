@@ -8,7 +8,7 @@ local function same(a,b,seen)
  for k,v in pairs(a)do same(v,b[k],seen)end;for k in pairs(b)do assert(a[k]~=nil)end
 end
 local function fresh(advanced)
- local s=C.new(D,{deck={'metallicize',{cardId='juggernaut',upgraded=true}},enemies={'cultist'},seed=42,orbSlots=2,cardRandomSeed='42'})
+ local s=C.new(D,{deck={'metallicize',{cardId='juggernaut',upgraded=true}},enemies={'raven_adept'},seed=42,orbSlots=2,cardRandomSeed='42'})
  s.experimentalMechanics=advanced
  for _,id in ipairs({'juggernaut','metallicize'})do for _,c in ipairs(s.hand)do if c.cardId==id then assert(C.play(s,c.uid));break end end end
  Orbs.channel(s,'dark',C);Orbs.channel(s,'frost',C)

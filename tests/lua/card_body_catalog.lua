@@ -5,7 +5,7 @@ local Presentation=require('abyss_character_presentation')
 local Keywords=require('abyss_card_keywords')
 local run=Run.new(F.Data,42,{character='ironclad',experimental=true,campaign=true,campaignProfile='competition-two-act'})
 local displays=Presentation.prepare(F.Presentation,run.data)
-assert(Run.startCombat(run,'cultist_solo'))
+assert(Run.startCombat(run,'raven_adept_solo'))
 local battle=run.combat
 local _,_,panel,_,_,_,_,root=H.setup()
 local choice=F.control(F.Templates.AbyssDeckCard):GetChild('face')

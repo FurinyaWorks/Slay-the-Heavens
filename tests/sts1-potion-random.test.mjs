@@ -8,7 +8,9 @@ import {runLua} from '../scripts/test-lua.mjs';
 
 const catalog=JSON.parse(readFileSync('data/catalogs/sts1-ironclad-potions.json','utf8'));
 const vectors=JSON.parse(readFileSync('tests/fixtures/sts1-ironclad-potion-pool-vectors.json','utf8'));
-const releaseSourceId = sourceId => sourceId === 'CultistPotion' ? 'RavenPotion' : sourceId;
+const sourceIds={CultistPotion:'RavenPotion', GamblersBrew:'SwapBrew', SteroidPotion:'SurgePotion'};
+const releaseSourceId = sourceId => sourceIds[sourceId] ?? sourceId;
+const releaseProjectId = id => id==='gamblers_brew' ? 'swap_brew' : id;
 const current=JSON.parse(readFileSync('data/potions.json','utf8')).potions;
 const prelude=`local P=require('abyss_potion_random');local R=require('abyss_sts_random')
 local function same(a,b,path)
@@ -30,12 +32,12 @@ function lua(body) {
 }
 
 test('production sampler preserves all33 exact source indices and canonical proposed IDs including pending effects',()=>{
- const expected=catalog.pool.map(p=>({sourceId:releaseSourceId(p.sourceId),id:p.proposedProjectId,sourceIndex:p.index,rarity:p.rarity}));
+ const expected=catalog.pool.map(p=>({sourceId:releaseSourceId(p.sourceId),id:releaseProjectId(p.proposedProjectId),sourceIndex:p.index,rarity:p.rarity}));
  assert.equal(new Set(expected.map(p=>p.id)).size,33);
  assert.deepEqual(expected.map(({sourceId,rarity})=>({sourceId,rarity})),vectors.pool.map(p=>({...p,sourceId:releaseSourceId(p.sourceId)})));
  for(const p of catalog.pool) {
   if(p.currentProjectId!==null)assert.equal(p.currentProjectId,p.proposedProjectId);
-  const definition=current.find(x=>x.id===p.proposedProjectId);
+  const definition=current.find(x=>x.id===releaseProjectId(p.proposedProjectId));
   if(definition)assert.equal(definition.rarity,p.rarity,p.sourceId);
  }
  lua(`local expected=${toLua(expected)};same(P.pool(),expected)
@@ -60,7 +62,8 @@ test('actual sampler and persistent owner match every draw and snapshot in nine 
  end
  local function selected(result)return {sourceId=result.sourceId,rarity=result.rarity,attempts=result.attempts}end
  local function expect(result,expected,action)
-  if expected.sourceId=='CultistPotion' then expected.sourceId='RavenPotion' end
+  local aliases=${toLua(sourceIds)}
+  expected.sourceId=aliases[expected.sourceId] or expected.sourceId
   same(selected(result),expected,action)
  end
  for _,v in ipairs(${toLua(vectors.cases)})do

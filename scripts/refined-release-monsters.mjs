@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 export const refinedReleaseMonsterRegistry = 'data/release/refined-monster-art.json';
 export const refinedReleaseMonsterIds = Object.freeze([
   'acid_slime_s', 'acid_slime_m', 'acid_slime_l', 'spike_slime_s', 'spike_slime_m', 'spike_slime_l',
-  'red_louse', 'green_louse', 'cultist', 'looter', 'mugger', 'blue_slaver', 'red_slaver', 'taskmaster',
+  'red_louse', 'green_louse', 'raven_adept', 'looter', 'mugger', 'blue_guard', 'red_guard', 'taskmaster',
   'sneaky_gremlin', 'shield_gremlin', 'wizard_gremlin', 'mad_gremlin', 'fat_gremlin', 'gremlin_nob',
   'jaw_worm', 'fungi_beast', 'lagavulin', 'sentry', 'spheric_guardian', 'guardian', 'slime_boss',
   'hexaghost', 'centurion', 'mystic', 'chosen', 'book_of_stabbing', 'snake_plant', 'shelled_parasite',

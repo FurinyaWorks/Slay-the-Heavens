@@ -25,7 +25,7 @@ end
 local function battle(potions, source)
     local run = Run.new(source or data, 42)
     run.potions = potions or {}
-    assert(Run.startCombat(run, "cultist_solo"))
+    assert(Run.startCombat(run, "raven_adept_solo"))
     return run
 end
 local function rejected(run, slot, target, reason)
@@ -47,7 +47,7 @@ test("all six opening relics use current data and retain their effects after own
     for _, relic in ipairs(source.relics.relics) do
         if relic.trigger == "combat_start" then run.relics[#run.relics + 1] = relic.id end
     end
-    assert(Run.startCombat(run, "cultist_solo"))
+    assert(Run.startCombat(run, "raven_adept_solo"))
     equal(run.combat.player.block, 13); equal(#run.combat.hand, 8); equal(run.combat.energy, 5)
     equal(run.combat.player.statuses.strength, 1); equal(run.combat.player.statuses.dexterity, 1)
     equal(run.combat.player.statuses.thorns, 3)
@@ -388,7 +388,7 @@ test("death followed by Run.new resets all same-run resources without sharing ca
     old.deck[1].upgraded = true
     old.deck[#old.deck + 1] = { uid = old.nextDeckUid, cardId = "cleave", upgraded = true }
     old.nextDeckUid = old.nextDeckUid + 1
-    assert(Run.startCombat(old, "cultist_solo")); assert(Run.endTurn(old)); assert(Run.endTurn(old)); equal(old.phase, "defeat")
+    assert(Run.startCombat(old, "raven_adept_solo")); assert(Run.endTurn(old)); assert(Run.endTurn(old)); equal(old.phase, "defeat")
     rejected(old, 1, 1, "not_in_combat")
     local before = Combat.copy(old)
     local fresh = Run.new(data, 19)

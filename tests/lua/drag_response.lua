@@ -39,7 +39,7 @@ test("free dragging follows every pointer sample without recalculating the hand"
 end)
 
 test("aiming updates damage only when the pointed enemy changes and restores it off target", function()
-    local host, ui, panel, event = H.setup({"strike", "defend"}, {"cultist", "jaw_worm"})
+    local host, ui, panel, event = H.setup({"strike", "defend"}, {"raven_adept", "jaw_worm"})
     local battle, card = host.run.combat, panel:GetChild("card1")
     Combat.addStatus(battle.enemies[2],'vulnerable',2)
     -- Raw constructor IDs have no MonsterHelper formation. Stage two separated
@@ -78,7 +78,7 @@ test("dragging back cancels and changed battle identity never uses the fast path
     assert(old.energy == 3 and old.player.block == 0)
     event("card1", "down", 7)
     event("card1", "drag", 7, 0, 0)
-    local replacement = Combat.new(H.F.Data, {deck={"defend"}, enemies={"cultist"}})
+    local replacement = Combat.new(H.F.Data, {deck={"defend"}, enemies={"raven_adept"}})
     host.run.combat = replacement
     event("dragLayer", "drag", 7, 10, 10)
     event("dragLayer", "up", 7, 10, 10)

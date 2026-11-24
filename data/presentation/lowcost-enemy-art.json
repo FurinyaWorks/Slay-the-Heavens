@@ -1015,7 +1015,7 @@
         }
       ]
     },
-    "cultist": {
+    "raven_adept": {
       "name": "祈火徒",
       "shapes": [
         {
@@ -1561,7 +1561,7 @@
         }
       ]
     },
-    "blue_slaver": {
+    "blue_guard": {
       "name": "蓝衣束缚者",
       "shapes": [
         {
@@ -1737,7 +1737,7 @@
         }
       ]
     },
-    "red_slaver": {
+    "red_guard": {
       "name": "赤衣束缚者",
       "shapes": [
         {

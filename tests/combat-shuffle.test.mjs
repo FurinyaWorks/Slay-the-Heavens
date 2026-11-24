@@ -38,7 +38,7 @@ for _,v in ipairs(${toLua(vectors[kind])})do
  R.shuffle=function(s,list)
   original(s,list);trace[#trace+1]={size=#list,cards=ids(list),rawHex=lastRaw,after=R.snapshot(s)}
  end
- local options={seed=101,deck={},enemies={'cultist'},roomSeed=streams.seed,roomStreams=streams}
+ local options={seed=101,deck={},enemies={'raven_adept'},roomSeed=streams.seed,roomStreams=streams}
  if v.size then
   for i=1,v.size do options.deck[i]='strike'end
   options.beforeOpeningDraw=function(s)same(ids(s.draw),v.beforeDraw,'initializeDeck copy/append order');return true end

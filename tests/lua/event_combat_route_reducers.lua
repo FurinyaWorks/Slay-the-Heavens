@@ -68,7 +68,7 @@ do
  local before=C.copy(run);assert(not choose(run,Colosseum,'leave'));same(run,before)
  assert(choose(run,Colosseum,'continue'));assert(run.nodeFlow.event.stage=='fight')
  assert(choose(run,Colosseum,'fight'));assert(run.nodeFlow.event.stage=='combat_first')
- assert(run.nodeFlow.event.preparedCombat.source=='Colosseum Slavers')
+ assert(run.nodeFlow.event.preparedCombat.source=='Colosseum Guards')
  assert(run.nodeFlow.event.combatRequest.round==1)
 end
 print('EVENT_COMBAT_ROUTE_REDUCERS_PASS '..completed..' completed source branches; '..refused..' unchanged-content refusals')

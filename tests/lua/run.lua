@@ -8,7 +8,7 @@ local function test(name, fn) fn(); count = count + 1; print("ok run " .. count 
 
 local function win(seed)
     local run = Run.new(data, seed or 1)
-    assert(Run.startCombat(run, "cultist_solo"))
+    assert(Run.startCombat(run, "raven_adept_solo"))
     for _ = 1, 100 do
         if run.phase ~= "combat" then break end
         for _ = 1, 10 do
@@ -43,7 +43,7 @@ test("selected reward becomes a unique permanent instance in next combat", funct
     local cardId = Run.rewardOptions(run)[1]
     assert(Run.claimCardReward(run, 1)); dofile('tests/lua/support/finish_combat_rewards.lua')(run)
     equal(#run.deck, 11); equal(run.deck[11].cardId, cardId); equal(run.deck[11].uid, 11)
-    assert(Run.startCombat(run, "cultist_solo"))
+    assert(Run.startCombat(run, "raven_adept_solo"))
     local instances = 0
     for _, pile in ipairs({ run.combat.hand, run.combat.draw }) do
         for _, card in ipairs(pile) do if card.cardId == cardId then instances = instances + 1 end end
@@ -86,8 +86,8 @@ test("unfinished and invalid battle commands preserve persistent resources", fun
     equal(Run.startCombat(run, "unknown"), false)
     equal(Run.startCombat(run, "boss_guardian"), false)
     equal(run.phase, "map"); equal(run.seed, seed)
-    assert(Run.startCombat(run, "cultist_solo"))
-    equal(Run.startCombat(run, "cultist_solo"), false)
+    assert(Run.startCombat(run, "raven_adept_solo"))
+    equal(Run.startCombat(run, "raven_adept_solo"), false)
     equal(Run.finishCombat(run), false)
     equal(run.gold, gold); equal(#run.deck, 10); equal(run.hp, run.maxHp)
 end)
@@ -95,7 +95,7 @@ end)
 test("loss never heals with starting relic or awards resources", function()
     local run = Run.new(data, 10)
     run.hp = 1
-    assert(Run.startCombat(run, "cultist_solo"))
+    assert(Run.startCombat(run, "raven_adept_solo"))
     assert(Run.endTurn(run)) -- opening Ritual is harmless
     assert(Run.endTurn(run))
     equal(run.phase, "defeat"); equal(run.hp, 0)

@@ -9,7 +9,7 @@ local function playTest(name,fn)fn();plays=plays+1;print("ok retrieval play "..p
 local function allData()return Cards.withCards(Cards.withCards(Data,"ironclad"),"defect")end
 local function find(d,id)for _,c in ipairs(d.cards.cards)do if c.id==id then return c end end end
 local function held(s,id)for _,c in ipairs(s.hand)do if c.cardId==id then return c end end;error("missing "..id)end
-local function setup(deck)return Combat.new(allData(),{seed=42,cardRandomSeed="42",enemies={"cultist"},deck=deck})end
+local function setup(deck)return Combat.new(allData(),{seed=42,cardRandomSeed="42",enemies={"raven_adept"},deck=deck})end
 local function play(s,id,target)local ok,why=Combat.play(s,held(s,id).uid,target);assert(ok,why)end
 local function choose(s,uids)
     local p=assert(s.pendingPileChoice,"real card did not establish pile choice")

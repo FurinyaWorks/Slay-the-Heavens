@@ -56,8 +56,8 @@ test('first Life Suck alone spends next-attack soften and counter; second remain
  local s,e=battle('HT',{'shelled_parasite','shelled_parasite'});eq(View.intentView(s,1).value,'4');eq(View.intentView(s,2).value,'10')
  assert(C.endTurn(s));eq(s.player.hp,26);eq(e.hp,6);eq(s.enemies[2].hp,20);eq(#hits(s,e),2);eq(#hits(s,s.enemies[2]),1)
 end)
-test('real nonattack Cultist chant preserves resources for following Life Suck',function()
- local s=battle('HT',{'cultist','shelled_parasite'});local e=s.enemies[2]
+test('real nonattack Raven Adept chant preserves resources for following Life Suck',function()
+ local s=battle('HT',{'raven_adept','shelled_parasite'});local e=s.enemies[2]
  eq(V.intentReduction(s,1),0);eq(View.intentView(s,2).value,'4');assert(C.endTurn(s));eq(s.player.hp,36);eq(e.hp,6)
  local found=false;for _,v in ipairs(s.events)do if v.kind=='status'and v.detail.target==s.enemies[1].id and v.detail.status=='ritual'then found=true;eq(v.frame.originalV4.soften,6);eq(v.frame.originalV4.counter,8)end end;assert(found)
 end)
@@ -78,7 +78,7 @@ test('non-Fairy lethal Life Suck consumes soften but never heals or counters aft
 end)
 for _,extra in ipairs({false,true})do
  test('counter kills attacker '..(extra and 'with teammate: retained Roll' or 'as final enemy: clear Roll'),function()
-  local s,e=battle('AR',extra and {'shelled_parasite','cultist'}or nil);e.hp=1;e.v4Directive={mature=true};local counter=s.aiRng.counter;local intent=e.intentIndex
+  local s,e=battle('AR',extra and {'shelled_parasite','raven_adept'}or nil);e.hp=1;e.v4Directive={mature=true};local counter=s.aiRng.counter;local intent=e.intentIndex
   assert(C.endTurn(s));eq(s.player.hp,36);eq(e.hp,0);eq(s.originalV4.bond,4);eq(e.v4Directive,nil)
   eq(s.aiRng.counter,counter+(extra and 2 or 0));eq(s.phase,extra and 'player'or'victory')
   if extra then eq(e.act2Last,'life_suck')else eq(e.intentIndex,intent)end
@@ -87,7 +87,7 @@ for _,extra in ipairs({false,true})do
 end
 for _,stage in ipairs({'heal','counter','roll'})do
  test('atomic C.endTurn restores all table identities, V4 resources and real RNG after '..stage..' failure',function()
-  local s,e=battle('AR',{'shelled_parasite','cultist'});e.hp=1;e.v4Directive={mature=true}
+  local s,e=battle('AR',{'shelled_parasite','raven_adept'});e.hp=1;e.v4Directive={mature=true}
   local check=unchanged(s);local emit,random=E.emit,SR.randomInt;local injected=false
   E.emit=function(state,kind,detail)local result=emit(state,kind,detail);if(stage=='heal'and kind=='heal'and detail.target==e.id)or(stage=='counter'and kind=='status_damage'and detail.target==e.id)then injected=true;error('v4 vampire injected '..stage)end;return result end
   SR.randomInt=function(rng,max)local value=random(rng,max);if stage=='roll'and rng==s.aiRng then injected=true;error('v4 vampire injected roll')end;return value end

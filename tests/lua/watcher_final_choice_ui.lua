@@ -4,7 +4,7 @@ local X,F,Run=require('support.experimental_ui_fixture'),require('support.game_u
 local function setup(id,up)
  local ui,root=X.new();assert(testStart(ui,'watcher'))
  ui.run.deck={{uid=31,cardId=id,upgraded=up},{uid=32,cardId='empty_fist'},{uid=33,cardId='empty_body'}};ui.run.nextDeckUid=34
- assert(Run.startCombat(ui.run,'cultist_solo'));ui.run.combat.energy=10;ui:refresh();return ui,root,ui.run.combat
+ assert(Run.startCombat(ui.run,'raven_adept_solo'));ui.run.combat.energy=10;ui:refresh();return ui,root,ui.run.combat
 end
 local function play(ui,root,s,id)
  ui:refresh();local slot;for i,c in ipairs(s.hand)do if c.cardId==id then slot=i end end;assert(slot)

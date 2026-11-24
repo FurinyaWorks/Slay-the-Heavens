@@ -24,7 +24,7 @@ local function battle(id,up,extra,filler)
     for _,value in ipairs(extra or {}) do deck[#deck+1]=value end
     for i=1,(filler==nil and 12 or filler) do deck[#deck+1]="defend" end
     for seed=1,100 do
-        local s=Combat.new(Watcher.withFoundationCards(Data),{seed=seed,enemies={"cultist"},enableStances=true,deck=deck})
+        local s=Combat.new(Watcher.withFoundationCards(Data),{seed=seed,enemies={"raven_adept"},enableStances=true,deck=deck})
         local ready=pcall(uid,s,id)
         for _,value in ipairs(extra or {}) do ready=ready and pcall(uid,s,type(value)=="table" and value.cardId or value) end
         if ready then s.enemies[1].hp=1000;s.enemies[1].maxHp=1000;return s end

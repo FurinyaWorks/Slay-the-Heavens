@@ -3,7 +3,7 @@ local C,A,Actions=require('abyss_combat'),require('abyss_actor'),require('abyss_
 local D=require('abyss_watcher_final_cards').withCards(require('abyss_silent_final_cards').withCardDefinitions(require('abyss_warrior_strength_cards').withCards(require('abyss_data'))))
 local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end
 local function fresh(advanced,deck)
- local s=C.new(D,{deck=deck or {},enemies={'cultist'},seed=42,enableStances=true,orbSlots=0,cardRandomSeed='42'})
+ local s=C.new(D,{deck=deck or {},enemies={'raven_adept'},seed=42,enableStances=true,orbSlots=0,cardRandomSeed='42'})
  s.experimentalMechanics=advanced;return s
 end
 for _,advanced in ipairs({false,true})do for _,first in ipairs({'loss','wraith'})do

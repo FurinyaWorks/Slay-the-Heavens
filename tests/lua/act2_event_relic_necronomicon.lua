@@ -42,7 +42,7 @@ test('late repeated-card failure rolls back energy, activation, deck/piles, RNG 
 end)
 test('active real book obtain publishes ownership without replaying opening benefits, loss/reacquire resets new book activation',function()
  local r,s=H.battle({}, {'heavy_blade','heavy_blade'});local hand=#s.hand;local oldDeck=#r.deck
- assert(H.Run.obtainRelic(r,'Enchiridion'));assert(H.Run.obtainRelic(r,'MutagenicStrength'));s=r.combat;eq(#s.hand,hand);eq(s.player.statuses.strength,nil)
+ assert(H.Run.obtainRelic(r,'Enchiridion'));assert(H.Run.obtainRelic(r,'AugmentationCore'));s=r.combat;eq(#s.hand,hand);eq(s.player.statuses.strength,nil)
  assert(H.Run.obtainRelic(r,'Necronomicon'));s=r.combat;eq(#r.deck,oldDeck+1);eq(#s.hand,hand)
  assert(H.play(r,'heavy_blade'));eq(repeats(s),1);eq(s.relicCombat.necronomiconActivated,false)
  assert(H.Run.loseRelic(r,'Necronomicon'));assert(H.Run.obtainRelic(r,'Necronomicon'));s=r.combat;eq(s.relicCombat.necronomiconActivated,true)

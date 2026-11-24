@@ -1,7 +1,7 @@
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
 local monsterControl=dofile('tests/lua/support/monster_control_fixture.lua')
 local Target=require('abyss_battle_targeting')
-local h,u,p,e=H.setup({'strike'}, {'cultist','jaw_worm'}, {touchScreen=function()return true end})
+local h,u,p,e=H.setup({'strike'}, {'raven_adept','jaw_worm'}, {touchScreen=function()return true end})
 h.run.combat.enemies[1].sourcePosition={x=-250,y=0}
 h.run.combat.enemies[2].sourcePosition={x=100,y=0}
 h:refresh()

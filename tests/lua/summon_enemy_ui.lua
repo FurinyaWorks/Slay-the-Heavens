@@ -20,7 +20,7 @@ local function shown(panel,actor)
  if box and box.visible then return slot,box end
 end
 local function fixture(kind)
- local h,u,p,event,tap,drain=H.setup({'strike','strike','strike','strike','strike'},{'cultist'})
+ local h,u,p,event,tap,drain=H.setup({'strike','strike','strike','strike','strike'},{'raven_adept'})
  local members=kind=='leader' and {'mad_gremlin','sneaky_gremlin','gremlin_leader'} or {'collector'}
  local s=C.new(H.F.Data,{deck={'strike','strike','strike','strike','strike'},enemies=members,seed=42,hp=1000,maxHp=1000})
  local boss=s.enemies[#s.enemies]

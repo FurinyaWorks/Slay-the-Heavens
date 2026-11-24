@@ -79,7 +79,7 @@ test('nonlethal and zero damage do not use Fairy while absent or blocked Fairy p
  local before=C.copy(r);r.phase='combat';local combat=C.copy(r);eq(Run.eventDamage(r,3),false);same(r,combat);r.phase='node';same(r,before)
 end)
 test('legacy Nodes damage events use the same outside boundary without changing their rewards or picker',function()
- for _,spec in ipairs({{'goop','gather'},{'shining_light','accept'},{'golden_wing','sacrifice'}})do
+ for _,spec in ipairs({{'goop','gather'},{'shining_light','accept'},{'golden_wing','endure_damage'}})do
   local r=fixture(spec[1]);r.hp=1;assert(Run.obtainPotion(r,'fairy_in_a_bottle'));local gold=r.gold
   assert(Nodes.chooseEvent(r,spec[2]));eq(r.hp,24);eq(r.potions[1],nil)
   if spec[1]=='goop'then eq(r.gold,gold+r.data.rules.events.goop.gold);eq(r.phase,'map')

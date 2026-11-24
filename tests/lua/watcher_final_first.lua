@@ -4,7 +4,7 @@ local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end
 local function battle(deck,up)
  local d=P.prepare(D,'watcher');local values={}
  for _,id in ipairs(deck)do values[#values+1]={cardId=id,upgraded=up==true}end
- local s=C.new(d,{seed=1,cardRandomSeed='1',shuffleSeed='1',enableStances=true,deck=values,enemies={'cultist'}})
+ local s=C.new(d,{seed=1,cardRandomSeed='1',shuffleSeed='1',enableStances=true,deck=values,enemies={'raven_adept'}})
  s.enemies[1].hp=1000;s.enemies[1].maxHp=1000;s.energy=20;return s
 end
 local function held(s,id)for _,c in ipairs(s.hand)do if c.cardId==id then return c end end;error('missing '..id)end

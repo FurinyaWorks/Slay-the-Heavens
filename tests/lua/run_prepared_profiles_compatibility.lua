@@ -17,7 +17,7 @@ for _,id in ipairs({'watcher','silent','defect','ironclad'})do
  for _,key in ipairs({'reward','src','shop'})do same(r.data.cards.sourcePools[key],source.cards.sourcePools[key])end
  local count=0;for _,c in ipairs(r.data.cards.cards)do if c.color==({watcher='purple',silent='green',defect='blue',ironclad='red'})[id]and c.rarity~='special'then count=count+1 end end
  assert(count==(id=='ironclad'and 66 or 75),'legacy prepared data is not rebuilt as a full catalogue')
- local ok,reason=Run.startCombat(r,'cultist_solo')
+ local ok,reason=Run.startCombat(r,'raven_adept_solo')
  if id=='defect'then assert(not ok and reason=='unsupported_starting_orb')
  else assert(ok,reason);assert(r.combat.experimentalCharacter==id and not r.combat.orbs and not r.combat.player.stance)end
  same(source,before)
@@ -27,7 +27,7 @@ for _,id in ipairs({'watcher','silent','defect','ironclad'})do
  local markedBefore=C.copy(source);local marked=Run.new(source,43,{experimental=true})
  assert(marked.data~=source and not marked.data.runCardCatalog and not marked.data.runCardCharacter)
  assert(marked.character==nil and marked.characterProfile==nil)
- ok,reason=Run.startCombat(marked,'cultist_solo')
+ ok,reason=Run.startCombat(marked,'raven_adept_solo')
  if id=='defect'then assert(not ok and reason=='unsupported_starting_orb')else assert(ok,reason);assert(not marked.combat.orbs)end
  same(source,markedBefore)
 end

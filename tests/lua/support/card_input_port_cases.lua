@@ -29,7 +29,7 @@ test('source relative rise permits a low battlefield release', function()
 end)
 
 test('release on empty ground retains target mode and later enemy click commits once', function()
-    local host, ui, panel, event, tap, drain = H.setup({'strike'}, {'cultist', 'jaw_worm'})
+    local host, ui, panel, event, tap, drain = H.setup({'strike'}, {'raven_adept', 'jaw_worm'})
     local battle, uid = host.run.combat, host.run.combat.hand[1].uid
     local hp = battle.enemies[2].hp
     event('card1', 'down', 7)

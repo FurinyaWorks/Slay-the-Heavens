@@ -12,11 +12,11 @@ end
 local function start(ids)
  local r=Run.new(D,42)
  for _,id in ipairs(ids)do local ok,why=Run.obtainRelic(r,id);assert(ok,id..': '..tostring(why))end
- assert(Run.startCombat(r,'cultist_solo'));return r,r.combat
+ assert(Run.startCombat(r,'raven_adept_solo'));return r,r.combat
 end
 test('all 23 source identities can be obtained once through Run',function()
  local ids={'Ginger','Bird Faced Urn','Unceasing Top','Torii','StoneCalendar','Shovel','WingedGreaves','Thread and Needle','Turnip',
- 'Ice Cream','Calipers','Prayer Wheel','Girya','Dead Branch','Du-Vu Doll','Pocketwatch','Incense Burner','Gambling Chip',
+ 'Ice Cream','Calipers','Prayer Wheel','Girya','Dead Branch','Du-Vu Doll','Pocketwatch','Incense Burner','Tactical Badge',
  'Peace Pipe','CaptainsWheel','Magic Flower',"Charon's Ashes",'Champion Belt'}
  for _,id in ipairs(ids)do
   local r=Run.new(D,42);assert(Run.obtainRelic(r,id),id)
@@ -43,12 +43,12 @@ test('Magic Flower rounds combat healing once and Bloom still blocks',function()
 end)
 test('Magic Flower also modifies Blood Vial opening healing',function()
  local r=Run.new(D,42);assert(Run.obtainRelic(r,'Blood Vial'));assert(Run.obtainRelic(r,'Magic Flower'));r.hp=20
- assert(Run.startCombat(r,'cultist_solo'));assert(r.combat.player.hp==23)
+ assert(Run.startCombat(r,'raven_adept_solo'));assert(r.combat.player.hp==23)
 end)
 test('Bird Faced Urn heals after a normally played permanent power card',function()
  local r=Run.new(D,42);assert(Run.obtainRelic(r,'Bird Faced Urn'));assert(Run.obtainRelic(r,'Magic Flower'))
  assert(Run.obtainCard(r,'inflame'));r.deck={r.deck[#r.deck]};r.hp=20
- assert(Run.startCombat(r,'cultist_solo'));assert(C.play(r.combat,r.combat.hand[1].uid))
+ assert(Run.startCombat(r,'raven_adept_solo'));assert(C.play(r.combat,r.combat.hand[1].uid))
  assert(r.combat.player.hp==23 and r.combat.player.statuses.strength==2)
 end)
 test('Champion Belt successful Vulnerable queues actual Weak and respects Artifact',function()
@@ -65,12 +65,12 @@ end)
 test('Native queued play drains exhaust relic effects through the shared action owner',function()
  local r=Run.new(D,42);assert(Run.obtainRelic(r,"Charon's Ashes"));assert(Run.obtainRelic(r,'Dead Branch'))
  assert(Run.obtainCard(r,'seeing_red'));local card=r.deck[#r.deck];r.deck={card}
- assert(Run.startCombat(r,'cultist_solo'));local s=r.combat;local hp=s.enemies[1].hp
+ assert(Run.startCombat(r,'raven_adept_solo'));local s=r.combat;local hp=s.enemies[1].hp
  assert(C.play(s,s.hand[1].uid));assert(s.enemies[1].hp==hp-3 and #s.exhaust==1 and #s.hand==1)
 end)
-test('Gambling Chip opens a real optional UID choice only at battle opening',function()
- local _,s=start({'Gambling Chip'});local p=assert(s.pendingChoice)
- assert(p.op=='rareGamblingChip'and p.multiple and p.allowEmpty)
+test('Tactical Badge opens a real optional UID choice only at battle opening',function()
+ local _,s=start({'Tactical Badge'});local p=assert(s.pendingChoice)
+ assert(p.op=='rareTacticalBadge'and p.multiple and p.allowEmpty)
  local uid=s.hand[1].uid;local n=#s.hand
  assert(C.chooseDiscard(s,{uid},p.token));assert(not s.pendingChoice and #s.hand==n)
  local found=false;for _,card in ipairs(s.discard)do if card.uid==uid then found=true end end
@@ -88,7 +88,7 @@ test('Wheel Calendar and Incense use actual turn progression',function()
  assert(C.endTurn(s));assert(s.turn==7);local hp=s.enemies[1].hp
  assert(C.endTurn(s));assert(s.enemies[1].hp==hp-52)
  r.phase='map';r.relicCounters.incense_burner=s.relicCounters.incense_burner
- assert(Run.startCombat(r,'cultist_solo'));assert(r.combat.relicCounters.incense_burner==3)
+ assert(Run.startCombat(r,'raven_adept_solo'));assert(r.combat.relicCounters.incense_burner==3)
 end)
 test('Ice Cream preserves actual unused energy at the next recharge',function()
  local _,s=start({'Ice Cream'});assert(s.energy==3)

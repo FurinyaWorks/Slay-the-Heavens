@@ -45,7 +45,7 @@ for slot,e in ipairs(host.relicUI.rows)do
 end
 assert(host:closeDeck())
 assert(Run.potionCount(host.run)==5,'reading inventory must not consume')
-assert(Run.startCombat(host.run,'cultist_solo'))
+assert(Run.startCombat(host.run,'raven_adept_solo'))
 host.run.combat.player.hp,host.run.combat.player.gold=999,99999
 host:refresh()
 S.capture('mobile-battle',root,F.Layout)

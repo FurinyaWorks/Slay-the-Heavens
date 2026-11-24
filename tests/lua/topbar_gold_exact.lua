@@ -2,7 +2,7 @@ local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Run=require('abyss_run')
 local ui,root=F.fixture()
 assert(F.start(ui,'ironclad'))
-assert(Run.startCombat(ui.run,'cultist_solo'))
+assert(Run.startCombat(ui.run,'raven_adept_solo'))
 ui:refresh()
 local panel=root:GetChild('battlePanel')
 for _,gold in ipairs({180,7,406,0})do

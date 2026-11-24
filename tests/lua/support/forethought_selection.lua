@@ -6,7 +6,7 @@ GameUI.new=function(root,data,presentation,event,platform)
 end
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
 local reveal=require('abyss_page_reveal')
-local host,_,_,_,tap,drain,_,root=H.setup({'forethought','bludgeon','defend','defend'},{'cultist'})
+local host,_,_,_,tap,drain,_,root=H.setup({'forethought','bludgeon','defend','defend'},{'raven_adept'})
 local function settle()
     for _=1,6 do
         host:update(0.06)

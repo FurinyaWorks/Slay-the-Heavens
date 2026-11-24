@@ -6,7 +6,7 @@ local function battle(ids)
  for _,id in ipairs(ids or {})do assert(Run.obtainRelic(r,id))end
  r.hp=20 -- explicit low-health initial condition, no damage/value/RNG override
  local ok,slot=Run.obtainPotion(r,'smoke_bomb');assert(ok)
- assert(Run.startCombat(r,'cultist_solo'));return r,slot
+ assert(Run.startCombat(r,'raven_adept_solo'));return r,slot
 end
 local function escape(r,slot,hp,maximum)
  local gold,wins=r.gold,r.victories
@@ -58,11 +58,11 @@ function M.hud()
  local F=dofile('tests/lua/support/game_ui_fixture.lua')
  local h,root=F.fixture();assert(F.start(h));local r=h.run
  assert(Run.obtainRelic(r,'face_of_cleric'));assert(Run.obtainPotion(r,'smoke_bomb'))
- r.hp=20;assert(Run.startCombat(r,'cultist_solo'));h:refresh()
+ r.hp=20;assert(Run.startCombat(r,'raven_adept_solo'));h:refresh()
  assert(Run.usePotion(r,1));h:refresh();h:update(0)
  assert(root:GetChild('mapPanel'):GetChild('resources'):GetChild('hp').text=='27/81','actual map HP HUD must show final source health')
  assert(r.combat.player.hp==27 and r.combat.player.maxHp==81,'retained escaped actor health')
- assert(Run.startCombat(r,'cultist_solo'));h:refresh()
+ assert(Run.startCombat(r,'raven_adept_solo'));h:refresh()
  assert(r.hp==27 and r.maxHp==81 and r.combat.player.hp==27 and r.combat.player.maxHp==81,'next public battle uses final source health')
  print('SMOKE_VICTORY_HEALING_HUD_PASS')
 end

@@ -1,6 +1,6 @@
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
 local Theme=require('abyss_theme')
-local host,ui,panel,event,tap,drain=H.setup({'defend'},{'cultist','jaw_worm'})
+local host,ui,panel,event,tap,drain=H.setup({'defend'},{'raven_adept','jaw_worm'})
 local group=panel:GetChild('potionHelp')
 local popup=group:GetChild('potionPopup')
 local function action(name,touch)

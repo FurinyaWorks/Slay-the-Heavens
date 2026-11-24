@@ -2,7 +2,7 @@ package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local Actions=require('abyss_card_actions')
 local C,H,R,D=require('abyss_combat'),require('abyss_relic_hooks'),require('abyss_sts_random'),require('abyss_data')
 local function battle()
- local s=assert(C.new(D,{seed=42,deck={'strike'},enemies={'cultist'}}));H.bindBattle(s,{'warped_tongs'})
+ local s=assert(C.new(D,{seed=42,deck={'strike'},enemies={'raven_adept'}}));H.bindBattle(s,{'warped_tongs'})
  s.shuffleRng=R.fromSeed('42');s.hand={};s.discard={};return s
 end
 local s=battle()

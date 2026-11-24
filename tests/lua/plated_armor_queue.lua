@@ -15,7 +15,7 @@ local function battle(mode,ids)
  -- cards, which would silently enable experimental mechanics in native/V4.
  local data=C.copy(D);data.statuses=require('abyss_watcher_flow_cards').withCards(D).statuses
  if mode=='v4'then data=require('abyss_original_v4_profiles').prepare(data,'hutao')end
- local state=C.new(data,{enemies=ids or {'shelled_parasite','cultist'},deck={},seed=42,hp=500,maxHp=500,enableStances=mode=='advanced'})
+ local state=C.new(data,{enemies=ids or {'shelled_parasite','raven_adept'},deck={},seed=42,hp=500,maxHp=500,enableStances=mode=='advanced'})
  if mode=='advanced'then assert(state.experimentalMechanics and state.player.stance)
  else assert(not state.experimentalMechanics,'native/V4 registry must not enable experimental mechanics')end
  eq(state.originalV4~=nil,mode=='v4','real V4 state routing')
@@ -83,7 +83,7 @@ for _,mode in ipairs(modes)do
   end
  end)
  test(mode..' original Taskmaster Wound and Roll precede appended Reduce',function()
-  local s=battle(mode,{'taskmaster','cultist'});local e=s.enemies[1];local trace={}
+  local s=battle(mode,{'taskmaster','raven_adept'});local e=s.enemies[1];local trace={}
   A.applyPower(s,s.player,'plated_armor',4,s.player)
   local V=require('abyss_original_v4')
   withHooks({{C,'damage',function(old)return function(state,source,target,n,...)
@@ -131,10 +131,10 @@ for _,mode in ipairs(modes)do
  end)
  test(mode..' both pre-card hooks snapshot fixed amounts before any block action',function()
   for _,platedFirst in ipairs({false,true})do
-  local s=battle(mode,{'cultist'});A.applyPower(s,s.player,'metallicize',3,s.player);A.applyPower(s,s.player,'plated_armor',4,s.player)
+  local s=battle(mode,{'raven_adept'});A.applyPower(s,s.player,'metallicize',3,s.player);A.applyPower(s,s.player,'plated_armor',4,s.player)
   if platedFirst then
    -- Recreate legal reverse acquisition order through source application.
-   s=battle(mode,{'cultist'});A.applyPower(s,s.player,'plated_armor',4,s.player);A.applyPower(s,s.player,'metallicize',3,s.player)
+   s=battle(mode,{'raven_adept'});A.applyPower(s,s.player,'plated_armor',4,s.player);A.applyPower(s,s.player,'metallicize',3,s.player)
   end
   A.applyPower(s,s.player,'dexterity',20,s.player);A.applyPower(s,s.player,'frail',2,s.player);card(s,'burn')
   local seen={};local hp=s.player.hp
@@ -208,7 +208,7 @@ test('preexisting native queue shared area batch and active owners prevent stand
 end)
 test('dead target distinguishes reducing stacks from guarded last-stack removal and final clear',function()
  for _,stacks in ipairs({1,2})do for _,teammate in ipairs({false,true})do
-  local s=battle('native',teammate and {'shelled_parasite','cultist'} or {'shelled_parasite'});local e=s.enemies[1]
+  local s=battle('native',teammate and {'shelled_parasite','raven_adept'} or {'shelled_parasite'});local e=s.enemies[1]
   e.block=0;e.hp=1;e.statuses.plated_armor=stacks;local chosen=selected(e)
   A.damage(s,s.player,e,1);eq(e.statuses.plated_armor,stacks);Q.drain(C,s)
   eq(e.statuses.plated_armor,teammate and math.max(1,stacks-1) or stacks);eq(selected(e),chosen)
@@ -237,20 +237,20 @@ test('TOP Remove calls onRemove before membership deletion; BOTTOM ChangeState h
 end)
 test('generic non-Parasite removal uses source default no-op and player never queues ChangeState',function()
  for _,player in ipairs({false,true})do
-  local s=battle('native',{'cultist','cultist'});local e=player and s.player or s.enemies[1]
+  local s=battle('native',{'raven_adept','raven_adept'});local e=player and s.player or s.enemies[1]
   A.applyPower(s,e,'plated_armor',1,s.player);local chosen=not player and selected(e)
   C.damage(s,player and s.enemies[1] or s.player,e,1);Q.drain(C,s);eq(e.statuses.plated_armor,nil)
   if not player then eq(selected(e),chosen)end
  end
 end)
 test('Plated initial amount and stack cap remain distinct; fixed block caps final block999',function()
- local s=battle('native',{'cultist'});A.applyPower(s,s.player,'plated_armor',1001,s.player);eq(s.player.statuses.plated_armor,1001)
+ local s=battle('native',{'raven_adept'});A.applyPower(s,s.player,'plated_armor',1001,s.player);eq(s.player.statuses.plated_armor,1001)
  A.applyPower(s,s.player,'plated_armor',1,s.player);eq(s.player.statuses.plated_armor,999)
  s.player.block=998;P.preEndCards(s,s.player,Q.enqueueReaction);Q.drain(C,s);eq(s.player.block,999)
 end)
 test('advanced real Cut Through Fate keeps ID-only Reduce behind scry, disposal and resume',function()
  local data=require('abyss_character_profiles').prepare(D,'watcher')
- local s=C.new(data,{enemies={'shelled_parasite','cultist'},deck={},seed=42,hp=500,maxHp=500,enableStances=true})
+ local s=C.new(data,{enemies={'shelled_parasite','raven_adept'},deck={},seed=42,hp=500,maxHp=500,enableStances=true})
  local e=s.enemies[1];e.block=0;local c=card(s,'cut_through_fate')
  for i=1,4 do s.draw[i]={cardId='strike_purple',uid=5000+i}end
  assert(C.play(s,c.uid,1));assert(s.pendingScry and s.actionQueue);eq(e.statuses.plated_armor,14)
@@ -271,7 +271,7 @@ for _,mode in ipairs(modes)do
  end)
  test(mode..' dead-owner Wound/Roll survive with teammate; final death clears Reduce and later turns',function()
   for _,teammate in ipairs({false,true})do
-   local s=battle(mode,teammate and {'taskmaster','cultist'} or {'taskmaster'});local e=s.enemies[1];e.hp=1
+   local s=battle(mode,teammate and {'taskmaster','raven_adept'} or {'taskmaster'});local e=s.enemies[1];e.hp=1
    A.applyPower(s,s.player,'plated_armor',4,s.player);A.applyPower(s,s.player,'thorns',1,s.player)
    local rolls=0
    withHooks({{AI,'afterAction',function(old)return function(state,owner,...)
@@ -283,7 +283,7 @@ for _,mode in ipairs(modes)do
   end
  end)
  test(mode..' fatal player hit stops Wound Roll Reduce and later teammate actions',function()
-  local s=battle(mode,{'taskmaster','cultist'});local e=s.enemies[1];s.player.hp=1
+  local s=battle(mode,{'taskmaster','raven_adept'});local e=s.enemies[1];s.player.hp=1
   A.applyPower(s,s.player,'plated_armor',1,s.player);local rolls=0
   withHooks({{AI,'afterAction',function(old)return function(state,owner,...)
    if state==s then rolls=rolls+1 end;return old(state,owner,...)
@@ -295,7 +295,7 @@ for _,mode in ipairs(modes)do
 end
 test('V4 counter completion precedes Roll and appended Reduce; final counter kill clears both',function()
  for _,teammate in ipairs({false,true})do
-  local s=battle('v4',teammate and {'taskmaster','cultist'} or {'taskmaster'});local e=s.enemies[1];e.hp=1
+  local s=battle('v4',teammate and {'taskmaster','raven_adept'} or {'taskmaster'});local e=s.enemies[1];e.hp=1
   A.applyPower(s,s.player,'plated_armor',4,s.player);s.originalV4.counter=1
   local rolls=0
   withHooks({{AI,'afterAction',function(old)return function(state,owner,...)
@@ -309,12 +309,12 @@ test('TOP boss suicide resolves before retained Thorns and clears queued Stasis 
  local held={cardId='impervious',uid=9000};s.draw={held};C.applyEffects(s,{{op='enemyStasis',value=1}},orb,s.player)
  A.applyPower(s,boss,'thorns',1,boss);boss.hp=1;s.events={};C.damage(s,s.player,boss,1);Q.drain(C,s)
  local suicide,retaliation
- for i,ev in ipairs(s.events)do if ev.kind=='enemy_suicide'then suicide=suicide or i elseif ev.kind=='status_damage'then retaliation=i end end
+ for i,ev in ipairs(s.events)do if ev.kind=='enemy_self_exit'then suicide=suicide or i elseif ev.kind=='status_damage'then retaliation=i end end
  assert(suicide and retaliation and suicide<retaliation);eq(s.act2StasisCards,nil);eq(C.outcome(s),'victory')
 end)
 for _,mode in ipairs({'advanced','v4'})do
  test(mode..' failed enemy Reduce restores end-turn state and original table/RNG identities',function()
-  local s=battle(mode,{'taskmaster','cultist'});A.applyPower(s,s.player,'plated_armor',4,s.player)
+  local s=battle(mode,{'taskmaster','raven_adept'});A.applyPower(s,s.player,'plated_armor',4,s.player)
   local player,statuses,events,hand,rng=s.player,s.player.statuses,s.events,s.hand,s.cardRandomRng;local before=C.copy(s)
   withHooks({{P,'apply',function(old)return function(combat,state,effect,...)
    local result=old(combat,state,effect,...);if state==s and effect.op=='platedReduce'then error('injected enemy Reduce')end;return result

@@ -1,7 +1,7 @@
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
 local Run=H.Run
 for _,spec in ipairs({{'heart_of_iron','metallicize','6'}, {'essence_of_steel','plated_armor','4'}, {'raven_potion','ritual','1'}}) do
- local host,ui,panel,event=H.setup({'defend'},{'cultist'})
+ local host,ui,panel,event=H.setup({'defend'},{'raven_adept'})
  assert(Run.obtainPotion(host.run,spec[1]));ui:render()
  local group=panel:GetChild('potionHelp')
  local label=group:GetChild('potionCaption1')
