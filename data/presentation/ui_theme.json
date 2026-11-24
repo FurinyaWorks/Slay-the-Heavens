@@ -94,7 +94,7 @@
     "battleCardInset": 4,
     "battleGlowReference": "CardGlowBorder.java: expanding silhouette, 1.2s lifetime and fading alpha; palette may differ by Owner instruction.",
     "battleAim": {"segments":20,"idle":"#FFFFFF","locked":"#FF334D","headSize":32,"lockScale":1.2,"bend":[0.25,0.5]},
-    "battleRelicBar": {"origin":[-528,292],"step":44,"icon":42.6666666667,"hit":44,"count":25},
+    "battleRelicBar": {"origin":[-594,292],"step":44,"icon":42.6666666667,"hit":44,"count":25},
     "battleRelicIcons": {
       "burning_blood":{"id":105071,"placeholder":true,"note":"官方石块图标仅在岩脉残晶原生图形不可用时代用。"},
       "kunai":{"id":105217,"placeholder":true,"note":"官方交叉利刃徽章代用苦无；非原版遗物专图。"},
@@ -201,7 +201,7 @@
     "battlePortraitDisplay": 210,
     "battlePortraitPosition": [0, 0],
     "mobileRunHud": {
-      "height": 104,
+      "height": 88,
       "y": 298,
       "hit": 84,
       "potionX": -242,
@@ -214,7 +214,10 @@
       "deckX": 452,
       "menuX": 548,
       "status": [241, 272, 130, 28],
-      "relicBar": {"origin":[-458,212],"step":92,"icon":42.6666666667,"hitOffsetY":0,"count":11}
+      "relicBar": {"origin":[-558,210],"step":92,"icon":42.6666666667,"count":11},
+      "neowOptions": {"bottomInset":40,"spacing":92,"faceHeight":58,"bubbleLift":32,"fontSize":21},
+      "rewardList": {"rowY":54,"rowStep":58,"potionLabel":[-398,-214,300,96]},
+      "treasureRewards": {"headingY":208,"rowY":134,"rowStep":110,"noteY":-270,"noteHeight":34}
     },
     "battleHud": {
       "y": 338.5,

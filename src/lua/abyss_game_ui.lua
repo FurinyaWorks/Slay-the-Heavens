@@ -117,14 +117,14 @@ function M.new(root, data, presentation, clickEvent, platform)
         platform, { embedded = true, onChange = changed, inputCovered=battleEntryCovered,
             onPile=function(kind)return self:openDeck(kind)end })
     self.mapUI = MapUI.new(child("mapPanel"), nil, Navigation.requestNodeEntry(self,platform,changed),
-        clickEvent, { embedded = true, hudTop=platform.mobileRunHud and platform.mobileRunHud.relicBar.origin[2]-platform.mobileRunHud.hit/2, color = platform.color, imageSource = platform.imageSource,
+        clickEvent, { embedded = true, hudTop=platform.mobileRunHud and platform.mobileRunHud.contentTop, color = platform.color, imageSource = platform.imageSource,
         cursor = platform.cursorEvents, pointerBlocked = platform.pointerBlocked,
         inputCovered=inputCovered,available=function(map)return Nodes.available(self.run,map)end })
     self.nodeUI = NodeUI.new(child("nodePanel"), nil, nil,
         presentation, clickEvent, changed, { color = platform.color, imageSource = platform.imageSource,
             imageTypes = platform.imageTypes,
             imageFillRight = platform.imageFillRight,
-            textAlignments = platform.textAlignments,
+            textAlignments = platform.textAlignments, mobileRunHud=platform.mobileRunHud,
             cursorEvents = platform.cursorEvents, sound = platform.sound, pointerBlocked = platform.pointerBlocked, touchScreen = platform.touchScreen,
             enhancedRooms=true, hostRendersEvents=true, hostRendersMap=true, inputCovered=inputCovered,
             onInspectCard=function(definition,upgraded)

@@ -31,6 +31,20 @@ local function repeatedEventNotice(ctx,node,message)
     return layout.event.reference and node and node.type=='event' and not ctx.self.failed
         and (ctx.self.notice=='' or message==ctx.child('eventView'):GetChild('body').text)
 end
+local function positionNotice(control,screen,top)
+    -- The old position was hidden by the taller mobile chrome. Room notes
+    -- now sit in the content area, clear of the role-specific heading or choices.
+    if screen=='treasureView' then
+        control:SetAnchoredPosition(-350,top-30)
+        control:SetSizeDelta(400,52)
+    elseif screen=='eventView' then
+        control:SetAnchoredPosition(-365,-225)
+        control:SetSizeDelta(400,52)
+    else
+        control:SetAnchoredPosition(0,top-30)
+        control:SetSizeDelta(760,52)
+    end
+end
 local function snapshotDeck(deck)
     local result = {}
     for _, card in ipairs(deck) do result[#result + 1] = { uid = card.uid, cardId = card.cardId, upgraded = card.upgraded } end
@@ -199,7 +213,7 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         return screen,hint,recallSource,treasureSource
     end
 
-    function ctx.refreshNodeNotice(node,active,hint)
+    function ctx.refreshNodeNotice(node,active,hint,screen)
         -- The merchant speaks in his own dialogue box; the notice keeps only shop facts.
         if node and node.type == "shop" and (ctx.self.merchantNode ~= node.id or ctx.self.merchantRun ~= ctx.self.run) then
             ctx.self.merchantNode, ctx.self.merchantRun = node.id, ctx.self.run
@@ -208,8 +222,11 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         ctx.merchant:setVisible(merchantVisible(ctx, node, active))
         local message=ctx.self.notice ~= "" and ctx.self.notice or hint
         if repeatedEventNotice(ctx,node,message)then message=''end
-        ctx.child("notice").text = message
-        ctx.ink(ctx.child("notice"), ctx.self.failed and ctx.self.notice ~= "" and C.danger or C.text)
+        local notice=ctx.child("notice")
+        local mobile=ctx.options.mobileRunHud
+        if mobile then positionNotice(notice,screen,mobile.contentTop) end
+        notice.text = message
+        ctx.ink(notice, ctx.self.failed and ctx.self.notice ~= "" and C.danger or C.text)
 
     end
 
@@ -318,7 +335,7 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         if not active or node.type ~= 'shop' or self.mode ~= 'main' then ctx.shopSelection:clear() end
         ctx.renderTopBar(node)
         local screen,hint,recallSource,treasureSource=ctx.renderNodePage(view,node,result,active)
-        ctx.refreshNodeNotice(node,active,hint)
+        ctx.refreshNodeNotice(node,active,hint,screen)
         local back, confirm = ctx.child("back"), ctx.child("confirm")
         local backLabel,confirmLabel,confirmOk,confirmFn,skipRestReward,recallObserve
         backLabel,confirmLabel,confirmOk,confirmFn,skipRestReward,recallObserve=ctx.chooseFooter(result,node,view,screen,recallSource,treasureSource,confirm)

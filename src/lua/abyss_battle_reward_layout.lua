@@ -77,36 +77,59 @@ local function visibleRewards(frame)
  end
  return visible
 end
+-- Reflow both list densities inside the same HUD/content boundary. The
+-- original desktop layouts and reward transactions remain the defaults.
+function M.mobileLayouts(hud)
+ if not hud then return end
+ local base=Theme.layout.battleRewards
+ local mobile=hud.rewardList
+ local function fit(layout,slots)
+  local titleY=hud.contentTop-layout.title[4]/2-4
+  local top=mobile.rowY+base.rowSize[2]/2+12
+  local bottom=top-base.rowSize[2]-24-(slots-1)*mobile.rowStep
+  return setmetatable({
+   title={layout.title[1],titleY,layout.title[3],layout.title[4]},
+   subtitle={layout.subtitle[1],titleY-38,layout.subtitle[3],28},
+   rowOrigin={layout.rowOrigin[1],mobile.rowY},rowStep=mobile.rowStep,
+   panelY=(top+bottom)/2,panelHeight=top-bottom,potionLabel=mobile.potionLabel,
+  },{__index=layout})
+ end
+ return {fit(base,4),fit(base.expanded,#names)}
+end
+
 local function positionHost(box,layout)
  -- The shared approved reward host follows the existing ordinary/expanded
  -- layout; the dimmer stays below the battle bar in canvas coordinates.
  local stage=layout.stage
  local field=box:GetChild('v25RewardField')
  if field then field:SetAnchoredPosition(-stage[1],-stage[2])end
- local paper=box:GetChild('v25RewardPaper')
- if paper then paper:SetAnchoredPosition(layout.title[1]-stage[1],layout.title[2]-stage[2])end
  if Theme.presentationProfile=='official-assets-first'and Theme.officialAssets.rewardRows then
   local token=Theme.officialAssets.rewardRows
   local panel=box:GetChild('stsRewardPanel')
-  panel:SetAnchoredPosition(token.panelPosition[1]-stage[1],token.panelPosition[2]-stage[2])
-  local height=token.panelSize[2]+stage[4]-Theme.layout.battleRewards.stage[4]
+  panel:SetAnchoredPosition(token.panelPosition[1]-stage[1],(layout.panelY or token.panelPosition[2])-stage[2])
+  local height=layout.panelHeight or token.panelSize[2]+stage[4]-Theme.layout.battleRewards.stage[4]
   panel:SetLocalScale(1,height/token.panelSize[2],1)
  end
 end
-function M.render(frame,child,sizeOwner)
+function M.render(frame,child,sizeOwner,mobileLayouts)
  local visible=visibleRewards(frame)
  local count=0;for _,name in ipairs(names)do if visible[name]then count=count+1 end end
  local base=Theme.layout.battleRewards
  local layout=count>4 and base.expanded or base
+ if mobileLayouts then layout=mobileLayouts[count>4 and 2 or 1] end
  local box=child('rewardList');local stage=layout.stage
  box:SetAnchoredPosition(stage[1],stage[2]);size(box,stage[3],stage[4],sizeOwner)
  positionHost(box,layout)
  size(box:GetChild('border'),stage[3],stage[4],sizeOwner)
  size(box:GetChild('plate'),stage[3]-Theme.space.border*2,stage[4]-Theme.space.border*2,sizeOwner)
+ local paper=box:GetChild('v25RewardPaper')
  for _,name in ipairs({'title','subtitle'})do
-  local position=layout[name];local control=box:GetChild(name)
-  control:SetAnchoredPosition(position[1]-stage[1],position[2]-stage[2])
-  size(control,position[3],position[4],sizeOwner)
+  local pos=layout[name]
+  local x,y=pos[1]-stage[1],pos[2]-stage[2]
+  local control=box:GetChild(name)
+  control:SetAnchoredPosition(x,y)
+  size(control,pos[3],pos[4],sizeOwner)
+  if paper and name=='title' then paper:SetAnchoredPosition(x,y) end
  end
  local row=0
  for _,name in ipairs(names)do
@@ -124,12 +147,13 @@ function M.render(frame,child,sizeOwner)
  frame.rewardLayout=layout
 end
 
-function M.banner(dependencies)
+function M.banner(dependencies,mobile)
  local battle,animation
  local veil=Theme.officialAssets.backdropVeil
+ local rise=mobile and 0 or Theme.space.xl
  local function paint(view,progress)
   local ease=1-(1-progress)^3
-  local y=view.y+(1-ease)*Theme.space.xl
+  local y=view.y+(1-ease)*rise
   local scale=.85+.15*ease
   view.paper:SetAnchoredPosition(view.x,y)
   view.title:SetAnchoredPosition(view.x,y)

@@ -50,29 +50,35 @@ local function belowBand(control,top)
     control:SetAnchoredPosition(0,(top+bottom)/2)
     control:SetSizeDelta(Theme.canvas.base[1],top-bottom)
 end
+local function rewardStageGeometry(stage,top)
+    local layout=Theme.layout.rewardPick
+    local x,y,_,h=table.unpack(layout.title)
+    local headerY=math.min(y,top-h/2-4)
+    local sx,_,sw=table.unpack(layout.subtitle)
+    stage:GetChild('v25RewardPaper'):SetAnchoredPosition(x-layout.stage[1],headerY-layout.stage[2])
+    local title=stage:GetChild('title')
+    title:SetAnchoredPosition(x-layout.stage[1],headerY-layout.stage[2])
+    local subtitle=stage:GetChild('subtitle')
+    subtitle:SetAnchoredPosition(sx-layout.stage[1],headerY-42-layout.stage[2])
+    subtitle:SetSizeDelta(sw,28)
+end
+
 local function contentGeometry(child,mobile)
-    local top=mobile.relicBar.origin[2]-mobile.hit/2
+    local top=mobile.contentTop
     local node=child('nodePanel')
-    -- Existing room content has a 233-unit upper bound. Reserve the complete
-    -- fixed-height relic row, keeping fonts, icon sizes, and input paths intact.
-    local shift=math.min(0,top-233-1)
-    for _,name in ipairs({'eventView','pickerView','shopView','campView','treasureView'})do
-        node:GetChild(name):SetAnchoredPosition(0,shift)
+    for _,name in ipairs({'pickerView','shopView','campView','treasureView'})do
+        node:GetChild(name):SetAnchoredPosition(0,mobile.roomY)
     end
+    -- Neow reuses the event controls but owns a full-stage scene. Its
+    -- renderer selects the appropriate frame when the shared page is painted.
     local event=node:GetChild('eventView'):GetChild('plateBorder'):GetChild('v25EventParchment'):GetChild('field')
-    belowBand(event,top-shift)
+    belowBand(event,top-mobile.roomY)
     local battle=child('battlePanel')
     for _,name in ipairs({'rewardList','rewardStage'})do
-        local panel=battle:GetChild(name)
-        local dark=panel:GetChild('v25RewardField'):GetChild('dark')
+        local dark=battle:GetChild(name):GetChild('v25RewardField'):GetChild('dark')
         belowBand(dark,top)
-        for _,role in ipairs({'title','subtitle'})do
-            local text=panel:GetChild(role)
-            -- RewardStage has a local offset; preserve that coordinate system.
-            text:SetAnchoredPosition(text.x or (role=='title' and Theme.layout.rewardPick.title[1] or Theme.layout.rewardPick.subtitle[1]),
-                (role=='title' and 128 or 82)-(name=='rewardStage' and Theme.layout.rewardPick.stage[2] or 0))
-        end
     end
+    rewardStageGeometry(battle:GetChild('rewardStage'),top)
 end
 
 local function pageGeometry(child,kind,desk,mobile)
@@ -136,6 +142,10 @@ function M.apply(child,platform)
         or not platform.touchScreen() then return end
     local mobile=Theme.officialAssets.mobileRunHud
     if not mobile then return end
+    mobile=setmetatable({}, {__index=mobile})
+    mobile.contentTop=mobile.relicBar.origin[2]-mobile.hit/2
+    -- Standard room content has a 233-unit upper bound.
+    mobile.roomY=math.min(0,mobile.contentTop-233-1)
     local desk=Theme.officialAssets.battleHud
     for _,kind in ipairs({'battlePanel','mapPanel','nodePanel'})do pageGeometry(child,kind,desk,mobile)end
     potionGeometry(child,desk,mobile)

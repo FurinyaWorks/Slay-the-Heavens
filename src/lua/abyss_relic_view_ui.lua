@@ -84,11 +84,6 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
     local boundCount=official and battleBar.count or baseBar.count
     local hitSize=platform.mobileRunHud and platform.mobileRunHud.hit or style.hit or style.step
     local capacity=style.count
-    if platform.mobileRunHud then
-        -- 40-unit safe margins + one 84-unit arrow and 8-unit gap per side.
-        local width=Theme.canvas.base[1]-2*40-2*(hitSize+8)
-        capacity=math.min(boundCount,math.floor((width-hitSize)/style.step)+1)
-    end
     self.barCapacity=capacity
     local barCells={}
     local function context()return platform.hudInputContext and platform.hudInputContext() or {}end
@@ -262,8 +257,12 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
         self.barPage=math.max(1,math.min(self.barPage,pages))
         barCells=M.barCells(#relics,capacity,self.barPage)
         for i=1,boundCount do paintBarCell(i,barCells[i] or false,relics,run)end
-        local left=style.origin[1]-style.step
         local right=style.origin[1]+style.step*capacity
+        local gap=official and not platform.mobileRunHud and 4 or 0
+        -- Official paging reserves two cells after the fixed slot pool so
+        -- showing the previous arrow never pushes the first relic inward.
+        local left=official and right+gap or style.origin[1]-style.step
+        if official then right=left+style.step+gap end
         for _,name in ipairs({'previous','next'})do
             local control=bar:GetChild(name)
             control:SetAnchoredPosition(name=='previous' and left or right,style.origin[2])

@@ -245,6 +245,11 @@ export function styleTreasure(panel,theme,{skinButtons=true}={}){
   ])];
  }
  if(theme.presentationProfile==='official-assets-first'){
+  const title=must(panel,'page');
+  title.text.colour=theme.color.panelSunken;
+  const paper=rewardPaper(theme.layout.nativeNode.rewardList.heading);
+  paper.visible=false;
+  panel.children.splice(panel.children.indexOf(title),0,paper);
   for(const row of parts(panel).filter(n=>/^reward(?:Item\d+)?$/.test(n.name))){
    const icon=must(row,'icon'),height=icon.size[1];
    row.children.push({...goldBag('goldBag',theme,icon.position,[height*.9,height],{compact:true}),visible:false});
@@ -302,16 +307,20 @@ function nodeCardChrome(face,theme){
  for(const child of parts(face))nodeCardChrome(child,theme);
 }
 
-function rewardHost(stage,title,veil){
- stage.children.unshift(group('v25RewardField',[rect('dark',0,-22,1280,676,veil.slice(0,7),
-  {opacity:parseInt(veil.slice(7),16)/255})],[0,-stage.position[1]]));
+function rewardPaper(title){
  const paper=group('v25RewardPaper',[polygon('banner',[[365,170],[409,164],[425,153],[563,151],[859,153],[877,165],[915,171],[893,205],[855,202],[849,211],[431,211],[420,202],[387,205]],'#A79E80'),
   // A continuous native centre closes antialias seams between the silhouette's
   // triangles without changing its authored outline or adding an atlas plate.
   rect('paperCore',0,180,420,38,'#A79E80'),
   fade('paperLight',0,180,450,55,'#D0C8AA',{rotation:180,opacity:.14})],title.slice(0,2));
  for(const item of paper.children)item.position=[item.position?.[0]??0,(item.position?.[1]??0)-180];
- paper.scale=[title[2]/550,title[3]/70];stage.children.splice(3,0,paper);
+ paper.scale=[title[2]/550,title[3]/70];
+ return paper;
+}
+function rewardHost(stage,title,veil){
+ stage.children.unshift(group('v25RewardField',[rect('dark',0,-22,1280,676,veil.slice(0,7),
+  {opacity:parseInt(veil.slice(7),16)/255})],[0,-stage.position[1]]));
+ stage.children.splice(3,0,rewardPaper(title));
 }
 function styleRewards(battle,theme){
  const stage=must(battle,'rewardStage'),r=theme.layout.rewardPick;setRect(stage,r.stage);

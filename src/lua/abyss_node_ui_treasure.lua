@@ -65,7 +65,7 @@ function M.install(ctx)
     function ctx.renderTreasure(_view, node)
         if node.chest then return require('abyss_treasure_ui').render({self=ctx.self,node=node,child=ctx.child,
                 show=ctx.show,tint=ctx.tint,state=ctx.state,picture=ctx.picture,action=ctx.action,commit=ctx.commit,relicName=ctx.relicName,relicText=ctx.relicText,
-                list=ctx.options.enhancedRooms==true,details=ctx.rewardDetail,relicPicture=ctx.relicPicture}) end
+                list=ctx.options.enhancedRooms==true,mobileRunHud=ctx.options.mobileRunHud,details=ctx.rewardDetail,relicPicture=ctx.relicPicture}) end
         local chest = ctx.child("treasureView")
         local reward = node.reward
         local boss = node.roomKind == "boss_treasure"

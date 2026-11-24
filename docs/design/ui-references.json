@@ -1,11 +1,204 @@
 {
   "references": [
     {
+      "codePath": "src/lua/abyss_node_ui_events.lua",
+      "targetVersion": "v2.0.0",
+      "state": "neowOptions",
+      "revision": "release-layout-20261124",
+      "status": "APPROVED",
+      "backlogTask": "TASK-4.12",
+      "reference": {
+        "path": "docs/design/reference-assets/v2.0.0/release-layout-20261124.md",
+        "sha256": "036f61ba190bbb4495ef902a43d0e06e6ef4f8bf8ee9c16d4c87501bce968813"
+      },
+      "supersedes": [],
+      "source": "https://mitadmissions.org/wp-content/uploads/2021/02/1613924743.png",
+      "note": "PD-01。现行 Release 布局。",
+      "themeKeys": [
+        "officialAssets.neowChoice"
+      ],
+      "codePaths": [
+        "scripts/sts-neow-choice-layout.mjs",
+        "scripts/noncombat-neow-layout.mjs",
+        "src/lua/abyss_node_ui.lua"
+      ]
+    },
+    {
+      "codePath": "src/lua/abyss_node_ui_events.lua",
+      "targetVersion": "v2.0.0",
+      "state": "neowOptions",
+      "revision": "release-layout-runtime-20261124",
+      "status": "CURRENT_IMPLEMENTATION",
+      "backlogTask": "TASK-4.12",
+      "reference": {
+        "path": "docs/evidence/release-layout-20261124/README.md",
+        "sha256": "f8f69fd4b7fef85ecea242a5828944f9feaafa82e18cd9c1daecb2cbe5cc450c"
+      },
+      "supersedes": [],
+      "source": "https://mitadmissions.org/wp-content/uploads/2021/02/1613924743.png",
+      "note": "PD-01。正式生成树、真实 Lua Host、离线控件投影。",
+      "themeKeys": [
+        "officialAssets.neowChoice"
+      ],
+      "codePaths": [
+        "scripts/sts-neow-choice-layout.mjs",
+        "scripts/noncombat-neow-layout.mjs",
+        "src/lua/abyss_node_ui.lua"
+      ]
+    },
+    {
+      "codePath": "src/lua/abyss_mobile_run_hud.lua",
+      "targetVersion": "v2.0.0",
+      "state": "sharedTopbar",
+      "revision": "release-layout-20261124",
+      "status": "APPROVED",
+      "backlogTask": "TASK-38.4",
+      "reference": {
+        "path": "docs/design/reference-assets/v2.0.0/release-layout-20261124.md",
+        "sha256": "036f61ba190bbb4495ef902a43d0e06e6ef4f8bf8ee9c16d4c87501bce968813"
+      },
+      "supersedes": [
+        "run-hud-pd-20261124",
+        "run-hud-runtime-20261124"
+      ],
+      "source": "https://developer.apple.com/design/human-interface-guidelines/designing-for-games",
+      "note": "PD-02。现行 Release 布局。",
+      "themeKeys": [
+        "officialAssets.mobileRunHud"
+      ],
+      "codePaths": [
+        "src/lua/abyss_game_ui.lua",
+        "src/lua/abyss_run_hud.lua",
+        "scripts/official-battle-hud.mjs"
+      ]
+    },
+    {
+      "codePath": "src/lua/abyss_mobile_run_hud.lua",
+      "targetVersion": "v2.0.0",
+      "state": "sharedTopbar",
+      "revision": "release-layout-runtime-20261124",
+      "status": "CURRENT_IMPLEMENTATION",
+      "backlogTask": "TASK-38.4",
+      "reference": {
+        "path": "docs/evidence/release-layout-20261124/README.md",
+        "sha256": "f8f69fd4b7fef85ecea242a5828944f9feaafa82e18cd9c1daecb2cbe5cc450c"
+      },
+      "supersedes": [],
+      "source": "https://developer.apple.com/design/human-interface-guidelines/designing-for-games",
+      "note": "PD-02。正式生成树、真实 Lua Host、离线控件投影。",
+      "themeKeys": [
+        "officialAssets.mobileRunHud"
+      ],
+      "codePaths": [
+        "src/lua/abyss_game_ui.lua",
+        "src/lua/abyss_run_hud.lua",
+        "scripts/official-battle-hud.mjs"
+      ]
+    },
+    {
+      "codePath": "src/lua/abyss_relic_view_ui.lua",
+      "targetVersion": "v2.0.0",
+      "state": "relicBar",
+      "revision": "release-layout-20261124",
+      "status": "APPROVED",
+      "backlogTask": "TASK-38.4",
+      "reference": {
+        "path": "docs/design/reference-assets/v2.0.0/release-layout-20261124.md",
+        "sha256": "036f61ba190bbb4495ef902a43d0e06e6ef4f8bf8ee9c16d4c87501bce968813"
+      },
+      "supersedes": [],
+      "source": "https://images.steamusercontent.com/ugc/957481092836729609/B9E28A64F2A7481684562684F4E09FA8E7F88970/",
+      "note": "PD-03。现行 Release 布局。",
+      "themeKeys": [
+        "officialAssets.battleRelicBar"
+      ],
+      "codePaths": [
+        "scripts/relic-view-layout.mjs"
+      ]
+    },
+    {
+      "codePath": "src/lua/abyss_relic_view_ui.lua",
+      "targetVersion": "v2.0.0",
+      "state": "relicBar",
+      "revision": "release-layout-runtime-20261124",
+      "status": "CURRENT_IMPLEMENTATION",
+      "backlogTask": "TASK-38.4",
+      "reference": {
+        "path": "docs/evidence/release-layout-20261124/README.md",
+        "sha256": "f8f69fd4b7fef85ecea242a5828944f9feaafa82e18cd9c1daecb2cbe5cc450c"
+      },
+      "supersedes": [],
+      "source": "https://images.steamusercontent.com/ugc/957481092836729609/B9E28A64F2A7481684562684F4E09FA8E7F88970/",
+      "note": "PD-03。正式生成树、真实 Lua Host、离线控件投影。",
+      "themeKeys": [
+        "officialAssets.battleRelicBar"
+      ],
+      "codePaths": [
+        "scripts/relic-view-layout.mjs"
+      ]
+    },
+    {
+      "codePath": "scripts/v25-node-layout.mjs",
+      "targetVersion": "v2.0.0",
+      "state": "rewardBanners",
+      "revision": "release-layout-20261124",
+      "status": "APPROVED",
+      "backlogTask": "TASK-103.2",
+      "reference": {
+        "path": "docs/design/reference-assets/v2.0.0/release-layout-20261124.md",
+        "sha256": "036f61ba190bbb4495ef902a43d0e06e6ef4f8bf8ee9c16d4c87501bce968813"
+      },
+      "supersedes": [],
+      "source": "https://mitadmissions.org/wp-content/uploads/2021/02/1613925089.png",
+      "note": "PD-04。现行 Release 布局。",
+      "themeKeys": [
+        "layout.rewardPick",
+        "layout.battleRewards",
+        "layout.nativeNode.rewardList"
+      ],
+      "codePaths": [
+        "scripts/sts-reward-row-layout.mjs",
+        "src/lua/abyss_battle_reward_layout.lua",
+        "src/lua/abyss_battle_render_hud.lua",
+        "src/lua/abyss_node_ui_treasure.lua",
+        "src/lua/abyss_node_ui_treasure_list.lua",
+        "src/lua/abyss_node_ui_motion.lua"
+      ]
+    },
+    {
+      "codePath": "scripts/v25-node-layout.mjs",
+      "targetVersion": "v2.0.0",
+      "state": "rewardBanners",
+      "revision": "release-layout-runtime-20261124",
+      "status": "CURRENT_IMPLEMENTATION",
+      "backlogTask": "TASK-103.2",
+      "reference": {
+        "path": "docs/evidence/release-layout-20261124/README.md",
+        "sha256": "f8f69fd4b7fef85ecea242a5828944f9feaafa82e18cd9c1daecb2cbe5cc450c"
+      },
+      "supersedes": [],
+      "source": "https://mitadmissions.org/wp-content/uploads/2021/02/1613925089.png",
+      "note": "PD-04。正式生成树、真实 Lua Host、离线控件投影。",
+      "themeKeys": [
+        "layout.rewardPick",
+        "layout.battleRewards",
+        "layout.nativeNode.rewardList"
+      ],
+      "codePaths": [
+        "scripts/sts-reward-row-layout.mjs",
+        "src/lua/abyss_battle_reward_layout.lua",
+        "src/lua/abyss_battle_render_hud.lua",
+        "src/lua/abyss_node_ui_treasure.lua",
+        "src/lua/abyss_node_ui_treasure_list.lua",
+        "src/lua/abyss_node_ui_motion.lua"
+      ]
+    },
+    {
       "codePath": "src/lua/abyss_mobile_run_hud.lua",
       "targetVersion": "v2.0.0",
       "state": "sharedTopbar",
       "revision": "run-hud-pd-20261124",
-      "status": "APPROVED",
+      "status": "SUPERSEDED",
       "backlogTask": "TASK-38.4",
       "reference": {
         "path": "docs/design/reference-assets/v2.0.0/run-hud-pd-20261124/REFERENCE.md",
@@ -34,14 +227,14 @@
         "officialAssets.battleRelicBar",
         "layout.relicView"
       ],
-      "note": "Owner正式PD01–05：整局共享HUD、左右分页、单详情复用、可见性与药水权限分离。原版证据与平台适配/客户端验收分开。"
+      "note": "历史版本。旧布局几何已失效。#928 的共享库存显隐、权限、单详情及分页生命周期继续适用。"
     },
     {
       "codePath": "src/lua/abyss_mobile_run_hud.lua",
       "targetVersion": "v2.0.0",
       "state": "sharedTopbar",
       "revision": "run-hud-runtime-20261124",
-      "status": "CURRENT_IMPLEMENTATION",
+      "status": "SUPERSEDED",
       "backlogTask": "TASK-38.4",
       "reference": {
         "path": "docs/evidence/run-hud-20261124/README.md",
@@ -67,7 +260,7 @@
         "officialAssets.battleRelicBar",
         "layout.relicView"
       ],
-      "note": "正式生成树/真实控制器/native API mock，PC与iPhone14 Pro离线前后投影；非官方客户端，GIL与同候选真机待验。"
+      "note": "历史版本。旧布局几何已失效。#928 的共享库存显隐、权限、单详情及分页生命周期继续适用。"
     },
     {
       "codePath": "src/lua/abyss_mobile_run_hud.lua",

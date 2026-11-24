@@ -61,6 +61,18 @@ function M.paintPicture(c,box,item,size)
     if c.relicPicture then c.relicPicture(icon,item.kind=='relic' and item.id or nil,size,fallback)
     else c.picture(icon,Theme.icon.relic[item.id] or fallback)end
 end
+function M.rowY(index,mobile)
+    if mobile then return mobile.treasureRewards.rowY-(index-1)*mobile.treasureRewards.rowStep end
+    return L.rows[index]
+end
+
+function M.showHeading(panel,visible)
+    for _,name in ipairs({'v25RewardPaper','page','bossDescription'})do
+        local control=panel:GetChild(name)
+        if control then control:SetVisible(visible) end
+    end
+end
+
 local function renderRow(c,panel,item,index,y,opened,linked,boss,bind,items)
         local key='treasureView/rewardItem'..index
         local box=panel:GetChild('rewardItem'..index)
@@ -78,19 +90,32 @@ local function renderRow(c,panel,item,index,y,opened,linked,boss,bind,items)
         else c.action(key,false,function()return false end) end
         box:SetAnchoredPosition(L.x,y);box:SetLocalScale(1,1,1)
 end
+local function positionHeading(panel,heading,note,mobile)
+    local x,y,w,h=table.unpack(L.heading)
+    local mobileRewards=mobile and mobile.treasureRewards
+    if mobileRewards then y=mobileRewards.headingY end
+    heading:SetAnchoredPosition(x,y);heading:SetSizeDelta(w,h)
+    local paper=panel:GetChild('v25RewardPaper')
+    if paper then paper:SetAnchoredPosition(x,y) end
+    note:SetAnchoredPosition(L.note[1],mobileRewards and mobileRewards.noteY or L.note[2])
+    note:SetSizeDelta(L.note[3],mobileRewards and mobileRewards.noteHeight or L.note[4])
+end
+
 function M.render(c,panel,items,opened,linked,bind)
     local boss=c.node.roomKind=='boss_treasure'
     for _,name in ipairs({'reward','take','previous','next'})do
         c.show(panel:GetChild(name),false);c.action('treasureView/'..name,false,function()return false end)
     end
-    for index,y in ipairs(L.rows)do renderRow(c,panel,items[index],index,y,opened,linked,boss,bind,items)end
+    local mobile=c.mobileRunHud
+    for index in ipairs(L.rows)do
+        renderRow(c,panel,items[index],index,M.rowY(index,mobile),opened,linked,boss,bind,items)
+    end
     local pose=opened and L.chest or Theme.layout.nativeNode.treasure.chest
     for _,name in ipairs({'closed','open','chest','glow'})do panel:GetChild(name):SetAnchoredPosition(pose[1],pose[2])end
     local heading,note=panel:GetChild('page'),panel:GetChild('bossDescription')
-    heading:SetAnchoredPosition(L.heading[1],L.heading[2]);heading:SetSizeDelta(L.heading[3],L.heading[4])
-    note:SetAnchoredPosition(L.note[1],L.note[2]);note:SetSizeDelta(L.note[3],L.note[4])
-    c.show(heading,opened);c.show(note,opened)
-    heading.text=#items>0 and ('宝箱奖励 · '..#items..' 项') or '奖励已领取'
+    positionHeading(panel,heading,note,mobile)
+    M.showHeading(panel,opened)
+    heading.text=#items>0 and ((boss and '首领宝箱奖励' or '宝箱奖励')..' · '..#items..' 项') or '奖励已领取'
     note.text=boss and '选择一件遗物，其余遗物将放弃' or linked and '金币可独立领取 · 遗物与蓝钥匙只能选一项' or '各项奖励可独立领取'
 end
 return M

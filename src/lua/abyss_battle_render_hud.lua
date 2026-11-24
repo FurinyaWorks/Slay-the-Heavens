@@ -40,7 +40,9 @@ end
 function M.install(owner, _ownership, host, dependencies)
     local R = L.rewardPick
     local rewardSizeOwner = {}
-    local showBanner, updateBanner = RewardLayout.banner(dependencies)
+    local mobile = host.platform.mobileRunHud
+    local mobileRewards = RewardLayout.mobileLayouts(mobile)
+    local showBanner, updateBanner = RewardLayout.banner(dependencies,mobile)
     host.updateRewardBanner = updateBanner
     local fullField = false
     local function renderStartControls(frame)
@@ -63,7 +65,7 @@ function M.install(owner, _ownership, host, dependencies)
             frame.manual and L.battleRewards.continue[2] or -S.xxl * 3)
     end
     local function renderRewardRows(frame)
-        RewardLayout.render(frame,dependencies.child,rewardSizeOwner)
+        RewardLayout.render(frame,dependencies.child,rewardSizeOwner,mobileRewards)
     end
     local function renderRelicRewards(frame)
         local run=frame.run

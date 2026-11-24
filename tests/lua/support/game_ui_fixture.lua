@@ -228,7 +228,7 @@ local function fixture(data, settle, music, cursorEvents, prologue, sound, point
     local ui = GameUI.new(root, data or Data, Presentation, "click",
         { seed = 1, nativeMonsterArtEnabled=require('abyss_art_features').flags.monsters, monsterActors=monsterActors(), imageTypes={basic=1,stretch=2}, imageSource = "static", color = function(r,g,b,a) return { r=r,g=g,b=b,a=a } end, settle = settle, music = music, cursorEvents = cursorEvents,
           prologue = prologue == true, sound = sound, cursorPosition = pointer and pointer.position,
-          touchScreen = pointer and pointer.touchScreen, keyEvents = pointer and pointer.keyEvents, controllerApi=controllerApi, deckBrowser=browserFactory })
+          touchScreen = pointer and pointer.touchScreen, readNeowHistory = pointer and pointer.readNeowHistory, keyEvents = pointer and pointer.keyEvents, controllerApi=controllerApi, deckBrowser=browserFactory })
     root.ui = ui
     return ui, root
 end

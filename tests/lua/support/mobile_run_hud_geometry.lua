@@ -74,10 +74,12 @@ local function geometry(root,screen)
     return {hits=query,tap=tap,at=at,dispatch=dispatch}
 end
 
-local function create(mobile)
+local function create(mobile, platformOptions)
     local screen=mobile and phone or {1920,1080}
-    local host,root=F.fixture(nil,nil,nil,cursor,nil,nil,{touchScreen=function()return mobile end,
-        keyEvents={KeyboardCraftspersonKey42Down='backspace'}})
+    local platform=platformOptions or {}
+    platform.touchScreen=function()return mobile end
+    platform.keyEvents={KeyboardCraftspersonKey42Down='backspace'}
+    local host,root=F.fixture(nil,nil,nil,cursor,nil,nil,platform)
     local picture=geometry(root,screen)
     local canvas={GetChild=function(_,name)if name=='stage'then return root end;return {} end}
     F.Viewport.apply(canvas,table.unpack(screen));host:resize(table.unpack(screen))

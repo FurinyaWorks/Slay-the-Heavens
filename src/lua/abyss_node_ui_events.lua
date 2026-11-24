@@ -75,7 +75,7 @@ local function alignEventBody(body, neow, alignment)
     body.horizontalAlignment = neow and alignment.horizontal.Middle or alignment.horizontal.Left
     body.verticalAlignment = neow and alignment.vertical.Middle or alignment.vertical.Top
 end
-local function renderEventFigure(event, id, alignment)
+local function renderEventFigure(event, id, alignment, bubbleText)
     local neow = id == 'neow' and NEOW ~= nil
     local figure, art = event:GetChild('neowFigure'), event:GetChild('art')
     if figure then figure:SetVisible(neow) end
@@ -90,8 +90,22 @@ local function renderEventFigure(event, id, alignment)
     local name, body = event:GetChild('name'), event:GetChild('body')
     name:SetVisible(not neow)
     -- talk(): Neow's line lives in the InfiniteSpeechBubble, dark ink on the light bubble.
-    place(body, neow and NEOW.bubbleText or layout.event.body)
+    place(body, neow and bubbleText or layout.event.body)
     alignEventBody(body, neow, alignment)
+end
+local function renderEventLayout(event,id,options)
+    local mobile=options.mobileRunHud
+    local dialog=NEOW and NEOW.bubbleText
+    if mobile then
+        local neow=id=='neow'
+        event:SetAnchoredPosition(0,neow and 0 or mobile.roomY)
+        if neow then
+            local x,y,w,h=table.unpack(dialog)
+            dialog={x,y+mobile.neowOptions.bubbleLift,w,h}
+            event:GetChild('bubble'):SetAnchoredPosition(dialog[1],dialog[2])
+        end
+    end
+    renderEventFigure(event,id,options.textAlignments,dialog)
 end
 -- LargeDialogOptionButton.calculateY (ROOM): bottom-aligned stack, -82px per slot, x = 620.
 local function inlineLines(text)
@@ -114,17 +128,35 @@ local function compactFrames(rows)
     end
     return frames
 end
-local function sizeOptionInput(box, w, h, neow)
+local function sizeOptionInput(box, w, h, neow, mobile)
     for _, part in ipairs({ 'border', 'hit' }) do
         local control = box:GetChild(part)
         if control then control:SetSizeDelta(w, h) end
     end
     if neow and NEOW.stsChoice then
-        box:GetChild('hit'):SetSizeDelta(w, math.max(h, NEOW.stsChoice.hitHeight))
+        box:GetChild('hit'):SetSizeDelta(w, mobile and mobile.hit or math.max(h, NEOW.stsChoice.hitHeight))
     end
 end
 
-local function placeOptions(event, neow, rows)
+local function neowOption(box, index, count, mobile)
+    local n=NEOW.options
+    local bottom,spacing,height=n.bottom,n.spacing,n.size[2]
+    if mobile then
+        local frame=mobile.neowOptions
+        bottom=-Theme.canvas.base[2]/2+frame.bottomInset+mobile.hit/2
+        spacing,height=frame.spacing,frame.faceHeight
+        box:GetChild('stsNeowChrome'):SetLocalScale(1,height/n.size[2],1)
+        local caption=box:GetChild('stsNeowText')
+        caption:SetSizeDelta(n.title[3],height)
+        caption.fontSize=frame.fontSize
+    end
+    box:SetAnchoredPosition(n.x,bottom+(count-index)*spacing)
+    place(box:GetChild('title'),n.title)
+    place(box:GetChild('description'),n.description)
+    return n.size[1],height
+end
+
+local function placeOptions(event, neow, rows, mobile)
     local o = layout.event.options
     local count = math.min(#rows, OPTIONS)
     local frames = layout.event.reference and not neow and compactFrames(rows)
@@ -133,11 +165,7 @@ local function placeOptions(event, neow, rows)
         if box then
             local w, h = o.size[1], o.size[2]
             if neow then
-                local n = NEOW.options
-                w, h = n.size[1], n.size[2]
-                box:SetAnchoredPosition(n.x, n.bottom + (count - i) * n.spacing)
-                place(box:GetChild('title'), n.title)
-                place(box:GetChild('description'), n.description)
+                w,h=neowOption(box,i,count,mobile)
             elseif frames and frames[i] then
                 w, h = frames[i][3], frames[i][4]
                 place(box, frames[i]);place(box:GetChild('title'), {0, 0, 650, h - 8})
@@ -147,7 +175,7 @@ local function placeOptions(event, neow, rows)
                 place(box:GetChild('description'), o.description)
             end
             box:SetSizeDelta(w, h)
-            sizeOptionInput(box, w, h, neow)
+            sizeOptionInput(box, w, h, neow, mobile)
             for _, part in ipairs({ 'normal', 'disabled', 'hover', 'pressed', 'selected' }) do
                 local c = box:GetChild(part); if c then c:SetSizeDelta(w - 4, h - 4) end
             end
@@ -288,10 +316,10 @@ end
 -- Every owner of the reused event controls restores the same layout and ink.
 -- Neow changes visibility, geometry and text controls, not only their content.
 function M.renderChoices(ctx,event,id,rows)
-    renderEventFigure(event,id,ctx.options.textAlignments)
+    renderEventLayout(event,id,ctx.options)
     if eventArt then renderEventArt(ctx, event, id) end
     ctx.ink(event:GetChild('body'),id=='neow' and C.panelSunken or C.text)
-    if NEOW then placeOptions(event,id=='neow',rows) end
+    if NEOW then placeOptions(event,id=='neow',rows,ctx.options.mobileRunHud) end
     for i=1,OPTIONS do
         local row,box=rows[i],event:GetChild('option'..i)
         ctx.show(box,row)
@@ -312,7 +340,7 @@ function M.install(ctx)
                 or mode=='restricted-six' and "未知事件 · 受限事件池（6种）" or kinds.event
         end
         writeEventHeading()
-        renderEventFigure(event, id, ctx.options.textAlignments)
+        renderEventLayout(event,id,ctx.options)
         renderEventArt(ctx, event, id)
         local body
         local function eventOutcomeBody()
@@ -440,7 +468,7 @@ function M.install(ctx)
             end
         end
         buildEventRows()
-        if NEOW then placeOptions(event, id == 'neow', rows) end
+        if NEOW then placeOptions(event, id == 'neow', rows, ctx.options.mobileRunHud) end
         for i = 1, OPTIONS do
             local row, box = rows[i], event:GetChild("option" .. i)
             ctx.show(box, row)
