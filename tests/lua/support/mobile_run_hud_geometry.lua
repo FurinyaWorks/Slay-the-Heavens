@@ -150,6 +150,8 @@ local function popupSlot(host,picture,slot,touch,path,dx,dy)
     return popupRoot
 end
 
+if ...=='helpers' then return {create=create,click=click,nonOverlap=nonOverlap,inspectTop=inspectTop,sharedPath=sharedPath,geometry=geometry} end
+
 if ...=='events' then
     local eventHost,eventRoot,eventPicture=create(true)
     eventHost.run.potions={[1]='speed_potion',[3]='block_potion'}
@@ -161,23 +163,20 @@ if ...=='events' then
     for i=1,#eventPath-1 do assert(Map.choose(eventHost.map,eventPath[i]))end
     eventHost:refresh();assert(eventHost.mapUI:choose(eventPath[#eventPath]))
     assert(eventRoot:GetChild('nodePanel'):GetChild('eventView').visible,'ordinary event not rendered')
-    local function noEventInventory()
-        assert(not eventRoot:GetChild('potionEntry').visible,'event displays shared potion entry')
-        assert(not eventRoot:GetChild('relicBar').visible,'event displays shared relic bar')
-        assert(not eventHost:openPotions(3) and not eventHost:openRelics(1),'event accepts stale inventory command')
-        local potion=eventPicture.at(sharedPath(3))
-        noPotionAt(eventPicture,potion.x,potion.y)
-        local relicHit=eventPicture.at('/relicBar/slot1/hit')
-        for _,row in ipairs(eventPicture.hits(relicHit.x,relicHit.y)) do
-            assert(not row.path:match('^/relicBar/'),'event accepts a relic hit')
-        end
+    local function eventInventory()
+        assert(eventRoot:GetChild('potionEntry').visible,'PD01 event potion slots missing')
+        assert(eventRoot:GetChild('relicBar').visible,'PD01 event relics missing')
+        popupSlot(eventHost,eventPicture,3,60,sharedPath(3))
+        assert(eventHost:closePotions())
+        click(eventPicture,'/relicBar/slot1/hit',61)
+        assert(eventHost.relicUI.selectedIndex==1 and eventHost:closeDeck())
     end
-    noEventInventory()
+    eventInventory()
     assert(eventHost.run.nodeFlow.event.id=='upgrade_shrine','fixture did not open Upgrade Shrine')
     click(eventPicture,'/nodePanel/eventView/option2/hit',70)
     assert(eventHost.run.phase=='map' and eventHost.mode=='node' and eventHost.nodeUI:holding(),
         'event result must stay in front after the rule phase becomes map')
-    noEventInventory()
+    eventInventory()
     click(eventPicture,'/nodePanel/confirm/hit',71)
     assert(eventHost.mode=='map' and eventRoot:GetChild('potionEntry').visible and eventRoot:GetChild('relicBar').visible)
     popupSlot(eventHost,eventPicture,3,72,sharedPath(3))
@@ -189,14 +188,14 @@ if ...=='events' then
     local labPath=Routes.to(lab.map,function(n)return n.type=='event'end)
     for i=1,#labPath-1 do assert(Map.choose(lab.map,labPath[i]))end
     lab:refresh();assert(lab.mapUI:choose(labPath[#labPath]))
-    assert(lab.run.nodeFlow.event.id=='lab' and not labRoot:GetChild('potionEntry').visible)
+    assert(lab.run.nodeFlow.event.id=='lab' and labRoot:GetChild('potionEntry').visible)
     local _,hiddenHit=labPicture.at(sharedPath(3))
     local stale={touchId=89}
     hiddenHit.listeners.down(stale)
     click(labPicture,'/nodePanel/eventView/option1/hit',80)
-    assert(lab.run.nodeFlow.event.stage=='potion_rewards' and not labRoot:GetChild('relicBar').visible)
+    assert(lab.run.nodeFlow.event.stage=='potion_rewards' and labRoot:GetChild('relicBar').visible)
     hiddenHit.listeners.up(stale);hiddenHit.listeners.click(stale)
-    assert(not lab.potionUI.visible,'a hidden potion slot accepted a queued touch')
+    assert(not lab.potionUI.visible,'a previous event stage accepted a queued touch')
     local labPopup=popupSlot(lab,labPicture,3,81,sharedPath(3))
     click(labPicture,labPopup..'/discard',82)
     assert(not lab.run.potions[3] and lab.nodeUI.actions['eventView/option1'].enabled,
@@ -256,7 +255,8 @@ assert(Run.finishCombat(host.run));host:refresh()
 local function clearRewardBar(name)
     local bar=picture.at('/battlePanel/topBar/steel')
     local dark=picture.at('/battlePanel/'..name..'/v25RewardField/dark')
-    near(bar.y-bar.h/2,dark.y+dark.h/2)
+    local relic=picture.at('/relicBar/slot1/hit')
+    assert(dark.y+dark.h/2<=relic.y-relic.h/2+.001,'reward veil crosses relic band')
 end
 clearRewardBar('rewardList')
 click(picture,'/battlePanel/cardReward',30)
@@ -298,7 +298,7 @@ host.run.relics[2]='potion_belt';host:refresh()
 local relic=picture.at('/relicBar/slot1/hit')
 assert(nonOverlap(relic,picture.at('/nodePanel/pickerView/previous/hit')))
 click(picture,'/relicBar/slot1/hit',57,0,-relic.h/2+2)
-assert(host.relicUI.visible and not host.relicUI.selectedIndex and host:closeDeck())
+assert(host.relicUI.visible and host.relicUI.selectedIndex==1 and host:closeDeck())
 assert(ui.rewardScreen=='cards')
 
 -- Independently enter each room through the real MapUI/Nodes path and

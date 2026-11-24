@@ -1,0 +1,20 @@
+✔ PD Run HUD relics through official generated Lua Host (3373.670487ms)
+✔ PD Run HUD pages through official generated Lua Host (940.606945ms)
+✔ PD Run HUD potions through official generated Lua Host (1399.611927ms)
+✔ PD Run HUD geometry through official generated Lua Host (829.550043ms)
+✔ PD Run HUD lifecycle through official generated Lua Host (4667.011809ms)
+✔ PD Run HUD mobile through official generated Lua Host (1847.213255ms)
+✔ PD Run HUD events through official generated Lua Host (787.933582ms)
+✔ PD Run HUD mutations through official generated Lua Host (765.125893ms)
+✔ PD Run HUD special-potions through official generated Lua Host (2457.668147ms)
+✔ PD Run HUD route through official generated Lua Host (1128.963927ms)
+✔ generated run chrome paints after all room content (61.384828ms)
+✔ generated map bar precedes resource values and floor groups (73.762376ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 20735.912805

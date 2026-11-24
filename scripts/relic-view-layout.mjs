@@ -47,8 +47,7 @@ export function relicViewControls(theme = nativeTheme) {
     ] };
   };
   const b = v.bar;
-  // One sunken capsule groups every owned disc so the strip reads as a single
-  // HUD element; the last disc doubles as a +N overflow chip (no wrap/occlusion).
+  // Fixed pooled slots; overflow uses the original horizontal paging arrows.
   const capsule = (name, [w, h], colour) => { const x = (w - h) / 2; return { name, kind: 'container', size: [w, h], children: [
     { ...plate('left', [-x, 0, h, h], colour), image: theme.image.disc }, plate('middle', [0, 0, w - h, h], colour),
     { ...plate('right', [x, 0, h, h], colour), image: theme.image.disc }] }; };
@@ -68,7 +67,7 @@ export function relicViewControls(theme = nativeTheme) {
     slot.children.push({ ...text('more', b.more, '', f.label, c.goldBright), visible: false });
     slot.children.push({ name: 'hit', kind: 'cursorArea', size: [b.step, 44] });
     return slot;
-  })];
+  }), button('previous',[-624,292,32,44],'‹'), button('next',[610,292,32,44],'›')];
   const [rw, rh] = v.row, discX = -rw / 2 + s.m + v.disc / 2;
   const rows = [];
   v.rows.forEach((y, r) => v.columns.forEach((x, col) => {
@@ -105,8 +104,8 @@ export function relicViewControls(theme = nativeTheme) {
       ] },
       { ...text('placeholder', [0, 0, 600, 48], '本局尚未获得遗物。', f.body, c.textDim), visible: false },
       button('close', v.close, '关闭'),
-      { ...button('previous', v.previous, '上一页'), visible: false },
-      { ...button('next', v.next, '下一页'), visible: false },
+      { ...button('previous', v.previous, '上一件'), visible: false },
+      { ...button('next', v.next, '下一件'), visible: false },
       { ...text('pageHint', v.pageHint, '', f.small, c.textDim), visible: false },
     ] },
   ];

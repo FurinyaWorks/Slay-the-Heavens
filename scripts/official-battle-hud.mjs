@@ -69,11 +69,11 @@ export function officialRunChrome(tree,theme){
   // Keep live titles in their existing owners (MapUI resolves mapGroup/title).
    const titleOwner=page.children.findIndex(part=>name==='mapPanel'?/^mapGroup\d+$/.test(part.name):part.name==='title');
    page.children.splice(titleOwner<0?page.children.length:titleOwner,0,bar);
-   if(name==='nodePanel'){
+   if(name==='nodePanel'||name==='mapPanel'){
     // A live action belongs to the node page, never to a decorative bar clone.
     // Reuse the battle shortcut face and let GameUI own its context and input.
     const route=structuredClone(child(source,'battleRoute'));
-    route.name='runRoute';route.position=[hud.route[0],hud.route[1]];
+    route.name=name==='nodePanel'?'runRoute':'mapRoute';route.position=[hud.route[0],hud.route[1]];
     page.children.push(route);
    }
   const visit=node=>{
@@ -89,6 +89,11 @@ export function officialRunChrome(tree,theme){
   visit(page);
   for(const [name,reference]of Object.entries(component.resources))mountOfficialResource(child(resources,name),reference);
   mountOfficialResourceHints(page,theme);
+  // The complete room surface paints first, then the resource component.
+  if(name==='nodePanel'){
+  const hudRoles=new Set(['officialRunBar','title','hpIcon','hp','goldIcon','gold','resourceHints','runRoute']);
+  page.children=[...page.children.filter(n=>!hudRoles.has(n.name)),...page.children.filter(n=>hudRoles.has(n.name))];
+  }
  }
 }
 export function officialBattleHud(root,theme){

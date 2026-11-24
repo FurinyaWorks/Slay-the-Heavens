@@ -1,0 +1,25 @@
+✔ official HUD renders a native settings icon in every button state (868.755245ms)
+✔ official HUD shows a fanned stack of cards alongside the count in every deck button state (733.635258ms)
+✔ official composition rejects a missing run page before mutating any host (108.419866ms)
+✔ official composition rejects unregistered roots rather than treating them as templates (7.45908ms)
+✔ official composition validates the whole batch and rejects repeated composition (1077.466517ms)
+✔ final contracts cover every card host and reject local skin, bar and relic regressions (1341.248922ms)
+✔ reward overview retains live rows while adopting measured compact rows and the shared flag (601.484193ms)
+✔ real reward layout keeps the shared host aligned through expanded and ordinary lists (915.37343ms)
+✔ official build adopts the existing paper map without replacing graph or input owners (689.536677ms)
+✔ run headers paint above opaque page backgrounds and below their live resource text (528.391953ms)
+✔ official shop has an explicit reachable map shortcut outside its decorative header (527.834815ms)
+✔ shop relics and potions clear every card at rest and on hover (579.715908ms)
+✔ official potion slots survive battle rewards, map, node and return-to-combat transitions (790.750221ms)
+✔ every run page mounts the complete battle resource component, preserving writer handles (1096.637119ms)
+✔ selection, run balance, battle rewards and treasure share the money bag (935.945761ms)
+✔ blessing, map and reward potion slots mount the same final battle faces in all states (998.312234ms)
+✔ battle and noncombat potion popups share compact panel and action tokens (891.38934ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8964.411245

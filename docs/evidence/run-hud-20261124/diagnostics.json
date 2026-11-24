@@ -1,0 +1,7011 @@
+[
+  {
+    "scene": "after-pc-map5",
+    "meta": {
+      "mode": "map",
+      "phase": "map",
+      "hp": 80,
+      "maxHp": 80,
+      "gold": 99,
+      "floor": 1,
+      "relics": [
+        "burning_blood",
+        "omamori",
+        "matryoshka",
+        "anchor",
+        "potion_belt"
+      ],
+      "potions": [
+        "fruit_juice"
+      ],
+      "capacity": 3,
+      "barPage": 1,
+      "barCapacity": 25,
+      "touchBoxes": {
+        "/relicBar/slot1/hit": {
+          "x": 168,
+          "y": -102,
+          "w": 66,
+          "h": 66,
+          "path": "/relicBar/slot1/hit"
+        },
+        "/relicBar/previous/hit": {
+          "x": 102,
+          "y": -102,
+          "w": 66,
+          "h": 66,
+          "path": "/relicBar/previous/hit"
+        },
+        "/relicBar/next/hit": {
+          "x": 1818,
+          "y": -102,
+          "w": 66,
+          "h": 66,
+          "path": "/relicBar/next/hit"
+        },
+        "/relicPanel/close/hit": {
+          "x": 1695,
+          "y": -138,
+          "w": 132,
+          "h": 72,
+          "path": "/relicPanel/close/hit"
+        },
+        "/relicPanel/previous/hit": {
+          "x": 315,
+          "y": -942,
+          "w": 300,
+          "h": 72,
+          "path": "/relicPanel/previous/hit"
+        },
+        "/relicPanel/next/hit": {
+          "x": 1605,
+          "y": -942,
+          "w": 300,
+          "h": 72,
+          "path": "/relicPanel/next/hit"
+        }
+      }
+    },
+    "unknownTextures": 49,
+    "textOverflows": [],
+    "hits": [
+      {
+        "path": "/stage/mapPanel/mapGroup1/dragArea",
+        "box": [
+          270.0,
+          277.0,
+          1620.0,
+          1102.0
+        ]
+      },
+      {
+        "path": "/stage/mapPanel/mapGroup3/node1/hit",
+        "box": [
+          582.0,
+          970.0,
+          666.0,
+          1054.0
+        ]
+      },
+      {
+        "path": "/stage/mapPanel/mapGroup3/node2/hit",
+        "box": [
+          918.0,
+          970.0,
+          1002.0,
+          1054.0
+        ]
+      },
+      {
+        "path": "/stage/mapPanel/resourceHints/hp/hit",
+        "box": [
+          252.0,
+          99.25,
+          394.5,
+          165.25
+        ]
+      },
+      {
+        "path": "/stage/mapPanel/resourceHints/gold/hit",
+        "box": [
+          402.0,
+          99.25,
+          474.3984375,
+          165.25
+        ]
+      },
+      {
+        "path": "/stage/mapPanel/mapRoute/hit",
+        "box": [
+          1583.70703125,
+          100.0,
+          1667.70703125,
+          166.0
+        ]
+      },
+      {
+        "path": "/stage/deckEntry/open/hit",
+        "box": [
+          1680.1171875,
+          96.25,
+          1800.1171875,
+          168.25
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          135.0,
+          169.0,
+          201.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot2/hit",
+        "box": [
+          201.0,
+          169.0,
+          267.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot3/hit",
+        "box": [
+          267.0,
+          169.0,
+          333.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot4/hit",
+        "box": [
+          333.0,
+          169.0,
+          399.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot5/hit",
+        "box": [
+          399.0,
+          169.0,
+          465.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/potionEntry/slot1/hit",
+        "box": [
+          476.6484375,
+          99.25,
+          550.1484375,
+          165.25
+        ]
+      },
+      {
+        "path": "/stage/potionEntry/slot3/hit",
+        "box": [
+          623.6484375,
+          99.25,
+          697.1484375,
+          165.25
+        ]
+      },
+      {
+        "path": "/stage/exitEntry/open/hit",
+        "box": [
+          1815.0,
+          96.25,
+          1887.0,
+          168.25
+        ]
+      }
+    ],
+    "controlBounds": [
+      {
+        "path": "/stage/mapPanel/officialRunBar/steel",
+        "box": [
+          0.0,
+          100.0,
+          1920.0,
+          164.5
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/mapPanel/mapRoute/hit",
+        "box": [
+          1583.70703125,
+          100.0,
+          1667.70703125,
+          166.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape0",
+        "box": [
+          143.9999999999825,
+          193.19999999999797,
+          163.1999999999975,
+          223.600000000022
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape1",
+        "box": [
+          172.00000000000202,
+          197.1999999999985,
+          192.800000000018,
+          226.0000000000215
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape2",
+        "box": [
+          151.199999999987,
+          169.999999999975,
+          184.800000000013,
+          205.200000000003
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape3",
+        "box": [
+          151.199999999987,
+          205.20000000000252,
+          184.800000000013,
+          224.4000000000175
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape4",
+        "box": [
+          155.19999999999348,
+          177.1999999999805,
+          171.2000000000065,
+          204.4000000000015
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape5",
+        "box": [
+          162.3999999999945,
+          202.0000000000035,
+          176.8000000000055,
+          218.0000000000165
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          135.0,
+          169.0,
+          201.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot2/icon",
+        "box": [
+          201.999999999975,
+          169.999999999975,
+          266.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot2/counter",
+        "box": [
+          204.0,
+          190.0,
+          264.0,
+          244.0
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/relicBar/slot2/hit",
+        "box": [
+          201.0,
+          169.0,
+          267.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape0",
+        "box": [
+          278.559999999988,
+          189.83999999999548,
+          308.64000000001204,
+          226.96000000002448
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape1",
+        "box": [
+          282.7199999999915,
+          177.0399999999805,
+          304.48000000000854,
+          198.79999999999748
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape2",
+        "box": [
+          285.91999999999405,
+          179.91999999998248,
+          301.280000000006,
+          195.9199999999955
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape3",
+        "box": [
+          285.27999999999355,
+          196.8799999999915,
+          301.9200000000065,
+          218.64000000000848
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape4",
+        "box": [
+          290.07999999999726,
+          203.27999999999702,
+          297.1200000000028,
+          210.960000000003
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape5",
+        "box": [
+          303.2000000000025,
+          202.00000000000003,
+          322.40000000001754,
+          227.60000000002
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape6",
+        "box": [
+          305.12000000000404,
+          192.39999999999398,
+          320.480000000016,
+          207.760000000006
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape7",
+        "box": [
+          307.68000000000603,
+          193.99999999999352,
+          317.920000000014,
+          204.8800000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape8",
+        "box": [
+          307.68000000000603,
+          207.1200000000045,
+          317.920000000014,
+          221.2000000000155
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape9",
+        "box": [
+          289.119999999989,
+          185.359999999987,
+          291.67999999999097,
+          187.919999999989
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape10",
+        "box": [
+          295.519999999999,
+          185.359999999987,
+          298.080000000001,
+          187.919999999989
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape11",
+        "box": [
+          309.28000000000924,
+          197.83999999999625,
+          311.2000000000108,
+          199.75999999999775
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape12",
+        "box": [
+          314.40000000000924,
+          197.83999999999625,
+          316.3200000000108,
+          199.75999999999775
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/counter",
+        "box": [
+          270.0,
+          190.0,
+          330.0,
+          244.0
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/relicBar/slot3/hit",
+        "box": [
+          267.0,
+          169.0,
+          333.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot4/icon",
+        "box": [
+          333.999999999975,
+          169.999999999975,
+          398.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot4/hit",
+        "box": [
+          333.0,
+          169.0,
+          399.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot5/icon",
+        "box": [
+          399.999999999975,
+          169.999999999975,
+          464.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot5/hit",
+        "box": [
+          399.0,
+          169.0,
+          465.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      }
+    ]
+  },
+  {
+    "scene": "after-pc-event5",
+    "meta": {
+      "mode": "node",
+      "phase": "node",
+      "hp": 80,
+      "maxHp": 80,
+      "gold": 99,
+      "floor": 2,
+      "relics": [
+        "burning_blood",
+        "omamori",
+        "matryoshka",
+        "anchor",
+        "potion_belt"
+      ],
+      "potions": [
+        "fruit_juice"
+      ],
+      "capacity": 3,
+      "barPage": 1,
+      "barCapacity": 25,
+      "touchBoxes": {
+        "/relicBar/slot1/hit": {
+          "x": 168,
+          "y": -102,
+          "w": 66,
+          "h": 66,
+          "path": "/relicBar/slot1/hit"
+        },
+        "/relicBar/previous/hit": {
+          "x": 102,
+          "y": -102,
+          "w": 66,
+          "h": 66,
+          "path": "/relicBar/previous/hit"
+        },
+        "/relicBar/next/hit": {
+          "x": 1818,
+          "y": -102,
+          "w": 66,
+          "h": 66,
+          "path": "/relicBar/next/hit"
+        },
+        "/relicPanel/close/hit": {
+          "x": 1695,
+          "y": -138,
+          "w": 132,
+          "h": 72,
+          "path": "/relicPanel/close/hit"
+        },
+        "/relicPanel/previous/hit": {
+          "x": 315,
+          "y": -942,
+          "w": 300,
+          "h": 72,
+          "path": "/relicPanel/previous/hit"
+        },
+        "/relicPanel/next/hit": {
+          "x": 1605,
+          "y": -942,
+          "w": 300,
+          "h": 72,
+          "path": "/relicPanel/next/hit"
+        }
+      }
+    },
+    "unknownTextures": 11,
+    "textOverflows": [],
+    "hits": [
+      {
+        "path": "/stage/nodePanel/shopDismiss",
+        "box": [
+          0.0,
+          100.0,
+          1920.0,
+          1180.0
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/eventView/option1/hit",
+        "box": [
+          772.5,
+          904.0,
+          1822.5,
+          970.0
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/eventView/option2/hit",
+        "box": [
+          772.5,
+          986.5,
+          1822.5,
+          1052.5
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/runRoute/hit",
+        "box": [
+          1583.70703125,
+          100.0,
+          1667.70703125,
+          166.0
+        ]
+      },
+      {
+        "path": "/stage/deckEntry/open/hit",
+        "box": [
+          1680.1171875,
+          96.25,
+          1800.1171875,
+          168.25
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          135.0,
+          169.0,
+          201.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot2/hit",
+        "box": [
+          201.0,
+          169.0,
+          267.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot3/hit",
+        "box": [
+          267.0,
+          169.0,
+          333.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot4/hit",
+        "box": [
+          333.0,
+          169.0,
+          399.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot5/hit",
+        "box": [
+          399.0,
+          169.0,
+          465.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/potionEntry/slot1/hit",
+        "box": [
+          476.6484375,
+          99.25,
+          550.1484375,
+          165.25
+        ]
+      },
+      {
+        "path": "/stage/potionEntry/slot3/hit",
+        "box": [
+          623.6484375,
+          99.25,
+          697.1484375,
+          165.25
+        ]
+      },
+      {
+        "path": "/stage/exitEntry/open/hit",
+        "box": [
+          1815.0,
+          96.25,
+          1887.0,
+          168.25
+        ]
+      }
+    ],
+    "controlBounds": [
+      {
+        "path": "/stage/nodePanel/eventView/name",
+        "box": [
+          75.0,
+          290.5,
+          1005.0,
+          380.5
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/nodePanel/eventView/body",
+        "box": [
+          772.5,
+          418.0,
+          1822.5,
+          688.0
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/nodePanel/officialRunBar/steel",
+        "box": [
+          0.0,
+          100.0,
+          1920.0,
+          164.5
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape0",
+        "box": [
+          143.9999999999825,
+          193.19999999999797,
+          163.1999999999975,
+          223.600000000022
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape1",
+        "box": [
+          172.00000000000202,
+          197.1999999999985,
+          192.800000000018,
+          226.0000000000215
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape2",
+        "box": [
+          151.199999999987,
+          169.999999999975,
+          184.800000000013,
+          205.200000000003
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape3",
+        "box": [
+          151.199999999987,
+          205.20000000000252,
+          184.800000000013,
+          224.4000000000175
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape4",
+        "box": [
+          155.19999999999348,
+          177.1999999999805,
+          171.2000000000065,
+          204.4000000000015
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape5",
+        "box": [
+          162.3999999999945,
+          202.0000000000035,
+          176.8000000000055,
+          218.0000000000165
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          135.0,
+          169.0,
+          201.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot2/icon",
+        "box": [
+          201.999999999975,
+          169.999999999975,
+          266.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot2/counter",
+        "box": [
+          204.0,
+          190.0,
+          264.0,
+          244.0
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/relicBar/slot2/hit",
+        "box": [
+          201.0,
+          169.0,
+          267.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape0",
+        "box": [
+          278.559999999988,
+          189.83999999999548,
+          308.64000000001204,
+          226.96000000002448
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape1",
+        "box": [
+          282.7199999999915,
+          177.0399999999805,
+          304.48000000000854,
+          198.79999999999748
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape2",
+        "box": [
+          285.91999999999405,
+          179.91999999998248,
+          301.280000000006,
+          195.9199999999955
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape3",
+        "box": [
+          285.27999999999355,
+          196.8799999999915,
+          301.9200000000065,
+          218.64000000000848
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape4",
+        "box": [
+          290.07999999999726,
+          203.27999999999702,
+          297.1200000000028,
+          210.960000000003
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape5",
+        "box": [
+          303.2000000000025,
+          202.00000000000003,
+          322.40000000001754,
+          227.60000000002
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape6",
+        "box": [
+          305.12000000000404,
+          192.39999999999398,
+          320.480000000016,
+          207.760000000006
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape7",
+        "box": [
+          307.68000000000603,
+          193.99999999999352,
+          317.920000000014,
+          204.8800000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape8",
+        "box": [
+          307.68000000000603,
+          207.1200000000045,
+          317.920000000014,
+          221.2000000000155
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape9",
+        "box": [
+          289.119999999989,
+          185.359999999987,
+          291.67999999999097,
+          187.919999999989
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape10",
+        "box": [
+          295.519999999999,
+          185.359999999987,
+          298.080000000001,
+          187.919999999989
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape11",
+        "box": [
+          309.28000000000924,
+          197.83999999999625,
+          311.2000000000108,
+          199.75999999999775
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape12",
+        "box": [
+          314.40000000000924,
+          197.83999999999625,
+          316.3200000000108,
+          199.75999999999775
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/counter",
+        "box": [
+          270.0,
+          190.0,
+          330.0,
+          244.0
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/relicBar/slot3/hit",
+        "box": [
+          267.0,
+          169.0,
+          333.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot4/icon",
+        "box": [
+          333.999999999975,
+          169.999999999975,
+          398.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot4/hit",
+        "box": [
+          333.0,
+          169.0,
+          399.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot5/icon",
+        "box": [
+          399.999999999975,
+          169.999999999975,
+          464.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot5/hit",
+        "box": [
+          399.0,
+          169.0,
+          465.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      }
+    ]
+  },
+  {
+    "scene": "after-pc-event26-page1",
+    "meta": {
+      "mode": "node",
+      "phase": "node",
+      "hp": 80,
+      "maxHp": 80,
+      "gold": 99,
+      "floor": 2,
+      "relics": [
+        "burning_blood",
+        "omamori",
+        "matryoshka",
+        "anchor",
+        "potion_belt",
+        "ancient_tea_set",
+        "lizard_tail",
+        "maw_bank",
+        "winged_greaves",
+        "nloths_mask",
+        "bag_of_preparation",
+        "happy_flower",
+        "vajra",
+        "orichalcum",
+        "pen_nib",
+        "nunchaku",
+        "horn_cleat",
+        "art_of_war",
+        "centennial_puzzle",
+        "lantern",
+        "preserved_insect",
+        "oddly_smooth_stone",
+        "strawberry",
+        "pear",
+        "mango",
+        "stone_calendar"
+      ],
+      "potions": [
+        "fruit_juice"
+      ],
+      "capacity": 3,
+      "barPage": 1,
+      "barCapacity": 25,
+      "touchBoxes": {
+        "/relicBar/slot1/hit": {
+          "x": 168,
+          "y": -102,
+          "w": 66,
+          "h": 66,
+          "path": "/relicBar/slot1/hit"
+        },
+        "/relicBar/previous/hit": {
+          "x": 102,
+          "y": -102,
+          "w": 66,
+          "h": 66,
+          "path": "/relicBar/previous/hit"
+        },
+        "/relicBar/next/hit": {
+          "x": 1818,
+          "y": -102,
+          "w": 66,
+          "h": 66,
+          "path": "/relicBar/next/hit"
+        },
+        "/relicPanel/close/hit": {
+          "x": 1695,
+          "y": -138,
+          "w": 132,
+          "h": 72,
+          "path": "/relicPanel/close/hit"
+        },
+        "/relicPanel/previous/hit": {
+          "x": 315,
+          "y": -942,
+          "w": 300,
+          "h": 72,
+          "path": "/relicPanel/previous/hit"
+        },
+        "/relicPanel/next/hit": {
+          "x": 1605,
+          "y": -942,
+          "w": 300,
+          "h": 72,
+          "path": "/relicPanel/next/hit"
+        }
+      }
+    },
+    "unknownTextures": 27,
+    "textOverflows": [],
+    "hits": [
+      {
+        "path": "/stage/nodePanel/shopDismiss",
+        "box": [
+          0.0,
+          100.0,
+          1920.0,
+          1180.0
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/eventView/option1/hit",
+        "box": [
+          772.5,
+          904.0,
+          1822.5,
+          970.0
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/eventView/option2/hit",
+        "box": [
+          772.5,
+          986.5,
+          1822.5,
+          1052.5
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/runRoute/hit",
+        "box": [
+          1583.70703125,
+          100.0,
+          1667.70703125,
+          166.0
+        ]
+      },
+      {
+        "path": "/stage/deckEntry/open/hit",
+        "box": [
+          1680.1171875,
+          96.25,
+          1800.1171875,
+          168.25
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          135.0,
+          169.0,
+          201.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot2/hit",
+        "box": [
+          201.0,
+          169.0,
+          267.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot3/hit",
+        "box": [
+          267.0,
+          169.0,
+          333.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot4/hit",
+        "box": [
+          333.0,
+          169.0,
+          399.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot5/hit",
+        "box": [
+          399.0,
+          169.0,
+          465.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot6/hit",
+        "box": [
+          465.0,
+          169.0,
+          531.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot7/hit",
+        "box": [
+          531.0,
+          169.0,
+          597.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot8/hit",
+        "box": [
+          597.0,
+          169.0,
+          663.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot9/hit",
+        "box": [
+          663.0,
+          169.0,
+          729.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot10/hit",
+        "box": [
+          729.0,
+          169.0,
+          795.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot11/hit",
+        "box": [
+          795.0,
+          169.0,
+          861.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot12/hit",
+        "box": [
+          861.0,
+          169.0,
+          927.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/next/hit",
+        "box": [
+          1785.0,
+          169.0,
+          1851.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot13/hit",
+        "box": [
+          927.0,
+          169.0,
+          993.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot14/hit",
+        "box": [
+          993.0,
+          169.0,
+          1059.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot15/hit",
+        "box": [
+          1059.0,
+          169.0,
+          1125.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot16/hit",
+        "box": [
+          1125.0,
+          169.0,
+          1191.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot17/hit",
+        "box": [
+          1191.0,
+          169.0,
+          1257.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot18/hit",
+        "box": [
+          1257.0,
+          169.0,
+          1323.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot19/hit",
+        "box": [
+          1323.0,
+          169.0,
+          1389.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot20/hit",
+        "box": [
+          1389.0,
+          169.0,
+          1455.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot21/hit",
+        "box": [
+          1455.0,
+          169.0,
+          1521.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot22/hit",
+        "box": [
+          1521.0,
+          169.0,
+          1587.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot23/hit",
+        "box": [
+          1587.0,
+          169.0,
+          1653.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot24/hit",
+        "box": [
+          1653.0,
+          169.0,
+          1719.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot25/hit",
+        "box": [
+          1719.0,
+          169.0,
+          1785.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/potionEntry/slot1/hit",
+        "box": [
+          476.6484375,
+          99.25,
+          550.1484375,
+          165.25
+        ]
+      },
+      {
+        "path": "/stage/potionEntry/slot3/hit",
+        "box": [
+          623.6484375,
+          99.25,
+          697.1484375,
+          165.25
+        ]
+      },
+      {
+        "path": "/stage/exitEntry/open/hit",
+        "box": [
+          1815.0,
+          96.25,
+          1887.0,
+          168.25
+        ]
+      }
+    ],
+    "controlBounds": [
+      {
+        "path": "/stage/nodePanel/eventView/name",
+        "box": [
+          75.0,
+          290.5,
+          1005.0,
+          380.5
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/nodePanel/eventView/body",
+        "box": [
+          772.5,
+          418.0,
+          1822.5,
+          688.0
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/nodePanel/officialRunBar/steel",
+        "box": [
+          0.0,
+          100.0,
+          1920.0,
+          164.5
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape0",
+        "box": [
+          143.9999999999825,
+          193.19999999999797,
+          163.1999999999975,
+          223.600000000022
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape1",
+        "box": [
+          172.00000000000202,
+          197.1999999999985,
+          192.800000000018,
+          226.0000000000215
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape2",
+        "box": [
+          151.199999999987,
+          169.999999999975,
+          184.800000000013,
+          205.200000000003
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape3",
+        "box": [
+          151.199999999987,
+          205.20000000000252,
+          184.800000000013,
+          224.4000000000175
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape4",
+        "box": [
+          155.19999999999348,
+          177.1999999999805,
+          171.2000000000065,
+          204.4000000000015
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape5",
+        "box": [
+          162.3999999999945,
+          202.0000000000035,
+          176.8000000000055,
+          218.0000000000165
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          135.0,
+          169.0,
+          201.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot2/icon",
+        "box": [
+          201.999999999975,
+          169.999999999975,
+          266.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot2/counter",
+        "box": [
+          204.0,
+          190.0,
+          264.0,
+          244.0
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/relicBar/slot2/hit",
+        "box": [
+          201.0,
+          169.0,
+          267.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape0",
+        "box": [
+          278.559999999988,
+          189.83999999999548,
+          308.64000000001204,
+          226.96000000002448
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape1",
+        "box": [
+          282.7199999999915,
+          177.0399999999805,
+          304.48000000000854,
+          198.79999999999748
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape2",
+        "box": [
+          285.91999999999405,
+          179.91999999998248,
+          301.280000000006,
+          195.9199999999955
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape3",
+        "box": [
+          285.27999999999355,
+          196.8799999999915,
+          301.9200000000065,
+          218.64000000000848
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape4",
+        "box": [
+          290.07999999999726,
+          203.27999999999702,
+          297.1200000000028,
+          210.960000000003
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape5",
+        "box": [
+          303.2000000000025,
+          202.00000000000003,
+          322.40000000001754,
+          227.60000000002
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape6",
+        "box": [
+          305.12000000000404,
+          192.39999999999398,
+          320.480000000016,
+          207.760000000006
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape7",
+        "box": [
+          307.68000000000603,
+          193.99999999999352,
+          317.920000000014,
+          204.8800000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape8",
+        "box": [
+          307.68000000000603,
+          207.1200000000045,
+          317.920000000014,
+          221.2000000000155
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape9",
+        "box": [
+          289.119999999989,
+          185.359999999987,
+          291.67999999999097,
+          187.919999999989
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape10",
+        "box": [
+          295.519999999999,
+          185.359999999987,
+          298.080000000001,
+          187.919999999989
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape11",
+        "box": [
+          309.28000000000924,
+          197.83999999999625,
+          311.2000000000108,
+          199.75999999999775
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape12",
+        "box": [
+          314.40000000000924,
+          197.83999999999625,
+          316.3200000000108,
+          199.75999999999775
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/counter",
+        "box": [
+          270.0,
+          190.0,
+          330.0,
+          244.0
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/relicBar/slot3/hit",
+        "box": [
+          267.0,
+          169.0,
+          333.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot4/icon",
+        "box": [
+          333.999999999975,
+          169.999999999975,
+          398.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot4/hit",
+        "box": [
+          333.0,
+          169.0,
+          399.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot5/icon",
+        "box": [
+          399.999999999975,
+          169.999999999975,
+          464.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot5/hit",
+        "box": [
+          399.0,
+          169.0,
+          465.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot6/icon",
+        "box": [
+          465.999999999975,
+          169.999999999975,
+          530.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/hit",
+        "box": [
+          465.0,
+          169.0,
+          531.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot7/iconArt/shape0",
+        "box": [
+          542.8857599999875,
+          193.927039999998,
+          575.1776000000126,
+          224.977280000022
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/iconArt/shape1",
+        "box": [
+          550.0271999999915,
+          195.789759999992,
+          571.7622400000085,
+          216.904000000008
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/iconArt/shape2",
+        "box": [
+          542.886079999986,
+          183.05919999998497,
+          552.8220799999939,
+          206.036480000003
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/iconArt/shape3",
+        "box": [
+          542.8860799999845,
+          173.1238399999775,
+          556.5481599999955,
+          189.89055999999047
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/iconArt/shape4",
+        "box": [
+          565.552320000003,
+          203.862720000003,
+          583.561280000017,
+          221.25088000001702
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/iconArt/shape5",
+        "box": [
+          569.278400000006,
+          204.794560000006,
+          579.835200000014,
+          215.351360000014
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/iconArt/shape6",
+        "box": [
+          547.2329599999875,
+          213.79936000000905,
+          553.4428799999926,
+          216.28320000001096
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/iconArt/shape7",
+        "box": [
+          545.0595199999873,
+          206.34719999999902,
+          551.8902399999927,
+          208.83104000000094
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/iconArt/shape8",
+        "box": [
+          543.8179199999873,
+          197.65279999999706,
+          550.6486399999927,
+          200.13663999999898
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/hit",
+        "box": [
+          531.0,
+          169.0,
+          597.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot8/icon",
+        "box": [
+          597.999999999975,
+          169.999999999975,
+          662.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot8/hit",
+        "box": [
+          597.0,
+          169.0,
+          663.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot9/iconArt/shape0",
+        "box": [
+          688.959999999993,
+          185.35999999998552,
+          706.8800000000069,
+          222.4800000000145
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot9/iconArt/shape1",
+        "box": [
+          689.59999999999,
+          214.800000000006,
+          715.2000000000099,
+          225.04000000001403
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot9/iconArt/shape2",
+        "box": [
+          684.799999999991,
+          183.4399999999855,
+          707.200000000009,
+          189.83999999999048
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot9/iconArt/shape3",
+        "box": [
+          687.039999999993,
+          210.64000000000826,
+          704.960000000007,
+          215.12000000001174
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot9/iconArt/shape4",
+        "box": [
+          668.15999999998,
+          187.2799999999885,
+          693.12,
+          198.7999999999975
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot9/iconArt/shape5",
+        "box": [
+          667.1999999999815,
+          195.599999999996,
+          688.9599999999986,
+          205.840000000004
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot9/iconArt/shape6",
+        "box": [
+          671.359999999983,
+          203.2799999999965,
+          688.639999999997,
+          212.24000000000348
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot9/iconArt/shape7",
+        "box": [
+          694.7199999999984,
+          191.1199999999915,
+          698.5600000000015,
+          212.8800000000085
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot9/hit",
+        "box": [
+          663.0,
+          169.0,
+          729.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape0",
+        "box": [
+          743.4399999999855,
+          179.59999999998251,
+          780.5600000000145,
+          224.40000000001749
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape1",
+        "box": [
+          748.5599999999895,
+          210.320000000003,
+          775.4400000000105,
+          228.240000000017
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape2",
+        "box": [
+          748.2399999999863,
+          193.679999999994,
+          757.8399999999937,
+          198.799999999998
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape3",
+        "box": [
+          766.1600000000063,
+          193.679999999994,
+          775.7600000000137,
+          198.799999999998
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape4",
+        "box": [
+          755.2799999999945,
+          210.32000000000852,
+          768.7200000000055,
+          214.1600000000115
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape5",
+        "box": [
+          752.7199999999925,
+          205.20000000000348,
+          771.2800000000075,
+          221.8400000000165
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape6",
+        "box": [
+          754.6399999999977,
+          209.6800000000085,
+          760.4000000000023,
+          213.5200000000115
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape7",
+        "box": [
+          763.5999999999977,
+          209.6800000000085,
+          769.3600000000023,
+          213.5200000000115
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape8",
+        "box": [
+          738.3199999999845,
+          177.03999999997998,
+          752.3999999999955,
+          192.399999999992
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape9",
+        "box": [
+          771.6000000000045,
+          177.03999999997998,
+          785.6800000000155,
+          192.399999999992
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape10",
+        "box": [
+          759.7599999999983,
+          189.839999999991,
+          764.2400000000017,
+          205.200000000003
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/hit",
+        "box": [
+          729.0,
+          169.0,
+          795.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot11/icon",
+        "box": [
+          795.999999999975,
+          169.999999999975,
+          860.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot11/hit",
+        "box": [
+          795.0,
+          169.0,
+          861.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot12/icon",
+        "box": [
+          861.999999999975,
+          169.999999999975,
+          926.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot12/hit",
+        "box": [
+          861.0,
+          169.0,
+          927.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot13/icon",
+        "box": [
+          927.999999999975,
+          169.999999999975,
+          992.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot13/hit",
+        "box": [
+          927.0,
+          169.0,
+          993.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot14/icon",
+        "box": [
+          993.999999999975,
+          169.999999999975,
+          1058.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot14/hit",
+        "box": [
+          993.0,
+          169.0,
+          1059.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot15/icon",
+        "box": [
+          1059.999999999975,
+          169.999999999975,
+          1124.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot15/hit",
+        "box": [
+          1059.0,
+          169.0,
+          1125.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot16/icon",
+        "box": [
+          1125.999999999975,
+          169.999999999975,
+          1190.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot16/hit",
+        "box": [
+          1125.0,
+          169.0,
+          1191.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot17/iconArt/shape0",
+        "box": [
+          1204.799999999985,
+          214.48000000000675,
+          1243.200000000015,
+          222.80000000001323
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot17/iconArt/shape1",
+        "box": [
+          1217.599999999995,
+          189.839999999989,
+          1230.400000000005,
+          218.00000000001103
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot17/iconArt/shape2",
+        "box": [
+          1200.959999999982,
+          189.83999999999048,
+          1247.040000000018,
+          198.7999999999975
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot17/iconArt/shape3",
+        "box": [
+          1198.0799999999954,
+          182.7999999999855,
+          1208.9600000000046,
+          199.4399999999985
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot17/iconArt/shape4",
+        "box": [
+          1239.0399999999954,
+          182.7999999999855,
+          1249.9200000000046,
+          199.4399999999985
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot17/iconArt/shape5",
+        "box": [
+          1204.799999999985,
+          198.47999999999874,
+          1243.200000000015,
+          201.68000000000123
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot17/iconArt/shape6",
+        "box": [
+          1212.7999999999981,
+          198.79999999999498,
+          1217.2800000000018,
+          211.600000000005
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot17/iconArt/shape7",
+        "box": [
+          1230.7199999999982,
+          198.79999999999498,
+          1235.2000000000019,
+          211.600000000005
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot17/hit",
+        "box": [
+          1191.0,
+          169.0,
+          1257.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot18/icon",
+        "box": [
+          1257.999999999975,
+          169.999999999975,
+          1322.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot18/hit",
+        "box": [
+          1257.0,
+          169.0,
+          1323.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot19/icon",
+        "box": [
+          1323.999999999975,
+          169.999999999975,
+          1388.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot19/hit",
+        "box": [
+          1323.0,
+          169.0,
+          1389.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot20/icon",
+        "box": [
+          1389.999999999975,
+          169.999999999975,
+          1454.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot20/hit",
+        "box": [
+          1389.0,
+          169.0,
+          1455.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot21/icon",
+        "box": [
+          1455.999999999975,
+          169.999999999975,
+          1520.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot21/hit",
+        "box": [
+          1455.0,
+          169.0,
+          1521.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot22/icon",
+        "box": [
+          1521.999999999975,
+          169.999999999975,
+          1586.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot22/hit",
+        "box": [
+          1521.0,
+          169.0,
+          1587.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot23/icon",
+        "box": [
+          1587.999999999975,
+          169.999999999975,
+          1652.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot23/hit",
+        "box": [
+          1587.0,
+          169.0,
+          1653.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot24/icon",
+        "box": [
+          1653.999999999975,
+          169.999999999975,
+          1718.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot24/hit",
+        "box": [
+          1653.0,
+          169.0,
+          1719.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot25/icon",
+        "box": [
+          1719.999999999975,
+          169.999999999975,
+          1784.000000000025,
+          234.000000000025
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot25/hit",
+        "box": [
+          1719.0,
+          169.0,
+          1785.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      }
+    ]
+  },
+  {
+    "scene": "after-pc-event26-page2",
+    "meta": {
+      "mode": "node",
+      "phase": "node",
+      "hp": 80,
+      "maxHp": 80,
+      "gold": 99,
+      "floor": 2,
+      "relics": [
+        "burning_blood",
+        "omamori",
+        "matryoshka",
+        "anchor",
+        "potion_belt",
+        "ancient_tea_set",
+        "lizard_tail",
+        "maw_bank",
+        "winged_greaves",
+        "nloths_mask",
+        "bag_of_preparation",
+        "happy_flower",
+        "vajra",
+        "orichalcum",
+        "pen_nib",
+        "nunchaku",
+        "horn_cleat",
+        "art_of_war",
+        "centennial_puzzle",
+        "lantern",
+        "preserved_insect",
+        "oddly_smooth_stone",
+        "strawberry",
+        "pear",
+        "mango",
+        "stone_calendar"
+      ],
+      "potions": [
+        "fruit_juice"
+      ],
+      "capacity": 3,
+      "barPage": 2,
+      "barCapacity": 25,
+      "touchBoxes": {
+        "/relicBar/slot1/hit": {
+          "x": 168,
+          "y": -102,
+          "w": 66,
+          "h": 66,
+          "path": "/relicBar/slot1/hit"
+        },
+        "/relicBar/previous/hit": {
+          "x": 102,
+          "y": -102,
+          "w": 66,
+          "h": 66,
+          "path": "/relicBar/previous/hit"
+        },
+        "/relicBar/next/hit": {
+          "x": 1818,
+          "y": -102,
+          "w": 66,
+          "h": 66,
+          "path": "/relicBar/next/hit"
+        },
+        "/relicPanel/close/hit": {
+          "x": 1695,
+          "y": -138,
+          "w": 132,
+          "h": 72,
+          "path": "/relicPanel/close/hit"
+        },
+        "/relicPanel/previous/hit": {
+          "x": 315,
+          "y": -942,
+          "w": 300,
+          "h": 72,
+          "path": "/relicPanel/previous/hit"
+        },
+        "/relicPanel/next/hit": {
+          "x": 1605,
+          "y": -942,
+          "w": 300,
+          "h": 72,
+          "path": "/relicPanel/next/hit"
+        }
+      }
+    },
+    "unknownTextures": 8,
+    "textOverflows": [],
+    "hits": [
+      {
+        "path": "/stage/nodePanel/shopDismiss",
+        "box": [
+          0.0,
+          100.0,
+          1920.0,
+          1180.0
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/eventView/option1/hit",
+        "box": [
+          772.5,
+          904.0,
+          1822.5,
+          970.0
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/eventView/option2/hit",
+        "box": [
+          772.5,
+          986.5,
+          1822.5,
+          1052.5
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/runRoute/hit",
+        "box": [
+          1583.70703125,
+          100.0,
+          1667.70703125,
+          166.0
+        ]
+      },
+      {
+        "path": "/stage/deckEntry/open/hit",
+        "box": [
+          1680.1171875,
+          96.25,
+          1800.1171875,
+          168.25
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          135.0,
+          169.0,
+          201.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/previous/hit",
+        "box": [
+          69.0,
+          169.0,
+          135.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/potionEntry/slot1/hit",
+        "box": [
+          476.6484375,
+          99.25,
+          550.1484375,
+          165.25
+        ]
+      },
+      {
+        "path": "/stage/potionEntry/slot3/hit",
+        "box": [
+          623.6484375,
+          99.25,
+          697.1484375,
+          165.25
+        ]
+      },
+      {
+        "path": "/stage/exitEntry/open/hit",
+        "box": [
+          1815.0,
+          96.25,
+          1887.0,
+          168.25
+        ]
+      }
+    ],
+    "controlBounds": [
+      {
+        "path": "/stage/nodePanel/eventView/name",
+        "box": [
+          75.0,
+          290.5,
+          1005.0,
+          380.5
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/nodePanel/eventView/body",
+        "box": [
+          772.5,
+          418.0,
+          1822.5,
+          688.0
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/nodePanel/officialRunBar/steel",
+        "box": [
+          0.0,
+          100.0,
+          1920.0,
+          164.5
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape0",
+        "box": [
+          143.679999999981,
+          177.679999999981,
+          192.320000000019,
+          226.320000000019
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape1",
+        "box": [
+          147.839999999984,
+          181.839999999984,
+          188.160000000016,
+          222.160000000016
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape2",
+        "box": [
+          152.3199999999875,
+          186.3199999999875,
+          183.6800000000125,
+          217.6800000000125
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape3",
+        "box": [
+          157.1199999999915,
+          191.1199999999915,
+          178.8800000000085,
+          212.8800000000085
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape4",
+        "box": [
+          166.0799999999985,
+          185.359999999987,
+          169.9200000000015,
+          218.640000000013
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape5",
+        "box": [
+          151.359999999987,
+          200.0799999999985,
+          184.640000000013,
+          203.9200000000015
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape6",
+        "box": [
+          166.0799999999985,
+          188.239999999989,
+          169.9200000000015,
+          215.760000000011
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape7",
+        "box": [
+          166.0799999999985,
+          188.239999999989,
+          169.9200000000015,
+          215.760000000011
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape8",
+        "box": [
+          162.5599999999955,
+          196.5599999999955,
+          173.4400000000045,
+          207.4400000000045
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          135.0,
+          169.0,
+          201.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      }
+    ]
+  },
+  {
+    "scene": "after-pc-detail",
+    "meta": {
+      "mode": "node",
+      "phase": "node",
+      "hp": 80,
+      "maxHp": 80,
+      "gold": 99,
+      "floor": 2,
+      "relics": [
+        "burning_blood",
+        "omamori",
+        "matryoshka",
+        "anchor",
+        "potion_belt",
+        "ancient_tea_set",
+        "lizard_tail",
+        "maw_bank",
+        "winged_greaves",
+        "nloths_mask",
+        "bag_of_preparation",
+        "happy_flower",
+        "vajra",
+        "orichalcum",
+        "pen_nib",
+        "nunchaku",
+        "horn_cleat",
+        "art_of_war",
+        "centennial_puzzle",
+        "lantern",
+        "preserved_insect",
+        "oddly_smooth_stone",
+        "strawberry",
+        "pear",
+        "mango",
+        "stone_calendar"
+      ],
+      "potions": [
+        "fruit_juice"
+      ],
+      "capacity": 3,
+      "barPage": 2,
+      "barCapacity": 25,
+      "selectedIndex": 26,
+      "touchBoxes": {
+        "/relicBar/slot1/hit": {
+          "x": 168,
+          "y": -102,
+          "w": 66,
+          "h": 66,
+          "path": "/relicBar/slot1/hit"
+        },
+        "/relicBar/previous/hit": {
+          "x": 102,
+          "y": -102,
+          "w": 66,
+          "h": 66,
+          "path": "/relicBar/previous/hit"
+        },
+        "/relicBar/next/hit": {
+          "x": 1818,
+          "y": -102,
+          "w": 66,
+          "h": 66,
+          "path": "/relicBar/next/hit"
+        },
+        "/relicPanel/close/hit": {
+          "x": 1293,
+          "y": -333,
+          "w": 132,
+          "h": 72,
+          "path": "/relicPanel/close/hit"
+        },
+        "/relicPanel/previous/hit": {
+          "x": 708,
+          "y": -757.5,
+          "w": 300,
+          "h": 72,
+          "path": "/relicPanel/previous/hit"
+        },
+        "/relicPanel/next/hit": {
+          "x": 1212,
+          "y": -757.5,
+          "w": 300,
+          "h": 72,
+          "path": "/relicPanel/next/hit"
+        }
+      }
+    },
+    "unknownTextures": 8,
+    "textOverflows": [],
+    "hits": [
+      {
+        "path": "/stage/relicPanel/contentBlocker",
+        "box": [
+          540.0,
+          383.5,
+          1380.0,
+          896.5
+        ]
+      },
+      {
+        "path": "/stage/relicPanel/close/hit",
+        "box": [
+          1227.0,
+          397.0,
+          1359.0,
+          469.0
+        ]
+      },
+      {
+        "path": "/stage/relicPanel/previous/hit",
+        "box": [
+          558.0,
+          821.5,
+          858.0,
+          893.5
+        ]
+      }
+    ],
+    "controlBounds": [
+      {
+        "path": "/stage/nodePanel/eventView/name",
+        "box": [
+          75.0,
+          290.5,
+          1005.0,
+          380.5
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/nodePanel/eventView/body",
+        "box": [
+          772.5,
+          418.0,
+          1822.5,
+          688.0
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/nodePanel/officialRunBar/steel",
+        "box": [
+          0.0,
+          100.0,
+          1920.0,
+          164.5
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape0",
+        "box": [
+          143.679999999981,
+          177.679999999981,
+          192.320000000019,
+          226.320000000019
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape1",
+        "box": [
+          147.839999999984,
+          181.839999999984,
+          188.160000000016,
+          222.160000000016
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape2",
+        "box": [
+          152.3199999999875,
+          186.3199999999875,
+          183.6800000000125,
+          217.6800000000125
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape3",
+        "box": [
+          157.1199999999915,
+          191.1199999999915,
+          178.8800000000085,
+          212.8800000000085
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape4",
+        "box": [
+          166.0799999999985,
+          185.359999999987,
+          169.9200000000015,
+          218.640000000013
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape5",
+        "box": [
+          151.359999999987,
+          200.0799999999985,
+          184.640000000013,
+          203.9200000000015
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape6",
+        "box": [
+          166.0799999999985,
+          188.239999999989,
+          169.9200000000015,
+          215.760000000011
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape7",
+        "box": [
+          166.0799999999985,
+          188.239999999989,
+          169.9200000000015,
+          215.760000000011
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape8",
+        "box": [
+          162.5599999999955,
+          196.5599999999955,
+          173.4400000000045,
+          207.4400000000045
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          135.0,
+          169.0,
+          201.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      }
+    ]
+  },
+  {
+    "scene": "after-pc-detail-return",
+    "meta": {
+      "mode": "node",
+      "phase": "node",
+      "hp": 80,
+      "maxHp": 80,
+      "gold": 99,
+      "floor": 2,
+      "relics": [
+        "burning_blood",
+        "omamori",
+        "matryoshka",
+        "anchor",
+        "potion_belt",
+        "ancient_tea_set",
+        "lizard_tail",
+        "maw_bank",
+        "winged_greaves",
+        "nloths_mask",
+        "bag_of_preparation",
+        "happy_flower",
+        "vajra",
+        "orichalcum",
+        "pen_nib",
+        "nunchaku",
+        "horn_cleat",
+        "art_of_war",
+        "centennial_puzzle",
+        "lantern",
+        "preserved_insect",
+        "oddly_smooth_stone",
+        "strawberry",
+        "pear",
+        "mango",
+        "stone_calendar"
+      ],
+      "potions": [
+        "fruit_juice"
+      ],
+      "capacity": 3,
+      "barPage": 2,
+      "barCapacity": 25,
+      "touchBoxes": {
+        "/relicBar/slot1/hit": {
+          "x": 168,
+          "y": -102,
+          "w": 66,
+          "h": 66,
+          "path": "/relicBar/slot1/hit"
+        },
+        "/relicBar/previous/hit": {
+          "x": 102,
+          "y": -102,
+          "w": 66,
+          "h": 66,
+          "path": "/relicBar/previous/hit"
+        },
+        "/relicBar/next/hit": {
+          "x": 1818,
+          "y": -102,
+          "w": 66,
+          "h": 66,
+          "path": "/relicBar/next/hit"
+        },
+        "/relicPanel/close/hit": {
+          "x": 1293,
+          "y": -333,
+          "w": 132,
+          "h": 72,
+          "path": "/relicPanel/close/hit"
+        },
+        "/relicPanel/previous/hit": {
+          "x": 708,
+          "y": -757.5,
+          "w": 300,
+          "h": 72,
+          "path": "/relicPanel/previous/hit"
+        },
+        "/relicPanel/next/hit": {
+          "x": 1212,
+          "y": -757.5,
+          "w": 300,
+          "h": 72,
+          "path": "/relicPanel/next/hit"
+        }
+      }
+    },
+    "unknownTextures": 8,
+    "textOverflows": [],
+    "hits": [
+      {
+        "path": "/stage/nodePanel/shopDismiss",
+        "box": [
+          0.0,
+          100.0,
+          1920.0,
+          1180.0
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/eventView/option1/hit",
+        "box": [
+          772.5,
+          904.0,
+          1822.5,
+          970.0
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/eventView/option2/hit",
+        "box": [
+          772.5,
+          986.5,
+          1822.5,
+          1052.5
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/runRoute/hit",
+        "box": [
+          1583.70703125,
+          100.0,
+          1667.70703125,
+          166.0
+        ]
+      },
+      {
+        "path": "/stage/deckEntry/open/hit",
+        "box": [
+          1680.1171875,
+          96.25,
+          1800.1171875,
+          168.25
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          135.0,
+          169.0,
+          201.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/relicBar/previous/hit",
+        "box": [
+          69.0,
+          169.0,
+          135.0,
+          235.0
+        ]
+      },
+      {
+        "path": "/stage/potionEntry/slot1/hit",
+        "box": [
+          476.6484375,
+          99.25,
+          550.1484375,
+          165.25
+        ]
+      },
+      {
+        "path": "/stage/potionEntry/slot3/hit",
+        "box": [
+          623.6484375,
+          99.25,
+          697.1484375,
+          165.25
+        ]
+      },
+      {
+        "path": "/stage/exitEntry/open/hit",
+        "box": [
+          1815.0,
+          96.25,
+          1887.0,
+          168.25
+        ]
+      }
+    ],
+    "controlBounds": [
+      {
+        "path": "/stage/nodePanel/eventView/name",
+        "box": [
+          75.0,
+          290.5,
+          1005.0,
+          380.5
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/nodePanel/eventView/body",
+        "box": [
+          772.5,
+          418.0,
+          1822.5,
+          688.0
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/nodePanel/officialRunBar/steel",
+        "box": [
+          0.0,
+          100.0,
+          1920.0,
+          164.5
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape0",
+        "box": [
+          143.679999999981,
+          177.679999999981,
+          192.320000000019,
+          226.320000000019
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape1",
+        "box": [
+          147.839999999984,
+          181.839999999984,
+          188.160000000016,
+          222.160000000016
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape2",
+        "box": [
+          152.3199999999875,
+          186.3199999999875,
+          183.6800000000125,
+          217.6800000000125
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape3",
+        "box": [
+          157.1199999999915,
+          191.1199999999915,
+          178.8800000000085,
+          212.8800000000085
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape4",
+        "box": [
+          166.0799999999985,
+          185.359999999987,
+          169.9200000000015,
+          218.640000000013
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape5",
+        "box": [
+          151.359999999987,
+          200.0799999999985,
+          184.640000000013,
+          203.9200000000015
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape6",
+        "box": [
+          166.0799999999985,
+          188.239999999989,
+          169.9200000000015,
+          215.760000000011
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape7",
+        "box": [
+          166.0799999999985,
+          188.239999999989,
+          169.9200000000015,
+          215.760000000011
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape8",
+        "box": [
+          162.5599999999955,
+          196.5599999999955,
+          173.4400000000045,
+          207.4400000000045
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          135.0,
+          169.0,
+          201.0,
+          235.0
+        ],
+        "kind": "cursorArea"
+      }
+    ]
+  },
+  {
+    "scene": "after-phone-map5",
+    "meta": {
+      "mode": "map",
+      "phase": "map",
+      "hp": 80,
+      "maxHp": 80,
+      "gold": 99,
+      "floor": 1,
+      "relics": [
+        "burning_blood",
+        "omamori",
+        "matryoshka",
+        "anchor",
+        "potion_belt"
+      ],
+      "potions": [
+        "fruit_juice"
+      ],
+      "capacity": 3,
+      "barPage": 1,
+      "barCapacity": 11,
+      "touchBoxes": {
+        "/relicBar/slot1/hit": {
+          "x": 528.025,
+          "y": -242.35,
+          "w": 137.55,
+          "h": 137.55,
+          "path": "/relicBar/slot1/hit"
+        },
+        "/relicBar/previous/hit": {
+          "x": 377.375,
+          "y": -242.35,
+          "w": 137.55,
+          "h": 137.55,
+          "path": "/relicBar/previous/hit"
+        },
+        "/relicBar/next/hit": {
+          "x": 2185.175,
+          "y": -242.35,
+          "w": 137.55,
+          "h": 137.55,
+          "path": "/relicBar/next/hit"
+        },
+        "/relicPanel/close/hit": {
+          "x": 2080.375,
+          "y": -150.65,
+          "w": 144.1,
+          "h": 78.6,
+          "path": "/relicPanel/close/hit"
+        },
+        "/relicPanel/previous/hit": {
+          "x": 573.875,
+          "y": -1028.35,
+          "w": 327.5,
+          "h": 78.6,
+          "path": "/relicPanel/previous/hit"
+        },
+        "/relicPanel/next/hit": {
+          "x": 1982.125,
+          "y": -1028.35,
+          "w": 327.5,
+          "h": 78.6,
+          "path": "/relicPanel/next/hit"
+        }
+      }
+    },
+    "unknownTextures": 44,
+    "textOverflows": [],
+    "hits": [
+      {
+        "path": "/stage/mapPanel/mapGroup1/dragArea",
+        "box": [
+          524.75,
+          411.12499999999994,
+          1998.5,
+          1193.85
+        ]
+      },
+      {
+        "path": "/stage/mapPanel/mapGroup3/node1/hit",
+        "box": [
+          865.35,
+          1049.75,
+          957.0500000000001,
+          1141.4499999999998
+        ]
+      },
+      {
+        "path": "/stage/mapPanel/mapGroup3/node2/hit",
+        "box": [
+          1232.15,
+          1049.75,
+          1323.85,
+          1141.4499999999998
+        ]
+      },
+      {
+        "path": "/stage/mapPanel/resourceHints/hp/hit",
+        "box": [
+          457.61249999999995,
+          132.75,
+          613.175,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/mapPanel/resourceHints/gold/hit",
+        "box": [
+          659.84375,
+          132.75,
+          797.39375,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/mapPanel/mapRoute/hit",
+        "box": [
+          1792.175,
+          132.75,
+          1929.7250000000001,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/deckEntry/open/hit",
+        "box": [
+          1949.375,
+          132.75,
+          2086.925,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          459.25,
+          273.57500000000005,
+          596.8,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot2/hit",
+        "box": [
+          609.9,
+          273.57500000000005,
+          747.4499999999999,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot3/hit",
+        "box": [
+          760.5500000000001,
+          273.57500000000005,
+          898.1,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot4/hit",
+        "box": [
+          911.2,
+          273.57500000000005,
+          1048.75,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot5/hit",
+        "box": [
+          1061.85,
+          273.57500000000005,
+          1199.4,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/potionEntry/slot1/hit",
+        "box": [
+          812.95,
+          132.75,
+          950.5,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/potionEntry/slot3/hit",
+        "box": [
+          1114.25,
+          132.75,
+          1251.8000000000002,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/exitEntry/open/hit",
+        "box": [
+          2106.575,
+          132.75,
+          2244.125,
+          270.3
+        ]
+      }
+    ],
+    "controlBounds": [
+      {
+        "path": "/stage/mapPanel/officialRunBar/steel",
+        "box": [
+          230.0,
+          100.0,
+          2326.0,
+          270.3
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/mapPanel/mapRoute/hit",
+        "box": [
+          1792.175,
+          132.75,
+          1929.7250000000001,
+          270.3
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape0",
+        "box": [
+          501.82499999998197,
+          332.7433333333235,
+          522.7849999999979,
+          365.9300000000165
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape1",
+        "box": [
+          532.391666666668,
+          337.1099999999975,
+          555.098333333352,
+          368.55000000002246
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape2",
+        "box": [
+          509.6849999999855,
+          307.4166666666415,
+          546.3650000000144,
+          345.8433333333385
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape3",
+        "box": [
+          509.6849999999855,
+          345.843333333332,
+          546.3650000000144,
+          366.80333333334795
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape4",
+        "box": [
+          514.0516666666599,
+          315.2766666666415,
+          531.51833333334,
+          344.96999999999855
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape5",
+        "box": [
+          521.9116666666639,
+          342.34999999999997,
+          537.631666666676,
+          359.81666666667996
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          459.25,
+          273.57500000000005,
+          596.8,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot2/icon",
+        "box": [
+          643.7416666666395,
+          307.4166666666395,
+          713.6083333333604,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot2/counter",
+        "box": [
+          645.925,
+          329.25,
+          711.425,
+          388.20000000000005
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/relicBar/slot2/hit",
+        "box": [
+          609.9,
+          273.57500000000005,
+          747.4499999999999,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape0",
+        "box": [
+          805.9196666666504,
+          329.075333333321,
+          838.7570000000095,
+          369.598000000019
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape1",
+        "box": [
+          810.4609999999875,
+          315.1019999999775,
+          834.2156666666724,
+          338.85666666666253
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape2",
+        "box": [
+          813.9543333333235,
+          318.24599999998003,
+          830.7223333333365,
+          335.71266666666
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape3",
+        "box": [
+          813.255666666656,
+          336.7606666666575,
+          831.4210000000039,
+          360.51533333334254
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape4",
+        "box": [
+          818.4956666666603,
+          343.74733333333666,
+          826.1809999999996,
+          352.13133333334326
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape5",
+        "box": [
+          832.818333333332,
+          342.3499999999955,
+          853.778333333348,
+          370.2966666666845
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape6",
+        "box": [
+          834.9143333333335,
+          331.8699999999935,
+          851.6823333333465,
+          348.6380000000065
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape7",
+        "box": [
+          837.7090000000024,
+          333.6166666666585,
+          848.8876666666775,
+          345.4940000000015
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape8",
+        "box": [
+          837.7090000000024,
+          347.9393333333405,
+          848.8876666666775,
+          363.3100000000195
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape9",
+        "box": [
+          817.4476666666556,
+          324.1846666666555,
+          820.2423333333245,
+          326.97933333332446
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape10",
+        "box": [
+          824.4343333333255,
+          324.1846666666555,
+          827.2289999999945,
+          326.97933333332446
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape11",
+        "box": [
+          839.4556666666792,
+          337.8086666666592,
+          841.5516666666808,
+          339.9046666666608
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape12",
+        "box": [
+          845.0450000000092,
+          337.8086666666592,
+          847.1410000000108,
+          339.9046666666608
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/counter",
+        "box": [
+          796.575,
+          329.25,
+          862.075,
+          388.20000000000005
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/relicBar/slot3/hit",
+        "box": [
+          760.5500000000001,
+          273.57500000000005,
+          898.1,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot4/icon",
+        "box": [
+          945.0416666666396,
+          307.4166666666395,
+          1014.9083333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot4/hit",
+        "box": [
+          911.2,
+          273.57500000000005,
+          1048.75,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot5/icon",
+        "box": [
+          1095.6916666666395,
+          307.4166666666395,
+          1165.5583333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot5/hit",
+        "box": [
+          1061.85,
+          273.57500000000005,
+          1199.4,
+          411.125
+        ],
+        "kind": "cursorArea"
+      }
+    ]
+  },
+  {
+    "scene": "after-phone-event5",
+    "meta": {
+      "mode": "node",
+      "phase": "node",
+      "hp": 80,
+      "maxHp": 80,
+      "gold": 99,
+      "floor": 2,
+      "relics": [
+        "burning_blood",
+        "omamori",
+        "matryoshka",
+        "anchor",
+        "potion_belt"
+      ],
+      "potions": [
+        "fruit_juice"
+      ],
+      "capacity": 3,
+      "barPage": 1,
+      "barCapacity": 11,
+      "touchBoxes": {
+        "/relicBar/slot1/hit": {
+          "x": 528.025,
+          "y": -242.35,
+          "w": 137.55,
+          "h": 137.55,
+          "path": "/relicBar/slot1/hit"
+        },
+        "/relicBar/previous/hit": {
+          "x": 377.375,
+          "y": -242.35,
+          "w": 137.55,
+          "h": 137.55,
+          "path": "/relicBar/previous/hit"
+        },
+        "/relicBar/next/hit": {
+          "x": 2185.175,
+          "y": -242.35,
+          "w": 137.55,
+          "h": 137.55,
+          "path": "/relicBar/next/hit"
+        },
+        "/relicPanel/close/hit": {
+          "x": 2080.375,
+          "y": -150.65,
+          "w": 144.1,
+          "h": 78.6,
+          "path": "/relicPanel/close/hit"
+        },
+        "/relicPanel/previous/hit": {
+          "x": 573.875,
+          "y": -1028.35,
+          "w": 327.5,
+          "h": 78.6,
+          "path": "/relicPanel/previous/hit"
+        },
+        "/relicPanel/next/hit": {
+          "x": 1982.125,
+          "y": -1028.35,
+          "w": 327.5,
+          "h": 78.6,
+          "path": "/relicPanel/next/hit"
+        }
+      }
+    },
+    "unknownTextures": 11,
+    "textOverflows": [],
+    "hits": [
+      {
+        "path": "/stage/nodePanel/shopDismiss",
+        "box": [
+          230.0,
+          100.0,
+          2326.0,
+          1279.0
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/eventView/option1/hit",
+        "box": [
+          1073.3125,
+          1082.5,
+          2219.5625,
+          1154.5500000000002
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/eventView/option2/hit",
+        "box": [
+          1073.3125,
+          1172.5625,
+          2219.5625,
+          1244.6125000000002
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/runRoute/hit",
+        "box": [
+          1792.175,
+          132.75,
+          1929.7250000000001,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/deckEntry/open/hit",
+        "box": [
+          1949.375,
+          132.75,
+          2086.925,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          459.25,
+          273.57500000000005,
+          596.8,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot2/hit",
+        "box": [
+          609.9,
+          273.57500000000005,
+          747.4499999999999,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot3/hit",
+        "box": [
+          760.5500000000001,
+          273.57500000000005,
+          898.1,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot4/hit",
+        "box": [
+          911.2,
+          273.57500000000005,
+          1048.75,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot5/hit",
+        "box": [
+          1061.85,
+          273.57500000000005,
+          1199.4,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/potionEntry/slot1/hit",
+        "box": [
+          812.95,
+          132.75,
+          950.5,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/potionEntry/slot3/hit",
+        "box": [
+          1114.25,
+          132.75,
+          1251.8000000000002,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/exitEntry/open/hit",
+        "box": [
+          2106.575,
+          132.75,
+          2244.125,
+          270.3
+        ]
+      }
+    ],
+    "controlBounds": [
+      {
+        "path": "/stage/nodePanel/eventView/name",
+        "box": [
+          311.875,
+          412.7625,
+          1327.125,
+          511.0125
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/nodePanel/eventView/body",
+        "box": [
+          1073.3125,
+          551.95,
+          2219.5625,
+          846.7
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/nodePanel/officialRunBar/steel",
+        "box": [
+          230.0,
+          100.0,
+          2326.0,
+          270.3
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape0",
+        "box": [
+          501.82499999998197,
+          332.7433333333235,
+          522.7849999999979,
+          365.9300000000165
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape1",
+        "box": [
+          532.391666666668,
+          337.1099999999975,
+          555.098333333352,
+          368.55000000002246
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape2",
+        "box": [
+          509.6849999999855,
+          307.4166666666415,
+          546.3650000000144,
+          345.8433333333385
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape3",
+        "box": [
+          509.6849999999855,
+          345.843333333332,
+          546.3650000000144,
+          366.80333333334795
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape4",
+        "box": [
+          514.0516666666599,
+          315.2766666666415,
+          531.51833333334,
+          344.96999999999855
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape5",
+        "box": [
+          521.9116666666639,
+          342.34999999999997,
+          537.631666666676,
+          359.81666666667996
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          459.25,
+          273.57500000000005,
+          596.8,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot2/icon",
+        "box": [
+          643.7416666666395,
+          307.4166666666395,
+          713.6083333333604,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot2/counter",
+        "box": [
+          645.925,
+          329.25,
+          711.425,
+          388.20000000000005
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/relicBar/slot2/hit",
+        "box": [
+          609.9,
+          273.57500000000005,
+          747.4499999999999,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape0",
+        "box": [
+          805.9196666666504,
+          329.075333333321,
+          838.7570000000095,
+          369.598000000019
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape1",
+        "box": [
+          810.4609999999875,
+          315.1019999999775,
+          834.2156666666724,
+          338.85666666666253
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape2",
+        "box": [
+          813.9543333333235,
+          318.24599999998003,
+          830.7223333333365,
+          335.71266666666
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape3",
+        "box": [
+          813.255666666656,
+          336.7606666666575,
+          831.4210000000039,
+          360.51533333334254
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape4",
+        "box": [
+          818.4956666666603,
+          343.74733333333666,
+          826.1809999999996,
+          352.13133333334326
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape5",
+        "box": [
+          832.818333333332,
+          342.3499999999955,
+          853.778333333348,
+          370.2966666666845
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape6",
+        "box": [
+          834.9143333333335,
+          331.8699999999935,
+          851.6823333333465,
+          348.6380000000065
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape7",
+        "box": [
+          837.7090000000024,
+          333.6166666666585,
+          848.8876666666775,
+          345.4940000000015
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape8",
+        "box": [
+          837.7090000000024,
+          347.9393333333405,
+          848.8876666666775,
+          363.3100000000195
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape9",
+        "box": [
+          817.4476666666556,
+          324.1846666666555,
+          820.2423333333245,
+          326.97933333332446
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape10",
+        "box": [
+          824.4343333333255,
+          324.1846666666555,
+          827.2289999999945,
+          326.97933333332446
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape11",
+        "box": [
+          839.4556666666792,
+          337.8086666666592,
+          841.5516666666808,
+          339.9046666666608
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape12",
+        "box": [
+          845.0450000000092,
+          337.8086666666592,
+          847.1410000000108,
+          339.9046666666608
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/counter",
+        "box": [
+          796.575,
+          329.25,
+          862.075,
+          388.20000000000005
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/relicBar/slot3/hit",
+        "box": [
+          760.5500000000001,
+          273.57500000000005,
+          898.1,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot4/icon",
+        "box": [
+          945.0416666666396,
+          307.4166666666395,
+          1014.9083333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot4/hit",
+        "box": [
+          911.2,
+          273.57500000000005,
+          1048.75,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot5/icon",
+        "box": [
+          1095.6916666666395,
+          307.4166666666395,
+          1165.5583333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot5/hit",
+        "box": [
+          1061.85,
+          273.57500000000005,
+          1199.4,
+          411.125
+        ],
+        "kind": "cursorArea"
+      }
+    ]
+  },
+  {
+    "scene": "after-phone-event26-page1",
+    "meta": {
+      "mode": "node",
+      "phase": "node",
+      "hp": 80,
+      "maxHp": 80,
+      "gold": 99,
+      "floor": 2,
+      "relics": [
+        "burning_blood",
+        "omamori",
+        "matryoshka",
+        "anchor",
+        "potion_belt",
+        "ancient_tea_set",
+        "lizard_tail",
+        "maw_bank",
+        "winged_greaves",
+        "nloths_mask",
+        "bag_of_preparation",
+        "happy_flower",
+        "vajra",
+        "orichalcum",
+        "pen_nib",
+        "nunchaku",
+        "horn_cleat",
+        "art_of_war",
+        "centennial_puzzle",
+        "lantern",
+        "preserved_insect",
+        "oddly_smooth_stone",
+        "strawberry",
+        "pear",
+        "mango",
+        "stone_calendar"
+      ],
+      "potions": [
+        "fruit_juice"
+      ],
+      "capacity": 3,
+      "barPage": 1,
+      "barCapacity": 11,
+      "touchBoxes": {
+        "/relicBar/slot1/hit": {
+          "x": 528.025,
+          "y": -242.35,
+          "w": 137.55,
+          "h": 137.55,
+          "path": "/relicBar/slot1/hit"
+        },
+        "/relicBar/previous/hit": {
+          "x": 377.375,
+          "y": -242.35,
+          "w": 137.55,
+          "h": 137.55,
+          "path": "/relicBar/previous/hit"
+        },
+        "/relicBar/next/hit": {
+          "x": 2185.175,
+          "y": -242.35,
+          "w": 137.55,
+          "h": 137.55,
+          "path": "/relicBar/next/hit"
+        },
+        "/relicPanel/close/hit": {
+          "x": 2080.375,
+          "y": -150.65,
+          "w": 144.1,
+          "h": 78.6,
+          "path": "/relicPanel/close/hit"
+        },
+        "/relicPanel/previous/hit": {
+          "x": 573.875,
+          "y": -1028.35,
+          "w": 327.5,
+          "h": 78.6,
+          "path": "/relicPanel/previous/hit"
+        },
+        "/relicPanel/next/hit": {
+          "x": 1982.125,
+          "y": -1028.35,
+          "w": 327.5,
+          "h": 78.6,
+          "path": "/relicPanel/next/hit"
+        }
+      }
+    },
+    "unknownTextures": 14,
+    "textOverflows": [],
+    "hits": [
+      {
+        "path": "/stage/nodePanel/shopDismiss",
+        "box": [
+          230.0,
+          100.0,
+          2326.0,
+          1279.0
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/eventView/option1/hit",
+        "box": [
+          1073.3125,
+          1082.5,
+          2219.5625,
+          1154.5500000000002
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/eventView/option2/hit",
+        "box": [
+          1073.3125,
+          1172.5625,
+          2219.5625,
+          1244.6125000000002
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/runRoute/hit",
+        "box": [
+          1792.175,
+          132.75,
+          1929.7250000000001,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/deckEntry/open/hit",
+        "box": [
+          1949.375,
+          132.75,
+          2086.925,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          459.25,
+          273.57500000000005,
+          596.8,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot2/hit",
+        "box": [
+          609.9,
+          273.57500000000005,
+          747.4499999999999,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot3/hit",
+        "box": [
+          760.5500000000001,
+          273.57500000000005,
+          898.1,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot4/hit",
+        "box": [
+          911.2,
+          273.57500000000005,
+          1048.75,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot5/hit",
+        "box": [
+          1061.85,
+          273.57500000000005,
+          1199.4,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot6/hit",
+        "box": [
+          1212.5,
+          273.57500000000005,
+          1350.0500000000002,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot7/hit",
+        "box": [
+          1363.1499999999999,
+          273.57500000000005,
+          1500.7,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot8/hit",
+        "box": [
+          1513.8,
+          273.57500000000005,
+          1651.3500000000001,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot9/hit",
+        "box": [
+          1664.4499999999998,
+          273.57500000000005,
+          1802.0,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot10/hit",
+        "box": [
+          1815.1,
+          273.57500000000005,
+          1952.65,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot11/hit",
+        "box": [
+          1965.75,
+          273.57500000000005,
+          2103.3,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/next/hit",
+        "box": [
+          2116.4,
+          273.57500000000005,
+          2253.9500000000003,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/potionEntry/slot1/hit",
+        "box": [
+          812.95,
+          132.75,
+          950.5,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/potionEntry/slot3/hit",
+        "box": [
+          1114.25,
+          132.75,
+          1251.8000000000002,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/exitEntry/open/hit",
+        "box": [
+          2106.575,
+          132.75,
+          2244.125,
+          270.3
+        ]
+      }
+    ],
+    "controlBounds": [
+      {
+        "path": "/stage/nodePanel/eventView/name",
+        "box": [
+          311.875,
+          412.7625,
+          1327.125,
+          511.0125
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/nodePanel/eventView/body",
+        "box": [
+          1073.3125,
+          551.95,
+          2219.5625,
+          846.7
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/nodePanel/officialRunBar/steel",
+        "box": [
+          230.0,
+          100.0,
+          2326.0,
+          270.3
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape0",
+        "box": [
+          501.82499999998197,
+          332.7433333333235,
+          522.7849999999979,
+          365.9300000000165
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape1",
+        "box": [
+          532.391666666668,
+          337.1099999999975,
+          555.098333333352,
+          368.55000000002246
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape2",
+        "box": [
+          509.6849999999855,
+          307.4166666666415,
+          546.3650000000144,
+          345.8433333333385
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape3",
+        "box": [
+          509.6849999999855,
+          345.843333333332,
+          546.3650000000144,
+          366.80333333334795
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape4",
+        "box": [
+          514.0516666666599,
+          315.2766666666415,
+          531.51833333334,
+          344.96999999999855
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/iconArt/shape5",
+        "box": [
+          521.9116666666639,
+          342.34999999999997,
+          537.631666666676,
+          359.81666666667996
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          459.25,
+          273.57500000000005,
+          596.8,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot2/icon",
+        "box": [
+          643.7416666666395,
+          307.4166666666395,
+          713.6083333333604,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot2/counter",
+        "box": [
+          645.925,
+          329.25,
+          711.425,
+          388.20000000000005
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/relicBar/slot2/hit",
+        "box": [
+          609.9,
+          273.57500000000005,
+          747.4499999999999,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape0",
+        "box": [
+          805.9196666666504,
+          329.075333333321,
+          838.7570000000095,
+          369.598000000019
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape1",
+        "box": [
+          810.4609999999875,
+          315.1019999999775,
+          834.2156666666724,
+          338.85666666666253
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape2",
+        "box": [
+          813.9543333333235,
+          318.24599999998003,
+          830.7223333333365,
+          335.71266666666
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape3",
+        "box": [
+          813.255666666656,
+          336.7606666666575,
+          831.4210000000039,
+          360.51533333334254
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape4",
+        "box": [
+          818.4956666666603,
+          343.74733333333666,
+          826.1809999999996,
+          352.13133333334326
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape5",
+        "box": [
+          832.818333333332,
+          342.3499999999955,
+          853.778333333348,
+          370.2966666666845
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape6",
+        "box": [
+          834.9143333333335,
+          331.8699999999935,
+          851.6823333333465,
+          348.6380000000065
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape7",
+        "box": [
+          837.7090000000024,
+          333.6166666666585,
+          848.8876666666775,
+          345.4940000000015
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape8",
+        "box": [
+          837.7090000000024,
+          347.9393333333405,
+          848.8876666666775,
+          363.3100000000195
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape9",
+        "box": [
+          817.4476666666556,
+          324.1846666666555,
+          820.2423333333245,
+          326.97933333332446
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape10",
+        "box": [
+          824.4343333333255,
+          324.1846666666555,
+          827.2289999999945,
+          326.97933333332446
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape11",
+        "box": [
+          839.4556666666792,
+          337.8086666666592,
+          841.5516666666808,
+          339.9046666666608
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/iconArt/shape12",
+        "box": [
+          845.0450000000092,
+          337.8086666666592,
+          847.1410000000108,
+          339.9046666666608
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/counter",
+        "box": [
+          796.575,
+          329.25,
+          862.075,
+          388.20000000000005
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/relicBar/slot3/hit",
+        "box": [
+          760.5500000000001,
+          273.57500000000005,
+          898.1,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot4/icon",
+        "box": [
+          945.0416666666396,
+          307.4166666666395,
+          1014.9083333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot4/hit",
+        "box": [
+          911.2,
+          273.57500000000005,
+          1048.75,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot5/icon",
+        "box": [
+          1095.6916666666395,
+          307.4166666666395,
+          1165.5583333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot5/hit",
+        "box": [
+          1061.85,
+          273.57500000000005,
+          1199.4,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot6/icon",
+        "box": [
+          1246.3416666666396,
+          307.4166666666395,
+          1316.2083333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/hit",
+        "box": [
+          1212.5,
+          273.57500000000005,
+          1350.0500000000002,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot7/iconArt/shape0",
+        "box": [
+          1408.8752880000193,
+          333.537018666657,
+          1444.1272133333805,
+          367.43353066668294
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/iconArt/shape1",
+        "box": [
+          1416.6713599999575,
+          335.57048799999103,
+          1440.3987786666426,
+          358.620200000009
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/iconArt/shape2",
+        "box": [
+          1408.875637333296,
+          321.672959999987,
+          1419.722437333304,
+          346.75649066667296
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/iconArt/shape3",
+        "box": [
+          1408.8756373333274,
+          310.826858666646,
+          1423.7900746666726,
+          329.130527999994
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/iconArt/shape4",
+        "box": [
+          1433.6196160000254,
+          344.38346933333946,
+          1453.2793973333746,
+          363.36554400002046
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/iconArt/shape5",
+        "box": [
+          1437.687253333362,
+          345.400728000002,
+          1449.211760000038,
+          356.92523466667797
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/iconArt/shape6",
+        "box": [
+          1413.620981333364,
+          355.23096800001224,
+          1420.400144000036,
+          357.9424933333478
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/iconArt/shape7",
+        "box": [
+          1411.2483093333306,
+          347.09569333333224,
+          1418.7051786666696,
+          349.8072186666678
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/iconArt/shape8",
+        "box": [
+          1409.8928960000305,
+          337.60430666666224,
+          1417.3497653333695,
+          340.3158319999978
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/hit",
+        "box": [
+          1363.1499999999999,
+          273.57500000000005,
+          1500.7,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot8/icon",
+        "box": [
+          1547.6416666666396,
+          307.4166666666395,
+          1617.5083333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot8/hit",
+        "box": [
+          1513.8,
+          273.57500000000005,
+          1651.3500000000001,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot9/iconArt/shape0",
+        "box": [
+          1725.5396666666588,
+          324.184666666651,
+          1745.102333333341,
+          364.707333333349
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot9/iconArt/shape1",
+        "box": [
+          1726.2383333333555,
+          356.32333333334253,
+          1754.1850000000445,
+          367.5020000000175
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot9/iconArt/shape2",
+        "box": [
+          1720.998333333324,
+          322.0886666666539,
+          1745.451666666676,
+          329.07533333332606
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot9/iconArt/shape3",
+        "box": [
+          1723.4436666666588,
+          351.7820000000047,
+          1743.006333333341,
+          356.67266666667524
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot9/iconArt/shape4",
+        "box": [
+          1702.8329999999896,
+          326.28066666665495,
+          1730.0810000000106,
+          338.856666666665
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot9/iconArt/shape5",
+        "box": [
+          1701.7849999999576,
+          335.3633333333325,
+          1725.5396666666425,
+          346.5420000000075
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot9/iconArt/shape6",
+        "box": [
+          1706.3263333332925,
+          343.74733333332955,
+          1725.1903333333075,
+          353.5286666666705
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot9/iconArt/shape7",
+        "box": [
+          1731.8276666666984,
+          330.4726666666575,
+          1736.0196666667016,
+          354.22733333334253
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot9/hit",
+        "box": [
+          1664.4499999999998,
+          273.57500000000005,
+          1802.0,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape0",
+        "box": [
+          1863.613666666651,
+          317.89666666664755,
+          1904.136333333349,
+          366.8033333333525
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape1",
+        "box": [
+          1869.2029999999886,
+          351.432666666669,
+          1898.5470000000114,
+          370.995333333351
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape2",
+        "box": [
+          1868.853666666696,
+          333.2673333333312,
+          1879.3336666667042,
+          338.85666666666884
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape3",
+        "box": [
+          1888.4163333332958,
+          333.2673333333312,
+          1898.896333333304,
+          338.85666666666884
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape4",
+        "box": [
+          1876.5389999999945,
+          351.43266666667836,
+          1891.2110000000055,
+          355.62466666668166
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape5",
+        "box": [
+          1873.7443333333256,
+          345.843333333336,
+          1894.0056666666744,
+          364.008666666684
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape6",
+        "box": [
+          1875.8403333332974,
+          350.73400000000834,
+          1882.1283333333024,
+          354.92600000001164
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape7",
+        "box": [
+          1885.6216666666976,
+          350.73400000000834,
+          1891.9096666667026,
+          354.92600000001164
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape8",
+        "box": [
+          1858.0243333333606,
+          315.1019999999835,
+          1873.3950000000395,
+          331.8699999999965
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape9",
+        "box": [
+          1894.3549999999605,
+          315.1019999999835,
+          1909.7256666666394,
+          331.8699999999965
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/iconArt/shape10",
+        "box": [
+          1881.4296666666648,
+          329.0753333333235,
+          1886.3203333333352,
+          345.8433333333365
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/hit",
+        "box": [
+          1815.1,
+          273.57500000000005,
+          1952.65,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot11/icon",
+        "box": [
+          1999.5916666666396,
+          307.4166666666395,
+          2069.4583333333608,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot11/hit",
+        "box": [
+          1965.75,
+          273.57500000000005,
+          2103.3,
+          411.125
+        ],
+        "kind": "cursorArea"
+      }
+    ]
+  },
+  {
+    "scene": "after-phone-event26-page2",
+    "meta": {
+      "mode": "node",
+      "phase": "node",
+      "hp": 80,
+      "maxHp": 80,
+      "gold": 99,
+      "floor": 2,
+      "relics": [
+        "burning_blood",
+        "omamori",
+        "matryoshka",
+        "anchor",
+        "potion_belt",
+        "ancient_tea_set",
+        "lizard_tail",
+        "maw_bank",
+        "winged_greaves",
+        "nloths_mask",
+        "bag_of_preparation",
+        "happy_flower",
+        "vajra",
+        "orichalcum",
+        "pen_nib",
+        "nunchaku",
+        "horn_cleat",
+        "art_of_war",
+        "centennial_puzzle",
+        "lantern",
+        "preserved_insect",
+        "oddly_smooth_stone",
+        "strawberry",
+        "pear",
+        "mango",
+        "stone_calendar"
+      ],
+      "potions": [
+        "fruit_juice"
+      ],
+      "capacity": 3,
+      "barPage": 2,
+      "barCapacity": 11,
+      "touchBoxes": {
+        "/relicBar/slot1/hit": {
+          "x": 528.025,
+          "y": -242.35,
+          "w": 137.55,
+          "h": 137.55,
+          "path": "/relicBar/slot1/hit"
+        },
+        "/relicBar/previous/hit": {
+          "x": 377.375,
+          "y": -242.35,
+          "w": 137.55,
+          "h": 137.55,
+          "path": "/relicBar/previous/hit"
+        },
+        "/relicBar/next/hit": {
+          "x": 2185.175,
+          "y": -242.35,
+          "w": 137.55,
+          "h": 137.55,
+          "path": "/relicBar/next/hit"
+        },
+        "/relicPanel/close/hit": {
+          "x": 2080.375,
+          "y": -150.65,
+          "w": 144.1,
+          "h": 78.6,
+          "path": "/relicPanel/close/hit"
+        },
+        "/relicPanel/previous/hit": {
+          "x": 573.875,
+          "y": -1028.35,
+          "w": 327.5,
+          "h": 78.6,
+          "path": "/relicPanel/previous/hit"
+        },
+        "/relicPanel/next/hit": {
+          "x": 1982.125,
+          "y": -1028.35,
+          "w": 327.5,
+          "h": 78.6,
+          "path": "/relicPanel/next/hit"
+        }
+      }
+    },
+    "unknownTextures": 18,
+    "textOverflows": [],
+    "hits": [
+      {
+        "path": "/stage/nodePanel/shopDismiss",
+        "box": [
+          230.0,
+          100.0,
+          2326.0,
+          1279.0
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/eventView/option1/hit",
+        "box": [
+          1073.3125,
+          1082.5,
+          2219.5625,
+          1154.5500000000002
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/eventView/option2/hit",
+        "box": [
+          1073.3125,
+          1172.5625,
+          2219.5625,
+          1244.6125000000002
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/runRoute/hit",
+        "box": [
+          1792.175,
+          132.75,
+          1929.7250000000001,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/deckEntry/open/hit",
+        "box": [
+          1949.375,
+          132.75,
+          2086.925,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          459.25,
+          273.57500000000005,
+          596.8,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot2/hit",
+        "box": [
+          609.9,
+          273.57500000000005,
+          747.4499999999999,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot3/hit",
+        "box": [
+          760.5500000000001,
+          273.57500000000005,
+          898.1,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot4/hit",
+        "box": [
+          911.2,
+          273.57500000000005,
+          1048.75,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot5/hit",
+        "box": [
+          1061.85,
+          273.57500000000005,
+          1199.4,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot6/hit",
+        "box": [
+          1212.5,
+          273.57500000000005,
+          1350.0500000000002,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot7/hit",
+        "box": [
+          1363.1499999999999,
+          273.57500000000005,
+          1500.7,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot8/hit",
+        "box": [
+          1513.8,
+          273.57500000000005,
+          1651.3500000000001,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot9/hit",
+        "box": [
+          1664.4499999999998,
+          273.57500000000005,
+          1802.0,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot10/hit",
+        "box": [
+          1815.1,
+          273.57500000000005,
+          1952.65,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot11/hit",
+        "box": [
+          1965.75,
+          273.57500000000005,
+          2103.3,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/previous/hit",
+        "box": [
+          308.6,
+          273.57500000000005,
+          446.15,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/next/hit",
+        "box": [
+          2116.4,
+          273.57500000000005,
+          2253.9500000000003,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/potionEntry/slot1/hit",
+        "box": [
+          812.95,
+          132.75,
+          950.5,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/potionEntry/slot3/hit",
+        "box": [
+          1114.25,
+          132.75,
+          1251.8000000000002,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/exitEntry/open/hit",
+        "box": [
+          2106.575,
+          132.75,
+          2244.125,
+          270.3
+        ]
+      }
+    ],
+    "controlBounds": [
+      {
+        "path": "/stage/nodePanel/eventView/name",
+        "box": [
+          311.875,
+          412.7625,
+          1327.125,
+          511.0125
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/nodePanel/eventView/body",
+        "box": [
+          1073.3125,
+          551.95,
+          2219.5625,
+          846.7
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/nodePanel/officialRunBar/steel",
+        "box": [
+          230.0,
+          100.0,
+          2326.0,
+          270.3
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/icon",
+        "box": [
+          493.09166666663947,
+          307.4166666666395,
+          562.9583333333604,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          459.25,
+          273.57500000000005,
+          596.8,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot2/icon",
+        "box": [
+          643.7416666666395,
+          307.4166666666395,
+          713.6083333333604,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot2/hit",
+        "box": [
+          609.9,
+          273.57500000000005,
+          747.4499999999999,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot3/icon",
+        "box": [
+          794.3916666666396,
+          307.4166666666395,
+          864.2583333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/hit",
+        "box": [
+          760.5500000000001,
+          273.57500000000005,
+          898.1,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot4/icon",
+        "box": [
+          945.0416666666396,
+          307.4166666666395,
+          1014.9083333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot4/hit",
+        "box": [
+          911.2,
+          273.57500000000005,
+          1048.75,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot5/icon",
+        "box": [
+          1095.6916666666395,
+          307.4166666666395,
+          1165.5583333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot5/hit",
+        "box": [
+          1061.85,
+          273.57500000000005,
+          1199.4,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape0",
+        "box": [
+          1260.3149999999837,
+          355.97400000001306,
+          1302.2350000000165,
+          365.0566666666869
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape1",
+        "box": [
+          1274.2883333333282,
+          329.0753333333215,
+          1288.261666666672,
+          359.81666666667854
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape2",
+        "box": [
+          1256.1229999999805,
+          329.0753333333195,
+          1306.4270000000197,
+          338.8566666666605
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape3",
+        "box": [
+          1252.9789999999286,
+          321.38999999998595,
+          1264.8563333332716,
+          339.555333333334
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape4",
+        "box": [
+          1297.6936666667286,
+          321.38999999998595,
+          1309.5710000000715,
+          339.555333333334
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape5",
+        "box": [
+          1260.3149999999837,
+          338.507333333332,
+          1302.2350000000165,
+          342.00066666666805
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape6",
+        "box": [
+          1269.0483333333648,
+          338.856666666668,
+          1273.939000000035,
+          352.83000000001203
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape7",
+        "box": [
+          1288.6109999999649,
+          338.856666666668,
+          1293.5016666666352,
+          352.83000000001203
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/hit",
+        "box": [
+          1212.5,
+          273.57500000000005,
+          1350.0500000000002,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot7/icon",
+        "box": [
+          1396.9916666666395,
+          307.4166666666395,
+          1466.8583333333604,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/hit",
+        "box": [
+          1363.1499999999999,
+          273.57500000000005,
+          1500.7,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot8/icon",
+        "box": [
+          1547.6416666666396,
+          307.4166666666395,
+          1617.5083333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot8/hit",
+        "box": [
+          1513.8,
+          273.57500000000005,
+          1651.3500000000001,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot9/icon",
+        "box": [
+          1698.2916666666395,
+          307.4166666666395,
+          1768.1583333333604,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot9/hit",
+        "box": [
+          1664.4499999999998,
+          273.57500000000005,
+          1802.0,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot10/icon",
+        "box": [
+          1848.9416666666395,
+          307.4166666666395,
+          1918.8083333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/hit",
+        "box": [
+          1815.1,
+          273.57500000000005,
+          1952.65,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot11/icon",
+        "box": [
+          1999.5916666666396,
+          307.4166666666395,
+          2069.4583333333608,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot11/hit",
+        "box": [
+          1965.75,
+          273.57500000000005,
+          2103.3,
+          411.125
+        ],
+        "kind": "cursorArea"
+      }
+    ]
+  },
+  {
+    "scene": "after-phone-detail",
+    "meta": {
+      "mode": "node",
+      "phase": "node",
+      "hp": 80,
+      "maxHp": 80,
+      "gold": 99,
+      "floor": 2,
+      "relics": [
+        "burning_blood",
+        "omamori",
+        "matryoshka",
+        "anchor",
+        "potion_belt",
+        "ancient_tea_set",
+        "lizard_tail",
+        "maw_bank",
+        "winged_greaves",
+        "nloths_mask",
+        "bag_of_preparation",
+        "happy_flower",
+        "vajra",
+        "orichalcum",
+        "pen_nib",
+        "nunchaku",
+        "horn_cleat",
+        "art_of_war",
+        "centennial_puzzle",
+        "lantern",
+        "preserved_insect",
+        "oddly_smooth_stone",
+        "strawberry",
+        "pear",
+        "mango",
+        "stone_calendar"
+      ],
+      "potions": [
+        "fruit_juice"
+      ],
+      "capacity": 3,
+      "barPage": 2,
+      "barCapacity": 11,
+      "selectedIndex": 12,
+      "touchBoxes": {
+        "/relicBar/slot1/hit": {
+          "x": 528.025,
+          "y": -242.35,
+          "w": 137.55,
+          "h": 137.55,
+          "path": "/relicBar/slot1/hit"
+        },
+        "/relicBar/previous/hit": {
+          "x": 377.375,
+          "y": -242.35,
+          "w": 137.55,
+          "h": 137.55,
+          "path": "/relicBar/previous/hit"
+        },
+        "/relicBar/next/hit": {
+          "x": 2185.175,
+          "y": -242.35,
+          "w": 137.55,
+          "h": 137.55,
+          "path": "/relicBar/next/hit"
+        },
+        "/relicPanel/close/hit": {
+          "x": 1641.525,
+          "y": -363.525,
+          "w": 157.2,
+          "h": 137.55,
+          "path": "/relicPanel/close/hit"
+        },
+        "/relicPanel/previous/hit": {
+          "x": 1002.9,
+          "y": -826.9375,
+          "w": 294.75,
+          "h": 137.55,
+          "path": "/relicPanel/previous/hit"
+        },
+        "/relicPanel/next/hit": {
+          "x": 1553.1,
+          "y": -826.9375,
+          "w": 294.75,
+          "h": 137.55,
+          "path": "/relicPanel/next/hit"
+        }
+      }
+    },
+    "unknownTextures": 19,
+    "textOverflows": [],
+    "hits": [
+      {
+        "path": "/stage/relicPanel/contentBlocker",
+        "box": [
+          819.5,
+          409.4875,
+          1736.5,
+          969.5125
+        ]
+      },
+      {
+        "path": "/stage/relicPanel/close/hit",
+        "box": [
+          1562.9250000000002,
+          394.75,
+          1720.125,
+          532.3
+        ]
+      },
+      {
+        "path": "/stage/relicPanel/previous/hit",
+        "box": [
+          855.525,
+          858.1625,
+          1150.275,
+          995.7125
+        ]
+      },
+      {
+        "path": "/stage/relicPanel/next/hit",
+        "box": [
+          1405.725,
+          858.1625,
+          1700.475,
+          995.7125
+        ]
+      }
+    ],
+    "controlBounds": [
+      {
+        "path": "/stage/nodePanel/eventView/name",
+        "box": [
+          311.875,
+          412.7625,
+          1327.125,
+          511.0125
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/nodePanel/eventView/body",
+        "box": [
+          1073.3125,
+          551.95,
+          2219.5625,
+          846.7
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/nodePanel/officialRunBar/steel",
+        "box": [
+          230.0,
+          100.0,
+          2326.0,
+          270.3
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/icon",
+        "box": [
+          493.09166666663947,
+          307.4166666666395,
+          562.9583333333604,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          459.25,
+          273.57500000000005,
+          596.8,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot2/icon",
+        "box": [
+          643.7416666666395,
+          307.4166666666395,
+          713.6083333333604,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot2/hit",
+        "box": [
+          609.9,
+          273.57500000000005,
+          747.4499999999999,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot3/icon",
+        "box": [
+          794.3916666666396,
+          307.4166666666395,
+          864.2583333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/hit",
+        "box": [
+          760.5500000000001,
+          273.57500000000005,
+          898.1,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot4/icon",
+        "box": [
+          945.0416666666396,
+          307.4166666666395,
+          1014.9083333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot4/hit",
+        "box": [
+          911.2,
+          273.57500000000005,
+          1048.75,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot5/icon",
+        "box": [
+          1095.6916666666395,
+          307.4166666666395,
+          1165.5583333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot5/hit",
+        "box": [
+          1061.85,
+          273.57500000000005,
+          1199.4,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape0",
+        "box": [
+          1260.3149999999837,
+          355.97400000001306,
+          1302.2350000000165,
+          365.0566666666869
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape1",
+        "box": [
+          1274.2883333333282,
+          329.0753333333215,
+          1288.261666666672,
+          359.81666666667854
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape2",
+        "box": [
+          1256.1229999999805,
+          329.0753333333195,
+          1306.4270000000197,
+          338.8566666666605
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape3",
+        "box": [
+          1252.9789999999286,
+          321.38999999998595,
+          1264.8563333332716,
+          339.555333333334
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape4",
+        "box": [
+          1297.6936666667286,
+          321.38999999998595,
+          1309.5710000000715,
+          339.555333333334
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape5",
+        "box": [
+          1260.3149999999837,
+          338.507333333332,
+          1302.2350000000165,
+          342.00066666666805
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape6",
+        "box": [
+          1269.0483333333648,
+          338.856666666668,
+          1273.939000000035,
+          352.83000000001203
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape7",
+        "box": [
+          1288.6109999999649,
+          338.856666666668,
+          1293.5016666666352,
+          352.83000000001203
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/hit",
+        "box": [
+          1212.5,
+          273.57500000000005,
+          1350.0500000000002,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot7/icon",
+        "box": [
+          1396.9916666666395,
+          307.4166666666395,
+          1466.8583333333604,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/hit",
+        "box": [
+          1363.1499999999999,
+          273.57500000000005,
+          1500.7,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot8/icon",
+        "box": [
+          1547.6416666666396,
+          307.4166666666395,
+          1617.5083333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot8/hit",
+        "box": [
+          1513.8,
+          273.57500000000005,
+          1651.3500000000001,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot9/icon",
+        "box": [
+          1698.2916666666395,
+          307.4166666666395,
+          1768.1583333333604,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot9/hit",
+        "box": [
+          1664.4499999999998,
+          273.57500000000005,
+          1802.0,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot10/icon",
+        "box": [
+          1848.9416666666395,
+          307.4166666666395,
+          1918.8083333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/hit",
+        "box": [
+          1815.1,
+          273.57500000000005,
+          1952.65,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot11/icon",
+        "box": [
+          1999.5916666666396,
+          307.4166666666395,
+          2069.4583333333608,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot11/hit",
+        "box": [
+          1965.75,
+          273.57500000000005,
+          2103.3,
+          411.125
+        ],
+        "kind": "cursorArea"
+      }
+    ]
+  },
+  {
+    "scene": "after-phone-detail-return",
+    "meta": {
+      "mode": "node",
+      "phase": "node",
+      "hp": 80,
+      "maxHp": 80,
+      "gold": 99,
+      "floor": 2,
+      "relics": [
+        "burning_blood",
+        "omamori",
+        "matryoshka",
+        "anchor",
+        "potion_belt",
+        "ancient_tea_set",
+        "lizard_tail",
+        "maw_bank",
+        "winged_greaves",
+        "nloths_mask",
+        "bag_of_preparation",
+        "happy_flower",
+        "vajra",
+        "orichalcum",
+        "pen_nib",
+        "nunchaku",
+        "horn_cleat",
+        "art_of_war",
+        "centennial_puzzle",
+        "lantern",
+        "preserved_insect",
+        "oddly_smooth_stone",
+        "strawberry",
+        "pear",
+        "mango",
+        "stone_calendar"
+      ],
+      "potions": [
+        "fruit_juice"
+      ],
+      "capacity": 3,
+      "barPage": 2,
+      "barCapacity": 11,
+      "touchBoxes": {
+        "/relicBar/slot1/hit": {
+          "x": 528.025,
+          "y": -242.35,
+          "w": 137.55,
+          "h": 137.55,
+          "path": "/relicBar/slot1/hit"
+        },
+        "/relicBar/previous/hit": {
+          "x": 377.375,
+          "y": -242.35,
+          "w": 137.55,
+          "h": 137.55,
+          "path": "/relicBar/previous/hit"
+        },
+        "/relicBar/next/hit": {
+          "x": 2185.175,
+          "y": -242.35,
+          "w": 137.55,
+          "h": 137.55,
+          "path": "/relicBar/next/hit"
+        },
+        "/relicPanel/close/hit": {
+          "x": 1641.525,
+          "y": -363.525,
+          "w": 157.2,
+          "h": 137.55,
+          "path": "/relicPanel/close/hit"
+        },
+        "/relicPanel/previous/hit": {
+          "x": 1002.9,
+          "y": -826.9375,
+          "w": 294.75,
+          "h": 137.55,
+          "path": "/relicPanel/previous/hit"
+        },
+        "/relicPanel/next/hit": {
+          "x": 1553.1,
+          "y": -826.9375,
+          "w": 294.75,
+          "h": 137.55,
+          "path": "/relicPanel/next/hit"
+        }
+      }
+    },
+    "unknownTextures": 18,
+    "textOverflows": [],
+    "hits": [
+      {
+        "path": "/stage/nodePanel/shopDismiss",
+        "box": [
+          230.0,
+          100.0,
+          2326.0,
+          1279.0
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/eventView/option1/hit",
+        "box": [
+          1073.3125,
+          1082.5,
+          2219.5625,
+          1154.5500000000002
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/eventView/option2/hit",
+        "box": [
+          1073.3125,
+          1172.5625,
+          2219.5625,
+          1244.6125000000002
+        ]
+      },
+      {
+        "path": "/stage/nodePanel/runRoute/hit",
+        "box": [
+          1792.175,
+          132.75,
+          1929.7250000000001,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/deckEntry/open/hit",
+        "box": [
+          1949.375,
+          132.75,
+          2086.925,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          459.25,
+          273.57500000000005,
+          596.8,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot2/hit",
+        "box": [
+          609.9,
+          273.57500000000005,
+          747.4499999999999,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot3/hit",
+        "box": [
+          760.5500000000001,
+          273.57500000000005,
+          898.1,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot4/hit",
+        "box": [
+          911.2,
+          273.57500000000005,
+          1048.75,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot5/hit",
+        "box": [
+          1061.85,
+          273.57500000000005,
+          1199.4,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot6/hit",
+        "box": [
+          1212.5,
+          273.57500000000005,
+          1350.0500000000002,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot7/hit",
+        "box": [
+          1363.1499999999999,
+          273.57500000000005,
+          1500.7,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot8/hit",
+        "box": [
+          1513.8,
+          273.57500000000005,
+          1651.3500000000001,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot9/hit",
+        "box": [
+          1664.4499999999998,
+          273.57500000000005,
+          1802.0,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot10/hit",
+        "box": [
+          1815.1,
+          273.57500000000005,
+          1952.65,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/slot11/hit",
+        "box": [
+          1965.75,
+          273.57500000000005,
+          2103.3,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/previous/hit",
+        "box": [
+          308.6,
+          273.57500000000005,
+          446.15,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/relicBar/next/hit",
+        "box": [
+          2116.4,
+          273.57500000000005,
+          2253.9500000000003,
+          411.125
+        ]
+      },
+      {
+        "path": "/stage/potionEntry/slot1/hit",
+        "box": [
+          812.95,
+          132.75,
+          950.5,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/potionEntry/slot3/hit",
+        "box": [
+          1114.25,
+          132.75,
+          1251.8000000000002,
+          270.3
+        ]
+      },
+      {
+        "path": "/stage/exitEntry/open/hit",
+        "box": [
+          2106.575,
+          132.75,
+          2244.125,
+          270.3
+        ]
+      }
+    ],
+    "controlBounds": [
+      {
+        "path": "/stage/nodePanel/eventView/name",
+        "box": [
+          311.875,
+          412.7625,
+          1327.125,
+          511.0125
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/nodePanel/eventView/body",
+        "box": [
+          1073.3125,
+          551.95,
+          2219.5625,
+          846.7
+        ],
+        "kind": "text"
+      },
+      {
+        "path": "/stage/nodePanel/officialRunBar/steel",
+        "box": [
+          230.0,
+          100.0,
+          2326.0,
+          270.3
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/icon",
+        "box": [
+          493.09166666663947,
+          307.4166666666395,
+          562.9583333333604,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot1/hit",
+        "box": [
+          459.25,
+          273.57500000000005,
+          596.8,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot2/icon",
+        "box": [
+          643.7416666666395,
+          307.4166666666395,
+          713.6083333333604,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot2/hit",
+        "box": [
+          609.9,
+          273.57500000000005,
+          747.4499999999999,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot3/icon",
+        "box": [
+          794.3916666666396,
+          307.4166666666395,
+          864.2583333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot3/hit",
+        "box": [
+          760.5500000000001,
+          273.57500000000005,
+          898.1,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot4/icon",
+        "box": [
+          945.0416666666396,
+          307.4166666666395,
+          1014.9083333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot4/hit",
+        "box": [
+          911.2,
+          273.57500000000005,
+          1048.75,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot5/icon",
+        "box": [
+          1095.6916666666395,
+          307.4166666666395,
+          1165.5583333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot5/hit",
+        "box": [
+          1061.85,
+          273.57500000000005,
+          1199.4,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape0",
+        "box": [
+          1260.3149999999837,
+          355.97400000001306,
+          1302.2350000000165,
+          365.0566666666869
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape1",
+        "box": [
+          1274.2883333333282,
+          329.0753333333215,
+          1288.261666666672,
+          359.81666666667854
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape2",
+        "box": [
+          1256.1229999999805,
+          329.0753333333195,
+          1306.4270000000197,
+          338.8566666666605
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape3",
+        "box": [
+          1252.9789999999286,
+          321.38999999998595,
+          1264.8563333332716,
+          339.555333333334
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape4",
+        "box": [
+          1297.6936666667286,
+          321.38999999998595,
+          1309.5710000000715,
+          339.555333333334
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape5",
+        "box": [
+          1260.3149999999837,
+          338.507333333332,
+          1302.2350000000165,
+          342.00066666666805
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape6",
+        "box": [
+          1269.0483333333648,
+          338.856666666668,
+          1273.939000000035,
+          352.83000000001203
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/iconArt/shape7",
+        "box": [
+          1288.6109999999649,
+          338.856666666668,
+          1293.5016666666352,
+          352.83000000001203
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot6/hit",
+        "box": [
+          1212.5,
+          273.57500000000005,
+          1350.0500000000002,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot7/icon",
+        "box": [
+          1396.9916666666395,
+          307.4166666666395,
+          1466.8583333333604,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot7/hit",
+        "box": [
+          1363.1499999999999,
+          273.57500000000005,
+          1500.7,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot8/icon",
+        "box": [
+          1547.6416666666396,
+          307.4166666666395,
+          1617.5083333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot8/hit",
+        "box": [
+          1513.8,
+          273.57500000000005,
+          1651.3500000000001,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot9/icon",
+        "box": [
+          1698.2916666666395,
+          307.4166666666395,
+          1768.1583333333604,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot9/hit",
+        "box": [
+          1664.4499999999998,
+          273.57500000000005,
+          1802.0,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot10/icon",
+        "box": [
+          1848.9416666666395,
+          307.4166666666395,
+          1918.8083333333605,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot10/hit",
+        "box": [
+          1815.1,
+          273.57500000000005,
+          1952.65,
+          411.125
+        ],
+        "kind": "cursorArea"
+      },
+      {
+        "path": "/stage/relicBar/slot11/icon",
+        "box": [
+          1999.5916666666396,
+          307.4166666666395,
+          2069.4583333333608,
+          377.28333333336053
+        ],
+        "kind": "image"
+      },
+      {
+        "path": "/stage/relicBar/slot11/hit",
+        "box": [
+          1965.75,
+          273.57500000000005,
+          2103.3,
+          411.125
+        ],
+        "kind": "cursorArea"
+      }
+    ]
+  }
+]

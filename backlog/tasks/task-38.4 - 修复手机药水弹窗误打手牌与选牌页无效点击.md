@@ -1,11 +1,11 @@
 ---
 id: TASK-38.4
 title: 修复手机药水触控，避免误出牌和无效闪屏
-status: To Do
+status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-15 19:11'
-updated_date: '2026-11-19 03:49'
+updated_date: '2026-11-24 00:09'
 labels:
   - mobile
   - playtest-20261115
@@ -60,4 +60,6 @@ ordinal: 175000
 
 <!-- SECTION:NOTES:BEGIN -->
 依据2026-11-15用户两轮真机录音。P0/P1是体验严重度，非突破High队列上限的授权。逐字时间和截图映射见docs/backlog-details/MOBILE-QA-20261115.md。本PR仅登记任务，不代表Bug已修、代码或手机已验。
+
+2026-11-24 Owner 明确授权 release P0 全局HUD/遗物分页/药水显隐修复及PR-only管理员紧急合并。BASE c4eec5f9；独立 hotfix/run-hud-inventory-v2；实施计划 docs/superpowers/plans/2026-11-24-run-hud-inventory.md。源码与离线Host回归不替代同候选实机；原AC保持待验。
 <!-- SECTION:NOTES:END -->

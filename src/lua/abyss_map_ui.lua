@@ -3,7 +3,7 @@
 -- No camp/shop/event/combat/run rules live in this module.
 local Map = require("abyss_map")
 local Theme = require("abyss_theme")
-local Layout = require("abyss_map_layout")
+local MapLayout = require("abyss_map_layout")
 local Acts = require("abyss_acts")
 local Pointer = require('abyss_pointer_input')
 local M = {}
@@ -19,7 +19,7 @@ function M.drawScale(fx)
         return fx.scale*(fx.state=="locked" and (visual.lockedIconScale or 1)
             or fx.state=="visited" and (visual.visitedIconScale or 1) or 1)
     end
-    local base, cap = Layout.sts.baseScale, Theme.layout.map.presentation.availableScaleCap
+    local base, cap = MapLayout.sts.baseScale, Theme.layout.map.presentation.availableScaleCap
     local t = math.max(0, math.min(1, (fx.scale - .91) / (1.25 - .91)))
     local minimum=Theme.layout.map.presentation.availableScaleFloor or 1.1
     local scale=base * (minimum + (cap - minimum) * t)
@@ -42,12 +42,12 @@ local function roomSize(fx,control,size)
 end
 function M.paintRoom(fx)
     local icon, ring = fx.box:GetChild("icon"), fx.box:GetChild("ring")
-    local iconSize = fx.size * Layout.sts.iconPerScale * M.drawScale(fx)
+    local iconSize = fx.size * MapLayout.sts.iconPerScale * M.drawScale(fx)
     roomSize(fx,icon,iconSize)
     -- oscillateColor drives color.a for reachable rooms.
     local ink = fx.ink
     if ink then icon.imageColor = fx.colour(ink.r, ink.g, ink.b, math.floor(ink.a * (fx.hovered and 1 or fx.alpha) + .5)) end
-    local ringSize = fx.size * Layout.sts.circlePerScale * (fx.scale * .95 + .2)
+    local ringSize = fx.size * MapLayout.sts.circlePerScale * (fx.scale * .95 + .2)
     roomSize(fx,ring,ringSize)
 end
 -- Room ink by state: emerald > visited gold > locked faded > official type colour.
@@ -58,7 +58,7 @@ function M.isFar(floor, currentFloor)
 end
 function M.pathWidth(taken, reachable)
     local v = Theme.layout.map.presentation
-    return taken and v.takenPathWidth or reachable and Layout.lineWidth or v.lockedPathWidth
+    return taken and v.takenPathWidth or reachable and MapLayout.lineWidth or v.lockedPathWidth
 end
 -- Presentation-only curve: monotone Y preserves viewport clipping; endpoints
 -- and the route's narrow corridor stay fixed. Never touch the Run RNG.
@@ -160,7 +160,7 @@ local function entryContext(map)
 end
 local function localFloor(map, floor) return floor - (map.firstFloor or 1) + 1 end
 -- ===== Port of STS MapRoomNode update/render state (aeubanks/sts@319009d map/MapRoomNode.java) =====
-local Sts = Layout.sts
+local Sts = MapLayout.sts
 local function roomState(node, currentNodeId)
     return node.id == currentNodeId and "current"
         or node.visited and "visited" or node.available and "available" or "locked"
@@ -245,10 +245,11 @@ function M.roomRadius(fx)
     end
     return radius
 end
-local function roomVisible(fx)
+local function roomVisible(fx,viewport)
+    viewport=viewport or MapLayout.viewport
     local radius=M.roomRadius(fx)
-    return fx.x-radius>=Layout.viewport.left and fx.x+radius<=Layout.viewport.right
-        and fx.y-radius>=Layout.viewport.bottom and fx.y+radius<=Layout.viewport.top
+    return fx.x-radius>=viewport.left and fx.x+radius<=viewport.right
+        and fx.y-radius>=viewport.bottom and fx.y+radius<=viewport.top
 end
 M.stsScaleLerpSnap, M.stsOscillate, M.stsRoomFx = scaleLerpSnap, oscillate, newRoomFx
 local function atStart(map) return map.floor == (map.firstFloor or 1) - 1 end
@@ -262,6 +263,12 @@ local function atStart(map) return map.floor == (map.firstFloor or 1) - 1 end
 function M.new(root, map, onChoose, clickEvent, options)
     assert(type(onChoose) == "function", "map UI requires onChoose callback")
     options = options or {}
+    -- Per-host viewport: mobile HUD geometry must not mutate the PC layout.
+    local Layout=setmetatable({},{__index=MapLayout})
+    if options.hudTop then
+        local bounds=Layout.viewport
+        Layout.viewport={left=bounds.left,right=bounds.right,bottom=bounds.bottom,top=math.min(bounds.top,options.hudTop)}
+    end
     local function available(owner)return options.available and options.available(owner)or Map.available(owner)end
     local function mapView(owner)
         local v=Map.view(owner);local enabled={}
@@ -479,7 +486,7 @@ function M.new(root, map, onChoose, clickEvent, options)
                 if state == "current" and fx.state ~= state then fx.scale = Sts.baseScale end
                 fx.state,fx.size,fx.box,fx.x,fx.y,fx.emerald=state,size,box,x,y,node.hasEmeraldKey
                 fx.hovered,fx.pressed=false,false
-                visible=roomVisible(fx);fx.visible=visible
+                visible=roomVisible(fx,Layout.viewport);fx.visible=visible
                 -- Hidden transitions still lerp to rest; otherwise a temporarily
                 -- oversized current ring could remain culled forever.
                 self.activeFx[#self.activeFx+1]=fx
@@ -573,7 +580,7 @@ function M.new(root, map, onChoose, clickEvent, options)
                 -- render still owns repaint after scroll/show/rebind. Avoid
                 -- resubmitting their unchanged colour on every stable frame.
                 if fx.visible and (fx.state=="available" or fx.scale~=previousScale) then M.paintRoom(fx)end
-                if dt>0 and roomVisible(fx)~=fx.visible then visibilityChanged=true end
+                if dt>0 and roomVisible(fx,Layout.viewport)~=fx.visible then visibilityChanged=true end
             end
         end
         if visibilityChanged then self:render()end
@@ -818,6 +825,11 @@ function M.new(root, map, onChoose, clickEvent, options)
         if cursor.CursorEndDrag then control:AddCursorEventListener(cursor.CursorEndDrag, function(event)
             local owns=feedbackOwned(event);cancelPointer(event, slot, true);if owns then feedback(false,false)end
         end) end
+    end
+    if options.hudTop then
+        local v=Layout.viewport
+        at('dragArea'):SetAnchoredPosition((v.left+v.right)/2,(v.bottom+v.top)/2)
+        at('dragArea'):SetSizeDelta(v.right-v.left,v.top-v.bottom)
     end
     draggable(at("dragArea"))
     for i = 1, Layout.maxNodes do local slot = i bind("node" .. slot, function(event)

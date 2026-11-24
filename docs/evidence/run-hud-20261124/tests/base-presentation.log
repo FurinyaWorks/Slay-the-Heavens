@@ -1,0 +1,215 @@
+test_build_range_is_endpoint_pair (art.test_scene_spike.SceneTests.test_build_range_is_endpoint_pair) ... ok
+test_central_nonfloor_overlap (art.test_scene_spike.SceneTests.test_central_nonfloor_overlap) ... ok
+test_cli_success_and_missing_file_failure (art.test_scene_spike.SceneTests.test_cli_success_and_missing_file_failure) ... ok
+test_current_inputs_and_rotation_bounds (art.test_scene_spike.SceneTests.test_current_inputs_and_rotation_bounds) ... ok
+test_duplicate_catalog_id (art.test_scene_spike.SceneTests.test_duplicate_catalog_id) ... ok
+test_duplicate_name_across_packs (art.test_scene_spike.SceneTests.test_duplicate_name_across_packs) ... ok
+test_empty_pack (art.test_scene_spike.SceneTests.test_empty_pack) ... ok
+test_entity_range_invalid (art.test_scene_spike.SceneTests.test_entity_range_invalid) ... ok
+test_entity_range_overlap (art.test_scene_spike.SceneTests.test_entity_range_overlap) ... ok
+test_floor_can_overlap_centre (art.test_scene_spike.SceneTests.test_floor_can_overlap_centre) ... ok
+test_install_true_or_missing (art.test_scene_spike.SceneTests.test_install_true_or_missing) ... ok
+test_invalid_model (art.test_scene_spike.SceneTests.test_invalid_model) ... ok
+test_invalid_scale (art.test_scene_spike.SceneTests.test_invalid_scale) ... ok
+test_invalid_transforms (art.test_scene_spike.SceneTests.test_invalid_transforms) ... ok
+test_ninety_degree_and_negative_yaw (art.test_scene_spike.SceneTests.test_ninety_degree_and_negative_yaw) ... ok
+test_ninth_instance (art.test_scene_spike.SceneTests.test_ninth_instance) ... ok
+test_pitch_or_roll_not_silently_ignored (art.test_scene_spike.SceneTests.test_pitch_or_roll_not_silently_ignored) ... ok
+test_recorded_model_ids_reject_floats (art.test_scene_spike.SceneTests.test_recorded_model_ids_reject_floats) ... ok
+test_recorded_numeric_types_are_strict (art.test_scene_spike.SceneTests.test_recorded_numeric_types_are_strict) ... ok
+test_scaled_size_mismatch (art.test_scene_spike.SceneTests.test_scaled_size_mismatch) ... ok
+test_selection_scale_mismatch (art.test_scene_spike.SceneTests.test_selection_scale_mismatch) ... ok
+test_solid_true_or_missing (art.test_scene_spike.SceneTests.test_solid_true_or_missing) ... ok
+test_verification_duplicate_pack (art.test_scene_spike.SceneTests.test_verification_duplicate_pack) ... ok
+test_verification_model_mismatch (art.test_scene_spike.SceneTests.test_verification_model_mismatch) ... ok
+test_all_basic_curses_render_blank_cost_and_source_numeric_text (test_basic_curses_presentation.BasicCursePresentationTests.test_all_basic_curses_render_blank_cost_and_source_numeric_text) ... ok
+test_unknown_curse_is_not_silently_rendered_as_supported (test_basic_curses_presentation.BasicCursePresentationTests.test_unknown_curse_is_not_silently_rendered_as_supported) ... ok
+test_canonical_local_art_order_including_stable_ties_is_preserved (test_card_art_assembly.CardArtAssemblyTests.test_canonical_local_art_order_including_stable_ties_is_preserved) ... ok
+test_empty_art_adds_no_controls_and_does_not_mutate_frame (test_card_art_assembly.CardArtAssemblyTests.test_empty_art_adds_no_controls_and_does_not_mutate_frame) ... ok
+test_four_text_slots_outer_properties_and_background_are_not_restyled (test_card_art_assembly.CardArtAssemblyTests.test_four_text_slots_outer_properties_and_background_are_not_restyled) ... ok
+test_inputs_standalone_background_and_copies_are_independent (test_card_art_assembly.CardArtAssemblyTests.test_inputs_standalone_background_and_copies_are_independent) ... ok
+test_masks_transforms_and_all_other_art_properties_are_preserved (test_card_art_assembly.CardArtAssemblyTests.test_masks_transforms_and_all_other_art_properties_are_preserved) ... ok
+test_nested_background_is_not_promoted_behind_card_shell (test_card_art_assembly.CardArtAssemblyTests.test_nested_background_is_not_promoted_behind_card_shell) ... ok
+test_damage_need_not_be_first_number_and_all_occurrences_are_preserved (test_growing_card_text.GrowingCardTextTests.test_damage_need_not_be_first_number_and_all_occurrences_are_preserved) ... ok
+test_live_tokens_cover_exactly_modifiable_damage_and_block_values (test_growing_card_text.GrowingCardTextTests.test_live_tokens_cover_exactly_modifiable_damage_and_block_values) ... ok
+test_preserved_damage_token_still_requires_valid_numeric_path (test_growing_card_text.GrowingCardTextTests.test_preserved_damage_token_still_requires_valid_numeric_path) ... ok
+test_candidate_rejects_other_canvas_masks_text_prefabs_and_lossy_values (test_native_card_binding.CandidateArtTest.test_candidate_rejects_other_canvas_masks_text_prefabs_and_lossy_values) ... ok
+test_literal_adapter_retains_native_properties_without_exporting (test_native_card_binding.CandidateArtTest.test_literal_adapter_retains_native_properties_without_exporting) ... ok
+test_registry_hashes_are_checked_before_parser_and_snapshot_is_not_an_input (test_native_card_binding.CandidateArtTest.test_registry_hashes_are_checked_before_parser_and_snapshot_is_not_an_input) ... ok
+test_cli_canonicalizes_crlf_for_parser_and_hash_without_rewriting_sources (test_native_card_samples.NativeCardSamplesTest.test_cli_canonicalizes_crlf_for_parser_and_hash_without_rewriting_sources) ... ok
+test_default_samples_are_the_four_explicit_review_card_ids (test_native_card_samples.NativeCardSamplesTest.test_default_samples_are_the_four_explicit_review_card_ids) ... ok
+test_float32_tolerance_is_bounded_and_not_a_crop_permission (test_native_card_samples.NativeCardSamplesTest.test_float32_tolerance_is_bounded_and_not_a_crop_permission) ... ok
+test_literal_fields_and_xyz_are_retained_without_rounding (test_native_card_samples.NativeCardSamplesTest.test_literal_fields_and_xyz_are_retained_without_rounding) ... ok
+test_main_rejects_all_source_aliases_before_parsing_or_writing (test_native_card_samples.NativeCardSamplesTest.test_main_rejects_all_source_aliases_before_parsing_or_writing) ... ok
+test_non_equivalent_parent_and_mask_semantics_are_rejected (test_native_card_samples.NativeCardSamplesTest.test_non_equivalent_parent_and_mask_semantics_are_rejected) ... ok
+test_output_symlink_cannot_escape_the_isolated_repository (test_native_card_samples.NativeCardSamplesTest.test_output_symlink_cannot_escape_the_isolated_repository) ... ok
+test_pool_has_one_mask_and_never_more_than_sixty_direct_children (test_native_card_samples.NativeCardSamplesTest.test_pool_has_one_mask_and_never_more_than_sixty_direct_children) ... ok
+test_exact_r02_source_identity_and_primitive_bounds (test_native_monster_art.NativeMonsterArtTest.test_exact_r02_source_identity_and_primitive_bounds) ... ok
+test_unknown_source_does_not_mutate_or_make_backup (test_platform_focus_patch.FocusPatchTests.test_unknown_source_does_not_mutate_or_make_backup) ... ok
+test_embedded_cards_match_source_and_presentation (test_prototype_cards.PrototypeCardTests.test_embedded_cards_match_source_and_presentation) ... 
+  test_embedded_cards_match_source_and_presentation (test_prototype_cards.PrototypeCardTests.test_embedded_cards_match_source_and_presentation) (card='strike') ... FAIL
+  test_embedded_cards_match_source_and_presentation (test_prototype_cards.PrototypeCardTests.test_embedded_cards_match_source_and_presentation) (card='perfected_strike') ... FAIL
+  test_embedded_cards_match_source_and_presentation (test_prototype_cards.PrototypeCardTests.test_embedded_cards_match_source_and_presentation) (card='pommel_strike') ... FAIL
+  test_embedded_cards_match_source_and_presentation (test_prototype_cards.PrototypeCardTests.test_embedded_cards_match_source_and_presentation) (card='twin_strike') ... FAIL
+  test_embedded_cards_match_source_and_presentation (test_prototype_cards.PrototypeCardTests.test_embedded_cards_match_source_and_presentation) (card='wild_strike') ... FAIL
+  test_embedded_cards_match_source_and_presentation (test_prototype_cards.PrototypeCardTests.test_embedded_cards_match_source_and_presentation) (card='dual_wield') ... FAIL
+test_bounded_pair_and_surrounding_ordinary_effects (test_shockwave_presentation.ShockwavePresentationTests.test_bounded_pair_and_surrounding_ordinary_effects) ... ok
+test_malformed_pair_is_not_silently_rendered (test_shockwave_presentation.ShockwavePresentationTests.test_malformed_pair_is_not_silently_rendered) ... ok
+test_nested_group_rejected_even_in_unreachable_condition (test_shockwave_presentation.ShockwavePresentationTests.test_nested_group_rejected_even_in_unreachable_condition) ... ok
+test_real_variants_keep_original_text_cost_name_and_indices (test_shockwave_presentation.ShockwavePresentationTests.test_real_variants_keep_original_text_cost_name_and_indices) ... ok
+test_unmarked_contract_and_unknown_fields_are_unchanged (test_shockwave_presentation.ShockwavePresentationTests.test_unmarked_contract_and_unknown_fields_are_unchanged) ... ok
+test_base_upgrade_and_inputs_unchanged (test_traveler_presentation.PresentationTests.test_base_upgrade_and_inputs_unchanged) ... ok
+test_cli_rejects_symlink_output_alias_when_supported (test_traveler_presentation.PresentationTests.test_cli_rejects_symlink_output_alias_when_supported) ... ok
+test_cli_stdout_errors_and_no_input_overwrite (test_traveler_presentation.PresentationTests.test_cli_stdout_errors_and_no_input_overwrite) ... ok
+test_cost_upgrade_inherits_effects (test_traveler_presentation.PresentationTests.test_cost_upgrade_inherits_effects) ... ok
+test_invalid_templates (test_traveler_presentation.PresentationTests.test_invalid_templates) ... ok
+test_missing_unknown_duplicate_and_bad_fields (test_traveler_presentation.PresentationTests.test_missing_unknown_duplicate_and_bad_fields) ... ok
+test_nested_numeric_and_negative_values (test_traveler_presentation.PresentationTests.test_nested_numeric_and_negative_values) ... ok
+test_repository_class_pool_and_status_integration (test_traveler_presentation.PresentationTests.test_repository_class_pool_and_status_integration) ... ok
+test_semantics_change_needs_explicit_upgrade_template (test_traveler_presentation.PresentationTests.test_semantics_change_needs_explicit_upgrade_template) ... ok
+test_status_cost_sentinel_is_blank_and_other_negative_costs_reject (test_traveler_presentation.PresentationTests.test_status_cost_sentinel_is_blank_and_other_negative_costs_reject) ... ok
+test_unknown_effect_contract_and_invalid_numeric_rejected (test_traveler_presentation.PresentationTests.test_unknown_effect_contract_and_invalid_numeric_rejected) ... ok
+test_x_cost (test_traveler_presentation.PresentationTests.test_x_cost) ... ok
+
+======================================================================
+FAIL: test_embedded_cards_match_source_and_presentation (test_prototype_cards.PrototypeCardTests.test_embedded_cards_match_source_and_presentation) (card='strike')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hud-review-c/base/tests/test_prototype_cards.py", line 45, in test_embedded_cards_match_source_and_presentation
+    self.assertEqual(by_id[card['id']], expected)
+AssertionError: Lists differ: ['strike', '普通攻击', 'attack', 'basic', '1', '对目标造成 6 点伤害。', '1', '对目标造成 9 点伤害。'] != ['strike', '剑势·初式', 'attack', 'basic', '1', '对目标造成 6 点伤害。', '1', '对目标造成 9 点伤害。']
+
+First differing element 1:
+'普通攻击'
+'剑势·初式'
+
+- ['strike', '普通攻击', 'attack', 'basic', '1', '对目标造成 6 点伤害。', '1', '对目标造成 9 点伤害。']
+?             ^^^^
+
++ ['strike', '剑势·初式', 'attack', 'basic', '1', '对目标造成 6 点伤害。', '1', '对目标造成 9 点伤害。']
+?             ^^^^^
+
+
+======================================================================
+FAIL: test_embedded_cards_match_source_and_presentation (test_prototype_cards.PrototypeCardTests.test_embedded_cards_match_source_and_presentation) (card='perfected_strike')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hud-review-c/base/tests/test_prototype_cards.py", line 45, in test_embedded_cards_match_source_and_presentation
+    self.assertEqual(by_id[card['id']], expected)
+AssertionError: Lists differ: ['per[64 chars]弃牌堆中每张带打击标签的牌提升2点伤害。', '2', '造成6点伤害。手牌、抽牌堆和弃牌堆[14 chars]伤害。'] != ['per[64 chars]弃牌堆中每有一张『剑势』系列牌，基础伤害增加2点。', '2', '造成6点伤害。手牌、抽牌[24 chars]3点。']
+
+First differing element 5:
+'造成6点伤害。手牌、抽牌堆和弃牌堆中每张带打击标签的牌提升2点伤害。'
+'造成6点伤害。手牌、抽牌堆和弃牌堆中每有一张『剑势』系列牌，基础伤害增加2点。'
+
+  ['perfected_strike',
+   '剑势如虹',
+   'attack',
+   'common',
+   '2',
+-  '造成6点伤害。手牌、抽牌堆和弃牌堆中每张带打击标签的牌提升2点伤害。',
++  '造成6点伤害。手牌、抽牌堆和弃牌堆中每有一张『剑势』系列牌，基础伤害增加2点。',
+   '2',
+-  '造成6点伤害。手牌、抽牌堆和弃牌堆中每张带打击标签的牌提升3点伤害。']
++  '造成6点伤害。手牌、抽牌堆和弃牌堆中每有一张『剑势』系列牌，基础伤害增加3点。']
+
+======================================================================
+FAIL: test_embedded_cards_match_source_and_presentation (test_prototype_cards.PrototypeCardTests.test_embedded_cards_match_source_and_presentation) (card='pommel_strike')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hud-review-c/base/tests/test_prototype_cards.py", line 45, in test_embedded_cards_match_source_and_presentation
+    self.assertEqual(by_id[card['id']], expected)
+AssertionError: Lists differ: ['pommel_strike', '试探一击', 'attack', 'common', '1', '对目标造成 9 [39 chars]张牌。'] != ['pommel_strike', '剑势·试锋', 'attack', 'common', '1', '对目标造成 9[40 chars]张牌。']
+
+First differing element 1:
+'试探一击'
+'剑势·试锋'
+
+  ['pommel_strike',
+-  '试探一击',
++  '剑势·试锋',
+   'attack',
+   'common',
+   '1',
+   '对目标造成 9 点伤害，再抽 1 张牌。',
+   '1',
+   '对目标造成 10 点伤害，再抽 2 张牌。']
+
+======================================================================
+FAIL: test_embedded_cards_match_source_and_presentation (test_prototype_cards.PrototypeCardTests.test_embedded_cards_match_source_and_presentation) (card='twin_strike')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hud-review-c/base/tests/test_prototype_cards.py", line 45, in test_embedded_cards_match_source_and_presentation
+    self.assertEqual(by_id[card['id']], expected)
+AssertionError: Lists differ: ['twin_strike', '重击', 'attack', 'common', '1', '对目标连续攻击 2 [42 chars]伤害。'] != ['twin_strike', '剑势·双斩', 'attack', 'common', '1', '对目标连续攻击[45 chars]伤害。']
+
+First differing element 1:
+'重击'
+'剑势·双斩'
+
+  ['twin_strike',
+-  '重击',
++  '剑势·双斩',
+   'attack',
+   'common',
+   '1',
+   '对目标连续攻击 2 次，每次造成 5 点伤害。',
+   '1',
+   '对目标连续攻击 2 次，每次造成 7 点伤害。']
+
+======================================================================
+FAIL: test_embedded_cards_match_source_and_presentation (test_prototype_cards.PrototypeCardTests.test_embedded_cards_match_source_and_presentation) (card='wild_strike')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hud-review-c/base/tests/test_prototype_cards.py", line 45, in test_embedded_cards_match_source_and_presentation
+    self.assertEqual(by_id[card['id']], expected)
+AssertionError: Lists differ: ['wild_strike', '猛进斩', 'attack', 'common', '1', '造成 12 点伤害[43 chars]牌堆。'] != ['wild_strike', '剑势·猛进', 'attack', 'common', '1', '造成 12 点[45 chars]牌堆。']
+
+First differing element 1:
+'猛进斩'
+'剑势·猛进'
+
+  ['wild_strike',
+-  '猛进斩',
+?     -
+
++  '剑势·猛进',
+?   +++
+
+   'attack',
+   'common',
+   '1',
+   '造成 12 点伤害，将 1 张伤口洗入抽牌堆。',
+   '1',
+   '造成 17 点伤害，将 1 张伤口洗入抽牌堆。']
+
+======================================================================
+FAIL: test_embedded_cards_match_source_and_presentation (test_prototype_cards.PrototypeCardTests.test_embedded_cards_match_source_and_presentation) (card='dual_wield')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hud-review-c/base/tests/test_prototype_cards.py", line 45, in test_embedded_cards_match_source_and_presentation
+    self.assertEqual(by_id[card['id']], expected)
+AssertionError: Lists differ: ['dual_wield', '再演剑势', 'skill', 'uncommon', '1', '选一张攻击牌或能力牌[44 chars]手中。'] != ['dual_wield', '再演剑招', 'skill', 'uncommon', '1', '选一张攻击牌或能力牌[44 chars]手中。']
+
+First differing element 1:
+'再演剑势'
+'再演剑招'
+
+  ['dual_wield',
+-  '再演剑势',
+?      ^
+
++  '再演剑招',
+?      ^
+
+   'skill',
+   'uncommon',
+   '1',
+   '选一张攻击牌或能力牌，将其 1 张复制加入手中。',
+   '1',
+   '选一张攻击牌或能力牌，将其 2 张复制加入手中。']
+
+----------------------------------------------------------------------
+Ran 66 tests in 0.853s
+
+FAILED (failures=6)

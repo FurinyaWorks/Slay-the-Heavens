@@ -117,7 +117,7 @@ function M.new(root, data, presentation, clickEvent, platform)
         platform, { embedded = true, onChange = changed, inputCovered=battleEntryCovered,
             onPile=function(kind)return self:openDeck(kind)end })
     self.mapUI = MapUI.new(child("mapPanel"), nil, Navigation.requestNodeEntry(self,platform,changed),
-        clickEvent, { embedded = true, color = platform.color, imageSource = platform.imageSource,
+        clickEvent, { embedded = true, hudTop=platform.mobileRunHud and platform.mobileRunHud.relicBar.origin[2]-platform.mobileRunHud.hit/2, color = platform.color, imageSource = platform.imageSource,
         cursor = platform.cursorEvents, pointerBlocked = platform.pointerBlocked,
         inputCovered=inputCovered,available=function(map)return Nodes.available(self.run,map)end })
     self.nodeUI = NodeUI.new(child("nodePanel"), nil, nil,
@@ -142,16 +142,17 @@ function M.new(root, data, presentation, clickEvent, platform)
             end)
     end
     local inCombat = Overlays.inCombat(self)
-    self.inventoryAccess = Overlays.inventoryAccess(self,platform)
     local canManagePotions = Overlays.canManagePotions(inputCovered,self)
     local resourceHint = Overlays.resourceHint(self,canManagePotions,inCombat)
-    local function canManageInventoryPotions(run)
-        return self.inventoryAccess('potion',run) and canManagePotions(run)
-    end
+    platform.previewingRoute=function()return self.routeOpen==true end
+    platform.hudAlive=function()return not self.disabled end
+    platform.hudInputContext=function()return {self.run,self.mode,self.run and self.run.phase,
+        self.run and self.run.nodeFlow,self.run and self.run.nodeFlow and self.run.nodeFlow.event and self.run.nodeFlow.event.stage,
+        self.deckUI.generation,self.potionUI and self.potionUI.generation,owner.exitGeneration}end
     self.relicUI=require('abyss_relic_view_ui').new(child('relicPanel'),child('relicBar'),clickEvent,platform,
         function(run,id)return self.nodeUI:describeRelic(run,id)end,function()return self:closeDeck()end,
         function(i)return self:openRelics(i)end,function()return self.mode end)
-    self.potionUI=PotionDiscardUI.new(child("potionPanel"),clickEvent,platform,canManageInventoryPotions,changed,
+    self.potionUI=PotionDiscardUI.new(child("potionPanel"),clickEvent,platform,canManagePotions,changed,
         function()return self:closePotions()end)
     self.openPotions = Overlays.openPotions(self)
     self.closePotions = Overlays.closePotions(self)
@@ -217,7 +218,7 @@ function M.new(root, data, presentation, clickEvent, platform)
     local syncOpening = View.syncOpening(self,openingCovered)
     local openingForeground = View.openingForeground(self,child,prologuePanel,runMenu,exitPanel)
     local syncOfficialBattleScene = View.syncOfficialBattleScene(root,self)
-    self.refresh = View.refresh(self,finishRunFlow,syncOpening,selectMode,syncOfficialBattleScene,syncMenuContext,platform,syncCardChoice,closeStaleDeck,openCardChoice,canManageInventoryPotions,overlaysBlocked,syncRewardReturn,refreshUtilities,refreshPageVisibility,renderCurrentPage,bgm,present,refreshForeground,syncPortraits,openingForeground)
+    self.refresh = View.refresh(self,finishRunFlow,syncOpening,selectMode,syncOfficialBattleScene,syncMenuContext,platform,syncCardChoice,closeStaleDeck,openCardChoice,canManagePotions,overlaysBlocked,syncRewardReturn,refreshUtilities,refreshPageVisibility,renderCurrentPage,bgm,present,refreshForeground,syncPortraits,openingForeground)
     local selectionChanged = RunFlow.selectionChanged(self,owner,View.refreshSelection(self,platform,syncPortraits))
     self.closeCharacters = RunFlow.closeCharacters(self,selectionChanged)
     self.selectCharacter = RunFlow.selectCharacter(self,selectionChanged)

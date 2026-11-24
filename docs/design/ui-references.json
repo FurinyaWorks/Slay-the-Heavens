@@ -4,6 +4,75 @@
       "codePath": "src/lua/abyss_mobile_run_hud.lua",
       "targetVersion": "v2.0.0",
       "state": "sharedTopbar",
+      "revision": "run-hud-pd-20261124",
+      "status": "APPROVED",
+      "backlogTask": "TASK-38.4",
+      "reference": {
+        "path": "docs/design/reference-assets/v2.0.0/run-hud-pd-20261124/REFERENCE.md",
+        "sha256": "7d31b56657a0da85d416bf678063bf5fb1908a4106ff643cc62b5deb463bd2e2"
+      },
+      "supersedes": [
+        "mobile-run-inventory-v2"
+      ],
+      "source": "https://store.steampowered.com/news/posts/?appids=646570&enddate=1533255390",
+      "codePaths": [
+        "src/lua/abyss_game_ui.lua",
+        "src/lua/abyss_game_ui_view.lua",
+        "src/lua/abyss_game_ui_overlays.lua",
+        "src/lua/abyss_game_ui_input.lua",
+        "src/lua/abyss_relic_view_ui.lua",
+        "src/lua/abyss_mobile_run_hud.lua",
+        "scripts/official-battle-hud.mjs",
+        "scripts/relic-view-layout.mjs",
+        "src/lua/abyss_run_hud.lua",
+        "src/lua/abyss_map_ui.lua",
+        "src/lua/abyss_lowcost_art.lua",
+        "src/lua/abyss_potion_discard_ui.lua"
+      ],
+      "themeKeys": [
+        "officialAssets.mobileRunHud",
+        "officialAssets.battleRelicBar",
+        "layout.relicView"
+      ],
+      "note": "Owner正式PD01–05：整局共享HUD、左右分页、单详情复用、可见性与药水权限分离。原版证据与平台适配/客户端验收分开。"
+    },
+    {
+      "codePath": "src/lua/abyss_mobile_run_hud.lua",
+      "targetVersion": "v2.0.0",
+      "state": "sharedTopbar",
+      "revision": "run-hud-runtime-20261124",
+      "status": "CURRENT_IMPLEMENTATION",
+      "backlogTask": "TASK-38.4",
+      "reference": {
+        "path": "docs/evidence/run-hud-20261124/README.md",
+        "sha256": "37b2b35cd2a009541dcd9ea50b7086f949450ec1134b29679db63bfc0c2acb6a"
+      },
+      "supersedes": [],
+      "codePaths": [
+        "src/lua/abyss_game_ui.lua",
+        "src/lua/abyss_game_ui_view.lua",
+        "src/lua/abyss_game_ui_overlays.lua",
+        "src/lua/abyss_game_ui_input.lua",
+        "src/lua/abyss_relic_view_ui.lua",
+        "src/lua/abyss_mobile_run_hud.lua",
+        "scripts/official-battle-hud.mjs",
+        "scripts/relic-view-layout.mjs",
+        "src/lua/abyss_run_hud.lua",
+        "src/lua/abyss_map_ui.lua",
+        "src/lua/abyss_lowcost_art.lua",
+        "src/lua/abyss_potion_discard_ui.lua"
+      ],
+      "themeKeys": [
+        "officialAssets.mobileRunHud",
+        "officialAssets.battleRelicBar",
+        "layout.relicView"
+      ],
+      "note": "正式生成树/真实控制器/native API mock，PC与iPhone14 Pro离线前后投影；非官方客户端，GIL与同候选真机待验。"
+    },
+    {
+      "codePath": "src/lua/abyss_mobile_run_hud.lua",
+      "targetVersion": "v2.0.0",
+      "state": "sharedTopbar",
       "revision": "pre-926-mobile-hitbox",
       "status": "SUPERSEDED",
       "backlogTask": "TASK-38.4",
@@ -33,7 +102,7 @@
       "targetVersion": "v2.0.0",
       "state": "sharedTopbar",
       "revision": "mobile-run-inventory-v2",
-      "status": "CURRENT_IMPLEMENTATION",
+      "status": "SUPERSEDED",
       "backlogTask": "TASK-38.4",
       "reference": {
         "path": "docs/design/reference-assets/v2.0.0/mobile-run-inventory-v2/REFERENCE.md",
@@ -43,7 +112,7 @@
         "release-mobile-touch",
         "pre-926-mobile-hitbox"
       ],
-      "note": "区分战斗、普通事件、药水领取；离线 Host 已核对，正式候选与真机待验。",
+      "note": "SUPERSEDED：普通事件隐藏库存、count:1/+N及集合列表不符合PD01–05；仅触控尺寸/隔离研究保留。",
       "codePaths": [
         "src/lua/abyss_game_ui.lua",
         "src/lua/abyss_game_ui_view.lua",

@@ -1,0 +1,17 @@
+
+> slay-the-abyss@2.0.0 check:native-ui-contract
+> node --test --test-concurrency=1 tests/native-startup-contract.test.mjs tests/ui-mock-contract.test.mjs
+
+✔ generated host starts under native capability guards and rejects the escaped startup write (5720.099731ms)
+✔ fatal native bootstrap failure stops enabled BGM without weakening cleanup or engine teardown (12128.137999ms)
+✔ real UI mock factories share public argument contracts and preserve scene isolation (1384.736899ms)
+✔ native grid destruction invalidates handles and deck consumers survive refresh and viewport churn (5651.484935ms)
+✔ native lifecycle gate detects removal of the production dead-item guard (3190.019002ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 28715.053697

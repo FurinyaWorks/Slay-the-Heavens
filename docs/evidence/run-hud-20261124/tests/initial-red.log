@@ -1,0 +1,134 @@
+✖ PD Run HUD relics through official generated Lua Host (5268.97105ms)
+✖ PD Run HUD pages through official generated Lua Host (5493.334971ms)
+✖ PD Run HUD potions through official generated Lua Host (5749.844162ms)
+✖ PD Run HUD geometry through official generated Lua Host (5928.75738ms)
+✔ PD Run HUD lifecycle through official generated Lua Host (11531.207312ms)
+✖ generated run chrome paints after all room content (82.039993ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 1
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 36474.546708
+
+✖ failing tests:
+
+test at tests/run-hud-inventory.test.mjs:14:71
+✖ PD Run HUD relics through official generated Lua Host (5268.97105ms)
+  AssertionError [ERR_ASSERTION]: ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+  ABYSS_RUN seed=1 source=explicit
+  tests/lua/support/run_hud_inventory.lua:24: capacity/paging policy
+  stack traceback:
+  	[JS]: in function 'assert'
+  	tests/lua/support/run_hud_inventory.lua:24: in main chunk
+  	(command line):9: in main chunk
+  
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///workspace/hotfix-run-hud/tests/run-hud-inventory.test.mjs:19:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/run-hud-inventory.test.mjs:14:71
+✖ PD Run HUD pages through official generated Lua Host (5493.334971ms)
+  AssertionError [ERR_ASSERTION]: ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+  ABYSS_RUN seed=1 source=explicit
+  ABYSS_UI_PAGES mode=node nodeNativeActive=true choiceNativeActive=false
+  tests/lua/support/run_hud_inventory.lua:47: ordinary event hides Run inventory
+  stack traceback:
+  	[JS]: in function 'assert'
+  	tests/lua/support/run_hud_inventory.lua:47: in main chunk
+  	(command line):9: in main chunk
+  
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///workspace/hotfix-run-hud/tests/run-hud-inventory.test.mjs:19:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/run-hud-inventory.test.mjs:14:71
+✖ PD Run HUD potions through official generated Lua Host (5749.844162ms)
+  AssertionError [ERR_ASSERTION]: ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+  ABYSS_RUN seed=1 source=explicit
+  ABYSS_UI_PAGES mode=node nodeNativeActive=true choiceNativeActive=false
+  tests/lua/support/run_hud_inventory.lua:66: lab hides potions before reward
+  stack traceback:
+  	[JS]: in function 'assert'
+  	tests/lua/support/run_hud_inventory.lua:66: in main chunk
+  	(command line):9: in main chunk
+  
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///workspace/hotfix-run-hud/tests/run-hud-inventory.test.mjs:19:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/run-hud-inventory.test.mjs:14:71
+✖ PD Run HUD geometry through official generated Lua Host (5928.75738ms)
+  AssertionError [ERR_ASSERTION]: ABYSS_UI_PAGES mode=menu nodeNativeActive=false choiceNativeActive=false
+  ABYSS_RUN seed=1 source=explicit
+  ABYSS_UI_PAGES mode=node nodeNativeActive=true choiceNativeActive=false
+  tests/lua/support/run_hud_inventory.lua:77: event field covers resource HUD
+  stack traceback:
+  	[JS]: in function 'assert'
+  	tests/lua/support/run_hud_inventory.lua:77: in main chunk
+  	(command line):9: in main chunk
+  
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///workspace/hotfix-run-hud/tests/run-hud-inventory.test.mjs:19:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/run-hud-inventory.test.mjs:21:1
+✖ generated run chrome paints after all room content (82.039993ms)
+  AssertionError [ERR_ASSERTION]: officialRunBar may be occluded by eventView
+      at TestContext.<anonymous> (file:///workspace/hotfix-run-hud/tests/run-hud-inventory.test.mjs:24:176)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

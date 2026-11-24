@@ -45,11 +45,33 @@ local function routeGeometry(route,mobile,y)
     hit:SetSizeDelta(mobile.hit,mobile.hit)
 end
 
-local function rewardVeils(battle,height)
+local function belowBand(control,top)
+    local bottom=-Theme.canvas.base[2]/2
+    control:SetAnchoredPosition(0,(top+bottom)/2)
+    control:SetSizeDelta(Theme.canvas.base[1],top-bottom)
+end
+local function contentGeometry(child,mobile)
+    local top=mobile.relicBar.origin[2]-mobile.hit/2
+    local node=child('nodePanel')
+    -- Existing room content has a 233-unit upper bound. Reserve the complete
+    -- fixed-height relic row, keeping fonts, icon sizes, and input paths intact.
+    local shift=math.min(0,top-233-1)
+    for _,name in ipairs({'eventView','pickerView','shopView','campView','treasureView'})do
+        node:GetChild(name):SetAnchoredPosition(0,shift)
+    end
+    local event=node:GetChild('eventView'):GetChild('plateBorder'):GetChild('v25EventParchment'):GetChild('field')
+    belowBand(event,top-shift)
+    local battle=child('battlePanel')
     for _,name in ipairs({'rewardList','rewardStage'})do
-        local dark=battle:GetChild(name):GetChild('v25RewardField'):GetChild('dark')
-        dark:SetAnchoredPosition(0,-height/2)
-        dark:SetSizeDelta(Theme.canvas.base[1],Theme.canvas.base[2]-height)
+        local panel=battle:GetChild(name)
+        local dark=panel:GetChild('v25RewardField'):GetChild('dark')
+        belowBand(dark,top)
+        for _,role in ipairs({'title','subtitle'})do
+            local text=panel:GetChild(role)
+            -- RewardStage has a local offset; preserve that coordinate system.
+            text:SetAnchoredPosition(text.x or (role=='title' and Theme.layout.rewardPick.title[1] or Theme.layout.rewardPick.subtitle[1]),
+                (role=='title' and 128 or 82)-(name=='rewardStage' and Theme.layout.rewardPick.stage[2] or 0))
+        end
     end
 end
 
@@ -59,6 +81,7 @@ local function pageGeometry(child,kind,desk,mobile)
     local floorX,barY=barGeometry(bar,desk,mobile)
     resources(page,kind,desk,mobile)
     if kind=='mapPanel' then
+        routeGeometry(page:GetChild('mapRoute'),mobile,mobile.y)
         for _,group in ipairs(page:GetChildren())do
             if group.name:match('^mapGroup%d+$')then
                 local title=group:GetChild('title')
@@ -69,7 +92,6 @@ local function pageGeometry(child,kind,desk,mobile)
         page:GetChild('title'):SetAnchoredPosition(floorX,mobile.y)
         if kind=='battlePanel' then
             routeGeometry(bar:GetChild('battleRoute'),mobile,mobile.y-barY)
-            rewardVeils(page,mobile.height)
             local x,y,w,h=table.unpack(mobile.status)
             local status=page:GetChild('floor')
             status:SetAnchoredPosition(x,y);status:SetSizeDelta(w,h)
@@ -117,6 +139,7 @@ function M.apply(child,platform)
     local desk=Theme.officialAssets.battleHud
     for _,kind in ipairs({'battlePanel','mapPanel','nodePanel'})do pageGeometry(child,kind,desk,mobile)end
     potionGeometry(child,desk,mobile)
+    contentGeometry(child,mobile)
     return mobile
 end
 return M

@@ -94,7 +94,7 @@
     "battleCardInset": 4,
     "battleGlowReference": "CardGlowBorder.java: expanding silhouette, 1.2s lifetime and fading alpha; palette may differ by Owner instruction.",
     "battleAim": {"segments":20,"idle":"#FFFFFF","locked":"#FF334D","headSize":32,"lockScale":1.2,"bend":[0.25,0.5]},
-    "battleRelicBar": {"origin":[-597.3333333333,292],"step":48,"icon":42.6666666667,"hit":48,"count":25},
+    "battleRelicBar": {"origin":[-528,292],"step":44,"icon":42.6666666667,"hit":44,"count":25},
     "battleRelicIcons": {
       "burning_blood":{"id":105071,"placeholder":true,"note":"官方石块图标仅在岩脉残晶原生图形不可用时代用。"},
       "kunai":{"id":105217,"placeholder":true,"note":"官方交叉利刃徽章代用苦无；非原版遗物专图。"},
@@ -214,7 +214,7 @@
       "deckX": 452,
       "menuX": 548,
       "status": [241, 272, 130, 28],
-      "relicBar": {"origin":[-458,212],"step":92,"icon":42.6666666667,"hitOffsetY":0,"count":1}
+      "relicBar": {"origin":[-458,212],"step":92,"icon":42.6666666667,"hitOffsetY":0,"count":11}
     },
     "battleHud": {
       "y": 338.5,
@@ -1772,7 +1772,7 @@
     "relicView": {
       "note": "TASK-4.7 持有遗物站位：顶栏圆形遗物盘沿 prototype topBar() 32px disc / 36 步进；详情每行为图标盘+中文名+状态签+说明，美术位绑定 icon.relic，占位图标待专属美术。",
       "bar": { "origin": [-584, 270], "step": 38, "disc": 34, "face": 30, "icon": 24, "count": 12, "tray": [-376, 270, 456, 38], "trayBorder": 1, "more": [10, 0, 56, 40] },
-      "barNote": "STS TopPanel/RelicPanel 移植：遗物在生命/金币行正下方从左向右单排流动（F 型扫视），每个遗物盘本身就是唯一入口；不再有托盘胶囊与右上角重复的遗物按钮。超过 count 件时末位改为 +N 溢出盘，点开分页详情。",
+      "barNote": "PD-02：持有顺序横向排列，固定尺寸，仅已持有图标；超容量左右箭头分页，PC25/移动端按有效舞台宽度计算。不使用+N或集合入口；详情独立复用单对象。",
       "panel": [0, 0, 1160, 620],
       "title": [0, 268, 760, 48],
       "close": [490, 268, 88, 48],

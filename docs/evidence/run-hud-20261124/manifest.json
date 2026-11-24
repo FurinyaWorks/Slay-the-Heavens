@@ -1,0 +1,41 @@
+{
+  "base": "c4eec5f9dc0cebb6bf0295b1d25cb1000cc48b96",
+  "profile": {
+    "officialAssets": true,
+    "nativePageLifecycle": true,
+    "refinedReleaseMonsterArt": true
+  },
+  "evidenceType": "offline-native-api-mock-lua-host-runtime-geometry",
+  "devices": [
+    {
+      "name": "PC",
+      "pixels": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "name": "iPhone 14 Pro reference",
+      "pixels": [
+        2556,
+        1179
+      ],
+      "pointsPerPixel": 0.3333333333333333
+    }
+  ],
+  "screenshots": {
+    "before": 4,
+    "after": 12
+  },
+  "officialClient": "NOT_TESTED",
+  "formalGilBuildReadback": "NOT_TESTED",
+  "officialImport": "NOT_TESTED",
+  "realDevice": "NOT_TESTED",
+  "sourceIdentity": "before/after-source-hashes.json.gz; final review binds actual HEAD/Tree externally to avoid self-reference",
+  "finalReplay": {
+    "sameRuntimeSceneTreesAsPngInput": true,
+    "productionStableDuringCapture": true,
+    "generatorConfigUnchanged": true,
+    "independentNestedSettingsAndStaleMenu": "PASS PC and phone"
+  }
+}

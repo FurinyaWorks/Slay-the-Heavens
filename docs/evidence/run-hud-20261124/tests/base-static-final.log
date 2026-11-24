@@ -1,0 +1,231 @@
+✖ Act1 local choices have a CC15 dispatcher and event-owned handlers (44.005017ms)
+✖ Act1 source inverse authenticates fresh current bytes with exact LF and Git identity (10.926563ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 22898.394328
+
+✖ failing tests:
+
+test at tests/act1-choice-responsibilities.test.mjs:10:1
+✖ Act1 local choices have a CC15 dispatcher and event-owned handlers (44.005017ms)
+  Error: Luacheck missing; run npm run setup:lua-static
+      at requireLuaTool (file:///tmp/hud-review-c/base/scripts/setup-lua-static.mjs:14:35)
+      at runStatic (file:///tmp/hud-review-c/base/scripts/check-lua-static.mjs:21:14)
+      at TestContext.<anonymous> (file:///tmp/hud-review-c/base/tests/act1-choice-responsibilities.test.mjs:11:45)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+
+test at tests/act1-choice-responsibilities.test.mjs:76:1
+✖ Act1 source inverse authenticates fresh current bytes with exact LF and Git identity (10.926563ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  ... Skipped lines
+  
+    '-- Fixed 319009d5 event contracts. Source option order and intermediate screens\n' +
+      "-- are retained; rewards use Run's permanent inventory transaction boundary.\n" +
+      "local Run=require('abyss_run')\n" +
+      "local Purge=require('abyss_living_wall')\n" +
+      "local Random=require('abyss_sts_random')\n" +
+  ...
+      "        if not stage then return {row('approach','靠近','靠近篝火中的元素。')} end\n" +
+  +   "        return {row('offer','交换卡牌','移除一张可移除卡牌，遗物绑定牌除外；按稀有度获得回报。')}\n" +
+  -   "        return {row('offer','献祭','移除一张可移除卡牌，遗物绑定牌除外；按稀有度获得回报。')}\n" +
+      "    elseif id=='transmogrifier' then\n" +
+      "        if stage=='choose_card' then return {row('change','变换','必须选择一张卡牌变换。')} end\n" +
+      "        return {row('change','变换','将一张可移除卡牌变换为随机新牌，遗物绑定牌除外。'),row('leave','离开','离开神龛。')}\n" +
+      "    elseif id=='scrap_ooze' then\n" +
+      "        return {row('search','继续探索','受到'..event.damage..'点伤害，显示遗物概率'..event.chance..'%。'),row('leave','离开','停止探索。')}\n" +
+  ...
+      'end\n' +
+  +   '-- Each local event owns its choice transitions and reward transaction.\n' +
+  +   'local choiceHandlers={}\n' +
+  +   'function choiceHandlers.sssserpent(run,event,choice)\n' +
+  +   "    if not event.stage and (choice=='agree' or choice=='disagree') then\n" +
+  +   '        event.stage=choice\n' +
+  +   "        event.body=choice=='agree' and '长蛇等待你伸手接过馈赠。' or '你拒绝了交易，准备离去。'\n" +
+  +   "        return true,'pending'\n" +
+  -   'function M.choose(run,flow,choice,uid,upgradeable,upgradeCards)\n' +
+  -   '    local extra=extension(flow.event.id);if extra then return extra.choose(run,flow,choice,uid)end\n' +
+  -   "    if flow.event.id=='mushrooms'then return Mushrooms.choose(run,flow,choice,uid)end\n" +
+  -   "    if flow.event.id=='golden_idol'then return GoldenIdol.choose(run,flow,choice,uid)end\n" +
+  -   '    local event=flow.event\n' +
+  -   "    if event.id=='we_meet_again' then return Trade.choose(run,flow,choice,uid) end\n" +
+  -   '    if Potions.ids[event.id] then return Potions.choose(run,flow,choice,uid) end\n' +
+  -   "    if event.id=='wheel' then return Wheel.choose(run,flow,choice,uid) end\n" +
+  -   "    if uid~=nil and event.stage~='choose_card' then return false,'invalid_event_choice' end\n" +
+  -   "    if event.stage=='result' or event.stage=='disagree' then\n" +
+  -   "        if choice~='leave' then return false,'invalid_event_choice' end\n" +
+  -   "        return true,'complete'\n" +
+      '    end\n' +
+  +   "    if event.stage~='agree' or choice~='confirm' then return false,'invalid_event_choice' end\n" +
+  +   "    if not Run.transaction or not Run.prepareCard then return false,'event_content_unavailable' end\n" +
+  +   '    local ok,detail=Run.transaction(run,function(staged)\n' +
+  +   "        local offer,why=Run.prepareCard(staged,'Doubt');if not offer then return false,why end\n" +
+  +   "        if not Run.gainGold then return false,'event_content_unavailable' end\n" +
+  +   '        local gained=Run.gainGold(staged,175)\n' +
+  +   '        local obtained,cardUid=commitCard(staged,offer)\n' +
+  +   '        if not obtained then return false,cardUid end\n' +
+  +   "        staged.nodeFlow.event.obtainedCardUid=type(cardUid)=='number' and cardUid or nil\n" +
+  +   "        staged.nodeFlow.event.curseBlocked=cardUid=='curse_blocked'\n" +
+  +   "        staged.nodeFlow.event.stage='result'\n" +
+  +   "        staged.nodeFlow.event.body='获得'..gained..'金币。'..(cardUid=='curse_blocked' and '诅咒已被御守阻止。' or '诅咒「疑虑」已加入牌组。')\n" +
+  +   "        return true,'pending'\n" +
+  +   '    end)\n' +
+  +   '    return ok,detail\n' +
+  +   'end\n' +
+  +   '\n' +
+  +   'function choiceHandlers.big_fish(run,event,choice)\n' +
+  +   "    if choice=='banana' then\n" +
+  +   "        if not Run.heal then return false,'event_content_unavailable' end\n" +
+  +   '        local healed=Run.heal(run,event.healAmount)\n' +
+  +   "        return result(run,'回复'..healed..'点生命。')\n" +
+  +   "    elseif choice=='donut' then\n" +
+  +   "        if not Run.increaseMaxHp then return false,'event_content_unavailable' end\n" +
+  +   '        local ok,healed=Run.increaseMaxHp(run,5);if not ok then return false,healed end\n' +
+  +   "        return result(run,'最大生命增加5，回复'..healed..'点生命。')\n" +
+  +   "    elseif choice=='box' then\n" +
+  +   '        return transaction(run,function(staged)\n' +
+  +   "            if not Run.prepareRelic or not Run.prepareCard then return false,'event_content_unavailable' end\n" +
+  +   "            local offer,nextPool=Run.prepareRelic(staged,{channel='event',screenless=true,room='event'})\n" +
+  +   '            if not offer then return false,nextPool end\n' +
+  +   '            -- Source first selects the relic, then constructs the card effect\n' +
+  +   '            -- (old Omamori), equips the relic and finally resolves the card\n' +
+  +   "            -- effect's delayed onObtain against the new relic list.\n" +
+  +   "            local card,why=Run.prepareCard(staged,'Regret');if not card then return false,why end\n" +
+  +   '            local ok\n' +
+  +   '            ok,why=obtainRelic(staged,offer.id or offer.sourceId);if not ok then return false,why end\n' +
+  +   '            ok,why=commitCard(staged,card);if not ok then return false,why end\n' +
+  +   '            staged.relicPool=nextPool\n' +
+  +   '            staged.nodeFlow.event.relicOffer=offer\n' +
+  +   "            return result(staged,'你打开了盒子。'..(staged.nodeFlow.event.curseBlocked and '诅咒已被御守阻止。' or '诅咒「悔恨」已加入牌组。'))\n" +
+  +   '        end)\n' +
+  +   '    end\n' +
+  +   "    return false,'invalid_event_choice'\n" +
+  +   'end\n' +
+  +   '\n' +
+  +   'function choiceHandlers.accursed_blacksmith(run,event,choice,uid,upgradeable,upgradeCards)\n' +
+  +   '    if not event.stage then\n' +
+  +   "        if choice=='leave' then return result(run,'你离开了铁砧。') end\n" +
+  +   "        if choice=='forge' then\n" +
+  +   "            if #upgradeCards(run)==0 then return false,'card_not_upgradeable' end\n" +
+  +   "            event.stage,event.choice='choose_card','forge'\n" +
+  +   "            event.body='选择一张卡牌升级。';return true,'choose_card'\n" +
+  -   "    if event.id=='sssserpent' then\n" +
+  -   "        if not event.stage and (choice=='agree' or choice=='disagree') then\n" +
+  -   '            event.stage=choice\n' +
+  -   "            event.body=choice=='agree' and '长蛇等待你伸手接过馈赠。' or '你拒绝了交易，准备离去。'\n" +
+  -   "            return true,'pending'\n" +
+      '        end\n' +
+  +   "        if choice=='rummage' then\n" +
+  -   "        if event.stage~='agree' or choice~='confirm' then return false,'invalid_event_choice' end\n" +
+  -   "        if not Run.transaction or not Run.prepareCard then return false,'event_content_unavailable' end\n" +
+  -   '        local ok,detail=Run.transaction(run,function(staged)\n' +
+  -   "            local offer,why=Run.prepareCard(staged,'Doubt');if not offer then return false,why end\n" +
+  -   "            if not Run.gainGold then return false,'event_content_unavailable' end\n" +
+  -   '            local gained=Run.gainGold(staged,175)\n' +
+  -   '            local obtained,cardUid=commitCard(staged,offer)\n' +
+  -   '            if not obtained then return false,cardUid end\n' +
+  -   "            staged.nodeFlow.event.obtainedCardUid=type(cardUid)=='number' and cardUid or nil\n" +
+  -   "            staged.nodeFlow.event.curseBlocked=cardUid=='curse_blocked'\n" +
+  -   "            staged.nodeFlow.event.stage='result'\n" +
+  -   "            staged.nodeFlow.event.body='获得'..gained..'金币。'..(cardUid=='curse_blocked' and '诅咒已被御守阻止。' or '诅咒「疑虑」已加入牌组。')\n" +
+  -   "            return true,'pending'\n" +
+  -   '        end)\n' +
+  -   '        return ok,detail\n' +
+  -   "    elseif event.id=='big_fish' then\n" +
+  -   "        if choice=='banana' then\n" +
+  -   "            if not Run.heal then return false,'event_content_unavailable' end\n" +
+  -   '            local healed=Run.heal(run,event.healAmount)\n' +
+  -   "            return result(run,'回复'..healed..'点生命。')\n" +
+  -   "        elseif choice=='donut' then\n" +
+  -   "            if not Run.increaseMaxHp then return false,'event_content_unavailable' end\n" +
+  -   '            local ok,healed=Run.increaseMaxHp(run,5);if not ok then return false,healed end\n' +
+  -   "            return result(run,'最大生命增加5，回复'..healed..'点生命。')\n" +
+  -   "        elseif choice=='box' then\n" +
+      '            return transaction(run,function(staged)\n' +
+  +   "                if not Run.prepareCard then return false,'event_content_unavailable' end\n" +
+  +   "                local offer,why=Run.prepareCard(staged,'Pain');if not offer then return false,why end\n" +
+  -   "                if not Run.prepareRelic or not Run.prepareCard then return false,'event_content_unavailable' end\n" +
+  -   "                local offer,nextPool=Run.prepareRelic(staged,{channel='event',screenless=true,room='event'})\n" +
+  -   '                if not offer then return false,nextPool end\n' +
+  -   '                -- Source first selects the relic, then constructs the card effect\n' +
+  -   '                -- (old Omamori), equips the relic and finally resolves the card\n' +
+  -   "                -- effect's delayed onObtain against the new relic list.\n" +
+  -   "                local card,why=Run.prepareCard(staged,'Regret');if not card then return false,why end\n" +
+      '                local ok\n' +
+  +   "                ok,why=obtainRelic(staged,'WarpedTongs');if not ok then return false,why end\n" +
+  +   '                ok,why=commitCard(staged,offer);if not ok then return false,why end\n' +
+  +   "                return result(staged,staged.nodeFlow.event.curseBlocked and '获得扭曲之钳；诅咒已被御守阻止。' or '获得扭曲之钳与诅咒「疼痛」。')\n" +
+  -   '                ok,why=obtainRelic(staged,offer.id or offer.sourceId);if not ok then return false,why end\n' +
+  -   '                ok,why=commitCard(staged,card);if not ok then return false,why end\n' +
+  -   '                staged.relicPool=nextPool\n' +
+  -   '                staged.nodeFlow.event.relicOffer=offer\n' +
+  -   "                return result(staged,'你打开了盒子。'..(staged.nodeFlow.event.curseBlocked and '诅咒已被御守阻止。' or '诅咒「悔恨」已加入牌组。'))\n" +
+      '            end)\n' +
+      '        end\n' +
+  +   "    elseif event.stage=='choose_card' and choice=='forge' then\n" +
+  +   "        local instance=find(run.deck,uid,'uid')\n" +
+  +   "        if not instance then return false,'invalid_card' end\n" +
+  +   "        if not upgradeable(run,instance) then return false,'card_not_upgradeable' end\n" +
+  +   '        instance.upgrades=(instance.upgrades or (instance.upgraded and 1 or 0))+1\n' +
+  +   '        instance.upgraded=true;event.upgradedUids={uid}\n' +
+  +   "        return result(run,'所选卡牌已升级。')\n" +
+  +   '    end\n' +
+  +   "    return false,'invalid_event_choice'\n" +
+  +   'end\n' +
+  +   '\n' +
+  +   'function choiceHandlers.scrap_ooze(run,event,choice)\n' +
+  +   "    if choice=='leave' then return result(run,'你停止了探索。') end\n" +
+  +   "    if choice~='search' then return false,'invalid_event_choice' end\n" +
+  +   '    -- Fixed source pays damage, rolls inclusive 0..99, and only on success\n' +
+  +   '    -- draws tier/queue. Display 25 is intentionally 26 successful buckets.\n' +
+  +   '    local damaged,damageReason=Run.eventDamage(run,event.damage)\n' +
+  +   '    if not damaged then return false,damageReason end\n' +
+  +   '    event.totalDamage=event.totalDamage+event.damage\n' +
+  +   '    local roll=Random.randomIntBetween(run.miscRng,0,99)\n' +
+  +   '    event.lastRoll=roll\n' +
+  +   '    if roll>=99-event.chance then\n' +
+  +   "        if not Run.prepareRelic then return false,'event_content_unavailable' end\n" +
+  +   '        local offer,nextPool=Run.prepareRel'... 4714 more characters
+  -   "    elseif event.id=='accursed_blacksmith' then\n" +
+  -   '        if not event.stage then\n' +
+  -   "            if choice=='leave' then return result(run,'你离开了铁砧。') end\n" +
+  -   "            if choice=='forge' then\n" +
+  -   "                if #upgradeCards(run)==0 then return false,'card_not_upgradeable' end\n" +
+  -   "                event.stage,event.choice='choose_card','forge'\n" +
+  -   "                event.body='选择一张卡牌升级。';return true,'choose_card'\n" +
+  -   '            end\n' +
+  -   "            if choice=='rummage' then\n" +
+  -   '                return transaction(run,function(staged)\n' +
+  -   "                    if not Run.prepareCard then return false,'event_content_unavailable' end\n" +
+  -   "                    local offer,why=Run.prepareCard(staged,'Pain');if not offer then return false,why end\n" +
+  -   '                    local ok\n' +
+  -   "                    ok,why=obtainRelic(staged,'WarpedTongs');if not ok then return false,why end\n" +
+  -   '                    ok,why=commitCard(staged,offer);if not ok then return false,why end\n' +
+  -   "                    return result(staged,staged.nodeFlow.event.curseBlocked and '获得扭曲之钳；诅咒已被御守阻止。' or '获得扭曲之钳与诅咒「疼痛」。')\n" +
+  -   '                end)\n' +
+  -   '            end\n' +
+  -   "        elseif event.stage=='choose_card' and choice=='forge' then\n" +
+  -   "            local instance=find(run.deck,uid,'uid')\n" +
+  -   "            if not instance then return false,'invalid_card' end\n" +
+  -   "            if not upgradeable(run,instance) then return false,'card_not_upgradeable' end\n" +
+  -   '            instance.upgrades=(instance.upgrades or (instance.upgra'... 4587 more characters
+  
+      at TestContext.<anonymous> (file:///tmp/hud-review-c/base/tests/act1-choice-responsibilities.test.mjs:79:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: "-- Fixed 319009d5 event contracts. Source option order and intermediate screens\n-- are retained; rewards use Run's permanent inventory transaction boundary.\nlocal Run=require('abyss_run')\nlocal Purge=require('abyss_living_wall')\nlocal Random=require('abyss_sts_random')\nlocal Wheel=require('abyss_wheel_event')\nlocal Potions=require('abyss_potion_events')\nlocal Trade=require('abyss_trade_event')\nlocal GoldenIdol=require('abyss_golden_idol_event')\nlocal Mushrooms=require('abyss_mushrooms_event')\nlocal M={ids={mushrooms=true,golden_idol=true,sssserpent=true,big_fish=true,accursed_blacksmith=true,bonfire=true,transmogrifier=true,scrap_ooze=true,wheel=true,lab=true,woman_in_blue=true,we_meet_again=true}}\nfor _,id in ipairs({'dead_adventurer','designer','face_trader','knowing_skull','nloth'})do M.ids[id]=true end\nlocal function extension(id)\n    if id=='dead_adventurer'then return require('abyss_dead_adventurer_event')end\n    if id=='designer'then return require('abyss_designer_event')end\n    if id=='face_trader'then return require('abyss_face_trader_event')end\n    if id=='knowing_skull'then return require('abyss_knowing_skull_event')end\n    if id=='nloth'then return require('abyss_nloth_event')end\nend\nfunction M.prepare(run,event,miscRng,floor)\n    local extra=extension(event.id);if extra then return extra.prepare(run,event,miscRng,floor)end\n    if event.id=='mushrooms'then return Mushrooms.prepare(run,event)end\n    if event.id=='golden_idol'then return GoldenIdol.prepare(run,event)end\n    if event.id=='big_fish' then event.healAmount=math.floor(run.maxHp/3) end\n    if event.id=='scrap_ooze' then event.damage,event.chance,event.totalDamage=3,25,0 end\n    if event.id=='wheel' then Wheel.prepare(run,event) end\n    if event.id=='we_meet_again' then Trade.prepare(run,event,miscRng) end\nend\nlocal function row(choice,title,description,enabled)\n    return {choice=choice,title=title,description=description,enabled=enabled~=false}\nend\nlocal function result(run,text)\n    run.nodeFlow.event.stage='result';run.nodeFlow.event.body=text\n    return true,'pending'\nend\nlocal function find(list,id,key)\n    for _,value in ipairs(list) do if value[key or 'id']==id then return value end end\nend\nlocal function transaction(run,fn)\n    if not Run.transaction then return false,'event_content_unavailable' end\n    return Run.transaction(run,fn)\nend\nlocal function commitCard(run,offer)\n    if not Run.commitCard then return false,'event_content_unavailable' end\n    local ok,uid=Run.commitCard(run,offer)\n    if ok then\n        run.nodeFlow.event.obtainedCardUid=type(uid)=='number' and uid or nil\n        run.nodeFlow.event.curseBlocked=uid=='curse_blocked'\n    end\n    return ok,uid\nend\nlocal function obtainRelic(run,id)\n    if not Run.obtainRelic then return false,'event_content_unavailable' end\n    local ok,localId=Run.obtainRelic(run,id)\n    if ok then run.nodeFlow.event.obtainedRelicId=localId end\n    return ok,localId\nend\nfunction M.options(run,event,upgradeCards)\n    local extra=extension(event.id);if extra then return extra.options(run,event)end\n    if event.id=='mushrooms'then return Mushrooms.options(run,event)end\n    if event.id=='golden_idol'then return GoldenIdol.options(run,event)end\n    if event.id=='we_meet_again' then return Trade.options(run,event) end\n    if Potions.ids[event.id] then return Potions.options(run,event) end\n    if event.id=='wheel' then return Wheel.options(run,event) end\n    local id,stage=event.id,event.stage\n    if stage=='result' or stage=='disagree' then return {row('leave','离开','返回路线。')} end\n    if id=='sssserpent' then\n        if stage=='agree' then return {row('confirm','收下馈赠','获得175金币与诅咒「疑虑」。')} end\n        return {row('agree','接受','获得175金币与诅咒「疑虑」；需要再次确认。'),row('disagree','拒绝','拒绝这笔交易。')}\n    elseif id=='big_fish' then\n        return {row('banana','香蕉','回复'..event.healAmount..'点生命。'),row('donut','甜甜圈','最大生命增加5。'),row('box','盒子','获得随机遗物与诅咒「悔恨」。')}\n    elseif id=='accursed_blacksmith' then\n        if stage=='choose_card' then return {row('forge','锻造','必须选择一张卡牌升级。')} end\n        return {row('forge','锻造','升级一张卡牌。',#upgradeCards(run)>0),row('rummage','搜寻','获得扭曲之钳与诅咒「疼痛」。'),row('leave','离开','放弃锻造与搜寻。')}\n    elseif id=='bonfire' then\n        if not stage then return {row('approach','靠近','靠近篝火中的元素。')} end\n        return {row('offer','交换卡牌','移除一张可移除卡牌，遗物绑定牌除外；按稀有度获得回报。')}\n    elseif id=='transmogrifier' then\n        if stage=='choose_card' then return {row('change','变换','必须选择一张卡牌变换。')} end\n        return {row('change','变换','将一张可移除卡牌变换为随机新牌，遗物绑定牌除外。'),row('leave','离开','离开神龛。')}\n    elseif id=='scrap_ooze' then\n        return {row('search','继续探索','受到'..event.damage..'点伤害，显示遗物概率'..event.chance..'%。'),row('leave','离开','停止探索。')}\n    end\n    return {}\nend\n-- Each local event owns its choice transitions and reward transaction.\nlocal choiceHandlers={}\nfunction choiceHandlers.sssserpent(run,event,choice)\n    if not event.stage and (choice=='agree' or choice=='disagree') then\n        event.stage=choice\n        event.body=choice=='agree' and '长蛇等待你伸手接过馈赠。' or '你拒绝了交易，准备离去。'\n        return true,'pending'\n    end\n    if event.stage~='agree' or choice~='confirm' then return false,'invalid_event_choice' end\n    if not Run.transaction or not Run.prepareCard then return false,'event_content_unavailable' end\n    local ok,detail=Run.transaction(run,function(staged)\n        local offer,why=Run.prepareCard(staged,'Doubt');if not offer then return false,why end\n        if not Run.gainGold then return false,'event_content_unavailable' end\n        local gained=Run.gainGold(staged,175)\n        local obtained,cardUid=commitCard(staged,offer)\n        if not obtained then return false,cardUid end\n        staged.nodeFlow.event.obtainedCardUid=type(cardUid)=='number' and cardUid or nil\n        staged.nodeFlow.event.curseBlocked=cardUid=='curse_blocked'\n        staged.nodeFlow.event.stage='result'\n        staged.nodeFlow.event.body='获得'..gained..'金币。'..(cardUid=='curse_blocked' and '诅咒已被御守阻止。' or '诅咒「疑虑」已加入牌组。')\n        return true,'pending'\n    end)\n    return ok,detail\nend\n\nfunction choiceHandlers.big_fish(run,event,choice)\n    if choice=='banana' then\n        if not Run.heal then return false,'event_content_unavailable' end\n        local healed=Run.heal(run,event.healAmount)\n        return result(run,'回复'..healed..'点生命。')\n    elseif choice=='donut' then\n        if not Run.increaseMaxHp then return false,'event_content_unavailable' end\n        local ok,healed=Run.increaseMaxHp(run,5);if not ok then return false,healed end\n        return result(run,'最大生命增加5，回复'..healed..'点生命。')\n    elseif choice=='box' then\n        return transaction(run,function(staged)\n            if not Run.prepareRelic or not Run.prepareCard then return false,'event_content_unavailable' end\n            local offer,nextPool=Run.prepareRelic(staged,{channel='event',screenless=true,room='event'})\n            if not offer then return false,nextPool end\n            -- Source first selects the relic, then constructs the card effect\n            -- (old Omamori), equips the relic and finally resolves the card\n            -- effect's delayed onObtain against the new relic list.\n            local card,why=Run.prepareCard(staged,'Regret');if not card then return false,why end\n            local ok\n            ok,why=obtainRelic(staged,offer.id or offer.sourceId);if not ok then return false,why end\n            ok,why=commitCard(staged,card);if not ok then return false,why end\n            staged.relicPool=nextPool\n            staged.nodeFlow.event.relicOffer=offer\n            return result(staged,'你打开了盒子。'..(staged.nodeFlow.event.curseBlocked and '诅咒已被御守阻止。' or '诅咒「悔恨」已加入牌组。'))\n        end)\n    end\n    return false,'invalid_event_choice'\nend\n\nfunction choiceHandlers.accursed_blacksmith(run,event,choice,uid,upgradeable,upgradeCards)\n    if not event.stage then\n        if choice=='leave' then return result(run,'你离开了铁砧。') end\n        if choice=='forge' then\n            if #upgradeCards(run)==0 then return false,'card_not_upgradeable' end\n            event.stage,event.choice='choose_card','forge'\n            event.body='选择一张卡牌升级。';return true,'choose_card'\n        end\n        if choice=='rummage' then\n            return transaction(run,function(staged)\n                if not Run.prepareCard then return false,'event_content_unavailable' end\n                local offer,why=Run.prepareCard(staged,'Pain');if not offer then return false,why end\n                local ok\n                ok,why=obtainRelic(staged,'WarpedTongs');if not ok then return false,why end\n                ok,why=commitCard(staged,offer);if not ok then return false,why end\n                return result(staged,staged.nodeFlow.event.curseBlocked and '获得扭曲之钳；诅咒已被御守阻止。' or '获得扭曲之钳与诅咒「疼痛」。')\n            end)\n        end\n    elseif event.stage=='choose_card' and choice=='forge' then\n        local instance=find(run.deck,uid,'uid')\n        if not instance then return false,'invalid_card' end\n        if not upgradeable(run,instance) then return false,'card_not_upgradeable' end\n        instance.upgrades=(instance.upgrades or (instance.upgraded and 1 or 0))+1\n        instance.upgraded=true;event.upgradedUids={uid}\n        return result(run,'所选卡牌已升级。')\n    end\n    return false,'invalid_event_choice'\nend\n\nfunction choiceHandlers.scrap_ooze(run,event,choice)\n    if choice=='leave' then return result(run,'你停止了探索。') end\n    if choice~='search' then return false,'invalid_event_choice' end\n    -- Fixed source pays damage, rolls inclusive 0..99, and only on success\n    -- draws tier/queue. Display 25 is intentionally 26 successful buckets.\n    local damaged,damageReason=Run.eventDamage(run,event.damage)\n    if not damaged then return false,damageReason end\n    event.totalDamage=event.totalDamage+event.damage\n    local roll=Random.randomIntBetween(run.miscRng,0,99)\n    event.lastRoll=roll\n    if roll>=99-event.chance then\n        if not Run.prepareRelic then return false,'event_content_unavailable' end\n        local offer,nextPool=Run.prepareRel"... 4714 more characters,
+    expected: "-- Fixed 319009d5 event contracts. Source option order and intermediate screens\n-- are retained; rewards use Run's permanent inventory transaction boundary.\nlocal Run=require('abyss_run')\nlocal Purge=require('abyss_living_wall')\nlocal Random=require('abyss_sts_random')\nlocal Wheel=require('abyss_wheel_event')\nlocal Potions=require('abyss_potion_events')\nlocal Trade=require('abyss_trade_event')\nlocal GoldenIdol=require('abyss_golden_idol_event')\nlocal Mushrooms=require('abyss_mushrooms_event')\nlocal M={ids={mushrooms=true,golden_idol=true,sssserpent=true,big_fish=true,accursed_blacksmith=true,bonfire=true,transmogrifier=true,scrap_ooze=true,wheel=true,lab=true,woman_in_blue=true,we_meet_again=true}}\nfor _,id in ipairs({'dead_adventurer','designer','face_trader','knowing_skull','nloth'})do M.ids[id]=true end\nlocal function extension(id)\n    if id=='dead_adventurer'then return require('abyss_dead_adventurer_event')end\n    if id=='designer'then return require('abyss_designer_event')end\n    if id=='face_trader'then return require('abyss_face_trader_event')end\n    if id=='knowing_skull'then return require('abyss_knowing_skull_event')end\n    if id=='nloth'then return require('abyss_nloth_event')end\nend\nfunction M.prepare(run,event,miscRng,floor)\n    local extra=extension(event.id);if extra then return extra.prepare(run,event,miscRng,floor)end\n    if event.id=='mushrooms'then return Mushrooms.prepare(run,event)end\n    if event.id=='golden_idol'then return GoldenIdol.prepare(run,event)end\n    if event.id=='big_fish' then event.healAmount=math.floor(run.maxHp/3) end\n    if event.id=='scrap_ooze' then event.damage,event.chance,event.totalDamage=3,25,0 end\n    if event.id=='wheel' then Wheel.prepare(run,event) end\n    if event.id=='we_meet_again' then Trade.prepare(run,event,miscRng) end\nend\nlocal function row(choice,title,description,enabled)\n    return {choice=choice,title=title,description=description,enabled=enabled~=false}\nend\nlocal function result(run,text)\n    run.nodeFlow.event.stage='result';run.nodeFlow.event.body=text\n    return true,'pending'\nend\nlocal function find(list,id,key)\n    for _,value in ipairs(list) do if value[key or 'id']==id then return value end end\nend\nlocal function transaction(run,fn)\n    if not Run.transaction then return false,'event_content_unavailable' end\n    return Run.transaction(run,fn)\nend\nlocal function commitCard(run,offer)\n    if not Run.commitCard then return false,'event_content_unavailable' end\n    local ok,uid=Run.commitCard(run,offer)\n    if ok then\n        run.nodeFlow.event.obtainedCardUid=type(uid)=='number' and uid or nil\n        run.nodeFlow.event.curseBlocked=uid=='curse_blocked'\n    end\n    return ok,uid\nend\nlocal function obtainRelic(run,id)\n    if not Run.obtainRelic then return false,'event_content_unavailable' end\n    local ok,localId=Run.obtainRelic(run,id)\n    if ok then run.nodeFlow.event.obtainedRelicId=localId end\n    return ok,localId\nend\nfunction M.options(run,event,upgradeCards)\n    local extra=extension(event.id);if extra then return extra.options(run,event)end\n    if event.id=='mushrooms'then return Mushrooms.options(run,event)end\n    if event.id=='golden_idol'then return GoldenIdol.options(run,event)end\n    if event.id=='we_meet_again' then return Trade.options(run,event) end\n    if Potions.ids[event.id] then return Potions.options(run,event) end\n    if event.id=='wheel' then return Wheel.options(run,event) end\n    local id,stage=event.id,event.stage\n    if stage=='result' or stage=='disagree' then return {row('leave','离开','返回路线。')} end\n    if id=='sssserpent' then\n        if stage=='agree' then return {row('confirm','收下馈赠','获得175金币与诅咒「疑虑」。')} end\n        return {row('agree','接受','获得175金币与诅咒「疑虑」；需要再次确认。'),row('disagree','拒绝','拒绝这笔交易。')}\n    elseif id=='big_fish' then\n        return {row('banana','香蕉','回复'..event.healAmount..'点生命。'),row('donut','甜甜圈','最大生命增加5。'),row('box','盒子','获得随机遗物与诅咒「悔恨」。')}\n    elseif id=='accursed_blacksmith' then\n        if stage=='choose_card' then return {row('forge','锻造','必须选择一张卡牌升级。')} end\n        return {row('forge','锻造','升级一张卡牌。',#upgradeCards(run)>0),row('rummage','搜寻','获得扭曲之钳与诅咒「疼痛」。'),row('leave','离开','放弃锻造与搜寻。')}\n    elseif id=='bonfire' then\n        if not stage then return {row('approach','靠近','靠近篝火中的元素。')} end\n        return {row('offer','献祭','移除一张可移除卡牌，遗物绑定牌除外；按稀有度获得回报。')}\n    elseif id=='transmogrifier' then\n        if stage=='choose_card' then return {row('change','变换','必须选择一张卡牌变换。')} end\n        return {row('change','变换','将一张可移除卡牌变换为随机新牌，遗物绑定牌除外。'),row('leave','离开','离开神龛。')}\n    elseif id=='scrap_ooze' then\n        return {row('search','继续探索','受到'..event.damage..'点伤害，显示遗物概率'..event.chance..'%。'),row('leave','离开','停止探索。')}\n    end\n    return {}\nend\nfunction M.choose(run,flow,choice,uid,upgradeable,upgradeCards)\n    local extra=extension(flow.event.id);if extra then return extra.choose(run,flow,choice,uid)end\n    if flow.event.id=='mushrooms'then return Mushrooms.choose(run,flow,choice,uid)end\n    if flow.event.id=='golden_idol'then return GoldenIdol.choose(run,flow,choice,uid)end\n    local event=flow.event\n    if event.id=='we_meet_again' then return Trade.choose(run,flow,choice,uid) end\n    if Potions.ids[event.id] then return Potions.choose(run,flow,choice,uid) end\n    if event.id=='wheel' then return Wheel.choose(run,flow,choice,uid) end\n    if uid~=nil and event.stage~='choose_card' then return false,'invalid_event_choice' end\n    if event.stage=='result' or event.stage=='disagree' then\n        if choice~='leave' then return false,'invalid_event_choice' end\n        return true,'complete'\n    end\n    if event.id=='sssserpent' then\n        if not event.stage and (choice=='agree' or choice=='disagree') then\n            event.stage=choice\n            event.body=choice=='agree' and '长蛇等待你伸手接过馈赠。' or '你拒绝了交易，准备离去。'\n            return true,'pending'\n        end\n        if event.stage~='agree' or choice~='confirm' then return false,'invalid_event_choice' end\n        if not Run.transaction or not Run.prepareCard then return false,'event_content_unavailable' end\n        local ok,detail=Run.transaction(run,function(staged)\n            local offer,why=Run.prepareCard(staged,'Doubt');if not offer then return false,why end\n            if not Run.gainGold then return false,'event_content_unavailable' end\n            local gained=Run.gainGold(staged,175)\n            local obtained,cardUid=commitCard(staged,offer)\n            if not obtained then return false,cardUid end\n            staged.nodeFlow.event.obtainedCardUid=type(cardUid)=='number' and cardUid or nil\n            staged.nodeFlow.event.curseBlocked=cardUid=='curse_blocked'\n            staged.nodeFlow.event.stage='result'\n            staged.nodeFlow.event.body='获得'..gained..'金币。'..(cardUid=='curse_blocked' and '诅咒已被御守阻止。' or '诅咒「疑虑」已加入牌组。')\n            return true,'pending'\n        end)\n        return ok,detail\n    elseif event.id=='big_fish' then\n        if choice=='banana' then\n            if not Run.heal then return false,'event_content_unavailable' end\n            local healed=Run.heal(run,event.healAmount)\n            return result(run,'回复'..healed..'点生命。')\n        elseif choice=='donut' then\n            if not Run.increaseMaxHp then return false,'event_content_unavailable' end\n            local ok,healed=Run.increaseMaxHp(run,5);if not ok then return false,healed end\n            return result(run,'最大生命增加5，回复'..healed..'点生命。')\n        elseif choice=='box' then\n            return transaction(run,function(staged)\n                if not Run.prepareRelic or not Run.prepareCard then return false,'event_content_unavailable' end\n                local offer,nextPool=Run.prepareRelic(staged,{channel='event',screenless=true,room='event'})\n                if not offer then return false,nextPool end\n                -- Source first selects the relic, then constructs the card effect\n                -- (old Omamori), equips the relic and finally resolves the card\n                -- effect's delayed onObtain against the new relic list.\n                local card,why=Run.prepareCard(staged,'Regret');if not card then return false,why end\n                local ok\n                ok,why=obtainRelic(staged,offer.id or offer.sourceId);if not ok then return false,why end\n                ok,why=commitCard(staged,card);if not ok then return false,why end\n                staged.relicPool=nextPool\n                staged.nodeFlow.event.relicOffer=offer\n                return result(staged,'你打开了盒子。'..(staged.nodeFlow.event.curseBlocked and '诅咒已被御守阻止。' or '诅咒「悔恨」已加入牌组。'))\n            end)\n        end\n    elseif event.id=='accursed_blacksmith' then\n        if not event.stage then\n            if choice=='leave' then return result(run,'你离开了铁砧。') end\n            if choice=='forge' then\n                if #upgradeCards(run)==0 then return false,'card_not_upgradeable' end\n                event.stage,event.choice='choose_card','forge'\n                event.body='选择一张卡牌升级。';return true,'choose_card'\n            end\n            if choice=='rummage' then\n                return transaction(run,function(staged)\n                    if not Run.prepareCard then return false,'event_content_unavailable' end\n                    local offer,why=Run.prepareCard(staged,'Pain');if not offer then return false,why end\n                    local ok\n                    ok,why=obtainRelic(staged,'WarpedTongs');if not ok then return false,why end\n                    ok,why=commitCard(staged,offer);if not ok then return false,why end\n                    return result(staged,staged.nodeFlow.event.curseBlocked and '获得扭曲之钳；诅咒已被御守阻止。' or '获得扭曲之钳与诅咒「疼痛」。')\n                end)\n            end\n        elseif event.stage=='choose_card' and choice=='forge' then\n            local instance=find(run.deck,uid,'uid')\n            if not instance then return false,'invalid_card' end\n            if not upgradeable(run,instance) then return false,'card_not_upgradeable' end\n            instance.upgrades=(instance.upgrades or (instance.upgra"... 4587 more characters,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

@@ -3,7 +3,7 @@ local PageReveal=require('abyss_page_reveal')
 local Navigation=require('abyss_game_ui_navigation')
 local M = {}
 local function fastOverlaysBlocked(self)
-    return self.mode~='menu' or self.characterOpen or self.exitOpen
+    return self.mode~='menu' or self.characterOpen or self.exitOpen and not self.routeOpen or self.menuOpen
         or (self.deckUI and self.deckUI.visible)
         or (self.potionUI and self.potionUI.visible) or (self.choiceUI and self.choiceUI.visible)
         or self.settlementRequested or self.settlementBusy
@@ -13,7 +13,7 @@ local function potionPhase(self,run)
         and (run.phase=="map" or run.phase=="node" or run.phase=="reward" or run.phase=="combat")
 end
 local function deckBlocked(self)
-    return self.disabled or self.characterOpen or self.choiceUI and self.choiceUI.visible or self.exitOpen
+    return self.disabled or self.characterOpen or self.choiceUI and self.choiceUI.visible or self.exitOpen and not self.routeOpen or self.menuOpen
         or self.potionUI.visible or not self.run or self.battleUI.busy or self.settlementBusy or self.settlementRequested
 end
 
@@ -60,19 +60,9 @@ function M.inCombat(self)
         end
 end
 
-function M.inventoryAccess(self,platform)
-    return function(kind,run)
-        local flow=run and run.nodeFlow
-        if not platform.mobileRunHud or self.mode~='node' or not flow or flow.type~='event' then return true end
-        -- Ordinary event pages own their controls until leaving the room. The
-        -- Lab/Blue Woman bottle rewards still need a way to free a full slot.
-        return kind=='potion' and not flow.complete and flow.event and flow.event.stage=='potion_rewards'
-    end
-end
-
 function M.canManagePotions(openingCovered,self)
     return function(run)
-            return not openingCovered() and not self.disabled and run~=nil and self.run==run and not self.exitOpen and not self.deckUI.visible
+            return not openingCovered() and not self.disabled and run~=nil and self.run==run and not (self.exitOpen and not self.routeOpen) and not self.menuOpen and not self.deckUI.visible
                 and not (self.choiceUI and self.choiceUI.visible)
                 and not self.battleUI.busy and not self.settlementBusy and not self.settlementRequested
                 and potionPhase(self,run)
@@ -122,8 +112,9 @@ end
 
 function M.openMenu(self,owner)
     return function(_)
+            if self.deckUI.visible or self.potionUI.visible or self.choiceUI and self.choiceUI.visible then return false end
             if self.prologue and self.prologue:covering() then return false end
-            if self.disabled or self.easterEggOpen or self.exitOpen or self.settlementRequested or self.settlementBusy then return false end
+            if self.disabled or self.easterEggOpen or self.exitOpen and not self.routeOpen or self.menuOpen or self.settlementRequested or self.settlementBusy then return false end
             owner.exitGeneration = owner.exitGeneration + 1
             self.exitOpen, self.menuOpen, self.exitError = true, true, nil
             Navigation.cancelNodeEntry(self)
@@ -136,6 +127,9 @@ function M.closeExit(self,owner)
     return function(_)
             if not self.exitOpen or self.settlementRequested or self.settlementBusy then return false end
             owner.exitGeneration = owner.exitGeneration + 1
+            if self.routeOpen and self.menuOpen then
+                self.menuOpen=false;self:refresh();return true
+            end
             if self.routeOpen then
                 self.routeOpen = false
                 -- Route preview returns directly to its caller, not a hidden parent menu.
@@ -179,7 +173,7 @@ end
 
 function M.openStarterDeck(openingCovered,self,platform,owner)
     return function(_)
-            if openingCovered() or self.disabled or not self.characterOpen or self.starting or self.exitOpen
+            if openingCovered() or self.disabled or not self.characterOpen or self.starting or self.exitOpen and not self.routeOpen or self.menuOpen
                 or self.settlementRequested or self.settlementBusy or self.deckUI.visible or not self.characterSelection.info then return false end
             PageReveal.registerSource(platform,'deckPanel')
             local ok,reason=self.deckUI:openPreview(self.characterSelection.info)
@@ -190,7 +184,7 @@ function M.openStarterDeck(openingCovered,self,platform,owner)
 end
 function M.openRelics(self,openingCovered,platform)
     return function(_,index)
-            if not self.inventoryAccess('relic',self.run) or self.deckUI.visible or not canOpenDeck(openingCovered,self) then return false end
+            if self.deckUI.visible or not canOpenDeck(openingCovered,self) then return false end
             PageReveal.registerSource(platform,'deckPanel')
             if not self.deckUI:inspectRelics(self.run,self.relicUI,index) then return false end
             self.battleUI.selected=nil
@@ -200,7 +194,7 @@ end
 
 function M.closeDeck(self)
     return function(_)
-            if self.exitOpen or self.settlementRequested then return false end
+            if self.exitOpen and not self.routeOpen or self.settlementRequested then return false end
             if self.deckUI.choiceToken then return false,"card_choice_pending" end
             local preview=self.deckUI.previewInfo~=nil
             if not self.deckUI:close() then return false end

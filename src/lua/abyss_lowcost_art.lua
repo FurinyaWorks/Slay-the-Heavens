@@ -119,6 +119,21 @@ function M.hide(icon,restore)
  fallback(pool,icon,token,restore)
  if current(pool,icon,token)then painted[pool]=nil end
 end
+-- Relic consumed/charged presentation must colour the actual native shapes,
+-- not only the atlas fallback hidden behind them. Reuses the painted pool.
+function M.tint(icon,ink)
+ local pool=poolFor(icon);local state=pool and painted[pool]
+ if not state or not state.ready or state.tint==ink then return end
+ local ok=pcall(function()
+  for i,shape in ipairs(state.asset.shapes)do
+   local c=shape.colour
+   colour(pool,icon,state,pool:GetChild('shape'..(i-1)),math.floor(c.r*ink/255),
+    math.floor(c.g*ink/255),math.floor(c.b*ink/255),c.a or 255)
+  end
+  state.tint=ink
+ end)
+ if not ok and current(pool,icon,state)then state.ready=false;visible(pool,false);visible(icon,true)end
+end
 function M.scale(icon,scale)
  local pool=poolFor(icon);local state=pool and painted[pool]
  if state then pool:SetLocalScale(state.size/100*scale,state.size/100*scale,1)end

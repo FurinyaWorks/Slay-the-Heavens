@@ -1,0 +1,40 @@
+✖ Act1 local choices have a CC15 dispatcher and event-owned handlers (7791.368457ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 60766.896541
+
+✖ failing tests:
+
+test at tests/act1-choice-responsibilities.test.mjs:10:1
+✖ Act1 local choices have a CC15 dispatcher and event-owned handlers (7791.368457ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   {
+  +     code: 'W561',
+  +     column: 12,
+  +     file: 'src/lua/abyss_game_ui_view.lua',
+  +     line: 89,
+  +     message: 'Responsibility complexity 16 exceeds 15: function'
+  +   }
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (file:///tmp/hud-review-c/base/tests/act1-choice-responsibilities.test.mjs:16:67)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ { file: 'src/lua/abyss_game_ui_view.lua', line: 89, column: 12, code: 'W561', message: 'Responsibility complexity 16 exceeds 15: function' } ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

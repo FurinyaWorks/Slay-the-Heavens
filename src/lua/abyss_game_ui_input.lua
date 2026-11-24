@@ -69,11 +69,15 @@ end
 
 local function potionPointer(run,slot)
     if not (run and slot) then return nil end
-    return {inventory=run.potions,id=run.potions[slot],phase=run.phase}
+    local flow=run.nodeFlow
+    return {inventory=run.potions,id=run.potions[slot],phase=run.phase,flow=flow,complete=flow and flow.complete,
+        stage=flow and flow.event and flow.event.stage}
 end
 local function samePotionPointer(run,slot,held)
     if not slot then return true end
     return held and held.inventory==run.potions and held.id==run.potions[slot] and held.phase==run.phase
+        and held.flow==run.nodeFlow and held.complete==(run.nodeFlow and run.nodeFlow.complete)
+        and held.stage==(run.nodeFlow and run.nodeFlow.event and run.nodeFlow.event.stage)
 end
 
 function M.bindCommand(platform,self,canManagePotions,clickEvent,owner)
@@ -84,7 +88,8 @@ function M.bindCommand(platform,self,canManagePotions,clickEvent,owner)
             local rewardAction = kind == "combatRewards"
             local characterAction = kind:match("^character_")~=nil
             local resourceAction = kind:match('^resource_')~=nil
-            local mapReturn = kind=='mapReturn'
+            local utilityAction=resourceAction or kind=='open'
+            local mapReturn = kind=='mapReturn' or kind=='mapHudReturn'
             local routeMode = routeModes[kind]
             local mapContext = mapReturn or routeMode
             local cursor = platform.cursorEvents or {}
@@ -131,13 +136,20 @@ function M.bindCommand(platform,self,canManagePotions,clickEvent,owner)
             local function modalAvailable()
                 if menuAction and self.motion.deathReveal then return false end
                 if kind == 'routeClose' then return self.exitOpen and self.routeOpen == true end
-                if mapReturn then return M.mapReturnAvailable(self) end
+                if mapReturn then
+                    if kind=='mapHudReturn' then return self.routeOpen==true and not mapReturnCovered(self) end
+                    return M.mapReturnAvailable(self)
+                end
                 return runMenuAvailable()
+            end
+            local function menuModalBlocked()
+                return kind=='open' and (self.deckUI.visible or self.potionUI.visible or self.choiceUI and self.choiceUI.visible)
             end
             local function available()
                 if self.prologue and self.prologue:covering() then return false end
                 if self.disabled or self.settlementRequested or self.settlementBusy then return false end
                 if routeMode then return battleRouteAvailable(self,enabled,routeMode)end
+                if menuModalBlocked()then return false end
                 if resourceAction then return not self.potionUI.visible and canManagePotions(self.run) and (not enabled or enabled()) end
                 if self.easterEggOpen or kind=='egg_open' or kind=='egg_close' then return eggAvailable()end
                 return modalAvailable()
@@ -152,7 +164,7 @@ function M.bindCommand(platform,self,canManagePotions,clickEvent,owner)
             end
             local function current(token)
                 return token and token.generation == owner.exitGeneration and token.run == self.run
-                    and (not resourceAction or token.deckGeneration==self.deckUI.generation and token.mode==self.mode
+                    and (not utilityAction or token.deckGeneration==self.deckUI.generation and token.mode==self.mode
                         and token.potionGeneration==self.potionUI.generation)
                     and samePotionPointer(self.run,potionSlot,token.potion)
                     and (not menuAction and not characterAction or token.menuGeneration == owner.menuGeneration) and available()
@@ -255,8 +267,7 @@ function M.installMenu(self,child,clickEvent,resourceHint,bindCommand,start,sett
         for i=1,Theme.layout.battlePotions.count do
             local box=entry:GetChild('slot'..i)
             bindCommand(box,'resource_potion',function()return self:openPotions(i)end,
-                function()return box.visible and self.inventoryAccess('potion',self.run)
-                    and self.run.phase~='combat' and self.run.potions[i]~=nil end,i)
+                function()return box.visible and (self.run.phase~='combat' or self.routeOpen) and self.run.potions[i]~=nil end,i)
         end
     end
     bindCommand(settlement, "settle", function() return self:settle() end)
@@ -287,6 +298,8 @@ function M.installRunMenu(self,bindCommand,runMenu,canViewRoute,child,owner)
     end
     local shortcut=bar and bar:GetChild('battleRoute')
     if shortcut then bindCommand(shortcut,'battleRoute',openRoute,canViewRoute)end
+    local mapShortcut=Theme.presentationProfile=='official-assets-first' and child('mapPanel'):GetChild('mapRoute')
+    if mapShortcut then bindCommand(mapShortcut,'mapHudReturn',function()return self:closeExit()end)end
     local nodeShortcut=Theme.presentationProfile=='official-assets-first' and child('nodePanel'):GetChild('runRoute')
     if nodeShortcut then bindCommand(nodeShortcut,'runRoute',openRoute,canViewRoute)end
     bindCommand(runMenu:GetChild('resume'), 'run_resume', function() return self:closeExit() end)

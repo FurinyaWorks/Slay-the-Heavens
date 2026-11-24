@@ -64,24 +64,39 @@ function M.status(run,id)
     if v>=0 then return '计数 '..v end
     return nil
 end
--- Pure bar plan: true = show relic i, '+N' = overflow chip, false = hidden.
-function M.barCells(total,count)
+-- Physical cells map to actual owned indices on a bounded horizontal page.
+function M.barCells(total,count,page)
     local cells={}
     for i=1,count do
-        if total>count and i==count then cells[i]='+'..(total-count+1)
-        else cells[i]=i<=total end
+        local index=((page or 1)-1)*count+i
+        cells[i]=index<=total and index or false
     end
     return cells
 end
 local function perPage()return #Theme.layout.relicView.rows*#Theme.layout.relicView.columns end
 function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
-    local self={root=root,bar=bar,visible=false,page=1}
+    local self={root=root,bar=bar,visible=false,page=1,barPage=1,detailGeneration=0}
     local official=Theme.presentationProfile=='official-assets-first'
     self.localPanel=official
     local baseBar=Theme.layout.relicView.bar
     local battleBar=official and assert(Theme.officialAssets.battleRelicBar,'missing official battle relic layout')
     local style=platform.mobileRunHud and platform.mobileRunHud.relicBar or battleBar or baseBar
     local boundCount=official and battleBar.count or baseBar.count
+    local hitSize=platform.mobileRunHud and platform.mobileRunHud.hit or style.hit or style.step
+    local capacity=style.count
+    if platform.mobileRunHud then
+        -- 40-unit safe margins + one 84-unit arrow and 8-unit gap per side.
+        local width=Theme.canvas.base[1]-2*40-2*(hitSize+8)
+        capacity=math.min(boundCount,math.floor((width-hitSize)/style.step)+1)
+    end
+    self.barCapacity=capacity
+    local barCells={}
+    local function context()return platform.hudInputContext and platform.hudInputContext() or {}end
+    local function same(a,b)
+        for k,v in pairs(a)do if b[k]~=v then return false end end
+        for k,v in pairs(b)do if a[k]~=v then return false end end
+        return true
+    end
     local tooltip=bar:GetChild('tooltip')
     local function child(name)return assert(root:GetChild(name),'missing relic control '..name)end
     function self.resetBarHover(_)
@@ -98,6 +113,7 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
         if official and platform.color then
             local ink=battle and spentCounter(key,value) and 110 or 255
             slot:GetChild('icon').imageColor=platform.color(ink,ink,ink,255)
+            Art.tint(slot:GetChild('icon'),ink)
         end
     end
     function self.entry(_,run,i)
@@ -125,7 +141,7 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
         -- Native art is a sibling of the atlas image and needs the same anchor.
         if art then art:SetAnchoredPosition(x,y)end
         for name,frame in pairs({name={55,91,350,40},rarity={55,53,350,32},
-            description={55,-30,350,126},status={55,-110,350,34}})do
+            description={55,-18,350,104},status={55,-86,350,24}})do
             local control=view:GetChild(name)
             control:SetAnchoredPosition(frame[1],frame[2]);control:SetSizeDelta(frame[3],frame[4])
         end
@@ -183,6 +199,11 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
         child('pageHint'):SetVisible(not single and many)
         child('pageHint').text=not single and many and ('第 '..self.page..'/'..self:pages()..' 页') or ''
         child('placeholder'):SetVisible(#run.relics==0)
+        if platform.mobileRunHud then
+            for _,name in ipairs({'previous','next','close'})do
+                child(name):GetChild('hit'):SetSizeDelta(name=='close' and 96 or 180,84)
+            end
+        end
     end
     function self.render(_)
         local run=self.run
@@ -194,17 +215,19 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
         renderPageControls(run,single,compact,width,height)
     end
     function self.open(_,run,index)
-        if self.visible or not run then return false end
+        if self.visible or not run or #run.relics==0 or index~=nil and (type(index)~='number' or not run.relics[index]) then return false end
         self:resetBarHover()
+        self.detailGeneration=self.detailGeneration+1
         self.visible,self.run=true,run
-        self.selectedIndex=(official or run.phase=='combat') and type(index)=='number' and run.relics[index] and index or nil
-        self.page=index and math.floor((index-1)/perPage())+1 or 1
+        self.selectedIndex=index or 1
+        self.page=1
         root:SetVisible(true);root:SetAsLastSibling()
         self:render();return true
     end
     function self.close(_)
         if not self.visible then return false end
         self:resetBarHover()
+        self.detailGeneration=self.detailGeneration+1
         self.visible,self.run,self.rows,self.selectedIndex,self.selected=false,nil,nil,nil,nil
         root:SetVisible(false);return true
     end
@@ -212,70 +235,113 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
         if self.visible and self.selectedIndex then
             local target=self.selectedIndex+step
             if target<1 or target>#self.run.relics then return false end
+            self.detailGeneration=self.detailGeneration+1
             self.selectedIndex=target;self:render();return true
         end
         if not self.visible or self:pages()<2 then return false end
         self.page=(self.page-1+step)%self:pages()+1;self:render();return true
     end
-    -- Owned-only tray like the prototype topBar(). Beyond count the last disc
-    -- becomes a +N overflow chip that opens the paginated overlay there.
-    local function hideEmptyArt(icon,cell,more)
-        if not cell or more then Art.hide(icon)end
-    end
-    local function paintBarCell(i,cell,relics,run)
+    local function paintBarCell(i,index,relics,run)
         local slot=bar:GetChild('slot'..i)
-        slot:SetVisible(cell~=false)
+        slot:SetVisible(index~=false)
         slot:SetAnchoredPosition(style.origin[1]+style.step*(i-1),style.origin[2])
         local icon,hit=slot:GetChild('icon'),slot:GetChild('hit')
         icon:SetSizeDelta(style.icon,style.icon)
-        local mobile=platform.mobileRunHud
-        local hitSize=mobile and mobile.hit or style.hit
-        hit:SetSizeDelta(hitSize or style.step,hitSize or 44)
-        if mobile then
-            slot:SetSizeDelta(hitSize,hitSize+2*style.hitOffsetY)
-            hit:SetAnchoredPosition(0,style.hitOffsetY)
-        end
+        hit:SetSizeDelta(hitSize,platform.mobileRunHud and hitSize or 44)
+        slot:SetSizeDelta(hitSize,hitSize)
+        hit:SetAnchoredPosition(0,0)
         for _,name in ipairs({'rim','face'})do slot:GetChild(name):SetVisible(not official)end
-        local more=type(cell)=='string'
-        hideEmptyArt(icon,cell,more)
-        icon:SetVisible(not more)
-        slot:GetChild('more'):SetVisible(more)
-        slot:GetChild('more').text=more and cell or ''
-        if cell and not more then M.paint(icon,relics[i],style.icon,platform,run)end
-        paintCounter(slot,run,cell and not more and relics[i] or nil,official)
+        slot:GetChild('more'):SetVisible(false)
+        icon:SetVisible(index~=false)
+        if index then M.paint(icon,relics[index],style.icon,platform,run)else Art.hide(icon)end
+        paintCounter(slot,run,index and relics[index] or nil,official)
+    end
+    local function renderBar(run)
+        local relics=run and run.relics or {}
+        local pages=math.max(1,math.ceil(#relics/capacity))
+        self.barPage=math.max(1,math.min(self.barPage,pages))
+        barCells=M.barCells(#relics,capacity,self.barPage)
+        for i=1,boundCount do paintBarCell(i,barCells[i] or false,relics,run)end
+        local left=style.origin[1]-style.step
+        local right=style.origin[1]+style.step*capacity
+        for _,name in ipairs({'previous','next'})do
+            local control=bar:GetChild(name)
+            control:SetAnchoredPosition(name=='previous' and left or right,style.origin[2])
+            control:GetChild('hit'):SetSizeDelta(hitSize,platform.mobileRunHud and hitSize or 44)
+            control:SetVisible(pages>1 and (name=='previous' and self.barPage>1 or name=='next' and self.barPage<pages))
+        end
+    end
+    function self.turnBar(_,step)
+        if not self.barInteractive or step~=1 and step~=-1 then return false end
+        local target=self.barPage+step
+        if target<1 or target>math.ceil(#self.barRun.relics/capacity)then return false end
+        self:resetBarHover();self.barPage=target;renderBar(self.barRun);return true
     end
     function self.refreshBar(_,run,visible,inputBlocked,deferHiddenPaint)
-        local relics=run and run.relics or {}
-        self.barInteractive=official and visible and not inputBlocked and not self.visible or false
-        if not self.barInteractive or self.barRun~=run or self.hoverIndex and relics[self.hoverIndex]~=self.hoverId then
-            self:resetBarHover()
-        end
+        if self.barRun~=run then self.barPage=1 end
+        self.barInteractive=not not (visible and run and not inputBlocked and not self.visible)
+        if not self.barInteractive or self.barRun~=run or self.hoverIndex and run.relics[barCells[self.hoverIndex]]~=self.hoverId then self:resetBarHover()end
         self.barRun=run
+        if self.visible and run==self.run and #run.relics>0 then
+            self.selectedIndex=math.min(self.selectedIndex,#run.relics);self:render()
+        end
         bar:SetVisible(visible and run~=nil)
         if deferHiddenPaint and not visible then return end
-        bar:GetChild('tray'):SetVisible(false) -- STS: discs float under the HP row, no tray capsule
-        local cells=M.barCells(#relics,style.count)
-        for i=1,boundCount do paintBarCell(i,cells[i] or false,relics,run)end
+        bar:GetChild('tray'):SetVisible(false)
+        renderBar(run)
     end
-    root.disableCursorEventPassthrough=true
-    child('blocker'):AddCursorEventListener(clickEvent,function()
-        if not self.visible or Pointer.blocked(platform)then return false end
-        if self.selectedIndex then onClose()end
-        return true
-    end)
-    child('contentBlocker'):AddCursorEventListener(clickEvent,function()return self.visible end)
-    local actions={close=function()return onClose()end,previous=function()return self:turn(-1)end,next=function()return self:turn(1)end}
-    for name,action in pairs(actions)do
-        local hit=child(name):GetChild('hit')
-        hit:AddCursorEventListener(clickEvent,function()
-            if not self.visible or Pointer.blocked(platform)then return false end
+    -- A pooled slot can represent a different relic after a page/room change.
+    -- Down/Up/Click must agree on identity, not just on its old coordinates.
+    local function bindBar(control,identity,action)
+        local hit=control:GetChild('hit')
+        local held,released
+        local cursor=platform.cursorEvents or {}
+        local pointers=cursor.CursorDown and cursor.CursorUp
+        local function token()return {run=self.barRun,page=self.barPage,id=identity(),context=context()}end
+        local function valid(t)
+            return self.barInteractive and control.visible and (not platform.hudAlive or platform.hudAlive()) and not Pointer.blocked(platform)
+                and (not t or t.run==self.barRun and t.page==self.barPage and t.id==identity() and same(t.context,context()))
+        end
+        if pointers then
+            hit:AddCursorEventListener(cursor.CursorDown,function(e)held,released=nil,nil;if valid()then held=token();held.touch=e and e.touchId end end)
+            hit:AddCursorEventListener(cursor.CursorUp,function(e)released=held and held.touch==(e and e.touchId) and valid(held) and held or nil;held=nil end)
+            if cursor.CursorEndDrag then hit:AddCursorEventListener(cursor.CursorEndDrag,function()held,released=nil,nil end)end
+        end
+        hit:AddCursorEventListener(clickEvent,function(e)
+            local t=released;released=nil
+            if Pointer.dragged(e,8) or not valid(t) or pointers and (not t or t.touch~=(e and e.touchId))then return false end
             return action()
         end)
     end
-    local function openSlot(i)
-        -- The overflow cell represents a collection, not the relic at its index.
-        if bar:GetChild('slot'..i):GetChild('more').visible then return onSlot()end
-        return onSlot(i)
+    for _,name in ipairs({'previous','next'})do
+        bindBar(bar:GetChild(name),function()return name end,function()return self:turnBar(name=='previous' and -1 or 1)end)
+    end
+    root.disableCursorEventPassthrough=true
+    child('contentBlocker'):AddCursorEventListener(clickEvent,function()return self.visible end)
+    local actions={blocker=function()return onClose()end,close=function()return onClose()end,previous=function()return self:turn(-1)end,next=function()return self:turn(1)end}
+    for name,action in pairs(actions)do
+        local control=child(name)
+        local hit=name=='blocker' and control or control:GetChild('hit')
+        local cursor=platform.cursorEvents or {}
+        local held,released
+        local function valid(token)
+            return self.visible and control.visible and (not platform.hudAlive or platform.hudAlive()) and not Pointer.blocked(platform)
+                and (not token or token.generation==self.detailGeneration and same(token.context,context()))
+        end
+        if cursor.CursorDown and cursor.CursorUp then
+            hit:AddCursorEventListener(cursor.CursorDown,function(e)
+                held,released=nil,nil
+                if valid()then held={generation=self.detailGeneration,context=context(),touch=e and e.touchId}end
+            end)
+            hit:AddCursorEventListener(cursor.CursorUp,function(e)
+                released=held and held.touch==(e and e.touchId) and valid(held) and held or nil;held=nil
+            end)
+        end
+        hit:AddCursorEventListener(clickEvent,function(e)
+            local token=released;released=nil
+            if not valid(token) or cursor.CursorDown and cursor.CursorUp and (not token or token.touch~=(e and e.touchId)) then return false end
+            return action()
+        end)
     end
     for i=1,boundCount do
         local hit=bar:GetChild('slot'..i):GetChild('hit')
@@ -284,12 +350,12 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
             hit:AddCursorEventListener(cursor.CursorEnter,function()
                 if not self.barInteractive or self.visible or Pointer.blocked(platform)then return false end
                 local slot=bar:GetChild('slot'..i)
-                if slot.visible==false or slot:GetChild('more').visible then return false end
+                if slot.visible==false or not barCells[i] then return false end
                 self:resetBarHover();self.hoverIndex=i
                 slot:GetChild('icon'):SetLocalScale(1.25,1.25,1)
                 Art.scale(slot:GetChild('icon'),1.25)
-                if tooltip and self.barRun and self.barRun.relics[i] then
-                    local entry=self:entry(self.barRun,i)
+                if tooltip and self.barRun and self.barRun.relics[barCells[i]] then
+                    local entry=self:entry(self.barRun,barCells[i])
                     self.hoverId=entry.id
                     tooltip:GetChild('name').text=entry.name
                     tooltip:GetChild('effect').text=entry.description..(entry.status and '\n'..entry.status or '')
@@ -304,10 +370,9 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
                 return true
             end)
         end
-        hit:AddCursorEventListener(clickEvent,function()
-            if Pointer.blocked(platform)then return false end
-            return openSlot(i)
-        end)
+        bindBar(bar:GetChild('slot'..i),function()
+            local index=barCells[i];return index and self.barRun and self.barRun.relics[index]
+        end,function()return onSlot(barCells[i])end)
     end
     return self
 end

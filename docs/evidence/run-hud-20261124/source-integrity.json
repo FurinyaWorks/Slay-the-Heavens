@@ -1,0 +1,9 @@
+{
+  "productionChangedDuringFinalReplay": [],
+  "generatorConfigurationChangedSinceBuild": [],
+  "finalReplaySceneTreesEqualRenderedPngInput": true,
+  "sourceManifest": "after-source-hashes.json.gz",
+  "preReplaySourceManifest": "after-production-start.json.gz",
+  "replayScript": "recapture.mjs",
+  "newRunHudIncluded": true
+}

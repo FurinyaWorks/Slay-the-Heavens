@@ -156,6 +156,13 @@ export function assertOfficialRunContracts(trees){
    const backdrop=role==='mapPanel'?'v25MapPaper':'backdrop';
    if(index<=parts(page).findIndex(part=>part.name===backdrop))
     throw Error('Shared run bar covered by background: '+role);
+   const after=role==='mapPanel'?['resources',...parts(page).filter(n=>/^mapGroup/.test(n.name)).map(n=>n.name)]
+    :['title','hpIcon','hp','goldIcon','gold'];
+   for(const name of after)if(parts(page).findIndex(n=>n.name===name)<=index)
+    throw Error('Shared run resource covered by bar: '+role+'/'+name);
+   if(role==='nodePanel')for(const name of ['eventView','pickerView','shopView','campView','treasureView','roomEffect'])
+    if(parts(page).findIndex(n=>n.name===name)>=index)throw Error('Shared run bar covered by room: '+name);
+
   }
  }
 }
