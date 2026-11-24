@@ -1,3 +1,4 @@
+import {validPreflight} from '../scripts/fork-preflight.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, mkdtempSync, writeFileSync, rmSync, mkdirSync, renameSync } from 'node:fs';
@@ -1500,4 +1501,42 @@ test('first Fork B Full push uses its pinned upstream base in real quality ratch
   assert.equal(evaluate(expression,{event:{...context.event,merge_group:{base_sha:formal}}},{base_sha:''},needs),formal,name+' queue');
   assert.equal(evaluate(expression,context,{base_sha:formal},needs),formal,name+' dispatch');
  }
+});
+
+test('automatic Fork A Quick is bounded advisory without a complete certificate while manual preflight stays complete',()=>{
+ const workflow=readFileSync(new URL('../.github/workflows/quick-feedback.yml',import.meta.url),'utf8');
+ const expression=value=>value.replace(/^\$\{\{ /,'').replace(/ \}\}$/,'');
+ const evaluate=(value,event)=>Function('github','return '+expression(value))({event_name:event});
+ const field=name=>workflow.match(new RegExp('^    '+name+': (.+)$','m'))[1];
+ assert.match(field('name'),/^\$\{\{ /,'automatic and manual checks must identify their different coverage');
+ const steps=workflow.split(/^      - /m).slice(1);
+ const enabled=(step,event)=>{const guard=step.match(/^(?:        )?if: (.+)$/m)?.[1];return !guard||evaluate(guard,event);};
+ for(const event of ['push','workflow_dispatch']){
+  const selected=steps.filter(step=>enabled(step,event)).join('\n');
+  assert.equal(evaluate(field('name'),event),event==='push'?'Advisory Quick feedback':'Complete affected preflight');
+  assert.equal(evaluate(field('timeout-minutes'),event),event==='push'?10:30);
+  if(event==='push'){
+   assert.match(selected,/node scripts\/test-affected\.mjs --ci-fast --base "\$BASE_SHA"/);
+   assert.doesNotMatch(selected,/--preflight|write-ci-receipt|actions\/upload-artifact|build\/ci-checkout\.json/);
+   assert.match(selected,/90s Lua scheduling estimate/);
+   assert.match(selected,/10-minute automatic job guard/);
+   assert.match(selected,/integration and deferred Lua require formal Quality/);
+   assert.match(selected,/not a complete preflight certificate/);
+  }else{
+   assert.match(selected,/run: node scripts\/test-affected\.mjs --preflight --base "\$BASE_SHA"/);
+   assert.match(selected,/run: node scripts\/write-ci-receipt\.mjs --preflight/);
+   assert.match(selected,/PREFLIGHT_BASE_SHA: \$\{\{ steps\.comparison\.outputs\.sha \}\}/);
+   assert.match(selected,/name: preflight-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/);
+   assert.match(selected,/path: build\/ci-checkout\.json/);
+   assert.doesNotMatch(selected,/--ci-fast/);
+  }
+ }
+ assert.match(workflow,/^run-name: \$\{\{ github\.event_name == 'push' && 'Advisory Quick' \|\| 'Preflight' \}\} \/ /m);
+ assert.match(workflow,/^permissions:\n  contents: read$/m);
+ assert.match(workflow,/https:\/\/github.com\/FurinyaWorks\/Slay-the-Heavens.git refs\/heads\/develop/);
+ const head='a'.repeat(40),base='b'.repeat(40);
+ const run={path:'.github/workflows/quick-feedback.yml',head_sha:head,status:'completed',conclusion:'success',event:'workflow_dispatch',display_title:`Preflight / ${head} / ${base}`};
+ assert.equal(validPreflight(run,{head,base}),true,'manual complete contract remains reusable as before');
+ for(const display_title of [`Advisory Quick / ${head} / ${base}`,run.display_title])
+  assert.equal(validPreflight({...run,event:'push',display_title},{head,base}),false,'an automatic advisory success cannot be reused as a complete preflight');
 });

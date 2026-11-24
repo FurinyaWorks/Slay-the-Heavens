@@ -1,5 +1,5 @@
 name: Quick feedback
-run-name: Preflight / ${{ github.sha }} / ${{ inputs.base_sha || 'upstream-develop' }}
+run-name: ${{ github.event_name == 'push' && 'Advisory Quick' || 'Preflight' }} / ${{ github.sha }} / ${{ inputs.base_sha || 'upstream-develop' }}
 on:
   # Routine task pushes run only Fork A Quick (never the main-repo runner).
   push:
@@ -18,10 +18,10 @@ concurrency:
   cancel-in-progress: true
 jobs:
   related:
-    name: Complete affected preflight
+    name: ${{ github.event_name == 'push' && 'Advisory Quick feedback' || 'Complete affected preflight' }}
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event.repository.id == 1460097312 && github.event_name == 'push' && !startsWith(github.ref, 'refs/heads/ci/full/')) }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: ${{ github.event_name == 'push' && 10 || 30 }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -80,17 +80,29 @@ jobs:
         env:
           QUALITY_RATCHET_BASE: ${{ steps.comparison.outputs.sha }}
         run: node scripts/check-quality-ratchet.mjs
+      - name: Advisory Quick feedback
+        if: github.event_name == 'push'
+        env:
+          BASE_SHA: ${{ steps.comparison.outputs.sha }}
+          CI_LFS_TOKEN: ${{ github.token }}
+          ABYSS_PYTHON: python3
+        run: |
+          printf '%s\n' 'Advisory fast JS and Lua subset only: 90s Lua scheduling estimate, 10-minute automatic job guard; integration and deferred Lua require formal Quality. This is not a complete preflight certificate.' >> "$GITHUB_STEP_SUMMARY"
+          node scripts/test-affected.mjs --ci-fast --base "$BASE_SHA"
       - name: Complete affected JS and Lua preflight
+        if: github.event_name != 'push'
         env:
           BASE_SHA: ${{ steps.comparison.outputs.sha }}
           CI_LFS_TOKEN: ${{ github.token }}
           ABYSS_PYTHON: python3
         run: node scripts/test-affected.mjs --preflight --base "$BASE_SHA"
       - name: Record exact tested checkout
+        if: github.event_name != 'push'
         run: node scripts/write-ci-receipt.mjs --preflight
         env:
           PREFLIGHT_BASE_SHA: ${{ steps.comparison.outputs.sha }}
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - if: github.event_name != 'push'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: preflight-${{ github.run_id }}-${{ github.run_attempt }}
           path: build/ci-checkout.json

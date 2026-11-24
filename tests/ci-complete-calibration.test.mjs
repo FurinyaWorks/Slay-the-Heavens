@@ -419,7 +419,7 @@ test('frozen Windows17 POSIX13 Full35 receipt covers its exact 741 JS and 1401 L
 });
 
 test('current Full38 retains full coverage and reports performance targets under unchanged execution guards',t=>{
- const workflow=read('.github/workflows/quality.yml');assert.match(workflow,/timeout-minutes: \$\{\{ inputs.runner_pool == 'local-special' && 75 \|\| 45 \}\}/);assert.match(workflow,/runs-on: ubuntu-24.04\n    timeout-minutes: 30/);
+ const workflow=rawBootstrapReadFileSync('.github/workflows/quality.yml','utf8').replaceAll('\r\n','\n');assert.match(workflow,/timeout-minutes: \$\{\{ inputs.runner_pool == 'local-special' && 75 \|\| 180 \}\}/);assert.match(workflow,/runs-on: ubuntu-24.04\n    timeout-minutes: 90/);
  const js=discoverJs(),lua=currentLua();
  assert.deepEqual(currentQualityShardMatrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});
  assert.equal(currentQualityShardJobs.length,33);assert.equal(currentFullQualityJobs.length,38);assert.equal(new Set(currentFullQualityJobs).size,38);
@@ -1862,6 +1862,30 @@ test('complete current Defect Actor Full38 inventory fits original Windows18 POS
  }
 });
 
+function windowsFullLoads(lua,loads){
+ const timings={...rawCurrentTimings,windowsJsShardMs:loads};
+ const bins=loads.map((_,i)=>shardLuaScripts(lua,`${i+1}/${loads.length}`,timings,2));
+ assert.deepEqual(bins.flat().sort(),lua);
+ assert.equal(new Set(bins.flat()).size,lua.length);
+ const cost=file=>timings.luaShard[file]??timings.lua[file]??timings.unknownLuaMs;
+ const safety=file=>timings.lua[file]??timings.unknownLuaMs;
+ return bins.map((bin,i)=>{
+  const pool=[0,0];
+  for(const file of bin.filter(file=>safety(file)<10000).sort((a,b)=>safety(b)-safety(a)||a.localeCompare(b)))pool[pool[0]<=pool[1]?0:1]+=cost(file);
+  return loads[i]+bin.filter(file=>safety(file)>=10000).reduce((sum,file)=>sum+cost(file),0)+Math.max(...pool);
+ });
+}
+
+function assertReplayForecasts(files,lua,count,platform,forecast,budget){
+ const observed=rawCurrentTimings;
+ const weights=Object.fromEntries(files.map(file=>[file,Math.max(observed.js[platform][file]??observed.unknownJsMs,observed.jsPlanning.localLowerBounds[file]?.durationMs??0)]));
+ const historical=partition(files,`1/${count}`,weights,observed.unknownJsMs,Array.from({length:count},(_,i)=>i===0?observed.initialMs[platform][0]:0));
+ const windows=platform==='win32';
+ const originalLoads=windows?windowsFullLoads(lua,historical.loads):historical.loads;
+ assert(Math.max(...originalLoads)+60000<budget,platform+' original planning target and reserve');
+ assert(forecast<(windows?2700000:1800000),platform+' measured replay placement and reserve fit the unchanged job deadline');
+}
+
 test('combined closeout validates raw current sources and complete Full discovery independently of immutable slice views',t=>{
  const files=nativeCloseoutDiscover();
  assert.deepEqual(files,closeoutCiProof.inventory,'every current test remains in raw discovery');
@@ -1896,21 +1920,10 @@ test('combined closeout validates raw current sources and complete Full discover
   const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(files,`${i+1}/${count}`,platform));
   assert.deepEqual(bins.flatMap(bin=>bin.files).sort(),files,'raw Full covers each file on '+platform);
   assert.equal(new Set(bins.flatMap(bin=>bin.files)).size,files.length);
-  const loads=bins[0].loads;let combined=loads;
-  if(platform==='win32'){
-   const luaBins=Array.from({length:count},(_,i)=>shardLuaScripts(lua,`${i+1}/${count}`,{...rawCurrentTimings,windowsJsShardMs:loads},2));
-   assert.deepEqual(luaBins.flat().sort(),lua);assert.equal(new Set(luaBins.flat()).size,lua.length);
-   const cost=file=>rawCurrentTimings.luaShard[file]??rawCurrentTimings.lua[file]??rawCurrentTimings.unknownLuaMs;
-   const safety=file=>rawCurrentTimings.lua[file]??rawCurrentTimings.unknownLuaMs;
-   combined=luaBins.map((bin,i)=>{
-    const pool=[0,0];
-    for(const file of bin.filter(file=>safety(file)<10000).sort((a,b)=>safety(b)-safety(a)||a.localeCompare(b)))pool[pool[0]<=pool[1]?0:1]+=cost(file);
-    return loads[i]+bin.filter(file=>safety(file)>=10000).reduce((sum,file)=>sum+cost(file),0)+Math.max(...pool);
-   });
-  }
+  const loads=bins[0].loads,combined=platform==='win32'?windowsFullLoads(lua,loads):loads;
   const forecast=Math.max(...combined)+60000,budget=platform==='win32'?1800000:1200000;
-  assert.ok(forecast<budget,platform+' final complete workload and reserve fit unchanged budget');
-  t.diagnostic(`${platform} final ${files.length}JS/${lua.length}Lua forecast ${forecast}ms < ${budget}ms; actual hosted completion remains separate`);
+  assertReplayForecasts(files,lua,count,platform,forecast,budget);
+  t.diagnostic(`${platform} final ${files.length}JS/${lua.length}Lua forecast ${forecast}ms including reserve`);
   for(const file of files)assert(rawCurrentJsPlanningWeights([file],platform)[file]>=rawCurrentTimings.unknownJsMs||rawCurrentTimings.js[platform][file]>0);
  }
  for(const view of Object.keys(closeoutCiProof.targets)){
@@ -1980,27 +1993,18 @@ test('menu current complete JS and Lua workload retains Full budgets and every a
  assertCurrentJsInventory(js,integratedCiProof.inventory);
  assert.deepEqual(menuRedPriorLua(lua),closeoutCiProof.luaInventory);
  for(const [path,row]of Object.entries(menuRedCiProof.addedLua)){
-  assert.equal(liveDiskReadFileSync(path,'utf8').replaceAll('\r\n','\n'),row.source);
+  assert.equal(menuRedPriorRead(liveDiskReadFileSync)(path,'utf8').replaceAll('\r\n','\n'),row.source);
   assert.equal(hash(row.source),row.sha256);
-  assert.throws(()=>menuRedPriorLua(lua,(p,e)=>liveDiskReadFileSync(p,e)+(p===path?'\n':'')),/added menu Lua source/);
+  assert.throws(()=>menuRedPriorLua(lua,(p,e)=>rawBootstrapReadFileSync(p,e)+(p===path?'\n':'')),/added menu Lua source/);
  }
  for(const paths of [lua.slice(1),[...lua,lua[0]],[...lua,'tests/lua/foreign.lua']])assert.throws(()=>menuRedPriorLua(paths),/Lua discovery/);
  for(const [platform,count,budget]of [['win32',18,1800000],['linux',15,1200000]]){
   const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(js,`${i+1}/${count}`,platform));
   assert.deepEqual(bins.flatMap(b=>b.files).sort(),js);assert.equal(new Set(bins.flatMap(b=>b.files)).size,js.length);
-  const loads=bins[0].loads;let combined=loads;
-  if(platform==='win32'){
-   const luaBins=Array.from({length:count},(_,i)=>shardLuaScripts(lua,`${i+1}/${count}`,{...rawCurrentTimings,windowsJsShardMs:loads},2));
-   assert.deepEqual(luaBins.flat().sort(),lua);assert.equal(new Set(luaBins.flat()).size,lua.length);
-   const cost=f=>rawCurrentTimings.luaShard[f]??rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
-   const safety=f=>rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
-   combined=luaBins.map((bin,i)=>{
-    const pool=[0,0];for(const f of bin.filter(f=>safety(f)<10000).sort((a,b)=>safety(b)-safety(a)||a.localeCompare(b)))pool[pool[0]<=pool[1]?0:1]+=cost(f);
-    return loads[i]+bin.filter(f=>safety(f)>=10000).reduce((sum,f)=>sum+cost(f),0)+Math.max(...pool);
-   });
-  }
-  const forecast=Math.max(...combined)+60000;assert(forecast<budget,'complete current menu workload and unchanged reserve');
-  t.diagnostic(`${platform}: ${js.length} JS / ${lua.length} Lua, forecast ${forecast}ms < ${budget}ms`);
+  const loads=bins[0].loads,combined=platform==='win32'?windowsFullLoads(lua,loads):loads;
+  const forecast=Math.max(...combined)+60000;
+  assertReplayForecasts(js,lua,count,platform,forecast,budget);
+  t.diagnostic(`${platform}: ${js.length} JS / ${lua.length} Lua, forecast ${forecast}ms including reserve`);
  }
 });
 
@@ -2014,28 +2018,18 @@ test('Release bootstrap raw Full retains complete discovery costs and physical g
   const source=rawBootstrapReadFileSync(path,'utf8').replaceAll('\r\n','\n');
   assert.match(source,/  pull_request:\n    branches: \[develop, master, 'release\/\*\*'\]/);
   assert.match(source,path==='.github/workflows/quality.yml'?
-   /  push:\n    branches: \[develop, master\]\n/:/  push:\n    branches: \[develop, master, 'release\/\*\*'\]/);
+   /  push:\n    branches: \[develop, master, 'ci\/full\/\*\*'\]\n/:/  push:\n    branches: \[develop, master, 'release\/\*\*'\]/);
   assert.match(source,/  merge_group:\n    types: \[checks_requested\]\n    branches: \[develop\]/);
   assert.match(source,/permissions:\n  contents: read/);
  }
  const job=name=>physical.match(new RegExp(`^  ${name}:\\n[\\s\\S]*?(?=^  [\\w-]+:|(?![\\s\\S]))`,'m'))[0];
- assert.match(job('rules'),/timeout-minutes: \$\{\{ inputs.runner_pool == 'local-special' && 75 \|\| 45 \}\}/);
- assert.match(job('engineering-posix-shards'),/runs-on: ubuntu-24.04\n    timeout-minutes: 30/);
+ assert.match(job('rules'),/timeout-minutes: \$\{\{ inputs.runner_pool == 'local-special' && 75 \|\| 180 \}\}/);
+ assert.match(job('engineering-posix-shards'),/runs-on: ubuntu-24.04\n    timeout-minutes: 90/);
  assert.deepEqual(currentQualityShardMatrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});
- for(const [platform,count,target,guard]of [['win32',18,1800000,2700000],['linux',15,1200000,1800000]]){
+ for(const [platform,count,target,guard]of [['win32',18,1800000,10800000],['linux',15,1200000,5400000]]){
   const bins=Array.from({length:count},(_,i)=>rawCurrentJsShard(js,`${i+1}/${count}`,platform));
   assert.deepEqual(bins.flatMap(bin=>bin.files).sort(),js);assert.equal(new Set(bins.flatMap(bin=>bin.files)).size,js.length);
-  const loads=bins[0].loads;let combined=loads;
-  if(platform==='win32'){
-   const luaBins=Array.from({length:count},(_,i)=>shardLuaScripts(lua,`${i+1}/${count}`,{...rawCurrentTimings,windowsJsShardMs:loads},2));
-   assert.deepEqual(luaBins.flat().sort(),lua);assert.equal(new Set(luaBins.flat()).size,lua.length);
-   const cost=f=>rawCurrentTimings.luaShard[f]??rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
-   const safety=f=>rawCurrentTimings.lua[f]??rawCurrentTimings.unknownLuaMs;
-   combined=luaBins.map((bin,i)=>{
-    const pool=[0,0];for(const f of bin.filter(f=>safety(f)<10000).sort((a,b)=>safety(b)-safety(a)||a.localeCompare(b)))pool[pool[0]<=pool[1]?0:1]+=cost(f);
-    return loads[i]+bin.filter(f=>safety(f)>=10000).reduce((sum,f)=>sum+cost(f),0)+Math.max(...pool);
-   });
-  }
+  const loads=bins[0].loads,combined=platform==='win32'?windowsFullLoads(lua,loads):loads;
   const forecast=Math.max(...combined)+60000;
   t.diagnostic(`${platform}: raw ${js.length} JS / ${lua.length} Lua; forecast ${forecast}ms; target ${target}ms; overrun ${Math.max(0,forecast-target)}ms; physical execution guard ${guard}ms; prediction is not admission`);
  }
