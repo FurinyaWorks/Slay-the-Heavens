@@ -96,7 +96,7 @@ for(const [path,row] of Object.entries(transport.files)){
 const normalize=s=>s.replaceAll('\r\n','\n');
 // Exact complete successor bytes preserve the existing immutable historical CI views.
 const forkPushBytes=readFileSync(new URL('../fixtures/fork-push-ci-source.json.gz',import.meta.url));
-assert.equal(hash(forkPushBytes),'a66b116b3e33b8ebd30c3686dd86656d018a827db86f787a2a5f62f85e1be8ad','complete Fork push CI continuation');
+assert.equal(hash(forkPushBytes),'d7699894574f5562d242929875e6da0cf1d8ac82963dda36ad66cfd8918d4948','complete Fork push CI continuation');
 const forkPushPacket=JSON.parse(gunzipSync(forkPushBytes));
 assert.equal(forkPushPacket.baseCommit,'73c21489efaab409d4c0c46bee517d410d3427fc');
 for(const row of Object.values(forkPushPacket.files))assert.equal(hash(row.before),row.beforeSha256);
