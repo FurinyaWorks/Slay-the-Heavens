@@ -94,6 +94,12 @@ export function beforeCurrentHistoricalStsSource(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 export function beforeCurrentReplayCopier(path,source){
+ if(path===copierPath&&matches(source,{sha256:'827b7222977277673e8f9dec9c8919ca024bee83fc44ba7755eb3f65d97cf3e8',gitBlob:'44a2f8f716400c8cd4cbf03322ea058f8927155f'})){
+  const prior=lf(source).replace(/const deckProgressiveFiles=Object\.freeze\(\{\n[\s\S]+?\n\}\);\n/,'')
+   .replace('Object.entries(deckProgressiveFiles)','Object.entries(entranceFiles)');
+  assert.equal(hash(prior),'9c0b358a3b75b59ebe7218f988297661b71a42b47d20e34a3b9734a2c0a71a10','exact deck progressive copier predecessor');
+  source=source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+ }
  if(path===copierPath&&matches(source,{
   sha256:'9c0b358a3b75b59ebe7218f988297661b71a42b47d20e34a3b9734a2c0a71a10',gitBlob:'143ce2350c049fa4fe641e86dc34b18d094a8c73',
  })){

@@ -490,6 +490,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         end
     end
     if pileGrid and platform.deckBrowser then
+        self.progressiveBrowser=platform.deckBrowser.progressive==true
         local viewport=official and Theme.layout.deckView.pileViewport or Theme.layout.deckView.viewport
         pool=Browser.new(pileGrid,platform.deckBrowser,platform,clickEvent,viewport[4]/2-123,browserModel,paintBrowser,
             function(instance)

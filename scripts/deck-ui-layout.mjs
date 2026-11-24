@@ -29,6 +29,8 @@ export function splitDeckBrowserCard(template) {
     mount.children=[];
     return {name,kind:'container',size:[...mount.size],position:[0,0],children};
   });
+  // A later card can be allocated under a visible pileGrid between scheduler turns.
+  template.visible=false;
   const rim=atPath(template,['face','nativePlayableRim']);
   if(rim.visible!==false)throw Error('A read-only card must not show a playable rim');
   rim.children=[];

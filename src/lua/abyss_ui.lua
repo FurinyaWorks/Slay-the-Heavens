@@ -269,7 +269,8 @@ function OnStart()
               createEasterEggArt=createEasterEggArt,
               characterProfile = (alpha or isTest and testPlay == true) and "competition-candidate" or "production",
               deckBrowser=deckTemplateIndex>0 and {
-                  parts=deckBinding.parts,
+                  -- Only the official static profile binds the segmented card templates.
+                  parts=deckBinding.parts,progressive=#deckBinding.parts>0,
                   create=function(parent,part)return actorInstantiate(part and part.templateIndex or deckTemplateIndex,parent)end,
                   destroy=actorDestroy,
               } or nil,

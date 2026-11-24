@@ -1,4 +1,4 @@
--- One publication boundary; preparation continues behind an opaque input cover.
+-- One input and readiness boundary, with local visual feedback during preparation.
 local M={}
 function M.registerSource(platform,page)
     if platform and platform.presentationPage then platform.presentationPage(page)end
@@ -45,7 +45,8 @@ function M.intent(owner)
         rewards=run.phase=='reward' and battle.rewardScreen or nil,
         overlayRevision=revision,details=details,detailPage=detailPage,overlayContent=content,
         deckBrowser=page=='deckPanel' and owner.deckUI.browserShell==true and not details,
-        deckPaged=page=='deckPanel' and owner.deckUI.paged==true and not details}
+        deckPaged=page=='deckPanel' and owner.deckUI.paged==true and not details,
+        deckProgressive=page=='deckPanel' and owner.deckUI.progressiveBrowser==true}
 end
 local function sameOwner(a,b,except)
     if not a or not b then return false end
@@ -204,8 +205,31 @@ function M.new(cover,ready,onIntent,frames,motion)
         end
         return gate.epoch==ticket
     end
+    function gate:allowsDeckChrome()
+        return self.intent and self.intent.deckPaged and self.localFrame and self.state~='failed'
+    end
+    local function progressiveDeck()
+        return gate:allowsDeckChrome() and gate.intent.deckProgressive
+    end
+    local paintedVeilVisible=true
+    local function paintVeilVisibility()
+        local visible=not progressiveDeck()
+        if visible==paintedVeilVisible then return true end
+        local ticket=gate.epoch
+        local veil=cover:GetChild('veil')
+        if gate.epoch~=ticket then return false end
+        paintedVeilVisible=nil
+        local accepted=veil:SetVisible(visible)
+        if gate.epoch~=ticket then
+            paintedVeilVisible=nil -- the old setter can finish after the new owner's paint
+            return false
+        end
+        assert(accepted~=false,'page veil visibility rejected')
+        paintedVeilVisible=visible
+        return true
+    end
     local function paintBlocker(frame)
-        local limited=gate.intent and gate.intent.deckPaged and gate.localFrame and gate.state~='failed'
+        local limited=gate:allowsDeckChrome()
         local blockerFrame=limited and frame or frames.size or frames.full
         local ticket=gate.epoch
         local blocker=cover:GetChild('blocker')
@@ -219,7 +243,7 @@ function M.new(cover,ready,onIntent,frames,motion)
     local function paintFrame()
         if not frames then return true end
         local frame=gate.localFrame or frames.size or frames.full
-        if not paintBlocker(frame) then return false end
+        if not paintBlocker(frame) or not paintVeilVisibility() then return false end
         if frame==paintedFrame then return true end
         paintToken=paintToken+1;local ticket,epoch=paintToken,gate.epoch
         paintedFrame=nil -- a partial native write invalidates every old promise
@@ -380,7 +404,7 @@ function M.new(cover,ready,onIntent,frames,motion)
         local message=cover:GetChild('message')
         if self.epoch~=ticket then return false end
         if message then
-            local show=failed or self.state=='preparing' and self.wait>=slowWait
+            local show=failed or self.state=='preparing' and self.wait>=slowWait and not progressiveDeck()
             local text=failed and '画面暂未准备完成，可返回。' or '正在准备画面…'
             if message.visible~=show then message:SetVisible(show)end
             if self.epoch~=ticket then return false end

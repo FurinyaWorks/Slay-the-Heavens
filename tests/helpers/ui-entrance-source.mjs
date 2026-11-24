@@ -6,6 +6,7 @@ import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {exactSourceMatches as matches} from './source-fingerprint.mjs';
 import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
+import {beforeDeckProgressive,deckProgressiveOwns} from './deck-progressive-source.mjs';
 import {beforeCurrentReplayFixes} from './current-replay-fix-sources.mjs';
 
 const archive=readFileSync(new URL('../fixtures/ui-entrance-source.json.gz',import.meta.url));
@@ -25,8 +26,9 @@ const currentInput=(path,source)=>['src/lua/abyss_node_ui_faces.lua','src/lua/ab
  'tests/watcher-actor-boundary.test.mjs','tests/defect-actor-boundary.test.mjs',
  'tests/competition-roster-config-composition.test.mjs','tests/silent-final-source-epoch.test.mjs',
  'tests/defect-integration-source.test.mjs','tests/defect-final-source-epoch.test.mjs'].includes(path)
- ?beforeCurrentReplayFixes(path,source):source;
+ ?beforeCurrentReplayFixes(path,source):beforeDeckProgressive(path,source);
 function currentMatches(path,source,expected){
+ if(deckProgressiveOwns(path)&&beforeDeckProgressive(path,source)===source)return false;
  const normalized=currentInput(path,source);
  if(['src/lua/abyss_node_ui_faces.lua','src/lua/abyss_game_ui.lua','src/lua/abyss_game_ui_run.lua','src/lua/abyss_game_ui_view.lua'].includes(path)
   &&normalized===source)return false;
@@ -35,8 +37,9 @@ function currentMatches(path,source,expected){
 const predecessors=new Map();
 
 function project(path,source,row){
- if(row)source=currentInput(path,source);
- if(!row||!matches(source,row.after))return source;
+ if(!row)return source;
+ source=currentInput(path,source);
+ if(!matches(source,row.after))return source;
  if(!row.before)return null;
  if(!predecessors.has(path)){
   const prior=restoreExactFixtureHunks({

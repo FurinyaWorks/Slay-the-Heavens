@@ -1,5 +1,6 @@
 // Exact predecessors for the current replay and test repairs. Current
 // discovery and test execution continue to use the files on disk.
+import {beforeDeckProgressive} from './deck-progressive-source.mjs';
 import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
 
 const bindings = new Map([
@@ -2367,6 +2368,7 @@ const bindings = new Map([
 // Retain at most one verified byte-for-byte projection per declared path.
 const lastVerifiedProjection=new Map();
 export function beforeCurrentReplayFixes(path, source){
+ source=beforeDeckProgressive(path,source);
  const binding=bindings.get(path);
  if(!binding)return source;
  const cached=lastVerifiedProjection.get(path);

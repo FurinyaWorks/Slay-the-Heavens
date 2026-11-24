@@ -7,6 +7,7 @@ import {beforeActionButtons} from './action-buttons-source.mjs';
 import {beforeNativeFixtureInputRetirement} from './native-fixture-replay-source.mjs';
 import {beforeNativeHostInputRetirement} from './native-host-replay-source.mjs';
 import {beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';
+import {beforeDeckProgressive,deckProgressiveOwns} from './deck-progressive-source.mjs';
 import {beforeCurrentReplayFixes} from './current-replay-fix-sources.mjs';
 import {exactSourceMatches as matches,sourceConfigLayoutMatches} from './source-fingerprint.mjs';
 import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
@@ -66,6 +67,7 @@ for(const [path,row] of Object.entries(browserBackflow.files)){
 export function beforeDeckBrowserBackflow(path,source){
  const row=Object.hasOwn(browserBackflow.files,path)&&browserBackflow.files[path];
  if(path===deckChromePath)source=beforeCurrentReplayFixes(path,source);
+ else if(row)source=beforeDeckProgressive(path,source);
  if(!row||!matches(source,row.after))return source;
  return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
 }
@@ -145,7 +147,9 @@ export function assertCurrentDevelopUiSource(path,source,read){
  if(!row)return;
  const expected=path===rewardsBackView?rewardsBackViewSuccessor:row.after;
  const isCurrent=value=>{
-  if(path!==deckChromePath)return matches(value,expected);
+  const before=beforeDeckProgressive(path,value);
+  if(deckProgressiveOwns(path)&&before===value)return false;
+  if(path!==deckChromePath)return matches(before,expected);
   const prior=beforeCurrentReplayFixes(path,value);
   return prior!==value&&matches(prior,expected);
  };
@@ -156,7 +160,8 @@ export function assertCurrentDevelopUiSource(path,source,read){
 }
 
 export function beforeDevelopUiBackflows(path,source){
- return beforeDeckBrowserBackflow(path,beforePotionBackflow(path,source));
+ const prior=Object.hasOwn(files,path)?beforeDeckProgressive(path,source):source;
+ return beforeDeckBrowserBackflow(path,beforePotionBackflow(path,prior));
 }
 
 export function beforeMergedInputRetirement(path,source,options){
@@ -244,7 +249,7 @@ export function beforeInputRetirementStsSuite(paths,read,trustSuccessors){
   names.add(path);
  }
  for(const [path,identity] of Object.entries(suite.deck.added)){
-  assert(names.delete(path)&&matches(suitePredecessor(path,read(path,'utf8'),files),identity),'fresh deck inventory source: '+path);
+  assert(names.delete(path)&&matches(suitePredecessor(path,beforeDeckProgressive(path,read(path,'utf8')),files),identity),'fresh deck inventory source: '+path);
  }
  return {paths:[...names].sort(),read:(path,encoding)=>{
   if(Object.hasOwn(suite.removed,path)){
@@ -261,7 +266,7 @@ export function beforeInputRetirementStsSuite(paths,read,trustSuccessors){
   }
   if(![files,suite.deck.files,suite.earlier].some(layer=>Object.hasOwn(layer,path)))return raw;
   const bytes=typeof raw==='string'?raw:raw.toString('utf8');
-  const source=suitePredecessor(path,suitePredecessor(path,suitePredecessor(path,bytes,files),suite.deck.files),suite.earlier);
+  const source=suitePredecessor(path,suitePredecessor(path,suitePredecessor(path,beforeDeckProgressive(path,bytes),files),suite.deck.files),suite.earlier);
   return typeof raw==='string'?source:Buffer.from(source);
  }};
 }

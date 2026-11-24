@@ -66,8 +66,7 @@ function M.new(root, data, presentation, clickEvent, platform)
         function self.pointerBlocked()
             local gate=self.pageReveal
             return gate:covered() and (not self.exitOpen or self.routeOpen)
-                and not (self.deckUI and self.deckUI.paged and gate.intent and gate.intent.deckPaged
-                    and gate.localFrame and gate.state~='failed')
+                and not (self.deckUI and self.deckUI.paged and gate:allowsDeckChrome())
         end
         platform.pointerBlocked=self.pointerBlocked
         cover.disableCursorEventPassthrough=true

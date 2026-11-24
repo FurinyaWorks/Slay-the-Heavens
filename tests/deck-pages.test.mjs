@@ -14,6 +14,9 @@ test('the production card browser retains ten independent faces and retires inpu
   buildLuaData('data', join(generated, 'abyss_data.lua'));
   buildUI(generated, undefined, {officialAssets: true, nativePageLifecycle: true});
   const layout = JSON.parse(readFileSync(join(generated, 'game-ui.json'), 'utf8'));
+  const templates = JSON.parse(readFileSync(join(generated, 'game-ui-templates.json'), 'utf8'));
+  const browser = templates.find(control => control.name === 'AbyssBattlePileCard');
+  assert.equal(browser?.visible, false, 'a new card shell must stay hidden in an already visible page');
   const panel = layout.controls.find(c => c.name === 'stage').children.find(c => c.name === 'deckPanel');
   const find = name => panel.children.find(c => c.name === name);
   const cardBottom = find('pileGrid').position[1] - 81.5 - 210 / 2;

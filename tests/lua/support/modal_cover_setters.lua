@@ -86,4 +86,27 @@ for _,boundary in ipairs({'position','size','onIntent'})do
  assert(#queries==reads,'retired outer step queried readiness for the old modal')
  assert(not g:step(potion) and queries[#queries]=='potionPanel','replacement must use its own readiness')
 end
+do
+ local gate
+ local map={page='mapPanel',mode='map',phase='map'}
+ local deck={page='deckPanel',mode='map',phase='map',deckPaged=true,deckProgressive=true}
+ local choice={page='choicePanel',mode='battle',phase='combat'}
+ local veil={visible=true}
+ local function setPosition()end
+ veil.SetAnchoredPosition,veil.SetSizeDelta=setPosition,setPosition
+ function veil:SetVisible(value)
+     if not value then assert(gate:request(choice), 'reentrant strict page request failed') end
+     self.visible=value
+ end
+ local blocker={SetAnchoredPosition=setPosition,SetSizeDelta=setPosition}
+ local cover={GetChild=function(_,name)return name=='veil' and veil or name=='blocker' and blocker or nil end,
+     SetVisible=function(self,value)self.visible=value end,SetAsLastSibling=function()end}
+ gate=Gate.new(cover,function(intent)return intent.page=='mapPanel'end,nil,{
+     full={0,0,1280,720},deckPaged={0,0,918,452},deckPanel={0,0,918,452},choicePanel={0,0,800,600}
+ })
+ assert(not gate:step(map));assert(gate:step(map));assert(not gate:covered())
+ assert(not gate:request(deck) and gate.intent==choice and gate:covered())
+ assert(gate:paint(true))
+ assert(cover.visible and veil.visible,'strict choice screen was unintentionally left unmasked after the native visibility call changed owners')
+end
 print('MODAL_COVER_SETTERS_PASS partial-failure/position-reentry/size-reentry/same-epoch-paint/step-reentry')

@@ -5,6 +5,7 @@ local root=F.Viewport.apply(F.control({children=F.Layout}),1280,720)
 local cursor={CursorDown='down',CursorUp='up',CursorExit='exit',CursorEndDrag='end'}
 local host
 local factory=F.deckBrowser()
+factory.progressive=true
 local nativeCreate,nativeDestroy=factory.create,factory.destroy
 local created,destroyed,chunks,fail=0,0,0,false
 function factory.create(parent,part)
@@ -28,9 +29,10 @@ host=F.GameUI.new(root,F.Data,F.Presentation,'click',{seed=1,imageSource='static
 local panel=root:GetChild('deckPanel')
 local pool=panel:GetChild('pileGrid')
 local deck=host.deckUI
-local function tick()
-    host:update(1/60)
-    local changed,repaint=host.pageReveal:step(Gate.intent(host),1/60)
+local function tick(dt)
+    dt=dt or 1/60
+    host:update(dt)
+    local changed,repaint=host.pageReveal:step(Gate.intent(host),dt)
     if changed and repaint~=false then host:refresh() end
     host.pageReveal:paint(true)
 end
@@ -79,7 +81,40 @@ assert(host:openDeck())
 assert(created==0 and page.text=='第 1/2 页 · 11 张' and deck.pendingGrid and nextHit.interactable)
 assert(not previousHit.interactable and not previousHit.raycastTarget and not panel:GetChild('grid').visible)
 assert(tap(back,1) and not deck.visible and created==0)
-settle();assert(host:openDeck());settle()
+settle()
+local cover=root:GetChild('pageReveal')
+local veil,message=cover:GetChild('veil'),cover:GetChild('message')
+local clock=0
+factory.clock=function()clock=clock+.005;return clock end
+assert(host:openDeck())
+assert(panel.visible and cover.visible and not veil.visible and not message.visible,
+    'the browser must submit its unobscured frame on the input turn')
+assert(cover:GetChild('blocker').click() and host.pageReveal:covered(),
+    'visual feedback must not release viewport input')
+for _=1,30 do
+    if pool.visible then break end
+    tick(1/60)
+end
+local partial,partialCount=cells()
+assert(pool.visible and partialCount==1 and deck.pendingGrid and host.pageReveal:covered(),
+    'the first card must be shown before full-page readiness')
+local face=partial[1]:GetChild('face')
+assert(face:GetChild('name').text~='' and face:GetChild('label').text~='' and face:GetChild('art').visible)
+assert(not tap(partial[1]:GetChild('hit'),50) and not deck.cardDetail)
+tick(.5)
+assert(not veil.visible and not message.visible, 'slow progressive loading must not show the normal preparation screen')
+assert(tap(back,51) and not pool.visible and not deck.visible)
+assert(host:openDeck())
+assert(not pool.visible and not veil.visible and deck.pendingGrid, 'rapid reopen showed the retired page')
+assert(tap(nextHit,52) and page.text=='第 2/2 页 · 11 张')
+settle()
+local last,lastCount=cells()
+assert(lastCount==1 and tap(last[1]:GetChild('hit'),53) and deck.cardDetail.instance.uid==1011)
+settle();assert(deck:back());settle()
+assert(deck:setSort('type') and deck.pendingGrid and not pool.visible)
+assert(deck:setSort('original') and deck.pendingGrid and not pool.visible)
+factory.clock=nil
+settle()
 local shown,count=cells()
 assert(count==10 and created==10 and chunks==50)
 local held=shown[1]:GetChild('hit')
@@ -140,9 +175,22 @@ assert(panel:GetChild('pileChrome'):GetChild('empty').visible and page.text=='�
 assert(panel:GetChild('browserDescription').text=='在这场战斗中被 消耗 的牌。')
 assert(host:closeDeck());settle()
 assert(created==10 and chunks==50 and destroyed==0 and #pool:GetChildren()==10)
+assert(host:openDeck('draw') and deck.pendingGrid)
+clock=0
+factory.clock=function()clock=clock+.005;return clock end
+for _=1,30 do
+    if pool.visible then break end
+    tick()
+end
+local retired,retiredCount=cells()
+assert(pool.visible and retiredCount==1 and deck.pendingGrid)
+local retiredHit=retired[1]:GetChild('hit')
+retiredHit.listeners.down({touchId=54})
+factory.clock=nil
 local replacement=Run.new(F.Data,2)
 host.run=replacement;host:refresh();settle()
-assert(destroyed==10 and #pool:GetChildren()==0)
+assert(destroyed==10 and #pool:GetChildren()==0 and not pool.visible and not deck.visible)
+assert(not retired[1].alive and not tap(retiredHit,54) and not deck.cardDetail)
 -- A real preparation budget may yield before reaching the failing native create.
 local previousClock=factory.clock
 local budgetClock=0
@@ -156,9 +204,30 @@ for _=3,80 do
 end
 factory.clock=previousClock
 assert(host.pageReveal.state=='failed' and deck.prepareError)
+assert(veil.visible and message.visible and cover:GetChild('cancel').visible)
 assert(host:recoverPage() and not deck.visible)
 settle();assert(host:openDeck());settle()
 assert(not deck.prepareError and deck.pageIndex==1)
+assert(host:closeDeck());settle()
+local setPoolVisibility=pool.SetVisible
+local reopened=false
+function pool:SetVisible(value)
+    if value and not reopened then
+        reopened=true
+        assert(host:closeDeck() and host:openDeck())
+    end
+    setPoolVisibility(self,value)
+end
+assert(host:openDeck())
+for _=1,30 do
+    if reopened then break end
+    tick()
+end
+local _,reopenedCount=cells()
+assert(reopened and deck.pendingGrid and not pool.visible and reopenedCount==0,
+    'a late container publication must not expose the new page before its first card')
+pool.SetVisible=setPoolVisibility
+settle()
 local beforeDestroy=destroyed
 host:onEngineDestroy()
 assert(destroyed==beforeDestroy,'engine teardown owns destruction')
