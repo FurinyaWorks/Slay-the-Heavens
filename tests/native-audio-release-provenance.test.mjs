@@ -12,6 +12,7 @@ import { buildNativeAudioGame, defaultNativeCardArt, nativeAudioBuildArgs } from
 import { sourceInputs, payloadDigest } from '../scripts/build-native-candidate.mjs';
 import {monsterActorInventory,monsterActorTemplate,monsterActorTiers} from '../scripts/monster-art.mjs';
 import { fileRecord } from '../scripts/evidence-files.mjs';
+import {deckBrowserParts} from '../scripts/deck-ui-layout.mjs';
 import { gitSourceIdentity } from '../scripts/release-notes.mjs';
 import {prepareRefinedReleaseMonsterArt,refinedReleaseMonsterRegistry} from '../scripts/refined-release-monsters.mjs';
 
@@ -45,6 +46,7 @@ function fixture(t, mutate = () => {}, {refined=false}={}) {
       payloadDigest: payloadDigest(sourceInputs(root,{artFeatures:options.artFeatures,nativeCardArt:options.nativeCardArt,readyCardArt:options.readyCardArt,refinedReleaseMonsterArt:options.refinedReleaseMonsterArt})),
       ...(options.officialAssets?{officialAssetsProfile:monster?refinedReleaseOfficialAssetsProfile:officialAssetsProfile,uiProfile:uiProfileReceipt(options.nativePageLifecycle)}:{}),
       ...(monster?{refinedReleaseMonsterArt:true,nativeMonsterArt:monsterReceipt}:{}),
+      deckBrowser:{templateIndex:1470123470,maxFaces:10,parts:deckBrowserParts.map((part,i)=>({...part,templateIndex:1470123471+i}))},
       monsterActors:{...monsterActorInventory(monsterActorTemplate(null)),templateIndex:1470123460,containerTemplateIndex:1470123458,powerTemplateIndex:1470123461,...(actors?{tiers,templateIndexByDefinition}:{})},
       ...(options.artFeatures.menuBackground?{officialBackground: {templateIndex:1470123456,peakDynamicControls:13201,inputs:[{sha256:'c'.repeat(64)}]}}:{}),
       ...(options.artFeatures.selectionAvatar||options.artFeatures.battlePortrait||options.artFeatures.cards||options.artFeatures.menuBackground?{officialPortraits: {...portraitInventory(options.artFeatures,{officialAssets:options.officialAssets}),imageTemplateIndex:1470123457,containerTemplateIndex:1470123458,
@@ -83,6 +85,8 @@ test('actual audio entrypoint follows UUID full receipt and binds FINAL audio ha
   assert.deepEqual(result.release, { version: 'v0.1.1', workKey: 'alpha-test', notesSha256: 'b'.repeat(64) });
   assert.equal(result.sourceCommit, gitSourceIdentity(f.root).sourceCommit); assert.equal(result.sourceDirty, false);
   assert.deepEqual(result.sourceReceipt, fileRecord(f.full.receiptPath));
+  assert.deepEqual(result.deckBrowser,f.full.deckBrowser,'final audio receipt retains candidate-local deck browser bindings');
+  assert.deepEqual(JSON.parse(readFileSync(result.receiptPath)).deckBrowser,f.full.deckBrowser);
   assert.deepEqual(result.officialBackground,f.full.officialBackground,'final audio candidate retains exact runtime binding/provenance');
   assert.deepEqual(result.officialPortraits,f.full.officialPortraits,'final audio candidate retains exact portrait binding/provenance');
   assert.deepEqual(result.artFeatures,f.full.artFeatures);
