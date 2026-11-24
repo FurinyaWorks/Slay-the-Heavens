@@ -551,13 +551,13 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         local text=cardBody(display,definition,instance,not definition.originalV4 and battle)
         return {instance=instance,definition=definition,text=text}
     end
-    local function cardNotes(context,version,fits)
+    local function cardNotes(context,version)
         local definition,instance=version.definition,version.instance
         local notes={}
         if definition.originalV4 then
             notes[#notes+1]=OriginalDisplay.describe(definition,instance.upgraded)
             notes[#notes+1]=OriginalDisplay.keywordDefinitions(definition,instance.upgraded)
-        elseif not fits then notes[#notes+1]=version.text:gsub('<color=#[%x]+>',''):gsub('</color>','') end
+        end
         notes[#notes+1]=context.provenance
         local text=table.concat(notes,'\n'):gsub('^%s+',''):gsub('%s+$','')
         local pages=paginate(text,noteWidth,noteHeight)
@@ -574,7 +574,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     end
     local function paintCardDetail(context,version)
         local definition=version.definition
-        local fits=paintCardText(detailFace,version.instance,context.display,definition,version.text)
+        paintCardText(detailFace,version.instance,context.display,definition,version.text)
         local last=context.painted
         local art=detailFace:GetChild('art')
         if not last or last.type~=definition.type then CardDisplay.writeArt(art,definition,picture,detailFace) end
@@ -589,7 +589,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
                 templateKind=not last and Theme.presentationProfile=='official-assets-first' and 'attack' or nil})
         end
         context.painted=definition
-        version.notes=version.notes or cardNotes(context,version,fits)
+        version.notes=version.notes or cardNotes(context,version)
         context.notes,context.notePage=version.notes,1
         paintCardNotes()
         for _,state in ipairs({'normal','hover','pressed','disabled'})do
@@ -645,7 +645,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
                 definition.repeatable and (instance.upgrades or 1) or nil,face:GetChild('type'),typeNames[definition.type] or definition.type,browserFit)
             if not current() then return end
             if entry.bodyText~=model.text then
-                local _,accepted=CardDisplay.writeBody(face:GetChild('label'),model.text,face,browserFit)
+                local _,accepted=CardDisplay.writeBody(face:GetChild('label'),model.text,face,browserFit,entry.parts)
                 assert(accepted~=false,'deck browser body geometry rejected')
                 if not current() then return end
                 entry.bodyText=model.text

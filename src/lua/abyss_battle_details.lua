@@ -9,6 +9,9 @@ local C, L = Theme.color, Theme.layout
 -- Explicit ports preserve the approved implementation without a shared constructor closure.
 function M.install(owner, ownership, host, dependencies)
     local closeInfo
+    local function isCard(spec)
+        return spec and (spec.kind=="card" or spec.kind=="rewardCard")
+    end
     local function endTurnFace(part,state)
         local fill=state=='disabled' and C.panelSunken or L.endTurn.faceColour
         for _,name in ipairs({'plate','plateLeft','plateRight'})do dependencies.tint(part:GetChild(name),fill)end
@@ -49,13 +52,17 @@ function M.install(owner, ownership, host, dependencies)
     local function describeInfo(battle, info, actor)
         return host.infoContent(owner.data, owner.presentation, battle, info, actor)
     end
-    closeInfo = function()
+    closeInfo = function(preserveHover)
         if host.potionPopup and host.potionPopup:close() then return true end
         if not owner.info then return false end
         local info = owner.info
         local pinnedEnemy = info.powerTips and info.index > 0 and not info.transient
         local passThrough = not info.kind and not pinnedEnemy or info.transient and info.kind == "card"
         owner.info = nil
+        if isCard(info) then
+            if not preserveHover and owner.hover==info.slot then owner.hover,owner.handHover=nil,nil end
+            if owner.help and owner.help.source==info.source then owner.help=nil end
+        end
         dependencies.child("statusInfo"):SetVisible(false)
         if not info.kind then dependencies.child("statusDismiss"):SetVisible(false) end
         return true,passThrough
@@ -107,9 +114,34 @@ function M.install(owner, ownership, host, dependencies)
             host.renderInfo(battle)
         else owner:renderDetailsOnly(cancelled) end
     end
+    local function handSlot(battle,uid)
+        for slot,instance in ipairs(battle.hand)do if instance.uid==uid then return slot end end
+    end
+    function owner:cardHelpReady(info)
+        local run=self.run
+        if not isCard(info) or not run or not self.active or self.busy or run~=info.run or run.combat~=info.battle then return false end
+        if info.reward then return RewardOwner.ready(self,info.reward) end
+        if run.phase~="combat" or run.combat.phase~="player" or run.combat.turn~=info.turn then return false end
+        local instance=run.combat.hand[info.slot]
+        return instance and instance.uid==info.uid
+    end
+    local function openCardHelp(spec,source,transient,battle,actor,reward)
+        local slot=spec.slot or handSlot(battle,spec.uid)
+        local info={kind=spec.kind,index=0,id=actor.id,actor=actor,uid=spec.uid,slot=slot,source=source,
+            run=owner.run,battle=battle,turn=battle.turn,transient=transient==true,
+            reward=reward and spec or nil,press=spec.press}
+        if not slot or not owner:cardHelpReady(info) then return false end
+        local cancelled=dependencies.cancelPotionAim("已取消药水瞄准。")
+        owner.info=info
+        if owner.hover~=slot then owner:setHover(slot)
+        else owner:renderDetailsOnly(cancelled) end
+        return owner.info==info
+    end
     function owner:openHelp(spec, source, transient)
+        if self.info and self.info.press then return false end
         local battle, actor, reward = helpContext(spec)
         if not actor then return false end
+        if isCard(spec) then return openCardHelp(spec,source,transient,battle,actor,reward) end
         local enemyReader = spec.powerTips and spec.index > 0
         if not detailAvailable(spec, transient, enemyReader) then return false end
         local cancelled = not enemyReader and dependencies.cancelPotionAim("已取消药水瞄准。")
@@ -129,6 +161,7 @@ function M.install(owner, ownership, host, dependencies)
         return self.info ~= nil
     end
     function owner.queueHelp(_,spec,source,held,touch,card)
+        if owner.info and owner.info.press then return end
         local battle, actor = helpContext(spec)
         if not actor then return end
         owner.help={spec=spec,source=source,held=held,touch=touch,t=0,run=owner.run,battle=battle,
@@ -146,7 +179,7 @@ function M.install(owner, ownership, host, dependencies)
         local instance=battle and battle.hand[slot]
         if not instance then return end
         -- Every live hand card needs a read-only detail route, even without keywords.
-        return {kind="card",index=0,uid=instance.uid}
+        return {kind="card",index=0,uid=instance.uid,slot=slot}
     end
     function owner:potionHelpSpec(slot)
         local run = self.run

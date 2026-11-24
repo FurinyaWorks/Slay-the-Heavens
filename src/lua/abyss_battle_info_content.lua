@@ -1,5 +1,6 @@
 -- Read-only detail projection. Combat owns the effects, durations and preview values.
 local Combat = require("abyss_combat")
+local CardDisplay = require("abyss_card_display")
 local Theme = require("abyss_theme")
 local number = require("abyss_numbers").integer
 local M = {}
@@ -88,8 +89,60 @@ local function ownedStatusText(self, describe, entry, battle, actor)
     return text, tag, note
 end
 
+local traits={
+    {'exhaust','消耗','打出后移出本场战斗，不进入弃牌堆。'},
+    {'ethereal','虚无','回合结束时若仍在手中，将被消耗。'},
+    {'innate','先天','战斗开始时优先出现在起始手牌中。','固有'},
+    {'selfRetain','保留','回合结束时不弃掉这张牌。'},
+}
+local function addTip(results,text,name,body,alias)
+    local first,last=text:find(name,1,true)
+    if not first and alias then first,last=text:find(alias,1,true) end
+    if first and body and body~='' then results[#results+1]={name=name,body=body,first=first,last=last} end
+end
+local commonKeywords={'vulnerable','weak','frail','strength','dexterity','poison','artifact','intangible','thorns','mantra'}
+local function effectKeywords(effects,ids)
+    for _,effect in ipairs(effects)do
+        if effect.status then ids[effect.status]=true end
+        if effect.kind then ids[effect.kind]=true end
+        if effect["then"] then effectKeywords(effect["then"],ids) end
+    end
+end
+function M.cardTips(statuses,definition,upgraded,text)
+    local matches,rows,seen={},{},{}
+    if definition.originalV4 then
+        local copy=require('abyss_original_v4_display').keywordDefinitions(definition,upgraded)
+        for name,body in copy:gmatch('([^\n]-)：([^\n]+)')do addTip(matches,text,name,body) end
+    end
+    for _,trait in ipairs(traits)do
+        if definition[trait[1]] then addTip(matches,text,trait[2],trait[3],trait[4]) end
+    end
+    if definition.cost==-2 then addTip(matches,text,'无法打出','这张牌不能主动打出。','不可打出') end
+    local ids={}
+    for _,id in ipairs(commonKeywords)do ids[id]=true end
+    effectKeywords(definition.effects,ids)
+    for id in pairs(ids)do
+        local status=statuses[id]
+        if status then addTip(matches,text,status.name,status.description) end
+    end
+    table.sort(matches,function(a,b)
+        if a.first~=b.first then return a.first<b.first end
+        if a.last~=b.last then return a.last>b.last end
+        if a.name~=b.name then return a.name<b.name end
+        return a.body<b.body
+    end)
+    local last=0
+    for _,tip in ipairs(matches) do
+        if tip.first>last and not seen[tip.name] then
+            rows[#rows+1]=tip
+            seen[tip.name],last=true,tip.last
+        end
+    end
+    if #rows>0 then return rows end
+end
+
 -- Fixed presentation dependencies stay with the existing battle description helpers.
-function M.new(self, describe, lines)
+function M.new(self, describe)
     local function projectedIntent(battle,index)
         if require('abyss_boss_relics').hidesIntents(self.run)then return require('abyss_battle_intent_view').hidden()end
         return describe.intentView(battle,index)
@@ -112,107 +165,40 @@ function M.new(self, describe, lines)
             note = require('abyss_potion_text').note(definition) or (definition.targetPolicy == "enemy_one" and "对选中的一名敌人；先选药水，再点击敌人" or "对自己使用；短按药水生效"), colour = C.goldBright}}
     end
 
-    local function keywordRow(status,id,effect,battle,actor,keywordText)
-        if keywordText then return {status=id,name=status.name,text=status.description,
-            colour=status.kind=='buff' and C.buff or C.debuff}end
-        local row=statusRow({id=id,name=status.name,amount=effect.value,
-            temporary=describe.temporaryOps[effect.op] and effect.value or 0,
-            kind=status.kind,description=status.description,stack=status.stack},battle,actor)
-        if status.stack=='duration' then row.tag='持续 '..number(effect.value)..' 回合'end
-        return row
-    end
-    local function keywordRows(effects, battle, actor, rows, keywordText)
+    local function potionKeywords(effects, battle, actor, rows)
         for _, effect in ipairs(effects) do
             local id = effect.status or effect.op == "gainTemporaryStrength" and "strength"
             local status = id and battle.catalog.statuses[id]
-            if status and (not keywordText or keywordText:find(status.name,1,true)) then
-                rows[#rows + 1] = keywordRow(status,id,effect,battle,actor,keywordText)
+            if status then
+                local row=statusRow({id=id,name=status.name,amount=effect.value,
+                    temporary=describe.temporaryOps[effect.op] and effect.value or 0,
+                    kind=status.kind,description=status.description,stack=status.stack},battle,actor)
+                if status.stack=='duration' then row.tag='持续 '..number(effect.value)..' 回合'end
+                rows[#rows+1]=row
             end
-            if effect["then"] then keywordRows(effect["then"], battle, actor, rows, keywordText) end
+            if effect["then"] then potionKeywords(effect["then"], battle, actor, rows) end
         end
     end
 
-    local function fullEffectRows(definition, instance, battle, rows,reward)
-        local full
-        local preview = not reward and Combat.cardPreview(battle, instance, self.target) or {}
-        if definition.originalV4 then
-            local original=require('abyss_original_v4_display')
-            full=original.describe(definition,instance.upgraded)
-            local keywords=original.keywordDefinitions(definition,instance.upgraded)
-            if keywords~='' then full=full..'\n'..keywords end
-            if preview.text and preview.text~='' then full=full..'\n'..preview.text end
-        else
-            local display=self.presentation[instance.cardId]
-            local cardDisplay=require('abyss_card_display')
-            full=reward and cardDisplay.permanentText(display,definition,instance)
-                or cardDisplay.combatText(display,definition,instance,preview,battle,self.target)
-        end
-        -- Detail rows use their own colour; never split inline markup across pages.
-        full=full:gsub('<color=[^>]+>',''):gsub('</color>','')
-        local chunk, index = "", 0
-        local function flush()
-            if chunk ~= "" then
-                index = index + 1
-                rows[#rows + 1] = {name = "完整效果 " .. index, text = chunk, colour = C.goldBright, icon = Theme.icon.cardArt[definition.type]}
-                chunk = ""
-            end
-        end
-        for glyph in full:gmatch("[%z\1-\127\194-\244][\128-\191]*") do
-            if lines(chunk .. glyph) > 2 then flush() end
-            chunk = chunk .. glyph
-        end
-        flush()
-    end
-
-    local function cardTraits(definition, rows)
-        if definition.exhaust then rows[#rows + 1] = {icon = Theme.icon.exhaust, colour = C.goldBright, name = "消耗",
-            text = "打出后移出本场战斗", note = "不进入弃牌堆"} end
-        if definition.ethereal then rows[#rows + 1] = {intent = "unknown", colour = C.goldBright, name = "虚无",
-            text = "回合结束时若仍在手中，将被消耗"} end
-    end
-
-    local function originRow(info,instance,rows)
-        if info.kind~='card' or not self.run then return end
-        local origin=require('abyss_card_origin_view').describe(self.run,instance,true)
-        if origin~=''then rows[#rows+1]={intent='unknown',colour=C.goldBright,name='升级来源',text=origin}end
-    end
-    local function standardCardEffectRows(kind,definition,instance,battle,rows,reward)
-        if kind~='potion' and not definition.originalV4 then fullEffectRows(definition,instance,battle,rows,reward)end
-    end
-    local function automaticKeywords(info)
-        return Theme.presentationProfile=='official-assets-first' and info.kind=='card' and info.transient==true
-    end
-    local function cardRows(info,definition,instance,battle,actor,rows)
-        local keywordOnly=automaticKeywords(info)
-        if definition.originalV4 and not keywordOnly then fullEffectRows(definition,instance,battle,rows,info.reward)end
-        local keywordText=keywordOnly and require('abyss_card_display').permanentText(self.presentation[instance.cardId],definition,instance)
-        keywordRows(definition.effects, battle, actor, rows, keywordText)
-        cardTraits(definition, rows)
-        if not keywordOnly then
-            originRow(info,instance,rows)
-            standardCardEffectRows(info.kind,definition,instance,battle,rows,info.reward)
-        end
-        return keywordOnly
-    end
-    local function keywordCard(card, data, presentation, battle, info, actor)
+    local function cardKeywords(presentation, battle, info)
         local reward=info.reward
-        if reward and not require('abyss_battle_reward_owner').ready(self,reward) then return end
-        local instance = reward and {cardId=reward.cardId,upgraded=reward.upgraded} or find(battle.hand, "uid", info.uid)
-        local definition, rows
-        if info.kind == "potion" then
-            definition, rows = potionRows(data, battle, info)
-            if not definition then return end
-        else
-            if not instance then return end
-            definition, rows = Combat.cardDefinition(battle, instance), {}
-        end
-        local keywordOnly=cardRows(info,definition,instance,battle,actor,rows)
-        if #rows == 0 then return end
-        card.title, card.tag, card.hp = info.kind == "potion" and definition.name or presentation[instance.cardId].name, "关键词", nil
-        card.subtitle = info.kind == "potion" and "药水说明，尚未使用 · 查看不消耗" or "卡牌效果说明，尚未生效"
-        card.keywordOnly=keywordOnly
-        if keywordOnly then card.subtitle=nil end
-        card.sections[1] = { rows = rows }
+        local instance = reward and {cardId=reward.cardId,upgraded=reward.upgraded}
+            or battle.hand[info.slot]
+        local display=instance and presentation[instance.cardId]
+        if not display then return end
+        local definition=Combat.cardDefinition(battle,instance)
+        local text=CardDisplay.permanentText(display,definition,instance):gsub('<[^>]+>','')
+        return M.cardTips(battle.catalog.statuses,definition,instance.upgraded,text)
+    end
+
+    local function keywordCard(card, data, presentation, battle, info, actor)
+        if info.kind~='potion' then return cardKeywords(presentation,battle,info) end
+        local definition,rows=potionRows(data,battle,info)
+        if not definition then return end
+        potionKeywords(definition.effects,battle,actor,rows)
+        card.title,card.tag,card.hp=definition.name,"关键词",nil
+        card.subtitle="药水说明，尚未使用 · 查看不消耗"
+        card.sections[1]={rows=rows}
         return card
     end
 

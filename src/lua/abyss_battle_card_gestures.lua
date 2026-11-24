@@ -119,6 +119,12 @@ function M.install(owner, ownership, host, dependencies)
     end
     local function prepareDown(event, keepActor, readOnly)
         if pointerOwned(event, readOnly) then return true end
+        local press=owner.info and owner.info.press
+        if press then
+            if press.touch~=(event and event.touchId) then return true end
+            dependencies.closeInfo()
+            owner:render(true)
+        end
         if not readOnly then retireInterruptedPress(event) end
         ownership.pointerObserved = true
         owner.help = nil
@@ -134,7 +140,7 @@ function M.install(owner, ownership, host, dependencies)
         return true
     end
     local function swallowed(event, keepActor)
-        if owner.potionMenu then return true end
+        if owner.potionMenu or owner.info and owner.info.press then return true end
         local swallow = owner.swallow
         if swallow and swallow.touch == (event and event.touchId) then owner.swallow = nil return true end
         local closed,passThrough=dismissForPointer(keepActor)
@@ -297,10 +303,22 @@ function M.install(owner, ownership, host, dependencies)
         owner.suppressClick,owner.selected = g,action ~= 'cancel' and g.uid or nil
         finishReleaseAction(action,target)
     end
+    local function releaseRead(event,input)
+        local info=owner.info
+        local press=info and info.press
+        if not press then return false end
+        if press.touch==(event and event.touchId) and (not input or input==press.input) then
+            ownership.releasedDragTouch=press.touch
+            dependencies.closeInfo()
+            owner:render(true)
+        end
+        return true
+    end
     local function release(event, input, ended)
         if owner.potionAim and owner.potionAim.moving and dependencies.releasePotionDrag then return dependencies.releasePotionDrag(event,input) end
         local g = owner.gesture
         local touch = event and event.touchId
+        if not g and releaseRead(event,input) then return end
         if not g then releaseCardTap(event, input, ended) return end
         if touch ~= g.touch or input and input ~= g.input then return end
         if owner.help and owner.help.card == g then owner.help = nil end
