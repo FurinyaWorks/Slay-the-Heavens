@@ -238,8 +238,13 @@ function M.new(root,bar,clickEvent,platform,describe,onClose,onSlot)
         local more=type(cell)=='string'
         hideEmptyArt(icon,cell,more)
         icon:SetVisible(not more)
-        slot:GetChild('more'):SetVisible(more)
-        slot:GetChild('more').text=more and cell or ''
+        local overflow=slot:GetChild('more')
+        overflow:SetVisible(more)
+        overflow.text=more and cell or ''
+        if official and more then
+            overflow:SetAnchoredPosition(7,0)
+            overflow:SetSizeDelta(62,40)
+        end
         local index=cell==true and i or type(cell)=='number' and cell or nil
         if index then M.paint(icon,relics[index],style.icon,platform,run)end
         paintCounter(slot,run,index and relics[index] or nil,official)

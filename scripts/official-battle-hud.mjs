@@ -27,8 +27,7 @@ export function officialBattleUtilityFaces(stage,theme){
    const deck=entry==='deckEntry',colour=variant.name==='hover'?'#FFF3CE':variant.name==='disabled'?'#8F918B':'#D6CBA5';
    const count=text('count',[26,0],[52,36],'',18,colour);
    Object.assign(count.text,{autoSize:false,align:'left'});
-   if(deck)variant.size=[104,variant.size[1]];
-   variant.children.push({name:'officialBattleHud',kind:'container',size:[...variant.size],visible:false,children:[
+   variant.children.push({name:'officialBattleHud',kind:'container',size:deck?[104,variant.size[1]]:[...variant.size],visible:false,children:[
     ...(deck?[text('symbol',[-19,0],[30,36],'▱',18,colour)]:[
      {name:'symbol',kind:'image',position:[0,0],size:[28,28],image:theme.icon.settings,colour},
     ]),

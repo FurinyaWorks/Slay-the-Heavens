@@ -185,15 +185,13 @@ test('approved pages keep live input identities while unrelated pages retain the
   for(const key of ['position','size','visible','scale','rotation','states','focusable','interactable','raycastTarget']){
    const potionLabel=/^\/SlayTheAbyss\/potionEntry\/open\/hit\/(?:normal|hover|pressed|disabled)\/label$/.test(path);
    const relicHit=/^\/SlayTheAbyss\/relicBar\/slot\d+\/hit$/.test(path);
-   const relicMore=/^\/SlayTheAbyss\/relicBar\/slot\d+\/more$/.test(path);
    const footer=/^\/SlayTheAbyss\/deckPanel\/(browserDescription|rarityTip|previous|next|pageHint)$/.exec(path);
    const frame=footer&&theme.layout.deckView.browser.footer[footer[1]];
-   const expected=key==='position'&&relicMore?[7,0]:key==='size'&&relicMore?[62,40]:key==='position'&&frame?frame.slice(0,2):key==='size'&&frame?frame.slice(2):key==='size'&&relicHit?[theme.officialAssets.battleRelicBar.hit,theme.officialAssets.battleRelicBar.hit]:key==='size'&&cardText.get(node)==='cost'
+   const expected=key==='position'&&frame?frame.slice(0,2):key==='size'&&frame?frame.slice(2):key==='size'&&relicHit?[theme.officialAssets.battleRelicBar.hit,theme.officialAssets.battleRelicBar.hit]:key==='size'&&cardText.get(node)==='cost'
     ?child(child(child(layout,'battlePanel'),'card1'),'cost').size:key==='visible'&&potionLabel?false:before[key];
    assert.deepEqual(node[key],expected,path+' '+key);
   }
    if(node.text){const actual={...node.text},expected={...before.text};delete actual.colour;delete expected.colour;
-    if(/^\/SlayTheAbyss\/relicBar\/slot\d+\/(counter|more)$/.test(path))expected.autoSize=false;
     if(cardText.has(node))for(const key of ['outline','outlineColour','outlineOpacity']){
      const canonical=child(child(child(layout,'battlePanel'),'card1'),cardText.get(node)).text;
      assert.deepEqual(actual[key],canonical[key],path+' shared '+key);expected[key]=canonical[key];
@@ -268,9 +266,6 @@ test('approved pages keep live input identities while unrelated pages retain the
     if(relicSlot&&key==='position'){
      const bar=theme.officialAssets.battleRelicBar;
      assert.deepEqual(node.position,[bar.origin[0]+bar.step*(Number(relicSlot[1])-1),bar.origin[1]],path+' canonical position');continue;
-    }
-    if(key==='size'&&/^\/SlayTheAbyss\/deckEntry\/open\/hit\/(?:normal|hover|pressed|disabled)$/.test(path)){
-     assert.deepEqual(node.size,[104,before.size[1]],path+' room for the fixed-size deck amount');continue;
     }
     assert.deepEqual(node[key],key==='size'&&cardHosts.has(node)?theme.layout.card.size:expected[key],path+' '+key);
    }

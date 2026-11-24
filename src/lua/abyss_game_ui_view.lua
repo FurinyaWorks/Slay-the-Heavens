@@ -463,6 +463,7 @@ function M.refreshForeground(characterPanel,self,platform,exitEntry,exitEntryVis
         local overlay=variant:GetChild('officialBattleHud')
         if not overlay then return end
         for _,part in ipairs(variant:GetChildren())do part:SetVisible(part==overlay)end
+        return overlay
     end
     local function battleUtilities()
         if not hud or utilitiesReady then return end
@@ -473,7 +474,8 @@ function M.refreshForeground(characterPanel,self,platform,exitEntry,exitEntryVis
             for _,name in ipairs({'normal','hover','pressed','disabled'})do
                 local variant=hit:GetChild(name)
                 variant:SetLocalScale((variant.localScaleX or 1)*values[3],(variant.localScaleY or 1)*values[3],1)
-                utilityFace(variant)
+                local face=utilityFace(variant)
+                if values==hud.deck and face then variant:SetSizeDelta(face.sizeDeltaX,face.sizeDeltaY)end
             end
         end
         utilitiesReady=true
