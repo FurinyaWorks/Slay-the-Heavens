@@ -196,7 +196,7 @@ effects.gainEnergyIfDiscard = function(e, _value)
     assert(e.value==2,'unsupported discard refund');text='若本回合主动弃过牌，获得 2 点能量'
     return text
 end
-effects.calculatedGamble = function()
+effects.calculatedExchange = function()
     return '弃掉其余所有手牌，再抽等量牌'
 end
 effects.gainOrbPower = function(e, value)

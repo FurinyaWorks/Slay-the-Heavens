@@ -91,7 +91,7 @@
       "Pocketwatch",
       "Mango",
       "Incense Burner",
-      "Gambling Chip",
+      "Tactical Badge",
       "Peace Pipe",
       "CaptainsWheel",
       "FossilizedHelix",
@@ -123,7 +123,7 @@
       "Fusion Hammer",
       "Velvet Choker",
       "Runic Dome",
-      "SlaversCollar",
+      "ArenaCollar",
       "Snecko Eye",
       "Pandora's Box",
       "Cursed Key",
@@ -285,7 +285,7 @@
     "Fusion Hammer": {
       "kind": "always"
     },
-    "Gambling Chip": {
+    "Tactical Badge": {
       "kind": "always"
     },
     "Ginger": {
@@ -478,7 +478,7 @@
       "floor": 48,
       "endlessBypass": true
     },
-    "SlaversCollar": {
+    "ArenaCollar": {
       "kind": "always"
     },
     "Sling": {

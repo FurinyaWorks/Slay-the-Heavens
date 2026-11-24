@@ -88,9 +88,9 @@ function M.deathStart(state,actor,before)
 end
 function M.finalEscapes(state,push)
  -- AwakenedOne.die queues escapes, not kills, before its override's second
- -- Power visit. Do not mark the cultists escaped while constructing callbacks.
+ -- Power visit. Do not mark the raven_adepts escaped while constructing callbacks.
  for _,actor in ipairs(state.enemies)do
-  if actor.definitionId=='cultist'and actor.hp>0 and not actor.escaped then
+  if actor.definitionId=='raven_adept'and actor.hp>0 and not actor.escaped then
    push(state,action('escape',actor))
   end
  end

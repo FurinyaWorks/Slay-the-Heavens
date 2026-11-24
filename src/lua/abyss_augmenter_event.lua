@@ -35,7 +35,7 @@ end
 function M.options(_run,event)
     if event.stage=='intro'then return {row('jax','研习增幅术','获得1张「元素增幅」。'),
         row('test_subject','调校卡牌','必须选择2张可清除卡牌，将它们转化。',event.canTransform),
-        row('mutagens','领取增幅晶核','获得增幅晶核；已拥有时获得头环。')}end
+        row('claim_core','领取增幅晶核','获得增幅晶核；已拥有时获得头环。')}end
     if event.stage=='choose_card'then return {row('transform','转化两张卡牌','按选择顺序转化两张卡牌，不能跳过或少选。',true,'augmenter_transform')}end
     if event.stage=='result'then return {row('leave','离开','返回路线。')}end
     return {}
@@ -88,9 +88,9 @@ local function transformPair(run,event,uids)
     event.stage,event.body='result','调校完成，两张卡牌已经转化。'
     return true,'pending'
 end
-local function mutagens(run,event)
-    local id='MutagenicStrength'
-    for _,held in ipairs(run.relics)do if held==id or Hooks.localId(held)=='mutagenic_strength'then id='Circlet';break end end
+local function claim_core(run,event)
+    local id='AugmentationCore'
+    for _,held in ipairs(run.relics)do if held==id or Hooks.localId(held)=='augmentation_core'then id='Circlet';break end end
     local ok,why=Run.obtainRelic(run,id);if not ok then return false,why end
     event.obtainedRelicId=why;return true
 end
@@ -111,7 +111,7 @@ function M.choose(run,flow,choice,uid)
     local ok,why
     if choice=='jax'then
         ok,why=Run.obtainCard(run,'J.A.X.');if ok then event.obtainedCardUid=why end
-    elseif choice=='mutagens'then ok,why=mutagens(run,event)
+    elseif choice=='claim_core'then ok,why=claim_core(run,event)
     else return false,'invalid_event_choice'end
     if not ok then return false,why end
     event.choice,event.stage,event.body=choice,'result','你完成了元素调校。'

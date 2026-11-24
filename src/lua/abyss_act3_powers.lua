@@ -40,7 +40,7 @@ function M.duringTurn(combat,state,enemy)
  if not transient(enemy)or enemy.hp<=0 then return end
  local n=enemy.statuses.fading
  assert(type(n)=='number'and n%1==0 and n>0,'invalid Fading countdown')
- if n==1 then combat.suicideTransient(state,enemy)
+ if n==1 then combat.expireTransient(state,enemy)
  else enemy.statuses.fading=n-1;Events.emit(state,'status',{source=enemy.id,target=enemy.id,status='fading',amount=-1})end
 end
 function M.active(state)
@@ -111,7 +111,7 @@ function M.afterTurn(combat,state,enemy)
   Events.emit(state,'status',{source=enemy.id,target=enemy.id,status='explosive',amount=-1})
   return
  end
- combat.suicideExploder(state,enemy)
+ combat.detonateExploder(state,enemy)
  combat.retaliate(state,enemy,state.player,30)
 end
 return M

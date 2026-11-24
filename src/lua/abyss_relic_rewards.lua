@@ -6,7 +6,7 @@ local M={}
 local legacy={burning_blood='Burning Blood',anchor='Anchor',vajra='Vajra',
  bag_of_preparation='Bag of Preparation',lantern='Lantern',oddly_smooth_stone='Oddly Smooth Stone',
  bronze_scales='Bronze Scales',membership_card='Membership Card',courier='The Courier',
- smiling_mask='Smiling Mask',black_blood='Black Blood',slavers_collar='SlaversCollar',sozu='Sozu',
+ smiling_mask='Smiling Mask',black_blood='Black Blood',arena_collar='ArenaCollar',sozu='Sozu',
  black_star='Black Star',circlet='Circlet'}
 local restockRejected={['Old Coin']=true,['Smiling Mask']=true,MawBank=true,['The Courier']=true}
 function M.definition(run,id)

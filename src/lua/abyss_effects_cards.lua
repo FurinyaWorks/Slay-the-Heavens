@@ -9,8 +9,8 @@ function M.gainEnergyIfDiscard(context)
     require("abyss_silent_discard_cards").gainEnergyIfDiscard(state,value)
 end
 
-function M.calculatedGamble()
-    error("Gamble requires the continuation queue")
+function M.calculatedExchange()
+    error("Exchange requires the continuation queue")
 end
 
 function M.handChoice()

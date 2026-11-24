@@ -333,7 +333,7 @@ function M.new(root, data, presentation, clickEvent, platform, options)
             if not ok then services.notice(reasons[reason] or "当前无法离开奖励。") end
             -- The embedded host unmounts and cleans up the old battle.
             services.refresh(ok,ok and host.options.embedded and host.options.onChange~=nil)
-        elseif not host.options.embedded and self.run.phase == "map" then assert(Run.startCombat(self.run, "cultist_solo")) services.refresh(true) end
+        elseif not host.options.embedded and self.run.phase == "map" then assert(Run.startCombat(self.run, "raven_adept_solo")) services.refresh(true) end
     end)
     host.potionPopup=PotionPopup.new(host.stage:GetChild('potionHelp'):GetChild('potionPopup'),self,host.platform,host.clickEvent,{
         pointerDown=function(event)

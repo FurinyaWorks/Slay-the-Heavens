@@ -60,7 +60,7 @@ function M.mapContext(run)return EmeraldRewards.mapContext(run)end
 local legacyRelics={['Burning Blood']='burning_blood',Anchor='anchor',Vajra='vajra',
  ['Bag of Preparation']='bag_of_preparation',Lantern='lantern',['Oddly Smooth Stone']='oddly_smooth_stone',
  ['Bronze Scales']='bronze_scales',['Membership Card']='membership_card',['The Courier']='courier',
- ['Smiling Mask']='smiling_mask',['Black Blood']='black_blood',SlaversCollar='slavers_collar',Sozu='sozu'}
+ ['Smiling Mask']='smiling_mask',['Black Blood']='black_blood',ArenaCollar='arena_collar',Sozu='sozu'}
 local function relicDefinition(run,id)
     for _,relic in ipairs(run.data.relics.relics) do
         if relic.id==id or relic.sourceId==id or legacyRelics[id]==relic.id then return relic end

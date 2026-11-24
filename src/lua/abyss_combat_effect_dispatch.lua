@@ -24,7 +24,7 @@ local function relicActions(combat,state,effect)
         require('abyss_relic_combat_hooks').upgradeRandomHand(combat,state)
         return true,true
     end
-    if effect.op=='rareGamblingChip'then
+    if effect.op=='rareTacticalBadge'then
         require('abyss_relic_family_combat').rare.applyEffect(combat,state,effect)
         return true,'pause'
     end

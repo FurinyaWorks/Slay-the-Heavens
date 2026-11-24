@@ -387,26 +387,26 @@
           {
             "dynamic": false,
             "enemies": [
-              "cultist",
+              "raven_adept",
               "chosen"
             ],
             "entry": "Run.startRoomCombat -> abyss_act2_enemies.resolve",
-            "id": "act2_cultist_chosen",
+            "id": "act2_raven_adept_chosen",
             "pool": "strong",
-            "source": "Cultist and Chosen",
+            "source": "Raven Adept and Chosen",
             "weight": 3
           },
           {
             "dynamic": false,
             "enemies": [
-              "cultist",
-              "cultist",
-              "cultist"
+              "raven_adept",
+              "raven_adept",
+              "raven_adept"
             ],
             "entry": "Run.startRoomCombat -> abyss_act2_enemies.resolve",
-            "id": "act2_cultists",
+            "id": "act2_raven_adepts",
             "pool": "strong",
-            "source": "3 Cultists",
+            "source": "3 Raven Adepts",
             "weight": 3
           },
           {
@@ -432,14 +432,14 @@
           {
             "dynamic": false,
             "enemies": [
-              "blue_slaver",
+              "blue_guard",
               "taskmaster",
-              "red_slaver"
+              "red_guard"
             ],
             "entry": "Run.startRoomCombat -> abyss_act2_enemies.resolve",
-            "id": "act2_slavers",
+            "id": "act2_arena_guards",
             "pool": "elite",
-            "source": "Slavers",
+            "source": "Arena Guards",
             "weight": 1
           },
           {

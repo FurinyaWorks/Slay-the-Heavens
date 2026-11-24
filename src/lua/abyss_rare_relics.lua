@@ -3,7 +3,7 @@
 local Queries=require('abyss_relic_queries').rare
 local Combat=require('abyss_relic_family_combat').rare
 local queryFields={canSpawn=true,extraCardRewards=true,localId=true,owns=true}
-local combatFields={applyEffect=true,atTurnStart=true,battleStart=true,bindBattle=true,blockAtTurnStart=true,blockPower=true,chooseGambling=true,disableTop=true,modifyHealing=true,onAttacked=true,onExhaust=true,onPlayCard=true,onPlayerEndTurn=true,onRefreshHand=true,onUseCard=true,onVictory=true,onVulnerableApplied=true,postDraw=true,randomCardId=true,rechargeEnergy=true}
+local combatFields={applyEffect=true,atTurnStart=true,battleStart=true,bindBattle=true,blockAtTurnStart=true,blockPower=true,chooseTacticalExchange=true,disableTop=true,modifyHealing=true,onAttacked=true,onExhaust=true,onPlayCard=true,onPlayerEndTurn=true,onRefreshHand=true,onUseCard=true,onVictory=true,onVulnerableApplied=true,postDraw=true,randomCardId=true,rechargeEnergy=true}
 local function queryIndex(_,key)
  if queryFields[key] then return Queries[key] end
  if combatFields[key] then return Combat[key] end

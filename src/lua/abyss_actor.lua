@@ -464,7 +464,7 @@ function M.resolveDamageReactions(state, reactions, retaliate)
             if M.isActive(state.player) then M.block(state,state.player,hit.effect.value,true) end
         elseif hit.effect and hit.effect.op=='cardTriggerPoison' then
             require('abyss_card_triggers').resolveEnvenom(state,hit.effect)
-        elseif hit.effect and hit.effect.op=='reptomancerSuicide'then
+        elseif hit.effect and hit.effect.op=='reptomancerDismissal'then
             require('abyss_reptomancer').cleanup(M,state,hit.effect)
         elseif hit.effect and Act2Powers.supports(hit.effect.op)then
             Act2Powers.apply(M,state,hit.effect)
@@ -526,26 +526,26 @@ function M.instantKill(state,target)
     M.resolveDamageReactions(state,reactions)
 end
 
-function M.suicideReptomancerMinion(state,target)
+function M.dismissReptomancerMinion(state,target)
     local before=target.hp;target.hp,target.gold=0,0
     if before<=0 then return end
-    Events.emit(state,'enemy_suicide',{enemy=target.id})
+    Events.emit(state,'enemy_self_exit',{enemy=target.id})
     if state.originalV4 then require('abyss_original_v4').enemyDied(state,target,before)end
     local reactions={};queueDeathPower(state,target,before,reactions)
     M.resolveDamageReactions(state,reactions)
 end
 
-function M.sacrificeDagger(state,target,amount)
-    assert(target.ai and target.ai.kind=='reptomancer'and target.ai.policy=='dagger','Dagger sacrifice only')
+function M.expendDagger(state,target,amount)
+    assert(target.ai and target.ai.kind=='reptomancer'and target.ai.policy=='dagger','Dagger expenditure only')
     if not M.isActive(target)then return end
     local reactions={};directDamage(state,target,target,amount,'hp_loss',0,reactions)
     M.resolveDamageReactions(state,reactions)
 end
 
-function M.suicideTransient(state,target)
+function M.expireTransient(state,target)
     assert(M.isActive(target)and target.ai and target.ai.kind=='act3'and target.ai.policy=='transient','Expected a Transient exit')
     local before=target.hp;target.hp,target.gold=0,0
-    Events.emit(state,'enemy_suicide',{enemy=target.id})
+    Events.emit(state,'enemy_self_exit',{enemy=target.id})
     local reactions={};queueDeathPower(state,target,before,reactions)
     M.resolveDamageReactions(state,reactions)
 end
@@ -876,7 +876,7 @@ end
 function M.endRound(state, actor)
     require('abyss_giant_head').endRound(state,actor)
     -- Orb Walker receives Growth in pre-battle, before any later round-decay
-    -- debuff. Its first round is not suppressed like Cultist Ritual.
+    -- debuff. Its first round is not suppressed like Raven Adept Ritual.
     Act3Powers.endRound(M,state,actor)
     tick(state, actor, "round_end")
 end

@@ -25,7 +25,7 @@ const specialRelicEvents = {
   neows_lament: ['explicit:Nodes.beginNeow:THREE_ENEMY_KILL'],
   red_mask: ['explicit_event:tomb_red_mask:pay', 'explicit_event:masked_bandits:fight'],
   bloody_idol: ['explicit_event:forgotten_altar:offer_idol'],
-  mutagenic_strength: ['explicit_event:augmenter:mutagens'],
+  augmentation_core: ['explicit_event:augmenter:claim_core'],
   necronomicon: ['explicit_event:cursed_tome:claim'],
   enchiridion: ['explicit_event:cursed_tome:claim'],
   nilrys_codex: ['explicit_event:cursed_tome:claim'],
@@ -36,7 +36,7 @@ const specialRelicEvents = {
   ssserpent_head: ['explicit_event:face_trader:trade'],
   nloths_gift: ['explicit_event:nloth:trade_1', 'explicit_event:nloth:trade_2'],
   warped_tongs: ['explicit_event:accursed_blacksmith:rummage'],
-    spirit_poop: ['explicit_event:bonfire:curse_offer'], circlet: ['explicit_event:bonfire:repeat_curse_offer', 'explicit_event:golden_idol:repeat_take', 'explicit_event:mushrooms:repeat_fight', 'explicit_event:cursed_tome:claim', 'explicit_event:forgotten_altar:offer_idol', 'explicit_event:augmenter:mutagens', 'explicit_event:face_trader:trade', 'explicit_event:nloth:trade_1', 'explicit_event:nloth:trade_2', 'explicit_event:masked_bandits:fight'],
+    spirit_poop: ['explicit_event:bonfire:curse_offer'], circlet: ['explicit_event:bonfire:repeat_curse_offer', 'explicit_event:golden_idol:repeat_take', 'explicit_event:mushrooms:repeat_fight', 'explicit_event:cursed_tome:claim', 'explicit_event:forgotten_altar:offer_idol', 'explicit_event:augmenter:claim_core', 'explicit_event:face_trader:trade', 'explicit_event:nloth:trade_1', 'explicit_event:nloth:trade_2', 'explicit_event:masked_bandits:fight'],
     golden_idol: ['explicit_event:golden_idol:take'],
     odd_mushroom: ['explicit_event:mushrooms:fight'],
 };

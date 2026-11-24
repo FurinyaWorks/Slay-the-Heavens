@@ -4,7 +4,7 @@ local M = {}
 local families={melee=true,heavy=true,projectile=true,poison=true,bind=true,buff=true,defend=true,dot=true}
 -- Exact definition + intent pairs; identical intent names on other actors do not match.
 local moves={
-    sentry={sentry_1='projectile'}, red_slaver={red_slaver_2='bind'},
+    sentry={sentry_1='projectile'}, red_guard={red_guard_2='bind'},
     chosen={zap='projectile',debilitate='heavy',hex='bind',drain='bind'},
     snake_plant={spores='poison'}, collector={fireball='projectile',mega_debuff='bind'},
     automaton={hyper_beam='projectile'}, bronze_orb={beam='projectile',stasis='bind'},

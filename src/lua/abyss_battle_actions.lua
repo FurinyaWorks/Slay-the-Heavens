@@ -191,7 +191,7 @@ function M.install(owner, ownership, host, dependencies)
         self.feedback:cancel()
         self.run = Run.new(self.data, self.seed)
         self.seed = (self.seed + 1) % 65536
-        assert(Run.startCombat(self.run, "cultist_solo"))
+        assert(Run.startCombat(self.run, "raven_adept_solo"))
         self.target, self.selected = 1, nil
         dependencies.notice("") refresh(true)
         print("ABYSS_UI combat_started")

@@ -172,7 +172,7 @@ local function living(s)
  return false
 end
 function M.bindBattle(s)
- s.rareRelicCombat={firstPocketTurn=true,gamblingActivated=false,topCanDraw=false,topDisabled=false}
+ s.rareRelicCombat={firstPocketTurn=true,tacticalBadgeActivated=false,topCanDraw=false,topDisabled=false}
  for _,id in ipairs({'stone_calendar','captains_wheel','pocketwatch'})do if owns(s,id)then counters(s)[id]=0 end end
 end
 function M.battleStart(s,id,execute)
@@ -211,8 +211,8 @@ function M.postDraw(s,singleId)
   if id=='pocketwatch'then
    if not f.firstPocketTurn and (c[id]or 0)<=3 then enqueue(s,{op='draw',value=3})end
    f.firstPocketTurn=false;c[id]=0
-  elseif id=='gambling_chip'and not f.gamblingActivated then
-   f.gamblingActivated=true;enqueue(s,{op='rareGamblingChip'})
+  elseif id=='tactical_badge'and not f.tacticalBadgeActivated then
+   f.tacticalBadgeActivated=true;enqueue(s,{op='rareTacticalBadge'})
   end
  end
 end
@@ -272,13 +272,13 @@ function M.onExhaust(s,emit)
   elseif id=='dead_branch'and living(s)then emit(s,{op='rareRelicGenerate',card=M.randomCardId(s)})end
  end
 end
-local function beginGambling(s)
+local function beginTacticalExchange(s)
  s.choiceSerial=(s.choiceSerial or 0)+1
  local uids={};for _,c in ipairs(s.hand)do uids[#uids+1]=c.uid end
- s.pendingChoice={token=s.choiceSerial,op='rareGamblingChip',uids=uids,multiple=true,selected={},allowEmpty=true}
- E.emit(s,'card_choice',{token=s.choiceSerial,op='rareGamblingChip'})
+ s.pendingChoice={token=s.choiceSerial,op='rareTacticalBadge',uids=uids,multiple=true,selected={},allowEmpty=true}
+ E.emit(s,'card_choice',{token=s.choiceSerial,op='rareTacticalBadge'})
 end
-local function validateGamblingSelection(s,uids,p)
+local function validateTacticalSelection(s,uids,p)
  local allowed,seen,count={},{},0
  for _,uid in ipairs(p.uids)do allowed[uid]=true end
  for k,uid in pairs(uids)do
@@ -291,11 +291,11 @@ local function validateGamblingSelection(s,uids,p)
  if count~=#uids then return false,'invalid_choice'end
  return true
 end
-function M.chooseGambling(combat,s,uids,token)
+function M.chooseTacticalExchange(combat,s,uids,token)
  local p=s.pendingChoice
- if not p or p.op~='rareGamblingChip'or token~=p.token then return false,'stale_choice'end
+ if not p or p.op~='rareTacticalBadge'or token~=p.token then return false,'stale_choice'end
  if type(uids)~='table'then return false,'invalid_choice'end
- local valid,reason=validateGamblingSelection(s,uids,p)
+ local valid,reason=validateTacticalSelection(s,uids,p)
  if not valid then return false,reason end
  s.pendingChoice=nil
  -- Chip increments discard before each card's manual-discard trigger.
@@ -306,7 +306,7 @@ function M.chooseGambling(combat,s,uids,token)
  return true
 end
 function M.applyEffect(combat,s,e)
- if e.op=='rareGamblingChip'then beginGambling(s)
+ if e.op=='rareTacticalBadge'then beginTacticalExchange(s)
  elseif e.op=='rareRelicGenerate'then
   combat.applyEffects(s,{{op='makeTempCardInHand',card=e.card,value=1}},s.player)
  elseif e.op=='rareRelicDamageAll'then

@@ -110,6 +110,12 @@ export function buildUiTheme(themeFile = 'data/presentation/ui_theme.json', data
   if (errors.length) throw new Error(errors.join('\n'));
   rejectInputOutputAlias(themeFile, dataDirectory, output);
   const { note, ...runtime } = theme;
+  // Keep authoring references in JSON. The client only consumes layout values.
+  if (runtime.officialAssets?.rewardRows) {
+    const { catalogSources, ...officialAssets } = runtime.officialAssets;
+    const { reference, ...rewardRows } = officialAssets.rewardRows;
+    runtime.officialAssets = { ...officialAssets, rewardRows };
+  }
   runtime.icon = { ...runtime.icon, status: Object.fromEntries(
     Object.entries(runtime.icon.status).map(([key, value]) => [key, iconId(value)])) };
   const source = `-- Generated from data/presentation/ui_theme.json. Do not edit.\nreturn ${toLua(convertColours(runtime))}\n`;

@@ -11,8 +11,8 @@ local Events = require("abyss_events")
 local Guardian = require("abyss_guardian_ai")
 local JawWorm = require("abyss_jaw_worm_ai")
 local GremlinNob = require("abyss_gremlin_nob_ai")
-local BlueSlaver = require("abyss_blue_slaver_ai")
-local RedSlaver = require("abyss_red_slaver_ai")
+local BlueGuard = require("abyss_blue_guard_ai")
+local RedGuard = require("abyss_red_guard_ai")
 local AcidSlimeS = require("abyss_acid_slime_s_ai")
 local Sentry = require("abyss_sentry_ai")
 local SpikeSlimeM = require("abyss_spike_slime_m_ai")
@@ -89,8 +89,8 @@ end
 local function initializeAct1Policy(state, enemy, random)
     if enemy.ai.kind == "jaw_worm" then return JawWorm.initialize(state, enemy, random) end
     if enemy.ai.kind == "gremlin_nob" then return GremlinNob.initialize(state, enemy, random) end
-    if enemy.ai.kind == "blue_slaver" then return BlueSlaver.initialize(state, enemy, random) end
-    if enemy.ai.kind == "red_slaver" then return RedSlaver.initialize(state, enemy, random) end
+    if enemy.ai.kind == "blue_guard" then return BlueGuard.initialize(state, enemy, random) end
+    if enemy.ai.kind == "red_guard" then return RedGuard.initialize(state, enemy, random) end
     if enemy.ai.kind == "acid_slime_s" then return AcidSlimeS.initialize(state, enemy, random) end
     if enemy.ai.kind == "sentry" then return Sentry.initialize(state, enemy, random, Actors.applyPower) end
     if enemy.ai.kind == "spike_slime_m" or enemy.ai.kind == "spike_slime_l" then return SpikeSlimeM.initialize(state, enemy, random) end
@@ -210,8 +210,8 @@ end
 local function advanceAct1Policy(state, enemy, random)
     if enemy.ai.kind == "jaw_worm" then return JawWorm.advance(state, enemy, random)
     elseif enemy.ai.kind == "gremlin_nob" then return GremlinNob.advance(state, enemy, random)
-    elseif enemy.ai.kind == "blue_slaver" then return BlueSlaver.advance(state, enemy, random)
-    elseif enemy.ai.kind == "red_slaver" then return RedSlaver.advance(state, enemy, random)
+    elseif enemy.ai.kind == "blue_guard" then return BlueGuard.advance(state, enemy, random)
+    elseif enemy.ai.kind == "red_guard" then return RedGuard.advance(state, enemy, random)
     elseif enemy.ai.kind == "acid_slime_s" then return AcidSlimeS.advance(state, enemy)
     elseif enemy.ai.kind == "sentry" then return Sentry.advance(state, enemy, random)
     elseif enemy.ai.kind == "spike_slime_m" or enemy.ai.kind == "spike_slime_l" then return SpikeSlimeM.advance(state, enemy, random)
@@ -254,7 +254,7 @@ end
 -- Only these source-verified policies enqueue RollMoveAction during takeTurn.
 -- That action has no owner-death guard and survives while another enemy lives.
 -- Acid S sets its next move directly instead; do not invent a queued roll.
-local queuedRoll = { jaw_worm=true, gremlin_nob=true, blue_slaver=true, red_slaver=true, rolled_attack=true, sentry=true, ritual_then_attack=true, sleep_then_cycle=true, spike_slime_m=true, spike_slime_l=true, acid_slime_m=true, acid_slime_l=true, fungi_beast=true, louse=true }
+local queuedRoll = { jaw_worm=true, gremlin_nob=true, blue_guard=true, red_guard=true, rolled_attack=true, sentry=true, ritual_then_attack=true, sleep_then_cycle=true, spike_slime_m=true, spike_slime_l=true, acid_slime_m=true, acid_slime_l=true, fungi_beast=true, louse=true }
 function M.afterAction(state, enemy, random, executedIntent)
     if EventEnemies.owns(enemy)then return EventEnemies.afterAction(state,enemy,random)end
     if Act4.owns(enemy)then return Act4.afterAction(state,enemy,random,executedIntent)end
@@ -316,7 +316,7 @@ function M.beforeAction(state, enemy, random, executedIntent)
     if enemy.ai and enemy.ai.kind=='act3' then return Act3.beforeAction(state,enemy,random,executedIntent) end
     if enemy.ai and enemy.ai.kind=='act2' then Act2.beforeAction(state,enemy,random,executedIntent) end
     if enemy.ai and enemy.ai.kind == "looter" then return Looter.beforeAction(state, enemy, random, executedIntent) end
-    if enemy.ai and enemy.ai.kind == "red_slaver" then RedSlaver.beforeAction(enemy) end
+    if enemy.ai and enemy.ai.kind == "red_guard" then RedGuard.beforeAction(enemy) end
     if enemy.ai and enemy.ai.kind == "charge_then_attack" and enemy.intents[enemy.intentIndex].id == enemy.ai.attackIntent then
         enemy.aiCharge = 0 -- Reset before damage, including lethal retaliation.
     end

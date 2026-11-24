@@ -40,7 +40,7 @@ local rows={
         {"envenom","Envenom","Envenom","rare","power",false},
         {"adrenaline","Adrenaline","Adrenaline","rare","skill",false},
         {"quick_slash","Quick Slash","QuickSlash","common","attack",false},
-        {"calculated_gamble","Calculated Gamble","CalculatedGamble","uncommon","skill",false},
+        {"calculated_exchange","Calculated Exchange","CalculatedExchange","uncommon","skill",false},
         {"escape_plan","Escape Plan","EscapePlan","uncommon","skill",false},
         {"finisher","Finisher","Finisher","uncommon","attack",false},
         {"die_die_die","Die Die Die","DieDieDie","rare","attack",false},

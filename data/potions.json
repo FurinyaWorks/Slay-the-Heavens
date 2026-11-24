@@ -22,7 +22,7 @@
       "description":"抽5张牌，再将手中可修改费用牌的战斗费用随机改为0至3。","effects":[{"op":"draw","value":5},{"op":"randomizeHandCost","value":0}] },
     { "id":"elixir","targetPolicy":"self","name":"灵药","rarity":"uncommon",
       "description":"选择任意张手牌消耗，可以不选。","effects":[{"op":"exhaustMany","value":0}] },
-    { "id":"gamblers_brew","targetPolicy":"self","name":"换牌秘酿","rarity":"uncommon",
+    { "id":"swap_brew","targetPolicy":"self","name":"换牌秘酿","rarity":"uncommon",
       "description":"选择任意张手牌丢弃，再抽等量牌。","effects":[{"op":"discardRedraw","value":0}] },
     { "id":"liquid_memories","targetPolicy":"self","name":"液态记忆","rarity":"uncommon",
       "description":"从弃牌堆选择1张牌回手，本回合费用为0。","effects":[{"op":"discardToHand","value":1}] },

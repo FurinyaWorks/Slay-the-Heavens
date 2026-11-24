@@ -6,7 +6,7 @@ local Handlers={}
 function Handlers.darklingAction(c)
     require('abyss_darklings').resolve(c.state,c.effect);return true
 end
-function Handlers.reptomancerSuicide(c)
+function Handlers.reptomancerDismissal(c)
     return require('abyss_reptomancer').cleanup(Actors,c.state,c.effect)
 end
 function Handlers.timeEater(c)

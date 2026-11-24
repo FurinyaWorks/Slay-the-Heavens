@@ -260,7 +260,7 @@ local function openingPower(state,id)
 end
 
 function M.battleStart(state,id)
- if id=='mutagenic_strength'then return require('abyss_act2_event_relics').battleStart(state,id)end
+ if id=='augmentation_core'then return require('abyss_act2_event_relics').battleStart(state,id)end
  id=M.localId(id)
  if id=='pantograph' then openingHeal(state,id,25)
  elseif id=='blood_vial' then openingHeal(state,id,2)

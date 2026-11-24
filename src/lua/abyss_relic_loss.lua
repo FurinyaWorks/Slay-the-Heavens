@@ -3,7 +3,7 @@
 local M={}
 local bottles={bottled_flame='inBottleFlame',bottled_lightning='inBottleLightning',bottled_tornado='inBottleTornado'}
 -- These exact source classes implement onUnequip: --energyMaster. The
--- trigger category is NOT an inverse-equip contract (notably SlaversCollar).
+-- trigger category is NOT an inverse-equip contract (notably ArenaCollar).
 local energyUnequip={sozu=true,coffee_dripper=true,fusion_hammer=true}
 local combatObjectFields={horn_cleat='hornCleatGrayscale',necronomicon='necronomiconActivated'}
 function M.unbottle(run,id)

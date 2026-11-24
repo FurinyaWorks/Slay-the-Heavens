@@ -2,21 +2,22 @@
 -- Fixed source: aeubanks/sts@319009d5, Exordium / AbstractDungeon / MonsterInfo.
 -- Uses the production STS wrapper, preserving the raw signed64 decimal seed.
 local R = require("abyss_sts_random")
+local CheckpointIdentities=require("abyss_checkpoint_identities")
 local M = {}
-local weak = {{"Cultist",2},{"Jaw Worm",2},{"2 Louse",2},{"Small Slimes",2}}
-local strong = {{"Blue Slaver",2},{"Gremlin Gang",1},{"Looter",2},{"Large Slime",2},
+local weak = {{"Raven Adept",2},{"Jaw Worm",2},{"2 Louse",2},{"Small Slimes",2}}
+local strong = {{"Blue Guard",2},{"Gremlin Gang",1},{"Looter",2},{"Large Slime",2},
     {"Lots of Slimes",1},{"Exordium Thugs",1.5},{"Exordium Wildlife",1.5},
-    {"Red Slaver",1},{"3 Louse",2},{"2 Fungi Beasts",2}}
+    {"Red Guard",1},{"3 Louse",2},{"2 Fungi Beasts",2}}
 local elite = {{"Gremlin Nob",1},{"Lagavulin",1},{"3 Sentries",1}}
-local exclusions = {Looter={"Exordium Thugs"},["Blue Slaver"]={"Red Slaver","Exordium Thugs"},
+local exclusions = {Looter={"Exordium Thugs"},["Blue Guard"]={"Red Guard","Exordium Thugs"},
     ["2 Louse"]={"3 Louse"},["Small Slimes"]={"Large Slime","Lots of Slimes"}}
 local later = {
     [2]={weak={{'Spheric Guardian',2},{'Chosen',2},{'Shell Parasite',2},{'3 Byrds',2},{'2 Thieves',2}},
         strong={{'Chosen and Byrds',2},{'Sentry and Sphere',2},{'Snake Plant',6},{'Snecko',4},
-            {'Centurion and Healer',6},{'Cultist and Chosen',3},{'3 Cultists',3},{'Shelled Parasite and Fungi',3}},
-        elite={{'Gremlin Leader',1},{'Slavers',1},{'Book of Stabbing',1}},
+            {'Centurion and Healer',6},{'Raven Adept and Chosen',3},{'3 Raven Adepts',3},{'Shelled Parasite and Fungi',3}},
+        elite={{'Gremlin Leader',1},{'Arena Guards',1},{'Book of Stabbing',1}},
         exclusions={['Spheric Guardian']={'Sentry and Sphere'},['3 Byrds']={'Chosen and Byrds'},
-            Chosen={'Chosen and Byrds','Cultist and Chosen'}},weakCount=2},
+            Chosen={'Chosen and Byrds','Raven Adept and Chosen'}},weakCount=2},
     [3]={weak={{'3 Darklings',2},{'Orb Walker',2},{'3 Shapes',2}},
         strong={{'Spire Growth',1},{'Transient',1},{'4 Shapes',1},{'Maw',1},{'Sphere and 2 Shapes',1},
             {'Jaw Worm Horde',1},{'3 Darklings',1},{'Writhing Mass',1}},
@@ -79,17 +80,21 @@ local function plain(t,keys)
     assert(type(t)=="table" and getmetatable(t)==nil,"expected plain encounter table")
     for k in pairs(t)do assert(keys[k],"unexpected encounter field")end
 end
-local function queue(list,allowedNames,maximum)
+local function queue(list,allowedNames,maximum,allowLegacy)
     assert(type(list)=="table" and getmetatable(list)==nil,"expected plain encounter queue")
     local length,count=#list,0
     assert(length<=maximum,"encounter queue too long")
     for k,v in pairs(list)do
+        if allowLegacy and not allowedNames[v] then
+            v=CheckpointIdentities.resolve(v)
+            list[k]=v
+        end
         assert(type(k)=="number" and k%1==0 and k>=1 and k<=length and allowedNames[v],"invalid encounter queue entry")
         count=count+1
     end
     assert(count==length,"sparse encounter queue")
 end
-local function validate(s)
+local function validate(s,allowLegacy)
     plain(s,{version=true,act=true,rawSeed=true,normal=true,elite=true,monsterRng=true})
     assert((s.version==1 and s.act==nil) or (s.version==2 and type(s.act)=='number' and s.act>=2 and s.act<=4 and s.act%1==0),"unsupported encounter queue version")
     local act=s.act or 1
@@ -98,7 +103,7 @@ local function validate(s)
     local normalNames=names(rules.weak);for name in pairs(strongNames)do normalNames[name]=true end
     if act==4 then normalNames['Shield and Spear'],strongNames['Shield and Spear']=true,true end
     R.fromSeed(s.rawSeed) -- Canonical signed64 validation; never tonumber or truncate.
-    queue(s.normal,normalNames,act==4 and 3 or rules.weakCount+13);queue(s.elite,eliteNames,act==4 and 3 or 10)
+    queue(s.normal,normalNames,act==4 and 3 or rules.weakCount+13,allowLegacy);queue(s.elite,eliteNames,act==4 and 3 or 10,allowLegacy)
     local weakCount=math.max(0,#s.normal-13)
     for i,name in ipairs(s.normal)do
         assert((i<=weakCount and weakNames[name])or(i>weakCount and strongNames[name]),"invalid weak/strong queue boundary")
@@ -142,7 +147,7 @@ function M.restore(snap)
     plain(snap,{version=true,act=true,rawSeed=true,normal=true,elite=true,monsterRng=true})
     local s={version=snap.version,act=snap.act,rawSeed=snap.rawSeed,normal=copy(snap.normal),elite=copy(snap.elite),
         monsterRng=R.restore(snap.monsterRng)}
-    validate(s);return s
+    validate(s,true);return s
 end
 function M.clone(s)return M.restore(M.snapshot(s))end
 local function prepare(s,tier)

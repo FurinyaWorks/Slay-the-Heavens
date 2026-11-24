@@ -1,3 +1,4 @@
+local CheckpointIdentities=require('abyss_checkpoint_identities')
 -- Same-run map navigation only; no platform storage, UI or combat dependencies.
 local Rooms = require("abyss_map_rooms")
 local Seed = require("abyss_run_seed")
@@ -271,6 +272,25 @@ equal = function(actual, expected)
     return true
 end
 
+local function migratedSignature(source)
+    if type(source)~='string' then return source end
+    local header,body=source:match('^([^|]+)|(.+)$')
+    if not header then return source end
+    local entries,original,previous,changed={},{},nil,false
+    for entry in body:gmatch('[^|]+') do
+        local id,configuration=entry:match('^([a-z][a-z0-9_]*)(:.*)$')
+        if not id or (previous and previous>=id) then return source end
+        previous=id
+        original[#original+1]=entry
+        local current=CheckpointIdentities.resolve(id)
+        changed=changed or current~=id
+        entries[#entries+1]=current..configuration
+    end
+    if not changed or table.concat(original,'|')~=body then return source end
+    table.sort(entries)
+    return header..'|'..table.concat(entries,'|')
+end
+
 -- Strict same-run restoration: regenerate the source graph, then replay legal choices.
 -- Returns an independent state or nil/reason; never mutates the supplied snapshot/data.
 function M.restore(data, snapshot, trustedContext)
@@ -280,7 +300,20 @@ function M.restore(data, snapshot, trustedContext)
     end
     local ok, map = pcall(M.generate, data, snapshot.runSeed, snapshot.version==4 and snapshot.act or 1,trustedContext)
     if not ok then return nil, "invalid_configuration" end
-    if snapshot.sourceSignature ~= map.sourceSignature then return nil, "configuration_mismatch" end
+    if snapshot.sourceSignature ~= map.sourceSignature then
+        local signature=migratedSignature(snapshot.sourceSignature)
+        if signature~=map.sourceSignature then return nil,"configuration_mismatch" end
+        local original=snapshot
+        snapshot={}
+        for key,value in pairs(original)do snapshot[key]=value end
+        snapshot.sourceSignature=signature
+        local boost=original.emeraldBoost
+        if type(boost)=='table' and getmetatable(boost)==nil and boost.mapSignature==original.sourceSignature then
+            snapshot.emeraldBoost={}
+            for key,value in pairs(boost)do snapshot.emeraldBoost[key]=value end
+            snapshot.emeraldBoost.mapSignature=signature
+        end
+    end
     local jumps={}
     if snapshot.wingedJumps~=nil then
         if not array(snapshot.wingedJumps,3)or #snapshot.wingedJumps==0 then return nil,'invalid_winged_path'end
