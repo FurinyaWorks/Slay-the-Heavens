@@ -1,0 +1,81 @@
+--- battle-probe.lua
++++ battle-trace.lua
+@@ -218,11 +218,43 @@
+         end
+         return shell,count,blocked,visible(hint),tappable
+     end
++    local trace,tick,notes,pool=false,0,{}
++    for i=1,99 do
++        local name,value=debug.getupvalue(deck.update,i)
++        if not name then break end
++        if name=='pool' then pool=value;break end
++    end
++    assert(pool and pool.step,'cannot observe live pool')
++    local function traceRow(event)
++        if not trace then return end
++        local j=assert(pool.job)
++        local mounted,committed,modelCount=0,0,0
++        for _,e in ipairs(pool.entries) do
++            local live=e.root.alive~=false and e.face.alive~=false and e.hit.alive~=false and e.art.alive~=false
++            for _,p in pairs(e.parts)do if p.alive==false then live=false end end
++            if live and not pool.factory.parts[e.nextPart] then mounted=mounted+1 end
++        end
++        for _,e in pairs(j.slots) do if e.instance and e.root.visible~=false then committed=committed+1 end end
++        for _ in pairs(j.models)do modelCount=modelCount+1 end
++        notes[#notes+1]=table.concat({tick,event,pool.revision,#j.cards,#pool.entries,mounted,modelCount,committed,j.next,tostring(j.yielded),tostring(j.ready),tostring(deck.pendingGrid),tostring(host.pageReveal.state),tostring(host.pageReveal:covered())},'\t')
++    end
++    local function watch(owner,key,label)
++        local prior=owner[key]
++        owner[key]=function(...)
++            traceRow(label..'.before')
++            local output=table.pack(prior(...))
++            traceRow(label..'.after')
++            return table.unpack(output,1,output.n)
++        end
++    end
++    watch(pool,'step','pool')
++    watch(host.pageReveal,'step','gate')
+     local function measure(phase)
+         assert(visible(entry) and entry.raycastTarget~=false,'HUD entry missing or not tappable '..kind)
+         local c,p=totals.created,totals.parts
+         local began=os.clock()
+         assert(entry.click(),'HUD entry rejected '..kind)
++        trace=phase=='warm';tick=0;traceRow('open.return')
+         local sync=(os.clock()-began)*1000
+         assert(deck.visible and (deck.pileKind==kind or kind=='permanent' and deck.pileKind==nil))
+         assert(#deck.allCards==#source)
+@@ -239,16 +271,19 @@
+                 if ready then
+                     assert(count==expected)
+                     full,fullCpu=i,elapsed
++                    traceRow('detail.before')
+                     if not hit.click() then error('first fully ready card click failed '..kind) end
+                     assert(deck.cardDetail and deck.cardDetail.instance)
+                     usable=i
++                    if trace then notes[#notes+1]=i..'\tdetail.accepted' end
++                    trace=false
+                     break
+                 end
+                 assert(not hit.click() and not deck.cardDetail,'early/stale card hit accepted')
+                 checks=checks+1
+             end
+             assert(i<120 and not host.disabled and not deck.prepareError)
+-            local beganUpdate=os.clock();OnUpdate(frame);elapsed=elapsed+(os.clock()-beganUpdate)*1000
++            local beganUpdate=os.clock();tick=i+1;OnUpdate(frame);elapsed=elapsed+(os.clock()-beganUpdate)*1000
+         end
+         assert(shell and first and full and usable,'missing measured milestones')
+         report(table.concat({tostring(progressive),iteration,kind,#source,phase,shell,first,usable,full,veils,hints,checks,totals.created-c,totals.parts-p,sync,firstCpu,fullCpu},'\t'))
+@@ -262,10 +297,12 @@
+         unchanged()
+     end
+     measure('cold');measure('warm')
++    report('tick\tevent\trevision\trequested\tentries\tmounted\tmodels\tcommitted\tnext\tyielded\tready\tpending\tgate\tcovered')
++    for _,l in ipairs(notes)do report(l)end
+     OnDestroy();assert(not script.updating)
+     script,game=nil,nil
+ end
+ report('progressive\titeration\tkind\tpile_size\tphase\tshell_frame\tfirst_complete\tfirst_click_accepted\tfull_ready\tveil_updates\thint_updates\tearly_rejections\tnew_roots\tnew_parts\tclick_cpu_ms\tfirst_cpu_ms\tready_cpu_ms')
+ for i=1,tonumber(os.getenv('DECK_SAMPLES') or '1') do
+-    for _,kind in ipairs({'draw','discard','permanent'})do capture(kind,i)end
++    for _,kind in ipairs({'discard'})do capture(kind,i)end
+ end

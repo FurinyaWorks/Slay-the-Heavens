@@ -1,0 +1,12 @@
+tick	event	revision	requested	entries	mounted	models	committed	next	yielded	ready	pending	gate	covered
+0	open.return	6	10	10	10	0	0	1	false	false	true	preparing	true
+1	pool.before	6	10	10	10	0	0	1	false	false	true	preparing	true
+1	pool.after	6	10	10	10	0	0	1	true	false	true	preparing	true
+1	gate.before	6	10	10	10	0	0	1	true	false	true	preparing	true
+1	gate.after	6	10	10	10	0	0	1	true	false	true	preparing	true
+2	pool.before	6	10	10	10	0	0	1	true	false	true	preparing	true
+2	pool.after	6	10	10	10	10	10	11	true	true	true	preparing	true
+2	gate.before	6	10	10	10	10	10	11	true	true	false	preparing	true
+2	gate.after	6	10	10	10	10	10	11	true	true	false	visible	false
+2	detail.before	6	10	10	10	10	10	11	true	true	false	visible	false
+2	detail.accepted
