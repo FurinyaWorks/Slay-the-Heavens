@@ -1,0 +1,36 @@
+✖ STS1 reference keeps the complete orb material dimmed at zero and restores it on recharge (687.052771ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1004.046106
+
+✖ failing tests:
+
+test at tests/helpers/combat-visual-feedback.cases.mjs:29:1
+✖ STS1 reference keeps the complete orb material dimmed at zero and restores it on recharge (687.052771ms)
+  AssertionError [ERR_ASSERTION]: src/lua/abyss_battle_render_hud.lua:44: attempt to index a nil value (field 'platform')
+  stack traceback:
+  	src/lua/abyss_battle_render_hud.lua:44: in function 'abyss_battle_render_hud.install'
+  	...lease-orb-proof-1415-cDevQc/build/visual-test/energy.lua:11: in main chunk
+  	[JS]: in function 'dofile'
+  	(command line):1: in main chunk
+  
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file://tests/helpers/combat-visual-feedback.cases.mjs:67:56)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
