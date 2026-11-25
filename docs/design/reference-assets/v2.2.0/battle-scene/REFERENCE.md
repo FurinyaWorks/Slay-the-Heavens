@@ -86,7 +86,9 @@ The Champ 的可见外轮廓含盾剑较宽，站姿底点与角色处于同一�
 | 布局安全 | 以实际主题配置为基础，参考 16:9 角色 x≈320、单敌枢轴 x≈900–960、多敌右侧 x≈700–1060。红条/格挡/状态始终走伴随单位坐标。相邻单位效果范围有重叠时，意图、血条/状态和触控矩形须逐个可达。混合敌群按躯体尺度与遭遇选横向间距和最少的纵向交错，优先共用源位置能力。四至五敌仍用项目正式合法遭遇测量。 |
 | 接触暗缘 | 正式背景先运行原角色测试自然接地。仍出现漂浮感时，以单个可复用图元试验脚线处低对比接触层，不透明度 12–20%，纵向 4–8、横向为接地点跨度的 100–115%，随演员姿态和底色比较。无增益或破坏形态就舍弃。浮空和可见轮廓外有意留空需要独立对照。 |
 | 宽屏 | 同一高度下参考画布宽 1280/1560/1600/1680，对应两侧各增加 0/140/160/200。每幕在主体尺度不变的情况下补画边缘延伸，保持后沿、石面与透视跨边界连续。战斗安全区依据宿主读回确定，场景晚些延伸区容纳背景边缘和外侧交互。角色、卡牌、图标沿各自原比例缩放，悬停/拖拽和命中共享实际布局的坐标。 |
-| 实现入口 | 当前正式图元入口中 `attachLowpolyScenes` 把 `lowpolyScene` 首层挂到 `battlePanel`，运行时实例还取同份 `Asset.lowpolyLand`。两幕差异先从这条可见的挂接和正式 chapter/room 所有者接入。保留原 base 过渡、地图轮换和现有动效关闭逻辑，按实际模式收放段落资源。 [挂接](../../../../../scripts/official-portraits.mjs#L91) · [舞台图元运行时](../../../../../src/lua/abyss_traveler_portraits.lua#L455) · [敌人布局与命中](../../../../../src/lua/abyss_battle_enemy_view.lua) |
+| 当前 v3 生产入口 | `build-ui.mjs` 的 `officialAssets` 分支调用 `applyOfficialAssets`，经 `applyV25BattleScene` 将单个静态 `v25BattleScene` 置于战斗舞台首层并移除该层的 `lowpolyScene`。两幕当前共用该场景。 [构建分支](../../../../../scripts/build-ui.mjs#L198) · [原生生产布局](../../../../../scripts/official-assets-layout.mjs#L272) · [战斗场景](../../../../../scripts/v25-battle-scene.mjs#L149) |
+| 旧配置入口 | 其他配置启用 `menuBackground` 时，`attachLowpolyScenes` 可将 `lowpolyScene` 挂到页面，运行时读取 `Asset.lowpolyLand`。v3 正式美术配置的 `menuBackground` 为 `false`。 [旧场景挂接](../../../../../scripts/official-portraits.mjs#L91) · [运行时](../../../../../src/lua/abyss_traveler_portraits.lua#L455) · [正式美术配置](../../../../../scripts/official-assets-profile.mjs#L3) |
+| 两幕接入待实现 | 从正式 `v25BattleScene` 入口接入两幕资源，由当前章节和房间身份确定场景，切换与清理复用现有战斗页面生命周期。复验准备过渡、地图往返、同图复用和动效设置。敌人站位、反馈和命中使用统一的布局坐标。 [敌人布局与命中](../../../../../src/lua/abyss_battle_enemy_view.lua) |
 
 ## 本研究的验收位置
 
