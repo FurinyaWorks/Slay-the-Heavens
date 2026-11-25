@@ -154,21 +154,21 @@ local function rejectedHide()
  local panel=root:GetChild('battlePanel')
  local controls={panel:GetChild('hero'),panel:GetChild('card1'),panel:GetChild('statusInfo'),
   panel:GetChild('potionHelp'):GetChild('potionPopup')}
- local attempts={}
  for _,control in ipairs(controls)do
   local hide=control.SetVisible
-  attempts[control]=0
+  local attempts=0
   control.visible=true
   function control:SetVisible(value)
-   attempts[self]=attempts[self]+1
-   if attempts[self]==1 then return false end
+   attempts=attempts+1
+   if attempts==1 then return false end
    return hide(self,value)
   end
- end
- host.battleUI:render()
- host.battleUI:setActive(false)
- for _,control in ipairs(controls)do
-  assert(not control.visible and attempts[control]>=2,'rejected hidden projection suppressed its retry: '..control.name)
+  -- Force a new retirement attempt first, then test the ordinary hidden path.
+  host.battleUI:setActive(true,nil,true)
+  host.battleUI:setActive(false)
+  host.battleUI:setActive(false)
+  assert(not control.visible and attempts>=2,'rejected hidden projection suppressed its retry: '..control.name)
+  control.SetVisible=hide
  end
 end
 

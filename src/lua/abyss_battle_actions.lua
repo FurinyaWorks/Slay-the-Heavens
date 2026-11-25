@@ -175,6 +175,51 @@ function M.install(owner, ownership, host, dependencies)
             else self:render(true) end
         end
     end
+    local emptyRender, retiringEmpty
+    local pileIcons={"drawIcon","discardIcon","exhaustIcon"}
+    local function feedbackRetired(view)
+        local feedback=view.feedback
+        return not view.busy and not view.feedbackRun and not view.feedbackBattle
+            and not feedback.busy and not feedback.idleBattle and not feedback.battle
+    end
+    local function unowned(view)
+        return not view.active and not view.run and not view.viewRun and not view.viewBattle
+            and not view.displayBattle and not view.suspendedBattle and feedbackRetired(view)
+            and not view.gesture and not view.carry and not view.help and not view.info and not view.potionAim
+    end
+    local function retiredControlsHidden()
+        -- These surfaces hide through their own views rather than the shared
+        -- visibility setter. A refused hide must leave full rendering enabled.
+        local stage=host.stage
+        if stage:GetChild("statusInfo").visible or stage:GetChild("statusDismiss").visible then return false end
+        local potionHelp=stage:GetChild("potionHelp")
+        if potionHelp:GetChild("potionPopup").visible or stage:GetChild("energyIcon"):GetChild("light").visible then return false end
+        for i=1,10 do if stage:GetChild("card"..i).visible then return false end end
+        for i=1,L.battlePotions.count do
+            if potionHelp:GetChild("potionCaption"..i).visible then return false end
+        end
+        for _,name in ipairs(pileIcons) do if stage:GetChild(name):GetChild("hit").visible then return false end end
+        return true
+    end
+    local function canReuseEmptyRender()
+        local revision=emptyRender
+        return revision and not retiringEmpty and owner.rewardRender==revision and unowned(owner)
+            and not ownership.projectionRejected and retiredControlsHidden()
+            and emptyRender==revision and owner.rewardRender==revision and unowned(owner)
+            and not ownership.projectionRejected
+    end
+    local function renderHiddenProjection()
+        local revision=(owner.rewardRender or 0)+1
+        local nested=retiringEmpty
+        retiringEmpty=true
+        ownership.projectionRejected=nil
+        local ok,reason=pcall(owner.render,owner)
+        retiringEmpty=nested
+        if not ok then error(reason,0) end
+        -- Full renders increment rewardRender before any native writes. A
+        -- nested or failed projection cannot certify this transition.
+        if not nested and owner.rewardRender==revision and unowned(owner) then emptyRender=revision end
+    end
     function owner:setActive(active, suspend, deferRender)
         assert(type(active) == "boolean", "active must be boolean")
         local wasActive = self.active
@@ -184,8 +229,11 @@ function M.install(owner, ownership, host, dependencies)
         if not active then self.help=nil;dependencies.cancelPotionAim("已取消药水瞄准。") end
         host.root:SetVisible(active)
         -- GameUI can commit its battle render after all page visibility writes.
-        -- Only a previously retired, unowned hidden projection can be reused.
-        if not deferRender and (active or wasActive or not self:hasClearedHiddenProjection()) then self:render() end
+        if deferRender then return end
+        if not active and not wasActive and canReuseEmptyRender() then return end
+        emptyRender=nil
+        if active or self.run then self:render()
+        else renderHiddenProjection() end
     end
     function owner:start()
         if not self.active or host.options.embedded or self.busy then return false end
