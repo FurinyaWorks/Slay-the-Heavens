@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-06 01:46'
-updated_date: '2026-11-14 10:12'
+updated_date: '2026-11-25 14:11'
 labels:
   - 待验
   - delivery-verify
@@ -63,4 +63,6 @@ PR #523 首份离线Host全路径基线已实现：固定实际seed、源摘要�
 2026-11-14逐项对账：同源Host基准、visibility样本及原SDK结果均已交付，复用现有工具；未覆盖当前生产候选完整冷暖路径的测量继续保留，不把旧样本当当前，也不重造基准工具。
 
 2026-11-14第二轮状态纠正：已有Host基准、visibility配对与SDK阶段记录，当前候选完整覆盖待补；工具及研究已开展，不应标To Do。 更正上一轮将待验统一退回To Do的处理；未勾AC及独立审批保持，In Progress表示工作已开展，不表示有人正持续占用执行窗口。
+
+2026-11-25 v2.1.1 封板。保留 #959 的正式配置 Host 回归和线上源码 06c2577ecc6c07593c6bf8b6e79e158dac5b6195 的离线性能结果。后续配对、正式合入核验和同包设备证据继续留在本任务及 TASK-4.21，已上线版本不追加变更。
 <!-- SECTION:NOTES:END -->

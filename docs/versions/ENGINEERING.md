@@ -4,8 +4,9 @@
 
 ## v2.1.1 平台发布确认（2026-11-25）
 
-- Owner 确认千星奇域平台版本 `v2.1.1` 已上线并封板。该版本收口仅处理已上线内容。旧版与 Beta 的玩家体验记录在 TASK-4.21，设备验收留待后续版本。[玩家反馈](../backlog-details/TASK-4.21.md#2026-11-25-玩家反馈)
-- 已核对早期草稿 `6ab89ed1`、离线构建 `55d0bf58` 及打包交接 `06c2577e` 的 `package.json`、锁文件与 Release Please manifest，工程版本均为 `2.1.1`，三份源码树各不相同。实际上传包与 `source SHA`、`buildId`、GIL SHA-256 的对应关系待核实。官方发布回执、作品 ID 和精确上线时间待补录。[早期草稿](https://github.com/FurinyaWorks/Slay-the-Heavens/releases/tag/untagged-116361919efbee6b5147) · [离线构建](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/955#issuecomment-7150065670) · [打包交接](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/959#issuecomment-7152521001)
+- Owner 确认千星奇域平台版本 `v2.1.1` 已于 2026-11-25 上线并封板，工程 SemVer 为 `2.1.1`。正式上传包的源码为 `06c2577ecc6c07593c6bf8b6e79e158dac5b6195`，源码树为 `d3bb8794ee95f97142c986a11aa9f439b5d73984`。已核对 `package.json`、锁文件与 Release Please manifest。[生产收口 PR #961](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/961)
+- Owner 提供的正式 GIL 与远端 Git LFS 归档逐字一致，文件为 23,780,838 字节，SHA-256 为 `afe80c0783d0d4b6046c1f44cba3ef2b71cb8bb34fbc7404d939d12e0f5ff831`。内嵌 buildId 为 `29f48ea1-fa9d-4f76-b124-2bffc83f7594`，与归档构建回执摘要一致。[GIL 和构建回执存档](https://github.com/FurinyaWorks/Slay-the-Heavens/tree/3f79269e90a8f2507f6782135563ecf573b357d7/docs/evidence/v2.1.1-2026-11-25)
+- 工程记录保留粒子同值写入与隐藏战斗页去重、正式配置性能回归和构建审计。确切源码的 Hosted Performance 已通过。官方发布回执、作品 ID、精确上线时间和同包设备验收待补录。玩家更新文案见 [CHANGELOG](../../CHANGELOG.md#v211-2026-11-25)，旧版与 Beta 的对照体验及后续验收见 [TASK-4.21](../backlog-details/TASK-4.21.md#2026-11-25-玩家反馈)。[战斗优化 #956](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/956) · [正式配置回归 #959](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/959) · [Hosted Performance](https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45544260623)
 
 ## v0.11.0 候选（自 v0.10.1 起；2026-10-28）
 

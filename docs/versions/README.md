@@ -8,6 +8,7 @@
 
 | 版本 | 日期 | 本版概要 | 源码位置 | 变更对比 |
 | --- | --- | --- | --- | --- |
+| `v2.1.1`（工程 `2.1.1`） | 2026-11-25 | 启动、战斗与卡组性能补丁。Owner 已确认千星奇域 `v2.1.1` 上线，官方上传回执待补录 | [正式构建源码](https://github.com/FurinyaWorks/Slay-the-Heavens/commit/06c2577ecc6c07593c6bf8b6e79e158dac5b6195) | [源码差异](https://github.com/FurinyaWorks/Slay-the-Heavens/compare/v2.1.0...06c2577ecc6c07593c6bf8b6e79e158dac5b6195) |
 | `v1.0.0`（正式首发源码） | 2026-11-01 | 岩系旅行者前两幕；平台部署由 Owner 确认，官方回执尚未入账 | [不可移动 Tag](https://github.com/CHNISam/Slay-the-Abyss/releases/tag/v1.0.0)（master 提交 `e970eb2`） | [源码差异](https://github.com/CHNISam/Slay-the-Abyss/compare/v0.10.1...v1.0.0) |
 | `v0.11.0`（历史提案） | 2026-10-28 | 前两幕比赛打磨与场景交互（待验证） | **待验收冻结，暂无 Tag** | [候选差异](https://github.com/CHNISam/Slay-the-Abyss/compare/v0.10.1...develop) |
 | `v0.10.1` | 2026-10-27 | 战斗反应修复 | [fa93ac9](https://github.com/CHNISam/Slay-the-Abyss/commit/fa93ac9ff23e7e5cbcf74813d1f9fa776219a314)（PR #247 合入；修复范围截止 b164fda） | [查看变化](https://github.com/CHNISam/Slay-the-Abyss/compare/v0.10.0...v0.10.1) |
