@@ -87,7 +87,6 @@ test('current POSIX matrix consumes fifteen shared shards with serial full regre
   assert.ok(shards.includes('          npm run build:data\n          npm run build:ui\n          node scripts/ci-shards.mjs --shard='));
   assert.ok(shards.includes('      - run: npm run check:engineering\n        if: matrix.shard == 1\n'));
   assert.ok(shards.includes('        if: always() && matrix.shard == 1\n'));
-  assert.match(aggregate,/^    needs: \[impact, engineering-posix-shards, fast\]\n    if: \$\{\{ !cancelled\(\) && \(github\.event_name != 'pull_request' \|\| github\.event\.pull_request\.draft == false\) \}\}$/m);
 });
 
 test('native Node four-shard selection executes every current JS file name exactly once', t => {
@@ -123,4 +122,18 @@ test('current Fork POSIX aggregate retains its complete push and draft scope',()
   assert.ok(aggregate.includes("    if: ${{ !cancelled() && (github.event_name != 'push' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' || (github.event.repository.id == 1460133275 && startsWith(github.ref, 'refs/heads/ci/full/'))) && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}"));
   assert.match(aggregate,/^    needs: \[impact, engineering-posix-shards, fast\]$/m);
   assert.doesNotMatch(aggregate,/continue-on-error:|\|\| true/);
+});
+
+test('current POSIX suite retains its exact archived preflight source', async () => {
+  const { beforePreflightSource } = await import('./helpers/fork-preflight-source.mjs');
+  const path = 'tests/ci-posix-shards.test.mjs';
+  const source = readFileSync(path, 'utf8').replaceAll('\r\n', '\n');
+  const expected = '1512e7464481b1b44320ab1c78f0cd5a46f0dce36a6e7e98df947881fca3fe67';
+  for (const input of [source, source.replaceAll('\n', '\r\n')]) {
+    const archived = beforePreflightSource(path, input).replaceAll('\r\n', '\n');
+    assert.equal(createHash('sha256').update(archived).digest('hex'), expected);
+    const drift = input + '\n';
+    assert.equal(beforePreflightSource(path, drift), drift);
+    assert.equal(beforePreflightSource('foreign/' + path, input), input);
+  }
 });

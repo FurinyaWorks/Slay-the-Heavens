@@ -1442,8 +1442,8 @@ test('a partial native Licenses rerun inherits actual old auxiliary skips while 
 });
 
 test('Fork push routing skips every Quality runner outside Fork B Full and preserves formal events',()=>{
-  const quality=readFileSync(new URL('../.github/workflows/quality.yml',import.meta.url),'utf8');
-  const quick=readFileSync(new URL('../.github/workflows/quick-feedback.yml',import.meta.url),'utf8');
+  const quality=readFileSync(new URL('../.github/workflows/quality.yml',import.meta.url),'utf8').replaceAll('\r\n','\n');
+  const quick=readFileSync(new URL('../.github/workflows/quick-feedback.yml',import.meta.url),'utf8').replaceAll('\r\n','\n');
   const condition=(text,job)=>text.match(new RegExp('^  '+job+':[\\s\\S]*?^    if: \\$\\{\\{ (.*?) \\}\\}', 'm'))[1];
   const evaluate=(expression,github)=>Function('github','cancelled','startsWith','return '+expression)(github,()=>false,(s,p)=>s.startsWith(p));
   for(const repositoryId of [1429751262,1460097312,1460133275])for(const ref of ['refs/heads/ci/full/probe','refs/heads/fix/probe','refs/heads/develop','refs/heads/master']){
@@ -1459,7 +1459,7 @@ test('Fork push routing skips every Quality runner outside Fork B Full and prese
 });
 
 test('first Fork B Full push uses its pinned upstream base in real quality ratchet execution',t=>{
- const workflow=readFileSync(new URL('../.github/workflows/quality.yml',import.meta.url),'utf8');
+ const workflow=readFileSync(new URL('../.github/workflows/quality.yml',import.meta.url),'utf8').replaceAll('\r\n','\n');
  const expressions=[...workflow.matchAll(/^          (CI_COMPARISON_BASE|BASE_SHA|QUALITY_RATCHET_BASE): \$\{\{ (.+github.event.before.*?) \}\}$/gm)];
  assert.equal(expressions.length,3,'retain all three existing comparison consumers');
  const root=mkdtempSync(join(tmpdir(),'fork-full-first-push-'));t.after(()=>rmSync(root,{recursive:true,force:true}));
@@ -1504,7 +1504,7 @@ test('first Fork B Full push uses its pinned upstream base in real quality ratch
 });
 
 test('automatic Fork A Quick is bounded advisory without a complete certificate while manual preflight stays complete',()=>{
- const workflow=readFileSync(new URL('../.github/workflows/quick-feedback.yml',import.meta.url),'utf8');
+ const workflow=readFileSync(new URL('../.github/workflows/quick-feedback.yml',import.meta.url),'utf8').replaceAll('\r\n','\n');
  const expression=value=>value.replace(/^\$\{\{ /,'').replace(/ \}\}$/,'');
  const evaluate=(value,event)=>Function('github','return '+expression(value))({event_name:event});
  const field=name=>workflow.match(new RegExp('^    '+name+': (.+)$','m'))[1];

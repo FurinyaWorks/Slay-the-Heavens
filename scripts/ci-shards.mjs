@@ -53,6 +53,9 @@ const linuxReplayMinimumMs = Object.freeze({
   'power-shop-boundaries.test.mjs': 486000,
   'presentation-native-m3-contract.test.mjs': 1037000,
   'relic-query-source-inverse.test.mjs': 123000,
+  // Fork B job 138133072993 completed the full file in 607023ms.
+  // Charge that observation across jobs to avoid collecting slow replays in one shard.
+  'reward-query-boundary-source.test.mjs': 607023,
   // Job 137510449969 spent over 22 minutes in this file before cutoff.
   'task77-current-source-layers.test.mjs': 1295000,
 });
