@@ -42,6 +42,29 @@ test('legacy allocation remains explicit and the refined no-art variant has no p
  assert.deepEqual(off,{templates:[art.monsterActorTemplate(null)],templateByDefinition:{},artData:null});
 });
 
+test('refined payload decodes and caches only the requested drawing',()=>{
+ const slot={image:100002,imageType:'stretch',position:[-1.25,2],size:[8,7],pivot:[.5,.5],
+  anchorMin:[.5,.5],anchorMax:[.5,.5],scale:[1,1],rotation:[0,35.5,-22],colour:[120,180,90,128]};
+ const payload=art.monsterArtPayloadSource({status:'refined-release',assets:{first:{slots:[slot]},second:{slots:[slot]}}});
+ const temp=mkdtempSync(join(tmpdir(),'abyss-lazy-monster-art-'));
+ try {
+  const entry=join(temp,'entry.lua');
+  writeFileSync(entry,`
+local art=assert(load(${luaString(payload)}))()
+local first,second=art.assets.first,art.assets.second
+assert(rawget(first,'slots')==nil and rawget(second,'slots')==nil,'catalogue decoded during load')
+local slots=first.slots
+assert(slots==first.slots and slots==rawget(first,'slots'),'selected drawing was not cached')
+assert(#slots==1 and slots[1].image==100002 and slots[1].imageType=='stretch')
+assert(slots[1].position[1]==-1.25 and slots[1].rotation[2]==35.5 and slots[1].colour[4]==128)
+assert(rawget(second,'slots')==nil,'request decoded unrelated drawing')
+assert(second.slots~=slots and second.slots[1].rotation~=slots[1].rotation)
+`);
+  const result=runLua(entry);
+  assert.equal(result.status,0,result.stdout+result.stderr);
+ }finally{rmSync(temp,{recursive:true,force:true});}
+});
+
 test('real native art writer renders three tiers, leaves no-art fallback, and reclaims cross-tier actor',()=>{
  const fixture=refined();
  const slot={image:100002,imageType:'basic',position:[1,2],size:[8,7],pivot:[.5,.5],anchorMin:[.5,.5],anchorMax:[.5,.5],scale:[1,1],rotation:[0,0,0],colour:[120,180,90,128]};
