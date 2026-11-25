@@ -94,25 +94,45 @@ local function renderEventFigure(event, id, alignment)
     alignEventBody(body, neow, alignment)
 end
 -- LargeDialogOptionButton.calculateY (ROOM): bottom-aligned stack, -82px per slot, x = 620.
-local function inlineLines(text)
+local function inlineCopy(row)
+    local copy = row.title:gsub('［', '['):gsub('］', ']') .. ' ' .. (row.description or '')
+    return (copy:gsub('\r?\n', ' '))
+end
+local function inlineLines(text, maxWidth, font)
     local lines, width = 1, 0
+    local latin = math.ceil(font * 0.6)
     for _, code in utf8.codes(text) do
-        local advance = code < 128 and 9 or 18
+        local advance = code <= 255 and latin or font
         if code == 10 then lines, width = lines + 1, 0
-        elseif width + advance > 650 then lines, width = lines + 1, advance
+        elseif width + advance > maxWidth then lines, width = lines + 1, advance
         else width = width + advance end
     end
     return lines
 end
-local function compactFrames(rows)
+local compactPadding = 4
+local function compactFrames(rows, textWidth)
     local frames, bottom = {}, -275
     for i = math.min(#rows, OPTIONS), 1, -1 do
-        local text = rows[i].title .. ' ' .. (rows[i].description or '')
-        local height = 44 + (inlineLines(text) - 1) * 22
+        local height = inlineLines(inlineCopy(rows[i]), textWidth, 18) * Theme.layout.nativeText.lineHeight + compactPadding
         frames[i] = {225, bottom + height / 2, 700, height}
         bottom = bottom + height + 11
     end
     return frames
+end
+local function clearCompactBody(event, frames)
+    local first = frames[1]
+    if not first then return end
+    local x, y, width, height = table.unpack(layout.event.body)
+    local body, name = event:GetChild('body'), layout.event.name
+    local authoredTop = y + height / 2
+    local optionTop = first[2] + first[4] / 2 + 8
+    local needed = inlineLines(body.text, width, 21) * Theme.layout.nativeText.lineHeight
+    local top = math.max(authoredTop, math.min(optionTop + needed, name[2] - name[4] / 2 - 8))
+    -- Tall option stacks can use the spare space below the authored stack.
+    local drop = math.min(20, math.max(0, optionTop + needed - top))
+    for _, frame in ipairs(frames) do frame[2] = frame[2] - drop end
+    local resized = math.max(0, math.min(height, top - optionTop + drop))
+    if resized ~= height or top ~= authoredTop then place(body, {x, top - resized / 2, width, resized}) end
 end
 local function sizeOptionInput(box, w, h, neow)
     for _, part in ipairs({ 'border', 'hit' }) do
@@ -127,7 +147,8 @@ end
 local function placeOptions(event, neow, rows)
     local o = layout.event.options
     local count = math.min(#rows, OPTIONS)
-    local frames = layout.event.reference and not neow and compactFrames(rows)
+    local frames = layout.event.reference and not neow and compactFrames(rows, o.title[3])
+    if frames then clearCompactBody(event, frames) end
     for i = 1, OPTIONS do
         local box = event:GetChild('option' .. i)
         if box then
@@ -140,7 +161,7 @@ local function placeOptions(event, neow, rows)
                 place(box:GetChild('description'), n.description)
             elseif frames and frames[i] then
                 w, h = frames[i][3], frames[i][4]
-                place(box, frames[i]);place(box:GetChild('title'), {0, 0, 650, h - 8})
+                place(box, frames[i]);place(box:GetChild('title'), {0, 0, o.title[3], h - compactPadding})
             elseif o.rows[i] then
                 box:SetAnchoredPosition(o.x, o.rows[i])
                 place(box:GetChild('title'), o.title)
@@ -219,7 +240,7 @@ end
 
 local function inlineOption(row)
     local reference = layout.event.reference
-    local text = row.title:gsub('［', '['):gsub('］', ']') .. ' ' .. (row.description or '')
+    local text = inlineCopy(row)
     if not row.enabled then return text end
     local function paint(pattern, colour)
         local hex = string.format('#%02X%02X%02X', colour.r, colour.g, colour.b)

@@ -26,6 +26,11 @@ function H.control(spec,parent)
  local c={name=spec.name,parent=parent,children={},listeners={},visible=spec.visible~=false,
   text=spec.text and spec.text.content or '',scale={1,1,1}}
  function c:GetChild(name)return self.children[name]end
+ function c:GetChildren()
+  local children={}
+  for _,child in pairs(self.children)do children[#children+1]=child end
+  return children
+ end
  function c:SetVisible(value)assert(type(value)=='boolean');self.visible=value end
  function c:SetImage(source,id)assert(source=='static' and type(id)=='number');self.imageId=id end
  function c:SetSizeDelta(width,height)
@@ -33,6 +38,7 @@ function H.control(spec,parent)
      self.size={width,height};self.sizeDeltaX,self.sizeDeltaY=width,height
  end
  function c:SetLocalScale(x,y,z)self.scale={x,y,z}end
+ function c:SetLocalRotation(x,y,z)self.rotation={x,y,z}end
  function c:SetAnchoredPosition(x,y)self.x,self.y=x,y end
  function c:AddCursorEventListener(event,fn)assert(not self.listeners[event]);self.listeners[event]=fn end
  function c:emit(event,id)return assert(self.listeners[event],event)({touchId=id})end
