@@ -22,6 +22,7 @@
     "build:native": "node scripts/build-native-audio-game.mjs",
     "verify:sts1-map": "npm run build:data && node scripts/sts1-map-evidence.mjs compare",
     "verify:sts1-map:properties": "npm run build:data && node scripts/sts1-map-evidence.mjs properties 10000",
+    "verify:actor-alpha": "node scripts/art/check-actor-alpha.mjs",
     "verify:ui": "node scripts/verify-ui-acceptance.mjs docs/design/ui-acceptance.json",
     "check:syntax": "node scripts/check-syntax.mjs && npm run check:release-text",
     "check:release-text": "node scripts/check-release-text.mjs",

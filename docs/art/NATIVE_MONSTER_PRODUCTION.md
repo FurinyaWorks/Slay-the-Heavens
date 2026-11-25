@@ -22,6 +22,20 @@
 3. **生产池检查**：正式默认 monsters 关闭。可选怪物装配仍在筛启用资产前按整个目录最大值预留 600 槽，即使换成44/119也不会自然减少。接入时先在独立开发分支对实际启用资产/实例容量定池，测试首现、两只/三只同屏、召唤、变身重绑定、分配失败、解绑/重进；保留对完整保留目录的校验、未启用资产及关闭开关的原回退。**分别记录绘图控件数、生产 actor 及同屏实际总数**，不要相加或用一个冒充另一个。
 4. **逐批放量**：先用这两只对接原生与设备，不批量开关全库。不改变已有怪物逻辑；检查命中、HP/意图、动作层序、原生读回、PC/手机和峰值。只有同一候选设备证据过关，再按小批次扩量。画面认可、运行时验证、设备/官方容量通过分别写状态。
 
+### v2.2.0 正式美术入库回执
+
+完成怪物或战斗角色的覆盖率修复、新资产接入或合并后视觉验收时，须将以下命令生成的正向回执作为本节第 1 步的必要证据，附在现有美术验收记录中。脚本按当前 checkout 的正式图元库导出预期名单，确保岩荧与 42 种敌人的实际 Lua 绘制截图覆盖完整，核对精确源提交、图元几何、数量和截图哈希。
+
+```sh
+npm run verify:actor-alpha -- <capture.json> <approved-masks.json> <new-report.json>
+```
+
+使用 Pillow、NumPy 及实际 Simulator 运行时的三组同帧黑、白、高对比色截图。捕获采用 133px 岩荧和 106px 怪物的原生图元尺寸用于注册掩模。正式场景显示尺寸、战斗背景和设备复验随同一候选记录。已有的同尺寸图审、原生容量和性能门槛照常执行。
+
+捕获回执包含 `sourceCommit`、`profile: "official-assets-battle-v3"`、`scope: "production Lua actor painters on an isolated Simulator runtime scene"`、`canvas`、`backdrops` 以及 `pages`。每页保存实际引擎帧编号、时间、截图文件、SHA-256 和原生加载警告，并登记每个受测角色的 `id`、`geometry`、`width`、`shapes` 和 `center` 像素位置。捕获与源图批准依旧由现有美术审查核验。
+
+批准掩模清单使用 `schemaVersion: 1`，每个 `actors` 条目包含 `id`、`basis: "approved-original"`、`approvalReference`、原图 `sourceSha256`、与截图对位的 `crop: [left, top, width, height]`，以及采样 Alpha PNG 的相对 `path` 和 `sha256`。私有原图和掩模保持在授权环境内。缺少覆盖回执、原图掩模或独立批准记录时，入库视觉验收保持待验。日常 CI、普通构建和早期 CD 沿用原入口。
+
 ## 起跑资产与可复现证据
 
 - 两个视觉锚点的源行及离线结果：[R5](https://github.com/FurinyaWorks/Slay-the-Heavens/blob/ae832ba85f5aae1fef6e870ecfef2202051f99c2/docs/release-handoffs/2026-11-15-pr663/native-figure-budget-review/r5/README.md)；低档反例：[R6](https://github.com/FurinyaWorks/Slay-the-Heavens/blob/ae832ba85f5aae1fef6e870ecfef2202051f99c2/docs/release-handoffs/2026-11-15-pr663/native-figure-budget-review/r6/README.md)。
