@@ -76,6 +76,27 @@ for _,dt in ipairs({.5,1,4,225})do
   assert(name.fontColor.a==0,'expired name alpha was not zero')
  end
 end
+local name=controls[1]
+local setVisible,nameWrites=name.SetVisible,0
+name.SetVisible=function(self,value)
+ nameWrites=nameWrites+1
+ return setVisible(self,value)
+end
+for _=1,30 do h:update(1/60)end
+assert(not name.visible and nameWrites==0,'hidden enemy name republished visibility')
+setVisible(name,true)
+h:update(1/60)
+assert(not name.visible and nameWrites==1,'enemy name visibility did not recover after an external change')
+local reject=true
+name.SetVisible=function(self,value)
+ if reject then reject=false;return false end
+ return setVisible(self,value)
+end
+setVisible(name,true)
+h:update(1/60)
+assert(name.visible and not reject,'native rejection fixture did not attempt the hide')
+h:update(1/60)
+assert(not name.visible,'enemy name visibility was not retried after a rejected write')
 assert(reentered and writes>0,'real native setter and render reentry were not exercised')
 assert(battle==h.run.combat and hp==battle.player.hp and turn==battle.turn and energy==battle.energy,'presentation changed combat rules')
 print('ENEMY_NAME_REAL_HOST_PASS')

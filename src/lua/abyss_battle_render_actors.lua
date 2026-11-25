@@ -49,8 +49,11 @@ local function intentPosition(control,x,y,owner)
     -- Overlapping native setters have unknown completion order: retry next time.
     if result~=false and current then intentPositions[control]={owner=owner,x=x,y=y} end
 end
+-- UnitView also writes name visibility, so use the current control state.
+local function showEnemyName(control,value)
+    if control.visible~=value then control:SetVisible(value)end
+end
 -- Only the six intent controls have exclusive visibility writers in this module.
--- Name visibility is also owned by UnitView, so it is deliberately not cached.
 local intentVisibilities=setmetatable({},{__mode='k'})
 local function intentVisible(control,value,binding)
     local saved=intentVisibilities[control]
@@ -293,7 +296,7 @@ function M.install(owner, ownership, host, dependencies)
             local hovered=x and y and math.abs(x-g.hitX)<g.hitWidth/2 and math.abs(y-g.hitY)<g.hitHeight/2
             local offset
             state.timer,state.alpha,offset=EnemyView.nameStep(state.timer,state.alpha,dt,hovered,nameBlocked(actor),1)
-            local name=box:GetChild('name');name:SetVisible(owner.active and offset~=nil and state.alpha>0)
+            local name=box:GetChild('name');showEnemyName(name,owner.active and offset~=nil and state.alpha>0)
             if offset then
                 name:SetAnchoredPosition(g.nameX-(box:GetChild('portrait').x or 0),g.nameY+offset*g.sourceScale)
                 dependencies.ink(name,{r=C.gold.r,g=C.gold.g,b=C.gold.b,a=math.floor(255*state.alpha)})

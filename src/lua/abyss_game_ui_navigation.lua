@@ -112,7 +112,10 @@ function M.install(self,owner,neowHistory)
         if blocked(self) or not self.exitOpen or not self.navigationAction or not M.hasRun(self) then return false end
         local action=self.navigationAction
         NeowHistory.finish(neowHistory,self.run,'abandon')
-        self.battleUI.feedback:cancel()
+        local battle=self.battleUI
+        battle.feedback:cancel() -- Completion still needs the old Run and battle.
+        battle.feedbackRun,battle.feedbackBattle,battle.feedbackLast=nil,nil,nil
+        battle.reuseRetiredProjection=true
         self.battleUI.run,self.nodeUI.run,self.nodeUI.map,self.mapUI.map=nil,nil,nil,nil
         self.nodeUI.result,self.nodeUI.notice=nil,''
         self.run,self.map,self.runSeed,self.presentedBattle=nil,nil,nil,nil
