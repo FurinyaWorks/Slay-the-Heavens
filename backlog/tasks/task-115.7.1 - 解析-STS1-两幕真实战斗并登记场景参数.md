@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-11-25 21:01'
-updated_date: '2026-11-25 21:03'
+updated_date: '2026-11-25 21:19'
 labels:
   - v2.2.0
 milestone: m-8
@@ -20,6 +20,7 @@ references:
     https://github.com/FurinyaDev/Slay-the-Heavens-Fork-A/tree/46ca4a02d658b1ee1435441cb0f1eb19479e52c6/docs/design/reference-assets/v2.2.0/battle-scene
 documentation:
   - docs/versions/V2.2.0-RELEASE.md
+  - docs/design/reference-assets/v2.2.0/battle-scene/REFERENCE.md
 parent_task_id: TASK-115.7
 priority: medium
 type: spike
@@ -47,4 +48,6 @@ ordinal: 215000
 
 <!-- SECTION:NOTES:BEGIN -->
 已派发独立视觉研究，取得两幕参照原图和战斗截图，场景参数与对照待独立评审。
+
+独立复核了两幕场景与九份素材身份、14 组色彩采样及源坐标。正式 v3 当前只有静态 v25BattleScene。研究和视口数据供后续两幕独立接入与整体验收。
 <!-- SECTION:NOTES:END -->
