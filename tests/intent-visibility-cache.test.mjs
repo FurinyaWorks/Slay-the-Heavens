@@ -40,12 +40,12 @@ test('complete Host route retains final run/native graph while idle intent write
  assert.equal(samples[1].graph,samples[0].graph,'complete final Host/run/native graph changed');
  const idle=samples.map(s=>s.counts.find(row=>row.phase==='idle-300'));
  // Entrance assertions now require the fixture to mirror each position write
- // into anchoredPositionX/Y. Count those extra fixture fields separately;
- // native calls and the original visibility-write saving retain their budgets.
+ // into anchoredPositionX/Y, which are measured separately below.
+ // The enemy name visibility guard saves one setter and property write per idle frame.
  const anchorMirrors=idle.map(row=>(row.properties.anchoredPositionX??0)+(row.properties.anchoredPositionY??0));
  assert.deepEqual(anchorMirrors,[1800,1800]);
  assert.deepEqual(idle.map((row,i)=>row.counts.map((count,index)=>index===3?count-anchorMirrors[i]:count)),
-  [[900,0,3600,7200,0],[900,0,1800,5400,0]]);
+  [[900,0,3600,7200,0],[900,0,1500,5100,0]]);
  for(let i=0;i<samples[0].counts.length;i++)for(const index of [0,1,4])assert.equal(samples[0].counts[i].counts[index],samples[1].counts[i].counts[index],'require/load/snapshot workload changed');
  mkdirSync('build/intent-visibility',{recursive:true});
  writeFileSync('build/intent-visibility/equivalence.json',JSON.stringify({
