@@ -1,7 +1,6 @@
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local View=require('abyss_monster_intent_particle_view')
 local Powers=require('abyss_monster_power_surfaces')
-local Run=require('abyss_run')
 
 local mode=arg and arg[1]
 local case=arg and arg[2]
@@ -152,18 +151,25 @@ end
 
 local function rejectedHide()
  local host,root=F.fixture()
- local hero=root:GetChild('battlePanel'):GetChild('hero')
- local hide=hero.SetVisible
- local attempts=0
- hero.visible=true
- function hero:SetVisible(value)
-  attempts=attempts+1
-  if attempts==1 then return false end
-  return hide(self,value)
+ local panel=root:GetChild('battlePanel')
+ local controls={panel:GetChild('hero'),panel:GetChild('card1'),panel:GetChild('statusInfo'),
+  panel:GetChild('potionHelp'):GetChild('potionPopup')}
+ local attempts={}
+ for _,control in ipairs(controls)do
+  local hide=control.SetVisible
+  attempts[control]=0
+  control.visible=true
+  function control:SetVisible(value)
+   attempts[self]=attempts[self]+1
+   if attempts[self]==1 then return false end
+   return hide(self,value)
+  end
  end
  host.battleUI:render()
  host.battleUI:setActive(false)
- assert(not hero.visible and attempts==2,'rejected hidden projection suppressed its retry')
+ for _,control in ipairs(controls)do
+  assert(not control.visible and attempts[control]>=2,'rejected hidden projection suppressed its retry: '..control.name)
+ end
 end
 
 local function selection()
