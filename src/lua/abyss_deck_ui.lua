@@ -174,8 +174,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     local indexBases=setmetatable({},{__mode='k'})
     local function gridColumns() return self.browserShell and 5 or Theme.layout.deckView.columns end
     local function browserHeading(kind)
-        if self.previewInfo then return '初始牌组' end
-        return pileNames[kind] or '卡组'
+        return self.previewInfo and '初始牌组' or pileNames[kind] or '卡组'
     end
     local function liveFaces(fn)
         for control in pairs(self.bindings)do
@@ -220,14 +219,11 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     local function paintBrowseSort(active)
         for _,mode in ipairs(browseSorts)do
             local control=root:GetChild('sort'..mode)
-            -- The official browser uses its own sort bar. Keep the generated
-            -- legacy controls hidden without repainting their unused labels.
             if not official or active or control.visible~=false then
                 control:SetVisible(active and not self.pileKind)
                 local selected=active and self.sortMode==mode
                 control:GetChild('selected'):SetVisible(selected)
-                local direction=self.sortAscending
-                local label=sortNames[mode]..(selected and (direction and ' ↑' or ' ↓') or '')
+                local label=sortNames[mode]..(selected and (self.sortAscending and ' ↑' or ' ↓') or '')
                 for _,state in ipairs({'normal','hover','pressed','disabled'})do
                     control:GetChild('hit'):GetChild(state):GetChild('label').text=label
                 end
