@@ -133,7 +133,8 @@ function M.render(frame,child,sizeOwner,mobileLayouts)
  end
  local row=0
  for _,name in ipairs(names)do
-  local control=child(name);control:SetVisible(not not visible[name])
+  local control=child(name)
+  if control:SetVisible(not not visible[name])==false then frame.projectionRejected=true end
   if visible[name]then
    control:SetAnchoredPosition(layout.rowOrigin[1],layout.rowOrigin[2]-row*layout.rowStep)
    row=row+1
@@ -141,7 +142,7 @@ function M.render(frame,child,sizeOwner,mobileLayouts)
  end
  if frame.manual then child('continue'):SetAnchoredPosition(layout.continue[1],layout.continue[2])end
  local caption=child('potionReward');local position=layout.potionLabel
- caption:SetVisible(frame.pendingPotion==true)
+ if caption:SetVisible(frame.pendingPotion==true)==false then frame.projectionRejected=true end
  caption:SetAnchoredPosition(position[1],position[2]);size(caption,position[3],position[4],sizeOwner)
  frame.rewardRows=count
  frame.rewardLayout=layout

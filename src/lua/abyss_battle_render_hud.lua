@@ -67,6 +67,7 @@ function M.install(owner, _ownership, host, dependencies)
     end
     local function renderRewardRows(frame)
         RewardLayout.render(frame,dependencies.child,rewardSizeOwner,mobileRewards)
+        if frame.projectionRejected then owner.projectionRejected=true end
     end
     local function renderRelicRewards(frame)
         local run=frame.run

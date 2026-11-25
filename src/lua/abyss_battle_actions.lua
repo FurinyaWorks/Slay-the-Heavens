@@ -48,7 +48,7 @@ local function installActivation(owner,host,dependencies)
         return not wasActive and emptyRender and emptyRender==owner.rewardRender
             and not owner.projectionRejected and hiddenProjectionUnowned(owner,host)
     end
-    local function renderAfterActivation()
+    local function renderAfterActivation(wasActive)
         emptyRender=nil
         if owner.active or owner.run then owner:render();return end
         -- Full renders increment rewardRender before any native writes.
@@ -59,7 +59,9 @@ local function installActivation(owner,host,dependencies)
         local ok,reason=pcall(owner.render,owner)
         retiring=nested
         if not ok then error(reason,0) end
-        if not nested and owner.rewardRender==revision and not owner.projectionRejected
+        -- The transition from active retires the old screen. Only a full
+        -- projection made while already inactive proves the steady hidden view.
+        if not wasActive and not nested and owner.rewardRender==revision and not owner.projectionRejected
             and hiddenProjectionUnowned(owner,host) then emptyRender=revision end
     end
     function owner:setActive(active, suspend, deferRender)
@@ -71,7 +73,7 @@ local function installActivation(owner,host,dependencies)
         if not active then self.help=nil;dependencies.cancelPotionAim("已取消药水瞄准。") end
         if host.root:SetVisible(active)==false then self.projectionRejected=true end
         -- GameUI can commit its battle render after all page visibility writes.
-        if not deferRender and (active or not reuseEmptyProjection(wasActive)) then renderAfterActivation() end
+        if not deferRender and (active or not reuseEmptyProjection(wasActive)) then renderAfterActivation(wasActive) end
     end
 end
 -- Explicit ports preserve the approved implementation without a shared constructor closure.

@@ -152,8 +152,10 @@ end
 local function rejectedHide()
  local host,root=F.fixture()
  local panel=root:GetChild('battlePanel')
+ local potionHelp=panel:GetChild('potionHelp')
  local controls={panel:GetChild('hero'),panel:GetChild('card1'),panel:GetChild('statusInfo'),
-  panel:GetChild('potionHelp'):GetChild('potionPopup')}
+  potionHelp:GetChild('potionPopup'),panel:GetChild('goldReward'),panel:GetChild('claimPotion'),
+  potionHelp:GetChild('relicReward1'),potionHelp:GetChild('potionReward')}
  for _,control in ipairs(controls)do
   local hide=control.SetVisible
   local attempts=0
@@ -163,8 +165,9 @@ local function rejectedHide()
    if attempts==1 then return false end
    return hide(self,value)
   end
-  -- Force a new retirement attempt first, then test the ordinary hidden path.
-  host.battleUI:setActive(true,nil,true)
+  -- Explicit projection invalidates any previous proof. A failed hide in the
+  -- next ordinary, already-inactive projection must receive a second attempt.
+  host.battleUI.rewardRender=(host.battleUI.rewardRender or 0)+1
   host.battleUI:setActive(false)
   host.battleUI:setActive(false)
   assert(not control.visible and attempts>=2,'rejected hidden projection suppressed its retry: '..control.name)
@@ -174,6 +177,7 @@ end
 
 local function noHiddenReadback()
  local host,root=F.fixture()
+ host.battleUI:setActive(false)
  local panel=root:GetChild('battlePanel')
  local get=panel.GetChild
  function panel:GetChild(name)
@@ -185,6 +189,7 @@ end
 
 local function selection()
  local host,root=F.fixture()
+ assert(host:start()) -- The first open establishes the inactive projection.
  local panel=root:GetChild('battlePanel')
  local counts={}
  instrument(panel,'GetChild',counts)
@@ -195,7 +200,7 @@ local function selection()
   return render(self,...)
  end
  local timer=os.clock()
- for _=1,5 do assert(host:start());assert(host:closeCharacters())end
+ for _=1,5 do assert(host:closeCharacters());assert(host:start())end
  if measure then
   print('selection',os.clock()-timer,renders,counts.GetChild or 0)
   return
