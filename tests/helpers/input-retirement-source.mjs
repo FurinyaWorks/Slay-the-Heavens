@@ -47,8 +47,21 @@ for(const [path,row] of Object.entries(combatEvents.files)){
  assert(/^(?:scripts|src\/lua|tests)\//.test(path)&&matches(row.before.source,row.before),'exact combat/event predecessor: '+path);
  assert.match(row.after.sha256,/^[a-f0-9]{64}$/);assert.match(row.after.gitBlob,/^[a-f0-9]{40}$/);
 }
+const eventReadabilityArchive=readFileSync(new URL('../fixtures/event-readability-source.json.gz',import.meta.url));
+assert.equal(hash(eventReadabilityArchive),'1ccc3098014ebf726a776928f5d0b41c29b6a2a1cff21f096ee42a53b0da9cd5');
+const eventReadability=JSON.parse(gunzipSync(eventReadabilityArchive));
+assert.equal(eventReadability.path,'src/lua/abyss_node_ui_events.lua');
+for(const {before,after} of eventReadability.transitions){
+ assert(matches(before.source,before),'exact event UI predecessor');
+ assert.match(after.sha256,/^[a-f0-9]{64}$/);assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
+}
 export const combatEventsOwns=path=>Object.hasOwn(combatEvents.files,path);
 export function beforeCombatEvents(path,source){
+ if(path===eventReadability.path){
+  for(const {before,after} of eventReadability.transitions){
+   if(matches(source,after))source=source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
+  }
+ }
  const row=Object.hasOwn(combatEvents.files,path)&&combatEvents.files[path];
  if(!row||!matches(source,row.after))return source;
  return source.includes('\r\n')?row.before.source.replaceAll('\n','\r\n'):row.before.source;
