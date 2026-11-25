@@ -19,6 +19,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { compareNativeCandidate, requireSourceSha, sha256, candidateEntrySource } from './native-candidate-audit.mjs';
 import { exportedCandidatePath, newEvidenceDirectory } from './native-audit-paths.mjs';
 import { releaseSourceFiles } from './release-notes.mjs';
+import { mediaFiles, mediaPointer } from './ci-media-lfs.mjs';
 
 export function auditPortraitTemplateBindings(receipt,templates,{sourceSha,candidateHash,officialAssets=false,selectionAvatar=false}={}){
   const single=name=>{const rows=templates.filter(row=>row?.template?.name===name);return rows.length===1?rows[0]:undefined;};
@@ -93,6 +94,21 @@ function argumentsOf(args) {
   return options;
 }
 
+function restoreArchivedMedia(repo, snapshot, assetInputs) {
+  for (const row of mediaFiles) {
+    if (!assetInputs.some(path => row.path === path || row.path.startsWith(path + '/'))) continue;
+    const archived = join(snapshot, row.path);
+    const bytes = readFileSync(archived);
+    if (bytes.length === row.bytes && sha256(bytes) === row.sha256) continue;
+    if (!bytes.equals(mediaPointer(row))) throw Error('Pinned media differs from its reviewed SHA-256: ' + row.path);
+    const hydrated = readFileSync(join(repo, row.path));
+    if (hydrated.length !== row.bytes || sha256(hydrated) !== row.sha256) {
+      throw Error('Hydrate the reviewed media for the pinned source checkout: ' + row.path);
+    }
+    writeFileSync(archived, hydrated);
+  }
+}
+
 export async function auditNativeCandidate(options) {
   const sourceSha = requireSourceSha(options.source);
   const mapPath = exportedCandidatePath(options.candidate);
@@ -155,6 +171,7 @@ export async function auditNativeCandidate(options) {
     const selection=auditAssetInputs(buildReceipt,{deferExperimentalInventory:true}),assetInputs=selection.paths,registryPath=selection.registryPath;
     run('tar', ['-xf', '-', '-C', snapshot], { input: run('git', ['archive', sourceSha, '--',
       'src/lua', 'data', 'scripts', 'tools', ...releaseSourceFiles, ...assetInputs]) });
+    restoreArchivedMedia(repo, snapshot, assetInputs);
     prepareAuditStaticRegistry(snapshot,buildReceipt,selection);
     const v25Private=artOptions.v25CardAssets?prepareAuditV25CardInputs({snapshot,receipt:buildReceipt,root:repo}):null;
     const v25Masks=artOptions.v25UiMasks?await prepareAuditV25UiMasks({snapshot,receipt:buildReceipt,root:repo}):null;
