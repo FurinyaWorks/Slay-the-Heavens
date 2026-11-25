@@ -1,4 +1,5 @@
-local AI = dofile('tools/candidates/raven_adept_ai.lua')
+-- This unbound candidate retains its original archive filename.
+local AI = dofile('tools/candidates/cultist_ai.lua')
 local n = 0
 local function eq(a,b) assert(a == b, tostring(a)..' ~= '..tostring(b)) end
 local function test(name,fn) fn(); n=n+1; print('ok '..n..' - '..name) end
