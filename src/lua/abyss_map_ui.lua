@@ -242,11 +242,17 @@ function M.new(root, map, onChoose, clickEvent, options)
         end
     end
     local controlCache = {}
+    -- Reuse positive group lookups while binding the imported controls.
+    local initialGroups = {}
     local function at(name)
         if controlCache[name] then return controlCache[name] end
         local i = 1
         while true do
-            local group = panel:GetChild("mapGroup" .. i)
+            local group = initialGroups and initialGroups[i]
+            if not group then
+                group = panel:GetChild("mapGroup" .. i)
+                if initialGroups then initialGroups[i] = group end
+            end
             if not group then break end
             local found = group:GetChild(name)
             if found then controlCache[name] = found return found end
@@ -795,6 +801,7 @@ function M.new(root, map, onChoose, clickEvent, options)
     end) draggable(child(at("node" .. slot), "hit"), slot) end
     self:resize(Theme.canvas.base[1], Theme.canvas.base[2])
     if map then self:focusCurrent() else root:SetVisible(false) end
+    initialGroups = nil
     return self
 end
 return M
