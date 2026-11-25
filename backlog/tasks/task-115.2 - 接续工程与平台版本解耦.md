@@ -1,11 +1,11 @@
 ---
 id: TASK-115.2
 title: 接续工程与平台版本解耦
-status: In Progress
+status: Done
 assignee:
   - '@Furinya'
 created_date: '2026-11-25 20:59'
-updated_date: '2026-11-25 21:19'
+updated_date: '2026-11-25 21:28'
 labels:
   - v2.2.0
 milestone: m-8
@@ -35,5 +35,11 @@ ordinal: 209000
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 覆盖版本类型、历史兼容、待确认平台编号、构建与附件错配；通过独审与定向回归
+- [x] #1 覆盖版本类型、历史兼容、待确认平台编号、构建与附件错配；通过独审与定向回归
 <!-- AC:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+通过 #977 接续 #952。工程版本与平台实发版本分别记录，31/31 定向回归及精确组合独立评审通过。已合入 develop，平台版本待 Owner 依据上线回执确认。
+<!-- SECTION:FINAL_SUMMARY:END -->

@@ -1,11 +1,11 @@
 ---
 id: TASK-115.7.1
 title: 解析 STS1 两幕真实战斗并登记场景参数
-status: In Progress
+status: Done
 assignee:
   - '@Furinya'
 created_date: '2026-11-25 21:01'
-updated_date: '2026-11-25 21:19'
+updated_date: '2026-11-25 21:28'
 labels:
   - v2.2.0
 milestone: m-8
@@ -41,7 +41,7 @@ ordinal: 215000
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 交付两幕截图及原画对照、来源和可实现参数；每项设计标明适用版本、有效稿和被替代稿
+- [x] #1 交付两幕截图及原画对照、来源和可实现参数；每项设计标明适用版本、有效稿和被替代稿
 <!-- AC:END -->
 
 ## Implementation Notes
@@ -51,3 +51,9 @@ ordinal: 215000
 
 独立复核了两幕场景与九份素材身份、14 组色彩采样及源坐标。正式 v3 当前只有静态 v25BattleScene。研究和视口数据供后续两幕独立接入与整体验收。
 <!-- SECTION:NOTES:END -->
+
+## Final Summary
+
+<!-- SECTION:FINAL_SUMMARY:BEGIN -->
+通过 #978 登记原版两幕实机与背景、九份图片身份、14 组采样和两张坐标图；最新精确组合通过独立评审。背景制作及项目内 Simulator 验收在后续任务继续。
+<!-- SECTION:FINAL_SUMMARY:END -->

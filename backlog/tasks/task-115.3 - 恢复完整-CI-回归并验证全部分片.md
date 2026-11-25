@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-11-25 21:00'
-updated_date: '2026-11-25 21:19'
+updated_date: '2026-11-25 21:28'
 labels:
   - v2.2.0
 milestone: m-8
@@ -18,6 +18,8 @@ references:
   - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/973'
   - 'https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45630976779'
   - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/976'
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/979'
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/980'
 documentation:
   - docs/versions/V2.2.0-RELEASE.md
 parent_task_id: TASK-115
@@ -48,4 +50,6 @@ ordinal: 210000
 
 <!-- SECTION:NOTES:BEGIN -->
 已派发恢复 Full。原始运行含 19 个失败、16 个取消分片或汇总、1 个跳过及 2 个成功；失败日志已取回，逐项归因中。
+
+四条现有测试 PR 由 #976 合并接续。#979 通过 126 项固定源向量，相关 GitHub Fork Quick JS 93/93；同一 Quick 后续 Lua 失败保留。#980 共享预览 PNG 真实制品生产、恢复与负对照通过定向验证。完整 Hosted Full 和 #929 继续。
 <!-- SECTION:NOTES:END -->

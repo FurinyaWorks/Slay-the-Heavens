@@ -5,6 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-11-25 21:00'
+updated_date: '2026-11-25 21:28'
 labels:
   - v2.2.0
 milestone: m-8
@@ -46,4 +47,6 @@ ordinal: 211000
 
 <!-- SECTION:NOTES:BEGIN -->
 已派发永久门禁开发。真实 Docker、cgroup v2 可用。0.5 CPU、1 GiB、无 swap 的实际配置已读回，正式配对和门禁集成待验。
+
+正式配置同一 1 CPU/2 GiB 环境三对样本中，选角打开 P50 约 201→4285 ms，地图进入约 609→1996 ms。原始配对报告 SHA-256 80115294e539d04e5b07fc385a3c8c97350d954cb4b093c507adceb06dbe8928。离线结果已锁定，候选继续保持待验。
 <!-- SECTION:NOTES:END -->
