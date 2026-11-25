@@ -27,7 +27,7 @@ local function battle(data,id,up,filler)
     local deck={{cardId=id,upgraded=up}}
     for _=1,filler or 12 do deck[#deck+1]="defend" end
     for seed=1,100 do
-        local s=Combat.new(data,{seed=seed,cardRandomSeed="42",enemies={"cultist"},deck=deck,enableStances=true})
+        local s=Combat.new(data,{seed=seed,cardRandomSeed="42",enemies={"raven_adept"},deck=deck,enableStances=true})
         if pcall(uid,s,id) then s.enemies[1].hp=1000;s.enemies[1].maxHp=1000;return s end
     end
     error("no reproducible choice fixture")

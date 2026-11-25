@@ -7,7 +7,7 @@ local function test(name,fn)local ok,why=pcall(fn);count=count+1;if not ok then 
 local function run(character,ids)
  local r=R.new(D,'42',{experimental=true,character=character})
  for _,id in ipairs(ids or {})do assert(R.obtainRelic(r,id))end
- assert(R.startCombat(r,'cultist_solo'));local s=r.combat;s.enemies[1].hp=10000;s.enemies[1].maxHp=10000
+ assert(R.startCombat(r,'raven_adept_solo'));local s=r.combat;s.enemies[1].hp=10000;s.enemies[1].maxHp=10000
  return r,s
 end
 test('Fumes constructor snapshots Snake ownership before a real Foresight pause',function()
@@ -39,7 +39,7 @@ test('real card use captures explicit Poison and Crippling Poison before queue e
  local Q=require('abyss_action_queue');local C=require('abyss_combat')
  local r=R.new(D,'42',{experimental=true,character='silent'})
  r.deck={{uid=1,cardId='deadly_poison',upgraded=false},{uid=2,cardId='crippling_poison',upgraded=false}}
- assert(R.startCombat(r,'cultist_solo'));r.combat.enemies[1].hp=10000;r.combat.enemies[1].maxHp=10000
+ assert(R.startCombat(r,'raven_adept_solo'));r.combat.enemies[1].hp=10000;r.combat.enemies[1].maxHp=10000
  local original=Q.start;local expected,seen=0,false
  local function inspect(effect)
   if effect and (effect.op=='applyStatus'and effect.status=='poison'or effect.op=='cripplingPoison')then

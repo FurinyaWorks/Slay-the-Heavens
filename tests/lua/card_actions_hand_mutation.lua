@@ -4,7 +4,7 @@ local A=require('abyss_card_actions')
 local data=require('abyss_data')
 local function eq(a,b,label) assert(a==b,'[HAND_MUTATION_CONTRACT] '..label..': '..tostring(a)..' ~= '..tostring(b)) end
 local function battle()
-    local s=C.new(data,{seed=42,deck={'strike'},enemies={'cultist'},cardRandomSeed='42'})
+    local s=C.new(data,{seed=42,deck={'strike'},enemies={'raven_adept'},cardRandomSeed='42'})
     s.hand={};s.draw={};s.discard={};s.exhaust={};s.cardActions=nil
     return s
 end

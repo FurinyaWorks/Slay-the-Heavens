@@ -20,10 +20,10 @@ for _,registered in ipairs({false,true})do
  end
  assert(#source.cards.cards==count and #source.statuses.statuses==statusCount and next(source.metadataAlias)==nil)
  assert(source.colorlessCards==(registered and true or nil),'owned registration never trusts a caller marker or mutates its source')
- assert(Run.startCombat(first,'cultist_solo'));local a=first.combat
+ assert(Run.startCombat(first,'raven_adept_solo'));local a=first.combat
  a.sourcePools.cardSourceMetadata.strike.sourceId='battle only'
  assert(first.data.metadataAlias.strike.sourceId=='Strike_R')
- assert(Run.obtainPotion(first,'smoke_bomb'));assert(Run.usePotion(first,1));assert(Run.startCombat(first,'cultist_solo'))
+ assert(Run.obtainPotion(first,'smoke_bomb'));assert(Run.usePotion(first,1));assert(Run.startCombat(first,'raven_adept_solo'))
  assert(first.combat.sourcePools.cardSourceMetadata.strike.sourceId=='Strike_R'and first.combat.sourcePools~=a.sourcePools)
 end
 print('RUN_CARD_CATALOG_OWNED_REGISTRATION_PASS private Run ownership before registration, both caller modes/five profiles, two-Run and two-battle metadata isolation')

@@ -27,7 +27,7 @@ function M.apply(api,s,entry)
  if entry.targetId==s.player.id then target=s.player end
   if entry.op=='stasis_return'then Stasis.release(api,s,entry)
   elseif entry.op=='boss_dead'then
-   for _,e in ipairs(s.enemies)do if api.isActive(e)then e.hp=0;Events.emit(s,'enemy_suicide',{enemy=e.id})end end
+   for _,e in ipairs(s.enemies)do if api.isActive(e)then e.hp=0;Events.emit(s,'enemy_self_exit',{enemy=e.id})end end
    s.act2StasisCards=nil
   elseif entry.op=='leader_dead'then
    for _,e in ipairs(s.enemies)do if api.isActive(e)then e.escaped=true;Events.emit(s,'enemy_escape',{enemy=e.id})end end
@@ -76,7 +76,7 @@ function M.stasisDied(s,e,push)
  local stasis=Stasis.death(s,e);if stasis then push(s,stasis)end
 end
 function M.died(s,e,push)
- -- Both source bosses queue DAMAGE-typed SuicideAction at TOP. Stasis and
+ -- Both source bosses queue DAMAGE-typed enemy exit at TOP. Stasis and
  -- Leader's EscapeAction remain BOTTOM, with their original constructor data.
  if e.ai and (e.ai.policy=='collector' or e.ai.policy=='automaton')then push(s,{op='boss_dead'},true) end
  if e.ai and e.ai.policy=='leader'then push(s,{op='leader_dead'}) end

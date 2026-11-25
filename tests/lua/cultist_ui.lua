@@ -41,7 +41,7 @@ local function setup()
         imageSource="static",color=function(r,g,b,a) return {r=r,g=g,b=b,a=a} end
     }),{embedded=true})
     ui.run = Run.new(Data,1)
-    assert(Run.startCombat(ui.run,"cultist_solo"))
+    assert(Run.startCombat(ui.run,"raven_adept_solo"))
     ui:render()
     local function click(name)
         local box = F.actorControl(stage,name)
@@ -66,9 +66,9 @@ local function details(stage, box)
     return table.concat(lines, " | ")
 end
 local count = 0
-local function test(name,fn) fn(); count=count+1; print("ok Cultist UI "..count.." - "..name) end
+local function test(name,fn) fn(); count=count+1; print("ok Raven Adept UI "..count.." - "..name) end
 
-test("Cultist displays Ritual opener, persistent status and next modified attack", function()
+test("Raven Adept displays Ritual opener, persistent status and next modified attack", function()
     local ui, stage, click = setup()
     local box = F.actorControl(stage,'enemy1')
     assert(box.children.intent.text == "")

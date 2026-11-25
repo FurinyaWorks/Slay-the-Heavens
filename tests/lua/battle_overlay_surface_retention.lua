@@ -11,7 +11,7 @@ F.GameUI.new=function(root,data,presentation,event,platform)
  return original(root,data,presentation,event,platform)
 end
 local host,root=F.fixture();F.GameUI.new=original
-assert(F.start(host));assert(Run.startCombat(host.run,'cultist_solo'));host:refresh()
+assert(F.start(host));assert(Run.startCombat(host.run,'raven_adept_solo'));host:refresh()
 local manager=assert(Surfaces.get(root:GetChild('battlePanel')))
 local battle=host.run.combat;local id=battle.enemies[1].id
 local box=assert(manager:find(id));local beforeCreate,beforeDestroy=creates,destroys
@@ -43,7 +43,7 @@ print('OVERLAY_COUNTS 10 cycles creates='..(creates-beforeCreate)..' destroys='.
 host.battleUI:setActive(false);assert(not box.alive and not manager:find(id))
 host.battleUI:setActive(true);box=assert(manager:find(id));assert(box.alive)
 assert(host:openDeck());local old=box
-local nextBattle=F.Combat.new(F.Data,{enemies={'cultist'},deck={'strike'},seed=42})
+local nextBattle=F.Combat.new(F.Data,{enemies={'raven_adept'},deck={'strike'},seed=42})
 host.run.combat=nextBattle;host:refresh();assert(not old.alive,'new battle cannot retain old actor')
 host:closeDeck();box=assert(manager:find(nextBattle.enemies[1].id));assert(box~=old)
 assert(host:openDeck());host.battleUI:setActive(false)

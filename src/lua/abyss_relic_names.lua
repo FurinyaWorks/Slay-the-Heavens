@@ -4,7 +4,7 @@
 -- names were independently checked against the STS1 Chinese community wiki.
 local M={}
 local names={
- ['Whetstone']='磨刀石',['Boot']='靴子',['Blood Vial']='血瓶',MealTicket='餐券',['Pen Nib']='钢笔尖',Akabeko='赤牛',
+ ['Whetstone']='磨刀石',['Boot']='靴子',['Blood Vial']='回春瓶',MealTicket='餐券',['Pen Nib']='钢笔尖',Akabeko='赤牛',
  Lantern='启程灯',['Regal Pillow']='皇家枕头',['Bag of Preparation']='备战袋',['Ancient Tea Set']='古茶具',
  ['Smiling Mask']='微笑面具',['Potion Belt']='药水腰带',PreservedInsect='昆虫标本',Omamori='护符',MawBank='聚财罐',
  ['Art of War']='兵法',['Toy Ornithopter']='玩具扑翼机',CeramicFish='陶鱼',Vajra='裂岩杵',['Centennial Puzzle']='百年积木',
@@ -21,13 +21,13 @@ local names={
  ['Unceasing Top']='不休陀螺',Torii='鸟居',StoneCalendar='石历',Shovel='铲子',WingedGreaves='羽翼护胫',
  ['Thread and Needle']='针线',Turnip='萝卜',['Ice Cream']='冰淇淋',Calipers='卡钳',['Lizard Tail']='蜥蜴尾巴',
  ['Prayer Wheel']='转经轮',Girya='壶铃',['Dead Branch']='枯木树枝',['Du-Vu Doll']='咒术娃娃',Pocketwatch='怀表',
- Mango='芒果',['Incense Burner']='香炉',['Gambling Chip']='赌博筹码',['Peace Pipe']='宁静烟斗',CaptainsWheel='船舵',
+ Mango='芒果',['Incense Burner']='香炉',['Tactical Badge']='战术徽记',['Peace Pipe']='宁静烟斗',CaptainsWheel='船舵',
  FossilizedHelix='螺旋化石',TungstenRod='钨钢短杖',['Magic Flower']='魔法花',["Charon's Ashes"]='卡戎之灰',
  ['Champion Belt']='冠军腰带',Sling='投石索',HandDrill='手钻',Toolbox='工具箱',['Chemical X']='化学物质零号',
  ["Lee's Waffle"]='李家华夫饼',Orrery='星系仪',DollysMirror='多利之镜',OrangePellets='橙色药丸',PrismaticShard='棱镜碎片',
  ClockworkSouvenir='齿轮纪念品',['Frozen Eye']='冻结之眼',TheAbacus='算盘',['Medical Kit']='医药箱',Cauldron='大锅',
  ['Strange Spoon']='奇怪的勺子',['Membership Card']='会员卡',Brimstone='硫磺',['Fusion Hammer']='聚变之锤',
- ['Velvet Choker']='天鹅绒颈圈',['Runic Dome']='符文圆顶',SlaversCollar='缚岩项圈',['Snecko Eye']='异蛇之眼',
+ ['Velvet Choker']='天鹅绒颈圈',['Runic Dome']='符文圆顶',ArenaCollar='缚岩项圈',['Snecko Eye']='异蛇之眼',
  ["Pandora's Box"]='潘多拉魔盒',['Cursed Key']='诅咒钥匙',['Busted Crown']='破碎王冠',Ectoplasm='灵质',
  ['Tiny House']='小屋',Sozu='静泉竹筒',["Philosopher's Stone"]='贤者之石',Astrolabe='星盘',['Black Star']='黑星',
  SacredBark='神圣树皮',['Empty Cage']='空鸟笼',['Runic Pyramid']='符文金字塔',['Calling Bell']='召唤铃铛',
@@ -45,14 +45,14 @@ local names={
  ["Golden Idol"]='鎏金神像',
  ["NeowsBlessing"]='远古悲叹',
  ["Odd Mushroom"]='奇怪蘑菇',
- ["CultistMask"]='邪教徒头饰',
+ ["RavenMask"]='鸦羽面具',
  ["FaceOfCleric"]='圣职者之脸',
  ["GremlinMask"]='地精容貌',
  ["NlothsMask"]='恩洛斯的饥饿之脸',
  ["SsserpentHead"]='长蛇之首',
  ["Nloth's Gift"]='恩洛斯的礼物',
- ["Bloody Idol"]='血色神像',
- ["MutagenicStrength"]='突变力量',
+ ["Bloody Idol"]='赤晶神像',
+ ["AugmentationCore"]='增幅晶核',
  ["Necronomicon"]='死灵之书',
  ["Enchiridion"]='圣书',
  ["Nilry's Codex"]='尼利宝典',
@@ -60,7 +60,7 @@ local names={
 }
 local legacy={burning_blood='Burning Blood',anchor='Anchor',vajra='Vajra',bag_of_preparation='Bag of Preparation',
  lantern='Lantern',oddly_smooth_stone='Oddly Smooth Stone',bronze_scales='Bronze Scales',membership_card='Membership Card',
- courier='The Courier',smiling_mask='Smiling Mask',black_blood='Black Blood',slavers_collar='SlaversCollar',sozu='Sozu',
+ courier='The Courier',smiling_mask='Smiling Mask',black_blood='Black Blood',arena_collar='ArenaCollar',sozu='Sozu',
  black_star='Black Star',circlet='Circlet'}
 local function chinese(value)return type(value)=='string' and value:find('[\228-\233]')~=nil end
 function M.get(data,id)

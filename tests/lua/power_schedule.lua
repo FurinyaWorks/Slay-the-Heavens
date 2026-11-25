@@ -8,7 +8,7 @@ local n=0
 local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end
 local function test(name,fn)fn();n=n+1;print('ok power_schedule '..n..' - '..name)end
 local function state()
-    local s=C.new(require('abyss_data'),{seed=42,deck={},enemies={'cultist'}})
+    local s=C.new(require('abyss_data'),{seed=42,deck={},enemies={'raven_adept'}})
     for _,spec in ipairs({{'early',-5},{'late',20},{'alpha',5},{'beta',5},{'negative',5}}) do
         s.catalog.statuses[spec[1]]={id=spec[1],name=spec[1],description='scheduler fixture',
             kind=spec[1]=='negative' and 'debuff' or 'buff',stack='intensity',decay='none',priority=spec[2]}

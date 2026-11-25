@@ -1,4 +1,4 @@
--- DrugDealer (Augmenter), PC A0 at319009d5. The transform branch requires
+-- Augmenter, PC A0 at319009d5. The transform branch requires
 -- exactly TWO ordered object identities. Both removals/draws precede obtains.
 local Run=require('abyss_run')
 local copy=require('abyss_copy').copy
@@ -30,13 +30,13 @@ function M.transformCards(run)
 end
 function M.prepare(run,event)
     event.canTransform=#M.transformCards(run)>=2
-    event.stage,event.body='intro','一位增幅师提供三种实验方案。'
+    event.stage,event.body='intro','一位炼金术士提出三种元素调校方案。'
 end
 function M.options(_run,event)
-    if event.stage=='intro'then return {row('jax','服用激素','获得1张J.A.X.。'),
-        row('test_subject','成为实验对象','必须选择2张可清除卡牌，将它们转化。',event.canTransform),
-        row('mutagens','注射诱变剂','获得突变力量；已拥有时获得Circlet。')}end
-    if event.stage=='choose_card'then return {row('transform','转化两张卡牌','按选择顺序转化两张卡牌，不能跳过或少选。',true,'drug_dealer_transform')}end
+    if event.stage=='intro'then return {row('jax','研习增幅术','获得1张「元素增幅」。'),
+        row('test_subject','调校卡牌','必须选择2张可清除卡牌，将它们转化。',event.canTransform),
+        row('claim_core','领取增幅晶核','获得增幅晶核；已拥有时获得头环。')}end
+    if event.stage=='choose_card'then return {row('transform','转化两张卡牌','按选择顺序转化两张卡牌，不能跳过或少选。',true,'augmenter_transform')}end
     if event.stage=='result'then return {row('leave','离开','返回路线。')}end
     return {}
 end
@@ -85,12 +85,12 @@ local function transformPair(run,event,uids)
         event.obtainedCardUids[i]=type(obtained)=='number'and obtained or false
         event.curseBlocked[i]=obtained=='curse_blocked'
     end
-    event.stage,event.body='result','实验完成，两张卡牌已经转化。'
+    event.stage,event.body='result','调校完成，两张卡牌已经转化。'
     return true,'pending'
 end
-local function mutagens(run,event)
-    local id='MutagenicStrength'
-    for _,held in ipairs(run.relics)do if held==id or Hooks.localId(held)=='mutagenic_strength'then id='Circlet';break end end
+local function claim_core(run,event)
+    local id='AugmentationCore'
+    for _,held in ipairs(run.relics)do if held==id or Hooks.localId(held)=='augmentation_core'then id='Circlet';break end end
     local ok,why=Run.obtainRelic(run,id);if not ok then return false,why end
     event.obtainedRelicId=why;return true
 end
@@ -111,10 +111,10 @@ function M.choose(run,flow,choice,uid)
     local ok,why
     if choice=='jax'then
         ok,why=Run.obtainCard(run,'J.A.X.');if ok then event.obtainedCardUid=why end
-    elseif choice=='mutagens'then ok,why=mutagens(run,event)
+    elseif choice=='claim_core'then ok,why=claim_core(run,event)
     else return false,'invalid_event_choice'end
     if not ok then return false,why end
-    event.choice,event.stage,event.body=choice,'result','你完成了增幅实验。'
+    event.choice,event.stage,event.body=choice,'result','你完成了元素调校。'
     return true,'pending'
 end
 return M

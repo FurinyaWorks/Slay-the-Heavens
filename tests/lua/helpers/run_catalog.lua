@@ -4,7 +4,7 @@ function M.new(deck,character)
  local r=Run.new(D,42,character and{character=character,experimental=true}or nil)
  r.deck={};r.relics={}
  for i,id in ipairs(deck)do r.deck[i]={uid=30+i,cardId=id,upgraded=false}end
- assert(Run.startCombat(r,'cultist_solo'));r.combat.energy=20
+ assert(Run.startCombat(r,'raven_adept_solo'));r.combat.energy=20
  return r,r.combat
 end
 function M.held(s,id)

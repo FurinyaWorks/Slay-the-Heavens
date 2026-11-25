@@ -3,9 +3,9 @@
 local Actors=require('abyss_actor')
 local Events=require('abyss_events')
 local M={}
-local aliases={['Bloody Idol']='bloody_idol',MutagenicStrength='mutagenic_strength',
+local aliases={['Bloody Idol']='bloody_idol',AugmentationCore='augmentation_core',
     Necronomicon='necronomicon',Enchiridion='enchiridion',["Nilry's Codex"]='nilrys_codex'}
-local identities={bloody_idol=true,mutagenic_strength=true,necronomicon=true,enchiridion=true,nilrys_codex=true}
+local identities={bloody_idol=true,augmentation_core=true,necronomicon=true,enchiridion=true,nilrys_codex=true}
 function M.is(id)return identities[aliases[id]or id]==true end
 function M.owns(owner,id)
     for _,held in ipairs(owner.relics or {})do if (aliases[held]or held)==id then return true end end
@@ -36,7 +36,7 @@ local function lossPower(state,amount)
     local p=state.player
     if not Actors.isActive(p)or Actors.tryBlockDebuff(state,p,'lose_strength')then return end
     local old=p.temporaryStrength or 0
-    assert(type(old)=='number'and old%1==0 and old>=0 and old+0.0+amount<=2147483647,'invalid Mutagenic loss')
+    assert(type(old)=='number'and old%1==0 and old>=0 and old+0.0+amount<=2147483647,'invalid Augmentation loss')
     p.temporaryStrength=old+amount
     local order={};local found=false
     for _,id in ipairs(p.temporaryPowerOrder or {})do order[#order+1]=id;if id=='strength'then found=true end end
@@ -49,7 +49,7 @@ local function lossPower(state,amount)
     Events.emit(state,'status',{source=p.id,target=p.id,status='lose_strength',amount=amount})
 end
 function M.battleStart(state,id)
-    assert(id=='mutagenic_strength','unknown Act2 battle-start relic')
+    assert(id=='augmentation_core','unknown Act2 battle-start relic')
     -- Three TOP inserts: RelicAbove, LoseStrength, Strength. The loss Power
     -- reaches Artifact BEFORE the gain. Flex's gain-then-loss helper differs.
     lossPower(state,3)

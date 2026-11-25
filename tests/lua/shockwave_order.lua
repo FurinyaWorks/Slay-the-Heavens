@@ -6,7 +6,7 @@ local function eq(a,b,label) assert(a==b,(label or '')..': '..tostring(a)..' ~= 
 local function triple(a) return string.format('%.0f/%.0f/%.0f',a.statuses.artifact or 0,a.statuses.weak or 0,a.statuses.vulnerable or 0) end
 local function frame(actors) local r={} for _,a in ipairs(actors) do r[#r+1]=triple(a) end return table.concat(r,'|') end
 local function case(name, arts, upgraded, inactive, preexisting)
-    local enemies={} for _=1,#arts do enemies[#enemies+1]='cultist' end
+    local enemies={} for _=1,#arts do enemies[#enemies+1]='raven_adept' end
     local s=C.new(data,{seed=42,deck={{cardId='shockwave',upgraded=upgraded}},enemies=enemies})
     local amount=upgraded and 5 or 3
     local expectedActors, expected, actual={}, {}, {}

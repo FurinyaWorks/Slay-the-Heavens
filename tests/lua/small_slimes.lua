@@ -97,11 +97,11 @@ end)
 
 local function unknown()
     -- Position the actual seed7 second-floor unknown frontier and consume its
-    -- preceding Cultist queue item. This isolates entry, not prior victory.
+    -- preceding Raven Adept queue item. This isolates entry, not prior victory.
     local run,map,id=Run.new(Data,7),Map.generate(Data,7),'f2_l4'
     assert(Map.choose(map,'f1_l4'))
     local source,nextQueue=require('abyss_encounter_queue').consume(run.encounters,'normal')
-    eq(source,'Cultist');run.encounters=nextQueue
+    eq(source,'Raven Adept');run.encounters=nextQueue
     return run,map,id
 end
 for _,flag in ipairs({false,true}) do
@@ -220,10 +220,10 @@ test('explicit low-level enemy arrays do not acquire implicit encounter selectio
 end)
 
 local unchangedGroups={
-    cultist_solo={'cultist'},jaw_solo={'jaw_worm'},louse_pair={'red_louse','red_louse'},
+    raven_adept_solo={'raven_adept'},jaw_solo={'jaw_worm'},louse_pair={'red_louse','red_louse'},
     louse_trio={'red_louse','red_louse','green_louse'},medium_slimes={'acid_slime_m','spike_slime_m'},
     large_acid={'acid_slime_l'},large_spike={'spike_slime_l'},looter_solo={'looter'},
-    blue_slaver_solo={'blue_slaver'},red_slaver_solo={'red_slaver'},fungi_pair={'fungi_beast','fungi_beast'},
+    blue_guard_solo={'blue_guard'},red_guard_solo={'red_guard'},fungi_pair={'fungi_beast','fungi_beast'},
     wildlife={'jaw_worm','green_louse'},elite_nob={'gremlin_nob'},elite_lagavulin={'lagavulin'},
     elite_sentries={'sentry','sentry','sentry'},boss_guardian={'guardian'}
 }
@@ -265,7 +265,7 @@ test('other 16 static encounter groups retain their member order and consume no 
         same(Data.rules.player.startingRelics,{'burning_blood'})
         reference.relics={'burning_blood'};reference.relicCounters={};reference.relicCombat={attackPlayed=false}
         -- Pin the new first-turn hook owners independently of the actual Run.
-        reference.rareRelicCombat={firstPocketTurn=true,gamblingActivated=false,topCanDraw=true,topDisabled=false}
+        reference.rareRelicCombat={firstPocketTurn=true,tacticalBadgeActivated=false,topCanDraw=true,topDisabled=false}
         reference.shopRelicCombat={pellets={}}
         local generation=run.combatGeneration
         assert(type(generation)=='number'and generation%1==0 and generation>=1 and generation<=2147483647,'invalid Run combat generation')

@@ -47,7 +47,7 @@ do
  strike(host,panel,surfaces);assert(host.battleUI.busy)
  local old=host.run;local oldBox=assert(surfaces:find(old.combat.enemies[1].id))
  -- Controlled replacement rebinds both owner pointers, as GameUI.beginRun does.
- host.run=Run.new(F.Data,17);host.battleUI.run=host.run;assert(Run.startCombat(host.run,'cultist_solo'))
+ host.run=Run.new(F.Data,17);host.battleUI.run=host.run;assert(Run.startCombat(host.run,'raven_adept_solo'))
  local expected=F.Combat.copy(host.run);local map=F.Combat.copy(host.map)
  host:refresh();assert(changes()==1,'only explicit refresh, no stale completion callback')
  assert(not host.battleUI.busy and panel:GetChild('endTurn').interactable)
@@ -82,7 +82,7 @@ do
  for _=1,400 do if not host.battleUI.busy then break end;host:update(.01)end
  local ui=host.battleUI;assert(not ui.busy and next(ui.feedback.effects),'requires a real idle effect tail')
  local oldBox=assert(surfaces:find(host.run.combat.enemies[1].id))
- host.run=Run.new(F.Data,19);host.battleUI.run=host.run;assert(Run.startCombat(host.run,'cultist_solo'))
+ host.run=Run.new(F.Data,19);host.battleUI.run=host.run;assert(Run.startCombat(host.run,'raven_adept_solo'))
  local expected=F.Combat.copy(host.run);local map=F.Combat.copy(host.map)
  host:refresh();H.tick(host,expected,.02)
  assert(not oldBox.alive and next(ui.feedback.effects)==nil and next(ui.feedback.poses)==nil)

@@ -19,7 +19,7 @@ local function finish()
  assert(r.phase=='map')
 end
 for battle=1,4 do
- assert(Run.startCombat(r,'cultist_solo'))
+ assert(Run.startCombat(r,'raven_adept_solo'))
  local enemy=r.combat.enemies[1]
  assert(enemy.maxHp>=48 and enemy.maxHp<=54)
  assert(enemy.hp==(battle<=3 and 1 or enemy.maxHp),'Lament must change current HP only in the first three battles')

@@ -14,7 +14,7 @@ local function setup(options)
  options=options or {};local r=Run.new(D,'42',{experimental=true,character='defect'})
  if options.puzzle~=false then assert(Run.obtainRelic(r,'centennial_puzzle'))end
  if options.rod then assert(Run.obtainRelic(r,'tungsten_rod'))end
- assert(Run.startCombat(r,'cultist_solo'));local s=r.combat
+ assert(Run.startCombat(r,'raven_adept_solo'));local s=r.combat
  if options.thornsFirst then A.applyPower(s,s.player,'thorns',1,s.player)end
  if options.static~=false then A.applyPower(s,s.player,'static_discharge',options.amount or 1,s.player)end
  if options.thornsLast then A.applyPower(s,s.player,'thorns',1,s.player)end

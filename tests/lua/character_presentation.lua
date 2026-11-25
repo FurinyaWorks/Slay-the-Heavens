@@ -197,7 +197,7 @@ local function extendedData()
 end
 test('independent exhaust discard orb and retained helpers expose every new base and upgraded card',function()
  local ids={ironclad={'corruption','feel_no_pain','dark_embrace','sentinel','burning_pact'},
-  silent={'sneaky_strike','eviscerate','calculated_gamble'},defect={'loop','electrodynamics'},
+  silent={'sneaky_strike','eviscerate','calculated_exchange'},defect={'loop','electrodynamics'},
   watcher={'protect','perseverance','windmill_strike','sands_of_time'}}
  for _,id in ipairs({'ironclad','silent','defect','watcher'})do
   local data=extendedData()[id];local display=P.prepare(Existing,data)
@@ -234,8 +234,8 @@ test('new effect order counts upgrades and historical keywords are not generic p
  assert(s.sneaky_strike.text:find('若本回合主动弃过牌',1,true)and s.sneaky_strike.text:find('2 点能量',1,true))
  assert(s.eviscerate.text:find('7 点伤害，重复 3 次',1,true)and s.eviscerate.upgradeText:find('9 点伤害，重复 3 次',1,true))
  assert(s.eviscerate.text:find('费用降低 1',1,true))
- assert(s.calculated_gamble.text:find('其余所有手牌，再抽等量牌',1,true)and s.calculated_gamble.text:find('消耗',1,true))
- assert(not s.calculated_gamble.upgradeText:find('消耗',1,true))
+ assert(s.calculated_exchange.text:find('其余所有手牌，再抽等量牌',1,true)and s.calculated_exchange.text:find('消耗',1,true))
+ assert(not s.calculated_exchange.upgradeText:find('消耗',1,true))
  local d=P.prepare(Existing,extendedData().defect)
  assert(d.loop.text:find('1 层循环',1,true)and d.loop.upgradeText:find('2 层循环',1,true))
  assert(d.electrodynamics.text:find('生成 2 个闪电球',1,true)and d.electrodynamics.upgradeText:find('生成 3 个闪电球',1,true))

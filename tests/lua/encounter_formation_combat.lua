@@ -55,7 +55,7 @@ test('explicit enemy arrays remain unchanged and mixed/unknown group requests fa
  local calls=0;local callback={misc={boolean=function()calls=calls+1;return true end}}
  assert(not pcall(C.new,Data,{sourceEncounter='medium_slimes',encounterBoundary=callback}))
  assert(not pcall(C.new,Data,{sourceEncounter=false,encounterBoundary=callback}))
- assert(not pcall(C.new,Data,{sourceEncounter='2 Louse',enemies={'cultist'},encounterBoundary=callback}))
+ assert(not pcall(C.new,Data,{sourceEncounter='2 Louse',enemies={'raven_adept'},encounterBoundary=callback}))
  equal(calls,0)
 end)
 print('LUA_ENCOUNTER_FORMATION_COMBAT_PASS '..count)

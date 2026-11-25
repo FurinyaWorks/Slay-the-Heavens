@@ -2,7 +2,7 @@ local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local E=require('abyss_events')
 local A=require('abyss_actor')
 local host,root=F.fixture()
-assert(F.start(host));assert(require('abyss_run').startCombat(host.run,'cultist_solo'))
+assert(F.start(host));assert(require('abyss_run').startCombat(host.run,'raven_adept_solo'))
 local battle=F.Combat.new(F.Data,{enemies={'guardian','guardian'},deck={'strike'},seed=42})
 local function select(actor,id)
  for i,intent in ipairs(actor.intents)do if intent.id==id then actor.intentIndex=i;return intent end end

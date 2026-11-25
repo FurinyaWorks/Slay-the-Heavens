@@ -6,7 +6,7 @@ local function family(enemyId,intentId,effects)
     return Skill.resolve('intent',{}, {enemyId=enemyId,intentId=intentId,effects=effects or {}})
 end
 expect(family('sentry','sentry_1'),'projectile')
-expect(family('red_slaver','red_slaver_2'),'bind')
+expect(family('red_guard','red_guard_2'),'bind')
 expect(family('chosen','zap'),'projectile')
 expect(family('chosen','debilitate'),'heavy')
 expect(family('collector','fireball'),'projectile')
@@ -16,7 +16,7 @@ expect(family('snake_plant','spores'),'poison')
 expect(family('unknown','fireball',{{op='damage'}}),'melee')
 expect(family('collector','buff',{{op='block'}}),'defend')
 expect(family('mystic','heal',{{op='enemyHealAll'}}),'buff')
-expect(family('cultist','cultist_2',{{op='gainStatus',status='ritual'}}),'buff')
+expect(family('raven_adept','raven_adept_2',{{op='gainStatus',status='ritual'}}),'buff')
 expect(family('lagavulin','lagavulin_1'),'none')
 expect(Skill.resolve('status_damage',{status='poison'},{}),'poison')
 expect(Skill.resolve('status_damage',{status='thorns'},{}),'dot')
@@ -34,8 +34,8 @@ local primary=require('abyss_act2_enemies').enemies
 local definitions={}
 for _,enemy in ipairs(Data.enemies.enemies) do definitions[enemy.id]=enemy end
 for _,enemy in ipairs(primary) do definitions[enemy.id]=enemy end
-local ids={'cultist','jaw_worm','red_louse','green_louse','acid_slime_s','acid_slime_m','acid_slime_l',
-    'spike_slime_s','spike_slime_m','spike_slime_l','looter','blue_slaver','red_slaver','fungi_beast',
+local ids={'raven_adept','jaw_worm','red_louse','green_louse','acid_slime_s','acid_slime_m','acid_slime_l',
+    'spike_slime_s','spike_slime_m','spike_slime_l','looter','blue_guard','red_guard','fungi_beast',
     'mad_gremlin','sneaky_gremlin','fat_gremlin','wizard_gremlin','shield_gremlin','gremlin_nob','lagavulin','sentry','guardian'}
 for _,enemy in ipairs(primary) do ids[#ids+1]=enemy.id end
 for _,id in ipairs(ids) do

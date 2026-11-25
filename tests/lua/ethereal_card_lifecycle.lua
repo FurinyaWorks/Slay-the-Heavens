@@ -40,7 +40,7 @@ local function onlyIn(state, card, destination)
     end
 end
 local function battle(id, upgraded)
-    local s = Combat.new(data, {seed=42, deck={{cardId=id, upgraded=upgraded}}, enemies={"cultist"}})
+    local s = Combat.new(data, {seed=42, deck={{cardId=id, upgraded=upgraded}}, enemies={"raven_adept"}})
     return s, s.hand[1]
 end
 
@@ -89,7 +89,7 @@ for _, upgraded in ipairs({false, true}) do
     test(name .. " end-turn exhaustion does not sweep copies outside the hand", function()
         local deck = {}
         for _ = 1, 3 do deck[#deck+1] = {cardId=fixture.id, upgraded=upgraded} end
-        local s = Combat.new(data, {seed=42, deck=deck, enemies={"cultist"}})
+        local s = Combat.new(data, {seed=42, deck=deck, enemies={"raven_adept"}})
         local held, inDraw, discarded = s.hand[1], table.remove(s.hand, 3), table.remove(s.hand, 2)
         -- Controlled pile placement, not a claim of a particular shuffle order.
         s.draw[1], s.discard[1] = inDraw, discarded
@@ -108,7 +108,7 @@ for _, upgraded in ipairs({false, true}) do
         }
         run.nextDeckUid = 4
         local permanent, before = run.deck[1], Combat.copy(run.deck)
-        assert(Run.startCombat(run, "cultist_solo"))
+        assert(Run.startCombat(run, "raven_adept_solo"))
         local exhausted
         for _, card in ipairs(run.combat.hand) do if card.cardId == fixture.id then exhausted = card end end
         assert(exhausted); assert(exhausted ~= permanent)
@@ -119,7 +119,7 @@ for _, upgraded in ipairs({false, true}) do
             if run.phase == "combat" then assert(Run.endTurn(run)) end
         end
         equal(run.phase, "reward"); same(run.deck, before); equal(run.deck[1], permanent)
-        assert(Run.claimCardReward(run, 0)); dofile('tests/lua/support/finish_combat_rewards.lua')(run); assert(Run.startCombat(run, "cultist_solo"))
+        assert(Run.claimCardReward(run, 0)); dofile('tests/lua/support/finish_combat_rewards.lua')(run); assert(Run.startCombat(run, "raven_adept_solo"))
         equal(#run.combat.exhaust, 0); equal(run.nextDeckUid, 4); same(run.deck, before)
         local found = 0
         for _, card in ipairs(run.combat.hand) do
@@ -153,7 +153,7 @@ test("mixed base and upgraded ethereal hand exhausts each UID once, not the ordi
     local s = Combat.new(data, {seed=42, deck={
         "carnage", {cardId="carnage",upgraded=true},
         "ghostly_armor", {cardId="ghostly_armor",upgraded=true}, "impervious",
-    }, enemies={"cultist"}})
+    }, enemies={"raven_adept"}})
     local cards = {}; for _, card in ipairs(s.hand) do cards[#cards+1] = card end
     assert(Combat.endTurn(s)); equal(#s.exhaust, 4); equal(#s.hand, 1)
     for _, card in ipairs(cards) do onlyIn(s, card, card.cardId == "impervious" and "hand" or "exhaust") end

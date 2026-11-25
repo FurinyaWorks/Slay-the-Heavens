@@ -91,7 +91,7 @@ for _, move in ipairs({'heal', 'buff'}) do
         eq(#events, 2); eq(events[1].target, tank.id); eq(events[2].target, mage.id)
     end)
     test(move .. ': captured actor reference survives same-ID list replacement (contract boundary)', function()
-        local s, _, mage = battle(move, {'cultist'})
+        local s, _, mage = battle(move, {'raven_adept'})
         local captured = s.enemies[3]
         local replacement = C.copy(captured)
         eq(replacement.id, captured.id); assert(replacement ~= captured)
@@ -100,7 +100,7 @@ for _, move in ipairs({'heal', 'buff'}) do
         eq(#partyEvents(s, mage), 3)
     end)
     test(move .. ': initially dead/escaped actors remain excluded even if made active later (contract boundary)', function()
-        local s, _, mage = battle(move, {'cultist', 'cultist'})
+        local s, _, mage = battle(move, {'raven_adept', 'raven_adept'})
         local dead, escaped = s.enemies[3], s.enemies[4]
         dead.hp = 0; escaped.escaped = true
         onFirstPartyEvent(s, mage, function() dead.hp = 1; escaped.escaped = nil end)
@@ -108,19 +108,19 @@ for _, move in ipairs({'heal', 'buff'}) do
         eq(#partyEvents(s, mage), 2)
     end)
     test(move .. ': later death skips captured recipient without resurrection (contract boundary)', function()
-        local s, _, mage = battle(move, {'cultist'})
+        local s, _, mage = battle(move, {'raven_adept'})
         local captured = s.enemies[3]
         onFirstPartyEvent(s, mage, function() captured.hp = 0 end)
         eq(captured.hp, 0); eq(strength(captured), 0); eq(#partyEvents(s, mage), 2)
     end)
     test(move .. ': later escape skips captured recipient (contract boundary)', function()
-        local s, _, mage = battle(move, {'cultist'})
+        local s, _, mage = battle(move, {'raven_adept'})
         local captured = s.enemies[3]
         onFirstPartyEvent(s, mage, function() captured.escaped = true end)
         expectEffect(captured, move, false); eq(#partyEvents(s, mage), 2)
     end)
     test(move .. ': queued later recipient retains dead caster source (contract boundary)', function()
-        local s, tank, mage = battle(move, {'cultist'})
+        local s, tank, mage = battle(move, {'raven_adept'})
         local captured = s.enemies[3]
         onFirstPartyEvent(s, mage, function() mage.hp = 0 end)
         eq(mage.hp, 0); eq(strength(mage), 0); expectEffect(captured, move, true)

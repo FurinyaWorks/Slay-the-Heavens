@@ -67,7 +67,7 @@ assert(camp:press('confirm'))
 
 local H=dofile('tests/helpers/act2_choice_events.lua')
 local EventUI=dofile('tests/helpers/event_cards_native_ui.lua')
-local eventRun,eventMap=H.fixture('drug_dealer')
+local eventRun,eventMap=H.fixture('augmenter')
 local mandatory,mget,_,tap=EventUI.setup(eventRun,eventMap)
 assert(tap('eventView/option2',1));assert(mandatory.pageCount==4)
 local first,last=eventRun.deck[2].uid,eventRun.deck[10].uid

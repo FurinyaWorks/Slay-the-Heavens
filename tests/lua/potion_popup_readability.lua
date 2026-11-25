@@ -1,6 +1,6 @@
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
 local Theme=require('abyss_theme')
-local host,ui,panel,_,tap=H.setup({'defend'},{'cultist'})
+local host,ui,panel,_,tap=H.setup({'defend'},{'raven_adept'})
 local popup=panel:GetChild('potionHelp'):GetChild('potionPopup')
 local function bottom(p)return p.y-p.sizeDeltaY/2 end
 local function top(p)return p.y+p.sizeDeltaY/2 end

@@ -1,6 +1,8 @@
 local Run,D=require('abyss_run'),require('abyss_data')
 local vectors=dofile('tests/fixtures/sts1-class-relic-pool-vectors.lua').ironclad.cases
+local currentSource={['Gambling Chip']='Tactical Badge',SlaversCollar='ArenaCollar'}
 local function same(a,b)
+ if type(b)=='string' then b=currentSource[b] or b end
  assert(type(a)==type(b));if type(a)~='table'then assert(a==b,tostring(a)..' ~= '..tostring(b));return end
  for k,v in pairs(a)do same(v,b[k])end;for k in pairs(b)do assert(a[k]~=nil)end
 end

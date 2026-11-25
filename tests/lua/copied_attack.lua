@@ -186,7 +186,7 @@ end
 test("real reward followed by next combat uses copy without leaking generated cards to Run or following battle", function()
     local run, choice
     for seed = 1, 128 do
-        local candidate = Run.new(data, seed); assert(Run.startCombat(candidate,"cultist_solo")); finishBattle(candidate)
+        local candidate = Run.new(data, seed); assert(Run.startCombat(candidate,"raven_adept_solo")); finishBattle(candidate)
         for i,id in ipairs(Run.rewardOptions(candidate)) do if id == "anger" then run,choice = candidate,i; break end end
         if run then break end
     end
@@ -195,7 +195,7 @@ test("real reward followed by next combat uses copy without leaking generated ca
     assert(Run.claimCardReward(run,choice)); equal(#run.deck,oldSize+1)
     local checkDeck, nextDeckUid = unchangedAfter(run.deck), run.nextDeckUid
     dofile('tests/lua/support/finish_combat_rewards.lua')(run)
-    assert(Run.startCombat(run,"cultist_solo"))
+    assert(Run.startCombat(run,"raven_adept_solo"))
     local played = false
     for _ = 1, 10 do
         assert(run.phase == "combat")
@@ -211,7 +211,7 @@ test("real reward followed by next combat uses copy without leaking generated ca
     end
     assert(played); checkDeck(); equal(run.nextDeckUid,nextDeckUid)
     finishBattle(run); equal(run.phase,"reward"); checkDeck()
-    assert(Run.claimCardReward(run,0)); dofile('tests/lua/support/finish_combat_rewards.lua')(run); assert(Run.startCombat(run,"cultist_solo"))
+    assert(Run.claimCardReward(run,0)); dofile('tests/lua/support/finish_combat_rewards.lua')(run); assert(Run.startCombat(run,"raven_adept_solo"))
     equal(unique(run.combat),#run.deck); equal(run.combat.nextUid,#run.deck+1)
     checkDeck(); equal(run.nextDeckUid,nextDeckUid)
 end)

@@ -6,16 +6,16 @@ local data=require('abyss_data')
 local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end
 local function uids(cards)local ids={};for _,c in ipairs(cards)do ids[#ids+1]=c.uid end;return table.concat(ids,',')end
 local deck={};for _=1,10 do deck[#deck+1]='strike' end
-local s=C.new(data,{deck=deck,seed=101,shuffleSeed='43',enemies={'cultist'}})
+local s=C.new(data,{deck=deck,seed=101,shuffleSeed='43',enemies={'raven_adept'}})
 eq(uids(s.hand),'8,3,9,2,5');eq(uids(s.draw),'4,7,6,1,10');eq(s.shuffleRng.counter,1)
-local run=Run.new(data,42);assert(Run.startCombat(run,'cultist_solo'))
+local run=Run.new(data,42);assert(Run.startCombat(run,'raven_adept_solo'))
 eq(uids(run.combat.hand),'8,3,9,2,5');eq(run.combat.shuffleRng.counter,1);eq(run.combat.cardRandomRng.counter,0)
 for _,size in ipairs({0,1})do
  local d={};if size==1 then d={'strike'}end
- local b=C.new(data,{deck=d,shuffleSeed='43',enemies={'cultist'}})
+ local b=C.new(data,{deck=d,shuffleSeed='43',enemies={'raven_adept'}})
  eq(b.shuffleRng.counter,size==0 and 1 or 2);eq(#b.hand,size)
 end
-local b=C.new(data,{deck={},shuffleSeed='43',enemies={'cultist'}})
+local b=C.new(data,{deck={},shuffleSeed='43',enemies={'raven_adept'}})
 b.draw={{uid=21,cardId='strike'},{uid=22,cardId='strike'}};b.hand={};b.discard={};local n=b.shuffleRng.counter
 C.draw(b,5);eq(uids(b.hand),'22,21');eq(b.shuffleRng.counter,n+1)
 C.draw(b,5);eq(b.shuffleRng.counter,n+1) -- wholly empty skips
@@ -28,6 +28,6 @@ b.catalog.cards.shrug_it_off.effects={{op='draw',value=1},{op='gainStatus',statu
 local rng,primitive,pile=b.shuffleRng,b.shuffleRng.primitive,b.discard;local before=R.cloneState(rng)
 eq(pcall(C.play,b,1),false);eq(b.shuffleRng,rng);eq(rng.primitive,primitive);eq(rng.counter,before.counter);eq(b.discard,pile);eq(#pile,1)
 local innate={};for _=1,7 do innate[#innate+1]={cardId='brutality',upgraded=true}end
-local opening=C.new(data,{deck=innate,shuffleSeed='43',enemies={'cultist'}})
+local opening=C.new(data,{deck=innate,shuffleSeed='43',enemies={'raven_adept'}})
 eq(#opening.hand,7);eq(#opening.draw,0);eq(opening.openingInnateExtra,nil)
 print('Warrior75 shuffle: source vector, split draw, empty/full/locked, rollback and seven-Innate opening passed.')

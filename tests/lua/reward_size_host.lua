@@ -15,7 +15,7 @@ Layout.render=function(frame,child,...)
  for _,c in ipairs({box,box:GetChild('border'),box:GetChild('plate'),box:GetChild('title'),box:GetChild('subtitle'),(child('potionReward'))})do watch(c)end
  return draw(frame,child,...)
 end
-local h,root=F.fixture();assert(F.start(h));assert(Run.startCombat(h.run,'cultist_solo'));h:refresh()
+local h,root=F.fixture();assert(F.start(h));assert(Run.startCombat(h.run,'raven_adept_solo'));h:refresh()
 local u=h.battleUI
 local function preserveGraph(value)
  local saved={}

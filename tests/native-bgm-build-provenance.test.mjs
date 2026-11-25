@@ -8,6 +8,7 @@ import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import { toLua } from '../scripts/build-lua-data.mjs';
 import { fileRecord, sha256 } from '../scripts/evidence-files.mjs';
 import { nativeUiVariables } from '../scripts/native-candidate-scripts.mjs';
 import { requireStartupEvidence } from '../scripts/native-playtest-evidence.mjs';
@@ -37,7 +38,7 @@ export class Client {
  }
 }
 `;
-function fixture(t, corrupt, existing=false, official=false) {
+function fixture(t, corrupt, existing=false, official=false, embeddedText=false) {
   const root = mkdtempSync(join(tmpdir(), 'abyss-bgm-marker-'));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   const put = (file, text) => { const path = join(root, file); mkdirSync(dirname(path), { recursive: true }); writeFileSync(path, text); return path; };
@@ -45,6 +46,7 @@ function fixture(t, corrupt, existing=false, official=false) {
   const flags=official?officialAssetFlags:{menuBackground:true};
   const sources = { ...(official?{abyss_ui_profile:uiProfileSource(true)}:{}),abyss_art_features:artFeaturesSource(flags), abyss_bgm: 'return {bgm=true}', abyss_game_ui: 'return {view=true}',
     abyss_ui: `print("ABYSS_BUILD ${buildId}")\n-- exact full-build instrumentation\nreturn {}`, abyss_narrative: 'return {codeVersion="v0.1.0"}' };
+  if(embeddedText)sources.abyss_unmounted='return '+toLua('邪教徒药水');
   const moduleDigests = Object.fromEntries(Object.entries(sources).map(([name, source]) => {
     put(`full/payload/${name}.lua`, source); return [name, sha256(source)];
   }));
@@ -70,6 +72,13 @@ test('audio packaging reuses existing BGM graph and signals without duplicates',
  assert.equal(f.calls.some(c=>c.name==='scene_add_signal'||c.name==='scene_add_graph'),false);
  assert.equal(f.calls.find(c=>c.name==='write_graphs').args.graphs[0].graphId,42);
  assert(existsSync(join(f.output,'candidate.json')));
+});
+
+test('audio checks decoded text in unmounted Lua even when all module digests match',t=>{
+  const f=fixture(t,undefined,false,false,true);
+  assert.equal(f.run.status,1);
+  assert.match(f.run.stderr,/audio\/candidate\.gil\/abyss_unmounted\.lua:1:8: .*邪教.*decoded Lua literal/);
+  assert.equal(existsSync(join(f.output,'candidate.json')),false);
 });
 
 test('real BGM CLI preserves exact packaged startup marker and all entry parameters, then binds final adjacent artifact', t => {

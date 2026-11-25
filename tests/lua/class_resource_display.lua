@@ -11,7 +11,7 @@ local function test(name,fn)fn();n=n+1;print("ok class resource "..n.." - "..nam
 local function start(id,card)
     local ui,root=X.new();assert(testStart(ui,id))
     ui.run.deck={};for i=1,12 do ui.run.deck[i]={uid=i,cardId=card,upgraded=false} end
-    ui.run.nextDeckUid=13;assert(Run.startCombat(ui.run,"cultist_solo"));ui:refresh()
+    ui.run.nextDeckUid=13;assert(Run.startCombat(ui.run,"raven_adept_solo"));ui:refresh()
     return ui,root
 end
 test("orb view returns actual ordered passive and evoke values without mutations or RNG",function()

@@ -1,7 +1,7 @@
 package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local H=dofile('tests/lua/support/battle_action_fixture.lua')
 local ids={'regret','injury','doubt','pain','decay','shame','writhe','clumsy','normality','parasite'}
-local host,ui,panel,emit,tap,drain,_,root=H.setup(ids,{'cultist'})
+local host,ui,panel,emit,tap,drain,_,root=H.setup(ids,{'raven_adept'})
 local C=H.F.Combat
 local s=host.run.combat
 C.draw(s,10);host:refresh()

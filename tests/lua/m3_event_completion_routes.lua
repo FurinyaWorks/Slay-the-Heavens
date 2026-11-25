@@ -39,8 +39,8 @@ local paths={
  {'Dead Adventurer',1,{'leave','leave'}},
  {'FaceTrader',1,{'continue','touch','leave'}},
  {'Cursed Tome',2,{'read','continue','continue','continue','obtain','claim','leave'}},
- {'Drug Dealer',2,{'test_subject'}},
- {'Forgotten Altar',2,{'shed_blood','leave'}},
+ {'Augmenter',2,{'test_subject'}},
+ {'Forgotten Altar',2,{'accept_trial','leave'}},
  {'Masked Bandits',2,{'pay','continue','continue','leave'}},
  {'Vampires',2,{'accept','leave'}},
  {'Designer',2,{'continue','full'}},
@@ -52,10 +52,10 @@ for _,case in ipairs(paths)do test(case[1]..' sole exit reaches real map termina
  local id=assert(Pool.contentId[case[1]]);local r,m,node=fixture(case[2],id)
  assert(N.enter(r,m,node));eq(r.nodeFlow.event.id,id)
  for _,choice in ipairs(case[3])do choose(r,choice)end
- if id=='drug_dealer'or id=='designer'then
+ if id=='augmenter'or id=='designer'then
   local e=N.view(r,m).node.event;eq(e.selection.canCancel,false)
   local before=copy(r);assert(not N.chooseEvent(r,'leave'));same(r,before)
-  if id=='drug_dealer'then
+  if id=='augmenter'then
    eq(e.selection.count,2);local a,b=e.selectionCards[1].uid,e.selectionCards[2].uid
    assert(not N.chooseEvent(r,'transform',{a}));same(r,before)
    choose(r,'transform',{b,a});same(r.nodeFlow.event.removedUids,{b,a})
@@ -81,8 +81,8 @@ local function draw(r,m,rng)
 end
 test('full-pool controlled source draw keeps legal known mapping and recovers after injected missing route',function()
  local r,m,node=fixture(2,nil);local rng=R.cloneState(r.eventRng);local original
- for _=0,255 do original=draw(r,m,rng);if original=='Drug Dealer'then break end;R.randomFloat(rng)end
- eq(original,'Drug Dealer');r.eventRng=R.cloneState(rng)
+ for _=0,255 do original=draw(r,m,rng);if original=='Augmenter'then break end;R.randomFloat(rng)end
+ eq(original,'Augmenter');r.eventRng=R.cloneState(rng)
  local before,map=copy(r),C.copy(m);local flow,deck,pools=r.nodeFlow,r.deck,r.unknown.pools
  local saved=Pool.contentId[original];assert(saved);Pool.contentId[original]=nil
  local ok,err=pcall(function()

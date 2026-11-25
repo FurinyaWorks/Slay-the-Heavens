@@ -15,11 +15,11 @@ function M.setup(options)
     if options.revive == 'tail' then assert(Run.obtainRelic(ui.run, 'lizard_tail')) end
     ui.run.hp = options.normal and 80 or 3
     if not options.map then
-        assert(Run.startCombat(ui.run, 'cultist_solo'))
+        assert(Run.startCombat(ui.run, 'raven_adept_solo'))
         local enemy = ui.run.combat.enemies[1]
         local attack
-        for i,intent in ipairs(enemy.intents) do if intent.id=='cultist_1' then attack=i end end
-        assert(attack,'missing published Cultist attack')
+        for i,intent in ipairs(enemy.intents) do if intent.id=='raven_adept_1' then attack=i end end
+        assert(attack,'missing published Raven Adept attack')
         -- Select the real six-damage attack; the controlled three-HP run is
         -- already lethal without inventing source intents or consuming RNG.
         enemy.ai, enemy.intentIndex = nil, attack

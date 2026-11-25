@@ -6,7 +6,7 @@ import {join} from 'node:path';
 import {toLua} from '../scripts/build-lua-data.mjs';
 import {runLua} from '../scripts/test-lua.mjs';
 const fixture=JSON.parse(readFileSync('tests/fixtures/sts1-potion-channel-chain.json','utf8'));
-const identities=Object.fromEntries(JSON.parse(readFileSync('tests/fixtures/sts1-potion-production-channels.json','utf8')).drops.map(row=>[row.sourceId,row.id]));
+const identities=Object.fromEntries(JSON.parse(readFileSync('tests/fixtures/sts1-potion-production-channels.json','utf8')).drops.map(row=>[row.sourceId,({CultistPotion:'raven_potion', GamblersBrew:'swap_brew'})[row.sourceId] ?? row.id]));
 for(const sample of fixture.cases)test(`source potion stream survives Courier/reward/Entropic/escape/shop/elite chain seed ${sample.seed}`,()=>{
  const dir=mkdtempSync(join(tmpdir(),'potion-channel-chain-'));
  try {

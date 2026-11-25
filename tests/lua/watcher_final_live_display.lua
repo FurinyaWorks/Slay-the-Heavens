@@ -1,7 +1,7 @@
 package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local C,P,D,Presentation,Display,Theme=require('abyss_combat'),require('abyss_character_profiles'),require('abyss_data'),require('abyss_character_presentation'),require('abyss_card_display'),require('abyss_theme')
 local data=P.prepare(D,'watcher');local display=Presentation.prepare({},data)
-local s=C.new(data,{seed=1,enableStances=true,deck={'spirit_shield','swivel','ragnarok'},enemies={'cultist'}})
+local s=C.new(data,{seed=1,enableStances=true,deck={'spirit_shield','swivel','ragnarok'},enemies={'raven_adept'}})
 s.player.statuses.dexterity=2;s.player.statuses.strength=2
 local function held(id)for _,c in ipairs(s.hand)do if c.cardId==id then return c end end end
 local shield=held('spirit_shield');local values=Display.values(C.cardDefinition(s,shield),C.cardPreview(s,shield));assert(values[1] and values[1].current==8)

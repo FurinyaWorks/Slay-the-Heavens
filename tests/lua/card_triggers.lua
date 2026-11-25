@@ -16,7 +16,7 @@ local function data()
     return d
 end
 local function state(deck,orbs)
-    return Combat.new(data(),{seed=42,cardRandomSeed="42",enemies={"cultist","jaw_worm"},
+    return Combat.new(data(),{seed=42,cardRandomSeed="42",enemies={"raven_adept","jaw_worm"},
         deck=deck or {},orbSlots=orbs==false and nil or 3,enableStances=true})
 end
 local function find(d,id)
@@ -323,7 +323,7 @@ local function playData()
     return require("abyss_defect_cards").withFoundationCards(d)
 end
 local function playState(deck,enemies)
-    return Combat.new(playData(),{seed=42,cardRandomSeed="42",deck=deck,enemies=enemies or {"cultist","jaw_worm"},orbSlots=3})
+    return Combat.new(playData(),{seed=42,cardRandomSeed="42",deck=deck,enemies=enemies or {"raven_adept","jaw_worm"},orbSlots=3})
 end
 local function held(s,id)
     for _,c in ipairs(s.hand) do if c.cardId==id then return c end end
@@ -360,7 +360,7 @@ for _,up in ipairs({false,true}) do
         assert(inPile(s.discard,strike.uid));eq(s.cardTriggerPowerOrder[1].id,"after_image")
     end)
     playTest("Rage real Skill affects only later attacks and expires then reacquires at end turn "..tostring(up),function()
-        local s=playState({{cardId="rage",upgraded=up},"strike","defend"},{"cultist"})
+        local s=playState({{cardId="rage",upgraded=up},"strike","defend"},{"raven_adept"})
         play(s,"rage");eq(s.player.block,0);eq(s.energy,3);eq(s.player.statuses.rage,up and 5 or 3)
         play(s,"defend");eq(s.player.block,5)
         play(s,"strike",1);eq(s.player.block,up and 10 or 8)
@@ -414,7 +414,7 @@ for _,up in ipairs({false,true}) do
 end
 playTest("real After Image and Rage prevent same-card Sharp Hide damage before UseCard cleanup",function()
     for _,up in ipairs({false,true}) do
-        local s=playState({"after_image",{cardId="rage",upgraded=up},"strike"},{"cultist"})
+        local s=playState({"after_image",{cardId="rage",upgraded=up},"strike"},{"raven_adept"})
         play(s,"after_image");play(s,"rage") -- old After Image also sees the Rage Skill
         eq(s.player.block,1)
         Actors.applyPower(s,s.enemies[1],"sharp_hide",3,s.enemies[1])
@@ -429,7 +429,7 @@ playTest("real After Image and Rage prevent same-card Sharp Hide damage before U
     end
 end)
 playTest("Thousand Cuts afterUse DAMAGE and old After Image block survive the final native kill",function()
-    local s=playState({"thousand_cuts","after_image","slice"},{"cultist"})
+    local s=playState({"thousand_cuts","after_image","slice"},{"raven_adept"})
     play(s,"thousand_cuts");play(s,"after_image") -- the preexisting Cuts sees this Power after disposal
     s.enemies[1].hp=6
     local slice=held(s,"slice");local real=Triggers.resolveDamageAll;local called=0
@@ -442,7 +442,7 @@ playTest("Thousand Cuts afterUse DAMAGE and old After Image block survive the fi
     assert(inPile(s.discard,slice.uid));eq(s.actionQueue,nil);eq(s.pendingPlay,nil)
 end)
 playTest("real Envenom Artifact rejection prevents Bane conditional second hit",function()
-    local s=playState({"envenom","bane"},{"cultist"});play(s,"envenom")
+    local s=playState({"envenom","bane"},{"raven_adept"});play(s,"envenom")
     local target=s.enemies[1];Actors.applyPower(s,target,"artifact",1,target);local hp=target.hp
     play(s,"bane",1);eq(target.hp,hp-7);eq(target.statuses.artifact,0);eq(target.statuses.poison or 0,0)
 end)

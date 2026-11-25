@@ -34,7 +34,7 @@ test('the first card uses Slow zero, later cards use the prior completed-card co
  eq(#s.discard,2);eq(e.powerScheduleSerial,1);eq(e.powerOrder[1],'slow')
 end)
 test('skills Powers and cards aimed elsewhere count once for every Slow owner',function()
- local s=battle({'defend','inflame','strike'},{'giant_head','giant_head','cultist'})
+ local s=battle({'defend','inflame','strike'},{'giant_head','giant_head','raven_adept'})
  local one,two=s.enemies[1],s.enemies[2]
  assert(C.play(s,uid(s,'defend')));eq(one.statuses.slow,1);eq(two.statuses.slow,1)
  assert(C.play(s,uid(s,'inflame')));eq(one.statuses.slow,2);eq(two.statuses.slow,2)
@@ -114,7 +114,7 @@ test('independent binary32 vectors cover flooring stance and stable Slow/Vulnera
  end
 end)
 test('non-Slow arithmetic remains the existing unrounded modifier pipeline',function()
- local s=battle({}, {'cultist'});local e=s.enemies[1]
+ local s=battle({}, {'raven_adept'});local e=s.enemies[1]
  s.player.statuses.strength=3;s.player.statuses.weak=1;s.player.statuses.double_damage=1
  s.player.stance='Divinity';e.statuses.vulnerable=1
  for _,base in ipairs({6,31,16777217})do

@@ -2,7 +2,7 @@
 local Run=require('abyss_run')
 local R=require('abyss_sts_random')
 local M={}
-local faces={'CultistMask','FaceOfCleric','GremlinMask','NlothsMask','SsserpentHead'}
+local faces={'RavenMask','FaceOfCleric','GremlinMask','NlothsMask','SsserpentHead'}
 local function owns(run,sourceId)
  for _,id in ipairs(run.relics)do
   if id==sourceId then return true end

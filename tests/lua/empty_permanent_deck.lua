@@ -21,7 +21,7 @@ local function enter(kind,id)
 end
 
 test('explicit empty permanent deck starts without fabricated cards and can lose normally',function()
- local s=C.new(data,{deck={},enemies={'cultist'},seed=42})
+ local s=C.new(data,{deck={},enemies={'raven_adept'},seed=42})
  for _,pile in ipairs({s.hand,s.draw,s.discard,s.exhaust}) do eq(#pile,0) end
  local seed=s.seed;C.draw(s,5);eq(s.seed,seed)
  for _=1,30 do if s.phase~='player' then break end;assert(C.endTurn(s)) end
@@ -36,17 +36,17 @@ for _,id in ipairs({'cleric','purifier'}) do
   eq(run.gold,gold-(id=='cleric' and 50 or 0));eq(run.phase,'map')
   local before=C.copy(run);local ok,reason=Nodes.purifyEvent(run,uid)
   eq(ok,false);eq(reason,'no_pending_node');same(run,before)
-  assert(Run.startCombat(run,'cultist_solo'));eq(#run.combat.hand,0);eq(#run.deck,0)
+  assert(Run.startCombat(run,'raven_adept_solo'));eq(#run.combat.hand,0);eq(#run.deck,0)
  end)
 end
 
 test('Golden Wing pays once before removing the last permanent card',function()
  local run,map=enter('event','golden_wing');local uid=run.deck[1].uid;local hp=run.hp
- assert(Nodes.chooseEvent(run,'sacrifice'));eq(run.hp,hp-7)
+ assert(Nodes.chooseEvent(run,'endure_damage'));eq(run.hp,hp-7)
  eq(Nodes.view(run,map).node.event.options[1].enabled,true)
  local before=C.copy(run);eq(Nodes.chooseEvent(run,'leave'),false);same(run,before)
  assert(Nodes.purgeWing(run,uid));eq(#run.deck,0);eq(run.hp,hp-7)
- eq(run.phase,'map');assert(Run.startCombat(run,'cultist_solo'))
+ eq(run.phase,'map');assert(Run.startCombat(run,'raven_adept_solo'))
 end)
 
 test('empty event deck disables selection and rejects stale UID without charging',function()
@@ -63,9 +63,9 @@ end)
 test('Golden Wing empty-deck sacrifice still pays its displayed damage without a stuck picker',function()
  local run,map=enter('event','golden_wing');run.deck={};local hp=run.hp
  eq(Nodes.view(run,map).node.event.options[1].enabled,true)
- assert(Nodes.chooseEvent(run,'sacrifice'));eq(run.hp,hp-7);eq(run.phase,'map')
+ assert(Nodes.chooseEvent(run,'endure_damage'));eq(run.hp,hp-7);eq(run.phase,'map')
  eq(run.nodeFlow.complete,true);eq(#run.deck,0)
- local before=C.copy(run);eq(Nodes.chooseEvent(run,'sacrifice'),false);same(run,before)
+ local before=C.copy(run);eq(Nodes.chooseEvent(run,'endure_damage'),false);same(run,before)
 end)
 
 test('shop removes the last card, consumes one service, and still permits buying a new card',function()

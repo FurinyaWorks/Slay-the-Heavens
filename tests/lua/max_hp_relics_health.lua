@@ -37,7 +37,7 @@ test('all four exact identities obtain once, persist to the next real battle and
   assert(F.R.obtainRelic(r,pair[2]));F.eq(r.maxHp,pair[3]);F.eq(r.hp,pair[4]);F.snapshotFailure(r,function()return F.R.obtainRelic(r,pair[1])end)
  end
  for key,value in pairs(rng)do F.same(F.S.snapshot(r[key]),value)end;F.same(r.relicPool,pool)
- assert(F.R.startCombat(r,'cultist_solo'));F.eq(r.combat.player.hp,118);F.eq(r.combat.player.maxHp,118)
+ assert(F.R.startCombat(r,'raven_adept_solo'));F.eq(r.combat.player.hp,118);F.eq(r.combat.player.maxHp,118)
  local before=F.C.copy(r.combat);F.eq(#r.relics,5);F.same(r.combat,before)
 end)
 assert(failed==0,tostring(failed)..' max HP health groups failed');print('MAX_HP_RELICS_HEALTH_PASS '..count)

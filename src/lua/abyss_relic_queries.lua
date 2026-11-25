@@ -1,7 +1,7 @@
 -- Relic identity and reward queries only. No runtime dependencies or state writes.
 -- These fixed namespaces preserve the five original alias scopes and method slots.
 local hooks,uncommon,rare,boss,shop={},{},{},{},{}
-local hookAliases={['Bloody Idol']='bloody_idol',MutagenicStrength='mutagenic_strength',Necronomicon='necronomicon',Enchiridion='enchiridion',["Nilry's Codex"]='nilrys_codex',["Nloth's Gift"]="nloths_gift",NlothsGift="nloths_gift",CultistMask='cultist_mask',FaceOfCleric='face_of_cleric',GremlinMask='gremlin_mask',NlothsMask='nloths_mask',SsserpentHead='ssserpent_head',FossilizedHelix='fossilized_helix',Pantograph='pantograph',SacredBark='sacred_bark',['White Beast Statue']='white_beast_statue',['Old Coin']='old_coin',
+local hookAliases={['Bloody Idol']='bloody_idol',AugmentationCore='augmentation_core',Necronomicon='necronomicon',Enchiridion='enchiridion',["Nilry's Codex"]='nilrys_codex',["Nloth's Gift"]="nloths_gift",NlothsGift="nloths_gift",RavenMask='raven_mask',FaceOfCleric='face_of_cleric',GremlinMask='gremlin_mask',NlothsMask='nloths_mask',SsserpentHead='ssserpent_head',FossilizedHelix='fossilized_helix',Pantograph='pantograph',SacredBark='sacred_bark',['White Beast Statue']='white_beast_statue',['Old Coin']='old_coin',
  ['Frozen Egg 2']='frozen_egg',['Coffee Dripper']='coffee_dripper',['Fusion Hammer']='fusion_hammer',
  NeowsBlessing='neows_lament',['Darkstone Periapt']='darkstone_periapt',Omamori='omamori',CeramicFish='ceramic_fish',['Potion Belt']='potion_belt',
  MealTicket='meal_ticket',MawBank='maw_bank',['Blood Vial']='blood_vial',
@@ -26,7 +26,7 @@ local rareAliases={Ginger='ginger',['Bird Faced Urn']='bird_faced_urn',['Unceasi
  StoneCalendar='stone_calendar',Shovel='shovel',WingedGreaves='winged_greaves',['Thread and Needle']='thread_and_needle',
  Turnip='turnip',['Ice Cream']='ice_cream',Calipers='calipers',['Prayer Wheel']='prayer_wheel',Girya='girya',
  ['Dead Branch']='dead_branch',['Du-Vu Doll']='du_vu_doll',Pocketwatch='pocketwatch',['Incense Burner']='incense_burner',
- ['Gambling Chip']='gambling_chip',['Peace Pipe']='peace_pipe',CaptainsWheel='captains_wheel',['Magic Flower']='magic_flower',
+ ['Tactical Badge']='tactical_badge',['Peace Pipe']='peace_pipe',CaptainsWheel='captains_wheel',['Magic Flower']='magic_flower',
  ["Charon's Ashes"]='charons_ashes',['Champion Belt']='champion_belt'}
 local bossAliases={['Velvet Choker']='velvet_choker',['Runic Dome']='runic_dome',['Snecko Eye']='snecko_eye',
  ["Pandora's Box"]='pandoras_box',['Cursed Key']='cursed_key',['Busted Crown']='busted_crown',

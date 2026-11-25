@@ -2,7 +2,7 @@ local H = dofile('tests/lua/support/potion_gesture_fixture.lua')
 local Combat, Run = H.F.Combat, H.Run
 local test, finish = H.suite('LUA_POTION_TARGETING_HELP')
 local function setup(ids, enemies)
-    local h,u,p,e,t,d,deck,r,emit,tap=H.setup({'bash','defend'},enemies or {'cultist','jaw_worm'})
+    local h,u,p,e,t,d,deck,r,emit,tap=H.setup({'bash','defend'},enemies or {'raven_adept','jaw_worm'})
     h.run.potions={}
     for slot,id in pairs(ids or {'fire_potion'}) do h.run.potions[slot]=id end
     h:refresh()
@@ -51,9 +51,9 @@ test('P12 all registered potions retain explicit independent target policies',fu
         dexterity_potion='self',energy_potion='self',poison_potion='enemy_one',regen_potion='self',
         swift_potion='self',weak_potion='enemy_one',fear_potion='enemy_one',
         ancient_potion='self',liquid_bronze='self',duplication_potion='self',distilled_chaos='self',
-        smoke_bomb='self',snecko_oil='self',elixir='self',gamblers_brew='self',liquid_memories='self',
+        smoke_bomb='self',snecko_oil='self',elixir='self',swap_brew='self',liquid_memories='self',
         blood_potion='self',fruit_juice='self',blessing_of_the_forge='self',explosive_potion='enemy_all',
-        heart_of_iron='self',essence_of_steel='self',cultist_potion='self',flex_potion='self',speed_potion='self',
+        heart_of_iron='self',essence_of_steel='self',raven_potion='self',flex_potion='self',speed_potion='self',
         entropic_brew='self',attack_potion='self',skill_potion='self',power_potion='self',colorless_potion='self',fairy_in_a_bottle='self'}
     local seen,count={},{self=0,enemy_one=0,enemy_all=0}
     for _,item in ipairs(H.F.Data.potions.potions) do

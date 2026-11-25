@@ -30,14 +30,14 @@ local function drawings(state)
  for i,actor in ipairs(state.enemies)do result[i]=boxFor(actor):GetChild('monsterArt')end
  return result
 end
-root.ui=host;assert(F.start(host));assert(Run.startCombat(host.run,'cultist_solo'))
+root.ui=host;assert(F.start(host));assert(Run.startCombat(host.run,'raven_adept_solo'))
 local function battle(enemies)
  host.run.combat=F.Combat.new(F.Data,{deck={'strike','strike','defend'},enemies=enemies,seed=11})
  host:refresh();return host.run.combat
 end
 local function shape()return art:GetChild('monsterSamples'):GetChild('group000'):GetChild('shape0000')end
 local function near(a,b)return math.abs(a-b)<1e-8 end
-local state=battle({'cultist','acid_slime_m','acid_slime_m'})
+local state=battle({'raven_adept','acid_slime_m','acid_slime_m'})
 local ui=host.battleUI
 arts=drawings(state);art=arts[2]
 assert(panel:GetChild('actorLayer').visible,'dynamic actor ancestor must remain active')
@@ -103,8 +103,8 @@ host:refresh();assert(art.visible and not boxFor(state.enemies[2]):GetChild('por
 
 ui:setActive(false);assert(not art.visible,'unmount must clear even with live matching actor')
 ui:setActive(true);arts=drawings(state);art=arts[2];assert(art.visible)
-state=battle({'cultist','fungi_beast'});assert(not art.visible and not art.alive,'replacement battle must retire old drawing and surface')
-state=battle({'cultist','jaw_worm','acid_slime_m','cultist','cultist'});arts=drawings(state);art=arts[3]
+state=battle({'raven_adept','fungi_beast'});assert(not art.visible and not art.alive,'replacement battle must retire old drawing and surface')
+state=battle({'raven_adept','jaw_worm','acid_slime_m','raven_adept','raven_adept'});arts=drawings(state);art=arts[3]
 assert(art.visible and not boxFor(state.enemies[3]):GetChild('portrait').visible,'five-enemy any-slot binding')
 local _,_,size=EnemyView.position(5,3,state.enemies[3])
 assert(near(art:GetChild('monsterSamples').localScaleX,size/106),'five-enemy geometry must contain drawing in current portrait')

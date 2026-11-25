@@ -117,7 +117,7 @@ test('zero blocked lethal fixed null-owner poison and Thorns cannot trigger eith
 end)
 test('queued Reactive rolls dead owners only with living allies and cancels on final victory',function()
  for _,ally in ipairs({false,true})do
-  local s=battle(nil,ally and {'writhing_mass','cultist'}or nil);local e=s.enemies[1];local ai=s.aiRng.counter
+  local s=battle(nil,ally and {'writhing_mass','raven_adept'}or nil);local e=s.enemies[1];local ai=s.aiRng.counter
   s.resolvingEffects=true;C.damage(s,s.player,e,1);C.damage(s,s.player,e,999,true);s.resolvingEffects=nil
   eq(e.hp,0);eq(e.statuses.malleable,4);eq(e.block,0)
   require('abyss_card_actions').drain(C,s);eq(e.block,0)

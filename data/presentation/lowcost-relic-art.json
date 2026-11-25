@@ -1934,8 +1934,8 @@
         }
       ]
     },
-    "gambling_chip": {
-      "name": "赌博筹码",
+    "tactical_badge": {
+      "name": "战术徽记",
       "shapes": [
         {
           "image": 100002,
@@ -5426,7 +5426,7 @@
         }
       ]
     },
-    "slavers_collar": {
+    "arena_collar": {
       "name": "缚岩项圈",
       "shapes": [
         {
@@ -6051,8 +6051,8 @@
         }
       ]
     },
-    "cultist_mask": {
-      "name": "邪教徒头饰",
+    "raven_mask": {
+      "name": "鸦羽面具",
       "shapes": [
         {
           "image": 100002,
@@ -6595,7 +6595,7 @@
       ]
     },
     "bloody_idol": {
-      "name": "血色神像",
+      "name": "赤晶神像",
       "shapes": [
         {
           "image": 100001,
@@ -6689,8 +6689,8 @@
         }
       ]
     },
-    "mutagenic_strength": {
-      "name": "突变力量",
+    "augmentation_core": {
+      "name": "增幅晶核",
       "shapes": [
         {
           "image": 100001,

@@ -15,7 +15,7 @@ F.test('FaceTrader caches damage at construction and touch gains gold before NOR
  eq(r.gold,200);eq(r.hp,73)
 end)
 F.test('FaceTrader uses exact unowned five-face list in source order and singleton shuffle Circlet fallback',function()
- local faces={'CultistMask','FaceOfCleric','GremlinMask','NlothsMask','SsserpentHead'}
+ local faces={'RavenMask','FaceOfCleric','GremlinMask','NlothsMask','SsserpentHead'}
  for selected=1,#faces do
   local r=F.fixture(Face,'face_trader');r.relics={}
   for i,id in ipairs(faces)do if i~=selected then assert(Run.obtainRelic(r,id))end end
@@ -28,7 +28,7 @@ F.test('FaceTrader uses exact unowned five-face list in source order and singlet
 end)
 F.test('FaceTrader unsupported selected face rolls back shuffle without filtering or rerolling',function()
  local r=F.fixture(Face,'face_trader');F.ready(Face,r);local expected=R.cloneState(r.miscRng)
- local ids={'CultistMask','FaceOfCleric','GremlinMask','NlothsMask','SsserpentHead'};R.shuffle(expected,ids)
+ local ids={'RavenMask','FaceOfCleric','GremlinMask','NlothsMask','SsserpentHead'};R.shuffle(expected,ids)
  r.data=C.copy(r.data)
  for i=#r.data.relics.relics,1,-1 do if r.data.relics.relics[i].sourceId==ids[1]then table.remove(r.data.relics.relics,i)end end
  reject(Face,r,'trade',nil,'relic_content_unavailable')

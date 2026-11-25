@@ -30,14 +30,14 @@ local priority={
     multi_cast=0,thunder_strike=35,hologram=-1,seek=-1,
 }
 local cases={
- {seed=1318,sources={'2 Louse','Cultist','Jaw Worm','Large Slime'},
+ {seed=1318,sources={'2 Louse','Raven Adept','Jaw Worm','Large Slime'},
   rewards={'defragment','loop','cold_snap','sweeping_beam'},hp={65,59,41,25},turns={3,3,3,3},cardRng={4,5,4,8},shuffleRng={2,2,2,2},aiRng={5,3,4,3},
   offers={{'defragment','cold_snap','steam_barrier'},{'beam_cell','loop','melter'},{'recursion','lock_on','cold_snap'},{'barrage','sunder','sweeping_beam'}},
   plays={cold_snap=2,loop=2,defragment=3},focusedFrost=3,loopHooks=2,aoeActions=0,multiAoe=0,
   focusEffects={{room=4,turn=2,focus=1,block=3},{room=4,turn=3,focus=1,block=3},{room=4,turn=3,focus=1,block=3}},
   loopEffects={{room=4,turn=2,kind='lightning',amount=3,actual=3,lost=3},{room=4,turn=3,kind='lightning',amount=4,actual=4,lost=4}},
   focusFrost=true,focusCard='cold_snap',loop=true,resetAfterFour=true},
- {seed=29045,sources={'Cultist','Small Slimes','Jaw Worm','2 Fungi Beasts'},
+ {seed=29045,sources={'Raven Adept','Small Slimes','Jaw Worm','2 Fungi Beasts'},
   rewards={'chill','electrodynamics','claw','steam_barrier'},hp={74,68,57,51},turns={3,3,2,2},cardRng={7,3,0,0},shuffleRng={2,2,1,1},aiRng={3,5,3,4},
   offers={{'chill','cold_snap','compile_driver'},{'storm','ball_lightning','electrodynamics'},{'static_discharge','boot_sequence','claw'},{'go_for_the_eyes','steam_barrier','loop'}},
   plays={electrodynamics=2,chill=3},focusedFrost=0,loopHooks=0,aoeActions=7,multiAoe=2,electro=true,multi=true,resetAfterFour=true},

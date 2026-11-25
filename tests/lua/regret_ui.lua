@@ -1,7 +1,7 @@
 package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local H=dofile('tests/lua/support/battle_action_fixture.lua')
 local C=H.F.Combat
-local host,ui,panel,emit,tap,drain,_,root=H.setup({'regret','defend'},{'cultist'})
+local host,ui,panel,emit,tap,drain,_,root=H.setup({'regret','defend'},{'raven_adept'})
 local s=host.run.combat;local slot
 for i,c in ipairs(s.hand)do if c.cardId=='regret'then slot=i end end;assert(slot)
 local box=panel:GetChild('card'..slot)
@@ -18,7 +18,7 @@ local grid=root:GetChild('deckPanel'):GetChild('grid');local face=grid.items[0]:
 assert(face:GetChild('name').text=='余悔' and face:GetChild('type').text=='诅咒' and face:GetChild('cost').text=='')
 assert(face:GetChild('label').text:find('手牌',1,true))
 print('REGRET_UI_PASS battle type/cost/text/unplayable/HP-loss feedback and permanent-deck cost/type')
-local dead,deadUI,deadPanel,_,deadTap,deadDrain,_,deadRoot=H.setup({'regret','dazed'},{'cultist'})
+local dead,deadUI,deadPanel,_,deadTap,deadDrain,_,deadRoot=H.setup({'regret','dazed'},{'raven_adept'})
 dead.run.combat.player.hp=1;dead:refresh();deadTap('endTurn',4);deadDrain()
 assert(dead.run.phase=='defeat' and dead.run.hp==0 and dead.mode=='defeat')
 assert(dead.run.combat.cardInUse and #dead.run.combat.exhaust==0)

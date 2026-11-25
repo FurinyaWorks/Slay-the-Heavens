@@ -12,7 +12,7 @@ M.enemies={
  {id='snake_dagger',sourceId='Dagger',name='浮游蛇刃',tier='normal',hp=25,
   hpRange={min=20,max=25},ai={kind='reptomancer',policy='dagger'},intents={
    {id='stab',kind='attack',effects={{op='damage',value=9},{op='makeTempCardInDiscard',card='wound',value=1}}},
-   {id='explode',kind='attack',effects={{op='damage',value=25},{op='daggerSacrifice'}}}}},
+   {id='explode',kind='attack',effects={{op='damage',value=25},{op='daggerExpenditure'}}}}},
 }
 function M.register(catalog,copy)
  for _,enemy in ipairs(M.enemies)do
@@ -90,15 +90,15 @@ function M.summon(combat,state,leader)
 end
 function M.died(state,e,push)
  if not M.owns(e)or e.ai.policy~='reptomancer'then return end
- -- Reptomancer.die adds each Suicide(true) at TOP: reverse group order.
+ -- Reptomancer.die adds each summoned ally exit at TOP: reverse group order.
  -- Health-bar hiding is handled by the existing death presentation, not a kill.
  for _,ally in ipairs(state.enemies)do if ally~=e and ally.hp>0 and not ally.isDying then
-  push(state,{op='reptomancerSuicide',targetId=ally.id},true)
+  push(state,{op='reptomancerDismissal',targetId=ally.id},true)
  end end
 end
 function M.cleanup(api,state,effect)
  for _,e in ipairs(state.enemies)do if e.id==effect.targetId then
-  api.suicideReptomancerMinion(state,e);return true
+  api.dismissReptomancerMinion(state,e);return true
  end end
  error('missing Reptomancer cleanup target')
 end

@@ -34,7 +34,7 @@ test('default three hides nonexistent battle bottles, help and management slots'
  local h,r=setup(false);counter(r,0,3);assert(h:openPotions())
  for slot=1,5 do eq(r:GetChild('potionPanel'):GetChild('slot'..slot).visible,slot<=3)end
  for slot=4,5 do eq(modal(r,'slot'..slot),false)end
- assert(h:closePotions());assert(Run.startCombat(h.run,'cultist_solo'));h:refresh()
+ assert(h:closePotions());assert(Run.startCombat(h.run,'raven_adept_solo'));h:refresh()
  local panel=r:GetChild('battlePanel')
  for slot=1,5 do
   eq(bottle(panel,slot).visible,slot<=3)
@@ -51,7 +51,7 @@ test('real Belt exposes five management slots and discard refills exact fourth v
  eq(h.run.potions[5],nil);eq(h.run.potions[4],'dexterity_potion');counter(r,4,5)
 end)
 test('fourth and fifth native battle buttons use real bottles and expose independent help',function()
- local h,r=setup(true);fill(h);assert(Run.startCombat(h.run,'cultist_solo'));h:refresh()
+ local h,r=setup(true);fill(h);assert(Run.startCombat(h.run,'raven_adept_solo'));h:refresh()
  local panel=r:GetChild('battlePanel')
  for slot=4,5 do eq(bottle(panel,slot).visible,true);eq(panel:GetChild('potionHelp'):GetChild('potionHelp'..slot).visible,false)end
  local before=C.copy(h.run.potions);local energy=h.run.combat.energy
@@ -76,7 +76,7 @@ test('shop inventory admission and shared counter use actual five-slot capacity'
  assert(Nodes.enter(h.run,h.map,path[#path]));h.run.gold=1000;h:refresh();assert(F.click(r,'nodePanel','merchant/talk'));advanceShop(h);counter(r,4,5)
  local offer;for _,v in ipairs(h.run.nodeFlow.potions)do if not v.unavailable then offer=v;break end end;assert(offer)
  local gold=h.run.gold
- local tile=r:GetChild('nodePanel'):GetChild('shopView'):GetChild('potion'..offer.slot):GetChild('hit')
+ local tile=r:GetChild('nodePanel'):GetChild('shopView'):GetChild('goods'):GetChild('potion'..offer.slot):GetChild('hit')
  assert(tile.click());eq(h.run.potions[5],nil);eq(h.run.gold,gold);assert(not offer.sold);counter(r,4,5)
  local cancelled=h.nodeUI.actions.confirm.handler
  assert(r:GetChild('nodePanel'):GetChild('back'):GetChild('hit').click());eq(cancelled(),false)
@@ -91,7 +91,7 @@ end)
 test('full-five real combat reward refuses until management discard frees the fourth slot',function()
  local h,r=setup(false);h.run=Run.new(F.Data,42);h.map=Map.generate(F.Data,42)
  h.battleUI.run,h.nodeUI.run=h.run,h.run
- assert(Run.obtainRelic(h.run,'Potion Belt'));fill(h);assert(Run.startCombat(h.run,'cultist_solo'))
+ assert(Run.obtainRelic(h.run,'Potion Belt'));fill(h);assert(Run.startCombat(h.run,'raven_adept_solo'))
  for _,enemy in ipairs(h.run.combat.enemies)do enemy.hp=0 end
  assert(Run.finishCombat(h.run));h:refresh();counter(r,5,5)
  local offered=assert(h.run.rewards.potion);local before=C.copy(h.run)

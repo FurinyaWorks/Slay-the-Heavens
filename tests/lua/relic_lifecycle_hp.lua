@@ -1,7 +1,7 @@
 local F=dofile('tests/helpers/relic-lifecycle-baseline-support.lua')
 local C,A,H,Q=F.C,F.A,F.hooks,F.Q
 for _,shared in ipairs({false,true})do for _,reserve in ipairs({'fairy','tail','bloom'})do
- local s=C.new(F.D,{seed=42,deck={},enemies={'cultist'},enableStances=shared})
+ local s=C.new(F.D,{seed=42,deck={},enemies={'raven_adept'},enableStances=shared})
  local owned={'centennial_puzzle','runic_cube','self_forming_clay','red_skull','lizard_tail'}
  if reserve=='bloom'then owned[#owned+1]='mark_of_bloom'end
  H.bindBattle(s,owned,{lizard_tail=-1});A.applyPower(s,s.player,'rupture',2,s.player)
@@ -23,7 +23,7 @@ for _,shared in ipairs({false,true})do for _,reserve in ipairs({'fairy','tail','
  F.eq(s.cardActions,nil,'native owner released');F.eq(s.actionQueue,nil,'shared owner released')
 end end
 do
- local s=C.new(F.D,{seed=42,deck={'defend'},enemies={'cultist'}});H.bindBattle(s,{'red_skull','centennial_puzzle'})
+ local s=C.new(F.D,{seed=42,deck={'defend'},enemies={'raven_adept'}});H.bindBattle(s,{'red_skull','centennial_puzzle'})
  s.player.hp=40;H.battleStart(s,'red_skull');F.eq(s.player.statuses.strength,3)
  local root=F.root(s);F.call(root,'heal boundary removes Red Skull',C.applyEffects,s,{{op='heal',value=10}},s.player)
  F.eq(s.player.statuses.strength,0);F.eq(s.relicCombat.centennialUsed,nil,'healing is not HP loss')

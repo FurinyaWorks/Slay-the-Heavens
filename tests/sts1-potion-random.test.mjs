@@ -8,6 +8,9 @@ import {runLua} from '../scripts/test-lua.mjs';
 
 const catalog=JSON.parse(readFileSync('data/catalogs/sts1-ironclad-potions.json','utf8'));
 const vectors=JSON.parse(readFileSync('tests/fixtures/sts1-ironclad-potion-pool-vectors.json','utf8'));
+const sourceIds={CultistPotion:'RavenPotion', GamblersBrew:'SwapBrew', SteroidPotion:'SurgePotion'};
+const releaseSourceId = sourceId => sourceIds[sourceId] ?? sourceId;
+const releaseProjectId = id => id==='gamblers_brew' ? 'swap_brew' : id;
 const current=JSON.parse(readFileSync('data/potions.json','utf8')).potions;
 const prelude=`local P=require('abyss_potion_random');local R=require('abyss_sts_random')
 local function same(a,b,path)
@@ -29,12 +32,12 @@ function lua(body) {
 }
 
 test('production sampler preserves all33 exact source indices and canonical proposed IDs including pending effects',()=>{
- const expected=catalog.pool.map(p=>({sourceId:p.sourceId,id:p.proposedProjectId,sourceIndex:p.index,rarity:p.rarity}));
+ const expected=catalog.pool.map(p=>({sourceId:releaseSourceId(p.sourceId),id:releaseProjectId(p.proposedProjectId),sourceIndex:p.index,rarity:p.rarity}));
  assert.equal(new Set(expected.map(p=>p.id)).size,33);
- assert.deepEqual(expected.map(({sourceId,rarity})=>({sourceId,rarity})),vectors.pool);
+ assert.deepEqual(expected.map(({sourceId,rarity})=>({sourceId,rarity})),vectors.pool.map(p=>({...p,sourceId:releaseSourceId(p.sourceId)})));
  for(const p of catalog.pool) {
   if(p.currentProjectId!==null)assert.equal(p.currentProjectId,p.proposedProjectId);
-  const definition=current.find(x=>x.id===p.proposedProjectId);
+  const definition=current.find(x=>x.id===releaseProjectId(p.proposedProjectId));
   if(definition)assert.equal(definition.rarity,p.rarity,p.sourceId);
  }
  lua(`local expected=${toLua(expected)};same(P.pool(),expected)
@@ -58,6 +61,11 @@ test('actual sampler and persistent owner match every draw and snapshot in nine 
   return value
  end
  local function selected(result)return {sourceId=result.sourceId,rarity=result.rarity,attempts=result.attempts}end
+ local function expect(result,expected,action)
+  local aliases=${toLua(sourceIds)}
+  expected.sourceId=aliases[expected.sourceId] or expected.sourceId
+  same(selected(result),expected,action)
+ end
  for _,v in ipairs(${toLua(vectors.cases)})do
   local owner=P.new(v.seed);trace={}
   for _,record in ipairs(v.records)do
@@ -70,9 +78,9 @@ test('actual sampler and persistent owner match every draw and snapshot in nine 
     -- modifiers and acquisition policies are deliberately outside this module.
     inDrop=true;local roll=R.randomIntBetween(owner.potionRng,0,99);inDrop=false
     assert((roll<record.result.chance)==record.result.dropped)
-    if record.result.dropped then same(selected(P.sample(owner)),record.result.potion,action)end
-   elseif action=='totally_random'then same(selected(P.totallyRandom(owner)),record.result,action)
-   else same(selected(P.sample(owner,options)),record.result,action)end
+    if record.result.dropped then expect(P.sample(owner),record.result.potion,action)end
+   elseif action=='totally_random'then expect(P.totallyRandom(owner),record.result,action)
+   else expect(P.sample(owner,options),record.result,action)end
    same(P.snapshot(owner).potionRng,record.after,action..' '..v.seed)
   end
   same(trace,v.trace,'every draw '..v.seed);same(P.snapshot(owner).potionRng,v.after,'final '..v.seed)

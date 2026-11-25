@@ -11,9 +11,9 @@ end
 local function minimal()
  return {rules=D.rules,statuses=D.statuses,
   cards={cards={definition(D.cards.cards,'defend')}},
-  enemies={enemies={definition(D.enemies.enemies,'cultist')}}}
+  enemies={enemies={definition(D.enemies.enemies,'raven_adept')}}}
 end
-local function construct(data)return C.new(data,{seed=42,deck={'defend'},enemies={'cultist'}})end
+local function construct(data)return C.new(data,{seed=42,deck={'defend'},enemies={'raven_adept'}})end
 local passed,failed=0,0
 local function test(name,fn)
  local ok,why=pcall(fn);if ok then passed=passed+1 else failed=failed+1 end

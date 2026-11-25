@@ -17,7 +17,7 @@ local function streams(seed)
  local out={seed=seed};for _,id in ipairs({'aiRng','monsterHpRng','cardRandomRng','shuffleRng'})do out[id]=R.fromSeed(seed)end;return out
 end
 local function battle(mode,deck,allies,seed,data)
- local s=C.new(data or D,{enemies=allies and {'time_eater','cultist'}or {'time_eater'},deck=deck or {},
+ local s=C.new(data or D,{enemies=allies and {'time_eater','raven_adept'}or {'time_eater'},deck=deck or {},
   roomSeed=seed or '42',roomStreams=streams(seed or '42'),maxHp=1000,hp=1000,enableStances=mode=='advanced'})
  return s,s.enemies[1]
 end

@@ -10,7 +10,7 @@ end
 local function reward(stolen,full)
     local h,u,p,e,t,d,deck,root=H.setup()
     h.run=Run.new(H.F.Data,42);h.battleUI.run=h.run
-    assert(Run.startCombat(h.run,'cultist_solo'))
+    assert(Run.startCombat(h.run,'raven_adept_solo'))
     -- Isolate the completed encounter; all reward generation and subsequent
     -- transitions use the real Run and UI commands, not fabricated text.
     for _,enemy in ipairs(h.run.combat.enemies) do enemy.hp=0 end
@@ -63,7 +63,7 @@ assert(testStart(h));capture('map',h,root)
 h.mapUI.entryError='当前路线不可达，请选择亮起的节点。';h.mapUI:render()
 capture('map-feedback',h,root)
 h.mapUI.entryError=nil;h.mapUI:render();capture('map-feedback-cleared',h,root)
-assert(Run.startCombat(h.run,'cultist_solo'));h:refresh()
+assert(Run.startCombat(h.run,'raven_adept_solo'));h:refresh()
 capture('battle',h,root)
 root:GetChild('battlePanel'):GetChild('notice').text='能量不足，请选择其他卡牌。'
 h.battleUI:render();capture('battle-feedback',h,root)

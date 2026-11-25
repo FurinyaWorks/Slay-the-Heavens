@@ -1,6 +1,6 @@
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Run=require('abyss_run')
-local host,root=F.fixture();assert(F.start(host));assert(Run.startCombat(host.run,'cultist_solo'));host:refresh()
+local host,root=F.fixture();assert(F.start(host));assert(Run.startCombat(host.run,'raven_adept_solo'));host:refresh()
 local ui,panel=host.battleUI,root:GetChild('battlePanel')
 local render,renders=ui.render,0
 ui.render=function(self,...)renders=renders+1;return render(self,...)end

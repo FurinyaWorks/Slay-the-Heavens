@@ -1,11 +1,11 @@
--- Act 1 / A0 only; source and remaining RNG limits: TASK-15-blue-slaver-ai.md.
+-- Act 1 / A0 only; source and remaining RNG limits: TASK-15-blue-guard-ai.md.
 local M = {}
 
 local function select(enemy, id)
     for i, intent in ipairs(enemy.intents) do
         if intent.id == id then enemy.intentIndex = i; return end
     end
-    error("unknown Blue Slaver intent: " .. tostring(id))
+    error("unknown Blue Guard intent: " .. tostring(id))
 end
 
 function M.choose(ai, last, previous, roll)

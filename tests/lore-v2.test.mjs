@@ -17,7 +17,7 @@ const travelerNames=[
   [['flow','victory','full'],'荧收起剑','旅行者收起剑'],
   [['merchant','encounter'],'荧看到','旅行者看到'],
   [['combatIntros','looter'],'荧腰间','旅行者腰间'],
-  [['combatIntros','cultist'],'荧的脚步','旅行者的脚步'],
+  [['combatIntros','raven_adept'],'荧的脚步','旅行者的脚步'],
   [['eventCopy','purifier','intro'],'当荧靠近时','当旅行者靠近时'],
 ];
 // #668 @ f0bb1f342d14f4bf58753c9c2ac88fc9112e9bc1 approved these two event introductions.

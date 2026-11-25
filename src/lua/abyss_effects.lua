@@ -3,7 +3,7 @@ local M = {}
 local Actors = require("abyss_actor")
 local CardActions = require("abyss_card_actions")
 local extensionOps={defectFinal=true,gainMantra=true,applyMantra=true,removeMantra=true,gainDevotion=true,gainExhaustPower=true,gainOrbPower=true,
-    gainEnergyIfDiscard=true,calculatedGamble=true}
+    gainEnergyIfDiscard=true,calculatedExchange=true}
 for op in pairs(require('abyss_build_actions').ops) do extensionOps[op]=true end
 for op in pairs(require('abyss_flow_actions').ops) do extensionOps[op]=true end
 for op in pairs(require('abyss_watcher_final_cards').ops) do extensionOps[op]=true end
@@ -26,7 +26,7 @@ local clearsOnFinalDamage = { damage=true, damageAll=true, damageEqualToBlock=tr
 -- the entire input before any effect, including holes and unreachable branches.
 -- Unmarked inputs deliberately keep their old validation/error timing.
 coreOps.reptomancerSummon=true
-coreOps.daggerSacrifice=true
+coreOps.daggerExpenditure=true
 coreOps.enemyHealAll=true
 coreOps.enemyStrengthAll=true
 coreOps.enemyCleanse=true
@@ -149,7 +149,7 @@ function M.requiresQueue(effects)
         if type(effect)=='table' and require('abyss_build_actions').ops[effect.op] then return true end
         if type(effect)=='table' and require('abyss_flow_actions').ops[effect.op] then return true end
         if type(effect)=="table" and (effect.op=="gainMantra" or effect.op=="applyMantra" or effect.op=="removeMantra"
-            or effect.op=="gainExhaustPower" or effect.op=="calculatedGamble") then return true end
+            or effect.op=="gainExhaustPower" or effect.op=="calculatedExchange") then return true end
     end
     for _, effect in ipairs(effects) do if type(effect) == "table" and (effect.op == "scry" or effect.op == "handChoice" or effect.op == "whirlwind" or effect.op == "reaperDamage") then return true end end
     return false
@@ -157,7 +157,7 @@ end
 function M.allowedAfterVictory(effect)
     if effect.op=='rareRelicDamageAll'then return true end
     if require('abyss_time_eater').retained(effect)then return true end
-    if effect.op=='daggerSacrifice'then return true end
+    if effect.op=='daggerExpenditure'then return true end
     if effect.op=='capturedSharpHide' then return true end
     if effect.op=='orbStart' then return effect.action.kind=='frost' end
     if effect.op=='engineEvokeRounds' or effect.op=='evokeOrb' or effect.op=='evokeWithoutRemovingOrb' then return true end

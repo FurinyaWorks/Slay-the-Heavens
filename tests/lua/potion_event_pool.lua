@@ -3,7 +3,7 @@ local C,Run,Map,Nodes,R=require('abyss_combat'),require('abyss_run'),require('ab
 local Data=require('abyss_data')
 -- Independent fixed PotionHelper registration order, shared with the audited
 -- Python oracle rather than read from the production Lua sampler.
-local expected={'BloodPotion','ElixirPotion','HeartOfIron','Block Potion','Dexterity Potion','Energy Potion','Explosive Potion','Fire Potion','Strength Potion','Swift Potion','Weak Potion','FearPotion','AttackPotion','SkillPotion','PowerPotion','ColorlessPotion','SteroidPotion','SpeedPotion','BlessingOfTheForge','Regen Potion','Ancient Potion','LiquidBronze','GamblersBrew','EssenceOfSteel','DuplicationPotion','DistilledChaos','LiquidMemories','CultistPotion','Fruit Juice','SneckoOil','FairyPotion','SmokeBomb','EntropicBrew'}
+local expected={'BloodPotion','ElixirPotion','HeartOfIron','Block Potion','Dexterity Potion','Energy Potion','Explosive Potion','Fire Potion','Strength Potion','Swift Potion','Weak Potion','FearPotion','AttackPotion','SkillPotion','PowerPotion','ColorlessPotion','SurgePotion','SpeedPotion','BlessingOfTheForge','Regen Potion','Ancient Potion','LiquidBronze','SwapBrew','EssenceOfSteel','DuplicationPotion','DistilledChaos','LiquidMemories','RavenPotion','Fruit Juice','SneckoOil','FairyPotion','SmokeBomb','EntropicBrew'}
 local function eventRun(character)
  local run=Run.new(Data,42,character and {character=character,experimental=true} or nil)
  local map=Map.generate(Data,42);local first=Map.available(map)[1]

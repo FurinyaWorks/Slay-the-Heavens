@@ -4,7 +4,7 @@ local test,finish=H.suite('LUA_BATTLE_UI_POTION_REWARDS')
 local function reward()
     local host,ui,panel,emit,tap,drain=H.setup()
     host.run=Run.new(H.F.Data,42);host.battleUI.run=host.run
-    assert(Run.startCombat(host.run,'cultist_solo'))
+    assert(Run.startCombat(host.run,'raven_adept_solo'))
     -- Completed-battle fixture isolates real generated-tree reward input.
     for _,enemy in ipairs(host.run.combat.enemies) do enemy.hp=0 end
     assert(Run.finishCombat(host.run));assert(host.run.rewards.potion)

@@ -31,7 +31,7 @@ end
 local function battle(mode,deck,data)
  local s
  if mode=='v4' then s=require('support.original_v4_fixture').state('FR',40)
- else s=C.new(data or Data,{seed=42,deck=deck or {},enemies={'cultist'},cardRandomSeed='42'})end
+ else s=C.new(data or Data,{seed=42,deck=deck or {},enemies={'raven_adept'},cardRandomSeed='42'})end
  s.experimentalMechanics=mode=='experimental';s.events={}
  for _,e in ipairs(s.enemies)do e.ai=nil;e.intentIndex=1;e.intents={{id='wait',effects={{op='block',value=0}}}}end
  s.auditAliases={player=s.player,hand=s.hand,enemy=s.enemies[1],events=s.events,rng=s.aiRng};s.auditAliases.self=s.auditAliases

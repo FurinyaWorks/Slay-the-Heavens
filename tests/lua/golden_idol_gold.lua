@@ -15,7 +15,7 @@ end end
 -- Offer creation freezes once; lost/new ownership before claim never recalculates.
 local function terminal(held)
  local run=Run.new(require('abyss_data'),42);if held then assert(Run.obtainRelic(run,'golden_idol'))end
- assert(Run.startCombat(run,'cultist_solo'));run.combat.enemies[1].hp=0;assert(Run.finishCombat(run));return run
+ assert(Run.startCombat(run,'raven_adept_solo'));run.combat.enemies[1].hp=0;assert(Run.finishCombat(run));return run
 end
 local with=terminal(true);assert(with.rewards.gold==19);local frozen=with.rewards.gold
 for i,id in ipairs(with.relics)do if id=='golden_idol'then table.remove(with.relics,i);break end end

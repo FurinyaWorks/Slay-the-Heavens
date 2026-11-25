@@ -12,7 +12,7 @@ local function prepared()
  return Flow.withCards(data)
 end
 local function battle(deck,enemies)
- local s=C.new(prepared(),{seed=42,cardRandomSeed='42',enableStances=true,deck=deck or {'through_violence'},enemies=enemies or {'cultist'}})
+ local s=C.new(prepared(),{seed=42,cardRandomSeed='42',enableStances=true,deck=deck or {'through_violence'},enemies=enemies or {'raven_adept'}})
  for _,m in ipairs(s.enemies)do m.hp=1000;m.maxHp=1000 end
  return s
 end
@@ -40,7 +40,7 @@ test('normal damage snapshots remain independent of later stance and Strength',f
  assert(not pcall(Flow.prepareEffect,s,{op='wallop',value=math.huge},s.enemies[1]))
 end)
 test('Fear No Evil plans damage before Calm and Indignation uses BOTTOM',function()
- local s=battle(nil,{'cultist','cultist'});local target=s.enemies[1]
+ local s=battle(nil,{'raven_adept','raven_adept'});local target=s.enemies[1]
  target.intents={{effects={{op='damage',value=0}}}};target.intentIndex=1
  local p=Flow.planEffect(s,{op='fearNoEvil',value=8,normalAmount=8},{target=target})
  eq(#p.top,2);eq(p.top[1].op,'damage');eq(p.top[2].stance,'Calm')
@@ -90,7 +90,7 @@ test('Talk to the Hand queues fixed Block even for fully blocked zero damage',fu
  eq(#Flow.planAttacked(s,target,{damageType='NORMAL',source=target}).top,0)
 end)
 test('Pressure Points plans HP loss for all marked enemies after application',function()
- local s=battle(nil,{'cultist','cultist'});s.enemies[1].statuses.mark=8;s.enemies[2].statuses.mark=11
+ local s=battle(nil,{'raven_adept','raven_adept'});s.enemies[1].statuses.mark=8;s.enemies[2].statuses.mark=11
  local p=Flow.planEffect(s,{op='triggerMarks',value=1});eq(#p.bottom,2)
  eq(p.bottom[1].op,'markLoseHp');eq(p.bottom[1].targetId,s.enemies[1].id);eq(p.bottom[2].value,11)
 end)
@@ -176,7 +176,7 @@ test('Wallop TOP Block protects against this attack lethal Thorns retaliation',f
  play(s,'wallop');eq(s.player.hp,0);eq(s.phase,'defeat')
 end)
 test('Pressure Points real Mark bypasses Block on every marked target',function()
- local s=battle({'pressure_points'},{'cultist','cultist'});s.enemies[1].block=100;s.enemies[2].block=100;s.enemies[2].statuses.mark=11
+ local s=battle({'pressure_points'},{'raven_adept','raven_adept'});s.enemies[1].block=100;s.enemies[2].block=100;s.enemies[2].statuses.mark=11
  play(s,'pressure_points');eq(s.enemies[1].hp,992);eq(s.enemies[1].block,100);eq(s.enemies[2].hp,989)
 end)
 test('Cut Through Fate selects final Weave then draws it before idempotent queued recall',function()

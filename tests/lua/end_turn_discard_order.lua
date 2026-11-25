@@ -18,7 +18,7 @@ local function prepared()
     return d
 end
 local function battle(deck)
-    return Combat.new(prepared(),{seed=42,enemies={"cultist"},enableStances=true,deck=deck})
+    return Combat.new(prepared(),{seed=42,enemies={"raven_adept"},enableStances=true,deck=deck})
 end
 local function find(pile,id)
     for _,card in ipairs(pile) do if card.cardId==id then return card end end

@@ -19,7 +19,7 @@ test('map, battle, busy feedback and node survive repeated title round trips',fu
   local calls=0
   local h,r=F.fixture(nil,function()calls=calls+1;return true end,nil,cursor);assert(F.start(h))
   if context=='battle' or context=='busy'then
-   assert(Run.startCombat(h.run,'cultist_solo'));h:refresh()
+   assert(Run.startCombat(h.run,'raven_adept_solo'));h:refresh()
    if context=='busy'then h.battleUI:endTurn();assert(h.battleUI.busy)end
   elseif context=='node'then
    local routes=dofile('tests/lua/support/map_routes.lua')

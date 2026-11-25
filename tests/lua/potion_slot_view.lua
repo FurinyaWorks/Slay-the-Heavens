@@ -19,7 +19,7 @@ local function preserveGraph(root)
   end
  end
 end
-local run=Run.new(Data,42);assert(Run.startCombat(run,'cultist_solo'))
+local run=Run.new(Data,42);assert(Run.startCombat(run,'raven_adept_solo'))
 -- Every registered potion uses the exact complete original row, including sparse slots.
 local count=0
 for _,potion in ipairs(Data.potions.potions)do

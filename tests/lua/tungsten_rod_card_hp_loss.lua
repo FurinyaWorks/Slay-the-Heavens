@@ -13,7 +13,7 @@ local function fresh(id,upgraded,rod)
  for _,uid in ipairs(uids)do assert(Run.removeCard(r,uid))end
  assert(Run.obtainCard(r,id,{upgraded=upgraded}))
  if rod then assert(Run.obtainRelic(r,'tungsten_rod'))end
- assert(Run.startCombat(r,'cultist_solo'))
+ assert(Run.startCombat(r,'raven_adept_solo'))
  local c=r.combat.hand[1];eq(c.cardId,id);eq(c.upgraded,upgraded)
  return r,c
 end

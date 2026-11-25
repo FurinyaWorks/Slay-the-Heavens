@@ -47,14 +47,14 @@ local function beforeLethalPotion()
     if cached then return Combat.copy(cached) end
     local run = Run.new(Data, 61)
     assert(run.hp == 80 and run.gold == 99 and #run.deck == 10)
-    assert(Run.startCombat(run, 'cultist_solo'))
+    assert(Run.startCombat(run, 'raven_adept_solo'))
     for _ = 1, 150 do
         if run.phase ~= 'combat' then break end
         playOneCommand(run)
     end
     assert(run.phase == 'reward' and run.rewards.potion.id == 'fire_potion')
     assert(Run.claimPotionReward(run)); assert(Run.claimCardReward(run, 0)); dofile('tests/lua/support/finish_combat_rewards.lua')(run)
-    assert(Run.startCombat(run, 'cultist_solo'))
+    assert(Run.startCombat(run, 'raven_adept_solo'))
     for _ = 1, 150 do
         if run.combat.enemies[1].hp <= 20 then break end
         playOneCommand(run); assert(run.phase == 'combat')

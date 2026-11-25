@@ -2,15 +2,15 @@
   "note": "v0.1.0 数据基线。未声明 hpRange/ai 的旧敌人仍用固定生命/意图循环；已接专属策略的敌人见 SOURCES.md，不代表全池或原版随机流一致。",
   "enemies": [
     {
-      "id": "cultist",
+      "id": "raven_adept",
       "name": "祈火徒",
       "tier": "normal",
       "hp": 50,
       "hpRange": { "min": 48, "max": 54 },
-      "ai": { "kind": "ritual_then_attack", "ritualIntent": "cultist_2", "attackIntent": "cultist_1", "rollRange": 100 },
+      "ai": { "kind": "ritual_then_attack", "ritualIntent": "raven_adept_2", "attackIntent": "raven_adept_1", "rollRange": 100 },
       "intents": [
         {
-          "id": "cultist_1",
+          "id": "raven_adept_1",
           "kind": "attack",
           "effects": [
             {
@@ -20,7 +20,7 @@
           ]
         },
         {
-          "id": "cultist_2",
+          "id": "raven_adept_2",
           "kind": "buff",
           "effects": [
             {
@@ -454,21 +454,21 @@
       ]
     },
     {
-      "id": "blue_slaver",
+      "id": "blue_guard",
       "name": "蓝衣束缚者",
       "tier": "normal",
       "hp": 48,
       "hpRange": { "min": 46, "max": 50 },
       "ai": {
-        "kind": "blue_slaver",
-        "stabIntent": "blue_slaver_1",
-        "rakeIntent": "blue_slaver_2",
+        "kind": "blue_guard",
+        "stabIntent": "blue_guard_1",
+        "rakeIntent": "blue_guard_2",
         "rollRange": 100,
         "stabCutoff": 40
       },
       "intents": [
         {
-          "id": "blue_slaver_1",
+          "id": "blue_guard_1",
           "kind": "attack",
           "effects": [
             {
@@ -478,7 +478,7 @@
           ]
         },
         {
-          "id": "blue_slaver_2",
+          "id": "blue_guard_2",
           "kind": "attack",
           "effects": [
             {
@@ -495,23 +495,23 @@
       ]
     },
     {
-      "id": "red_slaver",
+      "id": "red_guard",
       "name": "赤衣束缚者",
       "tier": "normal",
       "hp": 48,
       "hpRange": {"min": 46, "max": 50},
       "ai": {
-        "kind": "red_slaver",
-        "stabIntent": "red_slaver_1",
-        "entangleIntent": "red_slaver_2",
-        "scrapeIntent": "red_slaver_3",
+        "kind": "red_guard",
+        "stabIntent": "red_guard_1",
+        "entangleIntent": "red_guard_2",
+        "scrapeIntent": "red_guard_3",
         "rollRange": 100,
         "entangleCutoff": 75,
         "stabCutoff": 55
       },
       "intents": [
         {
-          "id": "red_slaver_1",
+          "id": "red_guard_1",
           "kind": "attack",
           "effects": [
             {
@@ -521,14 +521,14 @@
           ]
         },
         {
-          "id": "red_slaver_2",
+          "id": "red_guard_2",
           "kind": "debuff",
           "effects": [
             {"op": "applyStatus", "status": "entangled", "value": 1}
           ]
         },
         {
-          "id": "red_slaver_3",
+          "id": "red_guard_3",
           "kind": "attack",
           "effects": [
             {"op": "damage", "value": 8},
@@ -977,10 +977,10 @@
   ],
   "encounters": [
     {
-      "id": "cultist_solo",
+      "id": "raven_adept_solo",
       "tier": "normal",
       "enemies": [
-        "cultist"
+        "raven_adept"
       ],
       "minFloor": 1,
       "maxFloor": 14
@@ -1068,19 +1068,19 @@
       "maxFloor": 14
     },
     {
-      "id": "blue_slaver_solo",
+      "id": "blue_guard_solo",
       "tier": "normal",
       "enemies": [
-        "blue_slaver"
+        "blue_guard"
       ],
       "minFloor": 4,
       "maxFloor": 14
     },
     {
-      "id": "red_slaver_solo",
+      "id": "red_guard_solo",
       "tier": "normal",
       "enemies": [
-        "red_slaver"
+        "red_guard"
       ],
       "minFloor": 4,
       "maxFloor": 14

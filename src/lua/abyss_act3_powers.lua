@@ -40,7 +40,7 @@ function M.duringTurn(combat,state,enemy)
  if not transient(enemy)or enemy.hp<=0 then return end
  local n=enemy.statuses.fading
  assert(type(n)=='number'and n%1==0 and n>0,'invalid Fading countdown')
- if n==1 then combat.suicideTransient(state,enemy)
+ if n==1 then combat.expireTransient(state,enemy)
  else enemy.statuses.fading=n-1;Events.emit(state,'status',{source=enemy.id,target=enemy.id,status='fading',amount=-1})end
 end
 function M.active(state)
@@ -101,7 +101,7 @@ function M.dazedDraw(state,source)
  end
 end
 -- takeTurn queues RollMove before duringTurn queues these actions. DAMAGE
--- survives the SuicideAction even when that was the final live monster.
+-- survives the enemy exit even when that was the final live monster.
 function M.afterTurn(combat,state,enemy)
  if not enemy.ai or enemy.ai.kind~='act3'or enemy.ai.policy~='exploder'or enemy.hp<=0 then return end
  local amount=enemy.statuses.explosive or 0
@@ -111,7 +111,7 @@ function M.afterTurn(combat,state,enemy)
   Events.emit(state,'status',{source=enemy.id,target=enemy.id,status='explosive',amount=-1})
   return
  end
- combat.suicideExploder(state,enemy)
+ combat.detonateExploder(state,enemy)
  combat.retaliate(state,enemy,state.player,30)
 end
 return M

@@ -10,16 +10,16 @@ local Library=require('abyss_library_event')
 local Ghosts=require('abyss_ghosts_event')
 local Nest=require('abyss_nest_event')
 local Duplicator=require('abyss_duplicator_event')
-local M={ids={beggar=true,mausoleum=true,addict=true,back_to_basics=true,joust=true,the_library=true,ghosts=true,nest=true,duplicator=true}}
+local M={ids={beggar=true,mausoleum=true,traveling_merchant=true,back_to_basics=true,joust=true,the_library=true,ghosts=true,nest=true,duplicator=true}}
 local GOLD_COST=75
 
-for _,id in ipairs({'colosseum','masked_bandits','cursed_tome','forgotten_altar','drug_dealer','vampires'})do M.ids[id]=true end
+for _,id in ipairs({'colosseum','masked_bandits','cursed_tome','forgotten_altar','augmenter','vampires'})do M.ids[id]=true end
 local function extension(id)
     if id=='colosseum'then return require('abyss_colosseum_event')end
     if id=='masked_bandits'then return require('abyss_masked_bandits_event')end
     if id=='cursed_tome'then return require('abyss_cursed_tome_event')end
     if id=='forgotten_altar'then return require('abyss_forgotten_altar_event')end
-    if id=='drug_dealer'then return require('abyss_drug_dealer_event')end
+    if id=='augmenter'then return require('abyss_augmenter_event')end
     if id=='vampires'then return require('abyss_vampires_event')end
 end
 function M.prepare(run,event,miscRng,floor)
@@ -31,7 +31,7 @@ function M.prepare(run,event,miscRng,floor)
     if event.id=='the_library' then return Library.prepare(run,event) end
     if event.id=='back_to_basics' then return Basics.prepare(run,event) end
     event.stage='intro'
-    if event.id=='addict' then event.body='一位商贩提供一件遗物，价格是85金币。';return end
+    if event.id=='traveling_merchant' then event.body='一位商贩提供一件遗物，价格是85金币。';return end
     event.body=event.id=='mausoleum' and '一座古墓中放着封闭的石棺。' or '一位乞丐向你请求75金币。'
 end
 
@@ -47,7 +47,7 @@ function M.options(run,event)
     if event.id=='ghosts' then return Ghosts.options(run,event) end
     if event.id=='the_library' then return Library.options(run,event) end
     if event.id=='back_to_basics' then return Basics.options(run,event) end
-    if event.id=='addict' then
+    if event.id=='traveling_merchant' then
         if event.stage=='intro' then
             return {row('buy','支付85金币','获得一件随机遗物。',run.gold>=85),
                 row('steal','偷取遗物','获得一件随机遗物和诅咒「羞惭」。'),
@@ -79,7 +79,7 @@ function M.options(run,event)
     return {}
 end
 
-local function chooseAddict(run,event,choice,uid)
+local function chooseTravelingMerchant(run,event,choice,uid)
     if uid~=nil then return false,'invalid_event_choice' end
     if event.stage=='result' then
         if choice=='leave' then return true,'complete' end
@@ -89,7 +89,7 @@ local function chooseAddict(run,event,choice,uid)
     if choice=='leave' then return true,'complete' end
     if choice~='buy' and choice~='steal' then return false,'invalid_event_choice' end
     if choice=='buy' and run.gold<85 then return false,'insufficient_gold' end
-    -- Unlike Mausoleum, Addict selects the source screenless relic BEFORE
+    -- Unlike Mausoleum, TravelingMerchant selects the source screenless relic BEFORE
     -- constructing the delayed curse effect. Unsupported content refuses the
     -- enclosing Nodes transaction, never rerolls against implemented content.
     local offer,nextPool=Run.prepareRelic(run,{channel='event',screenless=true,room='event'})
@@ -225,7 +225,7 @@ function M.choose(run,flow,choice,uid,upgradeable)
     local event=flow.event
     if event.id=='ghosts' then return Ghosts.choose(run,flow,choice,uid) end
     if event.id=='back_to_basics' then return Basics.choose(run,flow,choice,uid,upgradeable) end
-    if event.id=='addict' then return chooseAddict(run,event,choice,uid) end
+    if event.id=='traveling_merchant' then return chooseTravelingMerchant(run,event,choice,uid) end
     if event.id=='mausoleum' then return chooseMausoleum(run,event,choice,uid) end
     return chooseBeggar(run,event,choice,uid)
 end

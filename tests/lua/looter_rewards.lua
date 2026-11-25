@@ -7,7 +7,7 @@ local passed,failed=0,0
 local function test(name,fn) sliceRegistered=sliceRegistered+1;if sliceRegistered<sliceFirst or sliceRegistered>sliceLast then return end;sliceExecuted=sliceExecuted+1;local ok,e=pcall(fn);if ok then passed=passed+1;print('PASS '..name) else failed=failed+1;print('FAIL '..name..': '..tostring(e)) end end
 local function eq(a,b) assert(a==b,tostring(a)..' ~= '..tostring(b)) end
 local function win(stolen)
- local r=Run.new(Data,42);assert(Run.startCombat(r,'cultist_solo'))
+ local r=Run.new(Data,42);assert(Run.startCombat(r,'raven_adept_solo'))
  -- Contract fixture only: a staged death ledger, not proof of real Looter stealing.
  if stolen then r.combat.stolenGoldReward=stolen end
  for _=1,30 do

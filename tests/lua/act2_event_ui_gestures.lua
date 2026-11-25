@@ -90,7 +90,7 @@ end)
 test('final native GetChild reentrant render invalidates option/footer/row after its last ownership read',function()
  for _,kind in ipairs({'option','confirm','row'})do
   local r,m
-  if kind=='option' then r,m=H.fixture('addict')else r,m=H.selecting({{uid=7,cardId='strike'},{uid=8,cardId='defend'}})end
+  if kind=='option' then r,m=H.fixture('traveling_merchant')else r,m=H.selecting({{uid=7,cardId='strike'},{uid=8,cardId='defend'}})end
   local ui,get,shown,click,changes,root,host=H.setup(r,m)
   if kind=='confirm' then assert(click('pickerView/card1'))end
   local key=kind=='option' and 'eventView/option3' or kind=='confirm' and 'confirm' or 'pickerView/card2'

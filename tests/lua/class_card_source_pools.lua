@@ -27,7 +27,7 @@ for _,id in ipairs({'silent','defect','watcher'})do
  assert(missing.energy==snapshot.energy and missing.hand[1].uid==snapshot.hand[1].uid and #missing.events==#snapshot.events)
  assert(missing.cardRandomRng.counter==snapshot.cardRandomRng.counter)
  local run=Run.new(data,19,{character=id,experimental=true})
- assert(Run.startCombat(run,'cultist_solo'));run.combat.enemies[1].hp=0
+ assert(Run.startCombat(run,'raven_adept_solo'));run.combat.enemies[1].hp=0
  local counter=run.cardRng.counter;assert(Run.finishCombat(run));assert(run.cardRng.counter>counter,'rewards must consume the source card stream')
 end
 print('ok complete class source pools and explicit missing-generation rejection')

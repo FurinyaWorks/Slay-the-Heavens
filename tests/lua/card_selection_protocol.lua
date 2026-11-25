@@ -22,7 +22,7 @@ for _,name in ipairs({'apply','applyChoice','choose','enqueue'})do
  end
 end
 local function battle()
- local s=C.new(Data,{seed=42,deck={'strike'},enemies={'cultist'},cardRandomSeed='42'})
+ local s=C.new(Data,{seed=42,deck={'strike'},enemies={'raven_adept'},cardRandomSeed='42'})
  s.hand={{uid=101,cardId='strike'},{uid=102,cardId='defend'},{uid=103,cardId='bash'}}
  s.draw={};s.discard={};s.exhaust={};s.cardActions=nil
  return s

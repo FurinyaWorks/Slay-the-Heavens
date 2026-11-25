@@ -9,7 +9,7 @@ local function run(character,ids,deck)
  local r=R.new(D,'42',character and {experimental=true,character=character}or nil)
  for _,id in ipairs(ids or {})do assert(R.obtainRelic(r,id))end
  if deck then r.deck={};for i,id in ipairs(deck)do r.deck[i]={uid=i,cardId=id,upgraded=false}end end
- assert(R.startCombat(r,'cultist_solo'));r.combat.enemies[1].hp=10000;r.combat.enemies[1].maxHp=10000
+ assert(R.startCombat(r,'raven_adept_solo'));r.combat.enemies[1].hp=10000;r.combat.enemies[1].maxHp=10000
  return r,r.combat
 end
 local function play(r,id)

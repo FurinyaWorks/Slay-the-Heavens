@@ -1,4 +1,4 @@
-local number = require("abyss_numbers").integer
+local RunHud=require('abyss_run_hud')
 local PageReveal=require('abyss_page_reveal')
 local Navigation=require('abyss_game_ui_navigation')
 local M = {}
@@ -69,14 +69,14 @@ function M.canManagePotions(openingCovered,self)
         end
 end
 
-function M.resourceHint(self,canManagePotions,inCombat)
+function M.resourceHint(self,canManagePotions)
     return function(kind)
             if self.potionUI.visible or not canManagePotions(self.run) then return false end
             local run=self.run
-            local player=inCombat() and run.combat.player or run
+            local hp,gold=RunHud.resourceText(run)
             local title=kind=='hp' and '生命' or '金币'
-            local text=kind=='hp' and ('当前生命 '..number(player.hp)..'/'..number(player.maxHp)..'。\n生命归零即本局失败；战斗之间不会自动回满。')
-                or ('当前金币 '..number(run.gold)..'。\n可在商店购买卡牌、遗物、药水，或支付移除卡牌等服务。')
+            local text=kind=='hp' and ('当前生命 '..hp..'。\n生命归零即本局失败；战斗之间不会自动回满。')
+                or ('当前金币 '..gold..'。\n可在商店购买卡牌、遗物、药水，或支付移除卡牌等服务。')
             if not self.deckUI:inspectText(run,title,text) then return false end
             self.deckUI.closeOnOutside=true;self.battleUI.selected=nil;self:refresh();return true
         end
@@ -155,10 +155,19 @@ local function canOpenDeck(openingCovered,self)
     return not openingCovered() and not deckBlocked(self)
         and (self.mode=='map' or self.mode=='battle' or self.mode=='node')
 end
+local function openCardFocus(self,read)
+    if self.mode~='battle' then return false end
+    local function current()
+        return self.battleUI:cardHelpReady(read,self.deckUI.focusRead==read)
+    end
+    return current() and self.deckUI:openCardFocus(self.run,read,current)
+end
 function M.openDeck(openingCovered,self)
-    return function(_,pileKind)
+    return function(_,pileKind,read)
             if not canOpenDeck(openingCovered,self) then return false end
-            if pileKind then
+            if read then
+                if not openCardFocus(self,read) then return false end
+            elseif pileKind then
                 if self.mode~='battle' or not self.deckUI:openPile(self.run,pileKind)then return false end
             elseif not self.deckUI:open(self.run)then return false end
             self.battleUI.selected = nil

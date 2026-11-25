@@ -5,7 +5,7 @@ local passed,failed=0,0
 local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end
 local function test(name,fn)local ok,why=pcall(fn);if ok then passed=passed+1 else failed=failed+1 end;print((ok and 'PASS 'or 'FAIL ')..name..(ok and ''or ': '..tostring(why)))end
 local function fresh(advanced,burn)
- local s=C.new(Data,{deck={'combust'},enemies={'cultist'},seed=42})
+ local s=C.new(Data,{deck={'combust'},enemies={'raven_adept'},seed=42})
  -- The same real definitions exercise both production dispatchers; this is a
  -- controlled host selection, not a natural class acquisition claim.
  s.experimentalMechanics=advanced
@@ -23,12 +23,12 @@ for _,advanced in ipairs({false,true})do
   assert(C.endTurn(s));eq(C.outcome(s),nil);eq(s.player.hp,3);eq(s.player.statuses.regen,2)
  end)
  test('real native Rage cleanup keeps its owning registration '..tostring(advanced),function()
-  local s=C.new(Data,{deck={'rage'},enemies={'cultist'},seed=42});s.experimentalMechanics=advanced
+  local s=C.new(Data,{deck={'rage'},enemies={'raven_adept'},seed=42});s.experimentalMechanics=advanced
   assert(C.play(s,s.hand[1].uid));assert(C.endTurn(s));eq(s.player.statuses.rage,nil)
  end)
 end
 test('lethal queued real Strike still executes useCard disposal',function()
- local s=C.new(Data,{deck={'strike'},enemies={'cultist'},seed=42,enableStances=true})
+ local s=C.new(Data,{deck={'strike'},enemies={'raven_adept'},seed=42,enableStances=true})
  local card=s.hand[1];s.enemies[1].hp=1
  assert(C.play(s,card.uid,1));eq(C.outcome(s),'victory');eq(s.discard[1].uid,card.uid)
  eq(s.cardInUse,nil);eq(s.pendingPlay,nil);eq(s.actionQueue,nil)

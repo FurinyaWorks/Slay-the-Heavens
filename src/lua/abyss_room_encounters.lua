@@ -3,9 +3,9 @@
 local C=require('abyss_encounter_formation')
 local M={}
 local fixed={
- ['Cultist']={'cultist_solo','cultist'},['Jaw Worm']={'jaw_solo','jaw_worm'},
- ['Blue Slaver']={'blue_slaver_solo','blue_slaver'},['Looter']={'looter_solo','looter'},
- ['Red Slaver']={'red_slaver_solo','red_slaver'},['2 Fungi Beasts']={'fungi_pair','fungi_beast','fungi_beast'},
+ ['Raven Adept']={'raven_adept_solo','raven_adept'},['Jaw Worm']={'jaw_solo','jaw_worm'},
+ ['Blue Guard']={'blue_guard_solo','blue_guard'},['Looter']={'looter_solo','looter'},
+ ['Red Guard']={'red_guard_solo','red_guard'},['2 Fungi Beasts']={'fungi_pair','fungi_beast','fungi_beast'},
  ['Gremlin Nob']={'elite_nob','gremlin_nob'},['Lagavulin']={'elite_lagavulin','lagavulin'},
  ['3 Sentries']={'elite_sentries','sentry','sentry','sentry'},
 }

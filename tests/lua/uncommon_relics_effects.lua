@@ -4,7 +4,7 @@ local data=require('abyss_data')
 local n=0
 local function test(name,f)f();n=n+1;print('PASS '..name)end
 local function battle(relics)
- local s=assert(C.new(data,{seed=42,deck={'strike','defend','defend','defend','defend','defend','defend'},enemies={'cultist','cultist'}}))
+ local s=assert(C.new(data,{seed=42,deck={'strike','defend','defend','defend','defend','defend','defend'},enemies={'raven_adept','raven_adept'}}))
  s.relics=relics or {};s.relicCounters={};return s
 end
 local function apply(s,effects)assert(C.applyEffects(s,effects,s.player,s.enemies[1]))end

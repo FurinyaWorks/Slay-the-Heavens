@@ -245,7 +245,7 @@ local function redSkullOpening(state)
 end
 
 local function openingPower(state,id)
- if id=='cultist_mask'then E.emit(state,'relic_flavor',{relic=id,text='CAW! CAAAW!'})
+ if id=='raven_mask'then E.emit(state,'relic_flavor',{relic=id,text='CAW! CAAAW!'})
  elseif id=='fossilized_helix' then A.applyPower(state,state.player,'buffer',1,state.player)
  elseif id=='data_disk' then A.applyPower(state,state.player,'focus',1,state.player)
  elseif id=='red_mask'then redMaskOpening(state)
@@ -260,7 +260,7 @@ local function openingPower(state,id)
 end
 
 function M.battleStart(state,id)
- if id=='mutagenic_strength'then return require('abyss_act2_event_relics').battleStart(state,id)end
+ if id=='augmentation_core'then return require('abyss_act2_event_relics').battleStart(state,id)end
  id=M.localId(id)
  if id=='pantograph' then openingHeal(state,id,25)
  elseif id=='blood_vial' then openingHeal(state,id,2)

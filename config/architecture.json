@@ -1,5 +1,6 @@
 {
   "layers": {
+    "abyss_checkpoint_identities": "core",
     "abyss_page_reveal": "ui",
     "abyss_lowcost_art": "ui",
     "abyss_game_ui_navigation": "ui",
@@ -36,7 +37,7 @@
     "abyss_event_card_sampling": "core",
     "abyss_vampires_event": "core",
     "abyss_forgotten_altar_event": "core",
-    "abyss_drug_dealer_event": "core",
+    "abyss_augmenter_event": "core",
     "abyss_cursed_tome_event": "core",
     "abyss_event_combat_enemies": "core",
     "abyss_event_combat_routes": "core",
@@ -182,10 +183,11 @@
     "abyss_battle_status_view": "ui",
     "abyss_battle_unit_view": "ui",
     "abyss_bgm": "ui",
-    "abyss_blue_slaver_ai": "core",
+    "abyss_blue_guard_ai": "core",
     "abyss_card_actions": "core",
     "abyss_card_capability": "core",
     "abyss_card_display": "ui",
+    "abyss_card_keywords": "ui",
     "abyss_card_input": "ui",
     "abyss_card_pool": "core",
     "abyss_card_random": "core",
@@ -241,11 +243,12 @@
     "abyss_prologue": "ui",
     "abyss_random": "core",
     "abyss_randomxs128": "core",
-    "abyss_red_slaver_ai": "core",
+    "abyss_red_guard_ai": "core",
     "abyss_relic_hooks": "core",
     "abyss_relic_pool": "core",
     "abyss_room_encounters": "core",
     "abyss_run": "core",
+    "abyss_run_hud": "ui",
     "abyss_run_seed": "core",
     "abyss_sentry_ai": "core",
     "abyss_shop": "core",
@@ -301,6 +304,8 @@
     "abyss_node_ui_reward_detail": "ui",
     "abyss_character_select": "ui",
     "abyss_character_select_view": "ui",
+    "abyss_character_entrance": "ui",
+    "abyss_entrance_motion": "ui",
     "abyss_battle_damage_view": "ui",
     "abyss_card_skin": "ui",
     "abyss_node_ui_feedback": "ui",
@@ -652,7 +657,7 @@
     {
       "from": "abyss_combat_effect_dispatch",
       "to": "abyss_relic_family_combat",
-      "reason": "Only resolving Toolbox or Gambling Chip actions invokes fixed family choice execution after the dispatcher loads."
+      "reason": "Only resolving Toolbox or Tactical Badge actions invokes fixed family choice execution after the dispatcher loads."
     },
     {
       "from": "abyss_combat_effect_dispatch",
@@ -727,7 +732,7 @@
     {
       "from": "abyss_relic_family_combat",
       "to": "abyss_discard",
-      "reason": "Only a committed Gambling Chip selection dispatches initialized per-card discard actions after pending-choice clearing and draw admission."
+      "reason": "Only a committed Tactical Badge selection dispatches initialized per-card discard actions after pending-choice clearing and draw admission."
     },
     {
       "from": "abyss_relic_family_combat",

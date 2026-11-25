@@ -1,6 +1,6 @@
 -- Detached development display adaptation; rules remain owned by Combat.
 local M={}
-local names={corruption='腐化',feel_no_pain='无惧疼痛',dark_embrace='黑暗之拥',sentinel='哨卫',burning_pact='燃烧契约',sneaky_strike='潜袭',eviscerate='剔骨',calculated_gamble='筹谋',loop='循环',electrodynamics='电动力学',protect='护身',perseverance='坚韧',windmill_strike='风车打击',sands_of_time='化沙',accuracy='精准',infinite_blades='无限刀刃',prostrate='伏身',worship='礼拜',devotion='供奉',deadly_poison='毒液',shiv='飞刃',blade_dance='刃舞',survivor='撤身',acrobatics='翻找',
+local names={corruption='腐化',feel_no_pain='无惧疼痛',dark_embrace='黑暗之拥',sentinel='哨卫',burning_pact='燃烧契约',sneaky_strike='潜袭',eviscerate='剔骨',calculated_exchange='筹谋',loop='循环',electrodynamics='电动力学',protect='护身',perseverance='坚韧',windmill_strike='风车打击',sands_of_time='化沙',accuracy='精准',infinite_blades='无限刀刃',prostrate='伏身',worship='礼拜',devotion='供奉',deadly_poison='毒液',shiv='飞刃',blade_dance='刃舞',survivor='撤身',acrobatics='翻找',
     tactician='战术储备',reflex='灵思',footwork='步法',backflip='闪避翻滚',dagger_throw='掷刃',
     dagger_spray='双刃扫射',cloak_and_dagger='藏刃',prepared='预备',quick_slash='疾斩',catalyst='毒性催化',
     bouncing_flask='弹跳毒瓶',noxious_fumes='毒雾',neutralize='牵制',

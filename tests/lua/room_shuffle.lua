@@ -11,7 +11,7 @@ end
 local function test(name,fn)fn();count=count+1;print('ok room shuffle '..count..' - '..name)end
 local function battle(deck,seed,floor)
  local run=Run.new(Data,seed or '42');local streams=Run.roomStreams(run,floor or 1)
- return C.new(Data,{seed=101,deck=deck or {},enemies={'cultist'},roomSeed=streams.seed,roomStreams=streams}),streams
+ return C.new(Data,{seed=101,deck=deck or {},enemies={'raven_adept'},roomSeed=streams.seed,roomStreams=streams}),streams
 end
 local function card(uid,id)return {uid=uid,cardId=id or 'strike',upgraded=false}end
 
@@ -19,7 +19,7 @@ test('empty and singleton initialization spend a single shuffle before zero requ
  local data=C.copy(Data);data.rules.player.drawPerTurn=0
  for _,deck in ipairs({{}, {'strike'}})do
   local run=Run.new(data,'42');local streams=Run.roomStreams(run,1)
-  local s=C.new(data,{seed=101,deck=deck,enemies={'cultist'},roomSeed=streams.seed,roomStreams=streams})
+  local s=C.new(data,{seed=101,deck=deck,enemies={'raven_adept'},roomSeed=streams.seed,roomStreams=streams})
   eq(s.shuffleRng.counter,1);eq(s.seed,101);eq(#s.draw,#deck)
  end
 end)

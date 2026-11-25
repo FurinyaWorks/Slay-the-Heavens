@@ -225,7 +225,7 @@ for _, from in ipairs({"silent", "ironclad"}) do
     local e = {touchId = 43}
     icon(1).down(e)
     local run = G.Run.new(G.F.Data, 43)
-    assert(G.Run.startCombat(run, "cultist_solo"))
+    assert(G.Run.startCombat(run, "raven_adept_solo"))
     run.character = from == "silent" and "ironclad" or "silent"
     Combat.addStatus(run.combat.player, "weak", 2)
     host.run, ui.run = run, run

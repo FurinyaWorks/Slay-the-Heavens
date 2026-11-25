@@ -20,7 +20,7 @@ local function test(name,fn)
 end
 local data=C.copy(D);data.statuses=SF.withCardDefinitions(D).statuses
 local function battle(mode,deck,allies)
- local s=C.new(data,{seed=42,cardRandomSeed='42',enemies=allies and {'cultist','cultist','awakened_one'}or {'awakened_one'},
+ local s=C.new(data,{seed=42,cardRandomSeed='42',enemies=allies and {'raven_adept','raven_adept','awakened_one'}or {'awakened_one'},
   deck=deck or {},hp=500,maxHp=500,enableStances=mode=='advanced'})
  return s,s.enemies[#s.enemies]
 end
@@ -52,7 +52,7 @@ test('source resolver selects the real three-actor formation',function()
  local formation=require('abyss_encounter_formation').assemble(e.sourceEncounter,{misc={},construct=function(id,x,y)
   calls[#calls+1]={id,x,y};return {id=id}
  end})
- eq(#formation,3);same(calls,{{'cultist',-590,10},{'cultist',-298,-10},{'awakened_one',100,15}})
+ eq(#formation,3);same(calls,{{'raven_adept',-590,10},{'raven_adept',-298,-10},{'awakened_one',100,15}})
 end)
 test('opening power amounts retain source acquisition order and no A4 strength',function()
  local s,e=battle();eq(e.hp,300);eq(e.maxHp,300);eq(intent(e),'slash')
@@ -158,13 +158,13 @@ for _,mode in ipairs({'native','advanced'})do
   for _,id in ipairs({'corpse_explosion','weak','poison','shackled','curiosity','unawakened'})do eq(e.statuses[id],nil,id..' removed')end
   eq(e.statuses.strength,4);eq(e.statuses.regenerate_monster,10)
  end)
- test(mode..' final-form death queues cultist escapes between the source duplicate death visits',function()
+ test(mode..' final-form death queues raven_adept escapes between the source duplicate death visits',function()
   local s,e=battle(mode,nil,true);zeroFirst(s,e);assert(C.endTurn(s))
   for i=1,2 do s.enemies[i].hp=1000;s.enemies[i].maxHp=1000 end
   A.applyPower(s,e,'corpse_explosion',1,s.player)
   local n=corpseTrace(s,function()C.damage(s,s.player,e,1000,true)end)
   eq(n,2,'source final death callbacks');eq(e.hp,0);assert(e.isDying)
-  for i=1,2 do eq(s.enemies[i].hp,700);eq(s.enemies[i].escaped,true,'Cultist escapes without death')end
+  for i=1,2 do eq(s.enemies[i].hp,700);eq(s.enemies[i].escaped,true,'Raven Adept escapes without death')end
   eq(C.outcome(s),'victory');eq(#events(s,'enemy_escape'),2)
  end)
  test(mode..' lethal retaliation keeps the queued roll then restores Rebirth intent',function()

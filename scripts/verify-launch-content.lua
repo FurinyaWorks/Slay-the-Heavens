@@ -174,7 +174,7 @@ for _, relic in ipairs(data.relics.relics) do
             for tier,size in pairs({common=33,uncommon=30,rare=28,shop=17,boss=22})do
                 assert(#catalog.queues[tier]==size,'Incomplete Black Star source relic catalog')
             end
-            local boss={'Fusion Hammer','Velvet Choker','Runic Dome','SlaversCollar','Snecko Eye',"Pandora's Box",'Cursed Key','Busted Crown',
+            local boss={'Fusion Hammer','Velvet Choker','Runic Dome','ArenaCollar','Snecko Eye',"Pandora's Box",'Cursed Key','Busted Crown',
                 'Ectoplasm','Tiny House','Sozu',"Philosopher's Stone",'Astrolabe','Black Star','SacredBark','Empty Cage',
                 'Runic Pyramid','Calling Bell','Coffee Dripper','Black Blood','Mark of Pain','Runic Cube'}
             assert(#catalog.queues.boss==#boss,'Incomplete Black Star source Boss catalog')

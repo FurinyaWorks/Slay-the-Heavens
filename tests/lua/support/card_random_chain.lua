@@ -10,7 +10,7 @@ return function(fixture,fullPool,attackPool)
  local run=Run.new(D,fixture.seed,{experimental=true,character='ironclad',campaign=true,campaignProfile='competition-two-act'})
  for _,id in ipairs({'Strange Spoon','Dead Branch','Mummified Hand'})do assert(Run.obtainRelic(run,id))end
  for _,id in ipairs({'attack_potion','elixir','snecko_oil'})do assert(Run.obtainPotion(run,id))end
- assert(Run.startCombat(run,'cultist_solo'))
+ assert(Run.startCombat(run,'raven_adept_solo'))
  local s=run.combat
  same(R.snapshot(s.cardRandomRng),fixture.initial,'initial source stream')
  local function otherCombatStreams()

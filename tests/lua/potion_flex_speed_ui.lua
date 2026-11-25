@@ -1,7 +1,7 @@
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
 local Run=H.Run
 for _,spec in ipairs({{'flex_potion','力量'},{'speed_potion','敏捷'}}) do
- local host,ui,panel,event=H.setup({'defend'},{'cultist'})
+ local host,ui,panel,event=H.setup({'defend'},{'raven_adept'})
  assert(Run.obtainPotion(host.run,spec[1]));ui:render()
  -- Identity captions live beside the buttons in the permanent full-canvas group.
  local group=panel:GetChild('potionHelp')

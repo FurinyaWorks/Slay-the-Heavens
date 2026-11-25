@@ -27,7 +27,8 @@ test('official relic material is shared across run phases while the legacy profi
   const child=(node,name)=>(node.controls??node.children).find(part=>part.name===name);
   const layout=JSON.parse(readFileSync(join(dir,'game-ui.json'),'utf8'));
   const stage=child(layout,'stage')??layout;
-  const selectionArt=official?child(child(child(stage,'characterPanel'),'details'),'v25RelicIcon').children:[];
+  const selectionInfo=official?child(child(child(child(stage,'characterPanel'),'details'),'infoMotion'),'info1'):null;
+  const selectionArt=official?child(selectionInfo,'v25RelicIcon').children:[];
   const detail=theme.layout.relicView.detail;
   const single=child(child(stage,'relicPanel'),'single');
   assert.deepEqual(child(single,'icon').position,detail.icon.slice(0,2));
@@ -67,7 +68,7 @@ local function checkCrystal(host,size)
 end
 if official then checkCrystal(bar:GetChild('slot1'),Theme.officialAssets.battleRelicBar.icon)end
 for i,id in ipairs(h.run.relics)do assert(bar:GetChild('slot'..i):GetChild('icon').imageId==runIcon(id),'shared run map icon')end
-assert(require('abyss_run').startCombat(h.run,'cultist_solo'));h:refresh()
+assert(require('abyss_run').startCombat(h.run,'raven_adept_solo'));h:refresh()
 if official then checkCrystal(bar:GetChild('slot1'),Theme.officialAssets.battleRelicBar.icon)end
 for i,id in ipairs(h.run.relics)do assert(bar:GetChild('slot'..i):GetChild('icon').imageId==V.icon(id,true),'battle HUD icon')end
 local hp,energy,turn=h.run.hp,h.run.combat.energy,h.run.combat.turn
@@ -103,7 +104,7 @@ if official then
  assert(h:closeDeck())
  local battleHost,root=F.fixture();assert(F.start(battleHost))
  local run=battleHost.run
- assert(require('abyss_run').startCombat(run,'cultist_solo'))
+ assert(require('abyss_run').startCombat(run,'raven_adept_solo'))
  run.phase='reward'
  run.rewards={manualContinue=true,gold=0,goldClaimed=true,cards={},cardResolved=true,
   relics={{id='blue_candle',sourceId='Blue Candle',claimed=false},

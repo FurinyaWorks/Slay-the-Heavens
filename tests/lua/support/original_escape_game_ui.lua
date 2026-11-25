@@ -1,6 +1,6 @@
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local host,root=F.fixture()
-assert(F.start(host));assert(require('abyss_run').startCombat(host.run,'cultist_solo'))
+assert(F.start(host));assert(require('abyss_run').startCombat(host.run,'raven_adept_solo'))
 local battle=F.Combat.new(F.Data,{enemies={'looter','acid_slime_m'},deck={'strike'},seed=11})
 local actor=battle.enemies[1]
 for i,intent in ipairs(actor.intents)do if intent.id==actor.ai.escapeIntent then actor.intentIndex=i end end

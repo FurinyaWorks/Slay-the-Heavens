@@ -23,12 +23,12 @@ test('event box grants its original Helix identity and Regret exactly once',func
  assert(N.chooseEvent(r,'leave'));eq(r.phase,'map')
 end)
 test('Helix obtained through Run blocks one positive HP loss each combat',function()
- local r=R.new(D,42);assert(R.obtainRelic(r,'FossilizedHelix'));assert(R.startCombat(r,'cultist_solo'))
+ local r=R.new(D,42);assert(R.obtainRelic(r,'FossilizedHelix'));assert(R.startCombat(r,'raven_adept_solo'))
  local s=r.combat;local hp=s.player.hp;eq(s.player.statuses.buffer,1)
  s.player.block=10;C.damage(s,s.enemies[1],s.player,6,true);eq(s.player.hp,hp);eq(s.player.statuses.buffer,1)
  s.player.block=0;C.damage(s,s.enemies[1],s.player,6,true);eq(s.player.hp,hp);eq(s.player.statuses.buffer,nil)
  C.damage(s,s.enemies[1],s.player,6,true);eq(s.player.hp,hp-6)
- r.phase='map';assert(R.startCombat(r,'cultist_solo'));eq(r.combat.player.statuses.buffer,1)
+ r.phase='map';assert(R.startCombat(r,'raven_adept_solo'));eq(r.combat.player.statuses.buffer,1)
 end)
 test('Helix does not alter noncombat HP loss',function()
  local r=R.new(D,42);assert(R.obtainRelic(r,'FossilizedHelix'));local hp=r.hp
@@ -38,7 +38,7 @@ test('Pantograph heals 25 only at a Boss opening and respects Bloom',function()
  for _,blocked in ipairs({false,true})do
   local r=R.new(D,42);assert(R.obtainRelic(r,'Pantograph'));r.hp=20
   if blocked then r.relics[#r.relics+1]='mark_of_bloom' end
-  assert(R.startCombat(r,'cultist_solo'));eq(r.combat.player.hp,20)
+  assert(R.startCombat(r,'raven_adept_solo'));eq(r.combat.player.hp,20)
   r.phase='map';r.floor=16
   local id;for _,e in ipairs(r.data.enemies.encounters)do if e.tier=='boss'and e.minFloor<=16 and e.maxFloor>=16 then id=e.id;break end end
   assert(id);assert(R.startCombat(r,id));eq(r.combat.player.hp,blocked and 20 or 45)
@@ -48,7 +48,7 @@ test('Magic Flower modifies Meat and Burning Blood once while victory room is st
  for _,case in ipairs({{40,false,67},{41,false,50},{40,true,40}})do
   local r=R.new(D,42);assert(R.obtainRelic(r,'Meat on the Bone'));assert(R.obtainRelic(r,'Magic Flower'))
   if case[2]then assert(R.obtainRelic(r,'Mark of the Bloom'))end
-  r.hp=case[1];assert(R.startCombat(r,'cultist_solo'));r.combat.enemies[1].hp=1
+  r.hp=case[1];assert(R.startCombat(r,'raven_adept_solo'));r.combat.enemies[1].hp=1
   local card;for _,c in ipairs(r.combat.hand)do if c.cardId=='strike'then card=c;break end end
   assert(card);assert(R.play(r,card.uid,1));eq(r.phase,'reward');eq(r.hp,case[3])
   eq(R.play(r,card.uid,1),false);eq(r.hp,case[3])
@@ -57,7 +57,7 @@ test('Magic Flower modifies Meat and Burning Blood once while victory room is st
  eq(R.heal(r,6),6);eq(r.hp,16)
 end)
 test('Unceasing Top draws after the real last-card action queue drains',function()
- local r=R.new(D,42);assert(R.obtainRelic(r,'Unceasing Top'));assert(R.startCombat(r,'cultist_solo'))
+ local r=R.new(D,42);assert(R.obtainRelic(r,'Unceasing Top'));assert(R.startCombat(r,'raven_adept_solo'))
  local s=r.combat;local strike
  for _,card in ipairs(s.hand)do if card.cardId=='strike'then strike=card;break end end
  assert(strike and #s.draw>0)

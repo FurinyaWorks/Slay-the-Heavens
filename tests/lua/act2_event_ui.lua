@@ -2,7 +2,7 @@ local H=dofile('tests/helpers/act2_event_ui.lua')
 local test,eq,same=H.test,H.eq,H.same
 
 test('all three event titles/body and core option order use actual generated rows, pure rendering',function()
- for _,id in ipairs({'beggar','mausoleum','addict'})do
+ for _,id in ipairs({'beggar','mausoleum','traveling_merchant'})do
   local r,m=H.fixture(id);local before=H.snapshot(r);local ui,get,shown=H.setup(r,m);same(r,before)
   assert(shown('eventView'));assert(get('eventView/name').text~='未知事件')
   eq(get('eventView/body').text,r.nodeFlow.event.body);eq(get('eventView/caption').text,'未知事件')
@@ -29,8 +29,8 @@ test('donation insufficient funds and exact75 pay once before separate confirm, 
   end
  end
 end)
-test('Beggar Ignore has distinct LEAVE then map, Mausoleum has RESULT then map, Addict directly maps',function()
- for _,item in ipairs({{'beggar',2,'leave'},{'mausoleum',2,'result'},{'addict',3,false}})do
+test('Beggar Ignore has distinct LEAVE then map, Mausoleum has RESULT then map, TravelingMerchant directly maps',function()
+ for _,item in ipairs({{'beggar',2,'leave'},{'mausoleum',2,'result'},{'traveling_merchant',3,false}})do
   local r,m=H.fixture(item[1]);local ui,get,shown,click=H.setup(r,m)
   H.parity(r,m,'leave',nil,function()return click('eventView/option'..item[2])end)
   if item[3] then
@@ -88,13 +88,13 @@ test('duplicate/deleted selected UID refuses without refund; bottled duplicate c
   H.parity(r,m,'purge',8,function()return click('confirm')end);eq(#r.deck,0);eq(r.gold,25)
  end
 end)
-test('Addict buy84 refused and exact85 pays once with independent result leave; Mausoleum opens/result leave',function()
- for _,id in ipairs({'addict','mausoleum'})do
+test('TravelingMerchant buy84 refused and exact85 pays once with independent result leave; Mausoleum opens/result leave',function()
+ for _,id in ipairs({'traveling_merchant','mausoleum'})do
   local r,m=H.fixture(id);H.front(r,'Anchor');if id=='mausoleum' then H.boolean(r,false)else r.gold=84 end
   local ui,get,shown,click=H.setup(r,m)
-  if id=='addict' then H.unchanged(r,m,function()return click('eventView/option1')end);r.gold=85;ui:render()end
+  if id=='traveling_merchant' then H.unchanged(r,m,function()return click('eventView/option1')end);r.gold=85;ui:render()end
   local old=ui.actions['eventView/option1'].handler
-  H.parity(r,m,id=='addict' and 'buy' or 'open',nil,function()return click('eventView/option1')end)
+  H.parity(r,m,id=='traveling_merchant' and 'buy' or 'open',nil,function()return click('eventView/option1')end)
   eq(r.nodeFlow.event.stage,'result');eq(r.nodeFlow.event.obtainedRelicId,'anchor');assert(shown('eventView'))
   assert(get('eventView/body').text:find('获得遗物：'));H.unchanged(r,m,old)
   H.parity(r,m,'leave',nil,function()return click('eventView/option1')end);eq(r.phase,'map')

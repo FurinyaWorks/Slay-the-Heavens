@@ -21,7 +21,7 @@ local generated=${luaString(directory.replaceAll('\\','/'))}
 package.path=generated..'/?.lua;src/lua/?.lua'
 for _,name in ipairs(${toLua(modules)})do package.preload[name]=assert(loadfile(generated..'/'..name..'.lua'))end
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
-local h,u,p,event,tap,drain,toggle,root=H.setup({'defend','defend','defend','defend','defend','defend'},{'cultist'})
+local h,u,p,event,tap,drain,toggle,root=H.setup({'defend','defend','defend','defend','defend','defend'},{'raven_adept'})
 local notice=assert(p:GetChild('feedback'):GetChild('v25TurnNotice'),'missing V25 turn notice')
 local title,subtitle=notice:GetChild('title'),notice:GetChild('subtitle')
 assert(notice.visible and title.text=='战斗开始' and not subtitle.visible)
@@ -112,7 +112,7 @@ for _,name in ipairs(${toLua(generated)})do
  package.preload[name]=assert(loadfile(generated..'/'..name..'.lua'))
 end
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
-local h,u,p,event,tap,drain,deck,root=H.setup({'defend','defend','defend','defend','defend','defend'},{'cultist'})
+local h,u,p,event,tap,drain,deck,root=H.setup({'defend','defend','defend','defend','defend','defend'},{'raven_adept'})
 local icon=p:GetChild('energyIcon')
 assert(icon:GetChild('v25Chrome'),'isolated V25 layout did not reach Host')
 local function energy(expected)

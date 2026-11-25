@@ -52,7 +52,7 @@ test('same-boundary initial and post-room checkpoints remain independently resto
  eq(checkpoint.roomGeneration,1);local wanted=C.copy(checkpoint.queue)
  assert(Run.restoreEncounters(run,checkpoint));eq(run.roomGeneration,1)
  same(Q.snapshot(run.encounters),wanted)
- checkpoint.queue.normal[1]='Cultist';same(Q.snapshot(run.encounters),wanted)
+ checkpoint.queue.normal[1]='Raven Adept';same(Q.snapshot(run.encounters),wanted)
  local restored=assert(Map.restore(Data,Map.snapshot(map)))
  assert(#Nodes.available(run,restored)>0)
 end)

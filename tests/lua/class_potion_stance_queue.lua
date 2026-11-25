@@ -7,7 +7,7 @@ local function fresh()
  -- The real Run catalogue already owns foreign Fire Breathing; do not apply
  -- the historical raw-red adapter a second time to an adapted full catalogue.
  assert(r.data.runCardCatalog)
- r.relics[#r.relics+1]='toy_ornithopter';assert(Run.obtainPotion(r,'stance_potion'));assert(Run.startCombat(r,'cultist_solo'))
+ r.relics[#r.relics+1]='toy_ornithopter';assert(Run.obtainPotion(r,'stance_potion'));assert(Run.startCombat(r,'raven_adept_solo'))
  r.hp=r.hp-30;r.combat.player.hp=r.hp;return r
 end
 local function play(r,id)

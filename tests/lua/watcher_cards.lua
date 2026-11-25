@@ -8,7 +8,7 @@ local count=0
 local function eq(a,b) assert(a==b,tostring(a).." ~= "..tostring(b)) end
 local function test(name,fn) fn(); count=count+1; print("ok watcher_cards "..count.." - "..name) end
 local function battle(id,upgraded)
-    local s=Combat.new(Cards.withFoundationCards(Data),{seed=42,enemies={"cultist"},enableStances=true,deck={{cardId=id,upgraded=upgraded}}})
+    local s=Combat.new(Cards.withFoundationCards(Data),{seed=42,enemies={"raven_adept"},enableStances=true,deck={{cardId=id,upgraded=upgraded}}})
     s.enemies[1].hp=200; s.enemies[1].maxHp=200; s.energy=10
     return s,s.hand[1].uid
 end
@@ -90,7 +90,7 @@ end)
 test("retained cards occupy the real ten-card hand and stop further draws",function()
     local deck={}
     for i=1,11 do deck[i]="crescendo" end
-    local s=Combat.new(Cards.withFoundationCards(Data),{seed=42,enemies={"cultist"},enableStances=true,deck=deck})
+    local s=Combat.new(Cards.withFoundationCards(Data),{seed=42,enemies={"raven_adept"},enableStances=true,deck=deck})
     eq(#s.hand,5)
     local original={}; for _,c in ipairs(s.hand) do original[c.uid]=true end
     assert(Combat.endTurn(s)); eq(#s.hand,10); eq(#s.draw,1)

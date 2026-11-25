@@ -10,7 +10,7 @@ local function setup(id,advanced,maxHp,hp,fairy)
  assert(Run.obtainRelic(run,'Lizard Tail'));assert(Run.obtainRelic(run,'Red Skull'))
  if fairy then assert(Run.obtainPotion(run,'fairy_in_a_bottle'))end
  run.maxHp,run.hp=maxHp,hp -- controlled health, actual legal obtains above.
- assert(Run.startCombat(run,'cultist_solo'))
+ assert(Run.startCombat(run,'raven_adept_solo'))
  local s=run.combat;s.experimentalMechanics=advanced
  if advanced then s.player.stance='Neutral'end
  assert(not s.catalog.cards[id].runNativeABI and not s.catalog.cards[id].silentFinalCard)
@@ -106,7 +106,7 @@ end)
 
 test('real paused Omniscience continuation publishes spent counter to Run immediately',function()
  local run=Run.new(D,42,{experimental=true,character='watcher'})
- assert(Run.obtainRelic(run,'lizard_tail'));assert(Run.startCombat(run,'cultist_solo'))
+ assert(Run.obtainRelic(run,'lizard_tail'));assert(Run.startCombat(run,'raven_adept_solo'))
  -- Controlled Heart encounter boundary, using genuine constructors/opening
  -- ownership and a real Watcher choice; this is not a natural Act4 route.
  run.maxHp,run.hp=7,1

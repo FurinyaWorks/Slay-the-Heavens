@@ -100,7 +100,7 @@ local function escapingIntent(s)
  end
 end
 local function start(fast,enemies)
- local h=harness({'strike'},enemies or {'looter','mugger','cultist'},escapingIntent)
+ local h=harness({'strike'},enemies or {'looter','mugger','raven_adept'},escapingIntent)
  h.feedback:setFastMode(fast)
  h.run(Combat.endTurn)
  h.committed=Combat.copy(h.battle)
@@ -139,7 +139,7 @@ end
 print('ESCAPE_REAL_TURN_GATE_TWO_IDS_PASS')
 -- Real single escape event at end of journal: completion releases queue, not actor clock.
 for _,fast in ipairs({false,true})do
- local h=harness({'strike'},{'looter','cultist'},escapingIntent)
+ local h=harness({'strike'},{'looter','raven_adept'},escapingIntent)
  h.feedback:setFastMode(fast)
  h.run(function(s)return Combat.escapeEnemy(s,s.enemies[1])end)
  local a=h.battle.enemies[1].id;local box=assert(h.surfaces:find(a))
@@ -159,7 +159,7 @@ end
 print('ESCAPE_IDLE_EXACT_ZERO_PASS')
 -- A stalled frame entering the actual next committed cue does not backdate contact.
 do
- local h=harness({'strike'},{'looter','cultist'},escapingIntent)
+ local h=harness({'strike'},{'looter','raven_adept'},escapingIntent)
  h.run(Combat.endTurn)
  local id=h.battle.enemies[1].id
  h.until_(function(e)return e.kind=='intent'and e.detail.enemy==id end)
@@ -173,7 +173,7 @@ end
 print('ESCAPE_STALLED_CONTACT_PASS')
 -- Duplicate cue while running and again after terminal disposal must not restart/rebind.
 do
- local h=start(false,{'looter','cultist'});local id=h.battle.enemies[1].id
+ local h=start(false,{'looter','raven_adept'});local id=h.battle.enemies[1].id
  local cue=h.feedback.current;local state=assert(h.feedback.escaping[id]);local box=assert(h.surfaces:find(id))
  local pos=h.feedback.index+1
  table.insert(h.feedback.queue,pos,cue);table.insert(h.feedback.styles,pos,{})

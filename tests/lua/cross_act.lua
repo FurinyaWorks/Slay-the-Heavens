@@ -148,7 +148,7 @@ test('ordinary and shrine pools reset in source order while global events and ti
     local once=C.copy(run.unknown.pools.once)
     run.unknown.chances.monster=.5;run.unknown.chances.tinyChestCount=3
     assert(Nodes.claimBossTreasure(run,0) and Nodes.advanceAct(run,map))
-    assert(#run.unknown.pools.act==13 and run.unknown.pools.act[1]=='Addict' and run.unknown.pools.act[13]=='Vampires')
+    assert(#run.unknown.pools.act==13 and run.unknown.pools.act[1]=='TravelingMerchant' and run.unknown.pools.act[13]=='Vampires')
     same(run.unknown.pools.shrine,{'Match and Keep!','Wheel of Change','Golden Shrine','Transmorgrifier','Purifier','Upgrade Shrine'})
     same(run.unknown.pools.once,once)
     local fresh=Unknown.newPc();fresh.tinyChestCount=3;same(run.unknown.chances,fresh)

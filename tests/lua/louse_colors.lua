@@ -78,7 +78,7 @@ local function referenceBattle(run,roster)
  assert(equal(Data.rules.player.startingRelics,{'burning_blood'}))
  reference.relics={'burning_blood'};reference.relicCounters={};reference.relicCombat={attackPlayed=false}
  -- Independently pin the new per-combat hook owners after the first turn.
- reference.rareRelicCombat={firstPocketTurn=true,gamblingActivated=false,topCanDraw=true,topDisabled=false}
+ reference.rareRelicCombat={firstPocketTurn=true,tacticalBadgeActivated=false,topCanDraw=true,topDisabled=false}
  reference.shopRelicCombat={pellets={}}
  -- Run owns the encounter generation; these independent fixtures start once.
  assert(run.combatGeneration==1 and run.combat.combatGeneration==1,'first real encounter generation must be one')
@@ -229,9 +229,9 @@ end end end
 if part==5 then
 print('SECTION other 16 encounters retain full construction and selection state')
 local groups={
- cultist_solo={'cultist'},jaw_solo={'jaw_worm'},medium_slimes={'acid_slime_m','spike_slime_m'},
+ raven_adept_solo={'raven_adept'},jaw_solo={'jaw_worm'},medium_slimes={'acid_slime_m','spike_slime_m'},
  large_acid={'acid_slime_l'},large_spike={'spike_slime_l'},looter_solo={'looter'},
- blue_slaver_solo={'blue_slaver'},red_slaver_solo={'red_slaver'},fungi_pair={'fungi_beast','fungi_beast'},
+ blue_guard_solo={'blue_guard'},red_guard_solo={'red_guard'},fungi_pair={'fungi_beast','fungi_beast'},
  wildlife={'jaw_worm','green_louse'},elite_nob={'gremlin_nob'},elite_lagavulin={'lagavulin'},
  elite_sentries={'sentry','sentry','sentry'},boss_guardian={'guardian'},small_slimes={'spike_slime_s','acid_slime_m'},
  gremlin_gang={'mad_gremlin','shield_gremlin','fat_gremlin','fat_gremlin'}

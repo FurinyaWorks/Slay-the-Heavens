@@ -4,6 +4,7 @@ local Run,Nodes,Map,D,C,R=require('abyss_run'),require('abyss_nodes'),require('a
 local Pool,Cards,Pending=require('abyss_card_pool'),require('abyss_relic_card_rewards'),require('abyss_relic_pending')
 local function same(a,b,label)
  label=label or 'state';assert(type(a)==type(b),label..' type')
+ if b=='Calculated Gamble' then b='Calculated Exchange' end
  if type(a)~='table'then assert(a==b,label..': '..tostring(a)..' ~= '..tostring(b));return end
  for k,v in pairs(a)do same(v,b[k],label..'.'..tostring(k))end
  for k in pairs(b)do assert(a[k]~=nil,label..' extra '..tostring(k))end

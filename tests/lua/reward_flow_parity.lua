@@ -5,7 +5,7 @@ local Run,Combat,Data,Map,Nodes=require('abyss_run'),require('abyss_combat'),req
 local test,finish=H.suite('LUA_REWARD_FLOW_PARITY')
 local function won(run)
     run=run or Run.new(Data,42)
-    assert(Run.startCombat(run,'cultist_solo'))
+    assert(Run.startCombat(run,'raven_adept_solo'))
     for _,enemy in ipairs(run.combat.enemies) do enemy.hp=0 end
     assert(Run.finishCombat(run))
     return run
@@ -13,7 +13,7 @@ end
 local function uiReward(stolen)
     local h,u,p,e,t,d=H.setup()
     h.run=Run.new(Data,42);u.run=h.run
-    assert(Run.startCombat(h.run,'cultist_solo'))
+    assert(Run.startCombat(h.run,'raven_adept_solo'))
     if stolen then h.run.combat.stolenGoldReward=stolen end
     for _,enemy in ipairs(h.run.combat.enemies) do enemy.hp=0 end
     assert(Run.finishCombat(h.run));h:refresh()
@@ -50,7 +50,7 @@ end)
 test('failed room entry preserves pending rewards; successful combat and node entry expire them',function()
     local r=won();assert(Run.leaveCombatRewards(r));local pending=r.pendingCombatRewards
     assert(not Run.startCombat(r,'not_an_encounter'));assert(r.pendingCombatRewards==pending)
-    assert(Run.startCombat(r,'cultist_solo'));assert(r.pendingCombatRewards==nil)
+    assert(Run.startCombat(r,'raven_adept_solo'));assert(r.pendingCombatRewards==nil)
     r=Run.new(Data,42);local map=Map.generate(Data,42)
     local first=assert(Nodes.available(r,map)[1]);assert(Nodes.enter(r,map,first.id))
     for _,enemy in ipairs(r.combat.enemies)do enemy.hp=0 end
@@ -144,7 +144,7 @@ test('a failed staged next-combat setup retains original pending rewards and map
     if nextNode.type~='combat' and nextNode.type~='elite' and nextNode.type~='boss' then
         local node
         for _,candidate in ipairs(map.nodes)do if candidate.id==nextNode.id then node=candidate end end
-        node.type,nextNode.type='combat','combat';node.encounterId='cultist_solo'
+        node.type,nextNode.type='combat','combat';node.encounterId='raven_adept_solo'
     end
     Run.startRoomCombat=function()return false,'injected_room_setup_failure'end
     local ok,why=Nodes.enter(r,map,nextNode.id)

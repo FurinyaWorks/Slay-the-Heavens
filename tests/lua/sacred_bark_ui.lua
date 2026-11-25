@@ -3,7 +3,7 @@ local Run=require('abyss_run');local count,failed=0,0
 local function test(name,fn)local ok,why=pcall(fn);if ok then count=count+1;print('PASS Bark UI '..name)else failed=failed+1;print('FAIL Bark UI '..name..': '..tostring(why))end end
 local function fixture(id)
  local h,root=F.fixture();local run=Run.new(F.Data,42)
- assert(Run.obtainRelic(run,'SacredBark'));assert(Run.obtainPotion(run,id));assert(Run.startCombat(run,'cultist_solo'))
+ assert(Run.obtainRelic(run,'SacredBark'));assert(Run.obtainPotion(run,id));assert(Run.startCombat(run,'raven_adept_solo'))
  h.run,h.battleUI.run,h.nodeUI.run=run,run,run;h:resize(1280,720);h:refresh();return h,root
 end
 test('inventory details replace static base-dose description with actual doubled health amount',function()

@@ -9,7 +9,7 @@ local function eq(a,b)
 end
 local function test(name,fn) fn();count=count+1;print("ok corruption_cost "..count.." - "..name) end
 local function state()
-    return Combat.new(Data,{seed=42,enemies={"cultist"},deck={}})
+    return Combat.new(Data,{seed=42,enemies={"raven_adept"},deck={}})
 end
 local function card(s,pile,id,cost,kind,upgrade)
     s.catalog.cards[id]={id=id,type=kind or "skill",cost=cost,effects={},upgrade=upgrade and {cost=upgrade} or nil}

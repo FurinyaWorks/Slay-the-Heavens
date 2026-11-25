@@ -27,7 +27,7 @@ local function same(a,b,seen)
  for k,v in pairs(a)do same(v,b[k],seen)end;for k in pairs(b)do assert(a[k]~=nil)end
 end
 local r=Run.new(Data,'42');assert(Run.obtainRelic(r,'FossilizedHelix'));assert(Run.obtainRelic(r,'Self Forming Clay'))
-assert(Run.startCombat(r,'cultist_solo'))
+assert(Run.startCombat(r,'raven_adept_solo'))
 local root=control({name='root',size={1280,720},children=Layout})
 local panel=root:GetChild('stage'):GetChild('battlePanel')
 local ui=UI.new(panel,r.data,require('abyss_presentation'),'click',F.withMonsterActors({imageSource='static',color=function(a,b,c,d)return {r=a,g=b,b=c,a=d}end}),{embedded=true})
@@ -76,7 +76,7 @@ assert(C.endTurn(s));assert(not s.player.statuses.next_turn_block and s.player.b
 renderReadonly()
 for _,enemy in ipairs(s.enemies)do enemy.hp=0 end
 assert(Run.finishCombat(r));assert(Run.claimCardReward(r,0));dofile('tests/lua/support/finish_combat_rewards.lua')(r)
-assert(Run.startCombat(r,'cultist_solo'));assert(r.combat~=s and r.combat.player.statuses.buffer==1)
+assert(Run.startCombat(r,'raven_adept_solo'));assert(r.combat~=s and r.combat.player.statuses.buffer==1)
 renderReadonly();status('buffer',1,102036);renderReadonly();assert(r.combat.player.statuses.buffer==1)
 assert(calls>0)
 print('RELIC_NATIVE_STATUS_ICONS_PASS strict images, real Helix/Clay lifecycle, numbered chips/tooltips, readonly render')

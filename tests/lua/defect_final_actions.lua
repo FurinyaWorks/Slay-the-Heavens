@@ -4,7 +4,7 @@ assert(not require('abyss_effects').supported({{op='defectFinal',action='unknown
 local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end
 local function setup(id,up)
  local r=Run.new(Data,42,{character='defect',experimental=true});r.deck={{uid=31,cardId=id,upgraded=up}};r.relics={}
- assert(Run.startCombat(r,'cultist_solo'));return r,r.combat,r.combat.hand[1]
+ assert(Run.startCombat(r,'raven_adept_solo'));return r,r.combat,r.combat.hand[1]
 end
 for _,up in ipairs({false,true})do
  local r,s,c=setup('genetic_algorithm',up);local twin=A.sameInstance(C,s,c);local separate=A.fresh(C,s,c.cardId,c)

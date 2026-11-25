@@ -109,7 +109,7 @@ function M.group(state,options,construct)
   for i,enemy in ipairs(state.enemies)do enemy.id=enemy.definitionId..'_'..i end
   state.nextEnemyId=#state.enemies+1
  else
-  local ids=options.enemies or {'cultist'};assert(#ids>0,'empty encounter')
+  local ids=options.enemies or {'raven_adept'};assert(#ids>0,'empty encounter')
   local positions=SourcePositions.positions(options.encounterSource,options.encounterVisualFloat)
   if positions then assert(#positions==#ids,'source formation size mismatch')end
   for i,id in ipairs(ids)do

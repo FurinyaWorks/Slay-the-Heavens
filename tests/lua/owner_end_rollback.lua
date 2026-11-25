@@ -8,7 +8,7 @@ local function same(a,b,seen)
  for k,v in pairs(a)do same(v,b[k],seen)end;for k in pairs(b)do assert(a[k]~=nil)end
 end
 local function fresh(advanced,deck)
- local s=C.new(D,{deck=deck,enemies={'cultist'},seed=42,enableStances=true,orbSlots=0,cardRandomSeed='42'})
+ local s=C.new(D,{deck=deck,enemies={'raven_adept'},seed=42,enableStances=true,orbSlots=0,cardRandomSeed='42'})
  s.experimentalMechanics=advanced;return s
 end
 local function play(s,id)for _,c in ipairs(s.hand)do if c.cardId==id then assert(C.play(s,c.uid));return end end;error('missing real Power')end

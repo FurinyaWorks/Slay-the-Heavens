@@ -37,7 +37,7 @@ local function unchangedAfter(root)
 end
 local function battle(upgraded, companion)
     local s = Combat.new(data, {seed=42, deck={{cardId="rampage", upgraded=upgraded}},
-        enemies=companion and {"cultist","cultist"} or nil})
+        enemies=companion and {"raven_adept","raven_adept"} or nil})
     return s, s.hand[1]
 end
 local function base(s,c) return Combat.cardDefinition(s,c).effects[1].value end
@@ -180,7 +180,7 @@ test("real reward to next battle to following battle keeps permanent deck and re
     local run,choice
     for seed=1,128 do
         if seed>=seedFirst and seed<=seedLast then
-        local candidate=Run.new(data,seed); assert(Run.startCombat(candidate,"cultist_solo")); finishBattle(candidate)
+        local candidate=Run.new(data,seed); assert(Run.startCombat(candidate,"raven_adept_solo")); finishBattle(candidate)
         for i,id in ipairs(Run.rewardOptions(candidate)) do if id=="rampage" then run,choice=candidate,i; break end end
         if run then assert(seed==49,'source reward boundary changed');break end
         end
@@ -189,7 +189,7 @@ test("real reward to next battle to following battle keeps permanent deck and re
     assert(run,"rampage not offered"); local oldSize=#run.deck
     assert(Run.claimCardReward(run,choice)); dofile('tests/lua/support/finish_combat_rewards.lua')(run); equal(#run.deck,oldSize+1)
     local checkDeck,nextUid=unchangedAfter(run.deck),run.nextDeckUid
-    assert(Run.startCombat(run,"cultist_solo"))
+    assert(Run.startCombat(run,"raven_adept_solo"))
     local played=false
     for _=1,10 do
         for _,c in ipairs(run.combat.hand) do
@@ -204,7 +204,7 @@ test("real reward to next battle to following battle keeps permanent deck and re
     end
     assert(played); checkDeck(); equal(run.nextDeckUid,nextUid)
     finishBattle(run); equal(run.phase,"reward"); checkDeck()
-    assert(Run.claimCardReward(run,0)); dofile('tests/lua/support/finish_combat_rewards.lua')(run); assert(Run.startCombat(run,"cultist_solo"))
+    assert(Run.claimCardReward(run,0)); dofile('tests/lua/support/finish_combat_rewards.lua')(run); assert(Run.startCombat(run,"raven_adept_solo"))
     local found=false
     for _,pile in ipairs({run.combat.hand,run.combat.draw}) do
         for _,c in ipairs(pile) do if c.cardId=="rampage" then equal(base(run.combat,c),8); equal(c.damageBonus,nil); found=true end end

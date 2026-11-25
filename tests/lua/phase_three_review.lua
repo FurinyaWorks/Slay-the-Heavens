@@ -16,7 +16,7 @@ local function held(s,id)for _,c in ipairs(s.hand)do if c.cardId==id then return
 local function inPile(pile,uid)for _,c in ipairs(pile)do if c.uid==uid then return true end end;return false end
 local function play(s,id,target)local ok,why=C.play(s,held(s,id).uid,target);assert(ok,why)end
 local function setup(deck)
- local s=C.new(D,{seed=42,cardRandomSeed='42',deck=deck,enemies={'cultist','jaw_worm'},orbSlots=3})
+ local s=C.new(D,{seed=42,cardRandomSeed='42',deck=deck,enemies={'raven_adept','jaw_worm'},orbSlots=3})
  for _,e in ipairs(s.enemies)do e.hp=200;e.maxHp=200 end
  return s
 end

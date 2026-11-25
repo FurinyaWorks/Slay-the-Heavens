@@ -24,14 +24,14 @@ Native.decorate(art)
 local platform={seed=1,prologue=false,campaign=true,imageSource='static',imageTypes={basic=17,stretch=23},
  color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end}
 local host=F.GameUI.new(root,F.Data,F.Presentation,'click',platform)
-root.ui=host;assert(F.start(host));assert(Run.startCombat(host.run,'cultist_solo'))
+root.ui=host;assert(F.start(host));assert(Run.startCombat(host.run,'raven_adept_solo'))
 local function battle(enemies)
  host.run.combat=F.Combat.new(F.Data,{deck={'strike','strike','defend'},enemies=enemies,seed=11})
  host:refresh();return host.run.combat
 end
 local function shape()return art:GetChild('monsterSamples'):GetChild('group000'):GetChild('shape0000')end
 local function near(a,b)return math.abs(a-b)<1e-8 end
-local state=battle({'cultist','acid_slime_m','acid_slime_m'})
+local state=battle({'raven_adept','acid_slime_m','acid_slime_m'})
 local ui=host.battleUI
 assert(panel:GetChild('topBar').visible,'existing unmasked ancestor must remain active')
 assert(art.visible,'normal build must show real new drawing, not unreachable opt-in')
@@ -84,8 +84,8 @@ host:refresh();assert(art.visible and not panel:GetChild('enemy2'):GetChild('por
 
 ui:setActive(false);assert(not art.visible,'unmount must clear even with live matching actor')
 ui:setActive(true);assert(art.visible)
-state=battle({'cultist','jaw_worm'});assert(not art.visible,'replacement battle without ID must not show grass slime')
-state=battle({'cultist','jaw_worm','acid_slime_m','cultist','cultist'})
+state=battle({'raven_adept','jaw_worm'});assert(not art.visible,'replacement battle without ID must not show grass slime')
+state=battle({'raven_adept','jaw_worm','acid_slime_m','raven_adept','raven_adept'})
 assert(art.visible and not panel:GetChild('enemy3'):GetChild('portrait').visible,'five-enemy any-slot binding')
 local _,_,size=EnemyView.position(5,3,state.enemies[3])
 assert(near(art:GetChild('monsterSamples').localScaleX,size/106),'five-enemy geometry must contain drawing in current portrait')

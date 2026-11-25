@@ -11,7 +11,7 @@ return function(v,bark)
   local run=Run.new(D,v.seed,{experimental=true,character='ironclad',campaign=true,campaignProfile='competition-two-act'})
   if bark then assert(Run.obtainRelic(run,'SacredBark'))end
   assert(Run.obtainPotion(run,'colorless_potion'));assert(Run.obtainPotion(run,'colorless_potion'))
-  assert(Run.startCombat(run,'cultist_solo'));local s=run.combat
+  assert(Run.startCombat(run,'raven_adept_solo'));local s=run.combat
   while #s.hand<9 do s.hand[#s.hand+1]=assert(table.remove(s.draw))end
   local permanent=C.copy(run.deck);local energy,gold,hp,maxHp=s.energy,run.gold,run.hp,run.maxHp
   local function unrelated()

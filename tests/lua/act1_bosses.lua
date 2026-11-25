@@ -129,7 +129,7 @@ test('lethal player damage stops Inferno before BurnIncrease and queued roll',fu
  eq(run.phase,'combat') -- direct Combat command does not claim a Run transaction.
 end)
 test('dead Hexaghost still consumes its queued roll while another monster lives',function()
- local s=battle('hexaghost',500,{'hexaghost','cultist'});local e=s.enemies[1]
+ local s=battle('hexaghost',500,{'hexaghost','raven_adept'});local e=s.enemies[1]
  force(e,'divider');e.hp=1;s.player.statuses.thorns=3
  local old,calls=C.random,{}
  C.random=function(state,n)calls[#calls+1]=n;return old(state,n)end
@@ -139,7 +139,7 @@ test('dead Hexaghost still consumes its queued roll while another monster lives'
 end)
 test('queued BurnIncrease survives owner death with an ally and clears on final victory',function()
  for _,ally in ipairs({false,true})do
-  local s=battle('hexaghost',500,ally and {'hexaghost','cultist'} or {'hexaghost'})
+  local s=battle('hexaghost',500,ally and {'hexaghost','raven_adept'} or {'hexaghost'})
   local e=s.enemies[1];force(e,'inferno');e.hp=1;s.player.statuses.thorns=3
   assert(C.endTurn(s));eq(e.hp,0)
   eq(#cards(s,'burn'),ally and 3 or 0)

@@ -6,7 +6,7 @@ local function held(s,id)for _,c in ipairs(s.hand)do if c.cardId==id then return
 for _,manual in ipairs({false,true})do for _,up in ipairs({false,true})do for amount=1,2 do
  local deck={{uid=31,cardId='master_reality'},{uid=32,cardId='dual_wield',upgraded=amount==2},
   {uid=33,cardId='searing_blow',upgraded=up,upgrades=up and 1 or nil},{uid=34,cardId=manual and 'strike' or 'defend'}}
- local s=C.new(data,{seed=1,enableStances=true,deck=deck,masterDeck=deck,enemies={'cultist'}});s.energy=20
+ local s=C.new(data,{seed=1,enableStances=true,deck=deck,masterDeck=deck,enemies={'raven_adept'}});s.energy=20
  assert(C.play(s,held(s,'master_reality').uid));local original=held(s,'searing_blow');local before=original.upgrades or (up and 1 or 0)
  assert(C.play(s,held(s,'dual_wield').uid))
  if manual then local p=assert(s.pendingChoice);assert(C.chooseCard(s,p.token,original.uid))else assert(not s.pendingChoice)end

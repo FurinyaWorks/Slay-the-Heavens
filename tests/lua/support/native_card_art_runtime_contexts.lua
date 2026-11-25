@@ -35,7 +35,7 @@ end
 local function phase(name)print('NATIVE_CARD_ART_RUNTIME_PHASE '..name)end
 if ABYSS_RUNTIME_CONTEXT=='battle' then
  local run=Run.new(F.Data,42);run.deck={{uid=91,cardId='cleave',upgraded=true}}
- assert(Run.startCombat(run,'cultist_solo'))
+ assert(Run.startCombat(run,'raven_adept_solo'))
  local battle=require('abyss_battle_ui').new(r:GetChild('battlePanel'),run.data,F.Presentation,'click',platform,{embedded=true})
  battle.run=run;battle:render();local face=r:GetChild('battlePanel'):GetChild('card1')
  check(face,false);drain();check(face,true)

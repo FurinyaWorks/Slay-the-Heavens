@@ -37,7 +37,7 @@ local function source(registered)
  local status=C.copy(d.statuses.statuses[#d.statuses.statuses-1]);status.name='last status wins';status.catalogAlias=shared
  d.statuses.statuses[#d.statuses.statuses+1]=status
  for _,enemy in ipairs(d.enemies.enemies)do
-  if enemy.id=='cultist'then
+  if enemy.id=='raven_adept'then
    local duplicate=C.copy(enemy);duplicate.name='last enemy wins'
    d.enemies.enemies[#d.enemies.enemies+1]=duplicate;break
   end
@@ -51,7 +51,7 @@ Setup.register=function(catalog)
 end
 for _,registered in ipairs({false,true})do
  local d,shared=source(registered);local before=C.copy(d)
- local options={seed=42,deck={'strike','defend'},enemies={'cultist'},cardRandomSeed='42',shuffleSeed='42'}
+ local options={seed=42,deck={'strike','defend'},enemies={'raven_adept'},cardRandomSeed='42',shuffleSeed='42'}
  measuring=true;allocations=0;copyCalls=0
  local first=assert(C.new(d,options));local firstAllocations,firstCalls=allocations,copyCalls
  if ABYSS_CATALOG_OBSERVE then ABYSS_CATALOG_OBSERVE('battle-'..tostring(registered),first)end
@@ -67,7 +67,7 @@ for _,registered in ipairs({false,true})do
  assert(not second.catalog.cards.swift_strike.effects[1].catalogProbe)
  assert(first.catalog.statuses.catalog_alias_status_a.catalogAlias==first.catalog.statuses.catalog_alias_status_b.catalogAlias)
  assert(first.catalog.statuses.catalog_alias_status_a.name=='last status wins')
- assert(first.catalog.enemies.cultist.name=='last enemy wins')
+ assert(first.catalog.enemies.raven_adept.name=='last enemy wins')
  -- Cross-list aliases were never retained: each list is a separate copy root.
  assert(a.catalogAlias~=first.catalog.statuses.catalog_alias_status_a.catalogAlias)
  local potion=d.potions.potions[1];assert(first.catalog.potions[potion.id]==potion)
@@ -75,7 +75,7 @@ for _,registered in ipairs({false,true})do
  a.catalogAlias.marker='first battle only';assert(shared.marker=='caller-owned')
  assert(second.catalog.cards.catalog_alias_a.catalogAlias.marker=='caller-owned')
  local run=require('abyss_run').new(D,'42');local streams=require('abyss_run').roomStreams(run,2)
- local room={seed=42,roomSeed=streams.seed,roomStreams=streams,enemies={'cultist'},deck={'strike','defend'}}
+ local room={seed=42,roomSeed=streams.seed,roomStreams=streams,enemies={'raven_adept'},deck={'strike','defend'}}
  local previous=#captures
  measuring=true;allocations=0;copyCalls=0
  local prepared=C.prepareEncounter(d,room);local preparedAllocations,preparedCalls=allocations,copyCalls
@@ -83,7 +83,7 @@ for _,registered in ipairs({false,true})do
  measuring=false;assert(#captures==previous+1)
  local catalog=captures[#captures]
  assert(catalog.cards.catalog_alias_a.name=='last duplicate wins')
- assert(catalog.statuses.catalog_alias_status_a.name=='last status wins' and catalog.enemies.cultist.name=='last enemy wins')
+ assert(catalog.statuses.catalog_alias_status_a.name=='last status wins' and catalog.enemies.raven_adept.name=='last enemy wins')
  assert(catalog.cards.catalog_alias_a.catalogAlias==catalog.cards.catalog_alias_b.catalogAlias)
  assert(catalog.cards.catalog_alias_a.catalogAlias~=shared)
  assert(catalog.cards.swift_strike~=second.catalog.cards.swift_strike)

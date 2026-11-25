@@ -62,8 +62,12 @@ ACT1_GRAPH_WRITE(nil,'empty')
   }
  }finally{rmSync(dir,{recursive:true,force:true});}
 });
+// Update only the approved copy in the replay. Keep the archived source
+// and compare every state, alias and RNG value against its original rules.
+const beforeWithReleaseCopy=before.replace("'献祭'","'交换卡牌'")
+ .replace('没有可献祭的卡牌。','没有可交换的卡牌。').replace('卡牌已献祭。','卡牌已交付。');
 for(const fixture of ['tests/lua/act1_event_content.lua','tests/lua/scrap_ooze.lua','tests/lua/transmogrifier.lua'])test(`${fixture}: old/current VMs retain complete graphs, aliases, RNG, returns and assertions`,t=>{
- const old=replay(before,fixture),current=replay(read(file),fixture);
+ const old=replay(beforeWithReleaseCopy,fixture),current=replay(read(file),fixture);
  assert.equal(old.status,0,old.error);assert.equal(current.status,0,current.error);
  assert(current.checkpoints>0);assert.equal(current.checkpoints,old.checkpoints);
  assert.deepEqual(current.logs,old.logs);assert(current.graph.equals(old.graph),'complete graph bytes differ');
@@ -200,8 +204,15 @@ test('Act1 current source enters the unchanged historical chain and rereads ever
   changed=undefined;reads=[];assert.equal(preRelicQuerySource(file,source,{readSource}),before);
   if(!admittedReads){
    // Keep the complete current trace and the ordered original contract.
-   assert.equal(reads.length,403);
-   assert.equal(createHash('sha256').update(JSON.stringify(reads)).digest('hex'),'6f35ecd12c3f1edbc8ee8e476324bdb4380725eeacf240cc6ec15cd106fc2e3f');
+   assert.equal(reads.length,466);
+   assert.equal(createHash('sha256').update(JSON.stringify(reads)).digest('hex'),'049af1e21af40d804c1201c01f79da465c7ee0a2b1c4a2544a0c4c3cd1da0500');
+   const entranceBytes=readFileSync('tests/fixtures/ui-entrance-source.json.gz');
+   assert.equal(createHash('sha256').update(entranceBytes).digest('hex'),'7ac3f53b242819cdb569c0a1ebf60de0605b72297a1072ea612bfeb11b0597c9');
+   const entranceOwners=Object.keys(JSON.parse(gunzipSync(entranceBytes)).files);
+   assert.equal(entranceOwners.length,20);
+   assert.deepEqual(reads.slice(1,21),entranceOwners,'complete current entrance cohort');
+   assert.equal(createHash('sha256').update(JSON.stringify([reads[0],...reads.slice(21)])).digest('hex'),
+    '5dad58d855f93d4169fa5877eff635d77f2c0b99af76f12e8f5cb68a4d659a4f','unchanged complete original Act1 order');
    let position=-1;
    for(const owner of priorReadOrder){
     position=reads.indexOf(owner,position+1);
@@ -251,7 +262,7 @@ for(const [name,from,to,fixture,expected] of [
 });
 
 for(const group of [1,2,3,4])test(`Act1 failure boundaries ${group}/4 preserve all original values and aliases`,t=>{
- const fixture='tests/helpers/act1-choice-boundaries.lua',old=replay(before,fixture,group),current=replay(read(file),fixture,group);
+ const fixture='tests/helpers/act1-choice-boundaries.lua',old=replay(beforeWithReleaseCopy,fixture,group),current=replay(read(file),fixture,group);
  assert.equal(old.status,0,old.error);assert.equal(current.status,0,current.error);
  assert(current.checkpoints>0);assert.equal(current.checkpoints,old.checkpoints);assert.deepEqual(current.logs,old.logs);
  if(!current.graph.equals(old.graph)){

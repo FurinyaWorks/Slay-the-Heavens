@@ -128,11 +128,11 @@ test("Skills Powers and real fire potion do not count as an Attack card",functio
  eq(s.player.hp,80); eq(s.player.block,5); eq(sharpEvents(s),0)
 end)
 test("Sharp Hide reacts even when a different enemy is targeted",function()
- local s,e=defense({"strike"},80,{"guardian","cultist"}); local hp=s.player.hp
+ local s,e=defense({"strike"},80,{"guardian","raven_adept"}); local hp=s.player.hp
  play(s,"strike",2); eq(s.player.hp,hp-3); eq(e.hp,210); eq(sharpEvents(s),1)
 end)
 test("actual Cleave damages both enemies but triggers Sharp Hide only once",function()
- local s,e=defense({"cleave"},80,{"guardian","cultist"}); local hp=s.player.hp
+ local s,e=defense({"cleave"},80,{"guardian","raven_adept"}); local hp=s.player.hp
  local otherHp=s.enemies[2].hp; play(s,"cleave")
  eq(e.hp,202); eq(s.enemies[2].hp,otherHp-8); eq(s.player.hp,hp-3); eq(sharpEvents(s),1)
 end)

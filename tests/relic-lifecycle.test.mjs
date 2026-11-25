@@ -94,7 +94,7 @@ test('real lifecycle witnesses exercise all 14 Combat Hooks and every moved fami
   hooks:'enqueuePostDraw upgradeRandomHand onVictory bindBattle preBattle hpChanged wasHpLost atTurnStart prepareTurnStart onUseCard afterCard battleStart endTurnBlock onPlayerEndTurn',
   boss:'atTurnStart onPlayCard wasHpLost preBattle onSpawnMonster battleStart',
   uncommon:'onVictory atTurnStart onShuffle onUseCard onMonsterDeath wasHpLost strikeBonus vulnerablePercent canPlayCurse',
-  rare:'bindBattle battleStart atTurnStart postDraw onPlayCard onUseCard onPlayerEndTurn disableTop onRefreshHand blockPower onVulnerableApplied onAttacked blockAtTurnStart rechargeEnergy modifyHealing randomCardId onExhaust chooseGambling applyEffect onVictory',
+  rare:'bindBattle battleStart atTurnStart postDraw onPlayCard onUseCard onPlayerEndTurn disableTop onRefreshHand blockPower onVulnerableApplied onAttacked blockAtTurnStart rechargeEnergy modifyHealing randomCardId onExhaust chooseTacticalExchange applyEffect onVictory',
   shop:'battleStartActions turnStartActions onBlockBroken onShuffle medicalCard exhaustAfterUse onUseCard execute beginToolbox chooseToolbox',
   common:'gainGold beforeObtainCard onPreviewObtainCard previewCardReward onObtainCard',
  };

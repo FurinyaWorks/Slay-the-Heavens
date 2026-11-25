@@ -22,7 +22,7 @@ end
 local function fixture(card,extra)
  local r=Run.new(D,'42');r.deck={{uid=1,cardId=card or 'strike',upgraded=false}};r.nextDeckUid=2
  for _,id in ipairs(extra or {})do r.deck[#r.deck+1]={uid=r.nextDeckUid,cardId=id,upgraded=false};r.nextDeckUid=r.nextDeckUid+1 end
- assert(Run.startCombat(r,'cultist_solo'));local s=r.combat;local held
+ assert(Run.startCombat(r,'raven_adept_solo'));local s=r.combat;local held
  for _,c in ipairs(s.hand)do if c.cardId==(card or 'strike')then held=c end end
  return r,s,assert(held)
 end

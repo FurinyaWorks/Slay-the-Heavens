@@ -1,7 +1,7 @@
 package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local C,A,D,P=require('abyss_combat'),require('abyss_card_actions'),require('abyss_data'),require('abyss_character_profiles')
 local data=P.prepare(D,'defect')
-local function setup()return C.new(data,{deck={},enemies={'cultist'},seed=42,cardRandomSeed='17',shuffleSeed='17',orbSlots=0})end
+local function setup()return C.new(data,{deck={},enemies={'raven_adept'},seed=42,cardRandomSeed='17',shuffleSeed='17',orbSlots=0})end
 local function play(s,id,up,target)local c=A.fresh(C,s,id);c.upgraded=up;s.hand[#s.hand+1]=c;s.energy=20;assert(C.play(s,c.uid,target));return c end
 for _,up in ipairs({false,true})do
  local s=setup();local field=A.fresh(C,s,'force_field');s.hand={field};play(s,'defragment')
@@ -20,7 +20,7 @@ for _,up in ipairs({false,true})do
  play(s,'strike_blue',false,1);assert(s.enemies[1].hp==hp-18 and #s.cardsPlayedThisTurn==3)
 end
 local Run=require('abyss_run');local r=Run.new(D,42,{character='defect',experimental=true});r.deck={{uid=31,cardId='self_repair'}};r.relics={};r.hp=40
-assert(Run.startCombat(r,'cultist_solo'));assert(Run.play(r,r.combat.hand[1].uid));assert(r.combat.player.hp==40)
+assert(Run.startCombat(r,'raven_adept_solo'));assert(Run.play(r,r.combat.hand[1].uid));assert(r.combat.player.hp==40)
 -- One isolated final kill drives the real finish/victory hook and Run HP sync.
 local s=r.combat;local c=A.fresh(C,s,'strike_blue');s.hand={c};s.enemies[1].hp=6
 assert(Run.play(r,c.uid,1));assert(r.hp==47 and s.player.hp==47);C.startPlayerTurn(s);assert(s.player.hp==47)

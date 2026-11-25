@@ -1,6 +1,6 @@
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
 local Theme=require('abyss_theme')
-local host,ui,panel=H.setup({'anger','whirlwind','defend'},{'cultist'})
+local host,ui,panel=H.setup({'anger','whirlwind','defend'},{'raven_adept'})
 local battle=host.run.combat
 local slots={}
 for slot,card in ipairs(battle.hand)do slots[card.cardId]=slot end
@@ -42,7 +42,7 @@ visual('anger',false);visual('whirlwind',false);visual('defend',true,'能量不�
 assert(same(host.run,before),'turn visual refresh changed the run')
 ui:playSlot(slots.anger);assert(ui.selected==battle.hand[slots.anger].uid,'fresh unlocked selection must recover')
 -- Exercise the real command/feedback pipeline, rather than only a held busy flag.
-local actual,playback,view=H.setup({'defend','anger','whirlwind'},{'cultist'})
+local actual,playback,view=H.setup({'defend','anger','whirlwind'},{'raven_adept'})
 local committed=actual.run.combat
 committed.energy=1;playback:render()
 local defend

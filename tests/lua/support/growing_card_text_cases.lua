@@ -77,7 +77,7 @@ end
 local function fixture(upgraded, deck)
     local ui, stage, click, play = setup()
     ui.run = Run.new(Data, 42)
-    assert(Run.startCombat(ui.run, "cultist_solo"))
+    assert(Run.startCombat(ui.run, "raven_adept_solo"))
     ui.run.combat = Combat.new(Data, {deck=deck or {{cardId="rampage", upgraded=upgraded}}})
     ui:render()
     return ui, stage, play

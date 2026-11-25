@@ -1,7 +1,7 @@
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Run=require('abyss_run')
 local host,root=F.fixture()
-assert(F.start(host));assert(Run.startCombat(host.run,'cultist_solo'))
+assert(F.start(host));assert(Run.startCombat(host.run,'raven_adept_solo'))
 host.run.potions={'energy_potion','fire_potion'};host:refresh()
 local panel=root:GetChild('battlePanel')
 local entry=root:GetChild('potionEntry')

@@ -36,7 +36,7 @@ local function adapter(present, complete)
     return h
 end
 local function batch()
-    local battle = F.Combat.new(F.Data, {deck = {"strike"}, enemies = {"cultist"}, seed = 11})
+    local battle = F.Combat.new(F.Data, {deck = {"strike"}, enemies = {"raven_adept"}, seed = 11})
     local before, first = Events.frame(battle), #battle.events + 1
     assert(F.Combat.play(battle, battle.hand[1].uid, 1))
     return before, battle, first
@@ -69,8 +69,8 @@ test("early native reset failure restores host input after a committed command",
     same(Events.frame(unboundBattle),beforeFrame)
     assert(unboundBattle.events==unboundEvents and #unboundEvents>0,"unbound failure must not consume unrelated core frames")
     assert(testStart(host))
-    assert(Run.startCombat(host.run, "cultist_solo"))
-    host.run.combat = F.Combat.new(F.Data, {deck = {"strike"}, enemies = {"cultist"}, seed = 11})
+    assert(Run.startCombat(host.run, "raven_adept_solo"))
+    host.run.combat = F.Combat.new(F.Data, {deck = {"strike"}, enemies = {"raven_adept"}, seed = 11})
     host:refresh()
     local ui, battle = host.battleUI, host.run.combat
     local panel = root:GetChild("battlePanel")

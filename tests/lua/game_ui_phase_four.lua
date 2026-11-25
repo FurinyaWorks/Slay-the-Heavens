@@ -60,7 +60,7 @@ local function start(character,deck,physical)
  ui.run.deck={}
  for i,id in ipairs(deck)do ui.run.deck[i]={uid=i,cardId=type(id)=='table'and id.cardId or id,upgraded=type(id)=='table'and id.upgraded==true or false}end
  ui.run.nextDeckUid=#deck+1
- assert(Run.startCombat(ui.run,'cultist_solo'));ui:refresh()
+ assert(Run.startCombat(ui.run,'raven_adept_solo'));ui:refresh()
  return ui,root,ui.run.combat
 end
 local function find(pile,id)for _,c in ipairs(pile)do if c.cardId==id then return c end end;error('missing '..id)end

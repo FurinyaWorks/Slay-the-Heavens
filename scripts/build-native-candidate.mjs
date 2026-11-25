@@ -336,8 +336,11 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
     const existingSources=new Map((reusable.scripts??[]).filter(row=>typeof row.source==='string').map(row=>[row.name,row.source]));
     receipt.reusedModules=[];
     const moduleDigests={},pendingScripts=[];
-    for(const [name,source] of modules) {
-      const bytes=Buffer.from(readFileSync(fileRecord(source).path,'utf8').replace(/^\uFEFF/,'')),destination=join(payload,`${name}.lua`);
+    const scriptInputs=[...modules].map(([name,path])=>({name,source:readFileSync(fileRecord(path).path,'utf8').replace(/^\uFEFF/,'')}));
+    const {assertClientScriptText}=await import('./check-release-text.mjs');
+    assertClientScriptText(scriptInputs,'candidate-source');
+    for(const {name,source} of scriptInputs) {
+      const bytes=Buffer.from(source),destination=join(payload,`${name}.lua`);
       writeFileSync(destination,name==='abyss_ui'?Buffer.concat([Buffer.from(`print("ABYSS_BUILD ${buildId}")\n`),bytes]):bytes,{flag:'wx'});
       receipt.outputs.push(fileRecord(destination,workspace));
       moduleDigests[name]=fileRecord(destination).sha256;
@@ -394,6 +397,7 @@ export async function buildNativeCandidate({baseMap,output='build/candidates',ro
     const readback=await call('scene_list_client_scripts',{mapPath,includeSource:true});
     if(!Array.isArray(readback.scripts)||JSON.stringify(readback.scripts.map(row=>row.name).sort())!==JSON.stringify(names))throw new Error('Candidate readback module set differs');
     for(const row of readback.scripts)if(typeof row.source!=='string'||sha256(row.source)!==moduleDigests[row.name])throw new Error(`Candidate content digest mismatch: ${row.name}`);
+    receipt.scriptText=assertClientScriptText(readback.scripts,'candidate.gil');
     for(const record of receipt.outputs)if(fileRecord(record.path,workspace).sha256!==record.sha256)throw new Error('Packaged output changed during build');
     receipt.moduleDigests=moduleDigests;
     receipt.productionManifest={modules:[...modules.keys()].map(name=>({name,...fileRecord(join(payload,`${name}.lua`),workspace)})),

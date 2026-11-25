@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {loadContent,validateContent} from '../scripts/validate-data.mjs';
-const fixture=()=>{const data=loadContent('data');return {data,e:data.enemies.enemies.find(e=>e.id==='red_slaver')};};
+const fixture=()=>{const data=loadContent('data');return {data,e:data.enemies.enemies.find(e=>e.id==='red_guard')};};
 test('Red A0 declares source HP/actions/one-net thresholds and actual Entangle status',()=>{
  const {data,e}=fixture();assert.deepEqual(e.hpRange,{min:46,max:50});
- assert.deepEqual(e.ai,{kind:'red_slaver',stabIntent:'red_slaver_1',entangleIntent:'red_slaver_2',scrapeIntent:'red_slaver_3',rollRange:100,entangleCutoff:75,stabCutoff:55});
+ assert.deepEqual(e.ai,{kind:'red_guard',stabIntent:'red_guard_1',entangleIntent:'red_guard_2',scrapeIntent:'red_guard_3',rollRange:100,entangleCutoff:75,stabCutoff:55});
  assert.deepEqual(e.intents.map(i=>i.effects),[[{op:'damage',value:13}],[{op:'applyStatus',status:'entangled',value:1}],[{op:'damage',value:8},{op:'applyStatus',status:'vulnerable',value:1}]]);
  const status=data.statuses.statuses.find(s=>s.id==='entangled');assert.equal(status.kind,'debuff');assert.equal(status.stack,'intensity');assert.equal(status.decay,'none');
  assert.deepEqual(validateContent(data),[]);

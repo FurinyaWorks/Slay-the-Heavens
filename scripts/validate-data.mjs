@@ -307,7 +307,7 @@ export function validateContent(bundle) {
         const intent = Array.isArray(entry.intents) && entry.intents.find(intent => intent?.id === id);
         if (intent && (kind ? intent.kind !== kind : ['sleep', 'stunned', 'charge', 'split', 'escape'].includes(intent.kind))) fail(path, 'invalid AI intent kind');
       };
-      enumeration(a.kind, ['sleep_then_cycle', 'ritual_then_attack', 'guardian', 'jaw_worm', 'charge_then_attack', 'gremlin_nob', 'blue_slaver', 'red_slaver', 'acid_slime_s', 'rolled_attack', 'opening_roll_attack', 'sentry', 'mad_gremlin', 'shield_gremlin', 'spike_slime_m', 'spike_slime_l', 'acid_slime_m', 'acid_slime_l', 'fungi_beast', 'louse', 'looter'], `${ap}.kind`);
+      enumeration(a.kind, ['sleep_then_cycle', 'ritual_then_attack', 'guardian', 'jaw_worm', 'charge_then_attack', 'gremlin_nob', 'blue_guard', 'red_guard', 'acid_slime_s', 'rolled_attack', 'opening_roll_attack', 'sentry', 'mad_gremlin', 'shield_gremlin', 'spike_slime_m', 'spike_slime_l', 'acid_slime_m', 'acid_slime_l', 'fungi_beast', 'louse', 'looter'], `${ap}.kind`);
       if (a.kind === 'looter') {
         keys(a, ['kind', 'mugIntent', 'lungeIntent', 'smokeIntent', 'escapeIntent', 'stealAmount', 'rollRange', 'talkChance', 'smokeChance'], ap);
         reference('thievery', 'statuses', `${ap}.thievery`);
@@ -448,7 +448,7 @@ export function validateContent(bundle) {
         intentReference(a.tackleIntent, `${ap}.tackleIntent`, 'attack');
         intentReference(a.weakIntent, `${ap}.weakIntent`, 'debuff');
         integer(a.rollRange, `${ap}.rollRange`, 1, 65536);
-      } else if (a.kind === 'red_slaver') {
+      } else if (a.kind === 'red_guard') {
         keys(a, ['kind', 'stabIntent', 'entangleIntent', 'scrapeIntent', 'rollRange', 'entangleCutoff', 'stabCutoff'], ap);
         intentReference(a.stabIntent, `${ap}.stabIntent`, 'attack');
         intentReference(a.entangleIntent, `${ap}.entangleIntent`, 'debuff');
@@ -463,7 +463,7 @@ export function validateContent(bundle) {
         if (!Array.isArray(net?.effects) || !net.effects.some(effect => effect?.op === 'applyStatus' && effect.status === 'entangled' && effect.value === 1)) {
           fail(`${ap}.entangleIntent`, 'must apply Entangled one');
         }
-      } else if (a.kind === 'blue_slaver') {
+      } else if (a.kind === 'blue_guard') {
         keys(a, ['kind', 'stabIntent', 'rakeIntent', 'rollRange', 'stabCutoff'], ap);
         intentReference(a.stabIntent, `${ap}.stabIntent`, 'attack');
         intentReference(a.rakeIntent, `${ap}.rakeIntent`, 'attack');
@@ -630,7 +630,7 @@ export function validateContent(bundle) {
         'happy_flower', 'ancient_tea_set', 'art_of_war', 'boot', 'akabeko', 'pen_nib', 'nunchaku',
         'preserved_insect', 'red_skull', 'centennial_puzzle', 'tiny_chest', 'juzu_bracelet', 'dream_catcher',
         'warped_tongs', 'spirit_poop', 'circlet', 'golden_idol', 'tungsten_rod', 'red_mask', 'toxic_egg', 'molten_egg',
-        'snake_skull', 'data_disk', 'damaru', 'mark_of_bloom', 'black_star', 'lizard_tail', 'odd_mushroom', 'pear', 'mango', 'lees_waffle', 'white_beast_statue', 'old_coin', 'frozen_egg', 'sacred_bark', 'fossilized_helix', 'pantograph', 'bottled_tornado', 'sundial', 'kunai', 'blue_candle', 'eternal_feather', 'strike_dummy', 'singing_bowl', 'matryoshka', 'ink_bottle', 'ornamental_fan', 'bottled_lightning', 'gremlin_horn', 'horn_cleat', 'letter_opener', 'question_card', 'bottled_flame', 'shuriken', 'meat_on_the_bone', 'mummified_hand', 'mercury_hourglass', 'self_forming_clay', 'paper_frog', 'ginger', 'bird_faced_urn', 'unceasing_top', 'torii', 'stone_calendar', 'shovel', 'winged_greaves', 'thread_and_needle', 'turnip', 'ice_cream', 'calipers', 'prayer_wheel', 'girya', 'dead_branch', 'du_vu_doll', 'pocketwatch', 'incense_burner', 'gambling_chip', 'peace_pipe', 'captains_wheel', 'magic_flower', 'charons_ashes', 'champion_belt', 'velvet_choker', 'runic_dome', 'snecko_eye', 'pandoras_box', 'cursed_key', 'busted_crown', 'ectoplasm', 'tiny_house', 'philosophers_stone', 'astrolabe', 'empty_cage', 'runic_pyramid', 'calling_bell', 'mark_of_pain', 'runic_cube', 'sling', 'hand_drill', 'toolbox', 'chemical_x', 'orrery', 'dollys_mirror', 'orange_pellets', 'prismatic_shard', 'clockwork_souvenir', 'frozen_eye', 'the_abacus', 'medical_kit', 'cauldron', 'strange_spoon', 'brimstone', 'cultist_mask', 'face_of_cleric', 'nloths_mask', 'ssserpent_head', 'nloths_gift', 'bloody_idol', 'mutagenic_strength', 'necronomicon', 'enchiridion', 'nilrys_codex'].includes(entry.id)) fail(`${p}.id`, 'unsupported relic hook');
+        'snake_skull', 'data_disk', 'damaru', 'mark_of_bloom', 'black_star', 'lizard_tail', 'odd_mushroom', 'pear', 'mango', 'lees_waffle', 'white_beast_statue', 'old_coin', 'frozen_egg', 'sacred_bark', 'fossilized_helix', 'pantograph', 'bottled_tornado', 'sundial', 'kunai', 'blue_candle', 'eternal_feather', 'strike_dummy', 'singing_bowl', 'matryoshka', 'ink_bottle', 'ornamental_fan', 'bottled_lightning', 'gremlin_horn', 'horn_cleat', 'letter_opener', 'question_card', 'bottled_flame', 'shuriken', 'meat_on_the_bone', 'mummified_hand', 'mercury_hourglass', 'self_forming_clay', 'paper_frog', 'ginger', 'bird_faced_urn', 'unceasing_top', 'torii', 'stone_calendar', 'shovel', 'winged_greaves', 'thread_and_needle', 'turnip', 'ice_cream', 'calipers', 'prayer_wheel', 'girya', 'dead_branch', 'du_vu_doll', 'pocketwatch', 'incense_burner', 'tactical_badge', 'peace_pipe', 'captains_wheel', 'magic_flower', 'charons_ashes', 'champion_belt', 'velvet_choker', 'runic_dome', 'snecko_eye', 'pandoras_box', 'cursed_key', 'busted_crown', 'ectoplasm', 'tiny_house', 'philosophers_stone', 'astrolabe', 'empty_cage', 'runic_pyramid', 'calling_bell', 'mark_of_pain', 'runic_cube', 'sling', 'hand_drill', 'toolbox', 'chemical_x', 'orrery', 'dollys_mirror', 'orange_pellets', 'prismatic_shard', 'clockwork_souvenir', 'frozen_eye', 'the_abacus', 'medical_kit', 'cauldron', 'strange_spoon', 'brimstone', 'raven_mask', 'face_of_cleric', 'nloths_mask', 'ssserpent_head', 'nloths_gift', 'bloody_idol', 'augmentation_core', 'necronomicon', 'enchiridion', 'nilrys_codex'].includes(entry.id)) fail(`${p}.id`, 'unsupported relic hook');
       if (!Array.isArray(entry.effects) || entry.effects.length !== 0) fail(`${p}.effects`, 'source hooks require empty generic effects');
     } else if (kind === 'relics' && entry.trigger === 'shop') {
       targetGroup(entry.effects, `${p}.effects`, false);

@@ -69,7 +69,7 @@ test("new encounter resets stale target before the first attack-card tap", funct
     click(root, "battlePanel", "cardReward");click(root, "battlePanel", "skip")
     leavePotionRewards(ui, root)
     assert(run.phase == "map")
-    assert(Run.startCombat(run, "cultist_solo"))
+    assert(Run.startCombat(run, "raven_adept_solo"))
     ui:refresh() -- This is the same host refresh used after Nodes.enter.
     local battle = run.combat
     local slot
@@ -205,11 +205,13 @@ test("node panels compose through Boss16, independent treasure17 then restart", 
                 click(root, "nodePanel", "confirm")
                 assert(ui.run.gold < before)
             end
-            click(root, "nodePanel", "back");ui:update(.31)
-            -- The merchant's farewell holds the shop panel until the player continues.
-            assert(ui.mode == "node" and ui.run.phase == "map" and not ui.mapUI.navigationEnabled)
-            assert(root:GetChild("nodePanel"):GetChild("merchant").visible)
-            click(root, "nodePanel", "confirm")
+            if ui.nodeUI.shopOpen then
+                click(root, "nodePanel", "back")
+                assert(ui.run.phase=="node")
+                ui:update(.7)
+            end
+            click(root, "nodePanel", "back")
+            assert(ui.mode == "map" and ui.run.phase == "map")
         else
             assert(ui.mode == "node")
             if node.type == "event" then

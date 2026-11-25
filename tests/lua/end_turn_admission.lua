@@ -31,7 +31,7 @@ local function test(name,fn)
  fn();count=count+1;print('ok admission '..count..' '..name)
 end
 local function battle(experimental)
- local s=C.new(D,{seed=42,deck={},enemies={'cultist'},cardRandomSeed='42'})
+ local s=C.new(D,{seed=42,deck={},enemies={'raven_adept'},cardRandomSeed='42'})
  s.experimentalMechanics=experimental==true;s.events={}
  local e=s.enemies[1];e.ai=nil;e.intents={{id='wait',effects={{op='block',value=0}}}};e.intentIndex=1
  s.auditAliases={player=s.player,hand=s.hand,draw=s.draw,discard=s.discard,enemies=s.enemies,events=s.events}

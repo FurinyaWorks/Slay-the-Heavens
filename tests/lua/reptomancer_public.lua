@@ -78,7 +78,7 @@ test('leader death cleanup invokes normal death powers but never grants Minion f
  end
  leader.hp=1;local called,ok=pcall(Run.play,run,strike(run),2);Silent.death=old
  assert(called and ok);eq(visits,2);eq(queued,1);eq(run.phase,'reward');eq(run.victories,1)
- local suicides=0;for _,ev in ipairs(s.events)do if ev.kind=='enemy_suicide'then suicides=suicides+1 end end
+ local suicides=0;for _,ev in ipairs(s.events)do if ev.kind=='enemy_self_exit'then suicides=suicides+1 end end
  eq(suicides,2);eq(s.stolenGoldReward,0)
 end)
 print('REPTOMANCER_PUBLIC '..count..' groups; '..failed..' failed; source seed '..seed);assert(failed==0)

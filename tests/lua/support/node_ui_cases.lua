@@ -94,6 +94,10 @@ local function setup(kind, source, prepare, events, sound,relicSeed)
     ui:setVisible(true) -- the host shows the panel in node mode
     if kind=="shop" then assert(root:GetChild("merchant"):GetChild("talk"):GetChild("hit").click());advanceShop(ui) end
     local function get(key)
+        key = key:gsub('^shopView/(%a+)', function(name)
+            return (name:match('^relic') or name:match('^potion') or name:match('^removal'))
+                and 'shopView/goods/'..name or 'shopView/'..name
+        end)
         local node = root
         for part in key:gmatch("[^/]+") do node = assert(node:GetChild(part), "missing " .. key) end
         return node
@@ -193,7 +197,7 @@ test("shop shelf shows five colored and two implemented colorless cards without 
         assert(get('shopView/card'..i..'/description').text~='',offer.id..' must describe the card')
         assert(not get('shopView/card'..i..'/veil').visible,offer.id..' must not be sold')
     end
-    assert(get("back").children.label.text == "离开" and not shown("confirm"))
+    assert(get("back").children.label.text == "关闭" and not shown("confirm"))
 end)
 
 test("unaffordable goods turn the price red, grey the card and explain without charging", function()
@@ -265,7 +269,7 @@ test("removal service selects a uid first, confirms with the core price and is s
     local before = Combat.copy(ui.run)
     assert(not shown("pickerView/target") and get("pickerView/empty").text ~= "")
     assert(not click("confirm")) same(ui.run, before)
-    assert(get("notice").text == "请先在上方选择一张卡牌")
+    assert(get("pickerView/empty").text == "请先选择一张卡牌")
     assert(click("pickerView/card2")) same(ui.run, before)
     assert(shown("pickerView/target") and get("pickerView/card2").children.glow.visible)
     assert(get("pickerView/hint").text == "牌组 10 → 9 张")
@@ -301,22 +305,21 @@ test("an external removal invalidates a selected removal before charging gold", 
     local before = Combat.copy(ui.run)
     assert(not click("confirm")) same(ui.run, before)
     assert(ui.run.deck[1].uid == second and ui.run.shopRemoveCount == 1)
-    assert(get("notice").text == "本店删牌服务已使用")
+    assert(get("pickerView/empty").text == "本店删牌服务已使用")
     assert(#changes == 1 and changes[1].reason == "removal_unavailable" and not changes[1].ok)
 end)
 
 test("merchant only gives short transaction feedback and never idle dialogue", function()
     local ui,get,click,shown=setup('shop',nil,function(run)run.gold=10000 end)
-    assert(not shown('shopRoom') and ui.merchant.current==nil)
+    assert(shown('shopRoom') and ui.merchant.current==nil)
     assert(click('shopView/card1') and click('confirm'))
     assert(get('merchant/line').text=='谢啦！' and shown('merchant/bubble'))
     ui:update(2);assert(not shown('merchant/bubble'))
     ui:update(20);assert(not shown('merchant/bubble'))
     assert(click('shopView/card2') and click('confirm'))
-    assert(shown('merchant/bubble') and not shown('shopRoom'))
-    assert(click('back'));ui:update(.31)
-    assert(ui:holding() and not shown('shopView'))
-    assert(click('confirm') and not ui:holding())
+    assert(shown('merchant/bubble') and shown('shopRoom'))
+    assert(click('back'));assert(not ui.run.nodeFlow.complete and not shown('shopView'))
+    ui:update(.7);assert(click('back') and ui.run.nodeFlow.complete and not ui:holding())
 end)
 
 test("merchant reaction sounds are requested only for sales and refusals", function()
@@ -328,13 +331,13 @@ test("merchant reaction sounds are requested only for sales and refusals", funct
         sound = function(cue) cues[#cues + 1] = cue end })
     ui:setVisible(true)
     assert(root:GetChild("merchant"):GetChild("talk"):GetChild("hit").click());advanceShop(ui)
-    assert(#cues == 0, "entering and greeting are silent")
+    assert(#cues == 1 and cues[1]=='shop_open', "only shelf activation plays the entry cue")
     assert(ui:press("shopView/card1"))
-    assert(#cues==0, "preview is not a sale")
+    assert(#cues==1, "preview is not a sale")
     assert(ui:press("confirm"))
     run.gold = 0 ui:render()
     assert(not ui:press("shopView/card2"))
-    assert(cues[1] == "merchant_buy" and cues[2] == "merchant_deny" and #cues == 2)
+    assert(cues[2] == "merchant_buy" and cues[3] == "merchant_deny" and #cues == 3)
     assert(Theme.sound.merchant_buy and Theme.sound.merchant_deny)
 end)
 
@@ -403,7 +406,7 @@ test("forge previews the real before/after card and commits only the confirmed u
     for _, card in ipairs(ui.run.deck) do assert(card.upgraded == (card.uid == target)) end
     assert(ui.run.phase == "map" and ui:holding() and shown("pickerView"))
     assert(shown("pickerView/after") and get("pickerView/label").text == "已升级" and not shown("pickerView/card1"))
-    assert(get("notice").text == "已升级「" .. display.name .. "」→「" .. display.name .. "+」")
+    assert(get("pickerView/empty").text == "已升级「" .. display.name .. "」→「" .. display.name .. "+」")
     assert(click("confirm") and not ui:holding())
 end)
 
@@ -486,7 +489,7 @@ test("Cleric stale affordability is revalidated by Nodes without consuming the e
     assert(click("eventView/option2") and click("pickerView/card1")) ui.run.gold = 49
     local before = Combat.copy(ui.run)
     assert(not click("confirm")) same(ui.run, before)
-    assert(get("notice").text == "金币不足" and is(get("notice").fontColor, C.danger))
+    assert(get("pickerView/empty").text == "金币不足" and is(get("pickerView/empty").fontColor, C.danger))
     assert(click("back") and click("eventView/option3") and ui.run.phase == "map")
 end)
 

@@ -13,7 +13,7 @@ local function setup(owned,mark)
  local ui,root=F.fixture();assert(testStart(ui))
  if owned then assert(Run.obtainRelic(ui.run,'Lizard Tail'))end
  if mark then assert(Run.obtainRelic(ui.run,'Mark of the Bloom'))end
- assert(Run.startCombat(ui.run,'cultist_solo'));ui:refresh()
+ assert(Run.startCombat(ui.run,'raven_adept_solo'));ui:refresh()
  return ui,root,ui.run.combat
 end
 local function hero(ui,root)

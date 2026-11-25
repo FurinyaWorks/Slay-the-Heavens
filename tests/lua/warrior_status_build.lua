@@ -30,7 +30,7 @@ local function inst(id,up) return {cardId=id,upgraded=up} end
 local function held(s,id) for _,c in ipairs(s.hand) do if c.cardId==id then return c end end;error('missing '..id) end
 local function play(s,id,target) local ok,why=C.play(s,held(s,id).uid,target);assert(ok,why) end
 local function battle(deck,enemies)
- local s=C.new(data,{seed=42,deck=deck or {},enemies=enemies or {'cultist'},cardRandomSeed='42'})
+ local s=C.new(data,{seed=42,deck=deck or {},enemies=enemies or {'raven_adept'},cardRandomSeed='42'})
  for _,e in ipairs(s.enemies) do e.hp=200;e.maxHp=200 end;return s
 end
 local function arrange(s,ids)
@@ -145,7 +145,7 @@ test('real Wild Strike into an empty draw pile creates Wound without consuming i
 end)
 test('real Intimidate applies Weak independently through Artifact and exhausts',function()
  for _,up in ipairs({false,true}) do
-  local s=battle({inst('intimidate',up)},{'cultist','cultist'});s.enemies[1].statuses.artifact=1;play(s,'intimidate')
+  local s=battle({inst('intimidate',up)},{'raven_adept','raven_adept'});s.enemies[1].statuses.artifact=1;play(s,'intimidate')
   eq(s.enemies[1].statuses.weak or 0,0);eq(s.enemies[1].statuses.artifact,0)
   eq(s.enemies[2].statuses.weak,up and 2 or 1);eq(#s.exhaust,1);eq(s.energy,3)
  end
@@ -228,7 +228,7 @@ test('real fully blocked and zero enemy damage do not reduce Blood for Blood',fu
 end)
 for _,first in ipairs({'flame_barrier','thorns'}) do
  test('real Flame Barrier and potion Thorns retaliate in reverse TOP order with '..first..' acquired first',function()
-  local s=battle({'flame_barrier'});assert(C.endTurn(s)) -- Cultist now has an actual attack intent.
+  local s=battle({'flame_barrier'});assert(C.endTurn(s)) -- Raven Adept now has an actual attack intent.
   local bronze
   for _,potion in ipairs(data.potions.potions) do if potion.id=='liquid_bronze' then bronze=potion end end
   assert(bronze)
@@ -250,7 +250,7 @@ for _,first in ipairs({'flame_barrier','thorns'}) do
 end
 local function voidBattle(deck,hand)
  local mixed=T.withCards(require('abyss_defect_utility_cards').withCards(base))
- local s=C.new(mixed,{seed=42,deck=deck,enemies={'cultist'},cardRandomSeed='42'})
+ local s=C.new(mixed,{seed=42,deck=deck,enemies={'raven_adept'},cardRandomSeed='42'})
  s.enemies[1].hp=200;s.enemies[1].maxHp=200;arrange(s,hand);s.energy=3;return s
 end
 for _,first in ipairs({'evolve','fire_breathing'}) do

@@ -31,7 +31,7 @@ test('ordinary Dagger Throw pauses before Sharp Hide and using-card disposal wit
  -- Silent has no stance mechanic. Combat.new accepts this same no-stance
  -- entry used by existing Silent foundational Core tests.
  local s=C.new(P.prepare(Data,'silent'),{seed=42,cardRandomSeed='42',
-  deck={'dagger_throw','tactician','defend_green'},enemies={'cultist'}})
+  deck={'dagger_throw','tactician','defend_green'},enemies={'raven_adept'}})
  eq(s.player.stance,nil);s.player.hp=3;s.enemies[1].hp=100
  assert(A.applyPower(s,s.enemies[1],'sharp_hide',3,s.enemies[1]))
  local card=find(s.hand,'dagger_throw');local tactician=find(s.hand,'tactician')
@@ -46,7 +46,7 @@ test('ordinary Dagger Throw pauses before Sharp Hide and using-card disposal wit
 end)
 test('same Dagger Throw source sequence is correct with the Neutral stance option used by Run',function()
  local s=C.new(P.prepare(Data,'silent'),{seed=42,cardRandomSeed='42',enableStances=true,
-  deck={'dagger_throw','tactician','defend_green'},enemies={'cultist'}})
+  deck={'dagger_throw','tactician','defend_green'},enemies={'raven_adept'}})
  eq(s.player.stance,'Neutral');s.player.hp=3;s.enemies[1].hp=100
  assert(A.applyPower(s,s.enemies[1],'sharp_hide',3,s.enemies[1]))
  local using=find(s.hand,'dagger_throw');local tactician=find(s.hand,'tactician')
@@ -59,7 +59,7 @@ end)
 local function scryState(noDraw,selectWeave)
  local deck={'cut_through_fate','weave'};for i=1,9 do deck[#deck+1]='protect'end
  for i=1,3 do deck[#deck+1]='defend_purple'end
- local s=C.new(P.prepare(Data,'watcher'),{seed=42,cardRandomSeed='42',enableStances=true,deck=deck,enemies={'cultist'}})
+ local s=C.new(P.prepare(Data,'watcher'),{seed=42,cardRandomSeed='42',enableStances=true,deck=deck,enemies={'raven_adept'}})
  s.enemies[1].hp=100
  local hand={'cut_through_fate'};for i=1,9 do hand[#hand+1]='protect'end
  local draw={'defend_purple','defend_purple','defend_purple'}

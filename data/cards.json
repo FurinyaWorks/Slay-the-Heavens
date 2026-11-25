@@ -2001,7 +2001,7 @@
     {
       "id": "exhume",
       "sts_name": "Exhume",
-      "name": "掘尸",
+      "name": "重拾旧策",
       "type": "skill",
       "rarity": "rare",
       "cost": 1,

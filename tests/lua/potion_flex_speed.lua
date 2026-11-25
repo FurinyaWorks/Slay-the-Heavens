@@ -21,7 +21,7 @@ end
 local function battle(ids)
  local run=C.copy(base)
  for _,id in ipairs(ids) do assert(Run.obtainPotion(run,id)) end
- assert(Run.startCombat(run,'cultist_solo'));return run
+ assert(Run.startCombat(run,'raven_adept_solo'));return run
 end
 local function refused(run,slot,reason)
  local before=C.copy(run);local root,potions=run.combat,run.potions
@@ -106,7 +106,7 @@ test('real Strike and Defend receive five additional damage or block, then retur
  local source=C.copy(Data);source.cards.starter_deck.cards={'strike','defend','defend','defend','defend'}
  local prepared=Run.new(source,42)
  for _,v in ipairs(specs) do
-  local run=C.copy(prepared);assert(Run.obtainPotion(run,v[1]));assert(Run.startCombat(run,'cultist_solo'))
+  local run=C.copy(prepared);assert(Run.obtainPotion(run,v[1]));assert(Run.startCombat(run,'raven_adept_solo'))
   local s=run.combat;assert(Run.usePotion(run,1));local cardId=v[2]=='strength' and 'strike' or 'defend'
   for turn=1,2 do
    local uid;for _,card in ipairs(s.hand) do if card.cardId==cardId then uid=card.uid;break end end
@@ -120,7 +120,7 @@ end)
 test('real Flex card and Flex Potion share one LoseStrength debt and restore together',function()
  -- A fresh legal deck gives the existing card to Run.play; no synthetic effect invocation.
  local source=C.copy(Data);source.cards.starter_deck.cards={'flex','defend','defend','defend','defend'}
- local run=Run.new(source,42);assert(Run.obtainPotion(run,'flex_potion'));assert(Run.startCombat(run,'cultist_solo'));local s=run.combat
+ local run=Run.new(source,42);assert(Run.obtainPotion(run,'flex_potion'));assert(Run.startCombat(run,'raven_adept_solo'));local s=run.combat
  local uid;for _,card in ipairs(s.hand) do if card.cardId=='flex' then uid=card.uid end end
  assert(Run.play(run,uid));assert(Run.usePotion(run,1));eq(s.player.statuses.strength,7);eq(s.player.temporaryStrength,7)
  assert(Run.endTurn(run));eq(s.player.statuses.strength,0)

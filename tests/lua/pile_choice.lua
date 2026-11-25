@@ -13,7 +13,7 @@ local function data()
     return Cards.withCards(Cards.withCards(Data,"ironclad"),"defect")
 end
 local function setup(deck,d)
-    return Combat.new(d or data(),{seed=42,cardRandomSeed="42",enemies={"cultist"},deck=deck or {}})
+    return Combat.new(d or data(),{seed=42,cardRandomSeed="42",enemies={"raven_adept"},deck=deck or {}})
 end
 local function arrange(s,layout)
     local all={}

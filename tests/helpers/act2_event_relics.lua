@@ -27,7 +27,7 @@ function H.run(ids,deck,setup)
  return r
 end
 function H.battle(ids,deck,setup)
- local r=H.run(ids,deck,setup);assert(H.Run.startCombat(r,'cultist_solo'));return r,r.combat
+ local r=H.run(ids,deck,setup);assert(H.Run.startCombat(r,'raven_adept_solo'));return r,r.combat
 end
 function H.card(r,id)
  for _,c in ipairs(r.combat.hand)do if c.cardId==id then return c end end

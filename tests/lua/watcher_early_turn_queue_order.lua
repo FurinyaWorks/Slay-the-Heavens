@@ -1,7 +1,7 @@
 package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local C,P,D,A=require('abyss_combat'),require('abyss_character_profiles'),require('abyss_data'),require('abyss_card_actions')
 local function battle()
- local s=C.new(P.prepare(D,'watcher'),{seed=1,cardRandomSeed='1',enableStances=true,deck={'empty_body'},enemies={'cultist'}})
+ local s=C.new(P.prepare(D,'watcher'),{seed=1,cardRandomSeed='1',enableStances=true,deck={'empty_body'},enemies={'raven_adept'}})
  s.enemies[1].hp=1000;s.enemies[1].maxHp=1000;return s
 end
 local function add(s,id)local c=A.fresh(C,s,id);C.queueCard(s,c,{append=true,randomTarget=true});return c end

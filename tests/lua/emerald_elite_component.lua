@@ -20,7 +20,7 @@ local eligible={endingUnlocked=true,emeraldOwned=false}
 local ordered={'early_left','early_right','middle','late'}
 local function context()
  return {endingUnlocked=true,emeraldOwned=false,marked=true,roomClass='elite',outcome='victory',smoked=false,
-  runSeed='42',act=2,floor=23,nodeId='early_left',sourceEncounter='Slavers',combatGeneration=3,phase='reward'}
+  runSeed='42',act=2,floor=23,nodeId='early_left',sourceEncounter='Arena Guards',combatGeneration=3,phase='reward'}
 end
 do
  for _,v in ipairs(EMERALD_VECTORS.cases)do

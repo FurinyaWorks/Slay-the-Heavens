@@ -158,7 +158,7 @@ end)
 
 test('queued Burn and roll survive attacker death only while another enemy lives',function()
  for _,allies in ipairs({false,true})do
-  local s=battle('1',{},allies and {'orb_walker','cultist'}or {'orb_walker'})
+  local s=battle('1',{},allies and {'orb_walker','raven_adept'}or {'orb_walker'})
   local e=laser(s);A.applyPower(s,s.player,'thorns',100,s.player)
   local rng,uid=s.aiRng.counter,s.nextUid
   assert(C.endTurn(s));eq(e.hp,0);eq(e.statuses.strength,nil)

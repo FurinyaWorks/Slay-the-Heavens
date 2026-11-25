@@ -1,7 +1,7 @@
 local F=dofile('tests/helpers/relic-lifecycle-baseline-support.lua')
 dofile('tests/lua/relic_query_contract.lua')
 local H,B,U,Rare,Shop=F.hooks,F.boss,F.uncommon,F.rare,F.shop
-local s=F.C.new(F.D,{seed=42,deck={'strike','defend'},enemies={'cultist'}});H.bindBattle(s,{'philosophers_stone','centennial_puzzle'})
+local s=F.C.new(F.D,{seed=42,deck={'strike','defend'},enemies={'raven_adept'}});H.bindBattle(s,{'philosophers_stone','centennial_puzzle'})
 local root=F.root(s)
 for _,namespace in ipairs({'hooks','uncommon','rare','boss','shop'})do
  local module=F[namespace]

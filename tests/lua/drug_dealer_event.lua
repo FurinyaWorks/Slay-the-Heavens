@@ -2,10 +2,10 @@ local H=dofile('tests/helpers/act2_choice_events.lua')
 local eq,same,test=H.eq,H.same,H.test
 local Context,Transform=require('abyss_event_transform_context'),require('abyss_transform_card')
 local function selecting(setup)
-    local r,m=H.fixture('drug_dealer',setup);assert(H.Nodes.chooseEvent(r,'test_subject'));return r,m
+    local r,m=H.fixture('augmenter',setup);assert(H.Nodes.chooseEvent(r,'test_subject'));return r,m
 end
 test('Augmenter three exact options, no Leave, cached eligibility, bottles selectable and protected curses excluded',function()
-    local r,m=H.fixture('drug_dealer',function(s)s.deck={{uid=7,cardId='strike',inBottleFlame=true},{uid=8,cardId='defend',inBottleLightning=true},
+    local r,m=H.fixture('augmenter',function(s)s.deck={{uid=7,cardId='strike',inBottleFlame=true},{uid=8,cardId='defend',inBottleLightning=true},
         {uid=9,cardId='Necronomicurse'},{uid=10,cardId='AscendersBane'},{uid=11,cardId='CurseOfTheBell'}}end)
     local before=H.snapshot(r);local event=H.Nodes.view(r,m).node.event;eq(#event.options,3);eq(event.options[2].enabled,true);same(r,before)
     H.reject(r,'leave',nil,'invalid_event_choice');assert(H.Nodes.chooseEvent(r,'test_subject'))
@@ -14,11 +14,11 @@ test('Augmenter three exact options, no Leave, cached eligibility, bottles selec
     H.reject(r,'leave',nil,'invalid_event_choice');H.reject(r,'transform',{7},'invalid_card_selection')
     H.reject(r,'transform',{7,7},'invalid_card_selection');H.reject(r,'transform',{7,9},'card_not_purgeable')
     H.reject(r,'transform',{7,8,11},'invalid_card_selection');H.reject(r,'transform',7,'invalid_card_selection')
-    r,m=H.fixture('drug_dealer',function(s)s.deck={{uid=7,cardId='strike'}}end)
+    r,m=H.fixture('augmenter',function(s)s.deck={{uid=7,cardId='strike'}}end)
     eq(H.Nodes.view(r,m).node.event.options[2].enabled,false);H.reject(r,'test_subject',nil,'event_condition_unmet')
 end)
 test('Augmenter JAX fresh obtain, separate Leave, Toxic Egg and Fish exact hooks',function()
-    local r=H.fixture('drug_dealer',function(s)s.relics={'toxic_egg','ceramic_fish'}end);local before=H.snapshot(r)
+    local r=H.fixture('augmenter',function(s)s.relics={'toxic_egg','ceramic_fish'}end);local before=H.snapshot(r)
     assert(H.Nodes.chooseEvent(r,'jax'));eq(#r.deck,#before.deck+1);eq(r.deck[#r.deck].cardId,'jax');eq(r.deck[#r.deck].upgraded,true)
     eq(r.gold,before.gold+9);eq(r.nodeFlow.event.stage,'result');same(r.miscRng,before.miscRng)
     H.reject(r,'jax',nil,'invalid_event_choice');assert(H.Nodes.chooseEvent(r,'leave'));eq(r.phase,'map')
@@ -59,9 +59,9 @@ test('Augmenter second delayed obtain refusal rolls back both removals, Parasite
     end end,function()H.reject(r,'transform',{7,8},'late_transform_refusal')end)
     eq(calls,2);assert(H.Nodes.chooseEvent(r,'transform',{7,8}));eq(r.maxHp,77);eq(r.nodeFlow.event.stage,'result')
 end)
-test('Augmenter missing MutagenicStrength refuses, duplicate original relic gives exact Circlet fallback',function()
-    local r=H.fixture('drug_dealer');H.removeDefinition(r,'relics','mutagenic_strength');H.reject(r,'mutagens',nil,'relic_content_unavailable')
-    r=H.fixture('drug_dealer',function(s)s.relics={'mutagenic_strength'}end);local before=H.snapshot(r)
-    assert(H.Nodes.chooseEvent(r,'mutagens'));eq(r.nodeFlow.event.obtainedRelicId,'circlet');eq(r.relicCounters.circlet,1);same(r.miscRng,before.miscRng)
+test('Augmenter missing AugmentationCore refuses, duplicate original relic gives exact Circlet fallback',function()
+    local r=H.fixture('augmenter');H.removeDefinition(r,'relics','augmentation_core');H.reject(r,'claim_core',nil,'relic_content_unavailable')
+    r=H.fixture('augmenter',function(s)s.relics={'augmentation_core'}end);local before=H.snapshot(r)
+    assert(H.Nodes.chooseEvent(r,'claim_core'));eq(r.nodeFlow.event.obtainedRelicId,'circlet');eq(r.relicCounters.circlet,1);same(r.miscRng,before.miscRng)
 end)
 H.finish('DRUG_DEALER_EVENT')

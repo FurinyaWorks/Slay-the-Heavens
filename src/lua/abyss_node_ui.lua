@@ -12,7 +12,7 @@ local EndingUI=require('abyss_node_ui_ending')
 local EventUI=require('abyss_node_ui_events')
 local RelicView=require('abyss_relic_view_ui')
 local MatchUI=require('abyss_match_event_ui')
-local number = require("abyss_numbers").integer
+local RunHud=require('abyss_run_hud')
 local C = Theme.color
 local kinds = { camp = "营地", shop = "商店", event = "未知事件", treasure = "宝箱",ending_proceed='真结局' }
 local layout = Theme.layout.nativeNode
@@ -56,6 +56,8 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
 
     function ctx.path(key)
         local control = ctx.root
+        local product = key:match('^shopView/([^/]+)$')
+        if product then return assert(ctx.shopControl(product), key) end
         for part in key:gmatch("[^/]+") do control = assert(control:GetChild(part), "missing node UI control " .. key) end
         return control
     end
@@ -108,8 +110,9 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
             identity:SetVisible(not node or node.type ~= 'ending_proceed')
         end
         ctx.child("title").text = nodeHeaderTitle(node, ctx.self.run.floor)
-        ctx.child("hp").text = number(ctx.self.run.hp) .. "/" .. number(ctx.self.run.maxHp)
-        ctx.child("gold").text = number(ctx.self.run.gold)
+        local hp,gold=RunHud.resourceText(ctx.self.run)
+        ctx.child("hp").text=hp
+        ctx.child("gold").text=gold
         ctx.child("deck").text = tostring(#ctx.self.run.deck)
         -- TASK-4.7: the shared top-bar disc row and 遗物 N button carry this now.
         ctx.child("relics").text = ""
@@ -184,17 +187,27 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         return screen,hint,recallSource,treasureSource
     end
 
-    function ctx.refreshNodeNotice(node,active,hint)
+    function ctx.refreshNodeNotice(node,active,hint,screen)
         -- The merchant speaks in his own dialogue box; the notice keeps only shop facts.
         if node and node.type == "shop" and (ctx.self.merchantNode ~= node.id or ctx.self.merchantRun ~= ctx.self.run) then
             ctx.self.merchantNode, ctx.self.merchantRun = node.id, ctx.self.run
             ctx.merchant:enter(ctx.self.run)
         end
         ctx.merchant:setVisible(merchantVisible(ctx, node, active))
-        local message=ctx.self.notice ~= "" and ctx.self.notice or hint
+        local message=ctx.self.notice ~= "" and ctx.self.notice or hint or ""
+        local notice=ctx.child("notice")
+        if screen == "pickerView" and not ctx.enhancedForge(node) and not MatchUI.isBoard(node.event) then
+            -- Keep prompts and errors in the same coordinate space as the paged cards.
+            notice.text = ""
+            notice = ctx.child("pickerView"):GetChild("empty")
+            ctx.show(notice, message ~= "")
+            notice.text = message
+            ctx.ink(notice, ctx.self.failed and C.danger or C.text)
+            return
+        end
         if repeatedEventNotice(ctx,node,message)then message=''end
-        ctx.child("notice").text = message
-        ctx.ink(ctx.child("notice"), ctx.self.failed and ctx.self.notice ~= "" and C.danger or C.text)
+        notice.text = message
+        ctx.ink(notice, ctx.self.failed and ctx.self.notice ~= "" and C.danger or C.text)
 
     end
 
@@ -244,7 +257,7 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         ctx.show(back, backLabel ~= nil) ctx.show(confirm, confirmLabel ~= nil)
         if backLabel then back:GetChild("label").text = backLabel ctx.state(back, true) end
         if confirmLabel then confirm:GetChild("label").text = confirmLabel ctx.state(confirm, confirmOk, false, true) end
-        ctx.action("back", backLabel ~= nil, function()
+        ctx.action("back", backLabel ~= nil and not ctx.shopBackRetiring(), function()
             if ctx.self.view.node and ctx.self.view.node.type=='shop' and ctx.self.mode=='main' and not ctx.shopSelection.selected then return ctx.closeShop() end
             if ctx.shopSelection:cancel() then return true end
             if ctx.options.enhancedRooms and ctx.self.picker=='upgrade' and ctx.self.selected then
@@ -292,13 +305,13 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         if not active or node.type ~= 'shop' or self.mode ~= 'main' then ctx.shopSelection:clear() end
         ctx.renderTopBar(node)
         local screen,hint,recallSource,treasureSource=ctx.renderNodePage(view,node,result,active)
-        ctx.refreshNodeNotice(node,active,hint)
+        ctx.refreshNodeNotice(node,active,hint,screen)
         local back, confirm = ctx.child("back"), ctx.child("confirm")
         local backLabel,confirmLabel,confirmOk,confirmFn,skipRestReward,recallObserve
         backLabel,confirmLabel,confirmOk,confirmFn,skipRestReward,recallObserve=ctx.chooseFooter(result,node,view,screen,recallSource,treasureSource,confirm)
         ctx.bindFooter(back,confirm,backLabel,confirmLabel,confirmOk,skipRestReward)
         ctx.bindTreasureBack(back,node,active)
-        ctx.action("confirm", confirmOk, confirmFn, screen == "pickerView" and "请先在上方选择一张卡牌" or nil, nil, recallObserve)
+        ctx.action("confirm", confirmOk, confirmFn, screen == "pickerView" and "请先选择一张卡牌" or nil, nil, recallObserve)
         ctx.bindStagedEventActions(node);ctx.clearUnusedNativeArt(previousArt)
         self.failed = false
         ctx.roomMotion:paint()

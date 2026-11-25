@@ -9,7 +9,7 @@ local function card(s,id,up)
     local c={uid=s.nextUid,cardId=id,upgraded=up==true};s.nextUid=s.nextUid+1;return c
 end
 local function setup(id,up)
-    local s=C.new(data,{deck={id},hp=50,seed=17,enemies={'cultist'}})
+    local s=C.new(data,{deck={id},hp=50,seed=17,enemies={'raven_adept'}})
     s.hand={card(s,id,up)}; s.draw={}; s.discard={card(s,'anger')};s.exhaust={card(s,'defend')}
     for _=1,8 do s.draw[#s.draw+1]=card(s,'strike') end
     s.energy=10;s.events={};s.player.block=10

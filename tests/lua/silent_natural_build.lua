@@ -218,7 +218,7 @@ local function attempt(seed,quiet)
  assert(ev.stab==5 and ev.stabPoison==5 and ev.bane==1 and ev.baneDamage==11,'recorded Poisoned Stab into poison-conditional Bane')
  assert(run.victories==4 and #run.deck==16 and run.hp==61,'recorded four-room state')
  assert(table.concat(got,',')=='poisoned_stab,finisher,bane,storm_of_steel','natural acquisition record')
- local expected={{'louse_pair',70,70,4},{'jaw_solo',70,68,4},{'cultist_solo',68,68,3},{'exordium_thugs',68,61,5}}
+ local expected={{'louse_pair',70,70,4},{'jaw_solo',70,68,4},{'raven_adept_solo',68,68,3},{'exordium_thugs',68,61,5}}
  for i,r in ipairs(rooms)do local ex=expected[i];assert(r.encounter==ex[1]and r.hpBefore==ex[2]and r.hpAfter==ex[3]and r.turns==ex[4],'exact room/HP/turn record')end
  local offers={{'dash','acrobatics','poisoned_stab'},{'endless_agony','prepared','finisher'},
   {'noxious_fumes','bane','quick_slash'},{'storm_of_steel','infinite_blades','sucker_punch'}}

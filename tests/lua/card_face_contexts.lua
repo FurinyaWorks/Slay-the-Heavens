@@ -1,6 +1,7 @@
 local function plainCardTitle(text)return (text:gsub('<color=#[%x]+>',''):gsub('</color>',''))end
 package.path='src/lua/?.lua;build/lua/?.lua;'..package.path
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
+local advanceShop=dofile('tests/lua/support/shop_timeline.lua')
 local Run,Map,Nodes=require('abyss_run'),require('abyss_map'),require('abyss_nodes')
 local P=require('abyss_character_presentation')
 local BattleUI,DeckUI,NodeUI=require('abyss_battle_ui'),require('abyss_deck_ui'),require('abyss_node_ui')
@@ -18,7 +19,7 @@ local function assertLong(face,upgraded,context)
  assert(face:GetChild('artPlate').sizeDeltaX==144 and face:GetChild('artPlate').sizeDeltaY==64,context..' aperture changed')
 end
 run.deck={{uid=91,cardId='FR2-053',upgraded=true}}
-assert(Run.startCombat(run,'cultist_solo'))
+assert(Run.startCombat(run,'raven_adept_solo'))
 local battle=BattleUI.new(root:GetChild('battlePanel'),run.data,presentation,'click',platform,{embedded=true})
 battle.run=run;battle:render()
 assertLong(root:GetChild('battlePanel'):GetChild('card1'),true,'battle')
@@ -43,14 +44,14 @@ for _=1,17 do
 end
 shopRun.nodeFlow.cards[1].id='FR2-053'
 local node=NodeUI.new(root:GetChild('nodePanel'),shopRun,map,presentation,'click',function()end,platform)
-node:render()
+node:setVisible(true);assert(node:press('merchant/talk'));advanceShop(node)
 assertLong(root:GetChild('nodePanel'):GetChild('shopView'):GetChild('card1'),false,'shop')
 -- Reusing the actual battle/deck slots must clear the relocated marker. X costs
 -- and repeatable upgrade counts retain their existing rule-derived values.
 local traveler=Run.new(F.Data,42)
 local text=P.prepare(F.Presentation,traveler.data)
 traveler.deck={{uid=1,cardId='whirlwind',upgraded=true}}
-assert(Run.startCombat(traveler,'cultist_solo'))
+assert(Run.startCombat(traveler,'raven_adept_solo'))
 battle:setData(traveler.data,text);battle.run=traveler;battle:render()
 local face=root:GetChild('battlePanel'):GetChild('card1')
 assert(face:GetChild('cost').text=='X' and face:GetChild('type').text=='攻击')

@@ -38,7 +38,7 @@ test('native primitive template leaves real battle/game scene geometry unchanged
 test('production enables only labelled test prototype; malformed/count/unbounded primitive data rejected',()=>{
  const production=prepareMonsterArt();assert.equal(production.status,'test-prototype');assert.equal(production.approval.nativeFinalApproved,false);assert.equal(production.asset.capacity,600);assert.equal(production.asset.slots.length,597);assert.equal(production.surfaceAllocation,'per-drawable-actor-instance');
  assert.equal(prepareMonsterArt({schemaVersion:1,enabled:false}),null);
- for(const change of [r=>r.asset.enemyId='cultist',r=>r.asset.slots.push(...Array(4).fill(slot)),r=>r.canvas=[0,106],r=>r.asset.slots[0].image='source.png',r=>r.asset.slots[0].image=106056,r=>r.asset.slots[0].image=100004,r=>r.asset.slots[0].image=999999,r=>r.asset.slots[0].rotation=[0,NaN,0]]) {
+ for(const change of [r=>r.asset.enemyId='raven_adept',r=>r.asset.slots.push(...Array(4).fill(slot)),r=>r.canvas=[0,106],r=>r.asset.slots[0].image='source.png',r=>r.asset.slots[0].image=106056,r=>r.asset.slots[0].image=100004,r=>r.asset.slots[0].image=999999,r=>r.asset.slots[0].rotation=[0,NaN,0]]) {
   const registry=fixture();change(registry);assert.throws(()=>prepareMonsterArt(registry));
  }
 });
@@ -71,7 +71,7 @@ local stage=control({name='stage',children={{name='topBar',children={{name='mons
 local platform={imageSource=1,imageTypes={basic=1,stretch=2},color=function(...)return {...}end}
 local view=Art.new(stage,platform,${toLua(data)})
 local function row(id,kind)return {id=id,actor={definitionId=kind}}end
-local rows={row('other','cultist'),row('acid-a','acid_slime_m'),row('acid-b','acid_slime_m')}
+local rows={row('other','raven_adept'),row('acid-a','acid_slime_m'),row('acid-b','acid_slime_m')}
 local a,b=stage:GetChild('enemy2'),stage:GetChild('enemy3')
 local root=stage:GetChild('topBar'):GetChild('monsterArt');local tone={r=255,g=255,b=255,a=255}
 view:select(rows);assert(not view:write(stage:GetChild('enemy1'),0,0,106,tone))
@@ -83,7 +83,7 @@ Art.pose(a,5,-2,1.1,.9,{r=255,g=128,b=255,a=102},.5)
 assert(root.position[1]==305 and root.position[2]==18 and root.scale[1]==1.1 and root.scale[2]==.9)
 assert(shape.imageColor[1]==120 and shape.imageColor[2]==90 and shape.imageColor[4]==25)
 Art.pose(a,0,0,1,1,tone,0);assert(not root.visible,'finished death must hide pool')
-view:select({row('other','cultist'),row('other2','cultist'),row('acid-b','acid_slime_m')})
+view:select({row('other','raven_adept'),row('other2','raven_adept'),row('acid-b','acid_slime_m')})
 assert(a:GetChild('portrait').visible);assert(view:write(b,450,10,127,tone));assert(root:GetChild('monsterSamples').scale[1]==127/106)
 Art.pose(a,99,99,2,2,tone,1);assert(root.position[1]==450,'old slot must not move rebound drawing')
 Art.clearBox(b);assert(not root.visible and b:GetChild('portrait').visible)

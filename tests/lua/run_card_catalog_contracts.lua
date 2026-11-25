@@ -21,7 +21,7 @@ for _,spec in ipairs({{label='default'},{label='ironclad',id='ironclad'},{label=
  local states={};for _,s in ipairs(r.data.statuses.statuses)do states[s.id]=s end
  assert(states.intangible.priority==75 and states.rage.priority==5)
  local burn=find(r.data,'burn');assert(burn.burnDamage==2 and burn.upgrade.burnDamage==4)
- assert(Run.startCombat(r,'cultist_solo'));assert(r.combat.player.stance=='Neutral')
+ assert(Run.startCombat(r,'raven_adept_solo'));assert(r.combat.player.stance=='Neutral')
  assert(r.combat.orbs.slots==(spec.id=='defect'and 3 or 0))
  for _,id in ipairs({'master_reality','rage','evolve','feel_no_pain','corruption','self_repair'})do assert(not r.combat.player.statuses[id],'catalogue must not grant Power '..id)end
 end
@@ -29,5 +29,5 @@ local raw=P.prepare(D,'ironclad');local normal=0
 for _,c in ipairs(raw.cards.cards)do if c.type~='status'and c.type~='curse'and c.rarity~='special'then normal=normal+1 end end
 assert(normal==66 and not raw.runCardCatalog,'historical Profile.prepare must remain its original66-card component')
 local v4=Run.new(D,42,{character='furina'});assert(not v4.data.runCardCatalog and not v4.data.runCardCharacter)
-assert(Run.startCombat(v4,'cultist_solo'));assert(v4.combat.originalV4 and not v4.combat.orbs and not v4.combat.player.stance)
+assert(Run.startCombat(v4,'raven_adept_solo'));assert(v4.combat.originalV4 and not v4.combat.orbs and not v4.combat.player.stance)
 print('RUN_CARD_CATALOG_CONTRACTS_PASS default/four classes 300, unchanged72/71 pools/resources, native9, canonical states, inert library and V4 isolation')

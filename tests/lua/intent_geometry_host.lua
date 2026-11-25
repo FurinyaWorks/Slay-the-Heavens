@@ -1,7 +1,7 @@
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Run=require('abyss_run')
 local Surfaces=require('abyss_monster_surfaces')
-local host,root=F.fixture();assert(F.start(host));assert(Run.startCombat(host.run,'cultist_solo'));host:refresh()
+local host,root=F.fixture();assert(F.start(host));assert(Run.startCombat(host.run,'raven_adept_solo'));host:refresh()
 local manager=assert(Surfaces.get(root:GetChild('battlePanel')))
 local battle=host.run.combat;local id=battle.enemies[1].id
 local box=assert(manager:find(id));host:update(1)
@@ -55,7 +55,7 @@ for _,name in ipairs({'intentIcon','intent','intentHit'})do
  assert(after.x==before.x and after.y==before.y and after.sizeDeltaX==before.sizeDeltaX and after.sizeDeltaY==before.sizeDeltaY,'new native intent handle not initialized')
 end
 assert(host:openDeck())
-local replacement=F.Combat.new(F.Data,{enemies={'cultist'},deck={'strike'},seed=42})
+local replacement=F.Combat.new(F.Data,{enemies={'raven_adept'},deck={'strike'},seed=42})
 host.run.combat=replacement;host:refresh();assert(not fresh.alive)
 host:closeDeck();local nextBox=assert(manager:find(replacement.enemies[1].id));assert(nextBox~=fresh)
 host:disable();assert(not nextBox.alive)

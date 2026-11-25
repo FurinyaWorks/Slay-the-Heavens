@@ -3,7 +3,7 @@
 -- width/height/hbX/hbY are hitbox facts, not original sprite/Spine bounds.
 local M={}
 local definitions={
- ['cultist']={0,-10,0,0,-8,10,230,240},
+ ['raven_adept']={0,-10,0,0,-8,10,230,240},
  ['jaw_worm']={0,25,0,0,0,-25,260,170},
  ['red_louse']={0,0,0,0,0,-5,180,140},
  ['green_louse']={0,0,0,0,0,-5,180,140},
@@ -13,8 +13,8 @@ local definitions={
  ['spike_slime_s']={0,0,0,0,0,-24,130,100},
  ['spike_slime_m']={0,0,0,0,0,-25,170,130},
  ['spike_slime_l']={0,0,0,0,0,-30,300,180},
- ['red_slaver']={0,0,0,0,0,0,170,230},
- ['blue_slaver']={0,0,0,0,0,0,170,230},
+ ['red_guard']={0,0,0,0,0,0,170,230},
+ ['blue_guard']={0,0,0,0,0,0,170,230},
  ['looter']={0,0,0,0,0,0,200,220},
  ['fungi_beast']={0,0,0,0,0,-16,260,170},
  ['mad_gremlin']={0,0,0,0,-4,12,130,194},

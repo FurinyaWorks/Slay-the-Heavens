@@ -31,9 +31,9 @@ local function setup(deck, data, combatOptions, fastMode)
     -- Configure at the title instead of letting perform overwrite a lower-level flag.
     if fastMode ~= nil then assert(host:setFastMode(fastMode)) end
     assert(testStart(host))
-    assert(Run.startCombat(host.run, "cultist_solo"))
+    assert(Run.startCombat(host.run, "raven_adept_solo"))
     -- Controlled deck, ordinary Run.play via the actual host card/target controls.
-    local options = {deck = deck or {"strike", "defend", "strike"}, enemies = {"cultist", "cultist"}, seed = 11}
+    local options = {deck = deck or {"strike", "defend", "strike"}, enemies = {"raven_adept", "raven_adept"}, seed = 11}
     for key, value in pairs(combatOptions or {}) do options[key] = value end
     host.run.combat = F.Combat.new(data, options)
     host:refresh()
@@ -125,7 +125,7 @@ test("cancelling or replacing the battle clears retained VFX and does not leak s
     play(host, panel, "strike", 2)
     release(host)
     assert(next(ui.feedback.effects) ~= nil)
-    host.run.combat = F.Combat.new(F.Data, {deck = {"defend"}, enemies = {"cultist"}, seed = 12})
+    host.run.combat = F.Combat.new(F.Data, {deck = {"defend"}, enemies = {"raven_adept"}, seed = 12})
     host:refresh()
     host:update(0.01)
     assert(next(ui.feedback.effects) == nil and next(ui.feedback.poses) == nil)
@@ -180,7 +180,7 @@ test("a speed change takes effect on the next command rather than truncating an 
     local feedback = require("abyss_feedback").new(root:GetChild("battlePanel"), {
         imageSource = "static", color = function(r,g,b,a) return {r=r,g=g,b=b,a=a} end,
     }, function() end, function() end)
-    local battle = F.Combat.new(F.Data, {deck = {"strike", "strike"}, enemies = {"cultist", "cultist"}, seed = 11})
+    local battle = F.Combat.new(F.Data, {deck = {"strike", "strike"}, enemies = {"raven_adept", "raven_adept"}, seed = 11})
     local host = {battleUI = {feedback = feedback}}
     function host:update(dt) feedback:update(dt) end
     local function command(target)

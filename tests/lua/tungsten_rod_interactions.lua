@@ -3,7 +3,7 @@ local Run,C,A,Actions=require('abyss_run'),require('abyss_combat'),require('abys
 local Data=require('abyss_data')
 local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end
 local function fresh()
- local r=Run.new(Data,42,{character='defect',experimental=true});assert(Run.obtainRelic(r,'TungstenRod'));assert(Run.startCombat(r,'cultist_solo'))
+ local r=Run.new(Data,42,{character='defect',experimental=true});assert(Run.obtainRelic(r,'TungstenRod'));assert(Run.startCombat(r,'raven_adept_solo'))
  return r,r.combat
 end
 local function power(s,id)

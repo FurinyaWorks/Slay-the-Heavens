@@ -103,7 +103,7 @@
       "potion_belt":{"id":105048,"placeholder":true,"note":"官方药剂瓶徽章代用药水腰带。"},
       "meal_ticket":{"id":105246,"placeholder":true,"note":"官方票券代用餐券。"},
       "maw_bank":{"id":105077,"placeholder":true,"note":"官方金币代用储钱罐。"},
-      "blood_vial":{"id":105243,"placeholder":true,"note":"官方液体瓶代用血瓶；颜色非原版。"},
+      "blood_vial":{"id":105243,"placeholder":true,"note":"官方液体瓶代用回春瓶；颜色非原版。"},
       "bag_of_marbles":{"id":105076,"placeholder":true,"note":"官方彩石代用弹珠。"},
       "orichalcum":{"id":105071,"placeholder":true,"note":"官方石块代用金属矿物。"},
       "strawberry":{"id":105068,"placeholder":true,"note":"官方浆果代用草莓；品种与颜色非原版。"},
@@ -214,25 +214,26 @@
     "battleHud": {
       "y": 338.5,
       "barColour": "#30333B",
-      "hpIcon": [-466, 338.5, 12, 12],
-      "hp": [-417, 338.5, 80, 36],
-      "goldIcon": [-369, 338.5, 8, 8],
-      "gold": [-337, 338.5, 44, 36],
+      "hpIcon": [-490, 338.5, 12, 12],
+      "hp": [-361, 338.5, 236, 36],
+      "goldIcon": [-230, 338.5, 8, 8],
+      "gold": [-161, 338.5, 116, 36],
       "numberSize": 18,
       "heading": [-556, 338.5, 120, 36],
       "headingText": "旅行者",
       "headingSize": 16,
-      "potionX": -297.734375,
+      "potionX": -73,
+      "floorGap": 43,
       "potionStep": 49,
       "potionScale": [0.5681818181818182, 0.6363636363636364],
       "potionCaptionY": 325.5,
       "exhaustPile": {"position":[593.3333333333,-237.3333333333],"diameter":32,"hit":44,"image":102049,"imageColour":"#D6CBA5","imageOpacity":1,"countOffset":[12,-10],"countSize":[40,32],"countFont":18,"colour":"#EE82EE"},
-      "deck": [520.078125, 338.5, 1],
+      "deck": [517, 338.5, 1],
       "menu": [594, 338.5, 1],
       "height": 43,
       "barTopColour": "#444852",
       "headingColour": "#C6BBA0",
-      "location": [116.109375, 338.5, 480, 36],
+      "location": [315, 338.5, 192, 36],
       "route": [443.8046875, 338.5, 56, 40],
       "routeBackText": "返回战斗"
     },
@@ -475,7 +476,7 @@
   "sound": {
     "card_play": 50916,
     "player_action": 40313,
-    "action_cultist": 20171,
+    "action_raven_adept": 20171,
     "action_jaw_worm": 20089,
     "action_red_louse": 20080,
     "action_green_louse": 20081,
@@ -486,8 +487,8 @@
     "action_spike_slime_m": 20096,
     "action_spike_slime_l": 20097,
     "action_looter": 20146,
-    "action_blue_slaver": 20147,
-    "action_red_slaver": 20148,
+    "action_blue_guard": 20147,
+    "action_red_guard": 20148,
     "action_fungi_beast": 20090,
     "action_mad_gremlin": 20149,
     "action_sneaky_gremlin": 20150,
@@ -515,6 +516,7 @@
     "prologue_rumble": 40224,
     "prologue_crack": 50928,
     "prologue_rise": 50926,
+    "shop_open": 50923,
     "merchant_buy": 50940,
     "merchant_deny": 50937,
     "forge": 50418,
@@ -525,10 +527,10 @@
     "card_remove": 50928
   },
   "deathSound": {
-    "cultist": "enemy_die_human",
+    "raven_adept": "enemy_die_human",
     "looter": "enemy_die_human",
-    "blue_slaver": "enemy_die_human",
-    "red_slaver": "enemy_die_human",
+    "blue_guard": "enemy_die_human",
+    "red_guard": "enemy_die_human",
     "acid_slime_s": "enemy_die_magic",
     "acid_slime_m": "enemy_die_magic",
     "acid_slime_l": "enemy_die_magic",
@@ -744,7 +746,7 @@
       "liquid_bronze": 111046,
       "snecko_oil": 111047,
       "elixir": 111047,
-      "gamblers_brew": 111047,
+      "swap_brew": 111047,
       "liquid_memories": 111047,
       "blood_potion": 111046,
       "fruit_juice": 111047,
@@ -752,7 +754,7 @@
       "explosive_potion": 111046,
       "heart_of_iron": 111048,
       "essence_of_steel": 111048,
-      "cultist_potion": 111046,
+      "raven_potion": 111046,
       "flex_potion": 111046,
       "speed_potion": 111047,
       "duplication_potion": 111047,
@@ -779,13 +781,13 @@
     },
     "relic": {
       "bloody_idol": {"id": 102028, "placeholder": true, "note": "第二幕事件遗物暂沿用批准主题现有宝箱图标；专属美术与设备验收待完成。"},
-      "mutagenic_strength": {"id": 102028, "placeholder": true, "note": "第二幕事件遗物暂沿用批准主题现有宝箱图标；专属美术与设备验收待完成。"},
+      "augmentation_core": {"id": 102028, "placeholder": true, "note": "第二幕事件遗物暂沿用批准主题现有宝箱图标；专属美术与设备验收待完成。"},
       "necronomicon": {"id": 102028, "placeholder": true, "note": "第二幕事件遗物暂沿用批准主题现有宝箱图标；专属美术与设备验收待完成。"},
       "enchiridion": {"id": 102028, "placeholder": true, "note": "第二幕事件遗物暂沿用批准主题现有宝箱图标；专属美术与设备验收待完成。"},
       "nilrys_codex": {"id": 102028, "placeholder": true, "note": "第二幕事件遗物暂沿用批准主题现有宝箱图标；专属美术与设备验收待完成。"},
 
       "nloths_gift": {"id": 102028, "placeholder": true, "note": "事件面孔遗物临时沿用批准主题现有图标；专属美术与实机显示待验。"},
-      "cultist_mask": {"id": 102028, "placeholder": true, "note": "事件面孔遗物临时沿用批准主题现有图标；专属美术与实机显示待验。"},
+      "raven_mask": {"id": 102028, "placeholder": true, "note": "事件面孔遗物临时沿用批准主题现有图标；专属美术与实机显示待验。"},
       "face_of_cleric": {"id": 102028, "placeholder": true, "note": "事件面孔遗物临时沿用批准主题现有图标；专属美术与实机显示待验。"},
       "gremlin_mask": {"id": 102028, "placeholder": true, "note": "事件面孔遗物临时沿用批准主题现有图标；专属美术与实机显示待验。"},
       "nloths_mask": {"id": 102028, "placeholder": true, "note": "事件面孔遗物临时沿用批准主题现有图标；专属美术与实机显示待验。"},
@@ -830,7 +832,7 @@
 "du_vu_doll": {"id":102028,"placeholder":true,"note":"巫毒娃娃复用批准主题遗物图标；专属美术与本轮设备显示待验。"},
 "pocketwatch": {"id":102028,"placeholder":true,"note":"怀表复用批准主题遗物图标；专属美术与本轮设备显示待验。"},
 "incense_burner": {"id":102028,"placeholder":true,"note":"香炉复用批准主题遗物图标；专属美术与本轮设备显示待验。"},
-"gambling_chip": {"id":102028,"placeholder":true,"note":"赌博筹码复用批准主题遗物图标；专属美术与本轮设备显示待验。"},
+"tactical_badge": {"id":102028,"placeholder":true,"note":"战术徽记复用批准主题遗物图标；专属美术与本轮设备显示待验。"},
 "peace_pipe": {"id":102028,"placeholder":true,"note":"宁静烟斗复用批准主题遗物图标；专属美术与本轮设备显示待验。"},
 "captains_wheel": {"id":102028,"placeholder":true,"note":"舵盘复用批准主题遗物图标；专属美术与本轮设备显示待验。"},
 "magic_flower": {"id":102028,"placeholder":true,"note":"魔法花复用批准主题遗物图标；专属美术与本轮设备显示待验。"},
@@ -923,7 +925,7 @@
       "smiling_mask": 102031,
       "burning_blood": 102005,
       "black_blood": 102005,
-      "slavers_collar": 102028,
+      "arena_collar": 102028,
       "sozu": 102028,
       "anchor": 102036,
       "vajra": 102012,
@@ -1054,7 +1056,7 @@
       "note": "战斗胸像槽，约 133×133。正式资源由 Dot B 替换 id。禁止再用岩元素图标 102005。"
     },
     "enemy": {
-      "cultist": 112022,
+      "raven_adept": 112022,
       "jaw_worm": 112038,
       "red_louse": 112013,
       "green_louse": 112014,
@@ -1065,8 +1067,8 @@
       "spike_slime_m": 112007,
       "spike_slime_l": 112008,
       "looter": 112030,
-      "blue_slaver": 112031,
-      "red_slaver": 112050,
+      "blue_guard": 112031,
+      "red_guard": 112050,
       "fungi_beast": 112033,
       "mad_gremlin": 112022,
       "sneaky_gremlin": 112025,
@@ -1402,6 +1404,13 @@
         116
       ],
       "longTextArt": 32,
+      "reading": {
+        "lineScale": 1.3,
+        "referenceWidth": 128,
+        "referenceHeights": [96, 116, 132],
+        "legacyExtraHeight": 16,
+        "focusScale": 1.9
+      },
       "title": {
         "position": [
           0,
@@ -2391,7 +2400,7 @@
         ]
       },
       "picker": {
-        "cardY": 116,
+        "cardY": 76,
         "columns": [
           -410,
           -246,
@@ -2402,29 +2411,29 @@
         ],
         "previous": [
           -530,
-          116,
+          76,
           44,
           208
         ],
         "next": [
           530,
-          116,
+          76,
           44,
           208
         ],
         "page": [
-          0,
-          -12,
-          600,
+          -450,
+          -78,
+          340,
           40
         ],
-        "previewY": -150,
+        "previewY": -164,
         "before": -170,
         "after": 170,
         "target": 0,
         "arrow": [
           0,
-          -150,
+          -164,
           48,
           48
         ],
@@ -2442,8 +2451,8 @@
         ],
         "empty": [
           0,
-          -150,
-          480,
+          213,
+          1000,
           40
         ]
       },

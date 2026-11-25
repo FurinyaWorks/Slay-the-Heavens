@@ -3,7 +3,7 @@ local C,P,D,R=require('abyss_combat'),require('abyss_character_profiles'),requir
 local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end
 local function battle(id,up)
  local s=C.new(P.prepare(D,'watcher'),{seed=1,cardRandomSeed='1',shuffleSeed='1',miscRng=R.fromSeed('7'),enableStances=true,
- deck={{uid=90,cardId=id,upgraded=up}},masterDeck={{uid=1,cardId='empty_fist',upgraded=false}},enemies={'cultist'}})
+ deck={{uid=90,cardId=id,upgraded=up}},masterDeck={{uid=1,cardId='empty_fist',upgraded=false}},enemies={'raven_adept'}})
  s.enemies[1].hp=1000;s.enemies[1].maxHp=1000;s.enemies[1].ai=nil;s.enemies[1].intents={{id='wait',effects={}}};s.enemies[1].intentIndex=1;s.energy=20;return s
 end
 local function play(s)local ok,why=C.play(s,s.hand[1].uid,1);assert(ok,why)end

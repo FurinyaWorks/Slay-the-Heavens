@@ -9,7 +9,7 @@ local n=0
 for _,inCombat in ipairs({false,true})do for _,capacity in ipairs({3,5})do
  local r=Run.new(Data,42);if capacity==5 then assert(Run.obtainRelic(r,'Potion Belt'))end
  assert(Run.obtainPotion(r,'block_potion'));assert(Run.obtainPotion(r,'entropic_brew'))
- if inCombat then assert(Run.startCombat(r,'cultist_solo'))end
+ if inCombat then assert(Run.startCombat(r,'raven_adept_solo'))end
  local expected=P.new(r.runSeed);local ids={}
  for i=1,capacity do ids[i]=P.sample(expected,{limited=inCombat}).id end
  local preview=Run.potionView(r);eq(preview[2].canUse,true);eq(r.shopRng,nil)
@@ -21,7 +21,7 @@ for _,inCombat in ipairs({false,true})do for _,capacity in ipairs({3,5})do
 end end
 for _,inCombat in ipairs({false,true})do
  local r=Run.new(Data,42);assert(Run.obtainPotion(r,'entropic_brew'));assert(Run.obtainRelic(r,'sozu'))
- if inCombat then assert(Run.startCombat(r,'cultist_solo'))end
+ if inCombat then assert(Run.startCombat(r,'raven_adept_solo'))end
  assert(Run.usePotion(r,1));eq(Run.potionCount(r),0)
  if inCombat then assert(r.shopRng.potion.counter>0)else eq(r.shopRng,nil)end
  n=n+1

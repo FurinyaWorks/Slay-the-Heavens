@@ -2,6 +2,7 @@
 -- AbstractDungeon/RelicLibrary. Catalog order is pinned host-JDK HashMap order,
 -- not registration/alphabetical order; PC binary parity remains unverified.
 local R=require('abyss_sts_random')
+local CheckpointIdentities=require('abyss_checkpoint_identities')
 local M={}
 local tiers={'common','uncommon','rare','shop','boss'}
 local tierSet={common=true,uncommon=true,rare=true,shop=true,boss=true}
@@ -68,13 +69,16 @@ end
 function M.restore(snap,sourceCatalog)
  exact(snap,{version=true,sourceCommit=true,queues=true,rng=true})
  assert(snap.version==1 and snap.sourceCommit==sourceCatalog.sourceCommit,'relic source/version mismatch')
- local ids=catalogIndex(sourceCatalog);exact(snap.queues,tierSet);local seen={}
+ local ids=catalogIndex(sourceCatalog);exact(snap.queues,tierSet);local seen,queues={},{}
  for _,tier in ipairs(tiers)do
+  local queue={};queues[tier]=queue
   for _,id in ipairs(list(snap.queues[tier]))do
+   if not ids[id] then id=CheckpointIdentities.resolve(id) end
    assert(ids[id]==tier and not seen[id],'unknown duplicate or wrong-tier relic');seen[id]=true
+   queue[#queue+1]=id
   end
  end
- return {version=1,sourceCommit=snap.sourceCommit,queues=copy(snap.queues),rng=R.restore(snap.rng),catalog=copy(sourceCatalog)}
+ return {version=1,sourceCommit=snap.sourceCommit,queues=queues,rng=R.restore(snap.rng),catalog=copy(sourceCatalog)}
 end
 function M.snapshot(state)
  local snap={version=state.version,sourceCommit=state.sourceCommit,queues=copy(state.queues),rng=R.snapshot(state.rng)}

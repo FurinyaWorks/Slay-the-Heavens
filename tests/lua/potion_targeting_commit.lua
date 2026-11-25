@@ -2,7 +2,7 @@ local H = dofile('tests/lua/support/potion_gesture_fixture.lua')
 local Combat, Run = H.F.Combat, H.Run
 local test, finish = H.suite('LUA_POTION_TARGETING_COMMIT')
 local function setup(ids, enemies)
-    local h,u,p,e,t,d,deck,r,emit,tap=H.setup({'bash','defend'},enemies or {'cultist','jaw_worm'})
+    local h,u,p,e,t,d,deck,r,emit,tap=H.setup({'bash','defend'},enemies or {'raven_adept','jaw_worm'})
     h.run.potions={}
     for slot,id in pairs(ids or {'fire_potion'}) do h.run.potions[slot]=id end
     h:refresh()
@@ -29,7 +29,7 @@ test('P08 enemy EndDrag cancels rather than submits',function()
 end)
 
 test('P09/P11 sparse slot3 selects enemy3 with no default even for one enemy',function()
-    for _,enemies in ipairs({{'cultist'},{'cultist','jaw_worm','cultist'},{'cultist','jaw_worm','cultist','jaw_worm','cultist'}}) do
+    for _,enemies in ipairs({{'raven_adept'},{'raven_adept','jaw_worm','raven_adept'},{'raven_adept','jaw_worm','raven_adept','jaw_worm','raven_adept'}}) do
         local h,u,p,e,t,d,deck,r,emit,tap=setup({[3]='fire_potion'},enemies)
         local b=h.run.combat;local index=math.min(3,#enemies);local hp=b.enemies[index].hp
         tap(1,3);assert(h.run.potions[3]=='fire_potion')

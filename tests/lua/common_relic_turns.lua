@@ -5,7 +5,7 @@ local n=0
 local function test(name,f)f();n=n+1;print('PASS '..name)end
 local function battle(ids,counters)
  local opening=assert(I.opening(data.relics.relics,ids,counters))
- local s=assert(C.new(data,{seed=42,deck={'strike','defend','defend','defend','defend','defend','defend'},enemies={'cultist'},
+ local s=assert(C.new(data,{seed=42,deck={'strike','defend','defend','defend','defend','defend','defend'},enemies={'raven_adept'},
   beforeOpeningDraw=function(s)return I.applyOpening(s,opening.beforeDraw)end}))
  assert(I.applyOpening(s,opening.afterDraw));return s
 end

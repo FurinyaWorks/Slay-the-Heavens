@@ -57,7 +57,7 @@ for _, upgraded in ipairs({false, true}) do
 end
 for _, target in ipairs({false, 0, -1, 3, 1.5, "1", {}, math.huge, 0/0}) do
     test("invalid target " .. tostring(target) .. " has no mutation", function()
-        local s, c = battle(nil, {"cultist", "jaw_worm"})
+        local s, c = battle(nil, {"raven_adept", "jaw_worm"})
         local before = Combat.copy(s)
         if target == false then target = nil end
         local ok, why = Combat.canPlay(s, c.uid, target)
@@ -79,7 +79,7 @@ for _, reason in ipairs({"invalid_target", "insufficient_energy", "not_player_tu
 end
 for _, index in ipairs({1, 2}) do
     test("condition reads chosen live target " .. index, function()
-        local s, c = battle(nil, {"cultist", "jaw_worm"})
+        local s, c = battle(nil, {"raven_adept", "jaw_worm"})
         vulnerable(s, 2)
         assert(Combat.play(s, c.uid, index))
         equal(s.energy, index == 2 and 3 or 2); equal(#s.hand, index == 2 and 1 or 0)
@@ -182,7 +182,7 @@ test("post-damage nested draw failure restores original state and references", f
 end)
 local function win(seed)
     local run = Run.new(data, seed)
-    assert(Run.startCombat(run, "cultist_solo"))
+    assert(Run.startCombat(run, "raven_adept_solo"))
     for _ = 1, 100 do
         if run.phase ~= "combat" then break end
         for _ = 1, 10 do
@@ -216,7 +216,7 @@ test("real starter reward joins permanent deck and is usable in next battle", fu
     assert(Run.claimCardReward(selected, choice)); dofile('tests/lua/support/finish_combat_rewards.lua')(selected); equal(#selected.deck, #old + 1)
     for i, c in ipairs(old) do same(selected.deck[i], c) end
     equal(selected.deck[#selected.deck].cardId, "dropkick")
-    assert(Run.startCombat(selected, "cultist_solo"))
+    assert(Run.startCombat(selected, "raven_adept_solo"))
     for _ = 1, 10 do
         assert(selected.phase == "combat")
         local combo, bash

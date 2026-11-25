@@ -28,7 +28,7 @@ test('captured attack, exact thresholds, immediate and queued moves',function()
  end
 end)
 test('RNG occurs before lethal attack and lethal retaliation; queued SetMove survives with companion',function()
- local b=battle(99,{'looter','cultist'});local e=b.enemies[1];A.addStatus(b.player,'thorns',100);local rnd=C.random;local seen=false
+ local b=battle(99,{'looter','raven_adept'});local e=b.enemies[1];A.addStatus(b.player,'thorns',100);local rnd=C.random;local seen=false
  C.random=function(s,max) if max==65536 then seen=true;eq(e.hp,e.maxHp);eq(s.player.hp,80) end;return rnd(s,max) end
  local ok,err=pcall(C.endTurn,b);C.random=rnd;assert(ok,err);assert(seen);eq(e.hp,0);eq(e.looterQueuedIntent,nil);eq(b.stolenGoldReward,15);eq(b.player.gold,84);eq(b.phase,'player')
  b=battle(99);b.player.hp=1;local before=b.seed;assert(C.endTurn(b));eq(b.phase,'defeat');assert(b.seed~=before);eq(b.player.gold,84)
@@ -47,7 +47,7 @@ test('death registers once for ordinary damage, poison, retaliation and fixed bo
  end
 end)
 test('escaped actor retains identity and HP but cannot be hit, selected, buffed or act',function()
- local b=battle(99,{'looter','cultist'});local e=b.enemies[1];for i,v in ipairs(e.intents) do if v.id==e.ai.escapeIntent then e.intentIndex=i end end -- explicit escape-state boundary fixture
+ local b=battle(99,{'looter','raven_adept'});local e=b.enemies[1];for i,v in ipairs(e.intents) do if v.id==e.ai.escapeIntent then e.intentIndex=i end end -- explicit escape-state boundary fixture
  assert(C.escapeEnemy(b,e));eq(b.enemies[1],e);assert(e.hp>0);eq(C.outcome(b),nil);eq(C.intent(b,1),nil);eq(C.damage(b,b.player,e,100),0);eq(A.applyPower(b,e,'poison',2,b.player),false)
  for _,card in ipairs(b.hand) do if card.cardId=='strike' then eq(C.canPlay(b,card.uid,1),false) end end
  local gold=b.player.gold;assert(C.endTurn(b));eq(b.player.gold,gold);eq(e.stolenGold,0);eq(b.stolenGoldReward,0)

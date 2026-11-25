@@ -20,7 +20,7 @@ local portraits=require('abyss_traveler_portraits').new(root,nil,{battlePortrait
 local ui=F.GameUI.new(root,F.Data,F.Presentation,'click',{seed=1,imageSource='static',
  color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end,portraits=portraits})
 root.ui=ui
-assert(F.start(ui));assert(Run.startCombat(ui.run,'cultist_solo'))
+assert(F.start(ui));assert(Run.startCombat(ui.run,'raven_adept_solo'))
 ui.run.combat=F.Combat.new(F.Data,{deck={'bludgeon'},enemies={'acid_slime_s'},seed=11})
 ui:refresh()
 for i=1,500 do ui:update(.02);if portraits:status().battle.phase=='ready'then break end end
@@ -46,7 +46,7 @@ retained('reward')
 assert(ui.mode=='battle' and ui.battleUI.rewardScreen=='list' and panel.visible and hero.visible and figure.visible)
 F.click(root,'battlePanel','continue');assert(ui.mode=='map')
 retained('map');assert(not panel.visible and not figure.visible)
-assert(Run.startCombat(ui.run,'cultist_solo'));ui:refresh();ui:update(.02)
+assert(Run.startCombat(ui.run,'raven_adept_solo'));ui:refresh();ui:update(.02)
 retained('next battle')
 assert(panel.visible and hero.visible and figure.visible and figure.activeInHierarchy,'formal portrait not visible in next battle')
 print('OFFICIAL_PORTRAIT_GAME_LIFECYCLE_PASS')

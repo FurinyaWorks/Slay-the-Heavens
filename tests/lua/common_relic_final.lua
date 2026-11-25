@@ -6,7 +6,7 @@ local count=0
 local function test(name,f)f();count=count+1;print('PASS '..name)end
 local function battle(ids,hp,context,advanced)
  local q=assert(I.opening(data.relics.relics,ids,nil,context))
- local s=assert(C.new(data,{seed=42,hp=hp or 80,deck={'strike','defend','defend','defend','defend','defend','defend','defend','defend','defend'},enemies={'cultist'},enableStances=advanced,
+ local s=assert(C.new(data,{seed=42,hp=hp or 80,deck={'strike','defend','defend','defend','defend','defend','defend','defend','defend','defend'},enemies={'raven_adept'},enableStances=advanced,
  beforeOpeningDraw=function(s)return I.applyOpening(s,q.beforeDraw)end}));assert(I.applyOpening(s,q.afterDraw));return s
 end
 local function withHooks(hooks,fn)

@@ -30,7 +30,7 @@ local function inst(id,up) return {cardId=id,upgraded=up} end
 local function held(s,id) for _,c in ipairs(s.hand) do if c.cardId==id then return c end end;error('missing '..id) end
 local function play(s,id,target) local ok,why=C.play(s,held(s,id).uid,target);assert(ok,why) end
 local function battle(deck)
- local s=C.new(data,{seed=42,deck=deck or {},enemies={'cultist'},cardRandomSeed='42'})
+ local s=C.new(data,{seed=42,deck=deck or {},enemies={'raven_adept'},cardRandomSeed='42'})
  s.enemies[1].hp=200;s.enemies[1].maxHp=200;return s
 end
 local function arrange(s,ids)
