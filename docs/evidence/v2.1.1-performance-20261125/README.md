@@ -129,3 +129,5 @@ dot -Tsvg fault-tree.dot -o 06-fault-tree.svg
 GitHub Actions Artifact `14983480628` 原始 ZIP SHA-256 `a79fe9675fdf080f53dd4a8bd468fbce96c9912411cdf79beb12c692a2b077e6`。仓库内 JSON 为已校验 ZIP 提取的小样本回执。源级启动、正式压紧 Lua、运行时与静态剂量的独立配置和数据均见图表链接。 [原始公开运行入口](https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45526278709)
 
 后续修复及复验见 [性能与交付修复复验](remediation/README.md)。
+
+战斗页热修见 [意图粒子与隐藏战斗页重复提交专项](battle-ui-publication/README.md)。

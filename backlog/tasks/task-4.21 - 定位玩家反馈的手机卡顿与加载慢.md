@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-10-31T23:38:00Z'
-updated_date: '2026-11-25T02:19:05Z'
+updated_date: '2026-11-25T03:26:36Z'
 labels:
   - 待验
   - delivery-verify
@@ -114,4 +114,6 @@ Owner 明确要求将 #899 回流 release/v2.0.0。从 #901 Release HEAD 38a2cd8
 2026-11-25 v2.1.1 P0 热修：唯一正式分支 hotfix/v2.1.1 从线上 v2.1.0 master eb64f4e6 同树基线建立。已回接 #953/#955 怪物按需解码及 #954 地图查找，保留敌名优化并恢复未通过回归取舍的手牌快路径至线上字节。六幅图、原始数据及独立评审见 docs/evidence/v2.1.1-performance-20261125/README.md。GitHub Actions run 45526278709 六档 36/36；组合压力卡组长尾、同包实机、负载与正式有声 CD 保持待验。取消 v2.1.2 发版目标。
 
 v2.1.1 后续修复：官方牌库暖开和翻页少 55 次 SDK 调用，默认执行不改变。收口 Lua 解析依赖及精绘、云端下载与历史回归，现有原 128 MiB 门槛冷检出已通过。原 T0–T3 实机及正式有声生产包仍待验。证据 docs/evidence/v2.1.1-performance-20261125/remediation/README.md。
+
+2026-11-25 v2.1.1 P0 战斗页切片 PR #956：实测 BASE 82223c1cc1436bdb4ab7290eb117d38edfdc12e8，代码 5fb26decad7e58757b806dbfe38f6de1d483406a。粒子阶段 55,968→33,649 次替身 SDK 调用，1,368 条外观、规则与 RNG 轨迹一致；关闭重开选角五轮少 9,135 次 GetChild 和 2,895 次 SDK 写入。四臂 48/48、六档交错 36/36、定向 10+4 通过，保留被淘汰方案、负对照与压力长尾。独审、实际合入及整包接续由 PR #956 记录；证据 docs/evidence/v2.1.1-performance-20261125/battle-ui-publication/。同一有声 GIL 的官方客户端和手机性能仍待验，相关 AC 待实测。
 <!-- SECTION:NOTES:END -->
