@@ -526,9 +526,8 @@ function M.new(self, child, enemyPosition, describeInfo, paginate, tint, ink, pi
         clearPowers(panel)
         if not card then
             self.info = nil
-            local dismissed=child("statusDismiss"):SetVisible(false)
-            local hidden=panel:SetVisible(false)
-            if dismissed==false or hidden==false then self.projectionRejected=true end
+            if child("statusDismiss"):SetVisible(false)==false then self.projectionRejected=true end
+            if panel:SetVisible(false)==false then self.projectionRejected=true end
             return
         end
         local width, font=cardStyle(card)

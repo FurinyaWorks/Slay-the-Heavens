@@ -44,6 +44,24 @@ local function hiddenProjectionUnowned(view,host)
 end
 local function installActivation(owner,host,dependencies)
     local emptyRender,retiring
+    local function reuseEmptyProjection(wasActive)
+        return not wasActive and emptyRender and emptyRender==owner.rewardRender
+            and not owner.projectionRejected and hiddenProjectionUnowned(owner,host)
+    end
+    local function renderAfterActivation()
+        emptyRender=nil
+        if owner.active or owner.run then owner:render();return end
+        -- Full renders increment rewardRender before any native writes.
+        local revision=(owner.rewardRender or 0)+1
+        local nested=retiring
+        retiring=true
+        owner.projectionRejected=nil
+        local ok,reason=pcall(owner.render,owner)
+        retiring=nested
+        if not ok then error(reason,0) end
+        if not nested and owner.rewardRender==revision and not owner.projectionRejected
+            and hiddenProjectionUnowned(owner,host) then emptyRender=revision end
+    end
     function owner:setActive(active, suspend, deferRender)
         assert(type(active) == "boolean", "active must be boolean")
         local wasActive = self.active
@@ -53,21 +71,7 @@ local function installActivation(owner,host,dependencies)
         if not active then self.help=nil;dependencies.cancelPotionAim("已取消药水瞄准。") end
         if host.root:SetVisible(active)==false then self.projectionRejected=true end
         -- GameUI can commit its battle render after all page visibility writes.
-        if deferRender then return end
-        if not active and not wasActive and emptyRender==self.rewardRender and emptyRender
-            and not self.projectionRejected and hiddenProjectionUnowned(self,host) then return end
-        emptyRender=nil
-        if active or self.run then self:render();return end
-        -- Full renders increment rewardRender before any native writes.
-        local revision=(self.rewardRender or 0)+1
-        local nested=retiring
-        retiring=true
-        self.projectionRejected=nil
-        local ok,reason=pcall(self.render,self)
-        retiring=nested
-        if not ok then error(reason,0) end
-        if not nested and self.rewardRender==revision and not self.projectionRejected
-            and hiddenProjectionUnowned(self,host) then emptyRender=revision end
+        if not deferRender and (active or not reuseEmptyProjection(wasActive)) then renderAfterActivation() end
     end
 end
 -- Explicit ports preserve the approved implementation without a shared constructor closure.
