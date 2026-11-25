@@ -187,24 +187,47 @@ function M.install(owner, ownership, host, dependencies)
             and not view.displayBattle and not view.suspendedBattle and feedbackRetired(view)
             and not view.gesture and not view.carry and not view.help and not view.info and not view.potionAim
     end
-    local function retiredControlsHidden()
-        -- These surfaces hide through their own views rather than the shared
-        -- visibility setter. A refused hide must leave full rendering enabled.
-        local stage=host.stage
-        if stage:GetChild("statusInfo").visible or stage:GetChild("statusDismiss").visible then return false end
-        local potionHelp=stage:GetChild("potionHelp")
-        if potionHelp:GetChild("potionPopup").visible or stage:GetChild("energyIcon"):GetChild("light").visible then return false end
-        for i=1,10 do if stage:GetChild("card"..i).visible then return false end end
+    local function readbackCurrent(revision)
+        -- A native getter can synchronously retire the entire screen.
+        assert(not host.monsterSurfaces.engineDestroyed,"hidden battle projection cancelled")
+        return emptyRender==revision and owner.rewardRender==revision and not owner.active
+    end
+    local function childForReadback(parent,name,revision)
+        local part=parent:GetChild(name)
+        if readbackCurrent(revision) then return part end
+    end
+    local function childHidden(parent,name,revision)
+        local part=childForReadback(parent,name,revision)
+        if not part then return false end
+        local visible=part.visible
+        return readbackCurrent(revision) and visible==false
+    end
+    local function potionChromeHidden(stage,revision)
+        local energy=childForReadback(stage,"energyIcon",revision)
+        if not (energy and childHidden(energy,"light",revision)) then return false end
+        local potionHelp=childForReadback(stage,"potionHelp",revision)
+        if not (potionHelp and childHidden(potionHelp,"potionPopup",revision)) then return false end
         for i=1,L.battlePotions.count do
-            if potionHelp:GetChild("potionCaption"..i).visible then return false end
+            if not childHidden(potionHelp,"potionCaption"..i,revision) then return false end
         end
-        for _,name in ipairs(pileIcons) do if stage:GetChild(name):GetChild("hit").visible then return false end end
+        return true
+    end
+    local function retiredControlsHidden(revision)
+        -- Some views hide directly, outside the shared checked visibility setter.
+        local stage=host.stage
+        if not childHidden(stage,"statusInfo",revision) or not childHidden(stage,"statusDismiss",revision) then return false end
+        if not potionChromeHidden(stage,revision) then return false end
+        for i=1,10 do if not childHidden(stage,"card"..i,revision) then return false end end
+        for _,name in ipairs(pileIcons) do
+            local icon=childForReadback(stage,name,revision)
+            if not (icon and childHidden(icon,"hit",revision)) then return false end
+        end
         return true
     end
     local function canReuseEmptyRender()
         local revision=emptyRender
         return revision and not retiringEmpty and owner.rewardRender==revision and unowned(owner)
-            and not ownership.projectionRejected and retiredControlsHidden()
+            and not ownership.projectionRejected and retiredControlsHidden(revision)
             and emptyRender==revision and owner.rewardRender==revision and unowned(owner)
             and not ownership.projectionRejected
     end

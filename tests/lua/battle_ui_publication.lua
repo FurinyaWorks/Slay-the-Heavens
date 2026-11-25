@@ -172,6 +172,21 @@ local function rejectedHide()
  end
 end
 
+local function reentrantHiddenRead()
+ local host,root=F.fixture()
+ local panel=root:GetChild('battlePanel')
+ local get=panel.GetChild
+ local retired=false
+ function panel:GetChild(name)
+  assert(not retired,'hidden projection read after engine teardown')
+  local child=get(self,name)
+  if name=='statusInfo' then host.battleUI:onEngineDestroy();retired=true end
+  return child
+ end
+ local ok,reason=pcall(host.battleUI.setActive,host.battleUI,false)
+ assert(retired and not ok and tostring(reason):find('hidden battle projection cancelled'),tostring(reason))
+end
+
 local function selection()
  local host,root=F.fixture()
  local panel=root:GetChild('battlePanel')
@@ -244,6 +259,6 @@ local function abandon(feedback)
 end
 
 if not case or case=='particle' then stableParticle();if not measure then particleLifecycle();reentrantChildLookup();reentrantPaint()end end
-if not case or case=='selection' then selection();if not measure then rejectedHide()end end
+if not case or case=='selection' then selection();if not measure then rejectedHide();reentrantHiddenRead()end end
 if not measure and (not case or case=='abandon') then abandon(false);abandon(true)end
 print('BATTLE_UI_PUBLICATION_PASS')
