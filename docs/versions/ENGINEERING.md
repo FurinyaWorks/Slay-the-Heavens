@@ -26,6 +26,6 @@
 ## 后续维护口径
 
 1. 功能合并到 `develop` 时，保留 Conventional Commits / PR / 任务与测试证据；**不因合并次数或 CI 次数自动升级版本**。
-2. 准备一个可交付的源码批次时，先核对上一个 Tag 到候选提交的差异，选择 MINOR（实质新增）或 PATCH（仅修复），同步 `package.json`、lockfile、manifest 和玩家更新文案，工程信息保留在本文件及 Git/PR。
+2. 准备一个可交付的源码批次时，先核对上一个 Tag 到候选提交的差异，按[双版本号规则](../PUBLISHING.md#双版本号与发布记录)选择 MAJOR、MINOR 或 PATCH，同步 `package.json`、lockfile、manifest 和玩家更新文案，工程信息保留在本文件及 Git/PR。
 3. Release Please 是**人工审阅的提案**，非未经审阅直接对外发布。特别注意 `fix(ci)`、`fix(engineering)`、`feat(release)`：其 Conventional Commit 类型可能让技术内容进入自动草稿，审阅时必须移除；纯 `refactor` 默认隐藏。涉及玩家可见性能或体验才允许进入玩家更新文案。
-4. 实际源码验收和平台发布是两道独立关口。确认目标提交、构建/实机验收和交付产物后才打不可移动注释 Tag；官方发布成功且有凭证时，才登记 `data/release/publications.json`，不拿 Tag 冒充作品已发布。
+4. 实际源码验收和平台发布是两道独立关口。确认目标提交、构建/实机验收和交付产物后才打不可移动注释 Tag；发布元数据在 GitHub Release 中维护，平台版号只在确认目标作品成功发布后填写。

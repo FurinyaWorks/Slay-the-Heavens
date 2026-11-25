@@ -2,15 +2,44 @@ name: Release proposal (manual only)
 
 on:
   workflow_dispatch:
+    inputs:
+      operation:
+        description: Version proposal or read-only Release metadata
+        type: choice
+        default: propose
+        options:
+          - propose
+          - prepare
+          - verify
+      release_id:
+        description: GitHub Release numeric ID (verify)
+        type: string
+      engineering_tag:
+        description: Existing annotated engineering tag (prepare)
+        type: string
+      previous_version:
+        description: Previous engineering version (prepare)
+        type: string
+      artifact_name:
+        description: Uploaded Release asset name (prepare)
+        type: string
+      candidate_commit:
+        description: Accepted build commit SHA (prepare)
+        type: string
+      candidate_sha256:
+        description: Accepted build artifact SHA-256 (prepare)
+        type: string
 
 permissions:
-  contents: write
-  pull-requests: write
-  issues: write
+  contents: read
 
 jobs:
   propose:
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/develop' && inputs.operation == 'propose'
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
     runs-on: ubuntu-latest
     steps:
       # Proposal only: this input skips createReleases, including tag creation.
@@ -22,3 +51,33 @@ jobs:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
           skip-github-release: true
+
+  metadata:
+    if: github.repository_id == '1429751262' && github.ref == 'refs/heads/develop' && inputs.operation != 'propose'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts/release-metadata.mjs
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.18.0'
+      - name: Prepare or verify Release metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OPERATION: ${{ inputs.operation }}
+          ENGINEERING_TAG: ${{ inputs.engineering_tag }}
+          RELEASE_ID: ${{ inputs.release_id }}
+          PREVIOUS_VERSION: ${{ inputs.previous_version }}
+          ARTIFACT_NAME: ${{ inputs.artifact_name }}
+          CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
+          CANDIDATE_SHA256: ${{ inputs.candidate_sha256 }}
+        run: |
+          if [[ "$OPERATION" == prepare ]]; then
+            block=$(node scripts/release-metadata.mjs prepare "$ENGINEERING_TAG" "$PREVIOUS_VERSION" "$ARTIFACT_NAME" "$CANDIDATE_COMMIT" "$CANDIDATE_SHA256")
+            printf '%s\n' '````markdown' "$block" '````' >> "$GITHUB_STEP_SUMMARY"
+          else
+            node scripts/release-metadata.mjs verify "$RELEASE_ID" >> "$GITHUB_STEP_SUMMARY"
+          fi

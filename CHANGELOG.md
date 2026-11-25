@@ -1,6 +1,6 @@
 # 版本说明
 
-本文件保留供人工填写千星奇域「奇域信息」官方更新日志的玩家文案：只记录新增玩法、内容、操作体验和玩家可感知的修复，不逐条复制 Git 提交。技术变更另见 `docs/versions/ENGINEERING.md`。版本日期为源码版本整理日期，不表示该日已在平台公开发布；真实发布凭证另见 `data/release/publications.json`。
+本文件保留供人工填写千星奇域「奇域信息」官方更新日志的玩家文案：只记录新增玩法、内容、操作体验和玩家可感知的修复，不逐条复制 Git 提交。技术变更另见 `docs/versions/ENGINEERING.md`。版本日期为源码版本整理日期，不表示该日已在平台公开发布；真实发布凭证及平台版号见 [GitHub Releases](https://github.com/FurinyaWorks/Slay-the-Heavens/releases)。
 
 历史版本目录：[docs/versions/README.md](docs/versions/README.md)。
 

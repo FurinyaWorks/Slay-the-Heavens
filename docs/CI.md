@@ -67,6 +67,10 @@ Licenses 与 Quality、Quick feedback 一样使用 GitHub 原生同引用 concur
 
 官方依据：[GitHub Merge Queue 配置](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue)；[merge_group 事件](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#merge_group)。
 
+## 手动版本提案与 Release 元数据
+
+现有 [Release proposal](../.github/workflows/release-proposal.yml) 的 `propose` 仍只生成提案 PR，并跳过 GitHub Release。手动 `prepare` / `verify` 使用只读权限，从已有工程 Tag、候选构建回执给出的 SHA 和 Release 附件生成或校验元数据。结果见 Actions Summary。草稿可由有权访问草稿的维护者用相同脚本校验。入口与平台确认步骤见[发布操作单](PUBLISHING.md#双版本号与发布记录)。
+
 ## PR 自动合并准入
 
 主仓身份以 `/repositories/1429751262` 返回的当前名称和实际 PR/run 仓库 ID 为准。迁移前的授权和收据保留原文，合后验收按[仓库身份代码](../scripts/repository-identity.mjs)校验迁移见证。

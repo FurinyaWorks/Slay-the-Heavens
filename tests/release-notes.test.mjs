@@ -159,14 +159,21 @@ test('published versions remain snapshot-readable but cannot build another relea
 test('proposal workflow is manually dispatched, pinned, manifest-driven and cannot tag or release', () => {
   const config = JSON.parse(readFileSync('release-please-config.json'));
   assert.equal(config.packages['.']['release-type'], 'node');
-  assert.equal(config['include-component-in-tag'], false); assert.equal(config['include-v-in-tag'], true);
-  assert.equal(config['versioning'], 'default'); assert.equal(config['bump-minor-pre-major'], true);
+  assert.equal(config.packages['.'].component, 'engine');
+  assert.equal(config['include-component-in-tag'], true); assert.equal(config['include-v-in-tag'], true);
+  assert.equal(config['versioning'], 'default'); assert.equal(config['bump-minor-pre-major'], false);
   assert.equal(config['bump-patch-for-minor-pre-major'], false); assert.equal(config['draft-pull-request'], true);
   const workflow = readFileSync('.github/workflows/release-proposal.yml', 'utf8');
   assert.match(workflow, /on:\s*\n  workflow_dispatch:/); assert.doesNotMatch(workflow, /\n  (?:push|pull_request|release|schedule):/);
   assert.match(workflow, /release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7/);
   assert.match(workflow, /skip-github-release: true/); assert.doesNotMatch(workflow, /\n\s+release-type:/);
-  assert.match(workflow, /target-branch: develop/); assert.doesNotMatch(workflow, /run:|master/);
+  assert.match(workflow, /target-branch: develop/); assert.doesNotMatch(workflow, /master/);
+  assert.match(workflow, /permissions:\n  contents: read/);
+  const metadataJob = workflow.split('  metadata:\n')[1];
+  assert.match(metadataJob, /inputs\.operation != 'propose'/);
+  assert.match(metadataJob, /scripts\/release-metadata\.mjs prepare/);
+  assert.match(metadataJob, /scripts\/release-metadata\.mjs verify/);
+  assert.doesNotMatch(metadataJob, /contents: write|gh release|git push/);
   assert.deepEqual(releaseBuildArgs(['out', '--release-candidate', '--work-key=contest-2026']),
     { paths: ['out'], options: { releaseCandidate: true, workKey: 'contest-2026' } });
   assert.throws(() => releaseBuildArgs(['--publish']), /Unknown/);
