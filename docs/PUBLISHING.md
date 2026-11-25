@@ -14,27 +14,52 @@ Release 日常修复走受影响 Fast；集成完成才按 [CI 候选入口](CI-
 
 只宣传同一RC已经验收的第一幕、第二幕、角色与前10分钟体验。第三幕、隐藏第四幕、真结局和所有依赖持久Save的退出续玩、跨局进度/解锁/历史功能不在本次比赛承诺中，不写进候选玩家介绍。无需Lv.4、账号升级或额外存储后端；本局资源连续、失败重开和本局结算仍须验收。正式入口双幕终点由TASK-77实现并验证后才可冻结候选；本次文档调整不证明已实现或投稿。10/29同候选冻结及10/30人工投稿安排不变。
 
-## 版本与官方更新日志（2026-10-28 起）
+## 双版本号与发布记录
 
-一眼看版本：[版本总览](versions/README.md)，完整更新说明：[CHANGELOG.md](../CHANGELOG.md)。
+- **工程版本**按 [SemVer 2.0.0](https://semver.org/lang/zh-CN/) 的稳定版格式 `MAJOR.MINOR.PATCH` 递增。向后兼容的缺陷修复升 PATCH，向后兼容的功能新增升 MINOR，不兼容的变更升 MAJOR。升 MAJOR 时 MINOR 与 PATCH 归零，升 MINOR 时 PATCH 归零。一个批次含多类变更时取最高级别。`package.json` 是当前代码版本，lockfile 与 Release Please manifest 同步，玩家文案维护在 [CHANGELOG](../CHANGELOG.md)。
+- **平台版本**由千星奇域按目标作品当次允许的规则分配或选择，原样保留成功发布后实际显示的编号。纯修复可单独发工程 PATCH，即使平台要求更大步长，也无须随包添加新功能。平台审核中、未上线或缺成功凭证时，`platform_version` 为 JSON `null`（待确认）。
+- [GitHub Releases](https://github.com/FurinyaWorks/Slay-the-Heavens/releases) 是映射的唯一事实源。同一工程版本维护一条记录。Alpha 和正式作品的发布凭证须注明实际目标作品，Alpha 凭证不能填入正式作品记录。同一工程版本先经 Alpha 试验再转正式时，正式记录仅确认目标正式作品的结果。仓库里的 `data/release/publications.json` 保留为旧离线构建兼容输入，停止向它登记新发布信息。
 
-- Alpha 使用 `v0.x.y`，正式参赛首发目标 `v1.0.0`。新增功能正常升 MINOR，纯修复升 PATCH；版本按代码批次划分，不绑定 Milestone、每日提交或 PR 数量。
-- 2026-10-22～27 的 14 个版本依据 Git 主线回溯整理。历史 Tag 指向选定旧源码提交，不重写历史代码字段；历史版本日期不冒充千星奇域发布日期。
-- `package.json` 是**当前代码版本**来源，lockfile/manifest 必须同步；`CHANGELOG.md` 保留玩家更新文案，供人工填写官方「奇域信息」更新日志；游戏内不再提供自研公告或源码历史浏览。源码版本记录不代表真实平台发布。
-- `data/release/publications.json` 只保存真实平台发布回执，不能充当版本目录。原 Alpha 测试作品和未来正式参赛作品共用仓库，真实发布记录按作品身份分开登记，不把 Alpha 记录复制为正式参赛作品的已发布历史。
-- 复用现有 [release-please](https://github.com/CHNISam/agent-skills/tree/master/release-please) / [git-workflow](https://github.com/CHNISam/agent-skills/tree/master/git-workflow) Skill，手动发起版本提案；日常合并、CI 不自动打 Tag 或上传平台。
+### 版本提案、候选与平台确认
 
-### 下一次 Alpha 版本
+1. 按[现有分支通道](BRANCH_LIFECYCLE.md)筹备发布。常规批次用 Actions → **Release proposal (manual only)** → `propose` 手动准备版本 PR。审阅相对上一工程版本的实际交付差异，并同步版本文件和玩家文案。若只发补丁，使用只含目标修复的现有 release/hotfix 通道，按上一正式工程版本升 PATCH。develop 的其他功能不进入补丁批次。Release Please 根据提交类型给出草案，维护者按实际兼容性校对。手动归档完成后，如对应提案仍有 `autorelease: pending` 标签，把它换成 `autorelease: tagged`，免得下一提案被旧提案阻塞。
+2. 完成既有冻结、Full、候选构建及同候选平台和设备验收。将不可移动的注释 Tag `engine-v<工程版本>` 指向**实际生成最终产物的提交**，即使之后的 master 合并提交具有相同树，也沿用构建 SHA。旧 `v*` 与归档 Tag 保留。Release Please 手动提案继续跳过 Tag 和 Release 创建。
+3. 用既有工程 Tag 开 GitHub Release 草稿，附上获准分发的最终构建产物。保留同候选构建回执与 GIL 校验值。用 Actions → **Release proposal (manual only)** → `prepare` 输入工程 Tag、上一工程版本、构建回执中的提交与 SHA-256、附件名称。把 Summary 的完整元数据块复制到草稿正文。也可以运行下列只读命令。
+4. 用有权读取草稿的 GitHub CLI 登录账号运行 `verify`，核对 Tag 指向、构建提交的工程版本及 GitHub 附件 SHA-256 与验收产物一致。已公开 Release 也可用该 workflow 的 `verify` 模式，填数字 Release ID。现有 Full 和实机门禁继续适用。
+5. Owner 完成人工平台发布并核对目标作品的成功结果后，将平台实际版号原样写入 `platform_version`，并添加 `platform_evidence`（指向脱敏成功回执的 HTTPS 地址）。回执应能核对作品 ID、版号、上线状态、时间和候选身份。重跑 `verify`，从同一 Release 重新读回。Actions 只校验格式和归档一致性，平台事实以实际成功回执为准。
 
-1. 决定更新批次，在 Actions 中手动运行 `Release proposal (manual only)`，审阅版本号、中文 CHANGELOG，并经 CI 与原生设备验证。
-2. 真实对外更新 Alpha 作品后，保存作品 ID、原源码 SHA、产物 SHA256、北京时间及成功凭证；构建成功不等于发布成功。
-3. 内容冻结、必要验证与候选交付后，才为任何新版本创建不可移动的注释 Tag；本轮不创建 `v0.11.0` Tag，既有 14 个 Tag 保持原样。已公开发布记录写入 `data/release/publications.json`。后续 Release Please 以最近版本接续，检查不要重复使用版本号。
+### 机器读取与追溯
+
+Release 正文保留一块标记 JSON。以下为待确认的格式示例，提交和摘要均为占位值。
+
+<!-- release-metadata:v1 -->
+```json
+{
+  "version": "2.0.1",
+  "platform_version": null,
+  "release_type": "patch",
+  "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "artifact": {
+    "name": "game.gil",
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  }
+}
+```
+
+```sh
+node scripts/release-metadata.mjs prepare "$ENGINEERING_TAG" "$PREVIOUS_VERSION" "$ASSET_NAME" "$BUILD_COMMIT" "$BUILD_SHA256"
+node scripts/release-metadata.mjs verify "$RELEASE_ID"
+node scripts/release-metadata.mjs list
+node scripts/release-metadata.mjs list --include-drafts
+```
+
+`list` 分页读取 GitHub Releases API，返回带标记的记录及其实际 Tag、草稿状态和 URL。使用已登录的 GitHub CLI 查询，默认仅返回公开记录。授权维护者可用 `--include-drafts` 查看草稿。由 Release 的 Tag 查源码，用 `commit` 查构建提交，按 `artifact` 与构建回执核对产物。历史记录可保留当年的标签和已核实的构建 SHA；若只留有原始摘要，`artifact.name` 为 `null`，正文链接原始证据，不视为已经通过新发布所需的附件校验。旧源码检查点、无成功凭证的历史编号及试玩草稿不推测平台映射。
 
 ### 官方玩家更新日志
 
 按用户 2026-10-28 确认，玩家统一通过「奇域信息」中的官方原生更新日志查看更新；从 `CHANGELOG.md` 选取该版本已核实的玩家文案，由人工填写。潜在「奇域更新速报」曝光不保证，不把日志填写、代码合并或候选构建当作真实发布成功。
 
-主菜单只保留当前版本号，不展示 Git SHA；移除自研公告入口、弹窗、历史分页及专用输入逻辑，不开发替代公告系统、自动同步或后台。这样避免重复 UI、同步与测试成本，集中参赛玩法和品质投入；完整决定见[版本记录](versions/README.md#2026-10-28-产品决定统一使用官方更新日志)。实际发布后仍独立保存作品、交付产物、日期与成功凭证，新正式参赛奇域单独绑定真实记录。
+主菜单只保留当前版本号，不展示 Git SHA；移除自研公告入口、弹窗、历史分页及专用输入逻辑，不开发替代公告系统、自动同步或后台。这样避免重复 UI、同步与测试成本，集中参赛玩法和品质投入；完整决定见[版本记录](versions/README.md#2026-10-28-产品决定统一使用官方更新日志)。实际发布后在对应 GitHub Release 记录目标作品、交付产物、日期与成功凭证。
 
 ## 0. 不可错过的门槛（已由官方确认）
 
@@ -130,7 +155,7 @@ Release 日常修复走受影响 Fast；集成完成才按 [CI 候选入口](CI-
 4. 检查最终确认页显示的作品 GUID、赛事、账号、可见性、提交不可更换等关键信息；谨慎点击最终发布/投稿。
 5. **截图/记录发布成功及赛事报名成功的结果**；在赛事中心或官方赛事活动页面核对这件作品确实列在本人参赛记录（平台提供相关入口时）。**仅显示「可发布」不算成功；仅显示已发布也不自动等于成功报名。**
 6. 记录官方可访问作品 ID/GUID、完成时间（UTC+8）、证明截图、发布候选 Git commit SHA、是否审核/可游玩、真实试玩反馈与是否更新。
-7. **真实发布成功且证据齐全以后**，才由 TASK-20 记录发布凭证，并在交付的精确提交上建立注释 Tag（正式首发目标 `v1.0.0`）；CHANGELOG 在发布前由版本提案准备并验收，不在发布后改写已交付说明。
+7. 按[双版本号流程](#版本提案候选与平台确认)归档真实发布凭证。CHANGELOG 在发布前由版本提案准备并验收，已交付说明保持原样。
 8. 若发布失败，先保存报错、界面、当前作品状态，判断是否已消耗投稿次数；**不能未经核实重复提交**。
 
 ## 5. 截止时间与 Backlog 任务映射

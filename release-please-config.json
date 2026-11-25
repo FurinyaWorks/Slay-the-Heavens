@@ -1,10 +1,10 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/v17.6.0/schemas/config.json",
-  "bootstrap-sha": "e25a0d6b7b0c759e7b5534dd89b082f25d86adf7",
-  "include-component-in-tag": false,
+  "bootstrap-sha": "ff6af63d9bf93056dd772347d10dc749e7fa8d34",
+  "include-component-in-tag": true,
   "include-v-in-tag": true,
   "versioning": "default",
-  "bump-minor-pre-major": true,
+  "bump-minor-pre-major": false,
   "bump-patch-for-minor-pre-major": false,
   "draft-pull-request": true,
   "changelog-sections": [
@@ -67,6 +67,7 @@
   "packages": {
     ".": {
       "release-type": "node",
+      "component": "engine",
       "changelog-path": "CHANGELOG.md"
     }
   }

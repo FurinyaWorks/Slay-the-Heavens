@@ -4,8 +4,8 @@ title: 核对已发布版本记录与当前版本展示
 status: In Progress
 assignee:
   - Furinya
-created_date: '2026-10-22 13:48'
-updated_date: '2026-11-14 06:51'
+created_date: '2026-10-22T13:48:00Z'
+updated_date: '2026-11-25T00:01:47Z'
 labels:
   - 待验
   - delivery-verify
@@ -82,4 +82,6 @@ PR249评审修正：负责人按现行AGENTS保持Furinya。实际14版宿主遍
 2026-11-14清理旧窗口日期：原due_date=2026-10-30保留于历史，不再显示为当前截止；实际未完成AC和审批不变。
 
 2026-11-14第二轮状态纠正：已核对本任务原实施计划、技术附件或已有PR/修复记录；工作已经开展，未勾AC不等于未开始。 状态表示整个任务的完成进展，不表示当前有执行者持续占用；保留原未验AC、负责人、依赖及历史证据。更正过去把已开展待验事项退回To Do的处理。
+
+2026-11-25：本次 develop 治理切片将工程 SemVer 与平台编号解耦，GitHub Release 是映射入口。复用历史注释 Tag 与 #950 核对正式记录，原投稿回执和实机待验项保持不变。
 <!-- SECTION:NOTES:END -->

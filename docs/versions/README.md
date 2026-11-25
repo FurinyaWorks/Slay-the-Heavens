@@ -2,13 +2,13 @@
 
 这里是**源码版本索引**，与 Backlog Milestone 分开管理。工程历史与玩家文案分开维护；供官方更新日志人工填写的玩家文案只有一份：[CHANGELOG.md](../../CHANGELOG.md)。
 
-> **2026-11-03 核验更新：** `v1.0.0` 的不可移动注释 Tag 已于 2026-11-01 建立（指向 master 发布提交 `e970eb2`）；Owner 确认正式作品已部署、旧大赛已投稿。但 `data/release/publications.json` 目前仍无正式平台回执条目，不能由该文件独立核验作品 GUID、发布时间或报名详情。下列 10/31、10/28 的未打 Tag 叙述属于历史观察，不覆盖本条。**后续排期提案（新增日期与活动条件待核实）：** [M9 → M7-A → M7-B → M8，三赛事 / Release / Sprint](../plans/2026-11-03-q4-three-campaign-milestone-release-sprint.md)。
+> **2026-11-03 核验更新：** `v1.0.0` 的不可移动注释 Tag 已于 2026-11-01 建立（指向 master 发布提交 `e970eb2`）；Owner 确认正式作品已部署、旧大赛已投稿。平台实际版号、作品 GUID、发布时间和报名详情仍缺可核实回执。下列 10/31、10/28 的未打 Tag 叙述属于历史观察，不覆盖本条。**后续排期提案（新增日期与活动条件待核实）：** [M9 → M7-A → M7-B → M8，三赛事 / Release / Sprint](../plans/2026-11-03-q4-three-campaign-milestone-release-sprint.md)。
 
 > 2026-10-28 历史复核：`v0.1.0`～`v0.10.1` 共 **14 个不可移动的注释 Tag** 已逐个核对目标提交，与本表一致。回溯 Tag 是可恢复的**源码检查点**，不是历史平台发布记录；旧提交里的版本字段不追改。`v0.11.0` 为下一源码版本候选，**尚未验收、未打 Tag、未在平台发布**。本次比赛按10/28决定聚焦第一幕、第二幕与前10分钟体验；第三/隐藏第四幕、真结局及持久存档依赖仅保留工程历史，不列玩家可用承诺。当前正式入口仍可越过第二幕，TASK-77未完成，不能仅凭范围文字认定候选已收敛。
 
 | 版本 | 日期 | 本版概要 | 源码位置 | 变更对比 |
 | --- | --- | --- | --- | --- |
-| `v1.0.0`（正式首发源码） | 2026-11-01 | 岩系旅行者前两幕；平台部署由 Owner 确认，官方回执尚未入账 | [不可移动 Tag](https://github.com/CHNISam/Slay-the-Abyss/releases/tag/v1.0.0)（master 提交 `e970eb2`） | [源码差异](https://github.com/CHNISam/Slay-the-Abyss/compare/v0.10.1...v1.0.0) |
+| `v1.0.0`（正式首发源码） | 2026-11-01 | 岩系旅行者前两幕；平台部署由 Owner 确认，官方回执尚未入账 | [不可移动 Tag](https://github.com/FurinyaWorks/Slay-the-Heavens/tree/v1.0.0)（master 提交 `e970eb2`） | [源码差异](https://github.com/CHNISam/Slay-the-Abyss/compare/v0.10.1...v1.0.0) |
 | `v0.11.0`（历史提案） | 2026-10-28 | 前两幕比赛打磨与场景交互（待验证） | **待验收冻结，暂无 Tag** | [候选差异](https://github.com/CHNISam/Slay-the-Abyss/compare/v0.10.1...develop) |
 | `v0.10.1` | 2026-10-27 | 战斗反应修复 | [fa93ac9](https://github.com/CHNISam/Slay-the-Abyss/commit/fa93ac9ff23e7e5cbcf74813d1f9fa776219a314)（PR #247 合入；修复范围截止 b164fda） | [查看变化](https://github.com/CHNISam/Slay-the-Abyss/compare/v0.10.0...v0.10.1) |
 | `v0.10.0` | 2026-10-27 | 第二幕、手柄与更新公告 | [c91f0d2](https://github.com/CHNISam/Slay-the-Abyss/commit/c91f0d22edb73acad3405c030a330f4b55c3f8fa) | [查看变化](https://github.com/CHNISam/Slay-the-Abyss/compare/v0.9.0...v0.10.0) |
@@ -27,9 +27,8 @@
 
 ## 后续版本怎样维护
 
-- **何时升级**：只有确定一个新版本批次才升级；新增功能通常升 MINOR（`0.10.1 → 0.11.0`），纯修复升 PATCH（`0.10.1 → 0.10.2`）；不按日期、提交数或 Milestone 升级。
-- **写哪里**：供官方更新日志人工填写的玩家文案在 [CHANGELOG.md](../../CHANGELOG.md)，内部工程变更在 [ENGINEERING.md](ENGINEERING.md)，本目录仅列版本与 Tag/提交对比。代码版本来自 `package.json`，lockfile 与 manifest 必须同步。Release Please 仅作草稿，`fix(ci)`、`fix(engineering)` 等技术提交可能混入自动文案，必须人工删去；纯重构默认隐藏。
-- **怎么操作**：复用仓库现有 `release-please` / `git-workflow` Skill 和 [发布操作单](../PUBLISHING.md)。真实千星奇域发布时间、作品 GUID、交付产物及证据另记在 `data/release/publications.json`；不使用 Milestone 充当版本号。
+- **版本规则与映射**：见[双版本号与发布记录](../PUBLISHING.md#双版本号与发布记录)。工程批次按 SemVer，平台版号在真实发布成功后登记在 GitHub Releases。
+- **写哪里**：玩家文案在 [CHANGELOG.md](../../CHANGELOG.md)，内部工程变更在 [ENGINEERING.md](ENGINEERING.md)。Release Please 仅作草稿，技术提交混入时按实际交付范围审阅。
 - **历史 Tag**：按上表固定原 Git 提交；这些追溯 Tag 是源码版本标识，不冒充旧版曾公开发布。不要移动已有 Tag，不建立 `archive/*` Tag。
 - **官方更新日志**：玩家更新说明统一使用千星奇域「奇域信息」的原生更新日志；人工从 CHANGELOG 选取已核实内容填写。游戏内不再维护公告弹窗或历史分页，主菜单仅显示当前版本号，不展示 Git SHA。未发布文案不作为平台已上线证据。
 - **新 Tag 门槛**：内容冻结、必要验证和候选交付完成后才创建任何新版本的注释 Tag；既有 14 个 Tag 不创建替身、不删除、不移动或覆盖。本轮不创建 `v0.11.0` Tag。
