@@ -1,0 +1,12 @@
+{
+  "version": "v2.1.1",
+  "platform": "千星奇域",
+  "platformPublicationDate": "2026-11-25",
+  "platformPublicationEvidence": "Owner identified latest.gil as the published file. Independent platform upload receipt unavailable.",
+  "filename": "slay-the-heavens-v2.1.1-2026-11-25.gil",
+  "sha256": "afe80c0783d0d4b6046c1f44cba3ef2b71cb8bb34fbc7404d939d12e0f5ff831",
+  "bytes": 23780838,
+  "buildId": "29f48ea1-fa9d-4f76-b124-2bffc83f7594",
+  "sourceCommit": "06c2577ecc6c07593c6bf8b6e79e158dac5b6195",
+  "sourceDirty": false
+}
