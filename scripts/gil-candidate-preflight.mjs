@@ -18,15 +18,15 @@ export function requireGate(condition, message) {
 export function candidateTarget(branch, source) {
   requireGate(sha.test(source), 'source_sha must be a 40-character lowercase Git SHA.');
   if (branch === 'develop') return { branch };
-  const version = /^hotfix\/(v(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))$/.exec(branch)?.[1];
-  requireGate(version, 'Select develop or a hotfix/vX.Y.Z branch.');
+  const version = /^(?:release|hotfix)\/(v(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))$/.exec(branch)?.[1];
+  requireGate(version, 'Select develop, release/vX.Y.Z or hotfix/vX.Y.Z.');
   return { branch, version };
 }
 
 export async function verifyFrozenHead(api, branch, source) {
   const ref = await api(`git/ref/heads/${branch}`);
   requireGate(ref.ref === `refs/heads/${branch}` && ref.object?.type === 'commit' && ref.object.sha === source,
-    'Hotfix HEAD changed. Freeze and validate the new SHA.');
+    'Frozen branch HEAD changed. Freeze and validate the new SHA.');
 }
 
 export async function verifySource(source, api, { branch = 'develop', version } = { branch: 'develop' },
@@ -36,7 +36,7 @@ export async function verifySource(source, api, { branch = 'develop', version } 
   let quality;
   if (version) {
     try { quality = (await verifyFull(branch, source)).runId; } catch {
-      throw new GateError('Frozen hotfix HEAD requires a successful hosted Quality Full and exact checkout receipt.');
+      throw new GateError('Frozen branch HEAD requires a successful hosted Quality Full and exact checkout receipt.');
     }
   } else {
     const comparison = await api(`compare/${source}...develop?per_page=1`);

@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       source_ref:
-        description: 'Source branch: develop or hotfix/vX.Y.Z'
+        description: 'Source branch: develop, release/vX.Y.Z or hotfix/vX.Y.Z'
         default: develop
         required: true
         type: string
       source_sha:
-        description: 'Exact CI-verified 40-character develop SHA or frozen hotfix HEAD'
+        description: 'Exact CI-verified 40-character develop SHA or frozen release/hotfix HEAD'
         required: true
         type: string
 permissions:

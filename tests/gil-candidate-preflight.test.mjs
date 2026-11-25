@@ -54,7 +54,7 @@ test('admit only exact merged source with successful current Quality and invento
 test('require hotfix dispatch, frozen Full and inventory audit on the same current HEAD', async () => {
   assert.deepEqual(hotfix, { branch, version });
   assert.throws(() => candidateTarget(branch, 'bad'), /40-character lowercase Git SHA/);
-  for (const invalid of ['rc/v2.1.1', 'release/v2.1.1', 'hotfix/v2.01.1', 'hotfix/next']) {
+  for (const invalid of ['rc/v2.1.1', 'release/2.1.1', 'hotfix/v2.01.1', 'hotfix/next']) {
     assert.throws(() => candidateTarget(invalid, sourceSha), /Select develop/);
   }
   const verifyFull = async (ref, head) => {
@@ -74,6 +74,26 @@ test('require hotfix dispatch, frozen Full and inventory audit on the same curre
   }), /successful hosted Quality Full/);
   await assert.rejects(verifySource(sourceSha, formalApi({ ...actions, event: 'push' }), hotfix, verifyFull), /must be successful/);
   await assert.rejects(verifySource(sourceSha, formalApi({ ...actions, refHead: '0'.repeat(40) }), hotfix, verifyFull), /HEAD changed/);
+});
+
+test('a normal frozen minor release requires matching branch approval, Full and license evidence', async () => {
+  const releaseBranch = 'release/v2.2.0';
+  const target = candidateTarget(releaseBranch, sourceSha);
+  assert.deepEqual(target, { branch: releaseBranch, version: 'v2.2.0' });
+  const releaseApproval = { ...approval, sourceBranch: releaseBranch, version: 'v2.2.0' };
+  const request = approvedRequest(JSON.stringify(releaseApproval), sourceSha, controller, target);
+  assert.equal(request.configuration.releaseCandidate, true);
+  assert.throws(() => approvedRequest(JSON.stringify({ ...releaseApproval, sourceBranch: 'hotfix/v2.2.0' }),
+    sourceSha, controller, target), /Approval must cover/);
+  const actions = { target: releaseBranch, event: 'workflow_dispatch' };
+  const verifyFull = async (ref, head) => {
+    assert.equal(ref, releaseBranch);
+    assert.equal(head, sourceSha);
+    return { runId: 9 };
+  };
+  assert.deepEqual(await verifySource(sourceSha, formalApi(actions), target, verifyFull), { quality: 9, licenses: 2 });
+  await assert.rejects(verifySource(sourceSha, formalApi({ ...actions, absentJob: 'inventory' }), target, verifyFull), /jobs must succeed/);
+  await assert.rejects(verifySource(sourceSha, formalApi({ ...actions, refHead: controllerSha }), target, verifyFull), /HEAD changed/);
 });
 
 test('require bound base, work-key and public distribution authorization', () => {
