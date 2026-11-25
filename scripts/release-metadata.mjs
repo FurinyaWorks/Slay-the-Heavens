@@ -25,7 +25,9 @@ function validate(metadata) {
        metadata.platform_version !== metadata.platform_version.trim() || /[\x00-\x1f\x7f]/.test(metadata.platform_version))) {
     throw Error('Invalid platform_version (use null until confirmed)');
   }
-  if (metadata.platform_version !== null && (typeof metadata.platform_evidence !== 'string' || !/^https:\/\/[^\s]+$/.test(metadata.platform_evidence))) {
+  const evidence = metadata.platform_evidence;
+  if (metadata.platform_version !== null &&
+      (typeof evidence !== 'string' || !/^https:\/\/[^\s\x00-\x1f\x7f]+$/.test(evidence) || !URL.canParse(evidence))) {
     throw Error('A confirmed platform_version requires a platform_evidence URL');
   }
   if (typeof metadata.commit !== 'string' || !sha.test(metadata.commit)) throw Error('Invalid build commit SHA');

@@ -24,6 +24,9 @@ test('a pure patch can prepare pending metadata while the platform chooses its o
   assert.throws(() => prepareMetadata(release.tag_name, build, '2.0.0', 'game.gil', 'c'.repeat(40), sha256), /build version and commit/);
 
   assert.throws(() => formatMetadata({ ...pending, platform_version: '2.7.0' }), /platform_evidence/);
+  for (const invalid of ['https://?', 'https://exa mple.com', 'http://example.com/receipt']) {
+    assert.throws(() => formatMetadata({ ...pending, platform_version: '2.7.0', platform_evidence: invalid }), /platform_evidence/);
+  }
   const confirmed = { ...pending, platform_version: '2.7.0', platform_evidence: 'https://example.com/receipt' };
   assert.deepEqual(verifyMetadata({ ...release, body: formatMetadata(confirmed) }, commit, version), confirmed);
 });

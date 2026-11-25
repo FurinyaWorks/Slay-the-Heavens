@@ -22,7 +22,7 @@ Release 日常修复走受影响 Fast；集成完成才按 [CI 候选入口](CI-
 
 ### 版本提案、候选与平台确认
 
-1. 按[现有分支通道](BRANCH_LIFECYCLE.md)筹备发布。常规批次用 Actions → **Release proposal (manual only)** → `propose` 手动准备版本 PR。审阅相对上一工程版本的实际交付差异，并同步版本文件和玩家文案。若只发补丁，使用只含目标修复的现有 release/hotfix 通道，按上一正式工程版本升 PATCH。develop 的其他功能不进入补丁批次。Release Please 根据提交类型给出草案，维护者按实际兼容性校对。手动归档完成后，如对应提案仍有 `autorelease: pending` 标签，把它换成 `autorelease: tagged`，免得下一提案被旧提案阻塞。
+1. 按[现有分支通道](BRANCH_LIFECYCLE.md)筹备发布。常规批次用 Actions → **Release proposal (manual only)** → `propose` 手动准备版本 PR。审阅相对上一工程版本的实际交付差异，并同步版本文件和玩家文案。若只发补丁，使用只含目标修复的现有 release/hotfix 通道，按上一正式工程版本升 PATCH。develop 的其他功能不进入补丁批次。Release Please 根据提交类型给出草案，维护者按实际兼容性校对。切换标签命名期间，首次草案从发布线分叉处扫描，可能包含此前已交付的回流提交，按实际候选差异剔除。若上一个工程 Tag 的构建提交不在 develop 祖先链上，Release Please 的扫描范围可能偏大。用 `git diff <上一工程Tag> <候选SHA>` 重核实际交付差异，并修正草案版本和文案。手动归档完成后，如对应提案仍有 `autorelease: pending` 标签，把它换成 `autorelease: tagged`，免得下一提案被旧提案阻塞。
 2. 完成既有冻结、Full、候选构建及同候选平台和设备验收。将不可移动的注释 Tag `engine-v<工程版本>` 指向**实际生成最终产物的提交**，即使之后的 master 合并提交具有相同树，也沿用构建 SHA。旧 `v*` 与归档 Tag 保留。Release Please 手动提案继续跳过 Tag 和 Release 创建。
 3. 用既有工程 Tag 开 GitHub Release 草稿，附上获准分发的最终构建产物。保留同候选构建回执与 GIL 校验值。用 Actions → **Release proposal (manual only)** → `prepare` 输入工程 Tag、上一工程版本、构建回执中的提交与 SHA-256、附件名称。把 Summary 的完整元数据块复制到草稿正文。也可以运行下列只读命令。
 4. 用有权读取草稿的 GitHub CLI 登录账号运行 `verify`，核对 Tag 指向、构建提交的工程版本及 GitHub 附件 SHA-256 与验收产物一致。已公开 Release 也可用该 workflow 的 `verify` 模式，填数字 Release ID。现有 Full 和实机门禁继续适用。
