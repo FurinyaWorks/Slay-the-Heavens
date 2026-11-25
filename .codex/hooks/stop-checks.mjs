@@ -55,9 +55,10 @@ function testCombat() {
 }
 
 let phase = '读取 Stop 事件';
+let retry = false;
 try {
   const input = readFileSync(0, 'utf8');
-  if (input.trim()) JSON.parse(input);
+  if (input.trim()) retry = JSON.parse(input)?.stop_hook_active === true;
   phase = '语法与数据类型';
   check(['scripts/check-syntax.mjs']);
   check(['scripts/check-release-text.mjs']);
@@ -69,6 +70,15 @@ try {
   testCombat();
 } catch (error) {
   const command = error.message.slice(0, 3400);
-  console.error(`[收工检查] ${phase}失败\n工作树 ${process.cwd()}\n${command}\n修复后再结束，本检查会重新运行。`);
-  process.exitCode = 2;
+  const message = `[收工检查] ${phase}失败\n工作树 ${process.cwd()}\n${command}`;
+  if (retry) {
+    console.log(JSON.stringify({
+      continue: false,
+      stopReason: '收工检查仍未通过，此轮阻塞。',
+      systemMessage: message,
+    }));
+  } else {
+    console.error(`${message}\n修复后再结束，本检查会重新运行。`);
+    process.exitCode = 2;
+  }
 }
