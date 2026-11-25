@@ -27,14 +27,16 @@
 完成怪物或战斗角色的覆盖率修复、新资产接入或合并后视觉验收时，须将以下命令生成的正向回执作为本节第 1 步的必要证据，附在现有美术验收记录中。脚本按当前 checkout 的正式图元库导出预期名单，确保岩荧与 42 种敌人的实际 Lua 绘制截图覆盖完整，核对精确源提交、图元几何、数量和截图哈希。
 
 ```sh
-npm run verify:actor-alpha -- <capture.json> <approved-masks.json> <new-report.json>
+npm run verify:actor-alpha -- <capture.json> <mask-locators.json> <new-report.json>
 ```
 
-使用 Pillow、NumPy 及实际 Simulator 运行时的三组同帧黑、白、高对比色截图。捕获采用 133px 岩荧和 106px 怪物的原生图元尺寸用于注册掩模。正式场景显示尺寸、战斗背景和设备复验随同一候选记录。已有的同尺寸图审、原生容量和性能门槛照常执行。
+使用 Pillow 及实际 Simulator 运行时的三组同帧黑、白、高对比色截图。捕获采用 133px 岩荧和 106px 怪物的原生图元尺寸用于注册掩模。正式场景显示尺寸、战斗背景和设备复验随同一候选记录。已有的同尺寸图审、原生容量和性能门槛照常执行。
 
 捕获回执包含 `sourceCommit`、`profile: "official-assets-battle-v3"`、`scope: "production Lua actor painters on an isolated Simulator runtime scene"`、`canvas`、`backdrops` 以及 `pages`。每页保存实际引擎帧编号、时间、截图文件、SHA-256 和原生加载警告，并登记每个受测角色的 `id`、`geometry`、`width`、`shapes` 和 `center` 像素位置。捕获与源图批准依旧由现有美术审查核验。
 
-批准掩模清单使用 `schemaVersion: 1`，每个 `actors` 条目包含 `id`、`basis: "approved-original"`、`approvalReference`、原图 `sourceSha256`、与截图对位的 `crop: [left, top, width, height]`，以及采样 Alpha PNG 的相对 `path` 和 `sha256`。私有原图和掩模保持在授权环境内。缺少覆盖回执、原图掩模或独立批准记录时，入库视觉验收保持待验。日常 CI、普通构建和早期 CD 沿用原入口。
+只读入本次被审源码提交中的 [原图掩模批准记录](../../data/release/actor-alpha-approvals.json)。独立审稿须绑定 `id`、正式 `geometry`、`productionSourceSha256`、批准原图 `originalSha256`、`maskSha256`、原图到掩模的 `registration`、实际截图范围 `captureCrop` 与 `approvalReference`。登记掩模时记录 `registration.sourceCrop`、`registration.maskPlacement`（均为左上 x/y、宽、高）和 `registration.filter`（nearest、bilinear 或 lanczos）。怪物的正式源码哈希用于识别已上线几何来源，原图哈希单独从批准材料登记。岩荧原图摘要还须匹配既有已批准战斗资源。当前批准清单为空，正式 43 项原图掩模继续待取得。
+
+本地文件清单采用 `schemaVersion: 1` 和 `actors`，每项只含 `id` 和相对 `path`。实际掩模文件可以是灰度 PNG 或 RGBA PNG。私有原图和掩模保持在授权环境，独立审查批准的摘要及坐标通过既有 PR 复审登记。缺少批准记录、缺少掩模或图像内容与批准不符，均禁止入库通过。日常 CI、普通构建和早期 CD 沿用原入口。
 
 ## 起跑资产与可复现证据
 

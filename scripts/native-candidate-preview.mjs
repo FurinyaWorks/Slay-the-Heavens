@@ -6,6 +6,7 @@ import {createHash} from 'node:crypto';
 import {loadNativeUiEncoder} from './native-ui-encoder.mjs';
 import {embeddedScripts} from './native-script-inventory.mjs';
 import {loadNativeSimulatorImporter} from './native-simulator-importer.mjs';
+import {hostedCandidatePath} from './hosted-gil-receipt.mjs';
 export function previewImageMaskFields(spec){
  return {enableMask:!!(spec.mask||spec.fill||spec.feather||spec.invertMask),enableFill:!!spec.fill,
   enableSoftEdge:!!spec.feather,reverseMaskArea:spec.invertMask===true,
@@ -22,7 +23,7 @@ const pinned=path.join(out,'readback');fs.mkdirSync(pinned);
 const toolRoot=process.env.MILIASTRA_MCP_ROOT??'D:/MiliastraTools/genshin-miliastra-mcp';
 const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),hash=p=>createHash('sha256').update(fs.readFileSync(p)).digest('hex');
 const candidate=read(candidatePath);
-const gil=candidate.candidate.path??candidate.mapPath;
+const gil=hostedCandidatePath(candidatePath,candidate)??candidate.mapPath;
 if(hash(gil)!==candidate.candidate.sha256)throw Error('GIL changed');
 const wire=await import(pathToFileURL(path.join(toolRoot,'src/scene/wire.mjs')));
 const {native}=await loadNativeUiEncoder(toolRoot);
