@@ -1,14 +1,16 @@
 import { spawnSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, symlinkSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 process.chdir(root);
 const deadline = Date.now() + 165_000;
 
-function check(args) {
+function check(args, cwd = root) {
   const result = spawnSync(process.execPath, args, {
-    cwd: root,
+    cwd,
     encoding: 'utf8',
     timeout: Math.max(1, deadline - Date.now()),
     maxBuffer: 4 * 1024 * 1024,
@@ -39,6 +41,19 @@ function lintLua() {
   });
 }
 
+function testCombat() {
+  const work = mkdtempSync(join(tmpdir(), 'abyss-stop-combat-'));
+  try {
+    for (const folder of ['src', 'tests']) {
+      symlinkSync(join(root, folder), join(work, folder), 'junction');
+    }
+    check(['scripts/build-lua-data.mjs', 'data', join(work, 'build/lua/abyss_data.lua')]);
+    check([join(root, 'scripts/test-lua.mjs'), 'tests/lua/combat.lua'], work);
+  } finally {
+    rmSync(work, { recursive: true, force: true });
+  }
+}
+
 let phase = '读取 Stop 事件';
 try {
   const input = readFileSync(0, 'utf8');
@@ -50,9 +65,8 @@ try {
   phase = 'Lua lint';
   await lintLua();
   phase = '核心单测';
-  check(['scripts/build-lua-data.mjs']);
   check(['--test', '--test-reporter=dot', 'tests/validate-map-contract.test.mjs', 'tests/lua-static.test.mjs']);
-  check(['scripts/test-lua.mjs', 'tests/lua/combat.lua']);
+  testCombat();
 } catch (error) {
   const command = error.message.slice(0, 3400);
   console.error(`[收工检查] ${phase}失败\n工作树 ${process.cwd()}\n${command}\n修复后再结束，本检查会重新运行。`);
