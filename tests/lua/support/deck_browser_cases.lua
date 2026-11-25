@@ -7,10 +7,21 @@ local host
 local factory=F.deckBrowser()
 local nativeCreate,nativeDestroy=factory.create,factory.destroy
 local created,destroyed,chunks,fail=0,0,0,false
+local hitShows,rejectedHit=0,nil
 function factory.create(parent,part)
     if fail then fail=false;return nil end
     if part then chunks=chunks+1 else created=created+1 end
-    return nativeCreate(parent,part)
+    local control=nativeCreate(parent,part)
+    if not part then
+        local hit=control:GetChild('hit')
+        local setVisible=hit.SetVisible
+        function hit:SetVisible(visible)
+            if visible then hitShows=hitShows+1 end
+            if visible and self==rejectedHit then return false end
+            return setVisible(self,visible)
+        end
+    end
+    return control
 end
 function factory.destroy(control)
     destroyed=destroyed+1;return nativeDestroy(control)
@@ -28,6 +39,20 @@ host=F.GameUI.new(root,F.Data,F.Presentation,'click',{seed=1,imageSource='static
 local panel=root:GetChild('deckPanel')
 local pool=panel:GetChild('pileGrid')
 local deck=host.deckUI
+local legacySortReads,legacySortWrites=0,0
+for _,mode in ipairs({'original','type','cost'})do
+    local control=panel:GetChild('sort'..mode)
+    assert(not control.visible)
+    local child,setVisible=control.GetChild,control.SetVisible
+    function control:GetChild(name)
+        legacySortReads=legacySortReads+1
+        return child(self,name)
+    end
+    function control:SetVisible(visible)
+        legacySortWrites=legacySortWrites+1
+        return setVisible(self,visible)
+    end
+end
 local function tick()
     host:update(1/60)
     local changed,repaint=host.pageReveal:step(Gate.intent(host),1/60)
@@ -82,7 +107,24 @@ assert(tap(back,1) and not deck.visible and created==0)
 settle();assert(host:openDeck());settle()
 local shown,count=cells()
 assert(count==10 and created==10 and chunks==50)
+assert(legacySortReads==0 and legacySortWrites==0,'official browsing repainted hidden legacy sorting chrome')
+assert(hitShows==count,'new browser hits were not enabled exactly once')
 local held=shown[1]:GetChild('hit')
+local initialShows=hitShows
+assert(host:closeDeck());settle()
+held:SetVisible(false)
+rejectedHit=held
+assert(host:openDeck())
+for _=1,80 do
+    tick()
+    if host.pageReveal.state=='failed' then break end
+end
+assert(deck.prepareError:find('deck browser hit visibility rejected',1,true) and hitShows==initialShows+1)
+assert(not held.visible and not held.raycastTarget and not tap(held,5),'failed hit became actionable')
+assert(host:recoverPage());settle()
+rejectedHit=nil
+assert(host:openDeck());settle()
+assert(held.visible and held.raycastTarget and hitShows==initialShows+2,'visible browser hits were unnecessarily republished or a hidden hit did not recover')
 held.listeners.down({touchId=7})
 assert(tap(nextHit,8));settle()
 held.listeners.up({touchId=7})

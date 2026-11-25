@@ -210,7 +210,9 @@ local function prepare(pool,job)
     entry.position,entry.look,entry.instance=i,model.look,job.cards[i]
     entry.hit.raycastTarget=true
     if not live(pool,job) then return end
-    assert(entry.hit:SetVisible(true)~=false,'deck browser hit visibility rejected')
+    if entry.hit.visible~=true then
+        assert(entry.hit:SetVisible(true)~=false,'deck browser hit visibility rejected')
+    end
     if not live(pool,job) then return end
     assert(entry.root:SetVisible(true)~=false,'deck browser entry visibility rejected')
     if not live(pool,job) then
