@@ -14,7 +14,7 @@ local function instrument(control,name,counts)
   return method(self,...)
  end
 end
-local function particle(source)
+local function particle(source,onCreate)
  local box=F.control(F.Templates.AbyssMonsterActor)
  local platform=F.withMonsterActors({})
  local native=platform.monsterActors.instantiate
@@ -40,6 +40,7 @@ local function particle(source)
     rotation(self,x,y,z)
     self.localRotationX,self.localRotationY,self.localRotationZ=x,y,z%360
    end
+   if onCreate then onCreate(control)end
   end
   return control
  end
@@ -116,6 +117,55 @@ local function particleLifecycle()
  assert(control().children.icon.imageId~=600)
 end
 
+local function reentrantChildLookup()
+ local view
+ local retired=false
+ local function bind(control)
+  local get=control.GetChild
+  function control:GetChild(name)
+   assert(not retired,'native read after engine teardown')
+   local part=get(self,name)
+   if name=='icon' then view:onEngineDestroy();retired=true end
+   return part
+  end
+ end
+ local _,_,paint
+ view,_,paint=particle('UNKNOWN',bind)
+ local ok,reason=pcall(paint,true)
+ assert(retired and not ok and tostring(reason):find('intent particle publication cancelled'),tostring(reason))
+end
+
+local function reentrantPaint()
+ local _,_,paint,control=particle('UNKNOWN')
+ paint(true)
+ local c=control()
+ local icon=c.children.icon
+ local scale=icon.SetLocalScale
+ local invoked=false
+ function icon:SetLocalScale(...)
+  if not invoked then invoked=true;paint(true)end
+  scale(self,...)
+ end
+ paint(true);paint(true)
+ assert(invoked and c.alive and control()==c,'same-owner reentry retired a live particle')
+end
+
+local function rejectedHide()
+ local host,root=F.fixture()
+ local hero=root:GetChild('battlePanel'):GetChild('hero')
+ local hide=hero.SetVisible
+ local attempts=0
+ hero.visible=true
+ function hero:SetVisible(value)
+  attempts=attempts+1
+  if attempts==1 then return false end
+  return hide(self,value)
+ end
+ host.battleUI:render()
+ host.battleUI:setActive(false)
+ assert(not hero.visible and attempts==2,'rejected hidden projection suppressed its retry')
+end
+
 local function selection()
  local host,root=F.fixture()
  local panel=root:GetChild('battlePanel')
@@ -187,7 +237,7 @@ local function abandon(feedback)
  end
 end
 
-if not case or case=='particle' then stableParticle();if not measure then particleLifecycle()end end
-if not case or case=='selection' then selection()end
+if not case or case=='particle' then stableParticle();if not measure then particleLifecycle();reentrantChildLookup();reentrantPaint()end end
+if not case or case=='selection' then selection();if not measure then rejectedHide()end end
 if not measure and (not case or case=='abandon') then abandon(false);abandon(true)end
 print('BATTLE_UI_PUBLICATION_PASS')

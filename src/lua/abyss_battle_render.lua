@@ -1,18 +1,20 @@
 -- Read state, issue Run commands. No damage/energy/outcome rules live in this view.
 local M = {}
 -- Explicit ports preserve the approved implementation without a shared constructor closure.
-function M.install(owner, _ownership, host, dependencies)
+function M.install(owner, ownership, host, dependencies)
     local renderDepth, cleared = 0, false
-    local function unowned(view)
+    local function feedbackRetired(view)
         local feedback=view.feedback
-        return not view.active and not view.run and not view.viewRun and not view.viewBattle
-            and not view.displayBattle and not view.suspendedBattle and not view.busy
-            and not view.feedbackRun and not view.feedbackBattle
+        return not view.busy and not view.feedbackRun and not view.feedbackBattle
             and not feedback.busy and not feedback.idleBattle and not feedback.battle
+    end
+    local function unowned(view)
+        return not view.active and not view.run and not view.viewRun and not view.viewBattle
+            and not view.displayBattle and not view.suspendedBattle and feedbackRetired(view)
             and not view.gesture and not view.carry and not view.help and not view.info and not view.potionAim
     end
     function owner:hasClearedHiddenProjection()
-        return cleared and renderDepth==0 and unowned(self)
+        return cleared and renderDepth==0 and not ownership.projectionRejected and unowned(self)
     end
     -- Detail changes reuse native controls; mutable content is queried on each paint.
     -- Preserve the explicit render's pointer invalidation and validity checks.
@@ -65,6 +67,7 @@ function M.install(owner, _ownership, host, dependencies)
     end
     function owner:render(presentationOnly, deckCoversHand)
         cleared=false
+        if renderDepth==0 then ownership.projectionRejected=nil end
         renderDepth=renderDepth+1
         local ok,empty=pcall(project,self,presentationOnly,deckCoversHand)
         renderDepth=renderDepth-1

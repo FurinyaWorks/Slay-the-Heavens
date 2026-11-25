@@ -10,13 +10,28 @@ local cosmetic=Random.fromSeed('0') -- Separate visual stream; never combat RNG.
 local M={}
 local layers={'intentVfxBehind','intentVfxAfter'}
 local hiddenParts={'edge','body','badge','count','hit'}
+local function checkGeneration(pool,generation)
+ assert(pool.generation==generation,'intent particle publication cancelled')
+end
 local function valid(pool,generation,key,control)
- assert(pool.generation==generation and pool:find(key)==control and control.alive~=false,'intent particle publication cancelled')
+ checkGeneration(pool,generation)
+ assert(pool:find(key)==control and control.alive~=false,'intent particle publication cancelled')
+ checkGeneration(pool,generation)
 end
 local function write(pool,generation,key,control,target,name,...)
  valid(pool,generation,key,control)
  assert(target[name](target,...)~=false,'intent particle native write rejected: '..name)
  valid(pool,generation,key,control)
+end
+local function read(pool,generation,target,name)
+ local value=target[name]
+ checkGeneration(pool,generation)
+ return value
+end
+local function child(pool,generation,control,name)
+ local part=control:GetChild(name)
+ checkGeneration(pool,generation)
+ return part
 end
 local function differs(actual,expected)
  return actual~=nil and actual~=expected
@@ -130,7 +145,50 @@ function M.new(platform,picture,tint)
    starWidth=16,starHeight=16},function()return Random.nextFloat(cosmetic)end)
  end
  function self.alpha(_,id)return assert(self.states[id],'missing intent instance').intentAlpha end
- local function paint(box,id,g,allowed)
+ local function paintControl(pool,generation,key,control,e,g,allowed,revision)
+  local binding=configured[control]
+  local first=not binding or binding.effect~=e
+  if first then
+   binding={effect=e,icon=child(pool,generation,control,'icon'),hidden={}}
+   for i,name in ipairs(hiddenParts)do binding.hidden[i]=child(pool,generation,control,name)end
+  end
+  for _,part in ipairs(binding.hidden)do
+   if first or read(pool,generation,part,'visible')~=false then write(pool,generation,key,control,part,'SetVisible',false)end
+  end
+  local icon=binding.icon
+  if first or read(pool,generation,icon,'visible')~=true then write(pool,generation,key,control,icon,'SetVisible',true)end
+  local image=e.textureKey=='TINY_STAR' and Theme.image.star or Theme.icon.intent.unknown
+  local imageId=type(image)=='table' and image.id or image
+  if binding.imageId~=imageId or differs(read(pool,generation,icon,'imageId'),imageId) then
+   valid(pool,generation,key,control)
+   assert(picture(icon,image)~=false,'intent particle image rejected')
+   valid(pool,generation,key,control)
+   binding.imageId=imageId
+  end
+  if first or differs(read(pool,generation,icon,'anchoredPositionX'),0) or differs(read(pool,generation,icon,'anchoredPositionY'),0) then
+   write(pool,generation,key,control,icon,'SetAnchoredPosition',0,0)
+  end
+  if binding.width~=e.width or binding.height~=e.height
+      or differs(read(pool,generation,icon,'sizeDeltaX'),e.width) or differs(read(pool,generation,icon,'sizeDeltaY'),e.height) then
+   write(pool,generation,key,control,icon,'SetSizeDelta',e.width,e.height)
+   binding.width,binding.height=e.width,e.height
+  end
+  write(pool,generation,key,control,icon,'SetLocalScale',e.scale,e.scale,1)
+  if binding.rotation~=e.rotationDeg or angleDiffers(read(pool,generation,icon,'localRotationZ'),e.rotationDeg)
+      or angleDiffers(read(pool,generation,icon,'localRotationX'),0) or angleDiffers(read(pool,generation,icon,'localRotationY'),0) then
+   write(pool,generation,key,control,icon,'SetLocalRotation',0,0,e.rotationDeg)
+   binding.rotation=e.rotationDeg
+  end
+  valid(pool,generation,key,control)
+  tint(icon,{r=e.color[1]*255,g=e.color[2]*255,b=e.color[3]*255,a=e.color[4]*255})
+  valid(pool,generation,key,control)
+  write(pool,generation,key,control,control,'SetAnchoredPosition',e.centerX-g.x,e.centerY-g.y)
+  if read(pool,generation,control,'visible')~=allowed then write(pool,generation,key,control,control,'SetVisible',allowed)end
+  -- A nested paint may have observed a partly published binding. Rebind
+  -- on the next paint if native calls overlapped, keeping pool ownership.
+  configured[control]=self.paintRevision==revision and binding or nil
+ end
+ local function paint(box,id,g,allowed,revision)
   local state=assert(self.states[id],'missing intent instance')
   local output=self.outputs[box]
   if not output and #state.effects==0 then return end
@@ -154,55 +212,15 @@ function M.new(platform,picture,tint)
     local key,e=row.id,row.effect
     local control=assert(pool:find(key))
     valid(pool,generation,key,control)
-    local binding=configured[control]
-    local first=not binding or binding.effect~=e
-    if first then
-     binding={effect=e,icon=control:GetChild('icon'),hidden={}}
-     for i,name in ipairs(hiddenParts)do binding.hidden[i]=control:GetChild(name)end
-    end
-    for _,part in ipairs(binding.hidden)do
-     if first or part.visible~=false then write(pool,generation,key,control,part,'SetVisible',false)end
-    end
-    local icon=binding.icon
-    if first or icon.visible~=true then write(pool,generation,key,control,icon,'SetVisible',true)end
-    local image=e.textureKey=='TINY_STAR' and Theme.image.star or Theme.icon.intent.unknown
-    local imageId=type(image)=='table' and image.id or image
-    if binding.imageId~=imageId or differs(icon.imageId,imageId) then
-     valid(pool,generation,key,control)
-     assert(picture(icon,image)~=false,'intent particle image rejected')
-     valid(pool,generation,key,control)
-     binding.imageId=imageId
-    end
-    if first or differs(icon.anchoredPositionX,0) or differs(icon.anchoredPositionY,0) then
-     write(pool,generation,key,control,icon,'SetAnchoredPosition',0,0)
-    end
-    if binding.width~=e.width or binding.height~=e.height
-        or differs(icon.sizeDeltaX,e.width) or differs(icon.sizeDeltaY,e.height) then
-     write(pool,generation,key,control,icon,'SetSizeDelta',e.width,e.height)
-     binding.width,binding.height=e.width,e.height
-    end
-    write(pool,generation,key,control,icon,'SetLocalScale',e.scale,e.scale,1)
-    if binding.rotation~=e.rotationDeg or angleDiffers(icon.localRotationZ,e.rotationDeg)
-        or angleDiffers(icon.localRotationX,0) or angleDiffers(icon.localRotationY,0) then
-     write(pool,generation,key,control,icon,'SetLocalRotation',0,0,e.rotationDeg)
-     binding.rotation=e.rotationDeg
-    end
-    valid(pool,generation,key,control)
-    tint(icon,{r=e.color[1]*255,g=e.color[2]*255,b=e.color[3]*255,a=e.color[4]*255})
-    valid(pool,generation,key,control)
-    write(pool,generation,key,control,control,'SetAnchoredPosition',e.centerX-g.x,e.centerY-g.y)
-    if control.visible~=allowed then write(pool,generation,key,control,control,'SetVisible',allowed)end
-    configured[control]=binding
+    paintControl(pool,generation,key,control,e,g,allowed,revision)
    end
   end
  end
  function self.paint(_,box,id,g,allowed)
   assert(not self.engineDestroyed,'monster intent view engine destroyed')
   assert(not self.failed,self.failed)
-  assert(not self.painting,'reentrant intent particle publication')
-  self.painting=true
-  local ok,reason=pcall(paint,box,id,g,allowed)
-  self.painting=false
+  self.paintRevision=(self.paintRevision or 0)+1
+  local ok,reason=pcall(paint,box,id,g,allowed,self.paintRevision)
   if not ok then
    self.failed=tostring(reason)
    pcall(self.release,self,box) -- Retain failed native cleanup ownership for explicit clear retry.

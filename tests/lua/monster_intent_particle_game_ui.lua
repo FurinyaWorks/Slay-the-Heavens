@@ -53,10 +53,10 @@ host:closeDeck();host:update(.51)
 local nextBox=assert(manager:find(nextBattle.enemies[1].id))
 assert(#outputs(nextBox)==1,'inactive first observation must not consume the initial showIntent boundary')
 local output=outputs(nextBox)[1];local current=output.box
-local rotation=output.icon.SetLocalRotation
+local scale=output.icon.SetLocalScale
 local colour=output.icon.imageColor
-output.icon.SetLocalRotation=function(self,...)
- rotation(self,...);host:disable() -- Native setter re-enters retirement before paint can finish.
+output.icon.SetLocalScale=function(self,...)
+ scale(self,...);host:disable() -- Native setter re-enters retirement before paint can finish.
 end
 local ok,reason=pcall(host.update,host,.01)
 assert(not ok and tostring(reason):find('intent particle publication cancelled'),'retired particle writes must stop immediately')
