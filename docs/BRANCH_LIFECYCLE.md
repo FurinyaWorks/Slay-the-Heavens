@@ -96,3 +96,11 @@ CLOSEOUT: <branch>@<full-head-sha> | version/base=<...> | outcome=<DELIVERED_VER
 - 对合入 Release 的 PR，用报告所列 develop SHA 比较生产文件内容，输出仍需核对的回流路径。同路径的后续修改也会触发复核。继任者合并、文件路径相交和文件内容相同都只是导航证据，行为与验收照旧按原任务验证。对应范围与结果写回原 PR 或 Backlog。旧 `release/v2.0.0` 保持冻结。
 - 进行批量清理前由具备完整 Git、PR 和 Backlog 上下文的协调 Agent 二次验证；远端删除必须独立执行、记录结果。禁止让没有源码判断能力的巡检机器人按天数清除。
 - 治理更新走 develop 的正常 PR。Develop 与后续批准的 Release PR 使用同一[生产代码规模门禁](TASK_EXECUTION.md#小批量集成)。两类分支沿用各自 Fast、Full、独立评审及规则集。
+
+## 静默收工与远端回调
+
+受信任的 Codex 项目使用 `.codex/hooks.json` 注册 Stop 和 SubagentStop。每次尝试结束时运行现有语法、发布文本、数据类型校验、Lua lint 与地图和战斗核心单测。全绿时 stdout 和 stderr 均为空。失败时用退出码 2 把检查阶段、工作树和截断后的诊断交回同一个 Agent，修复后再次触发。首次准备工作树运行 `npm ci` 和 `npm run setup:lua-static`。现有正式 CI 与完整验收继续按 [CI](CI.md) 运行。
+
+`Branch closeout` 由 GitHub 的 PR 关闭和分支删除事件触发。PR 回调确认最终状态，删除回调读取实际远端引用。把两种事件分开可避免在 GitHub 自动删分支之前误报。回调成功时不输出业务日志，失败时只注记仓库、目标、事件和原因。需要核对某个预期尚未收到事件的分支或 PR 时，手动运行同一工作流并传入目标。工作流需存在于各仓默认分支。正式合并和带 SHA 租约的清理权限沿用本页收口流程。
+
+Quality、Licenses 和 Quick feedback 的 `workflow_run.completed` 事件复用同一个回调。失败时只读对应 run attempt 的作业状态并注记失败作业和运行链接，无需拉取完整日志。成功、跳过与取消不会启动报告作业。已有自动合并继续消费正式门禁。回调的结果留在 GitHub Actions，Codex 会话无需常驻等待。
