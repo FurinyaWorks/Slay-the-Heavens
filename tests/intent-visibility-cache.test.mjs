@@ -39,7 +39,8 @@ test('complete Host route retains final run/native graph while idle intent write
  });
  assert.equal(samples[1].graph,samples[0].graph,'complete final Host/run/native graph changed');
  const idle=samples.map(s=>s.counts.find(row=>row.phase==='idle-300'));
- assert.deepEqual(idle.map(row=>row.counts),[[900,0,3600,7200,0],[900,0,1800,5400,0]]);
+ // The integrated renderer also skips one unchanged enemy-name SetVisible per frame.
+ assert.deepEqual(idle.map(row=>row.counts),[[900,0,3600,7200,0],[900,0,1500,5100,0]]);
  for(let i=0;i<samples[0].counts.length;i++)for(const index of [0,1,4])assert.equal(samples[0].counts[i].counts[index],samples[1].counts[i].counts[index],'require/load/snapshot workload changed');
  mkdirSync('build/intent-visibility',{recursive:true});
  writeFileSync('build/intent-visibility/equivalence.json',JSON.stringify({
