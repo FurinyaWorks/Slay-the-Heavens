@@ -151,11 +151,13 @@ end
 
 local function rejectedHide()
  local host,root=F.fixture()
+ host.battleUI.reuseRetiredProjection=true
  local panel=root:GetChild('battlePanel')
  local potionHelp=panel:GetChild('potionHelp')
  local controls={panel:GetChild('hero'),panel:GetChild('card1'),panel:GetChild('statusInfo'),
   potionHelp:GetChild('potionPopup'),panel:GetChild('goldReward'),panel:GetChild('claimPotion'),
-  potionHelp:GetChild('relicReward1'),potionHelp:GetChild('potionReward')}
+  potionHelp:GetChild('relicReward1'),potionHelp:GetChild('potionReward'),
+  panel:GetChild('exhaustIcon'),panel:GetChild('exhaust')}
  for _,control in ipairs(controls)do
   local hide=control.SetVisible
   local attempts=0
@@ -175,21 +177,39 @@ local function rejectedHide()
  end
 end
 
-local function noHiddenReadback()
+local function reentrantReadback()
  local host,root=F.fixture()
- host.battleUI:setActive(false)
+ local battle=host.battleUI
+ battle.reuseRetiredProjection=true
+ battle:setActive(false)
  local panel=root:GetChild('battlePanel')
- local get=panel.GetChild
- function panel:GetChild(name)
-  assert(name~='statusInfo','reused hidden projection queried retired details')
-  return get(self,name)
- end
- host.battleUI:setActive(false)
+ local status=panel:GetChild('statusInfo')
+ local original=getmetatable(status)
+ local shown=status.visible
+ local requests=0
+ rawset(status,'visible',nil)
+ setmetatable(status,{
+  __index=function(control,key)
+   if key=='visible' then
+    requests=requests+1
+    assert(requests==1,'hidden readback recursed')
+    battle:setActive(false)
+    return shown
+   end
+   return original.__index(control,key)
+  end,
+  __newindex=function(control,key,value)
+   if key=='visible' then shown=value;return end
+   original.__newindex(control,key,value)
+  end,
+ })
+ battle:setActive(false)
+ assert(requests==1 and not shown)
 end
 
 local function selection()
  local host,root=F.fixture()
- assert(host:start()) -- The first open establishes the inactive projection.
+ assert(host:start());assert(host:closeCharacters());assert(host:start())
  local panel=root:GetChild('battlePanel')
  local counts={}
  instrument(panel,'GetChild',counts)
@@ -260,6 +280,6 @@ local function abandon(feedback)
 end
 
 if not case or case=='particle' then stableParticle();if not measure then particleLifecycle();reentrantChildLookup();reentrantPaint()end end
-if not case or case=='selection' then selection();if not measure then rejectedHide();noHiddenReadback()end end
+if not case or case=='selection' then selection();if not measure then rejectedHide();reentrantReadback()end end
 if not measure and (not case or case=='abandon') then abandon(false);abandon(true)end
 print('BATTLE_UI_PUBLICATION_PASS')

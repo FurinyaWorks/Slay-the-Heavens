@@ -31,6 +31,10 @@ local function selectedPotionView(run,slot)
     if Theme.presentationProfile=='official-assets-first' then return Run.potionSlotView(run,slot) end
     return Run.potionView(run)[slot]
 end
+local emptyControls={"hero","statusInfo","statusDismiss","dragLayer","playArea","endTurn",
+    "rewardStage","rewardList","skip","continue","goldReward","stolenGold","cardReward","claimPotion","exhaustIcon","exhaust"}
+local potionButtons={"potionPopup","potionReward","emeraldKeyReward","relicReward1","relicReward2"}
+local pileIcons={"drawIcon","discardIcon","exhaustIcon"}
 local function feedbackRetired(view)
     local feedback=view.feedback
     return not view.busy and not view.feedbackRun and not view.feedbackBattle
@@ -42,38 +46,79 @@ local function hiddenProjectionUnowned(view,host)
         and not view.gesture and not view.carry and not view.help and not view.info and not view.potionAim
         and not host.monsterSurfaces.engineDestroyed
 end
-local function installActivation(owner,host,dependencies)
-    local emptyRender,retiring
-    local function reuseEmptyProjection(wasActive)
-        return not wasActive and emptyRender and emptyRender==owner.rewardRender
-            and not owner.projectionRejected and hiddenProjectionUnowned(owner,host)
+local function hiddenNativeProjection(owner,host,revision)
+    local function current()
+        assert(not host.monsterSurfaces.engineDestroyed,"hidden battle projection cancelled")
+        return owner.rewardRender==revision and not owner.active
     end
-    local function renderAfterActivation(wasActive)
-        emptyRender=nil
-        if owner.active or owner.run then owner:render();return end
-        -- Full renders increment rewardRender before any native writes.
-        local revision=(owner.rewardRender or 0)+1
+    local function child(parent,name)
+        local control=parent:GetChild(name)
+        if current() then return control end
+    end
+    local function hidden(parent,name)
+        local control=child(parent,name)
+        if not control then return false end
+        local visible=control.visible
+        return current() and visible==false
+    end
+    local function hiddenList(parent, names)
+        for _,name in ipairs(names) do if not hidden(parent,name) then return false end end
+        return true
+    end
+    local function hiddenSlots(stage,potionHelp)
+        for i=1,10 do if not hidden(stage,"card"..i) then return false end end
+        for i=1,L.battlePotions.count do
+            if not hidden(i<=3 and stage or potionHelp,"potion"..i)
+                or not hidden(potionHelp,"potionHelp"..i) or not hidden(potionHelp,"potionCaption"..i) then return false end
+        end
+        return true
+    end
+    local stage=host.stage
+    if not hiddenList(stage,emptyControls) then return false end
+    local potionHelp=child(stage,"potionHelp")
+    if not (potionHelp and hiddenList(potionHelp,potionButtons) and hiddenSlots(stage,potionHelp)) then return false end
+    local energy=child(stage,"energyIcon")
+    if not (energy and hidden(energy,"light")) then return false end
+    for _,name in ipairs(pileIcons) do
+        local icon=child(stage,name)
+        if not (icon and hidden(icon,"hit")) then return false end
+    end
+    return true
+end
+local function installActivation(owner,host,dependencies)
+    local revision,retiring,checking
+    local function verifyHiddenProjection()
+        checking=true
+        local ok,result=pcall(hiddenNativeProjection,owner,host,revision)
+        checking=nil
+        if not ok then error(result,0) end
+        return result
+    end
+    local function retireOrReuse(wasActive)
+        if not wasActive and not checking and revision and owner.rewardRender==revision
+            and hiddenProjectionUnowned(owner,host) and verifyHiddenProjection()
+            and hiddenProjectionUnowned(owner,host) then return end
+        revision=nil
+        local expected=(owner.rewardRender or 0)+1
         local nested=retiring
         retiring=true
-        owner.projectionRejected=nil
         local ok,reason=pcall(owner.render,owner)
         retiring=nested
         if not ok then error(reason,0) end
-        -- The transition from active retires the old screen. Only a full
-        -- projection made while already inactive proves the steady hidden view.
-        if not wasActive and not nested and owner.rewardRender==revision and not owner.projectionRejected
-            and hiddenProjectionUnowned(owner,host) then emptyRender=revision end
+        if not nested and owner.rewardRender==expected and hiddenProjectionUnowned(owner,host) then revision=expected end
     end
-    function owner:setActive(active, suspend, deferRender)
+    function owner:setActive(active,suspend,deferRender)
         assert(type(active) == "boolean", "active must be boolean")
-        local wasActive = self.active
-        self.active = active
+        local wasActive=self.active
+        self.active=active
         -- Only the host may request a temporary same-battle cover. Plain false still unmounts.
         self.suspendedBattle = not active and suspend == true and self.run and self.run.combat or nil
         if not active then self.help=nil;dependencies.cancelPotionAim("已取消药水瞄准。") end
-        if host.root:SetVisible(active)==false then self.projectionRejected=true end
-        -- GameUI can commit its battle render after all page visibility writes.
-        if not deferRender and (active or not reuseEmptyProjection(wasActive)) then renderAfterActivation(wasActive) end
+        host.root:SetVisible(active)
+        if deferRender then return end
+        if active or self.run or not self.reuseRetiredProjection then
+            revision=nil;self:render()
+        else retireOrReuse(wasActive) end
     end
 end
 -- Explicit ports preserve the approved implementation without a shared constructor closure.

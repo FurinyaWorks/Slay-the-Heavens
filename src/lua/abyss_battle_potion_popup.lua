@@ -63,11 +63,7 @@ function M.new(root,owner,platform,clickEvent,actions)
     end
     function popup.render(_)
         local token=owner.potionMenu
-        if not valid(token) then
-            popup:close()
-            if root:SetVisible(false)==false then owner.projectionRejected=true end
-            return
-        end
+        if not valid(token)then popup:close();root:SetVisible(false);return end
         local item=actions.item(token.slot)
         if not item then popup:close();return end
         local effect,lines=wrap(actions.text(item,token.battle),math.floor((P.width-P.padding*2)/P.font))

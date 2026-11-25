@@ -19,9 +19,7 @@ function M.install(owner, ownership, host, _dependencies)
         local found=(nested and host.stage:GetChild('potionHelp') or host.stage):GetChild(name)
         return assert(found, "missing UI control " .. name)
     end
-    local function show(name, value)
-        if child(name):SetVisible(value == true)==false then owner.projectionRejected=true end
-    end
+    local function show(name, value) child(name):SetVisible(value == true) end
     local function label(name, value) child(name).text = value end
     local function colour(value) return host.platform.color(value.r, value.g, value.b, value.a) end
     local function tint(control, value) control.imageColor = colour(value) end

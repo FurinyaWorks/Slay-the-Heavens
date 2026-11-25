@@ -67,7 +67,6 @@ function M.install(owner, _ownership, host, dependencies)
     end
     local function renderRewardRows(frame)
         RewardLayout.render(frame,dependencies.child,rewardSizeOwner,mobileRewards)
-        if frame.projectionRejected then owner.projectionRejected=true end
     end
     local function renderRelicRewards(frame)
         local run=frame.run
@@ -216,7 +215,7 @@ function M.install(owner, _ownership, host, dependencies)
         local icon = dependencies.child("energyIcon")
         icon:GetChild("valueShadow").text = value
         dependencies.tint(icon:GetChild("face"), charged and L.energy.faceColour or C.energyEmpty)
-        if icon:GetChild("light"):SetVisible(charged == true)==false then owner.projectionRejected=true end
+        icon:GetChild("light"):SetVisible(charged == true)
         renderEnergyChrome(icon,charged,dependencies.tint)
         dependencies.tint(icon:GetChild("core"), charged and L.energy.elementColour or C.energyEmpty)
         dependencies.ink(dependencies.child("energy"), L.energy.numberColour)
@@ -227,7 +226,7 @@ function M.install(owner, _ownership, host, dependencies)
         dependencies.label("discard", battle and tostring(#battle.discard) or "0")
         for _,kind in ipairs({'draw','discard','exhaust'})do
             local hit=dependencies.child(kind..'Icon'):GetChild('hit')
-            if hit:SetVisible(frame.fighting==true)==false then owner.projectionRejected=true end
+            hit:SetVisible(frame.fighting==true)
             hit.raycastTarget=host.options.onPile~=nil and frame.active==true
         end
         dependencies.label("statuses", frame.fighting and battle.phase ~= "player" and not owner.busy and "敌方回合" or "")

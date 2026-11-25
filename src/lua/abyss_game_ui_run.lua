@@ -47,6 +47,7 @@ function M.closeCharacters(self,selectionChanged)
                 self.characterSelection.deckOpen=false;selectionChanged();return true
             end
             self.characterOpen=false;self.characterSelection:clear()
+            self.battleUI.reuseRetiredProjection=true
             selectionChanged();return true
         end
 end

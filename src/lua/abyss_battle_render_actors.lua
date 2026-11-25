@@ -419,10 +419,10 @@ function M.install(owner, ownership, host, dependencies)
         local prior=potionCaptions[caption]
         if not prior or prior.shown~=shown or prior.text~=text then
             potionCaptions[caption]=nil
-            local accepted=prior and prior.shown==shown or caption:SetVisible(shown)~=false
+            local accepted=true
+            if not prior or prior.shown~=shown then accepted=caption:SetVisible(shown)~=false end
             if not prior or prior.text~=text then caption.text=text end
-            if accepted then potionCaptions[caption]={shown=shown,text=text}
-            else owner.projectionRejected=true end
+            if accepted then potionCaptions[caption]={shown=shown,text=text} end
         end
     end
     local function renderPotions(frame)
