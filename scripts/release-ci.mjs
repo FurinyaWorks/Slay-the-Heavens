@@ -7,7 +7,7 @@ import {tmpdir} from 'node:os';
 import {projectRepositoryMatches} from './repository-identity.mjs';
 
 const validSha=value=>/^[a-f0-9]{40}$/.test(value??'');
-export const releaseBranch=value=>/^release\/[\w][\w.-]*$/.test(value??'');
+export const releaseBranch=value=>/^(?:release|hotfix)\/[\w][\w.-]*$/.test(value??'');
 async function pages(request,path,key) {
  const rows=[];
  for(let page=1;page<=100;page++) {
@@ -25,7 +25,7 @@ function loadCheckout(repo,run,jobs) {
  try{return checkoutReceipt(repo,run,jobs,dir);}finally{rmSync(dir,{recursive:true,force:true});}
 }
 export async function verifyReleaseFull(repo,branch,head,request,readCheckout=loadCheckout) {
- if(!releaseBranch(branch)||!validSha(head))throw Error('Expected release/<name> and frozen 40-character HEAD');
+ if(!releaseBranch(branch)||!validSha(head))throw Error('Expected release/<name> or hotfix/<name> and frozen 40-character HEAD');
  const prefix=`/repos/${repo}`,refPath=`${prefix}/git/ref/heads/${branch}`;
  const checkRef=async()=>{
   const ref=await request(refPath);
@@ -68,7 +68,7 @@ export async function verifyReleaseFull(repo,branch,head,request,readCheckout=lo
 }
 
 export async function freezeReleaseFull(repo,branch,head,request,readCheckout=loadCheckout) {
- if(!releaseBranch(branch)||!validSha(head))throw Error('Expected release/<name> and frozen 40-character HEAD');
+ if(!releaseBranch(branch)||!validSha(head))throw Error('Expected release/<name> or hotfix/<name> and frozen 40-character HEAD');
  const prefix=`/repos/${repo}`,refPath=`${prefix}/git/ref/heads/${branch}`;
  if(!projectRepositoryMatches(await request(prefix),repo))throw Error('Unexpected Release repository identity');
  const checkRef=async()=>{
@@ -136,7 +136,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
    command='verify';branch=pr.head.ref;head=pr.head.sha;
   }
   if(!['freeze','verify'].includes(command)||!releaseBranch(branch)||!validSha(head))
-   throw Error('Usage: node scripts/release-ci.mjs freeze|verify release/<name> <frozen-HEAD>');
+   throw Error('Usage: node scripts/release-ci.mjs freeze|verify <release/name|hotfix/name> <frozen-HEAD>');
   if(command==='freeze') {
    console.log(JSON.stringify(await freezeReleaseFull(repo,branch,head,githubRequest)));
   } else console.log(JSON.stringify(await verifyReleaseFull(repo,branch,head,githubRequest),null,2));

@@ -16,6 +16,7 @@ import { verifyNativeCardArtReceipt } from './card-art-samples.mjs';
 import { validDate } from './evidence-files.mjs';
 import { gitSourceIdentity } from './release-notes.mjs';
 import {assertCandidateArtReceipt} from './candidate-art-policy.mjs';
+import { hostedCandidatePath, verifiedPayloadInputs } from './hosted-gil-receipt.mjs';
 
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 export function packageInventory(directory = 'build/lua') {
@@ -185,11 +186,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         .map(key => [key, report[key] - baseline[key]]));
     } else if (mode === 'release') {
       const receipt = JSON.parse(readFileSync(directory));
-      if (hash(readFileSync(receipt.candidate.path)) !== receipt.candidate.sha256) throw Error('Candidate file changed');
+      if (hash(readFileSync(hostedCandidatePath(directory, receipt))) !== receipt.candidate.sha256) throw Error('Candidate file changed');
       verifyNativeCardArtReceipt(receipt.nativeCardArt, {root: process.cwd()});
       assertCandidateArtReceipt(receipt);
       const artOptions=artBuildOptionsFromReceipt(receipt);
-      if (payloadDigest(sourceInputs(process.cwd(),artOptions)) !== receipt.payloadDigest) throw Error('Candidate payload differs from current production inputs');
+      if (payloadDigest(verifiedPayloadInputs(process.cwd(), receipt, artOptions, sourceInputs)) !== receipt.payloadDigest) throw Error('Candidate payload differs from current production inputs');
       verifyNativeCardArtReceipt(receipt.nativeCardArt, {root: process.cwd()});
       const evidence = evidencePath ? JSON.parse(readFileSync(evidencePath)) : undefined;
       // Artifact paths are relative to the evidence file, never fetched from a URL.

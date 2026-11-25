@@ -13,7 +13,7 @@ function styleButton(button,frame){
  const label=find(button,'label');
  if(button.name==='start')label.text.content='开始游戏';
  label.position=[0,0];label.size=[218,48];
- Object.assign(label.text,{align:'left',valign:'middle',fontSize:24,minFontSize:24,colour:'#F3EACF',outline:true,outlineColour:'#282328',autoSize:false});
+ Object.assign(label.text,{align:'left',valign:'middle',fontSize:24,minFontSize:24,colour:'#F3EACF',outline:true,outlineColour:'#282328',outlineOpacity:1,autoSize:false});
  button.children=button.children.filter(child=>child.name!=='menuAccent');
  const fills={hover:['#FFF09A',.85],pressed:['#D7AA47',.7],disabled:['#3D3A3D',.4]};
  for(const state of controls(find(button,'v25MenuFace'))){
