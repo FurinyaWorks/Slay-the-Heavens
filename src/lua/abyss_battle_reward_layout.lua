@@ -111,6 +111,9 @@ local function positionHost(box,layout)
   panel:SetLocalScale(1,height/token.panelSize[2],1)
  end
 end
+local function publishVisibility(frame,control,visible)
+ if control:SetVisible(visible)==false then frame.projectionRejected=true end
+end
 function M.render(frame,child,sizeOwner,mobileLayouts)
  local visible=visibleRewards(frame)
  local count=0;for _,name in ipairs(names)do if visible[name]then count=count+1 end end
@@ -134,7 +137,7 @@ function M.render(frame,child,sizeOwner,mobileLayouts)
  local row=0
  for _,name in ipairs(names)do
   local control=child(name)
-  if control:SetVisible(not not visible[name])==false then frame.projectionRejected=true end
+  publishVisibility(frame,control,not not visible[name])
   if visible[name]then
    control:SetAnchoredPosition(layout.rowOrigin[1],layout.rowOrigin[2]-row*layout.rowStep)
    row=row+1
@@ -142,7 +145,7 @@ function M.render(frame,child,sizeOwner,mobileLayouts)
  end
  if frame.manual then child('continue'):SetAnchoredPosition(layout.continue[1],layout.continue[2])end
  local caption=child('potionReward');local position=layout.potionLabel
- if caption:SetVisible(frame.pendingPotion==true)==false then frame.projectionRejected=true end
+ publishVisibility(frame,caption,frame.pendingPotion==true)
  caption:SetAnchoredPosition(position[1],position[2]);size(caption,position[3],position[4],sizeOwner)
  frame.rewardRows=count
  frame.rewardLayout=layout
