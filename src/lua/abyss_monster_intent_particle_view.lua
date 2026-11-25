@@ -8,9 +8,30 @@ local Theme=require('abyss_theme')
 local sequence=Particles.newSequence() -- Java static phase survives battle changes.
 local cosmetic=Random.fromSeed('0') -- Separate visual stream; never combat RNG.
 local M={}
-local function call(control,name,...)assert(control[name](control,...)~=false,'intent particle native write rejected: '..name)end
+local layers={'intentVfxBehind','intentVfxAfter'}
+local hiddenParts={'edge','body','badge','count','hit'}
+local function valid(pool,generation,key,control)
+ assert(pool.generation==generation and pool:find(key)==control and control.alive~=false,'intent particle publication cancelled')
+end
+local function write(pool,generation,key,control,target,name,...)
+ valid(pool,generation,key,control)
+ assert(target[name](target,...)~=false,'intent particle native write rejected: '..name)
+ valid(pool,generation,key,control)
+end
+local function differs(actual,expected)
+ return actual~=nil and actual~=expected
+end
+local function angleDiffers(actual,expected)
+ if actual==nil then return false end
+ -- Native Euler angles may be normalized to [0, 360).
+ local delta=(actual-expected)%360
+ return delta>0.0001 and delta<359.9999
+end
 local function createIntent(state)Particles.createIntent(state);state.createPending=true end
 function M.new(platform,picture,tint)
+ -- The surface pool drops the binding even if native destruction must retry.
+ local configured={}
+ local function retire(_,control)configured[control]=nil end
  local self={states={},outputs={},seenEvents=setmetatable({},{__mode="k"})}
  function self.release(_,box,engineDestroyed)
   local output=self.outputs[box]
@@ -115,7 +136,11 @@ function M.new(platform,picture,tint)
   if not output and #state.effects==0 then return end
   if not output then
    output={};self.outputs[box]=output
-   for _,layer in ipairs({'intentVfxBehind','intentVfxAfter'})do output[layer]=Surfaces.new(box:GetChild(layer),platform)end
+   for _,layer in ipairs(layers)do
+    local parent=box:GetChild(layer)
+    assert(self.outputs[box]==output,'intent particle publication cancelled')
+    output[layer]=Surfaces.new(parent,platform,nil,retire)
+   end
   end
   local rows={intentVfxBehind={},intentVfxAfter={}}
   for _,effect in ipairs(state.effects)do
@@ -125,24 +150,59 @@ function M.new(platform,picture,tint)
   for layer,pool in pairs(output)do
    pool:select(rows[layer],id)
    local generation=pool.generation
-   local function valid(control,key)assert(pool.generation==generation and pool:find(key)==control and control.alive~=false,'intent particle publication cancelled')end
    for _,row in ipairs(rows[layer])do
-    local control=assert(pool:find(row.id));local e=row.effect
-    local function write(target,name,...)valid(control,row.id);call(target,name,...);valid(control,row.id)end
-    for _,name in ipairs({'edge','body','badge','count','hit'})do write(control:GetChild(name),'SetVisible',false)end
-    local icon=control:GetChild('icon');write(icon,'SetVisible',true)
-    valid(control,row.id);picture(icon,e.textureKey=='TINY_STAR' and Theme.image.star or Theme.icon.intent.unknown);valid(control,row.id)
-    write(icon,'SetAnchoredPosition',0,0);write(icon,'SetSizeDelta',e.width,e.height)
-    write(icon,'SetLocalScale',e.scale,e.scale,1);write(icon,'SetLocalRotation',0,0,e.rotationDeg)
-    valid(control,row.id);tint(icon,{r=e.color[1]*255,g=e.color[2]*255,b=e.color[3]*255,a=e.color[4]*255});valid(control,row.id)
-    write(control,'SetAnchoredPosition',e.centerX-g.x,e.centerY-g.y);write(control,'SetVisible',allowed)
+    local key,e=row.id,row.effect
+    local control=assert(pool:find(key))
+    valid(pool,generation,key,control)
+    local binding=configured[control]
+    local first=not binding or binding.effect~=e
+    if first then
+     binding={effect=e,icon=control:GetChild('icon'),hidden={}}
+     for i,name in ipairs(hiddenParts)do binding.hidden[i]=control:GetChild(name)end
+    end
+    for _,part in ipairs(binding.hidden)do
+     if first or part.visible~=false then write(pool,generation,key,control,part,'SetVisible',false)end
+    end
+    local icon=binding.icon
+    if first or icon.visible~=true then write(pool,generation,key,control,icon,'SetVisible',true)end
+    local image=e.textureKey=='TINY_STAR' and Theme.image.star or Theme.icon.intent.unknown
+    local imageId=type(image)=='table' and image.id or image
+    if binding.imageId~=imageId or differs(icon.imageId,imageId) then
+     valid(pool,generation,key,control)
+     assert(picture(icon,image)~=false,'intent particle image rejected')
+     valid(pool,generation,key,control)
+     binding.imageId=imageId
+    end
+    if first or differs(icon.anchoredPositionX,0) or differs(icon.anchoredPositionY,0) then
+     write(pool,generation,key,control,icon,'SetAnchoredPosition',0,0)
+    end
+    if binding.width~=e.width or binding.height~=e.height
+        or differs(icon.sizeDeltaX,e.width) or differs(icon.sizeDeltaY,e.height) then
+     write(pool,generation,key,control,icon,'SetSizeDelta',e.width,e.height)
+     binding.width,binding.height=e.width,e.height
+    end
+    write(pool,generation,key,control,icon,'SetLocalScale',e.scale,e.scale,1)
+    if binding.rotation~=e.rotationDeg or angleDiffers(icon.localRotationZ,e.rotationDeg)
+        or angleDiffers(icon.localRotationX,0) or angleDiffers(icon.localRotationY,0) then
+     write(pool,generation,key,control,icon,'SetLocalRotation',0,0,e.rotationDeg)
+     binding.rotation=e.rotationDeg
+    end
+    valid(pool,generation,key,control)
+    tint(icon,{r=e.color[1]*255,g=e.color[2]*255,b=e.color[3]*255,a=e.color[4]*255})
+    valid(pool,generation,key,control)
+    write(pool,generation,key,control,control,'SetAnchoredPosition',e.centerX-g.x,e.centerY-g.y)
+    if control.visible~=allowed then write(pool,generation,key,control,control,'SetVisible',allowed)end
+    configured[control]=binding
    end
   end
  end
  function self.paint(_,box,id,g,allowed)
   assert(not self.engineDestroyed,'monster intent view engine destroyed')
   assert(not self.failed,self.failed)
+  assert(not self.painting,'reentrant intent particle publication')
+  self.painting=true
   local ok,reason=pcall(paint,box,id,g,allowed)
+  self.painting=false
   if not ok then
    self.failed=tostring(reason)
    pcall(self.release,self,box) -- Retain failed native cleanup ownership for explicit clear retry.
