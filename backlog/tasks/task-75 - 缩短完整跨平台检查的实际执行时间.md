@@ -4,15 +4,15 @@ title: 验收当前CI吞吐（既有调度优化已交付）
 status: In Progress
 assignee:
   - Furinya
-created_date: '2026-10-28 03:47'
-updated_date: '2026-11-20 23:55'
+created_date: '2026-10-28T03:47:00Z'
+updated_date: '2026-11-25T03:54:55Z'
 labels:
   - 待验
   - delivery-verify
 dependencies: []
 references:
   - docs/plans/2026-11-03-m9-engineering-foundation.md
-  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/769'
+  - https://github.com/FurinyaWorks/Slay-the-Heavens/pull/769
 priority: medium
 ordinal: 120000
 ---
@@ -122,4 +122,6 @@ PR269合后Windows日志确认两类合同错误：新快反馈工作流CRLF未�
 2026-11-20 附属切片仅离线回放 Queue 风险。开发基线 9e3b22dc，复用原队列连续前缀、判定器和选测器。以 #758 已红基线、#762 修复、#535 双平台纯文档及 44198319515 真实三成员组合核对；缺证据保留 Full。另消除 Full／明示纯文档路由的无用源码读取。Queue 实际分流和合后 Full 去重尚未启用，任务及未验 AC 保持。
 
 2026-11-21 发版对账：#764 已交付超大 Fast 选集转 Full 的分流。#769 接续队列净差与逐成员差异的离线回放，保持队列和 develop push 的 Full 门禁。没有稳定 Full 30 分钟以内的真实 Runner 证据，AC4 继续待验。
+
+2026-11-25 Hotfix Full 的完整 CI 取证见 v2.1.1 性能 History and Governance。历史菜单整树散列跨已批准变更漂移，当前产品 Host 独立运行。后续量化并消除 Windows/POSIX Full 已分片执行的 native-startup-contract 与 ui-mock-contract 在 shard 1 的重复执行（Windows 首份运行分别 12.7/7.1 秒），保留独立命令、原负控和原始历史证据。共享夹具输出与历史认证分别定位，勿以改散列或调门槛修红。
 <!-- SECTION:NOTES:END -->

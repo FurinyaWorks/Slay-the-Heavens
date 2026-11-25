@@ -1,5 +1,6 @@
 -- Opt-in offline Host measurement, not official client/device performance.
-package.path='./build/lua/?.lua;./src/lua/?.lua;'..package.path
+local generated=BASELINE_GENERATED or './build/lua'
+package.path=generated..'/?.lua;./src/lua/?.lua;'..package.path
 local counts={requireCalls=0,moduleLoads=0,nativeCalls=0,propertyWrites=0,snapshots=0,methods={},properties={}}
 local originalRequire=require
 require=function(name)
@@ -14,11 +15,12 @@ local function mark(label)
 end
 local observe=dofile('scripts/runtime-baseline/observer.lua')
 local verifyTurn=dofile('scripts/runtime-baseline/turn.lua')
-ABYSS_HOST_CONTROL=function(control)observe(control,counts)end
+ABYSS_HOST_CONTROL=function(control)observe(control,counts,BASELINE_GENERATED~=nil)end
 mark('begin')
 local Snapshot=require('abyss_snapshot');local capture=Snapshot.capture
 Snapshot.capture=function(...)counts.snapshots=counts.snapshots+1;return capture(...)end
 local F=assert(load(BASELINE_FIXTURE,'@tests/lua/support/game_ui_fixture.lua'))()
+if BASELINE_GENERATED then return assert(loadfile('tests/lua/support/production_performance.lua'))(F,counts,mark) end
 local Run=require('abyss_run')
 local host,root=F.fixture()
 mark('cold-host')

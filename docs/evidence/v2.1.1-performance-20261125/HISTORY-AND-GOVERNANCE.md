@@ -82,3 +82,15 @@
 [^flag]: [未开启怪物美术时跳过数据模块加载](https://github.com/FurinyaWorks/Slay-the-Heavens/blob/55d6396cf315cf1e30085d9521fdb3bfaadeb2ad/src/lua/abyss_monster_art.lua#L91-L93)
 [^917]: [Develop 候选构建 PR #917](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/917)
 [^952]: [工程与平台版本映射 PR #952](https://github.com/FurinyaWorks/Slay-the-Heavens/pull/952)
+
+## v2.1.1 Hotfix 测试纠偏
+
+| 为什么 | 源码与验证 |
+| --- | --- |
+| 为什么标题阶段漏测 42 份绘制？ | 日常 Host 与六档压力都读取默认 `build:ui` 的 65 字节空模块，旧观察器只计写入类方法。正式 GIL 的有声入口使用 refined v3、原生页面生命周期及组件模板。现有 Performance regression 增加同一有声参数解析器和生成器的核心路径。正式离线工作负载绑定生成的 actor、肖像及分块牌组模板，走实际 Lua `OnStart` 和用户控件，并记录查询及 setter。 |
+| 为什么 #706 的粒子性能回归？ | `72870245` 的实现与测试在冻结 `1ceb7c1a` 均存在。#775 `90ef4874` 把入口树替换为 develop `ff6af63d`，旧写入重新出现且粒子测试消失。实际发布线从该 develop 树经 #777 `fdc8178e` 重建，`55d6396c` / `eb64f4e6` 都不含有效修复。#956 `3c832e03` 恢复粒子发布。相同快照及粒子寿命仍受既有测试保护。 |
+| 为什么选角回归跟着测试通过？ | #812 `c186c1dc` 和回流 #839 `5a972c73` 移除错误摘要。#900 `2ab5404e` 恢复两控件，同时把正式布局和 Host 断言反向改为要求存在。该 PR 的设计引用检查未运行，Quality impact 作业 [45026925950](https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45026925950) 先失败。#923 `b131b84b` 按已批准 `release-sts1-20261122` 恢复摘要缺席和手机两行介绍。默认全量角色预览仍单独测试其原有摘要用途。 |
+| 为什么现在的 Full 红项不能直接作为产品结论？ | [Full 45532848554](https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45532848554) 的 Windows 原样收据 SHA 变化等于 Git LF→CRLF，按文件固定 LF，保留原散列和任意字节篡改拒绝。原意图回放 1,800→1,500 由后来逐帧少写一次敌名解释。已有菜单整树散列覆盖了 #935 已批准的按钮位移和 `8cff1cb8` 的显式缺省字段。原保护留存，当前 Host 产品断言改用真实战斗路线按钮，并与正式路径共用一次构建。历史发布 Full 另有已丢失输入和共享输出目录夹具问题。[旧 Full 45420029137](https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45420029137) |
+| 为什么仍有交付验收缺口？ | 离线正式配置复验只覆盖源码和生成模板；它使用 Fengari 跑真实玩家动作，有声信号、屏幕和原生控件由替身提供。GIL 打包读回、官方容量和负载、进入到首个可点按钮、实际手机出牌和卡组成对耗时分别依赖现有收据及 `verify:platform-load`。复跑不能转移候选身份。 |
+
+在同一正式 Host 工作负载下，单独恢复旧怪物生成器使冷启动报告 `FORMAL_EAGER_MONSTERS 42/42`，当前首屏为 0，首战实际绘制 1。单独恢复旧地图文件使查询从 5 增至 391 并触发 `FORMAL_MAP_LOOKUPS`。恢复 #956 之前的粒子文件触发既有 UNKNOWN 同值重复发布断言；仅恢复 #900 对正式布局的过滤条件触发既有选角合同，两控件被明确报出。旧卡组实现也触发既有隐藏排序外框写入断言。六档继续测轻量 Host 的受控 CPU/内存敏感度，历史两臂仅在工作负载及依赖相同的情况下配对。正式 Host 报告的卡组首开与暖开单独计时，输入、牌面和生命周期都有断言，墙钟样本包含模拟器和计数开销。

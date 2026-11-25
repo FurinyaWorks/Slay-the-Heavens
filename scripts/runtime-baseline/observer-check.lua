@@ -1,8 +1,8 @@
 local observe=dofile('scripts/runtime-baseline/observer.lua')
 local counts={nativeCalls=0,propertyWrites=0}
-local c={kind='cursorArea',SetVisible=function(...)return select('#',...),... end,flush=function(...)return select('#',...),... end}
+local c={name='mapPanel',kind='cursorArea',GetChild=function(_,name)return name end,GetChildren=function()return {}end,SetVisible=function(...)return select('#',...),... end,flush=function(...)return select('#',...),... end}
 setmetatable(c,{__index=function(_,key)if key=='alive' then return true end end})
-observe(c,counts)
+observe(c,counts,true)
 assert(not pcall(function()return c.interactable end),'capability read guard lost')
 assert(not pcall(function()c.interactable=true end),'capability write guard lost')
 assert(not pcall(function()c.alive=false end),'engine property must remain read-only')
@@ -15,4 +15,7 @@ assert(c.flush()==0 and counts.nativeCalls==3,'fixture helper counted as native'
 c.text='same';c.text='same';assert(counts.propertyWrites==2,'repeated property writes missing')
 assert(counts.methods.SetVisible==3 and counts.methods.flush==nil,'method attribution incorrect')
 assert(counts.properties.text==2 and counts.properties.alive==nil,'property attribution incorrect')
+assert(c:GetChild('mapGroup3')=='mapGroup3' and c:GetChild('title')=='title')
+assert(type(c:GetChildren())=='table')
+assert(counts.methods.GetChild==2 and counts.methods.GetChildren==1 and counts.mapGroupLookups==1)
 print('RUNTIME_OBSERVER_PASS')

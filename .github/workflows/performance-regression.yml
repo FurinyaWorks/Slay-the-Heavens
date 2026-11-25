@@ -72,6 +72,9 @@ jobs:
             git worktree add --detach "$reference" "$BASE_SHA"
             (cd "$reference" && npm ci "${npm_flags[@]}" && npm run build:data && npm run build:ui)
             args+=(--baseline "$reference")
+            if [ -z "$MANUAL_BASE_SHA" ]; then
+              args+=(--baseline-if-compatible)
+            fi
           elif [ -n "$MANUAL_BASE_SHA" ]; then
             echo '::error::The specified reference does not contain the fixed Host workload.'
             exit 1
@@ -79,10 +82,20 @@ jobs:
             echo '::warning::Reference has no fixed Host workload. Collecting candidate-only measurements.'
           fi
           node scripts/runtime-baseline/resource-suite.mjs "${args[@]}"
+      - name: Exercise the production native UI profile
+        if: ${{ !cancelled() }}
+        env:
+          GIT_TERMINAL_PROMPT: '0'
+        run: |
+          git lfs install --local --skip-smudge
+          git -c lfs.transfer.maxretries=0 -c lfs.activitytimeout=30 lfs pull --include='art/characters/traveler-geo/portraits/avatar96/preview-native-1x.png,art/characters/traveler-geo/portraits/battle133/preview-native-1x.png' --exclude=''
+          node scripts/runtime-baseline/production.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: performance-regression-${{ github.run_id }}-${{ github.run_attempt }}
-          path: build/performance-regression/report.json
+          path: |
+            build/performance-regression/report.json
+            build/performance-regression/production.json
           if-no-files-found: warn
           retention-days: 30

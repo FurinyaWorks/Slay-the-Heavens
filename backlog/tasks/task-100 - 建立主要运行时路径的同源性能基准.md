@@ -4,8 +4,8 @@ title: 复核当前候选热路径基准（已有工具与样本保留）
 status: In Progress
 assignee:
   - Furinya
-created_date: '2026-11-06 01:46'
-updated_date: '2026-11-14 10:12'
+created_date: '2026-11-06T01:46:00Z'
+updated_date: '2026-11-25T03:54:54Z'
 labels:
   - 待验
   - delivery-verify
@@ -63,4 +63,6 @@ PR #523 首份离线Host全路径基线已实现：固定实际seed、源摘要�
 2026-11-14逐项对账：同源Host基准、visibility样本及原SDK结果均已交付，复用现有工具；未覆盖当前生产候选完整冷暖路径的测量继续保留，不把旧样本当当前，也不重造基准工具。
 
 2026-11-14第二轮状态纠正：已有Host基准、visibility配对与SDK阶段记录，当前候选完整覆盖待补；工具及研究已开展，不应标To Do。 更正上一轮将待验统一退回To Do的处理；未勾AC及独立审批保持，In Progress表示工作已开展，不表示有人正持续占用执行窗口。
+
+2026-11-25 Hotfix 正式配置验证接入现有 Performance regression。沿用正式有声参数和生成器，覆盖冷启动、首战、十手牌、三次出牌、牌组冷暖开与退场重进。旧全量解码、地图查询、粒子同值提交与选角摘要均有单因素负控。六档轻量压力和正式 Host 分开读数；合入及平台待验见 v2.1.1 性能证据和 PR。
 <!-- SECTION:NOTES:END -->

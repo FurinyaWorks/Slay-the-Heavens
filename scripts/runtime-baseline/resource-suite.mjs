@@ -105,10 +105,16 @@ function suite(values) {
   const alertPercent = Number(values['alert-percent']);
   assert(Number.isFinite(alertPercent) && alertPercent > 0, 'alert-percent must be positive');
   const candidatePath = realpathSync('.');
-  const baselinePath = values.baseline ? realpathSync(values.baseline) : null;
+  let baselinePath = values.baseline ? realpathSync(values.baseline) : null;
   assert.notEqual(candidatePath, baselinePath, 'prepare the reference in a separate worktree');
   const candidate = snapshot(candidatePath);
-  const baseline = baselinePath ? snapshot(baselinePath) : null;
+  let baseline = baselinePath ? snapshot(baselinePath) : null;
+  let unpairedReference = null;
+  if (values['baseline-if-compatible'] && baseline && candidate.workloadSha256 !== baseline.workloadSha256) {
+    unpairedReference = { ...baseline, reason: 'Host workload changed; timings cannot be paired' };
+    console.log(unpairedReference.reason + ': ' + baseline.commit);
+    baseline = baselinePath = null;
+  }
   if (baseline) {
     assert.equal(candidate.workloadSha256, baseline.workloadSha256, 'the Host workload must match');
     assert.equal(candidate.lockfile.dependencies, baseline.lockfile.dependencies, 'the resolved dependency graph must match');
@@ -149,7 +155,8 @@ function suite(values) {
     schemaVersion: 1, kind: 'offline-host-resource-pressure', timeUtc: new Date().toISOString(),
     status: pass ? 'PASS' : 'FAIL', mode: values.mode, repetitions, seed: 1, idleFrames: 300,
     engine: { image, imageId, docker, kernel: release(), arch: arch(), cpuModel: cpus()[0]?.model, availableCpus: availableParallelism(), hostMemoryBytes: totalmem() },
-    alertPercent, candidate, baseline, results,
+    alertPercent, candidate, baseline, comparisonStatus: baseline ? 'PAIRED' : 'UNPAIRED',
+    ...(unpairedReference && { unpairedReference }), results,
   };
 }
 
@@ -162,7 +169,7 @@ function publish(destination, report) {
 function main() {
   const { values } = parseArgs({ options: {
     mode: { type: 'string', default: 'fast' }, profile: { type: 'string', multiple: true },
-    samples: { type: 'string' }, baseline: { type: 'string' },
+    samples: { type: 'string' }, baseline: { type: 'string' }, 'baseline-if-compatible': { type: 'boolean' },
     output: { type: 'string', default: 'build/performance-regression/report.json' },
     'alert-percent': { type: 'string', default: '20' },
   } });

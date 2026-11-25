@@ -15,8 +15,8 @@ export function validateHistogram(histogram,total){
  for(const [key,value] of Object.entries(histogram))assert(key.length>0&&Number.isSafeInteger(value)&&value>0,'invalid histogram entry');
  assert.equal(Object.values(histogram).reduce((sum,value)=>sum+value,0),total,'histogram does not match total');
 }
-export function validateSample(sample){
- assert.deepEqual(sample.rows.map(row=>row.phase),phases,'missing/reordered runtime phase');
+export function validateSample(sample,expectedPhases=phases){
+ assert.deepEqual(sample.rows.map(row=>row.phase),expectedPhases,'missing/reordered runtime phase');
  for(const row of sample.rows){
   assert(Number.isFinite(row.elapsedMs)&&row.elapsedMs>=0);
   for(const key of counters)assert(Number.isSafeInteger(row[key])&&row[key]>=0,`invalid ${key}`);
@@ -24,7 +24,8 @@ export function validateSample(sample){
   for(const key of ['rss','heapUsed'])assert(Number.isSafeInteger(row.memory[key])&&row.memory[key]>0);
  }
  assert(sample.rows[1].moduleLoads>0,'cold modules not observed');
- assert.equal(sample.rows[2].moduleLoads,0,'warm construction imported extra modules');
+ const warm=sample.rows.find(row=>row.phase==='warm-host');
+ if(warm)assert.equal(warm.moduleLoads,0,'warm construction imported extra modules');
  assert(sample.rows.some(row=>row.nativeCalls>0)&&sample.rows.some(row=>row.propertyWrites>0),'native observer missing');
  assert(sample.rows.some(row=>row.snapshots>0),'snapshot observer missing');
  return sample;

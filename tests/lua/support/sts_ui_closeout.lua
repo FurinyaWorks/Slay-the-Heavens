@@ -183,9 +183,8 @@ if not STS_UI_BASELINE then
     assert(veil.sizeDeltaX==1600 and cover:GetChild('blocker').sizeDeltaX==1600)
     for _,input in ipairs({'mouse','touch'})do
         recovering='mapPanel'
-        assert(fade:openMenu())
-        fade.routeOpen=true
-        fade:refresh()
+        local route=fadeRoot:GetChild('battlePanel'):GetChild('topBar'):GetChild('battleRoute')
+        assert(hit(route).click())
         for _=1,16 do tick(.05)end
         assert(fade.pageReveal.state=='failed' and cover:GetChild('message').visible)
         local back=hit(cover:GetChild('cancel'))

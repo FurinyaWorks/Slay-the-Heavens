@@ -4,6 +4,11 @@ import {performance} from 'node:perf_hooks';
 const require=createRequire(import.meta.url);
 const {lua,lauxlib,lualib,to_luastring,to_jsstring}=require('fengari');
 const L=lauxlib.luaL_newstate();lualib.luaL_openlibs(L);
+const generated=process.argv[2];
+if(generated){
+ lua.lua_pushstring(L,to_luastring(generated.replaceAll('\\','/')));
+ lua.lua_setglobal(L,to_luastring('BASELINE_GENERATED'));
+}
 const rows=[];let previous=performance.now(),before=[0,0,0,0,0];
 let beforeMethods={},beforeProperties={};
 function histogram(state,index){
@@ -27,7 +32,7 @@ lua.lua_setglobal(L,to_luastring('BASELINE_MARK'));
 const fixture=readFileSync('tests/lua/support/game_ui_fixture.lua','utf8');
 const needle='return NativeContract.control(self,spec)';
 if(fixture.split(needle).length!==2)throw Error('Host instrumentation anchor changed');
-lua.lua_pushstring(L,to_luastring(fixture.replace(needle,'ABYSS_HOST_CONTROL(self); '+needle)));
+lua.lua_pushstring(L,to_luastring(fixture.replace(needle, 'local control=NativeContract.control(self,spec); ABYSS_HOST_CONTROL(control); return control')));
 lua.lua_setglobal(L,to_luastring('BASELINE_FIXTURE'));
 const code=readFileSync(new URL('./host.lua',import.meta.url),'utf8');
 if(lauxlib.luaL_dostring(L,to_luastring(code))!==lua.LUA_OK)throw Error(to_jsstring(lua.lua_tostring(L,-1)));
