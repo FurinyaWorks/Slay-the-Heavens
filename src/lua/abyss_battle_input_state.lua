@@ -20,7 +20,7 @@ function M.install(owner, ownership, host, _dependencies)
         return assert(found, "missing UI control " .. name)
     end
     local function show(name, value)
-        if child(name):SetVisible(value == true)==false then ownership.projectionRejected=true end
+        if child(name):SetVisible(value == true)==false then owner.projectionRejected=true end
     end
     local function label(name, value) child(name).text = value end
     local function colour(value) return host.platform.color(value.r, value.g, value.b, value.a) end

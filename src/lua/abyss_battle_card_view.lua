@@ -396,7 +396,7 @@ function M.new(view, controls)
         end
         local instance = context.fighting and context.battle.hand[i]
         local id = instance and instance.cardId or context.rewards[i]
-        box:SetVisible(id ~= nil and id ~= false)
+        if box:SetVisible(id ~= nil and id ~= false)==false then view.projectionRejected=true end
         if not id then CardGlow.clear(box);CardDisplay.clearNativeArt(box);return end
         local card = slotCard(context, instance, id, i)
         writeName(box, card)
