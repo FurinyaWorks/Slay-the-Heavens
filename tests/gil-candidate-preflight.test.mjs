@@ -60,7 +60,7 @@ test('require hotfix dispatch, frozen Full and inventory audit on the same curre
   const verifyFull = async (ref, head) => {
     assert.equal(ref, branch);
     assert.equal(head, sourceSha);
-    return { runId: 9 };
+    return { runId: 9, attempt: 2, checkoutArtifactId: 11 };
   };
   const actions = { target: branch, event: 'workflow_dispatch' };
   assert.deepEqual(await verifySource(sourceSha, async path => {
@@ -68,7 +68,7 @@ test('require hotfix dispatch, frozen Full and inventory audit on the same curre
     assert(!path.includes('/quality.yml/'));
     if (path.includes('/licenses.yml/')) assert.match(path, /branch=hotfix%2Fv2\.1\.1&event=workflow_dispatch/);
     return formalApi(actions)(path);
-  }, hotfix, verifyFull), { quality: 9, licenses: 2 });
+  }, hotfix, verifyFull), { quality: 9, qualityAttempt: 2, qualityCheckoutArtifact: 11, licenses: 2 });
   await assert.rejects(verifySource(sourceSha, formalApi(actions), hotfix, async () => {
     throw new Error('stale');
   }), /successful hosted Quality Full/);
@@ -89,9 +89,14 @@ test('a normal frozen minor release requires matching branch approval, Full and 
   const verifyFull = async (ref, head) => {
     assert.equal(ref, releaseBranch);
     assert.equal(head, sourceSha);
-    return { runId: 9 };
+    return { runId: 9, attempt: 2, checkoutArtifactId: 11 };
   };
-  assert.deepEqual(await verifySource(sourceSha, formalApi(actions), target, verifyFull), { quality: 9, licenses: 2 });
+  const first = await verifySource(sourceSha, formalApi(actions), target, verifyFull);
+  assert.deepEqual(first, { quality: 9, qualityAttempt: 2, qualityCheckoutArtifact: 11, licenses: 2 });
+  const changed = await verifySource(sourceSha, formalApi(actions), target, async () => ({ runId: 9, attempt: 3, checkoutArtifactId: 11 }));
+  assert.notEqual(approvedRequest(JSON.stringify(releaseApproval), sourceSha, { sourceChecks: first }, target).id,
+    approvedRequest(JSON.stringify(releaseApproval), sourceSha, { sourceChecks: changed }, target).id);
+  await assert.rejects(verifySource(sourceSha, formalApi(actions), target, async () => ({ runId: 9, attempt: 3 })), /exact checkout receipt/);
   await assert.rejects(verifySource(sourceSha, formalApi({ ...actions, absentJob: 'inventory' }), target, verifyFull), /jobs must succeed/);
   await assert.rejects(verifySource(sourceSha, formalApi({ ...actions, refHead: controllerSha }), target, verifyFull), /HEAD changed/);
 });

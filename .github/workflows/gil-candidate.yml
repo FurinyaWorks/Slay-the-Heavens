@@ -149,6 +149,8 @@ jobs:
           REQUEST_ID: ${{ steps.candidate.outputs.request_id }}
           RELEASE_VERSION: ${{ steps.candidate.outputs.release_version }}
           QUALITY_RUN: ${{ steps.candidate.outputs.quality_run }}
+          QUALITY_ATTEMPT: ${{ steps.candidate.outputs.quality_attempt }}
+          QUALITY_CHECKOUT_ARTIFACT: ${{ steps.candidate.outputs.quality_checkout_artifact }}
           LICENSES_RUN: ${{ steps.candidate.outputs.licenses_run }}
           GH_TOKEN: ${{ github.token }}
         run: |

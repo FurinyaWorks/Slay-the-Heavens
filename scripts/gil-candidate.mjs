@@ -5,7 +5,7 @@ import { basename, join, relative, resolve } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { api, approvedRequest, artifactName, candidateTarget, digest, encoderSha256, findArtifact,
-  GateError, profile, repository, repositoryId, requireGate, sha, toolCommit, verifyFrozenHead, verifySource } from './gil-candidate-preflight.mjs';
+  GateError, profile, repository, repositoryId, requireGate, sha, toolCommit, verifyFrozenQuality, verifySource } from './gil-candidate-preflight.mjs';
 import { hostedGilReceipt } from './hosted-gil-receipt.mjs';
 
 const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
@@ -23,15 +23,16 @@ async function preflight() {
   const controllerSha = process.env.GITHUB_SHA;
   const controlRoot = fileURLToPath(new URL('..', import.meta.url));
   cleanHead(controlRoot, controllerSha, 'Controller');
+  const checks = await verifySource(source, api, target);
   const policy = {
     controllerSha,
     checkedFiles: [import.meta.url, new URL('../.github/workflows/gil-candidate.yml', import.meta.url)]
       .map(url => hash(readFileSync(new URL(url)))),
+    ...(target.version && { sourceChecks: checks }),
   };
   const request = approvedRequest(process.env.GIL_CANDIDATE_APPROVAL, source, policy, target);
-  const checks = await verifySource(source, api, target);
   const existing = await findArtifact(api, request, process.env.GITHUB_RUN_ID);
-  const ciSummary = Object.entries(checks).map(([name, id]) => `[${name}](https://github.com/${repository}/actions/runs/${id})`);
+  const ciSummary = ['quality', 'licenses'].map(name => `[${name}](https://github.com/${repository}/actions/runs/${checks[name]})`);
   appendFileSync(process.env.GITHUB_STEP_SUMMARY, `Source \`${target.branch}@${source}\` · ${ciSummary.join(' · ')}\n`);
   if (existing) {
     appendFileSync(process.env.GITHUB_STEP_SUMMARY, `\n[Download existing GIL candidate](${existing})\n`);
@@ -41,6 +42,7 @@ async function preflight() {
     'build=true', `base_sha256=${request.baseSha256}`, `work_key=${request.configuration.workKey}`,
     `tool_commit=${toolCommit}`, `request_id=${request.id}`, `release_version=${target.version ?? ''}`,
     `artifact_name=${artifactName(request)}`, `quality_run=${checks.quality}`, `licenses_run=${checks.licenses}`,
+    ...(target.version ? [`quality_attempt=${checks.qualityAttempt}`, `quality_checkout_artifact=${checks.qualityCheckoutArtifact}`] : []),
   ].join('\n') + '\n');
 }
 
@@ -177,12 +179,21 @@ async function deliver() {
     output: join(out, 'audit'), bgm: true });
   requireGate(audit.ok && audit.candidate.sha256Before === candidate.sha256 && audit.candidate.sha256After === candidate.sha256,
     'Final GIL failed the independent native scripts, UI, templates or graph audit.');
-  if (version) await verifyFrozenHead(api, branch, sourceSha);
+  const qualityRun = Number(process.env.QUALITY_RUN);
+  const sourceChecks = { qualityRun, licensesRun: Number(process.env.LICENSES_RUN) };
+  if (version) {
+    const expected = { quality: qualityRun, qualityAttempt: Number(process.env.QUALITY_ATTEMPT),
+      qualityCheckoutArtifact: Number(process.env.QUALITY_CHECKOUT_ARTIFACT) };
+    const current = await verifyFrozenQuality(branch, sourceSha);
+    requireGate(Object.keys(expected).every(key => expected[key] === current[key]),
+      'Frozen Quality Full changed during the GIL build. Start again with the current attempt.');
+    Object.assign(sourceChecks, { qualityAttempt: current.qualityAttempt, qualityCheckoutArtifact: current.qualityCheckoutArtifact });
+  }
   writeFileSync(join(artifact, 'manifest.json'), JSON.stringify({
     sourceCommit: sourceSha, sourceBranch: branch, version: receipt.release.version, buildId: receipt.buildId,
     payloadDigest: receipt.payloadDigest, candidate, requestId, baseSha256, toolCommit, encoderSha256,
     controllerSha: process.env.GITHUB_SHA,
-    sourceChecks: { qualityRun: Number(process.env.QUALITY_RUN), licensesRun: Number(process.env.LICENSES_RUN) },
+    sourceChecks,
     receipts: { nativeSha256: hash(fullReceipt), audioSha256: fileRecord(join(out, 'audio/candidate.json')).sha256 },
     nativeAudit: 'pass',
     platformVersion: null,

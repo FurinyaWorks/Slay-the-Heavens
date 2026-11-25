@@ -65,7 +65,8 @@ export async function verifyReleaseFull(repo,branch,head,request,readCheckout=lo
   current.conclusion!=='success'||current.head_sha!==head||last?.id!==run.id||last.run_attempt!==run.run_attempt)
   throw Error('Release Full run/attempt changed during verification');
  await checkRef();
- return {schemaVersion:1,kind:'release-full',repo,branch,head,runId:run.id,attempt:run.run_attempt,url:run.html_url};
+ return {schemaVersion:1,kind:'release-full',repo,branch,head,runId:run.id,attempt:run.run_attempt,
+  checkoutArtifactId:proof.checkoutArtifact.id,url:run.html_url};
 }
 
 export async function freezeReleaseFull(repo,branch,head,request,readCheckout=loadCheckout) {

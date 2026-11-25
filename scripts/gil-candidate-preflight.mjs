@@ -29,15 +29,23 @@ export async function verifyFrozenHead(api, branch, source) {
     'Frozen branch HEAD changed. Freeze and validate the new SHA.');
 }
 
-export async function verifySource(source, api, { branch = 'develop', version } = { branch: 'develop' },
+export async function verifyFrozenQuality(branch, source,
     verifyFull = (ref, head) => verifyReleaseFull(repository, ref, head, githubRequest)) {
+  try {
+    const { runId, attempt, checkoutArtifactId } = await verifyFull(branch, source);
+    requireGate([runId, attempt, checkoutArtifactId].every(id => Number.isSafeInteger(id) && id > 0), 'Incomplete Full identity.');
+    return { quality: runId, qualityAttempt: attempt, qualityCheckoutArtifact: checkoutArtifactId };
+  } catch {
+    throw new GateError('Frozen branch HEAD requires a successful hosted Quality Full and exact checkout receipt.');
+  }
+}
+
+export async function verifySource(source, api, { branch = 'develop', version } = { branch: 'develop' }, verifyFull) {
   requireGate(sha.test(source), 'source_sha must be a 40-character lowercase Git SHA.');
   const checks = [['licenses', ['inventory']]];
   let quality;
   if (version) {
-    try { quality = (await verifyFull(branch, source)).runId; } catch {
-      throw new GateError('Frozen branch HEAD requires a successful hosted Quality Full and exact checkout receipt.');
-    }
+    quality = await verifyFrozenQuality(branch, source, verifyFull);
   } else {
     const comparison = await api(`compare/${source}...develop?per_page=1`);
     requireGate(['ahead', 'identical'].includes(comparison.status) && comparison.merge_base_commit?.sha === source,
@@ -64,9 +72,8 @@ export async function verifySource(source, api, { branch = 'develop', version } 
   }));
   if (version) {
     await verifyFrozenHead(api, branch, source);
-    results.unshift(['quality', quality]);
   }
-  return Object.fromEntries(results);
+  return { ...Object.fromEntries(results), ...quality };
 }
 
 export function approvedRequest(raw, sourceSha, policy, { branch = 'develop', version } = { branch: 'develop' }) {
