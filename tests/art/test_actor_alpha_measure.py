@@ -92,7 +92,7 @@ class ActorAlphaApprovalTest(unittest.TestCase):
         self.inventory = {**self.identity, "actors": self.roster, "approvalsSha256": "f" * 64,
                           "approvals": {"schemaVersion": 1, "profile": self.identity["profile"], "actors": pins}}
 
-    def run_measure(self, specimen, locators, name):
+    def run_measure(self, specimen, locators, name, mutate=None):
         colours = {"black": "#000000", "white": "#FFFFFF", "contrast": "#20F84D"}
         foreground = Image.new("RGB", specimen.size, (93, 104, 174))
         entries = {}
@@ -103,6 +103,8 @@ class ActorAlphaApprovalTest(unittest.TestCase):
                             "assetWarnings": [], "frame": 0, "time": 0}
         self.capture.update(backdrops=colours, canvas={"width": 32, "height": 16})
         self.capture["pages"][0]["captures"] = entries
+        if mutate is not None:
+            mutate(self.capture)
         self.capture_path.write_text(json.dumps(self.capture))
         self.masks_path.write_text(json.dumps({"schemaVersion": 1, "actors": locators}))
         output = self.root / name
@@ -171,6 +173,40 @@ class ActorAlphaApprovalTest(unittest.TestCase):
         ):
             with self.subTest(fields=fields), self.assertRaises(ValueError):
                 measure.check_production_inventory({**self.capture, **fields}, self.inventory)
+
+    def test_rejects_black_relabelled_as_high_contrast(self):
+        def duplicate(capture):
+            entries = capture["pages"][0]["captures"]
+            entries["contrast"] = entries["black"].copy()
+
+        red, _ = self.run_measure(self.approved, self.locators, "duplicate.json", duplicate)
+        self.assertNotEqual(red.returncode, 0)
+        self.assertIn("distinct screenshot bytes", red.stderr)
+        red, _ = self.run_measure(self.approved, self.locators, "fake-colour.json",
+                                  lambda cap: cap["backdrops"].update(contrast="#000000"))
+        self.assertNotEqual(red.returncode, 0)
+        self.assertIn("requires exact black, white and high-contrast green", red.stderr)
+
+    def test_rejects_distinct_png_whose_actual_blank_pixels_are_not_green(self):
+        def relabel(cap):
+            entries = cap["pages"][0]["captures"]
+            actual = Image.open(self.root / "black.png").convert("RGB")
+            actual.putpixel((4, 4), (1, 2, 3))
+            substitute = self.root / "false-green.png"
+            actual.save(substitute)
+            entries["contrast"].update(screenshot=substitute.name,
+                                      screenshotSha256=measure.digest(substitute.read_bytes()))
+
+        red, _ = self.run_measure(self.approved, self.locators, "wrong-background.json", relabel)
+        self.assertNotEqual(red.returncode, 0)
+        self.assertIn("blank corners do not show the required contrast background", red.stderr)
+
+    def test_release_pins_actual_capture_bytes_before_pixel_scoring(self):
+        self.inventory["expectedCaptureSha256"] = "0" * 64
+        red, report = self.run_measure(self.approved, self.locators, "changed-capture.json")
+        self.assertNotEqual(red.returncode, 0)
+        self.assertIn("capture bytes differ from independent approval", red.stderr)
+        self.assertIsNone(report)
 
     def test_release_rejects_capture_bound_to_another_gil_or_config(self):
         self.inventory["releaseEvidence"] = {"candidateSha256": "a" * 64, "artConfigSha256": "b" * 64}

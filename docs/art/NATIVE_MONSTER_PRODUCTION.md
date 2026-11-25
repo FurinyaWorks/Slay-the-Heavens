@@ -30,7 +30,7 @@
 npm run verify:actor-alpha -- <capture.json> <mask-locators.json> <new-report.json>
 ```
 
-使用 Pillow 及实际 Simulator 运行时的三组同帧黑、白、高对比色截图。捕获采用 133px 岩荧和 106px 怪物的原生图元尺寸用于注册掩模。正式场景显示尺寸、战斗背景和设备复验随同一候选记录。已有的同尺寸图审、原生容量和性能门槛照常执行。
+使用 Pillow 及实际 Simulator 运行时的三组同帧截图，底色为 `#000000`、`#FFFFFF` 和 `#20F84D`。脚本核对三份不同 PNG 的完整哈希和实际空白角点颜色。捕获采用 133px 岩荧和 106px 怪物的原生图元尺寸用于注册掩模。正式场景显示尺寸、战斗背景和设备复验随同一候选记录。已有的同尺寸图审、原生容量和性能门槛照常执行。
 
 捕获回执包含 `sourceCommit`、`profile: "official-assets-battle-v3"`、`scope: "production Lua actor painters on an isolated Simulator runtime scene"`、`canvas`、`backdrops` 以及 `pages`。每页保存实际引擎帧编号、时间、截图文件、SHA-256 和原生加载警告，并登记每个受测角色的 `id`、`geometry`、`width`、`shapes` 和 `center` 像素位置。捕获与源图批准依旧由现有美术审查核验。
 

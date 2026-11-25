@@ -8,7 +8,10 @@ import re
 import sys
 from pathlib import Path
 
-from PIL import Image, ImageChops, ImageFilter
+from PIL import Image, ImageChops, ImageColor, ImageFilter
+
+
+BACKDROPS = {"black": "#000000", "white": "#FFFFFF", "contrast": "#20F84D"}
 
 
 def digest(data):
@@ -21,8 +24,8 @@ def read_capture(directory, entry, canvas):
     if digest(data) != entry["screenshotSha256"] or entry["assetWarnings"]:
         raise ValueError(f"Unverified Simulator screenshot {path}")
     with Image.open(io.BytesIO(data)) as image:
-        if image.size != (canvas["width"], canvas["height"]):
-            raise ValueError(f"Unexpected screenshot size {path}")
+        if image.format != "PNG" or image.size != (canvas["width"], canvas["height"]):
+            raise ValueError(f"Unexpected screenshot format or size {path}")
         return image.convert("RGB")
 
 
@@ -157,24 +160,35 @@ def check_production_inventory(capture, inventory):
     return expected
 
 
+def read_frame_triplet(page, capture, directory):
+    entries = [page["captures"][key] for key in BACKDROPS]
+    if len({(entry["frame"], entry["time"]) for entry in entries}) != 1:
+        raise ValueError("Screenshots are not from the same frame")
+    if len({entry["screenshotSha256"] for entry in entries}) != 3:
+        raise ValueError("Black, white and contrast require distinct screenshot bytes")
+    frames = [read_capture(directory, entry, capture["canvas"]) for entry in entries]
+    width, height = frames[0].size
+    corners = [(0, 0), (width - 1, 0), (0, height - 1), (width - 1, height - 1)]
+    for (name, colour), frame in zip(BACKDROPS.items(), frames):
+        if any(frame.getpixel(pixel) != ImageColor.getrgb(colour) for pixel in corners):
+            raise ValueError(f"Screenshot blank corners do not show the required {name} background")
+    return frames
+
+
 def measure(capture_path, mask_path, inventory):
     data = capture_path.read_bytes()
+    capture_sha = digest(data)
+    if "expectedCaptureSha256" in inventory and capture_sha != inventory["expectedCaptureSha256"]:
+        raise ValueError("Final capture bytes differ from independent approval")
     capture = json.loads(data)
     expected = check_production_inventory(capture, inventory)
     masks = load_masks(mask_path, inventory)
-    if capture["backdrops"]["black"] != "#000000" or capture["backdrops"]["white"] != "#FFFFFF":
-        raise ValueError("Capture requires exact black and white backgrounds")
-    contrast = capture["backdrops"]["contrast"]
-    if not re.fullmatch("#[0-9a-fA-F]{6}", contrast):
-        raise ValueError("Invalid contrast background")
-    contrast_rgb = [int(contrast[i:i + 2], 16) for i in (1, 3, 5)]
+    if any(capture["backdrops"].get(key) != colour for key, colour in BACKDROPS.items()):
+        raise ValueError("Capture requires exact black, white and high-contrast green backgrounds")
     actors = {}
     for page in capture["pages"]:
-        entries = page["captures"]
-        if len({(entry["frame"], entry["time"]) for entry in entries.values()}) != 1:
-            raise ValueError("Screenshots are not from the same frame")
-        frames = [read_capture(capture_path.parent, entries[key], capture["canvas"]) for key in ("black", "white", "contrast")]
-        alpha = infer_alpha(*frames, contrast_rgb)
+        frames = read_frame_triplet(page, capture, capture_path.parent)
+        alpha = infer_alpha(*frames, ImageColor.getrgb(BACKDROPS["contrast"]))
         for actor in page["actors"]:
             key, width = actor["id"], actor["width"]
             x, y = actor["center"]
@@ -192,10 +206,12 @@ def measure(capture_path, mask_path, inventory):
             else:
                 result.update(status="unverified", reason="approved independent registered opacity mask unavailable")
             actors[key] = result
-    report = {"captureSha256": digest(data), "sourceCommit": capture["sourceCommit"],
+    report = {"captureSha256": capture_sha, "sourceCommit": capture["sourceCommit"],
               "profile": capture["profile"], "approvalsSha256": inventory["approvalsSha256"], "actors": actors}
     if "releaseEvidence" in inventory:
         report["releaseEvidence"] = inventory["releaseEvidence"]
+    if "releaseAuthority" in inventory:
+        report["releaseAuthority"] = inventory["releaseAuthority"]
     return report
 
 
