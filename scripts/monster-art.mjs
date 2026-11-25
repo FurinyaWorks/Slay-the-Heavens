@@ -20,19 +20,32 @@ export function monsterArtPayloadSource(art){
   if(art?.status!=='refined-release')return `${header}return ${toLua(art??{})}\n`;
   const packed={...art,assets:Object.fromEntries(Object.entries(art.assets).map(([id,asset])=>
     [id,{...asset,slots:asset.slots.map(compactMonsterSlot).join(';')}]))};
-  // Retain every numeric spelling and restore independent mutable arrays once
-  // at module load, before the existing renderer receives the original schema.
+  // Retain every numeric spelling. Decode each drawing once, when its
+  // renderer first asks for slots, rather than decoding the catalogue at startup.
   return `${header}local art=${toLua(packed)}
-for _,asset in pairs(art.assets) do
+local function decodeSlots(source)
  local slots={}
- for row in string.gmatch(asset.slots,"[^;]+") do
+ for row in string.gmatch(source,"[^;]+") do
   local v={}
   for number in string.gmatch(row,"[^,]+") do v[#v+1]=assert(tonumber(number)) end
   slots[#slots+1]={image=v[1],imageType=v[2]==0 and "basic" or "stretch",
    position={v[3],v[4]},size={v[5],v[6]},rotation={v[7],v[8],v[9]},colour={v[10],v[11],v[12],v[13]},
    anchorMin={0.5,0.5},anchorMax={0.5,0.5},pivot={0.5,0.5},scale={1,1}}
  end
+ return slots
+end
+local encodedSlots={}
+local lazySlots={__index=function(asset,key)
+ if key~="slots" then return nil end
+ local slots=decodeSlots(encodedSlots[asset])
  asset.slots=slots
+ encodedSlots[asset]=nil
+ return slots
+end}
+for _,asset in pairs(art.assets) do
+ encodedSlots[asset]=asset.slots
+ asset.slots=nil
+ setmetatable(asset,lazySlots)
 end
 return art\n`;
 }

@@ -65,7 +65,7 @@ export function evaluateReplay(report,{maxStepMs=100,maxWarmControlGrowth=0}={})
    assert.equal(initial.complete,initial.scriptReady&&initial.structureReady);
    assert.equal(initial.scriptReady,page.scriptReady,'Startup evidence changed without a new session');
    if(page.frames===0)assert.deepEqual(initial.requiredChecks,page.requiredChecks,'Readiness changed without any SDK update');
-   if(initial.scriptReady&&!initial.complete&&initial.requiredChecks.controls)blockers.push(`${page.cycle}/${page.name}: visible before complete SDK structure`);
+   if(page.oracleVerified&&initial.scriptReady&&!initial.complete&&initial.requiredChecks.controls)blockers.push(`${page.cycle}/${page.name}: visible before complete SDK structure`);
    const expectedPhase=index===0?'initialize':page.name==='character'?'open-character':'close-character';
    assert.equal(page.firstEventIndex,cursor,'Page is detached from its input/startup event');
    assert.equal(report.events[cursor]?.phase,expectedPhase,'Missing/replaced page input event');
@@ -75,7 +75,7 @@ export function evaluateReplay(report,{maxStepMs=100,maxWarmControlGrowth=0}={})
     assert.equal(report.events[cursor]?.cycle,page.cycle);
    }
    assert.equal(page.lastEventIndex,cursor-1,'Page event coverage mismatch');
-   if(!page.complete)blockers.push(`${page.cycle}/${page.name}: incomplete SDK model`);
+   if(page.oracleVerified&&!page.complete)blockers.push(`${page.cycle}/${page.name}: incomplete SDK model`);
   }
   assert.equal(cursor,report.events.length,'Unbound/truncated runtime events');
   assert.equal(report.inputs?.length,40,'Missing input coverage');
@@ -111,7 +111,7 @@ export function evaluateReplay(report,{maxStepMs=100,maxWarmControlGrowth=0}={})
   result.roundTrips=20;
   result.warmControlGrowth=report.roundTrips.at(-1).countAfter-report.roundTrips[0].countAfter;
   if(result.maxStepMs>maxStepMs)blockers.push(`SDK synchronous operation exceeds ${maxStepMs}ms`);
-  result.offlineStatus=report.pages.some(page=>!page.oracleVerified)?'UNVERIFIED':blockers.length?'FAIL':'PASS';
+  result.offlineStatus=blockers.length?'FAIL':report.pages.some(page=>!page.oracleVerified)?'UNVERIFIED':'PASS';
  }catch(error){errors.push(error.message);result.offlineStatus='INVALID';}
  return result;
 }

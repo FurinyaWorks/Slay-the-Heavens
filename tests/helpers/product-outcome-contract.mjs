@@ -103,6 +103,19 @@ test('the frozen PR565 actual SDK records derive partial improvement, startup re
  assert.equal(result.replay.warmControlGrowth,0);assert.equal(result.sameVisualComparison,false);
  assert.ok(result.reproduction.blockers.some(reason=>reason.includes('visible before complete')));
 });
+test('missing model provenance cannot hide observed synchronous stalls',()=>{
+ const manifest=JSON.parse(readFileSync('docs/evidence/product-outcomes/TASK-104.json','utf8'));
+ const bytes=readFileSync(manifest.replay.path);
+ assert.equal(hash(bytes),manifest.replay.sha256);
+ const capture=JSON.parse(gunzipSync(bytes));
+ for(const page of capture.pages)page.oracleVerified=false;
+ const result=evaluateReplay(capture);
+ assert.equal(result.offlineStatus,'FAIL');
+ assert.ok(result.blockers.includes('SDK synchronous operation exceeds 100ms'));
+ assert.equal(result.productStatus,'UNVERIFIED');
+ const missing=replay();missing.pages[0].oracleVerified=false;
+ assert.equal(evaluateReplay(missing).offlineStatus,'UNVERIFIED');
+});
 test('experiment decisions derive from bound measurements and visual/load identity, ignoring inline success assertions',()=>{
  const dir=mkdtempSync(join(tmpdir(),'outcome-experiments-'));
  try{

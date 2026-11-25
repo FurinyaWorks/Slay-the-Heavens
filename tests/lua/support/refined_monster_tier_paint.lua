@@ -2,7 +2,6 @@ local data, variant = ...
 if variant=='shared-metadata' then
  for _,asset in pairs(data.art.assets)do asset.capacity=data.art.poolCapacity end
 end
-package.preload.abyss_theme=function()return {}end
 package.preload.abyss_card_skin=function()return setmetatable({},{__index=function()error("unexpected card skin access")end})end
 local Art=require('abyss_monster_art')
 local Surfaces=require('abyss_monster_surfaces')

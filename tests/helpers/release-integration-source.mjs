@@ -9,8 +9,11 @@ const blob = value => hash('blob ' + Buffer.byteLength(value) + '\0' + value, 's
 const archive = readFileSync(new URL('../fixtures/release-integration-source.json.gz', import.meta.url));
 assert.equal(hash(archive), '0ba3c551c50c35dfb4e27a0601063451693fba48d3ad9942dd34f6c2aec7d087', 'exact Release integration source archive');
 const layers = JSON.parse(gunzipSync(archive));
+const lazyArtArchive = readFileSync(new URL('../fixtures/release-lazy-monster-art-source.json.gz', import.meta.url));
+assert.equal(hash(lazyArtArchive), '211c3588a53b1f97c98d9f9b905349d82b244a2e81a940d4ebe48022381ca92e');
+const lazyArt = JSON.parse(gunzipSync(lazyArtArchive));
 
-for (const layer of Object.values(layers)) {
+for (const layer of [...Object.values(layers), lazyArt]) {
   for (const {before,after} of Object.values(layer)) {
     assert.equal(hash(before.source), before.sha256);
     assert.equal(blob(before.source), before.gitBlob);
@@ -40,7 +43,7 @@ export function beforeReleaseDetailSource(path,source) {
 }
 
 export function beforeReleaseCapacitySource(path,source) {
-  return project(layers.capacity,path,source);
+  return project(layers.capacity,path,project(lazyArt,path,source));
 }
 
 export function assertCurrentReleaseOwner(path,source,read) {

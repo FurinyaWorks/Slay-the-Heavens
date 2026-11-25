@@ -346,6 +346,8 @@ const currentReplayFiles=Object.freeze({
 });
 const entranceFiles=Object.freeze({
  ...currentReplayFiles,
+ 'tests/helpers/release-integration-source.mjs':'74093921a53a94ba842afac199e579a622b60fea5abf2519d416ede77bbfa1a7',
+ 'tests/fixtures/release-lazy-monster-art-source.json.gz':'211c3588a53b1f97c98d9f9b905349d82b244a2e81a940d4ebe48022381ca92e',
  'tests/helpers/m7-core-final-source-inverse.mjs':'8e0d432cd1ecf668bad14a614a61772e495e13cce67ab0168babcaac5bfda1e6',
  'tests/helpers/release-ui-restore-source.mjs':'d2f34bef11ae4cb35c5df68556afc37d3de8d4ce7268a988bcef8fc39495b47a',
  'tests/helpers/current-replay-fix-sources.mjs':'bfef80da2fc30501c3b2e82cd14bdb8130e4a089f2db231ff2587804fa83a08b',
