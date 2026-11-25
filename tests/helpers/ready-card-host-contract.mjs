@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 
 // Preserve the original 38 battle/shop/picker hosts and the twelve release
-// starter-deck faces, plus ten combat-choice faces. Expected paths are independent
-// of the production walker.
+// starter-deck faces, ten combat-choice faces, and the #940 deck detail face.
+// Expected paths are independent of the production walker.
 const cards=(prefix,count,suffix='')=>Array.from({length:count},(_,i)=>`SlayTheAbyss/stage/${prefix}${i+1}${suffix}`);
 export const expectedReadyCardChoiceHosts=cards('choicePanel/card',10,'/face');
 export const expectedReadyCardGameHosts=[
@@ -12,6 +12,7 @@ export const expectedReadyCardGameHosts=[
  ...cards('nodePanel/pickerView/forgeGrid/card',12),
  ...cards('characterPanel/deckView/deckCard',12,'/face'),
  ...expectedReadyCardChoiceHosts,
+ 'SlayTheAbyss/stage/deckPanel/cardFocus/face',
 ];
 export function readyCardHolderPaths(tree){
  const paths=[];
@@ -26,7 +27,7 @@ export function readyCardHolderPaths(tree){
 export function assertReadyCardGameHosts(tree,{enabled=true,staged=true}={}){
  const expected=enabled?expectedReadyCardGameHosts.map(path=>staged?path:path.replace('/stage/','/')):[];
  assert.deepEqual(readyCardHolderPaths(tree).sort(),[...expected].sort(),
-  'retain exact 38 existing, 12 starter-deck and 10 combat-choice hosts only when enabled');
+  'retain exact 38 original, 12 starter-deck, 10 combat-choice and one deck detail host only when enabled');
  function visit(node){
   if(node.name==='artSamples'){
    assert.deepEqual(node.children,[],'runtime holders must remain empty');

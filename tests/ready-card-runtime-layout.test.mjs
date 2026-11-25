@@ -6,12 +6,19 @@ import{attachReadyCardHosts,readyArtTemplates,bindReadyCardPresentation}from'../
 test('every actual card face and recyclable deck template gets only an empty bounded-runtime holder',()=>{
  const game=gameLayout(),deck=deckCardTemplate();
  const hosts=attachReadyCardHosts(game);
- assert.equal(expectedReadyCardGameHosts.length,38+12+10);
+ assert.equal(expectedReadyCardGameHosts.length,38+12+10+1);
  assert.equal(expectedReadyCardChoiceHosts.length,10);
  assert.deepEqual([...hosts].sort(),expectedReadyCardGameHosts.map(path=>path.replace('/stage/','/')).sort());
  assertReadyCardGameHosts(game,{staged:false});
  assert.equal(attachReadyCardHosts(deck).length,1);
  assert(hosts.includes('SlayTheAbyss/nodePanel/pickerView/forgeGrid/card12'));
+ const deckPanel=game.controls.find(node=>node.name==='deckPanel');
+ const focus=deckPanel.children.find(node=>node.name==='cardFocus');
+ const holder=focus.children.find(node=>node.name==='face').children.find(node=>node.name==='artSamples');
+ assert(holder,'deck detail face requires a dormant artwork host');
+ holder.name='missingHolder';
+ assert.throws(()=>assertReadyCardGameHosts(game,{staged:false}));
+ holder.name='artSamples';
  function verify(n){if(n.name==='artSamples'){assert.deepEqual(n.children,[]);assert.equal(n.visible,false);}for(const c of n.children??n.controls??[])verify(c);}
  verify(game);verify(deck);assertNativeUiCapacity(game);assertNativeUiCapacity(deck);
  assert.throws(()=>attachReadyCardHosts(game),/combine/);
