@@ -1029,6 +1029,16 @@ function beforeDevelopEpochReplayRuntime(path,source){
  return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
 }
 const replayAssetLedger='docs/legal/assets.json';
+const referenceAssetLedger=['6e618cdf519fbe4c252dcc1a33b42eac4e737e89641ad215d93fcf50fecab8c3','69d938af08e70e12466cb44b5375b669993fab33'];
+const preReferenceAssetLedger=['3c4b140e7d432bb1de89289e516723dafa14daecd414b1ffe94b4f39d267f5c2','94e5b7f8a05e190d59e603b7b0760fc968d2a600'];
+function currentAssetLedgerRead(read){
+ return (path,...args)=>{
+  const raw=read(path,...args);
+  if(path===replayAssetLedger)assert(exactCheckoutSource(Buffer.isBuffer(raw)?raw.toString('utf8'):raw,referenceAssetLedger),
+   'fresh complete integration source: '+path);
+  return raw;
+ };
+}
 const replayStorageSources=Object.freeze({
  '.gitattributes':['0b385940b40b3e3c37337ce283b8772bb800333d6654675ff3107fd70cca7cf5','11d5e5b797cff39ed75bc0614fb9d02975fbcc24'],
  'config/ci-media-lfs.json':['80e6bae0a63426858864d5d13d50b86e7fa2369a4b89715b2f0d264b8068092e','04ad2de599ff5e2a702764f0d07d5bbea41a2d77'],
@@ -1044,9 +1054,15 @@ function withoutArchiveRecords(current,first,after){
 function beforeDeckBrowserAssetLedger(source){
  if(typeof source!=='string'||source.includes('\r\r\n'))return source;
  let current=normalize(source);
+ if(source!==current&&source!==current.replaceAll('\n','\r\n'))return source;
+ // #1017 registers six reviewed design and simulator evidence files.
+ if(exactCheckoutSource(source,referenceAssetLedger)){
+  current=withoutArchiveRecords(current,'    "docs/design/reference-assets/v2.2.0/battle-scene/act1-geometry.svg": {\n',
+   '    "data/presentation/event-native-controls.json": {\n');
+  assert(exactSourceBinding(current,preReferenceAssetLedger),'exact pre-#1017 asset ledger');
+ }
  // #951 updates the native event manifest hash after its approved text edits.
- if(hash(current)==='3c4b140e7d432bb1de89289e516723dafa14daecd414b1ffe94b4f39d267f5c2'&&
-    blob(current)==='94e5b7f8a05e190d59e603b7b0760fc968d2a600'){
+ if(exactSourceBinding(current,preReferenceAssetLedger)){
   current=current.replace('eac9cfc53f1203d635ba1ed77acee1bfd6d12073be53fcb7b4d0af56262bb1b5',
    'db7a1393c4fae90fc9d7cc30b2ee762394a8ab041b19a6a9aa33973a263eeb13');
   assert.equal(hash(current),'5ec27c5274a512ccdf2dfb183f65bd15321c87883e3e4e633e6502f726429353','exact pre-#951 asset ledger');
@@ -1234,7 +1250,7 @@ function cursesReceiptCurrentRead(read){
  };
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
- const replayRead=cursesReceiptCurrentRead(responsiveReplayCurrentRead(currentReviewedSelectionRead(read)));
+ const replayRead=cursesReceiptCurrentRead(responsiveReplayCurrentRead(currentAssetLedgerRead(currentReviewedSelectionRead(read))));
  for(const path of Object.keys(cursesReceiptSources))replayRead(path,'utf8');
  for(const path of Object.keys(responsiveReplayHelpers))replayRead(path,'utf8');
  // The chapter guard consumes its exact reviewed predecessor. Current
@@ -1341,6 +1357,10 @@ function beforeV220HostedTiming(path,source){
  return source.includes('\r\n')?current.replaceAll('\n','\r\n'):current;
 }
 export function beforePreflightSource(path,source,view='prior',read=readFileSync){
+ if(path===replayAssetLedger&&typeof source==='string'){
+  const lf=normalize(source);
+  if(source!==lf&&source!==lf.replaceAll('\n','\r\n'))return source;
+ }
  source=beforeCursesReceiptFixture(path,source);
  const integratedPrior=beforeRelicCloseoutIntegratedFixture(path,source);
  if(integratedPrior!==source){
