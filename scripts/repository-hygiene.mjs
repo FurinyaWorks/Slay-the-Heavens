@@ -6,7 +6,8 @@ import { join, dirname } from 'node:path';
 import { mediaByPath } from './ci-media-lfs.mjs';
 import { frozenObjects, reviewedPngPaths, runtimePreviewObjects, runtimePreviewPaths } from './ci-reviewed-lfs.mjs';
 
-const RAW_SAVE = /(?:^|[./])(?:game\.save|runtime-snapshot)(?:[./]|$)/i;
+const RAW_SAVE = /\.save(?:\.[^.\/]+)*$|(?:^|[./])runtime-snapshot(?:[./]|$)/i;
+const REVIEWED_SEED = 'experiments/art-tech-lab/seed.save.json';
 const MAX_GIT_BYTES = 5 * 1024 * 1024;
 const blockedType = /^(?:\.env(?:\.(?!(?:example|sample|template)$).*)?|\.envrc|\.lfsconfig|id_(?:rsa|ed25519))$|\.(?:log(?:\..*)?|gil|gip|gia|key|pem|p12|pfx)$/i;
 const archive = /\.(?:zip|7z|rar|tar|t[bgx]z|gz|bz2|xz|zst)$/i;
@@ -106,7 +107,7 @@ try {
     const reason = [];
     if (ignored.has(path)) reason.push('tracked ignored file');
     if (blockedType.test(path.split('/').at(-1))) reason.push('prohibited file type');
-    if (RAW_SAVE.test(path)) reason.push('raw runtime save');
+    if (path !== REVIEWED_SEED && RAW_SAVE.test(path)) reason.push('raw runtime save');
     if (generated.test(path)) reason.push('generated output');
     if (archive.test(path) && !(mediaByPath.has(path) && lfs.has(path))) reason.push('unapproved archive');
     if (entry.size > MAX_GIT_BYTES) reason.push('oversize Git blob');

@@ -42,6 +42,7 @@ test('ordinary source, example env and formal images pass', t => {
   const result = candidate(t, {
     'src/main.lua': 'return 1\n',
     '.env.example': 'SERVICE_URL=https://example.invalid\n',
+    'experiments/art-tech-lab/seed.save.json': '{}\n',
     'art/official-image.png': Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
     'art/exact-size.bin': Buffer.alloc(5 * 1024 * 1024),
   });
@@ -51,8 +52,10 @@ test('ordinary source, example env and formal images pass', t => {
 test('forced track, generated path, raw save, archives, oversize or forged LFS fail', t => {
   const result = candidate(t, {
     'output/run.log.1': 'temporary',
-    'output/.gitignore': '!bypass.log\n',
+    'output/.gitignore': '!bypass.log\n!capture.save.json\n!session.save\n',
     'output/bypass.log': 'still prohibited',
+    'output/capture.save.json': 'save',
+    'output/session.save': 'save',
     'packages/app/node_modules/library/index.js': 'generated',
     'docs/evidence/game.save.json.gz': 'save',
     'docs/evidence/diagnostics.tar.xz': 'archive',
@@ -61,6 +64,8 @@ test('forced track, generated path, raw save, archives, oversize or forged LFS f
     'art/bad.png': 'version https://git-lfs.github.com/spec/v1\noid sha256:' + '1'.repeat(64) + '\nsize 100000000\n',
   });
   assert.equal(result.status, 1);
+  assert.ok(result.message.includes('"output/capture.save.json": raw runtime save'), result.message);
+  assert.ok(result.message.includes('"output/session.save": raw runtime save'), result.message);
   for (const expected of [
     'tracked ignored file', 'prohibited file type', 'generated output', 'raw runtime save', 'unapproved archive',
     'oversize Git blob', 'unapproved or malformed LFS object',
