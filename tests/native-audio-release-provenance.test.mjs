@@ -1,7 +1,7 @@
 import {portraitInventory,portraitRuntimeInputs as portraitSourceInputs} from '../scripts/official-portraits.mjs';
 import {artFeatureReceipt,artBuildOptionsFromReceipt} from '../scripts/art-features.mjs';
 import {officialAssetsProfile,refinedReleaseOfficialAssetsProfile,refinedReleaseOfficialAssetFlags} from '../scripts/official-assets-profile.mjs';
-import {uiProfileReceipt} from '../scripts/ui-profile.mjs';
+import {uiProfileFromReceipt,uiProfileReceipt} from '../scripts/ui-profile.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync, realpathSync } from 'node:fs';
@@ -13,6 +13,7 @@ import { sourceInputs, payloadDigest } from '../scripts/build-native-candidate.m
 import {monsterActorInventory,monsterActorTemplate,monsterActorTiers} from '../scripts/monster-art.mjs';
 import { fileRecord } from '../scripts/evidence-files.mjs';
 import {deckBrowserParts} from '../scripts/deck-ui-layout.mjs';
+import { verifyLocalProductionPreset } from '../scripts/gil-candidate.mjs';
 import { gitSourceIdentity } from '../scripts/release-notes.mjs';
 import {prepareRefinedReleaseMonsterArt,refinedReleaseMonsterRegistry} from '../scripts/refined-release-monsters.mjs';
 
@@ -192,6 +193,19 @@ test('default release CLI keeps the approved layout in the final audio receipt',
   assert.equal(result.sourceDirty, false);
   assert.equal(result.candidate.sha256, fileRecord(result.mapPath).sha256);
 });
+test('local intake recognizes both real production receipt shapes and rejects valid non-default audio builds', async t => {
+  const defaults = nativeAudioBuildArgs([]).options;
+  const confirmed = fixture(t, undefined, {refined:true});
+  const fullAudio = await confirmed.run({...defaults, releaseCandidate:true, workKey:'release-test'});
+  const admitted = receipt => verifyLocalProductionPreset(defaults, artBuildOptionsFromReceipt(receipt), uiProfileFromReceipt(receipt));
+  assert.doesNotThrow(() => admitted(confirmed.full));
+  assert.doesNotThrow(() => admitted(fullAudio));
+  const oldProfile = fixture(t);
+  const v2Audio = await oldProfile.run({...nativeAudioBuildArgs(['--official-assets']).options, releaseCandidate:true, workKey:'release-test'});
+  assert.equal(artBuildOptionsFromReceipt(v2Audio).officialAssets, true);
+  assert.throws(() => admitted(v2Audio), /default production preset/);
+});
+
 test('refined receipt validates exact registry bytes and fails closed before deferred snapshot reads',async t=>{
   const f=fixture(t,undefined,{refined:true});
   const {options}=nativeAudioBuildArgs(['base.gil','--release-candidate']);

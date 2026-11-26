@@ -5,7 +5,10 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
-import { verifyDownloadedArtifact, verifyReceipts } from '../scripts/gil-candidate.mjs';
+import { verifyDownloadedArtifact, verifyLocalBuild, verifyLocalProductionPreset, verifyReceipts } from '../scripts/gil-candidate.mjs';
+import { downloadLocalGilBundle, localGilRecord, readLocalGilBundle, writeLocalGilBundle } from '../scripts/local-gil-bundle.mjs';
+import { importedGilReceipt, localArchiveReceipt } from '../scripts/hosted-gil-receipt.mjs';
+import { nativeAudioBuildArgs } from '../scripts/build-native-audio-game.mjs';
 import { encoderSha256 } from '../scripts/gil-candidate-preflight.mjs';
 
 const sourceSha = '1'.repeat(40);
@@ -17,7 +20,14 @@ test('trusted develop owns protection, while audit receives the bound build cont
   const workflow = readFileSync(new URL('../.github/workflows/gil-candidate.yml', import.meta.url), 'utf8').replaceAll('\r\n', '\n');
   assert.match(workflow, /^    if: github\.event_name == 'workflow_dispatch' && github\.repository_id == '1429751262' && github\.ref == 'refs\/heads\/develop'$/m);
   assert.match(workflow, /^          GIL_BASE_URL: \$\{\{ secrets\.GIL_BASE_URL \}\}$/m);
-  assert.equal(workflow.match(/secrets\./g).length, 1);
+  assert.match(workflow, /^          GIL_LOCAL_BUILD_URL: \$\{\{ secrets\.GIL_LOCAL_BUILD_URL \}\}$/m);
+  assert.equal(workflow.match(/secrets\./g).length, 2);
+  for (const [name, origin] of [['Download and verify approved base GIL', 'hosted'],
+    ['Build the complete game with native audio', 'hosted'], ['Download the approved private local GIL bundle', 'local']]) {
+    assert(workflow.includes(`- name: ${name}\n        if: steps.candidate.outputs.build == 'true' && steps.candidate.outputs.origin == '${origin}'`));
+  }
+  assert(workflow.includes("- name: Audit the final GIL and prepare the download\n        if: steps.candidate.outputs.build == 'true'"));
+  assert(!workflow.slice(workflow.indexOf('- uses: actions/upload-artifact')).includes('LOCAL_BUNDLE'));
   const sourceCheckout = workflow.slice(workflow.indexOf('          path: source\n'), workflow.indexOf('          path: miliastra-mcp\n'));
   const sparse = sourceCheckout.match(/^          sparse-checkout: \|\n((?: {12}\S+\n)+)/m)?.[1];
   assert.deepEqual(sparse?.trim().split('\n').map(path => path.trim()), [
@@ -101,4 +111,89 @@ test('bind the exact full and final audio receipts, final bytes and production p
   assert.doesNotThrow(() => verifyReceipts(received));
   assert.throws(() => verifyReceipts({ ...received, version: 'v2.1.2' }), /release version or notes/);
   assert.throws(() => verifyReceipts({ ...received, audio }), /release version or notes/);
+});
+
+test('verify local base, intermediate, audio receipt and candidate before storing the approved private bundle', async t => {
+  const root = mkdtempSync(join(tmpdir(), 'gil-local-bundle-'));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const file = name => join(root, name);
+  const base = Buffer.from('approved base bytes'), intermediate = Buffer.from('full release bytes'), candidate = Buffer.from('full release with native audio');
+  const release = { workKey, version, notesSha256: 'a'.repeat(64) };
+  const builderRoot = 'D:\\candidate\\release';
+  const fullRoot = builderRoot + '\\build\\local-gil\\full\\11111111-1111-4111-a111-111111111111';
+  const toolchainIdentity = { sourceSha256: encoderSha256, sourcePath: 'D:\\mcp\\src\\scene-save.mjs',
+    helperPath: builderRoot + '\\scripts\\native-client-check.mjs' };
+  const full = { sourceCommit: sourceSha, sourceDirty: false, release, liveWriteEnabled: false,
+    toolchainIdentity, inputs: [{ path: 'src/lua/test.lua' }, ...[toolchainIdentity.sourcePath, toolchainIdentity.helperPath].map(path => ({ path }))],
+    buildId: '11111111-1111-4111-a111-111111111111', payloadDigest: '6'.repeat(64),
+    moduleDigests: { abyss_bgm: '7'.repeat(64) }, candidate: localGilRecord(intermediate),
+    baseMap: localGilRecord(base), statuses: { staticCheck: 'pass' }, receiptPath: fullRoot + '\\candidate.json',
+    officialAssetsProfile: 'official-assets-battle-v3', uiProfile: { nativePageLifecycle: true },
+    nativeMonsterArt: { assetCount: 42, bindingCount: 42 },
+    productionManifest: { modules: [{ name: 'abyss_bgm', path: fullRoot + '\\payload\\abyss_bgm.lua' }],
+      layout: { path: fullRoot + '\\generated\\game-ui.json' }, templates: { path: fullRoot + '\\generated\\game-ui-templates.json' } },
+  };
+  const fullReceipt = Buffer.from(JSON.stringify(full));
+  const audio = { ...full, candidate: localGilRecord(candidate), sha256: localGilRecord(candidate).sha256,
+    baseSha256: full.candidate.sha256, baseAfter: full.candidate.sha256, sourceReceipt: localGilRecord(fullReceipt),
+    compiled: { written: [{ graphId: 1 }] }, checked: { ok: true, errors: 0 } };
+  const bundleContents = { base, intermediate, candidate, fullReceipt, audioReceipt: Buffer.from(JSON.stringify(audio)) };
+  const paths = Object.fromEntries(Object.entries(bundleContents).map(([name, bytes]) => {
+    writeFileSync(file(name), bytes);
+    return [name, file(name)];
+  }));
+  const expected = { sourceSha, workKey, version, baseSha256: full.baseMap.sha256, candidateSha256: audio.sha256 };
+  const bundlePath = file('bundle.json');
+  const written = writeLocalGilBundle(bundlePath, paths, files => verifyLocalBuild(files, expected));
+  const good = readFileSync(bundlePath);
+  const receivedPath = file('received.json');
+  const get = async (_url, options) => {
+    assert.equal(options.redirect, 'error');
+    return new Response(good);
+  };
+  await downloadLocalGilBundle('https://secure.example/build', receivedPath, written.bundleSha256, get);
+  const received = readLocalGilBundle(receivedPath, written.bundleSha256);
+  assert.deepEqual(received, bundleContents);
+  const verified = verifyLocalBuild(received, expected);
+  const candidateRow = { path: 'candidate.gil', ...verified.finalGil };
+  const receipt = importedGilReceipt(verified.full, verified.audio, candidateRow, 'hotfix/' + version);
+  assert.deepEqual(receipt.candidate, candidateRow);
+  assert.equal(receipt.productionManifest.modules[0].path, 'payload/abyss_bgm.lua');
+  const digestInputs = rows => localGilRecord(Buffer.from(JSON.stringify(rows))).sha256;
+  const archived = localArchiveReceipt(receipt, full.inputs, digestInputs);
+  assert.deepEqual(archived.encoderPayloadPaths, ['/release/encoder/src/scene-save.mjs', '/release/source/scripts/native-client-check.mjs']);
+  assert(!JSON.stringify(archived).includes('candidate\\release'));
+  assert.equal(archived.payloadDigest, digestInputs([full.inputs[0], ...archived.encoderPayloadPaths.map(path => ({ path }))]));
+  assert.throws(() => localArchiveReceipt(receipt, [{ path:'wrong/source.mjs' }, full.inputs.at(-1)], digestInputs), /labels differ/);
+
+  assert.throws(() => importedGilReceipt(verified.full, { ...verified.audio,
+    productionManifest: { ...verified.audio.productionManifest, layout: { path: fullRoot + '\\..\\unreviewed.json' } },
+  }, candidateRow, 'hotfix/' + version), /Invalid local receipt path label/);
+
+  for (const field of ['base', 'intermediate', 'candidate', 'fullReceipt', 'audioReceipt']) {
+    assert.throws(() => verifyLocalBuild({ ...received, [field]: Buffer.from('{}') }, expected));
+  }
+  assert.throws(() => verifyLocalBuild(received, { ...expected, sourceSha: 'f'.repeat(40) }), /source/);
+  assert.throws(() => readLocalGilBundle(receivedPath, '0'.repeat(64)), /approved digest/);
+  await assert.rejects(downloadLocalGilBundle('https://secure.example/build', file('invalid'), '0'.repeat(64), get), /approved digest/);
+  await assert.rejects(downloadLocalGilBundle('http://secure.example/build', file('untrusted'), written.bundleSha256, get), /HTTPS/);
+  const invalid = JSON.parse(good);
+  invalid.candidate += '===';
+  const malformed = Buffer.from(JSON.stringify(invalid));
+  writeFileSync(file('malformed.json'), malformed);
+  assert.throws(() => readLocalGilBundle(file('malformed.json'), localGilRecord(malformed).sha256), /Malformed/);
+  assert.throws(() => writeLocalGilBundle(bundlePath, paths, files => verifyLocalBuild(files, expected)), /EEXIST/);
+});
+
+test('local intake accepts the frozen default preset and rejects other valid native build recipes', () => {
+  const defaultOptions = nativeAudioBuildArgs([]).options;
+  const check = ({ workKey, releaseCandidate, nativePageLifecycle = false, ...options }) =>
+    verifyLocalProductionPreset(defaultOptions, { ...options, toolchainIdentity: { sourceSha256: encoderSha256 } }, nativePageLifecycle);
+  assert.doesNotThrow(() => check(defaultOptions));
+  for (const args of [['--art-version=legacy'], ['--official-assets'], ['--native-card-art-count=0']]) {
+    const alternative = nativeAudioBuildArgs(args).options;
+    assert.throws(() => check(alternative), /default production preset/);
+  }
+  assert.throws(() => check({ ...defaultOptions, lightweight2d: true }), /default production preset/);
+  assert.throws(() => check({ ...defaultOptions, nativePageLifecycle: false }), /default production preset/);
 });

@@ -61,6 +61,40 @@ test('uses the actual bytes from the trusted hosted native-audio artifact', asyn
   assert.deepEqual(proof.gilBytes, f.files['candidate.gil']);
 });
 
+test('uses approved local GIL bytes from the same archive authority and rejects relabelled provenance', async () => {
+  const f = fixture();
+  const manifest = JSON.parse(f.files['manifest.json']);
+  manifest.buildOrigin = 'local';
+  manifest.localBuild = { bundleSha256:'6'.repeat(64), candidateSha256:manifest.candidate.sha256, approvalReference:'release/220',
+    buildPayloadDigest:'8'.repeat(64), recipe:{ node:'24.18.0', python:'3.12.10',
+      command:'npm run build:native -- <approved-base.gil> build/local-gil --release-candidate --work-key=' + manifest.parameters.workKey } };
+  const seal = () => {
+    f.files['manifest.json'] = Buffer.from(JSON.stringify(manifest));
+    f.files.SHA256SUMS = Buffer.from(['candidate.gil', 'candidate.json', 'manifest.json']
+      .map(name => sha256(f.files[name]) + '  ' + name + '\n').join(''));
+  };
+  seal();
+  const proof = await verifyGilArtifact(f.request, 1, target, f.load);
+  assert.equal(proof.binding.buildOrigin, 'local');
+  assert.deepEqual(proof.binding.localBuild, manifest.localBuild);
+  assert.deepEqual(proof.gilBytes, f.files['candidate.gil']);
+  const accepted = { ...manifest.localBuild };
+  for (const change of [{ candidateSha256:'0'.repeat(64) }, { bundleSha256:null }, { approvalReference:'' }, { buildPayloadDigest:'missing' },
+    { recipe:{ ...accepted.recipe, command:'unapproved command' } }]) {
+    manifest.localBuild = { ...accepted, ...change };
+    seal();
+    await assert.rejects(verifyGilArtifact(f.request, 1, target, f.load), /local approval identity differs/);
+  }
+  manifest.localBuild = accepted;
+  manifest.buildOrigin = 'hosted';
+  seal();
+  await assert.rejects(verifyGilArtifact(f.request, 1, target, f.load), /local approval identity differs/);
+  manifest.buildOrigin = 'local';
+  f.jobs[0].steps = [];
+  seal();
+  await assert.rejects(verifyGilArtifact(f.request, 1, target, f.load), /verified publication step/);
+});
+
 test('rejects a reused artifact from an older attempt or an untrusted controller', async () => {
   const stale = fixture();
   stale.attempt.run_started_at = '2026-11-25T12:02:00Z';

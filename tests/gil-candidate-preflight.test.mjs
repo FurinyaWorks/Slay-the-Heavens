@@ -205,3 +205,19 @@ test('verify extracted hosted artifacts without opening the original runner path
   assert.throws(() => verifiedPayloadInputs(repo, receipt, { toolchainIdentity: { ...options.toolchainIdentity, sourcePath: '../source' } }, collect, mcp),
     /pinned MCP toolchain/);
 });
+
+test('local intake requires frozen source and independent approval for both immutable digests', () => {
+  const localBundleSha256 = '3'.repeat(64);
+  const localCandidateSha256 = '4'.repeat(64);
+  const record = { ...approval, sourceBranch: branch, version, localBundleSha256, localCandidateSha256 };
+  const local = (value, target = hotfix) => approvedRequest(JSON.stringify(value), sourceSha, controller, target, 'local');
+  const accepted = local(record);
+  assert.deepEqual(accepted.localBuild, { bundleSha256: localBundleSha256, candidateSha256: localCandidateSha256,
+    approvalReference: approval.reference });
+  assert.notEqual(accepted.id, local({ ...record, localCandidateSha256: 'e'.repeat(64) }).id);
+  assert.notEqual(accepted.id, local({ ...record, localBundleSha256: 'f'.repeat(64) }).id);
+  assert.throws(() => local({ ...record, localBundleSha256: undefined }), /requires frozen source and an approval/);
+  assert.throws(() => local({ ...record, localCandidateSha256: 'latest' }), /requires frozen source and an approval/);
+  assert.throws(() => local({ ...record, sourceBranch: 'develop', version: undefined }, { branch: 'develop' }), /requires frozen source/);
+  assert.throws(() => approvedRequest(JSON.stringify(record), sourceSha, controller, hotfix), /requires frozen source and an approval/);
+});

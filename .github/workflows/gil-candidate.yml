@@ -12,6 +12,11 @@ on:
         description: 'Exact CI-verified 40-character develop SHA or frozen release/hotfix HEAD'
         required: true
         type: string
+      build_origin:
+        description: Build on the runner or audit an approved local release build
+        type: choice
+        options: [hosted, local]
+        default: hosted
 permissions:
   contents: read
   actions: read
@@ -51,13 +56,20 @@ jobs:
           SOURCE_REF: ${{ inputs.source_ref }}
           SOURCE_SHA: ${{ inputs.source_sha }}
           GIL_CANDIDATE_APPROVAL: ${{ vars.GIL_CANDIDATE_APPROVAL }}
+          GIL_CANDIDATE_BUILD_ORIGIN: ${{ inputs.build_origin }}
         run: node control/scripts/gil-candidate.mjs preflight
       - name: Download and verify approved base GIL
-        if: steps.candidate.outputs.build == 'true'
+        if: steps.candidate.outputs.build == 'true' && steps.candidate.outputs.origin == 'hosted'
         env:
           GIL_BASE_URL: ${{ secrets.GIL_BASE_URL }}
           BASE_SHA256: ${{ steps.candidate.outputs.base_sha256 }}
         run: node control/scripts/gil-candidate.mjs base
+      - name: Download the approved private local GIL bundle
+        if: steps.candidate.outputs.build == 'true' && steps.candidate.outputs.origin == 'local'
+        env:
+          GIL_LOCAL_BUILD_URL: ${{ secrets.GIL_LOCAL_BUILD_URL }}
+          LOCAL_BUNDLE_SHA256: ${{ steps.candidate.outputs.local_bundle_sha256 }}
+        run: node control/scripts/gil-candidate.mjs download-local
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         if: steps.candidate.outputs.build == 'true'
         with:
@@ -116,7 +128,7 @@ jobs:
           SOURCE_SHA: ${{ inputs.source_sha }}
         run: node control/scripts/gil-candidate.mjs assets
       - name: Build the complete game with native audio
-        if: steps.candidate.outputs.build == 'true'
+        if: steps.candidate.outputs.build == 'true' && steps.candidate.outputs.origin == 'hosted'
         working-directory: source
         env:
           SOURCE_SHA: ${{ inputs.source_sha }}
@@ -152,6 +164,9 @@ jobs:
           QUALITY_ATTEMPT: ${{ steps.candidate.outputs.quality_attempt }}
           QUALITY_CHECKOUT_ARTIFACT: ${{ steps.candidate.outputs.quality_checkout_artifact }}
           LICENSES_RUN: ${{ steps.candidate.outputs.licenses_run }}
+          LOCAL_BUNDLE_SHA256: ${{ steps.candidate.outputs.local_bundle_sha256 }}
+          LOCAL_CANDIDATE_SHA256: ${{ steps.candidate.outputs.local_candidate_sha256 }}
+          GIL_APPROVAL_REFERENCE: ${{ steps.candidate.outputs.approval_reference }}
           GH_TOKEN: ${{ github.token }}
         run: |
           $env:MILIASTRA_MCP_ROOT = (Resolve-Path ../miliastra-mcp).Path

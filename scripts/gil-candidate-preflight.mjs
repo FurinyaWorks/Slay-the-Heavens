@@ -6,6 +6,7 @@ export const repositoryId = 1429751262;
 export const toolCommit = '70470757d6fcb319c5afec13b178c87f2d8d54b3';
 export const encoderSha256 = 'eed054eea9285d1945ec826299e1e9546e36475d708007b2df1952ebca52f805';
 export const profile = 'official-assets-battle-v3';
+export const nativeBuildVersions = Object.freeze({ node: '24.18.0', python: '3.12.10' });
 export const sha = /^[a-f0-9]{40}$/;
 export const digest = /^[a-f0-9]{64}$/;
 const hash = data => createHash('sha256').update(data).digest('hex');
@@ -76,7 +77,7 @@ export async function verifySource(source, api, { branch = 'develop', version } 
   return { ...Object.fromEntries(results), ...quality };
 }
 
-export function approvedRequest(raw, sourceSha, policy, { branch = 'develop', version } = { branch: 'develop' }) {
+export function approvedRequest(raw, sourceSha, policy, { branch = 'develop', version } = { branch: 'develop' }, origin = 'hosted') {
   let approval;
   try { approval = JSON.parse(raw); } catch {
     throw new GateError('Set GIL_CANDIDATE_APPROVAL with the authorized base, work-key and public Artifact decision.');
@@ -87,8 +88,16 @@ export function approvedRequest(raw, sourceSha, policy, { branch = 'develop', ve
     (version ? approval.version === version : approval.version == null) &&
     digest.test(baseSha256) && workKey !== 'alpha-test' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(workKey ?? ''),
   'Approval must cover this source SHA, release branch and version if applicable, base SHA-256, processing, public distribution and the confirmed production work-key.');
-  const configuration = { profile, nativePageLifecycle: true, releaseCandidate: Boolean(version), workKey, node: '24.18.0', python: '3.12.10' };
-  const identity = { sourceSha, baseSha256, toolCommit, encoderSha256, branch, version, configuration, policy };
+  requireGate(['hosted', 'local'].includes(origin), 'Unknown GIL build origin.');
+  const { localBundleSha256, localCandidateSha256 } = approval;
+  const local = origin === 'local';
+  requireGate(local ? version && digest.test(localBundleSha256) && digest.test(localCandidateSha256) :
+    localBundleSha256 === undefined && localCandidateSha256 === undefined,
+  'Local GIL intake requires frozen source and an approval binding the private bundle and final GIL SHA-256.');
+  const localBuild = local ? { bundleSha256: localBundleSha256, candidateSha256: localCandidateSha256,
+    approvalReference: approval.reference } : undefined;
+  const configuration = { profile, nativePageLifecycle: true, releaseCandidate: Boolean(version), workKey, ...nativeBuildVersions };
+  const identity = { sourceSha, baseSha256, toolCommit, encoderSha256, branch, version, configuration, policy, ...(localBuild && { localBuild }) };
   return { ...identity, id: hash(JSON.stringify(identity)) };
 }
 

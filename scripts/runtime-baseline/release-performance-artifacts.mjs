@@ -81,6 +81,13 @@ function verifyGilFiles(files, locator, target) {
     /^[a-f0-9]{64}$/.test(manifest.requestId) && locator.name === 'gil-candidate-' + version + '-' + target.head + '-' + manifest.requestId,
     'Production GIL manifest does not certify this frozen source');
   assert.deepEqual(manifest.candidate, {path:'candidate.gil', bytes:files['candidate.gil'].length, sha256:gilSha256});
+  const { buildOrigin = 'hosted', localBuild } = manifest;
+  assert(buildOrigin === 'local' ? digest.test(localBuild?.bundleSha256) && localBuild?.candidateSha256 === gilSha256 &&
+    digest.test(localBuild.buildPayloadDigest) && /^\d+\.\d+\.\d+$/.test(localBuild.recipe?.node ?? '') &&
+    /^\d+\.\d+\.\d+$/.test(localBuild.recipe?.python ?? '') &&
+    localBuild.recipe.command === 'npm run build:native -- <approved-base.gil> build/local-gil --release-candidate --work-key=' + manifest.parameters.workKey &&
+    /^[A-Za-z0-9._/-]{1,120}$/.test(localBuild.approvalReference ?? '') : buildOrigin === 'hosted' && localBuild === undefined,
+  'Production GIL build origin or local approval identity differs');
   assert.deepEqual(receipt.candidate, manifest.candidate, 'Audited candidate files disagree');
   assert(receipt.receiptSchema === 'github-actions-gil-v1' && receipt.sourceCommit === target.head &&
     receipt.sourceBranch === target.branch && receipt.sourceDirty === false && receipt.liveWriteEnabled === false &&
@@ -96,7 +103,7 @@ function verifyGilFiles(files, locator, target) {
   return {receipt, gilBytes:files['candidate.gil'], binding:{...locator, gilSha256, buildId:receipt.buildId, payloadDigest:receipt.payloadDigest,
     receiptSha256:sha256(files['candidate.json']), manifestSha256:sha256(files['manifest.json']),
     qualityRun:manifest.sourceChecks.qualityRun, qualityAttempt:manifest.sourceChecks.qualityAttempt,
-    qualityCheckoutArtifact:manifest.sourceChecks.qualityCheckoutArtifact}};
+    qualityCheckoutArtifact:manifest.sourceChecks.qualityCheckoutArtifact, ...(localBuild && {buildOrigin, localBuild})}};
 }
 
 export function gilArtifactExpectation(target) {
