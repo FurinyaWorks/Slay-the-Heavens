@@ -18,7 +18,7 @@
 
 Fork 开发按 [任务执行](TASK_EXECUTION.md) 预检。成熟成果经审查后采用精确提交建立主仓集成 PR。PR 正文提供 `Fork-Source: <owner/repo> <refs/heads/branch> <40位SHA>`，并附验收版本、必要测试、许可证明和所用素材来源。保持源分支在审核 SHA，直到合并完成。门禁校验直接 Fork PR 和声明了该字段的主仓 PR。独立评审核对同仓 PR 有无未声明的回流，以及确属正式输入的资产。
 
-Quality 的 `impact` 步骤检查 PR 合成树和原生队列合成树。失败会阻断既有必需 `check`。检查 Git 跟踪的忽略文件、生成物、原始存档、未批准归档、超过 5 MiB 的 Git 对象和 LFS 指针。净变化中可准入的文件由固定版本 Gitleaks 扫描。变更的已批准 LFS 对象在扫描前下载并核对长度与 SHA-256。源码到正式有声候选的生产历史回流还须检查其专用审批、精确历史和实际 Full；禁止用回流恢复原始存档或原始日志。
+Quality 的 `impact` 步骤检查 PR 合成树和原生队列合成树。失败会阻断既有必需 `check`。检查 Git 跟踪的忽略文件、生成物、原始存档、未批准归档、超过 5 MiB 的 Git 对象和 LFS 指针。固定版本 Gitleaks 扫描合成树净变化中可准入的文件。PR 中间提交和其他可达历史由独立历史扫描覆盖。变更的已批准 LFS 对象在扫描前下载并核对长度与 SHA-256。源码到正式有声候选的生产历史回流还须检查其专用审批、精确历史和实际 Full；禁止用回流恢复原始存档或原始日志。
 
 重建本地准入用 `GITLEAKS_BIN=/path/to/gitleaks node scripts/repository-hygiene.mjs <base SHA>`。正反例用 `GITLEAKS_BIN=/path/to/gitleaks node --test scripts/repository-hygiene.test.mjs`。
 

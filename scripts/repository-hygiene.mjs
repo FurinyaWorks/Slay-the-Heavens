@@ -91,7 +91,7 @@ const ignored = new Set(nul(git(['ls-files', '-ci', '--exclude-per-directory=.gi
 const lfs = pathsMatchingLfs([...head.keys()]);
 const pointers = readPointers(head, lfs);
 const baseline = mode === '--baseline';
-const exceptions = baseline ? Object.create(null) : JSON.parse(readFileSync(new URL('../config/repository-hygiene-baseline.json', import.meta.url)));
+const exceptions = baseline ? new Map() : new Map(JSON.parse(readFileSync(new URL('../config/repository-hygiene-baseline.json', import.meta.url))).map(([oid, path]) => [path, oid]));
 const violations = [];
 const temporary = mkdtempSync(join(tmpdir(), 'sth-hygiene-'));
 const scan = join(temporary, 'candidate');
@@ -120,8 +120,8 @@ try {
       reason.push('unapproved or malformed LFS object');
     }
     if (reason.length) {
-      if (baseline) exceptions[path] = entry.oid;
-      else if (!unchanged || !Object.hasOwn(exceptions, path) || exceptions[path] !== entry.oid) {
+      if (baseline) exceptions.set(path, entry.oid);
+      else if (!unchanged || exceptions.get(path) !== entry.oid) {
         violations.push(`${JSON.stringify(path)}: ${reason.join(', ')}`);
       }
     }
@@ -149,7 +149,8 @@ try {
     }
   }
   if (baseline) {
-    process.stdout.write(JSON.stringify(exceptions, null, 2) + '\n');
+    const rows = [...exceptions].map(([path, oid]) => '  ' + JSON.stringify([oid, path]));
+    process.stdout.write('[\n' + rows.join(',\n') + '\n]\n');
   } else {
     if (violations.length) throw new Error(violations.join('\n'));
     const event = process.env.GITHUB_EVENT_PATH && JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH));
