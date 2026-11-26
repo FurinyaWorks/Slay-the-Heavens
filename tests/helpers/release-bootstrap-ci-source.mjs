@@ -138,9 +138,10 @@ export function assertReleaseBootstrapRawInventory(paths,kind='js'){
  }catch(error){throw new Error('complete Release bootstrap raw discovery inventory: '+error.message,{cause:error});}
 }
 export function assertReleaseBootstrapCiCurrent(read=readFileSync){
- assertIntegrationSuccessorsCurrent(read);
+ read=assertIntegrationSuccessorsCurrent(read);
  for(const [path,row]of Object.entries(packet.files))
   assert.equal(hash(norm(historicalSource(path,read(path,'utf8')))),row.current.sha256,'fresh complete integration source: bootstrap '+path);
  for(const [path,sha]of Object.entries(packet.immutableArchives))
   assert.equal(hash(read(path)),sha,'retained complete immutable bootstrap predecessor: '+path);
+ return read;
 }

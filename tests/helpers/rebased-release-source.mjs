@@ -5,6 +5,7 @@ import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {exactSourceMatches as matches} from './source-fingerprint.mjs';
 import {authenticateInputRetirement,beforeInputRetirement} from './input-retirement-source.mjs';
+import {beforeOfficialCharacterBackflow} from './current-replay-fix-sources.mjs';
 const hash=(s,algorithm='sha256')=>createHash(algorithm).update(s).digest('hex');
 const archive=readFileSync(new URL('./rebased-release-source.json.gz',import.meta.url));
 assert.equal(hash(archive),'9ae910d679bdc8386063c58043a43e496ee34b7c6f22fc1a27cbaeca7b27222d','exact reconciled source archive');
@@ -45,8 +46,13 @@ const nativeButtonRepair=Object.freeze({
   ],
  },
 });
+const officialCompositionPath='scripts/character-selection-composition.mjs';
+export const beforeOfficialComposition=(path,source)=>path===officialCompositionPath?beforeOfficialCharacterBackflow(path,source):source;
+export function assertCurrentOfficialComposition(path,source){
+ if(path===officialCompositionPath)assert(beforeOfficialComposition(path,source)!==source,'fresh current production owner: '+path);
+}
 export function beforeNativeButtonRepair(path,source){
- source=beforeInputRetirement(path,source);
+ source=beforeInputRetirement(path,beforeOfficialComposition(path,source));
  const row=Object.hasOwn(nativeButtonRepair,path)?nativeButtonRepair[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const current=source.replaceAll('\r\n','\n');
@@ -86,9 +92,11 @@ export function authorizeRebasedRelease(samples,read,sources=production){
   seen.add(path);
   authenticateInputRetirement(path,source,read);
   const retiredInput=beforeInputRetirement(path,source)!==source,repaired=current!==source;
+  const officialComposition=beforeOfficialComposition(path,source)!==source;
   const sameRevision=bytes=>{
    const before=beforeNativeButtonRepair(path,bytes);
    return (beforeInputRetirement(path,bytes)!==bytes)===retiredInput
+    &&(beforeOfficialComposition(path,bytes)!==bytes)===officialComposition
     &&(before!==bytes)===repaired&&matches(before,after);
   };
   assert(samples.every(([owner,bytes])=>owner!==path||sameRevision(bytes)),'combined linked owner identity: '+path+' mixed live and predecessor sources');

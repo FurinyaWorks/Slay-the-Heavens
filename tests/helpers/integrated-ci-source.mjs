@@ -154,8 +154,7 @@ export function integratedRead(target,{read=readFileSync}={}){read=preflightPrio
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function assertIntegratedCurrent(read=readFileSync){
- assertReleaseBootstrapCiCurrent(read);
- const rawRead=read;
+ const rawRead=assertReleaseBootstrapCiCurrent(read);
  read=preflightPriorRead(rawRead);
  for(const [path,row]of Object.entries(integratedCiProof.files)){
   const binding=integratedEvidenceSuccessors[path];

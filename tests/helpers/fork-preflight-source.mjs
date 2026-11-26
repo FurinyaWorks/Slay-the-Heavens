@@ -8,6 +8,7 @@ import {beforeCalibrationReplay,beforeCurrentReplayCopier} from './calibration-r
 import {beforeNativeHostReplay} from './native-host-replay-source.mjs';
 import {assertNativeFixturesCurrent,beforeNativeFixtureReplay} from './native-fixture-replay-source.mjs';
 import {assertNativeFlowFixturesCurrent,beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';
+import {beforeSelectionReceiptSource,checkedSelectionReceiptRead} from './ui-selection-current-source.mjs';
 import {beforeUiEntranceWitness} from './ui-entrance-source.mjs';
 import {beforeOfficialBackgroundFixture} from './official-background-fixture-source.mjs';
 import {assertAudioDeckBrowserCurrent,beforeMapRoomReplayCohort,beforeDevelopReplayMerge} from './develop-replay-merge-source.mjs';
@@ -943,11 +944,11 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
- const rawRead=read;
+ const rawRead=checkedSelectionReceiptRead(read);
  const alphaBuildPredecessors=Object.fromEntries(Object.keys(actorAlphaBuildInputs).map(path=>
   [path,checkedActorAlphaBuildPredecessor(path,rawRead(path,'utf8'))]));
  const liveRead=(path,encoding)=>{
-  const input=Object.hasOwn(alphaBuildPredecessors,path)?alphaBuildPredecessors[path]:rawRead(path,encoding);
+  const input=Object.hasOwn(alphaBuildPredecessors,path)?alphaBuildPredecessors[path]:beforeSelectionReceiptSource(path,rawRead(path,encoding));
   return beforeForkPush(path,beforeCalibrationReplayOwner(path,input));
  };
  assertReleaseCandidateToolsCurrent(rawRead);
@@ -1009,8 +1010,10 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
   const source=beforeV2UiAdmission(path,beforeCoopCiSource(path,beforeStsUiCloseoutSource(path,current)));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha,'fresh complete integration source: '+path);
  }
+ return rawRead;
 }
 export function beforePreflightSource(path,source,view='prior'){
+ source=beforeSelectionReceiptSource(path,source);
  source=beforeForkPush(path,beforeCalibrationReplayOwner(path,beforeActorAlphaBuildInput(path,source)));
  if(path==='.github/workflows/quality.yml')source=beforePosixDeadlineWorkflow(beforeWindowsDeadlineWorkflow(source));
  source=beforeUiEntranceWitness(path,beforeCurrentReplayCopier(path,source));
