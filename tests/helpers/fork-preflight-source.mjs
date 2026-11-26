@@ -931,6 +931,20 @@ function beforeReplayArchiveStorage(path,source){
  assert.equal(blob(prior),priorId,path);
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+// #951 renamed the Reptomancer handler in the live static gate. Only the
+// exact complete gate can recover the existing #934 historical source.
+function beforeReleaseScriptStaticGate(path,source){
+ if(path!=='scripts/check-lua-static.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const current=normalize(source);
+ if(hash(current)!=='71be0618a4f6909a684bacf738674fa8250e6624832f2333394dc8ce295337a0'||
+  blob(current)!=='c82d0af862f5652ed624dd28a446927ebdd23904')return source;
+ const handler="'giantHeadSlow','timeEater','reptomancerDismissal'";
+ assert.equal(current.split(handler).length,2,'one reviewed Reptomancer handler name');
+ const prior=current.replace(handler,"'giantHeadSlow','timeEater','reptomancerSuicide'");
+ assert.equal(hash(prior),'1af54cf42e38fd561ceff37827d12e7293061ed863172b6fa59bc824b71b2dfe','exact static gate predecessor');
+ assert.equal(blob(prior),'1ed655df7fb2d57f5098c48508b8ce1606c192a5',path);
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 export function beforeReviewedBuildInput(path,source,read){
  source=beforeForkPush(path,source);
  const reviewed=(owner,raw)=>{
@@ -1041,6 +1055,7 @@ export function beforePreflightSource(path,source,view='prior'){
  source=beforeCurrentReplayFixes(path,source);
  source=beforeNativeFlowFixture(path,source);
  source=beforeOfficialBackgroundFixture(path,source);
+ source=beforeReleaseScriptStaticGate(path,source);
  if(path===replayAssetLedger)source=beforeDeckBrowserAssetLedger(source);
  source=beforeReplayArchiveStorage(path,source);
  source=beforeCalibrationReplay(path,source);
