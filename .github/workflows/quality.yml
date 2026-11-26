@@ -27,8 +27,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
   impact:
-    # Fork B alone uses explicitly requested full-preflight pushes. Others skip.
-    if: ${{ (github.event_name != 'push' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' || (github.event.repository.id == 1460133275 && startsWith(github.ref, 'refs/heads/ci/full/'))) && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
+    # Fork A alone uses explicitly requested full-preflight pushes. Others skip.
+    if: ${{ (github.event_name != 'push' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' || (github.event.repository.id == 1460097312 && startsWith(github.ref, 'refs/heads/ci/full/'))) && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -80,7 +80,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: node scripts/check-pr-history.mjs
       - run: npm ci --ignore-scripts --prefer-offline --no-audit --no-fund --fetch-retries=0 --fetch-timeout=30000
-      - name: Pin upstream comparison for explicit Fork B Full
+      - name: Pin upstream comparison for explicit Fork A Full
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/ci/full/')
         id: forkbase
         run: |
@@ -431,7 +431,7 @@ jobs:
         if: matrix.shard == 1
       - run: npm run check:engineering
         if: matrix.shard == 1
-      - name: Fetch exact upstream base for Fork B Full ratchet
+      - name: Fetch exact upstream base for Fork A Full ratchet
         if: matrix.shard == 1 && needs.impact.outputs.fork_base_sha != ''
         shell: bash
         env:
@@ -480,7 +480,7 @@ jobs:
     # Preserve the required check name. A skipped/cancelled/missing shard must
     # never turn the aggregate green; fail-fast=false collects all shard results.
     needs: [impact, rules, fast, presentation, engineering-posix]
-    if: ${{ !cancelled() && (github.event_name != 'push' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' || (github.event.repository.id == 1460133275 && startsWith(github.ref, 'refs/heads/ci/full/'))) && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
+    if: ${{ !cancelled() && (github.event_name != 'push' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' || (github.event.repository.id == 1460097312 && startsWith(github.ref, 'refs/heads/ci/full/'))) && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     permissions:
@@ -638,7 +638,7 @@ jobs:
   engineering-posix:
     # Preserve the required check name and reject every non-success outcome.
     needs: [impact, engineering-posix-shards, fast]
-    if: ${{ !cancelled() && (github.event_name != 'push' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' || (github.event.repository.id == 1460133275 && startsWith(github.ref, 'refs/heads/ci/full/'))) && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
+    if: ${{ !cancelled() && (github.event_name != 'push' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' || (github.event.repository.id == 1460097312 && startsWith(github.ref, 'refs/heads/ci/full/'))) && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:

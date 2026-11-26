@@ -1441,14 +1441,14 @@ test('a partial native Licenses rerun inherits actual old auxiliary skips while 
  ]){const bad=structuredClone(e);mutate(bad.queueFull.licenses);assert.equal(verifyMergedDelivery(bad).state,'merged_pending',String(mutate));}
 });
 
-test('Fork push routing skips every Quality runner outside Fork B Full and preserves formal events',()=>{
+test('Fork push routing skips every Quality runner outside Fork A Full and preserves formal events',()=>{
   const quality=readFileSync(new URL('../.github/workflows/quality.yml',import.meta.url),'utf8').replaceAll('\r\n','\n');
   const quick=readFileSync(new URL('../.github/workflows/quick-feedback.yml',import.meta.url),'utf8').replaceAll('\r\n','\n');
   const condition=(text,job)=>text.match(new RegExp('^  '+job+':[\\s\\S]*?^    if: \\$\\{\\{ (.*?) \\}\\}', 'm'))[1];
   const evaluate=(expression,github)=>Function('github','cancelled','startsWith','return '+expression)(github,()=>false,(s,p)=>s.startsWith(p));
   for(const repositoryId of [1429751262,1460097312,1460133275])for(const ref of ['refs/heads/ci/full/probe','refs/heads/fix/probe','refs/heads/develop','refs/heads/master']){
     const github={event_name:'push',ref,event:{repository:{id:repositoryId}}};
-    const full=['refs/heads/develop','refs/heads/master'].includes(ref)||(repositoryId===1460133275&&ref==='refs/heads/ci/full/probe');
+    const full=['refs/heads/develop','refs/heads/master'].includes(ref)||(repositoryId===1460097312&&ref==='refs/heads/ci/full/probe');
     for(const job of ['impact','check','engineering-posix'])assert.equal(evaluate(condition(quality,job),github),full,job+' '+repositoryId+' '+ref);
     assert.equal(evaluate(condition(quick,'related'),github),repositoryId===1460097312&&!ref.startsWith('refs/heads/ci/full/'));
   }
@@ -1458,7 +1458,7 @@ test('Fork push routing skips every Quality runner outside Fork B Full and prese
   }
 });
 
-test('first Fork B Full push uses its pinned upstream base in real quality ratchet execution',t=>{
+test('first Fork A Full push uses its pinned upstream base in real quality ratchet execution',t=>{
  const workflow=readFileSync(new URL('../.github/workflows/quality.yml',import.meta.url),'utf8').replaceAll('\r\n','\n');
  const expressions=[...workflow.matchAll(/^          (CI_COMPARISON_BASE|BASE_SHA|QUALITY_RATCHET_BASE): \$\{\{ (.+github.event.before.*?) \}\}$/gm)];
  assert.equal(expressions.length,3,'retain all three existing comparison consumers');
@@ -1479,7 +1479,7 @@ test('first Fork B Full push uses its pinned upstream base in real quality ratch
  assert.equal(clone.status,0,clone.stderr);
  const run=qualityBase=>spawnSync(process.execPath,[command],{cwd:checkout,encoding:'utf8',env:{...process.env,CI:'false',QUALITY_RATCHET_BASE:qualityBase}});
  assert.notEqual(run(resolved).status,0,'a base object in impact is absent from a separate shallow rules checkout');
- const fetchStep=workflow.match(/      - name: Fetch exact upstream base for Fork B Full ratchet\n([\s\S]*?)(?=      - name:)/)[1];
+ const fetchStep=workflow.match(/      - name: Fetch exact upstream base for Fork A Full ratchet\n([\s\S]*?)(?=      - name:)/)[1];
  const fetchScript=fetchStep.match(/        run: \|\n([\s\S]*)/)[1].replace(/^          /gm,'')
   .replace('https://github.com/FurinyaWorks/Slay-the-Heavens.git',pathToFileURL(root).href);
  const shell=process.platform==='win32'?`${process.env.ProgramFiles}/Git/bin/bash.exe`:'/bin/bash';

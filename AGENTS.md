@@ -21,7 +21,7 @@
 
 ## 开始与交付
 
-- 三仓库共用 Backlog。新功能、重构、实验及技术探针必须在 Fork 开发，日常修复、测试、性能和文档默认在 Fork。Fork A 优先开发与 Fast，Fork B 优先高风险 Full。开工经现有切片检查核对分支和远端，从最新 `origin/develop` 建独立工作树。成熟且通过必要验证的精确提交才能同步到主仓短分支。分流与例外见 [任务执行](docs/TASK_EXECUTION.md#fork-first-开发) 和 [CI](docs/CI.md#三仓库按需验证)。
+- 三仓库共用 Backlog。新功能、重构、实验及技术探针必须在 Fork 开发，日常修复、测试、性能和文档默认在 Fork。Fork A 负责重型 CI 与工程验证，Fork B 负责美术生产和候选设计。成果回流与证据存储按[仓库卫生](docs/REPOSITORY_HYGIENE.md)。开工经现有切片检查核对分支和远端，从最新 `origin/develop` 建独立工作树。成熟且通过必要验证的精确提交才能同步到主仓短分支。分流与例外见 [任务执行](docs/TASK_EXECUTION.md#fork-first-开发) 和 [CI](docs/CI.md#三仓库按需验证)。
 - 每次会话先运行 `backlog instructions overview`；创建、执行、收口前分别读对应的 `backlog instructions task-creation`、`backlog instructions task-execution`、`backlog instructions task-finalization`。任务与里程碑只用 Backlog CLI 修改，先查重；负责人沿用 Furinya，任务正文用简洁中文，技术证据放对应附件。 内部单人多agent事项只进Backlog；GitHub Issues保留给外部协作和公开反馈，既有内部Issue迁入后关闭并保留来源链接。
 - 自主认领前按 [任务执行](docs/TASK_EXECUTION.md#开始任务) 检查范围、审批与依赖。
 - **产品优先、工程按需**：M7已归档，只在M8/M9实际功能、稳定性、容量或CI门禁受阻且有证据时实施最小架构修复；质量棘轮照常拦截新增债务，不为清零旧CC/SCC/Fan-out自主开工。按[工程移交](docs/backlog-details/M7-PRODUCT-FIRST-HANDOFF-20261113.md)追踪未验AC。
