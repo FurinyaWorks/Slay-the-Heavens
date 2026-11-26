@@ -1034,7 +1034,21 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha,'fresh complete integration source: '+path);
  }
 }
+// The live planner reads its measured Linux map directly. Historical CI views
+// first restore the exact pre-observation timing table and its custody chain.
+function beforeV220HostedTiming(path,source){
+ if(path!=='scripts/ci-test-timings.json'||typeof source!=='string'||source.includes('\r\r\n'))return source;
+ const current=normalize(source);
+ if(hash(current)!=='6756697bac41f5e9081c49a95618f909628aba4ce31e300ae7e0006d16a5eeef'||blob(current)!=='e7e9d43b598b8d91f70fe6b00843874b7702e1cb')return source;
+ const value=JSON.parse(current),update=value.jsCalibrationUpdates.pop();
+ for(const file of Object.keys(update.weightsMs))delete value.js.linux[file];
+ const prior=JSON.stringify(value,null,2)+'\n';
+ assert.equal(hash(prior),'8f5644822f365b925cba048ee71a6a1e62a4b1e635074fd05397c792a5d8b961','exact pre-v2.2 Hosted timing table');
+ assert.equal(blob(prior),'6b6db60d5e502286e2d0ff670b953c4af1d7d913',path);
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 export function beforePreflightSource(path,source,view='prior'){
+ source=beforeV220HostedTiming(path,source);
  source=beforeForkPush(path,beforeCalibrationReplayOwner(path,beforeActorAlphaBuildInput(path,source)));
  if(path==='.github/workflows/quality.yml')source=beforePosixDeadlineWorkflow(beforeWindowsDeadlineWorkflow(source));
  source=beforeUiEntranceWitness(path,beforeCurrentReplayCopier(path,source));

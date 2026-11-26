@@ -1488,7 +1488,16 @@
       "tests/actor-lifecycle.test.mjs": 51028,
       "tests/relic-lifecycle.test.mjs": 461487,
       "tests/combat-lifecycle.test.mjs": 63650,
-      "tests/relic-query-source-inverse.test.mjs": 29498
+      "tests/relic-query-source-inverse.test.mjs": 29498,
+      "tests/battle-card-coverage-scenario.test.mjs": 18,
+      "tests/check-release-text.test.mjs": 22,
+      "tests/coop-primitive-lab.test.mjs": 208,
+      "tests/core-lifecycle-complexity.test.mjs": 11,
+      "tests/evidence-native-junction.test.mjs": 19,
+      "tests/export-playtest.test.mjs": 52,
+      "tests/release-metadata.test.mjs": 14,
+      "tests/relic-equip-complexity.test.mjs": 696,
+      "tests/v25-private-card-assets.test.mjs": 216
     }
   },
   "lua": {
@@ -7736,6 +7745,468 @@
       },
       "detailedReceipt": "docs/evidence/pr521-ci-placement-20261106.json",
       "detailedReceiptSha256": "5af2e277b3472262b57a12a6c13e387f4a008eeff0223b2a214bdddae115bd78"
+    },
+    {
+      "kind": "measured-posix-first-observations",
+      "policy": "Planning only. Register nine previously unmeasured Linux files at their largest complete same-workload Hosted observation rounded up. All existing measured entries, discovery, worker policy, fallback, reserves and deadlines remain unchanged.",
+      "sourceTarget": {
+        "commit": "0a10bd9cc1bc89ce9cfa2569b071922149571468",
+        "tree": "de55f80eb501a811a5f72426825d304b77d90a0f"
+      },
+      "decodedLogEncoding": "SHA-256 of complete GitHub job log text re-encoded as UTF-8",
+      "previousMapSha256": {
+        "win32": "125afe81d6e51afd192d6c49a2fbfb5abb148c5f5d53696ea08b03dc28f65f7c",
+        "linux": "cae7879e14c6d44413ecd24d8571e4a5b3f4d156f4ca49cfa438f4f4c717e256"
+      },
+      "resultingMapSha256": {
+        "win32": "125afe81d6e51afd192d6c49a2fbfb5abb148c5f5d53696ea08b03dc28f65f7c",
+        "linux": "f1d5a7d2c001e918faf65b21d507a624e6a015260221917a814b8d135bda1dcc"
+      },
+      "weightsMs": {
+        "tests/battle-card-coverage-scenario.test.mjs": 18,
+        "tests/check-release-text.test.mjs": 22,
+        "tests/coop-primitive-lab.test.mjs": 208,
+        "tests/core-lifecycle-complexity.test.mjs": 11,
+        "tests/evidence-native-junction.test.mjs": 19,
+        "tests/export-playtest.test.mjs": 52,
+        "tests/release-metadata.test.mjs": 14,
+        "tests/relic-equip-complexity.test.mjs": 696,
+        "tests/v25-private-card-assets.test.mjs": 216
+      },
+      "sources": [
+        {
+          "runId": 45705324299,
+          "runAttempt": 1,
+          "jobId": 139536056368,
+          "jobName": "engineering-posix (10/15)",
+          "url": "https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45705324299/job/139536056368",
+          "checkoutSha": "4e488e6b290364e1d33f39bf4bfc55f6e217dddc",
+          "tree": "7d948a2cd58dc7a23574ee395863cd672aa7be59",
+          "runnerImage": "20261116.133.1",
+          "runnerVersion": "2.338.2",
+          "nodeVersion": "v24.18.0",
+          "pythonVersion": "3.13.18",
+          "pillowVersion": "12.3.0",
+          "mediaBundleSha256": "3da5748b97eac0648cf871f9b32a47e359b38f37b56fece190609990a2a34c72",
+          "decodedLogSha256": "d80463c807b360e8d3144bbff28d7ee509183a0caec229356d74fd1975d0d925",
+          "observations": [
+            {
+              "file": "tests/export-playtest.test.mjs",
+              "durationMs": 47.611952,
+              "success": true,
+              "line": 556
+            },
+            {
+              "file": "tests/core-lifecycle-complexity.test.mjs",
+              "durationMs": 10.441817,
+              "success": true,
+              "line": 898
+            }
+          ]
+        },
+        {
+          "runId": 45704932845,
+          "runAttempt": 1,
+          "jobId": 139535535761,
+          "jobName": "engineering-posix (10/15)",
+          "url": "https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45704932845/job/139535535761",
+          "checkoutSha": "a47d41c4f514d39a7ce24d4785555a525c54b2ac",
+          "tree": "972f040e9b352dcdb7869f1f63b79146acdc881b",
+          "runnerImage": "20261116.133.1",
+          "runnerVersion": "2.338.2",
+          "nodeVersion": "v24.18.0",
+          "pythonVersion": "3.13.18",
+          "pillowVersion": "12.3.0",
+          "mediaBundleSha256": "0090cd36f16795d44a990c547f1b53e5b7c76223af6a8754c189ac30353b8880",
+          "decodedLogSha256": "165dc786c1151a3888c9f439ac47d2cb384c1b59a5452f574c3074ef5c71971a",
+          "observations": [
+            {
+              "file": "tests/export-playtest.test.mjs",
+              "durationMs": 51.768438,
+              "success": true,
+              "line": 529
+            },
+            {
+              "file": "tests/core-lifecycle-complexity.test.mjs",
+              "durationMs": 10.720212,
+              "success": true,
+              "line": 871
+            }
+          ]
+        },
+        {
+          "runId": 45704315981,
+          "runAttempt": 1,
+          "jobId": 139540288658,
+          "jobName": "engineering-posix (10/15)",
+          "url": "https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45704315981/job/139540288658",
+          "checkoutSha": "282f73c3288ee8c4385ef2ddcbf21e6ee2a3da41",
+          "tree": "8c6b39ef8276e1d2ae67b8a1e100222954954cc7",
+          "runnerImage": "20261122.23.1",
+          "runnerVersion": "2.338.2",
+          "nodeVersion": "v24.18.0",
+          "pythonVersion": "3.13.18",
+          "pillowVersion": "12.3.0",
+          "mediaBundleSha256": "4abdaa2728d744ddc747403d4bb0d1a7a8accef8b2b0a52884415bc125f5c499",
+          "decodedLogSha256": "1f2cf8b0dc28c4c040e10a894d4fe25d5cdf25cf485a3b89e3027cdc5bc6d4eb",
+          "observations": [
+            {
+              "file": "tests/export-playtest.test.mjs",
+              "durationMs": 49.644722,
+              "success": true,
+              "line": 508
+            },
+            {
+              "file": "tests/core-lifecycle-complexity.test.mjs",
+              "durationMs": 10.191578,
+              "success": true,
+              "line": 850
+            }
+          ]
+        },
+        {
+          "runId": 45705324299,
+          "runAttempt": 1,
+          "jobId": 139536056474,
+          "jobName": "engineering-posix (12/15)",
+          "url": "https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45705324299/job/139536056474",
+          "checkoutSha": "4e488e6b290364e1d33f39bf4bfc55f6e217dddc",
+          "tree": "7d948a2cd58dc7a23574ee395863cd672aa7be59",
+          "runnerImage": "20261116.376.1",
+          "runnerVersion": "2.338.2",
+          "nodeVersion": "v24.18.0",
+          "pythonVersion": "3.13.18",
+          "pillowVersion": "12.3.0",
+          "mediaBundleSha256": "3da5748b97eac0648cf871f9b32a47e359b38f37b56fece190609990a2a34c72",
+          "decodedLogSha256": "b41960d78e6ed2bcf9736140242a9a53879c01c6d516869ba71fb41eb6e60895",
+          "observations": [
+            {
+              "file": "tests/battle-card-coverage-scenario.test.mjs",
+              "durationMs": 17.074645,
+              "success": true,
+              "line": 462
+            },
+            {
+              "file": "tests/check-release-text.test.mjs",
+              "durationMs": 20.549315,
+              "success": true,
+              "line": 466
+            },
+            {
+              "file": "tests/relic-equip-complexity.test.mjs",
+              "durationMs": 505.921085,
+              "success": true,
+              "line": 709
+            }
+          ]
+        },
+        {
+          "runId": 45704932845,
+          "runAttempt": 1,
+          "jobId": 139535535711,
+          "jobName": "engineering-posix (12/15)",
+          "url": "https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45704932845/job/139535535711",
+          "checkoutSha": "a47d41c4f514d39a7ce24d4785555a525c54b2ac",
+          "tree": "972f040e9b352dcdb7869f1f63b79146acdc881b",
+          "runnerImage": "20261122.23.1",
+          "runnerVersion": "2.338.2",
+          "nodeVersion": "v24.18.0",
+          "pythonVersion": "3.13.18",
+          "pillowVersion": "12.3.0",
+          "mediaBundleSha256": "0090cd36f16795d44a990c547f1b53e5b7c76223af6a8754c189ac30353b8880",
+          "decodedLogSha256": "da4ef7cff226905e0fa6a443a01e0b1fc789ae17cb16959f4ce391316fc591e1",
+          "observations": [
+            {
+              "file": "tests/battle-card-coverage-scenario.test.mjs",
+              "durationMs": 16.738134,
+              "success": true,
+              "line": 454
+            },
+            {
+              "file": "tests/check-release-text.test.mjs",
+              "durationMs": 21.297812,
+              "success": true,
+              "line": 458
+            },
+            {
+              "file": "tests/relic-equip-complexity.test.mjs",
+              "durationMs": 695.735394,
+              "success": true,
+              "line": 683
+            }
+          ]
+        },
+        {
+          "runId": 45704315981,
+          "runAttempt": 1,
+          "jobId": 139540288693,
+          "jobName": "engineering-posix (12/15)",
+          "url": "https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45704315981/job/139540288693",
+          "checkoutSha": "282f73c3288ee8c4385ef2ddcbf21e6ee2a3da41",
+          "tree": "8c6b39ef8276e1d2ae67b8a1e100222954954cc7",
+          "runnerImage": "20261116.133.1",
+          "runnerVersion": "2.338.2",
+          "nodeVersion": "v24.18.0",
+          "pythonVersion": "3.13.18",
+          "pillowVersion": "12.3.0",
+          "mediaBundleSha256": "4abdaa2728d744ddc747403d4bb0d1a7a8accef8b2b0a52884415bc125f5c499",
+          "decodedLogSha256": "358c80cf2a6d38c7a1bcbff06803a8dfc3a6d7effb218eac92ccf543b83eda48",
+          "observations": [
+            {
+              "file": "tests/battle-card-coverage-scenario.test.mjs",
+              "durationMs": 11.649717,
+              "success": true,
+              "line": 444
+            },
+            {
+              "file": "tests/check-release-text.test.mjs",
+              "durationMs": 12.672173,
+              "success": true,
+              "line": 448
+            },
+            {
+              "file": "tests/relic-equip-complexity.test.mjs",
+              "durationMs": 350.762046,
+              "success": true,
+              "line": 691
+            }
+          ]
+        },
+        {
+          "runId": 45705324299,
+          "runAttempt": 1,
+          "jobId": 139536056444,
+          "jobName": "engineering-posix (11/15)",
+          "url": "https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45705324299/job/139536056444",
+          "checkoutSha": "4e488e6b290364e1d33f39bf4bfc55f6e217dddc",
+          "tree": "7d948a2cd58dc7a23574ee395863cd672aa7be59",
+          "runnerImage": "20261116.376.1",
+          "runnerVersion": "2.338.2",
+          "nodeVersion": "v24.18.0",
+          "pythonVersion": "3.13.18",
+          "pillowVersion": "12.3.0",
+          "mediaBundleSha256": "3da5748b97eac0648cf871f9b32a47e359b38f37b56fece190609990a2a34c72",
+          "decodedLogSha256": "a676db0441b9e5806e207e49424457ccf5a452a559acaf1846e17d1e1a96d27a",
+          "observations": [
+            {
+              "file": "tests/coop-primitive-lab.test.mjs",
+              "durationMs": 160.676059,
+              "success": true,
+              "line": 384
+            },
+            {
+              "file": "tests/evidence-native-junction.test.mjs",
+              "durationMs": 18.520419,
+              "success": true,
+              "line": 512
+            }
+          ]
+        },
+        {
+          "runId": 45704932845,
+          "runAttempt": 1,
+          "jobId": 139535535727,
+          "jobName": "engineering-posix (11/15)",
+          "url": "https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45704932845/job/139535535727",
+          "checkoutSha": "a47d41c4f514d39a7ce24d4785555a525c54b2ac",
+          "tree": "972f040e9b352dcdb7869f1f63b79146acdc881b",
+          "runnerImage": "20261116.133.1",
+          "runnerVersion": "2.338.2",
+          "nodeVersion": "v24.18.0",
+          "pythonVersion": "3.13.18",
+          "pillowVersion": "12.3.0",
+          "mediaBundleSha256": "0090cd36f16795d44a990c547f1b53e5b7c76223af6a8754c189ac30353b8880",
+          "decodedLogSha256": "e797142de2ef9fa5affe336c5898e52a72cfb555de31fb0b87cf2152ca9f92e1",
+          "observations": [
+            {
+              "file": "tests/coop-primitive-lab.test.mjs",
+              "durationMs": 171.298308,
+              "success": true,
+              "line": 458
+            },
+            {
+              "file": "tests/evidence-native-junction.test.mjs",
+              "durationMs": 11.330127,
+              "success": true,
+              "line": 592
+            }
+          ]
+        },
+        {
+          "runId": 45704315981,
+          "runAttempt": 1,
+          "jobId": 139540288776,
+          "jobName": "engineering-posix (11/15)",
+          "url": "https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45704315981/job/139540288776",
+          "checkoutSha": "282f73c3288ee8c4385ef2ddcbf21e6ee2a3da41",
+          "tree": "8c6b39ef8276e1d2ae67b8a1e100222954954cc7",
+          "runnerImage": "20261116.376.1",
+          "runnerVersion": "2.338.2",
+          "nodeVersion": "v24.18.0",
+          "pythonVersion": "3.13.18",
+          "pillowVersion": "12.3.0",
+          "mediaBundleSha256": "4abdaa2728d744ddc747403d4bb0d1a7a8accef8b2b0a52884415bc125f5c499",
+          "decodedLogSha256": "f52e3cb9cf4c2300b660de7b45202962e2a711540a8697508fcf34a9f0fa70fd",
+          "observations": [
+            {
+              "file": "tests/coop-primitive-lab.test.mjs",
+              "durationMs": 207.653729,
+              "success": true,
+              "line": 443
+            },
+            {
+              "file": "tests/evidence-native-junction.test.mjs",
+              "durationMs": 17.153052,
+              "success": true,
+              "line": 558
+            }
+          ]
+        },
+        {
+          "runId": 45705324299,
+          "runAttempt": 1,
+          "jobId": 139536056375,
+          "jobName": "engineering-posix (6/15)",
+          "url": "https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45705324299/job/139536056375",
+          "checkoutSha": "4e488e6b290364e1d33f39bf4bfc55f6e217dddc",
+          "tree": "7d948a2cd58dc7a23574ee395863cd672aa7be59",
+          "runnerImage": "20261122.23.1",
+          "runnerVersion": "2.338.2",
+          "nodeVersion": "v24.18.0",
+          "pythonVersion": "3.13.18",
+          "pillowVersion": "12.3.0",
+          "mediaBundleSha256": "3da5748b97eac0648cf871f9b32a47e359b38f37b56fece190609990a2a34c72",
+          "decodedLogSha256": "cb671faa6a1291fc515284e275b64bab389e4489147f81e1d8f3804d55612a4a",
+          "observations": [
+            {
+              "file": "tests/v25-private-card-assets.test.mjs",
+              "durationMs": 215.291289,
+              "success": true,
+              "line": 2202
+            }
+          ]
+        },
+        {
+          "runId": 45704932845,
+          "runAttempt": 1,
+          "jobId": 139535535726,
+          "jobName": "engineering-posix (6/15)",
+          "url": "https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45704932845/job/139535535726",
+          "checkoutSha": "a47d41c4f514d39a7ce24d4785555a525c54b2ac",
+          "tree": "972f040e9b352dcdb7869f1f63b79146acdc881b",
+          "runnerImage": "20261116.133.1",
+          "runnerVersion": "2.338.2",
+          "nodeVersion": "v24.18.0",
+          "pythonVersion": "3.13.18",
+          "pillowVersion": "12.3.0",
+          "mediaBundleSha256": "0090cd36f16795d44a990c547f1b53e5b7c76223af6a8754c189ac30353b8880",
+          "decodedLogSha256": "fae45c86b1134f7e44cebfd459306e205b8bcf8ff7c73d9cd653da800b025a5e",
+          "observations": [
+            {
+              "file": "tests/v25-private-card-assets.test.mjs",
+              "durationMs": 207.311718,
+              "success": true,
+              "line": 2209
+            }
+          ]
+        },
+        {
+          "runId": 45704315981,
+          "runAttempt": 1,
+          "jobId": 139540288579,
+          "jobName": "engineering-posix (6/15)",
+          "url": "https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45704315981/job/139540288579",
+          "checkoutSha": "282f73c3288ee8c4385ef2ddcbf21e6ee2a3da41",
+          "tree": "8c6b39ef8276e1d2ae67b8a1e100222954954cc7",
+          "runnerImage": "20261116.133.1",
+          "runnerVersion": "2.338.2",
+          "nodeVersion": "v24.18.0",
+          "pythonVersion": "3.13.18",
+          "pillowVersion": "12.3.0",
+          "mediaBundleSha256": "4abdaa2728d744ddc747403d4bb0d1a7a8accef8b2b0a52884415bc125f5c499",
+          "decodedLogSha256": "a158c1900508fa14ff8ba20d2d410f887581ceb4de9cb72ca4b3fe3c8042cce6",
+          "observations": [
+            {
+              "file": "tests/v25-private-card-assets.test.mjs",
+              "durationMs": 204.258831,
+              "success": true,
+              "line": 2175
+            }
+          ]
+        },
+        {
+          "runId": 45705324299,
+          "runAttempt": 1,
+          "jobId": 139536056414,
+          "jobName": "engineering-posix (8/15)",
+          "url": "https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45705324299/job/139536056414",
+          "checkoutSha": "4e488e6b290364e1d33f39bf4bfc55f6e217dddc",
+          "tree": "7d948a2cd58dc7a23574ee395863cd672aa7be59",
+          "runnerImage": "20261116.376.1",
+          "runnerVersion": "2.338.2",
+          "nodeVersion": "v24.18.0",
+          "pythonVersion": "3.13.18",
+          "pillowVersion": "12.3.0",
+          "mediaBundleSha256": "3da5748b97eac0648cf871f9b32a47e359b38f37b56fece190609990a2a34c72",
+          "decodedLogSha256": "bec851e74984e386158d3eec0471b3d452bf7365513c1194510514579be6f640",
+          "observations": [
+            {
+              "file": "tests/release-metadata.test.mjs",
+              "durationMs": 13.830118,
+              "success": true,
+              "line": 886
+            }
+          ]
+        },
+        {
+          "runId": 45704932845,
+          "runAttempt": 1,
+          "jobId": 139535535720,
+          "jobName": "engineering-posix (8/15)",
+          "url": "https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45704932845/job/139535535720",
+          "checkoutSha": "a47d41c4f514d39a7ce24d4785555a525c54b2ac",
+          "tree": "972f040e9b352dcdb7869f1f63b79146acdc881b",
+          "runnerImage": "20261116.133.1",
+          "runnerVersion": "2.338.2",
+          "nodeVersion": "v24.18.0",
+          "pythonVersion": "3.13.18",
+          "pillowVersion": "12.3.0",
+          "mediaBundleSha256": "0090cd36f16795d44a990c547f1b53e5b7c76223af6a8754c189ac30353b8880",
+          "decodedLogSha256": "e0d6f25ee8cb8b769ce8eff464d8bcc32dc16839558e63372d4b81e407349b98",
+          "observations": [
+            {
+              "file": "tests/release-metadata.test.mjs",
+              "durationMs": 12.010317,
+              "success": true,
+              "line": 865
+            }
+          ]
+        },
+        {
+          "runId": 45704315981,
+          "runAttempt": 1,
+          "jobId": 139540288488,
+          "jobName": "engineering-posix (8/15)",
+          "url": "https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/45704315981/job/139540288488",
+          "checkoutSha": "282f73c3288ee8c4385ef2ddcbf21e6ee2a3da41",
+          "tree": "8c6b39ef8276e1d2ae67b8a1e100222954954cc7",
+          "runnerImage": "20261116.376.1",
+          "runnerVersion": "2.338.2",
+          "nodeVersion": "v24.18.0",
+          "pythonVersion": "3.13.18",
+          "pillowVersion": "12.3.0",
+          "mediaBundleSha256": "4abdaa2728d744ddc747403d4bb0d1a7a8accef8b2b0a52884415bc125f5c499",
+          "decodedLogSha256": "cbe525f624d5339e2bad517bf4155611b03886019c9c74f1c522cb76207538f1",
+          "observations": [
+            {
+              "file": "tests/release-metadata.test.mjs",
+              "durationMs": 7.625829,
+              "success": true,
+              "line": 882
+            }
+          ]
+        }
+      ]
     }
   ],
   "luaShardCalibrationUpdates": [
