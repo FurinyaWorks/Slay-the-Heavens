@@ -163,7 +163,10 @@ test('proposal workflow is manually dispatched, pinned, manifest-driven and cann
   assert.equal(config['include-component-in-tag'], true); assert.equal(config['include-v-in-tag'], true);
   assert.equal(config['versioning'], 'default'); assert.equal(config['bump-minor-pre-major'], false);
   assert.equal(config['bump-patch-for-minor-pre-major'], false); assert.equal(config['draft-pull-request'], true);
-  const workflow = readFileSync('.github/workflows/release-proposal.yml', 'utf8');
+  const rawWorkflow = readFileSync('.github/workflows/release-proposal.yml', 'utf8');
+  const workflow = rawWorkflow.replaceAll('\r\n', '\n');
+  assert(!workflow.includes('\r') && (rawWorkflow === workflow || rawWorkflow === workflow.replaceAll('\n', '\r\n')),
+    'release proposal checkout must use uniform LF or CRLF');
   assert.match(workflow, /on:\s*\n  workflow_dispatch:/); assert.doesNotMatch(workflow, /\n  (?:push|pull_request|release|schedule):/);
   assert.match(workflow, /release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7/);
   assert.match(workflow, /skip-github-release: true/); assert.doesNotMatch(workflow, /\n\s+release-type:/);

@@ -5,6 +5,7 @@ import {gunzipSync} from 'node:zlib';
 import assert from 'node:assert/strict';
 import {beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';
 import {beforeRebasedRelease} from './rebased-release-source.mjs';
+import {beforeSelectionReceiptSource} from './ui-selection-current-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const bytes=readFileSync(new URL('./sts1-menu-prior.test.mjs.gz',import.meta.url));
 assert.equal(hash(bytes),'b10cce10b072edcd45acc8204944ece9b604343699658543229999991ec94431');
@@ -28,7 +29,9 @@ export function beforeOfficialAssetsFocusFixture(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 export function beforeSts1MenuCiSource(path,source){
- const fixture=beforeOfficialAssetsFocusFixture(path,source);
+ const fixture=path===officialAssetsFixture
+  ?beforeOfficialAssetsFocusFixture(path,beforeSelectionReceiptSource(path,source))
+  :source;
  if(fixture!==source)source=beforeRebasedRelease(path,beforeNativeFlowFixture(path,fixture));
  const row=Object.hasOwn(files,path)?files[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n')||hash(source.replaceAll('\r\n','\n'))!==row.afterSha256)return source;

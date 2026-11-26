@@ -148,8 +148,35 @@ const nodeNoticeCopier=Object.freeze({
   }
  ]
 });
+const deckArchitectureCopier=Object.freeze({
+ current:{"sha256":"5d46ffcaf5ad5f49654ff8dbc55301c73962227384266dc2f28e43cc641b098e","gitBlob":"d3effc457c8fc1e619d356bfcf0c99a49f65f528"},
+ previous:nodeNoticeCopier.current,
+ hunks:[
+  {
+    "at": 359,
+    "before": " 'tests/helpers/develop-release-backflow-source.mjs':'2834679eef440cf54e64cfb2c144c2fc6dbb5dc7ed048c3767435c250827337f',",
+    "after": " 'tests/helpers/develop-release-backflow-source.mjs':'3f14f8c02058d83c00314be990754099cddf46020b1b0f64aabc93afef26d771',\n 'tests/helpers/develop-release-vocabulary-source.mjs':'6120c2639aeb77972adcab7571c384d2d53f8a28794f99cc389f108a8bf0aeb5',\n 'tests/fixtures/develop-release-vocabulary-source.json.gz':'2b3d606fc142f2c8c5cfaaff386c70f6e1f741f24fbc1879b78399b7c477e914',"
+  },
+  {
+    "at": 386,
+    "before": "  if(path==='tests/helpers/reward-current-source.mjs'&&!raw.equals(content))",
+    "after": "  if((path==='tests/helpers/reward-current-source.mjs'||path==='tests/helpers/develop-release-backflow-source.mjs'||\n      path==='tests/helpers/develop-release-vocabulary-source.mjs')&&!raw.equals(content))"
+  }
+],
+});
+const mapRoomBattleActionsCopier=Object.freeze({
+ current:{"sha256":"eda5c410a75c5ac92659ec477fee195652b38273c6438ee826c828aca8d5bc6e","gitBlob":"85ad4d1c1c77331689e21006e49210aa94db496a"},
+ previous:deckArchitectureCopier.current,
+ hunks:[
+  {
+    "at": 359,
+    "before": " 'tests/helpers/develop-release-backflow-source.mjs':'3f14f8c02058d83c00314be990754099cddf46020b1b0f64aabc93afef26d771',",
+    "after": " 'tests/helpers/develop-release-backflow-source.mjs':'dfaa31e83dbd633b57a1f309e9ed2f2de83510f2827e10492d6266d97c20417d',\n 'tests/fixtures/map-room-battle-actions-source.json.gz':'45918da82006880941ab23f10ccc49b7fe11fc2c7978b4f1508f923216e142ec',"
+  }
+],
+});
 export const selectionCopierReceipt=Object.freeze({path:copierPath,
- afterSha256:nodeNoticeCopier.current.sha256,afterBlob:nodeNoticeCopier.current.gitBlob});
+ afterSha256:mapRoomBattleActionsCopier.current.sha256,afterBlob:mapRoomBattleActionsCopier.current.gitBlob});
 
 function beforeReceipt(path,source,binding){
  if(!binding||!uniformSelectionSource(source)||!exactSourceMatches(source,binding.current))return source;
@@ -160,13 +187,17 @@ function beforeReceipt(path,source,binding){
 }
 
 export function beforeSelectionReceiptSource(path,source){
- if(path===copierPath)source=beforeReceipt(path,source,nodeNoticeCopier);
+ if(path===copierPath){
+  source=beforeReceipt(path,source,mapRoomBattleActionsCopier);
+  source=beforeReceipt(path,source,deckArchitectureCopier);
+  source=beforeReceipt(path,source,nodeNoticeCopier);
+ }
  return beforeReceipt(path,source,receipt(path));
 }
 
 export function checkedSelectionReceiptRead(read){
  const checked=(path,encoding)=>{
-  const raw=read(path,encoding),binding=path===copierPath?nodeNoticeCopier:receipt(path);
+  const raw=read(path,encoding),binding=path===copierPath?mapRoomBattleActionsCopier:receipt(path);
   if(binding){
    const source=decodedSelectionSource(raw);
    assert(uniformSelectionSource(source)&&exactSourceMatches(source,binding.current),
