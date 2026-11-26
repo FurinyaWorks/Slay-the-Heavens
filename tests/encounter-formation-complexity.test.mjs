@@ -66,7 +66,11 @@ test('real pinned measurements reject old Formation assemble and each helper or 
 test('only the assembly span changes and every new named family remains explicitly governed',()=>{
  const source=readFileSync(file,'utf8').replaceAll('\r\n','\n');
  const before=readFileSync('tests/fixtures/encounter-formation-before.lua','utf8').replaceAll('\r\n','\n');
- assert.equal(source.slice(0,source.indexOf(' local result={}')),before.slice(0,before.indexOf(' local result={}')));
+ const prefix=source.slice(0,source.indexOf(' local result={}'));
+ // #951 renamed the IDs in these two candidate expressions outside the assembly span.
+ const reviewedHumanoids="  candidates[1]=make('raven_adept',x,y)\n  candidates[2]=make(boolean() and 'red_guard' or 'blue_guard',x,y)\n";
+ const archivedHumanoids="  candidates[1]=make('cultist',x,y)\n  candidates[2]=make(boolean() and 'red_slaver' or 'blue_slaver',x,y)\n";
+ assert.equal(prefix.replace(reviewedHumanoids,archivedHumanoids),before.slice(0,before.indexOf(' local result={}')));
  assert.equal(source.slice(source.indexOf('\n return result\n')),before.slice(before.indexOf('\n return result\n')));
  const added=[...source.slice(source.indexOf(' local result={}')).matchAll(/local function ([\w.]+)\(/g)].map(m=>m[1]);
  assert.deepEqual(added.sort(),names.slice(1).sort());

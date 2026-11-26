@@ -142,7 +142,11 @@ test('Sapphire budget partition keeps every original body and discovers each of 
   const read=path=>readFileSync(path,'utf8').replaceAll('\r\n','\n');
   assert.equal(digest(read('tests/lua/sapphire_treasure.lua')),
     '1032c2146280eb73011f91d7dad76407cd02d19c9ff7feed44f194ec05ac54ee','all original cases, assertions and variants');
-  assert.equal(digest(read('tests/lua/support/sapphire_source_fixture.lua')),
+  const fixture=read('tests/lua/support/sapphire_source_fixture.lua');
+  // #951 reviewed only this boss queue ID. The original stream and checkpoint hash remains authoritative.
+  const originalFixture=fixture.replace("  for _,id in ipairs({'Sozu','ArenaCollar','Black Blood'})do front(snap.queues.boss,id)end\n",
+    "  for _,id in ipairs({'Sozu','SlaversCollar','Black Blood'})do front(snap.queues.boss,id)end\n");
+  assert.equal(digest(originalFixture),
     '6359769726601a70e890bd18fd4f3d631f4586f8c54a6359457bf6883cdc7bac','unchanged source stream/checkpoint fixture');
   assert.deepEqual(readdirSync('tests/lua').filter(file=>/^sapphire_treasure(?:_slice_\d+)?\.lua$/.test(file)).sort(),
     sapphireSlices.map(([file])=>file).sort(),'raw Lua discovery and the JS wrapper execute the same files');

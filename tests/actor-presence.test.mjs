@@ -1,12 +1,121 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';import luaparse from 'luaparse';
+import {createHash} from 'node:crypto';
 import {discoverSources,dependencyCycles} from '../scripts/lua-quality-metrics.mjs';
 import {analyzeSources} from '../scripts/check-architecture.mjs';
 import {reviewResponsibilityComplexity} from '../scripts/check-lua-static.mjs';
-import {runActorPresence} from './helpers/actor-presence-vm.mjs';
+import {luaString} from '../scripts/build-lua-data.mjs';
+import {presenceHash,runActorPresence} from './helpers/actor-presence-vm.mjs';
 const read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
 const roots=['abyss_actor_presence','abyss_act2_ai_moves','abyss_act2_summons','abyss_silent_discard_cards'];
 function closure(g,n){const seen=new Set(),pending=[n];while(pending.length){const next=pending.pop();if(seen.has(next))continue;seen.add(next);for(const e of g.edges)if(e.from===next)pending.push(e.to);}return [...seen].sort();}
+
+const reviewedNamingCheckpoints=new Map([['actor_presence_contract',3],['act2_party_snapshot',20]]);
+const silentDiscardFixture='silent_discard_build';
+const priorExchangeId='calculated_gamble',currentExchangeId='calculated_exchange';
+const stringIs=(cell,text)=>cell?.[0]==='string'&&cell[1]===text;
+const field=(entries,key,tag='string')=>entries?.find(([[type,name]])=>type===tag&&name===key)?.[1];
+function reviewedGraphNames(graph){
+ const tables=new Map(graph.definitions.filter(([kind])=>kind==='table').map(([,id,entries])=>[id,entries]));
+ const dereference=cell=>cell?.[0]==='table'?tables.get(cell[1]):undefined;
+ const changes=[0,0,0];
+ for(const entries of tables.values()){
+  const id=field(entries,'id'),source=field(entries,'sourceId'),name=field(entries,'name');
+  // #951 changed these two card display names in the production catalog.
+  if(stringIs(id,'bite')&&stringIs(source,'Bite')&&stringIs(name,'噬咬')){name[1]='迅袭';changes[0]++;}
+  if(stringIs(id,'jax')&&stringIs(source,'J.A.X.')&&stringIs(name,'激素')){name[1]='元素增幅';changes[1]++;}
+  if(stringIs(id,'snake_dagger')&&stringIs(source,'Dagger')){
+   const intents=dereference(field(entries,'intents'));
+   const explode=dereference(field(intents,'2','number'));
+   const effects=dereference(field(explode,'effects'));
+   const selfDestruct=dereference(field(effects,'2','number'));
+   const op=field(selfDestruct,'op');
+   if(stringIs(field(explode,'id'),'explode')&&stringIs(field(explode,'kind'),'attack')
+       &&selfDestruct?.length===1&&stringIs(op,'daggerSacrifice')){op[1]='daggerExpenditure';changes[2]++;}
+  }
+ }
+ return changes;
+}
+
+function frozenSilentFixturePrelude(path){
+ const raw=readFileSync(path,'utf8'),source=raw.replaceAll('\r\n','\n');
+ assert(raw===source||raw===source.replaceAll('\n','\r\n'),'complete Silent fixture line endings');
+ assert.equal(presenceHash(source),'bb16f540d685060cb3f3834a394faacb1197c1fdf6f2b6af0a23a01bb983b9bd','exact original Silent fixture');
+ const blob=createHash('sha1').update(`blob ${Buffer.byteLength(source)}\0`).update(source).digest('hex');
+ assert.equal(blob,'6c4f9b81778aaab02e8f77e2d7064c6c5d017aa3','exact original Silent fixture Git blob');
+ assert.equal(source.split('Cards.exchangeActions').length-1,3);
+ assert.equal(source.split(luaString(currentExchangeId)).length-1,11);
+ // The frozen module and its catalog still own the original #951 names.
+ const fixture=source.replaceAll('Cards.exchangeActions','Cards.gambleActions')
+  .replaceAll(luaString(currentExchangeId),luaString(priorExchangeId));
+ return `
+ local fixtureDofile=dofile
+ dofile=function(path)
+  if path~=${luaString(path)} then return fixtureDofile(path) end
+  dofile=fixtureDofile
+  return assert(load(${luaString(fixture)},${luaString('@'+path)}))()
+ end`;
+}
+
+function reviewedSilentCardNames(graph){
+ const tables=new Map(graph.definitions.filter(([kind])=>kind==='table').map(([,id,entries])=>[id,entries]));
+ const dereference=cell=>cell?.[0]==='table'?tables.get(cell[1]):undefined;
+ let catalogRows=0,references=0;
+ for(const entries of tables.values()){
+  const catalog=entries.find(([key])=>stringIs(key,priorExchangeId));
+  if(catalog){
+   const definition=dereference(catalog[1]),id=field(definition,'id'),source=field(definition,'sourceId');
+   const effects=dereference(field(definition,'effects'));
+   const action=dereference(field(effects,'1','number')),op=field(action,'op');
+   assert(stringIs(id,priorExchangeId)&&stringIs(source,'Calculated Gamble')
+     &&action?.length===1&&stringIs(op,'calculatedGamble'),'owned frozen Exchange catalog row');
+   // Only the catalog key and its exact definition are renamed in place.
+   catalog[0][1]=currentExchangeId;
+   id[1]=currentExchangeId;
+   source[1]='Calculated Exchange';
+   op[1]='calculatedExchange';
+   catalogRows++;
+  }
+  const cardId=field(entries,'cardId');
+  if(stringIs(cardId,priorExchangeId)){cardId[1]=currentExchangeId;references++;}
+ }
+ assert.equal(catalogRows,1,'one frozen Exchange catalog row per checkpoint');
+ return references;
+}
+
+function reviewedBeforeObservation(fixture,before){
+ const silent=fixture===silentDiscardFixture;
+ const reviewedCheckpoints=silent?20:reviewedNamingCheckpoints.get(fixture);
+ if(reviewedCheckpoints===undefined)return before;
+ // Authenticate the complete raw trace before projecting the reviewed names.
+ const trace=readFileSync(before.traceFile,'utf8');
+ assert(trace.endsWith('\n'),'complete frozen VM trace');
+ const rows=trace.slice(0,-1).split('\n');
+ assert.equal(rows.length,before.graphs.length);
+ let originalBytes=0,bytes=0,changed=0,exchangeReferences=0;
+ const graphs=rows.map((line,index)=>{
+  const {label,graph}=JSON.parse(line);
+  const original=JSON.stringify(graph);
+  assert.deepEqual({label,sha256:presenceHash(original)},before.graphs[index]);
+  originalBytes+=Buffer.byteLength(original);
+  const counts=reviewedGraphNames(graph);
+  if(counts.some(Boolean)){
+   assert.deepEqual(counts,[1,1,1],`${fixture}/${label}: exact reviewed scalar fields`);
+   changed++;
+  }
+  if(silent)exchangeReferences+=reviewedSilentCardNames(graph);
+  const projected=JSON.stringify(graph);
+  bytes+=Buffer.byteLength(projected);
+  return {label,sha256:presenceHash(projected)};
+ });
+ assert.equal(originalBytes,before.bytes);
+ assert.equal(changed,reviewedCheckpoints,'reviewed naming checkpoints: '+fixture);
+ if(silent){
+  assert.equal(rows.length,20,'all original Silent graph checkpoints');
+  assert.equal(exchangeReferences,75,'reviewed Exchange card references across the original branches');
+ }
+ return {graphs,bytes};
+}
 test('presence query consumers have no transitive Actor or combat execution dependency including deferred imports',()=>{
  const sources=Object.fromEntries(Object.entries(discoverSources()).map(([p,s])=>[p.slice(8,-4),s])),policy=JSON.parse(read('config/architecture.json'));
  const g=analyzeSources(sources,policy);assert.deepEqual(g.errors,[]);
@@ -29,9 +138,11 @@ test('entire presence leaf and both dynamic bridges including nested functions e
 });
 for(const fixture of ['actor_presence_contract','act2_party_snapshot','silent_discard_build'])test(`${fixture}: complete independent before/current graphs preserve states, aliases, RNG, returns and errors`,()=>{
  const path='tests/lua/'+fixture+'.lua',options={trace:fixture!=='actor_presence_contract'};
- const before=runActorPresence('before',path,options),after=runActorPresence('after',path,options);
+ const frozen=fixture===silentDiscardFixture?{...options,prelude:frozenSilentFixturePrelude(path)}:options;
+ const before=runActorPresence('before',path,frozen),after=runActorPresence('after',path,options);
  assert.equal(before.status,0,before.error);assert.equal(after.status,0,after.error);assert(before.graphs.length>0);
- assert.deepEqual(after.logs,before.logs);assert.deepEqual(after.generated,before.generated);assert.deepEqual(after.graphs,before.graphs);assert.equal(after.bytes,before.bytes);
+ const comparison=reviewedBeforeObservation(fixture,before);
+ assert.deepEqual(after.logs,before.logs);assert.deepEqual(after.generated,before.generated);assert.deepEqual(after.graphs,comparison.graphs);assert.equal(after.bytes,comparison.bytes);
  mkdirSync('build/actor-presence',{recursive:true});writeFileSync(`build/actor-presence/${fixture}-equivalence.json`,JSON.stringify({fixture,checkpoints:after.graphs,bytesPerSide:after.bytes,generated:after.generated},null,2)+'\n');
 });
 for(const root of roots)test(`${root}: cold query loading does not initialize Actor and early overrides stay visible after facade load`,()=>{

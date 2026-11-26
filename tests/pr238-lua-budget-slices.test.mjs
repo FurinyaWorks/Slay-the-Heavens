@@ -3,8 +3,48 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import {preSmallSlimesReferenceFixtureSource} from './helpers/small-slimes-reference-fixture-inverse.mjs';
+import {restoreExactFixtureHunks} from './helpers/exact-fixture-hunks.mjs';
+import {exactSourceMatches} from './helpers/source-fingerprint.mjs';
 
-const read = file => preSmallSlimesReferenceFixtureSource(file,readFileSync(file, 'utf8')).replaceAll('\r\n', '\n');
+// #951 renamed the encounter in three calls in the live potion fixture.
+const potionEncounterNames={
+ "path": "tests/lua/potion_flex_speed.lua",
+ "beforeSha256": "bf70b21aa13891ccdd4378f864fbcc4cad4eddd64377a7572e0b6fdf8c8c1109",
+ "afterSha256": "dec6f811f85c2b56297219c5c25a1fa9454a27d9bf6857f6a469ab1983c1cdf5",
+ "hunks": [
+  {
+   "at": 23,
+   "before": " assert(Run.startCombat(run,'cultist_solo'));return run",
+   "after": " assert(Run.startCombat(run,'raven_adept_solo'));return run"
+  },
+  {
+   "at": 108,
+   "before": "  local run=C.copy(prepared);assert(Run.obtainPotion(run,v[1]));assert(Run.startCombat(run,'cultist_solo'))",
+   "after": "  local run=C.copy(prepared);assert(Run.obtainPotion(run,v[1]));assert(Run.startCombat(run,'raven_adept_solo'))"
+  },
+  {
+   "at": 122,
+   "before": " local run=Run.new(source,42);assert(Run.obtainPotion(run,'flex_potion'));assert(Run.startCombat(run,'cultist_solo'));local s=run.combat",
+   "after": " local run=Run.new(source,42);assert(Run.obtainPotion(run,'flex_potion'));assert(Run.startCombat(run,'raven_adept_solo'));local s=run.combat"
+  }
+ ]
+};
+const potionCurrent={sha256:potionEncounterNames.afterSha256,gitBlob:'ddfdae63601a510a6357f75679178be17cf3a33f'};
+const potionPrevious={sha256:potionEncounterNames.beforeSha256,gitBlob:'51c903e2a99feed410fe2ac8e9b507716d93dac7'};
+
+function beforePotionEncounterNames(path,source){
+ if(path!==potionEncounterNames.path||!exactSourceMatches(source,potionCurrent))return source;
+ const lf=source.replaceAll('\r\n','\n');
+ if(source!==lf&&source!==lf.replaceAll('\n','\r\n'))return source;
+ const prior=restoreExactFixtureHunks(potionEncounterNames,path,source);
+ assert(exactSourceMatches(prior,potionPrevious),'exact pre-#951 Flex and Speed fixture');
+ return prior;
+}
+
+const read = file => {
+  const source=beforePotionEncounterNames(file,readFileSync(file,'utf8'));
+  return preSmallSlimesReferenceFixtureSource(file,source).replaceAll('\r\n','\n');
+};
 const hash = text => createHash('sha256').update(text).digest('hex');
 const budget = JSON.parse(read('tests/fixtures/pr238-lua-budget.json'));
 

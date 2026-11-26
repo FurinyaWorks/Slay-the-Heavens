@@ -4,6 +4,7 @@ import {readFileSync,writeFileSync,mkdtempSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {spawnSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
 import {requireLuaTool} from '../scripts/setup-lua-static.mjs';
 import {parseDiagnostics,reviewResponsibilityComplexity} from '../scripts/check-lua-static.mjs';
 
@@ -66,7 +67,12 @@ test('real pinned measurements reject old Defect execute and each helper or anon
 test('only the execute span changes; all action responsibilities remain governed',()=>{
   const source=readFileSync(file,'utf8').replaceAll('\r\n','\n');
   const before=readFileSync('tests/fixtures/defect-final-execute-before.lua','utf8').replaceAll('\r\n','\n');
-  assert.equal(source.slice(0,source.indexOf('-- Execute responsibilities')),before.slice(0,before.indexOf('function M.execute')));
+  const prefix=source.slice(0,source.indexOf('-- Execute responsibilities'));
+  const archivedPrefix=before.slice(0,before.indexOf('function M.execute'));
+  const sha256=text=>createHash('sha256').update(text).digest('hex');
+  assert.equal(sha256(archivedPrefix),'43992771c72aa1554faff2aec5745ddcd096fa8e8a18d38965b075ca456126f1');
+  // Preserve the archived prefix and admit the exact approved #940 display-text revision.
+  if(prefix!==archivedPrefix)assert.equal(sha256(prefix),'c5a53c5bc19bb85a5f9e391e1ef691417150a5fa677ae807f6553b9e3f2c4fd4');
   assert.equal(source.slice(source.indexOf('\nreturn M')),before.slice(before.indexOf('\nreturn M')));
   const sourceNames=[...source.slice(source.indexOf('-- Execute responsibilities')).matchAll(/function ([\w.]+)\(/g)].map(m=>m[1]);
   assert.deepEqual(sourceNames.sort(),[...names].sort());
