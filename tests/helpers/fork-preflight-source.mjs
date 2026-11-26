@@ -11,6 +11,7 @@ import {beforeCalibrationReplay,beforeCurrentReplayCopier} from './calibration-r
 import {beforeNativeHostReplay} from './native-host-replay-source.mjs';
 import {assertNativeFixturesCurrent,beforeNativeFixtureReplay} from './native-fixture-replay-source.mjs';
 import {assertNativeFlowFixturesCurrent,beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';
+import {beforeSelectionReceiptSource,checkedSelectionReceiptRead,selectionCopierReceipt} from './ui-selection-current-source.mjs';
 import {beforeUiEntranceWitness} from './ui-entrance-source.mjs';
 import {beforeOfficialBackgroundFixture} from './official-background-fixture-source.mjs';
 import {assertAudioDeckBrowserCurrent,beforeMapRoomReplayCohort,beforeDevelopReplayMerge} from './develop-replay-merge-source.mjs';
@@ -118,6 +119,11 @@ export function beforeForkPush(path,source){
 // Receipt readers retain the actual Q1 current-source predecessor before their existing replay layers.
 for(const row of Object.values(forkPushPacket.receiptSuccessors??{}))assert.equal(hash(row.before),row.beforeSha256);
 export function beforeForkReceiptSource(path,source){
+ if(path===cursesReceiptFixture.path){
+  const prior=beforeCursesReceiptFixture(path,source);
+  assert.notEqual(prior,source,'current receipt input changed: '+path);
+  return beforeForkPush(path,prior);
+ }
  const row=forkPushPacket.receiptSuccessors?.[path];
  if(row&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha256)
   return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;
@@ -589,6 +595,24 @@ function exactCheckoutSource(source,binding){
  const lf=normalize(source);
  return source===lf||source===lf.replaceAll('\n','\r\n');
 }
+const formalAct2ReleaseTest='tests/release-performance.test.mjs';
+const formalAct2ReleaseTestBefore=[currentReleaseTests[formalAct2ReleaseTest],'1d63817e885fd314045193f48e2bd9aa16760009'];
+const formalAct2ReleaseTestCurrent=['0fef6761800e815ef402e807163b8da69731dcb342f1e0b6aef72ae639ff1791',
+ '97d582db5f715a20a804b3a91b83154defbd2b9d'];
+function beforeFormalAct2ReleaseTest(path,source){
+ if(path!==formalAct2ReleaseTest||exactCheckoutSource(source,formalAct2ReleaseTestBefore))return source;
+ assert(exactCheckoutSource(source,formalAct2ReleaseTestCurrent),'fresh added inventory source: '+path);
+ const current=normalize(source);
+ const start="test('requires the Act II workload in both paired arms and the supported recovery'";
+ const end="test('rejects the wrong published source, release tree, missing tier, or changed art profile'";
+ assert.equal(current.split(start).length,2,'exact Act II test insertion start');
+ assert.equal(current.split(end).length,2,'exact Act II test insertion end');
+ const opening=current.indexOf(start),closing=current.indexOf(end);
+ assert(closing>opening,'ordered Act II test insertion');
+ const prior=current.slice(0,opening)+current.slice(closing);
+ assert(exactCheckoutSource(prior,formalAct2ReleaseTestBefore),'exact Act II performance test predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function beforeActorAlphaBuildInput(path,source){
  if(!Object.hasOwn(actorAlphaBuildInputs,path))return source;
  const {current,before,undo}=actorAlphaBuildInputs[path];
@@ -675,7 +699,7 @@ export function beforeReleaseAdditionalInventory(paths,kind,read=readFileSync){
   assert.equal(count,1,'single added Release test: '+path);
   const live=read(path,'utf8');
   if(kind==='lua'&&exactCurrentReleaseLuaFixture(path,live))continue;
-  const source=beforeDevelopBackflow(path,live);
+  const source=beforeFormalAct2ReleaseTest(path,beforeDevelopBackflow(path,live));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha,'fresh added inventory source: '+path);
  }
  return paths.filter(path=>!Object.hasOwn(newerTests[kind],path));
@@ -699,6 +723,13 @@ export function assertCurrentJsInventory(paths,preceding,read=readFileSync){
  // successor paths can be omitted from the older replay inventory.
  for(const path of Object.keys(currentReleaseTests))
   assert.equal(paths.filter(candidate=>candidate===path).length,1,'complete current raw discovery inventory: '+path);
+ const readCurrent=read;
+ read=(path,...args)=>{
+  const source=readCurrent(path,...args);
+  if(path===formalAct2ReleaseTest)
+   assert(exactCheckoutSource(source,formalAct2ReleaseTestCurrent),'fresh current Release performance test source: '+path);
+  return source;
+ };
  paths=beforeInputRetirementTestInventory(paths,'js',read,{required:true});
  paths=beforeRefinedReleaseJsInventory(beforeShopEntryInventory(paths,'js',read),[...preceding,coopLabTest],read,true);
  assertCoopJsInventory(paths,preceding,read);
@@ -954,8 +985,57 @@ function beforeRelicCloseoutIntegratedFixture(path,source){
  assert.equal(blob(prior),'2f628ab1013c999dc38c55b87537d573c4bbcd40','exact #1010 integration fixture predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+const reviewedStsFeedbackFixture={
+ "path": "tests/sts-style-source-epoch.test.mjs",
+ "beforeSha256": "d5dab6191c676a0520ecf6052ce7ffe6b8f60318a8b31c6022e84df191a59d45",
+ "afterSha256": "1b937677280a1e5f72063528e7188773d3493207166582bf0805dfe43a1e2669",
+ "hunks": [
+  {
+   "at": 2,
+   "before": "import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';",
+   "after": "import {beforeCharacterPreparationSource,beforeCurrentProductionSource} from './helpers/character-preparation-source.mjs';\nimport {reviewedSelectionRead} from './helpers/reviewed-selection-current-source.mjs';"
+  },
+  {
+   "at": 248,
+   "before": " for(const [path,row]of Object.entries(p.current))assert.equal(beforeCharacterPreparationSource(path,readProductionHistory(path)).replaceAll('\\r\\n','\\n'),row.source,path);\n const anchor=feedbackProductionPaths[0],raw=readProduction;",
+   "after": " const raw=reviewedSelectionRead();\n for(const [path,row]of Object.entries(p.current)){\n  const source=path===retiredControllerPath\n   ?beforeCharacterPreparationSource(path,readRetiredController(raw).source,raw)\n   :beforeCurrentProductionSource(path,raw(path),raw);\n  assert.equal(source.replaceAll('\\r\\n','\\n'),row.source,path);\n }\n const anchor=feedbackProductionPaths[0];"
+  }
+ ]
+};
+const reviewedStsFeedbackIdentity=['1b937677280a1e5f72063528e7188773d3493207166582bf0805dfe43a1e2669','bf1dd5f099f9c8536bf1b1bb5a73b0f37725d815'];
+const selectionStsFeedbackFixture={
+ "path": "tests/sts-style-source-epoch.test.mjs",
+ "beforeSha256": "1b937677280a1e5f72063528e7188773d3493207166582bf0805dfe43a1e2669",
+ "afterSha256": "dbd8dabc63cafcbaa8404fa76d309c8241dbee8aabecae3e46c2be8120d0ac90",
+ "hunks": [
+  {
+   "at": 4,
+   "before": "import {entranceInventory} from './helpers/ui-entrance-source.mjs';\nimport {assertCurrentJsInventory,assertCurrentLuaInventory,beforeShopEntryInventory} from './helpers/fork-preflight-source.mjs';",
+   "after": "import {entranceInventory,uiEntranceOwns} from './helpers/ui-entrance-source.mjs';\nimport {assertCurrentJsInventory,assertCurrentLuaInventory,beforeShopEntryInventory,chapterEvidenceCurrentRead} from './helpers/fork-preflight-source.mjs';\nimport {checkedSelectionEntranceRead} from './helpers/ui-selection-current-source.mjs';\nimport {beforeChapterBattleScene} from './helpers/chapter-battle-scene-source.mjs';\nimport {beforeBattlePeriphery} from './helpers/battle-periphery-source.mjs';"
+  },
+  {
+   "at": 251,
+   "before": " const raw=reviewedSelectionRead();\n for(const [path,row]of Object.entries(p.current)){\n  const source=path===retiredControllerPath\n   ?beforeCharacterPreparationSource(path,readRetiredController(raw).source,raw)\n   :beforeCurrentProductionSource(path,raw(path),raw);\n  assert.equal(source.replaceAll('\\r\\n','\\n'),row.source,path);\n }\n const anchor=feedbackProductionPaths[0];\n assert.equal(sourceEpoch.preCombinedSource(anchor,raw(anchor),{target:'stsFeedbackPrior',readSource:raw}),stsStyleEpoch.proof.current[anchor].source);\n for(const path of feedbackProductionPaths){\n  assert(p.owners.includes(path),'current owner must guard every changed feedback source: '+path);\n  for(const missing of [null,raw(path)+'\\n'])assert.throws(()=>sourceEpoch.preCombinedSource(anchor,raw(anchor),\n   {target:'stsFeedbackPrior',readSource:p=>p===path?missing:raw(p)}),/linked owner identity/,path);\n }",
+   "after": " const readOwner=reviewedSelectionRead();\n const readEntrance=chapterEvidenceCurrentRead(checkedSelectionEntranceRead(readFileSync));\n const current=path=>uiEntranceOwns(path)?readEntrance(path,'utf8'):readOwner(path);\n for(const [path,row]of Object.entries(p.current)){\n  const source=path===retiredControllerPath\n   ?beforeCharacterPreparationSource(path,readRetiredController(readOwner).source,current)\n   :beforeCurrentProductionSource(path,current(path),current);\n  assert.equal(source.replaceAll('\\r\\n','\\n'),row.source,path);\n }\n // The old StS projector sees these owners after the chapter and battle layout stages.\n const history=path=>{\n  const source=current(path);\n  return uiEntranceOwns(path)?beforeBattlePeriphery(path,beforeChapterBattleScene(path,source)):source;\n };\n const anchor=feedbackProductionPaths[0];\n assert.equal(sourceEpoch.preCombinedSource(anchor,history(anchor),{target:'stsFeedbackPrior',readSource:history}),stsStyleEpoch.proof.current[anchor].source);\n for(const path of feedbackProductionPaths){\n  assert(p.owners.includes(path),'current owner must guard every changed feedback source: '+path);\n  for(const missing of [null,history(path)+'\\n'])assert.throws(()=>sourceEpoch.preCombinedSource(anchor,history(anchor),\n   {target:'stsFeedbackPrior',readSource:p=>p===path?missing:history(p)}),/linked owner identity/,path);\n }"
+  }
+ ]
+};
+const selectionStsFeedbackIdentity=['dbd8dabc63cafcbaa8404fa76d309c8241dbee8aabecae3e46c2be8120d0ac90','3142acba314fe40251c9b46231a5db27dcf04986'];
+function beforeReviewedStsFeedbackFixture(path,source){
+ if(path!==luaInventoryTest)return source;
+ if(exactCheckoutSource(source,selectionStsFeedbackIdentity)){
+  const composed=restoreExactFixtureHunks(selectionStsFeedbackFixture,path,source);
+  assert(exactCheckoutSource(composed,reviewedStsFeedbackIdentity),'exact #1020 StS feedback fixture');
+  source=source.includes('\r\n')?composed.replaceAll('\n','\r\n'):composed;
+ }
+ if(!exactCheckoutSource(source,reviewedStsFeedbackIdentity))return source;
+ const prior=restoreExactFixtureHunks(reviewedStsFeedbackFixture,path,source);
+ assert.equal(blob(prior),'72e15c6ebec71499025aea8bd80a91e0c418f7e7','exact StS feedback fixture predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 function beforeCalibrationReplayOwner(path,source){
- source=beforeReviewedOfficialAssetReplay(path,source);
+ source=beforeReviewedStsFeedbackFixture(path,source);
+ source=beforeReviewedOfficialAssetReplay(path,beforeSelectionReceiptSource(path,source));
  source=beforeBattleSceneCopyClosure(path,source);
  if(path===integratedFixture)source=beforeChapterBattleScene(path,beforeRelicCloseoutIntegratedFixture(path,source));
  source=beforeVisualLegibility(path,source);
@@ -1029,6 +1109,16 @@ function beforeDevelopEpochReplayRuntime(path,source){
  return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
 }
 const replayAssetLedger='docs/legal/assets.json';
+const referenceAssetLedger=['6e618cdf519fbe4c252dcc1a33b42eac4e737e89641ad215d93fcf50fecab8c3','69d938af08e70e12466cb44b5375b669993fab33'];
+const preReferenceAssetLedger=['3c4b140e7d432bb1de89289e516723dafa14daecd414b1ffe94b4f39d267f5c2','94e5b7f8a05e190d59e603b7b0760fc968d2a600'];
+function currentAssetLedgerRead(read){
+ return (path,...args)=>{
+  const raw=read(path,...args);
+  if(path===replayAssetLedger)assert(exactCheckoutSource(Buffer.isBuffer(raw)?raw.toString('utf8'):raw,referenceAssetLedger),
+   'fresh complete integration source: '+path);
+  return raw;
+ };
+}
 const replayStorageSources=Object.freeze({
  '.gitattributes':['0b385940b40b3e3c37337ce283b8772bb800333d6654675ff3107fd70cca7cf5','11d5e5b797cff39ed75bc0614fb9d02975fbcc24'],
  'config/ci-media-lfs.json':['80e6bae0a63426858864d5d13d50b86e7fa2369a4b89715b2f0d264b8068092e','04ad2de599ff5e2a702764f0d07d5bbea41a2d77'],
@@ -1044,9 +1134,15 @@ function withoutArchiveRecords(current,first,after){
 function beforeDeckBrowserAssetLedger(source){
  if(typeof source!=='string'||source.includes('\r\r\n'))return source;
  let current=normalize(source);
+ if(source!==current&&source!==current.replaceAll('\n','\r\n'))return source;
+ // #1017 registers six reviewed design and simulator evidence files.
+ if(exactCheckoutSource(source,referenceAssetLedger)){
+  current=withoutArchiveRecords(current,'    "docs/design/reference-assets/v2.2.0/battle-scene/act1-geometry.svg": {\n',
+   '    "data/presentation/event-native-controls.json": {\n');
+  assert(exactSourceBinding(current,preReferenceAssetLedger),'exact pre-#1017 asset ledger');
+ }
  // #951 updates the native event manifest hash after its approved text edits.
- if(hash(current)==='3c4b140e7d432bb1de89289e516723dafa14daecd414b1ffe94b4f39d267f5c2'&&
-    blob(current)==='94e5b7f8a05e190d59e603b7b0760fc968d2a600'){
+ if(exactSourceBinding(current,preReferenceAssetLedger)){
   current=current.replace('eac9cfc53f1203d635ba1ed77acee1bfd6d12073be53fcb7b4d0af56262bb1b5',
    'db7a1393c4fae90fc9d7cc30b2ee762394a8ab041b19a6a9aa33973a263eeb13');
   assert.equal(hash(current),'5ec27c5274a512ccdf2dfb183f65bd15321c87883e3e4e633e6502f726429353','exact pre-#951 asset ledger');
@@ -1161,7 +1257,7 @@ function beforeIntegrationSuccessor(path,source){
 const responsiveReplayHelpers=Object.freeze({
  [integratedFixture]:relicCloseoutIntegratedIdentity,
  'tests/helpers/chapter-battle-scene-source.mjs':['1270c293d79c04ac4a5b15483dd4cc8f9c4279362e2f5c551f6e98c20c9ad293','5306929645881d562b4d4322c5b3fa2ecb91edbd'],
- 'tests/helpers/rebased-release-source.mjs':['9c06103ee6926bb5def608470430784145880f69d4c3aee3fb35787c1309d509','0016df7289d6b274b533496c48a6fd75a1f66e42'],
+ 'tests/helpers/rebased-release-source.mjs':['b1e42ded7f05f580fb25ab0417ccd8db45832f5e9e50db83a38d6aaa2767dc20','4b22a3e61459334c6d85b247ea188976313d549e'],
 });
 function responsiveReplayCurrentRead(read){
  return (path,...args)=>{
@@ -1174,16 +1270,31 @@ function responsiveReplayCurrentRead(read){
   return raw;
  };
 }
+export function chapterEvidenceCurrentRead(read,copier){
+ const currentRead=responsiveReplayCurrentRead(read);
+ const chapterRead=chapterSceneCurrentRead((path,encoding)=>{
+  const raw=currentRead(path,encoding);
+  if(path!==integratedFixture)return raw;
+  const source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
+  const prior=beforeRelicCloseoutIntegratedFixture(path,source);
+  return Buffer.isBuffer(raw)?Buffer.from(prior):prior;
+ },copier);
+ return (path,...args)=>(path===integratedFixture?currentRead:chapterRead)(path,...args);
+}
 export function currentReviewedSelectionRead(read){
  return (path,encoding)=>{
   const source=read(path,encoding);
-  if(path!==reviewedSelectionFixture&&path!==officialLegibilityFixture&&path!==officialAssetsFixture)return source;
+  if(path!==reviewedSelectionFixture&&path!==officialLegibilityFixture&&path!==officialAssetsFixture&&path!==luaInventoryTest)return source;
   const raw=Buffer.isBuffer(source)?source.toString('utf8'):source;
-  if(path===reviewedSelectionFixture){
-   assert.notEqual(beforeReviewedOfficialAssetReplay(path,raw),raw,'fresh current reviewed Selection replay fixture: '+path);
+  if(path===luaInventoryTest){
+   assert(exactCheckoutSource(raw,selectionStsFeedbackIdentity),'fresh complete integration source: '+path);
+  }else if(path===reviewedSelectionFixture){
+   const reviewed=beforeSelectionReceiptSource(path,raw);
+   assert.notEqual(beforeReviewedOfficialAssetReplay(path,reviewed),reviewed,'fresh current reviewed Selection replay fixture: '+path);
    assert.notEqual(beforeCalibrationReplayOwner(path,raw),raw,'fresh current reviewed Selection replay fixture: '+path);
   }else if(path===officialAssetsFixture){
-   assert.notEqual(beforeOfficialAssetsFocusFixture(path,raw),raw,'fresh current official card focus fixture: '+path);
+   const intermediate=beforeSelectionReceiptSource(path,raw);
+   assert.notEqual(beforeOfficialAssetsFocusFixture(path,intermediate),intermediate,'fresh current official card focus fixture: '+path);
   }else{
    assert.notEqual(beforeVisualLegibility(path,raw),raw,'fresh current official legibility fixture: '+path);
   }
@@ -1234,16 +1345,12 @@ function cursesReceiptCurrentRead(read){
  };
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
- const replayRead=cursesReceiptCurrentRead(responsiveReplayCurrentRead(currentReviewedSelectionRead(read)));
+ const replayRead=cursesReceiptCurrentRead(responsiveReplayCurrentRead(currentAssetLedgerRead(currentReviewedSelectionRead(checkedSelectionReceiptRead(read)))));
  for(const path of Object.keys(cursesReceiptSources))replayRead(path,'utf8');
  for(const path of Object.keys(responsiveReplayHelpers))replayRead(path,'utf8');
  // The chapter guard consumes its exact reviewed predecessor. Current
  // consumers still read and authenticate the new fixture at every read.
- const chapterRead=chapterSceneCurrentRead((path,encoding)=>{
-  const raw=replayRead(path,encoding);
-  return beforeRelicCloseoutIntegratedFixture(path,raw);
- },refinedByrdPoolCopyClosure);
- const rawRead=actorAlphaCurrentRead((path,...args)=>(path===integratedFixture?replayRead:chapterRead)(path,...args));
+ const rawRead=actorAlphaCurrentRead(chapterEvidenceCurrentRead(replayRead,selectionCopierReceipt));
  rawRead(officialLegibilityFixture,'utf8');
  rawRead(reviewedSelectionFixture,'utf8');
  rawRead(officialAssetsFixture,'utf8');
@@ -1251,7 +1358,7 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
   const alpha=Object.hasOwn(actorAlphaBuildInputs,path);
   const raw=rawRead(path,alpha?'utf8':encoding);
   const input=alpha?beforeActorAlphaBuildInput(path,raw):raw;
-  return beforeForkPush(path,beforeCalibrationReplayOwner(path,beforeOfficialAssetsFocusFixture(path,beforeCursesReceiptFixture(path,input))));
+  return beforeForkPush(path,beforeCalibrationReplayOwner(path,beforeOfficialAssetsFocusFixture(path,beforeCursesReceiptFixture(path,beforeSelectionReceiptSource(path,input)))));
  };
  assertReleaseCandidateToolsCurrent(rawRead);
  assertAudioDeckBrowserCurrent(rawRead);
@@ -1341,6 +1448,10 @@ function beforeV220HostedTiming(path,source){
  return source.includes('\r\n')?current.replaceAll('\n','\r\n'):current;
 }
 export function beforePreflightSource(path,source,view='prior',read=readFileSync){
+ if(path===replayAssetLedger&&typeof source==='string'){
+  const lf=normalize(source);
+  if(source!==lf&&source!==lf.replaceAll('\n','\r\n'))return source;
+ }
  source=beforeCursesReceiptFixture(path,source);
  const integratedPrior=beforeRelicCloseoutIntegratedFixture(path,source);
  if(integratedPrior!==source){
@@ -1361,6 +1472,7 @@ export function beforePreflightSource(path,source,view='prior',read=readFileSync
   const chapter=chapterBattleSceneReader(path,source,readRaw);
   ({source,read}=battlePeripheryPredecessor(path,chapter.source,chapter.read));
  }
+ source=beforeSelectionReceiptSource(path,source);
  source=beforeForkPush(path,beforeCalibrationReplayOwner(path,beforeActorAlphaBuildInput(path,source)));
  if(path==='.github/workflows/quality.yml')source=beforePosixDeadlineWorkflow(beforeWindowsDeadlineWorkflow(source));
  source=beforeUiEntranceWitness(path,beforeCurrentReplayCopier(path,source));

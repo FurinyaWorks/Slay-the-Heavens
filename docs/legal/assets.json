@@ -245,6 +245,36 @@
     }
   },
   "files": {
+    "docs/design/reference-assets/v2.2.0/battle-scene/act1-geometry.svg": {
+      "sha256": "06ffb448c74cc1aef249358f6107fe67172ff232f610efdc3a1c89c888363f0c",
+      "category": "project-geometry",
+      "evidence": "Project-drawn Act I coordinate schematic from 46ca4a02d658b1ee1435441cb0f1eb19479e52c6, integrated in #978. The vector markup contains geometric primitives and labels. The neighboring REFERENCE.md records the IndieDB ss8 citation and coordinate measurements. The cited media retain their original rights."
+    },
+    "docs/design/reference-assets/v2.2.0/battle-scene/act2-geometry.svg": {
+      "sha256": "4da5d33d0ad28f0290a9cce8acef61060d274af3caccb88a85809d7f2e6e5315",
+      "category": "project-geometry",
+      "evidence": "Project-drawn Act II coordinate schematic from 46ca4a02d658b1ee1435441cb0f1eb19479e52c6, integrated in #978. The vector markup contains geometric primitives and labels. The neighboring REFERENCE.md records the Mega Crit ss23 citation and coordinate measurements. The cited media retain their original rights."
+    },
+    "docs/evidence/v2.2.0-viewport/mobile-16-9.png": {
+      "sha256": "e71c5a7e0ca2935e835bb824ecbbd679a868a3abd6781446e6958ed88859b858",
+      "category": "platform-evidence",
+      "evidence": "Offline BeyondSimulator 0.5.2 render of the project's 1280×720 solid-rectangle viewport probe, from 6bdf065367799e9993faa121425678a0070892c1 and integrated in #984. The probe uses the native solid-fill image 100001. See the neighboring probe.mjs, README.md and mobile-16-9.result.json."
+    },
+    "docs/evidence/v2.2.0-viewport/mobile-19.5-9.png": {
+      "sha256": "678d1e61dd58fcc3df1a3dc90705ba5d20756de9caaaf9770e7bfd0041afca03",
+      "category": "platform-evidence",
+      "evidence": "Offline BeyondSimulator 0.5.2 render of the project's 1560×720 solid-rectangle viewport probe, from 6bdf065367799e9993faa121425678a0070892c1 and integrated in #984. The probe uses the native solid-fill image 100001. See the neighboring probe.mjs, README.md and mobile-19.5-9.result.json."
+    },
+    "docs/evidence/v2.2.0-viewport/mobile-20-9.png": {
+      "sha256": "d3bb480b77f6ebc0cbad3a7fdb5ff34b4d10f2b2d8fb3a91a0e93fc600d114dd",
+      "category": "platform-evidence",
+      "evidence": "Offline BeyondSimulator 0.5.2 render of the project's 1600×720 solid-rectangle viewport probe, from 6bdf065367799e9993faa121425678a0070892c1 and integrated in #984. The isolated simulator copy uses the custom canvas preset described in the neighboring README.md. See probe.mjs and mobile-20-9.result.json."
+    },
+    "docs/evidence/v2.2.0-viewport/pc-21-9.png": {
+      "sha256": "cbc49942c5ce03779186ea87a4c77066223d2d2c9a559dbeff71922bad5fd5c5",
+      "category": "platform-evidence",
+      "evidence": "Offline BeyondSimulator 0.5.2 render of the project's 2100×900 solid-rectangle viewport probe, from 6bdf065367799e9993faa121425678a0070892c1 and integrated in #984. The probe uses the native solid-fill image 100001. See the neighboring probe.mjs, README.md and pc-21-9.result.json."
+    },
     "data/presentation/event-native-controls.json": {
       "sha256": "eac9cfc53f1203d635ba1ed77acee1bfd6d12073be53fcb7b4d0af56262bb1b5",
       "category": "native-event-illustrations"
