@@ -1,6 +1,31 @@
 {
   "references": [
     {
+      "codePath": "scripts/exit-ui-layout.mjs",
+      "codePaths": [
+        "scripts/potion-discard-layout.mjs",
+        "scripts/native-rounded-button.mjs",
+        "scripts/official-run-layout.mjs",
+        "src/lua/abyss_game_ui_navigation_view.lua"
+      ],
+      "targetVersion": "v2.0.0",
+      "state": "confirmationShared",
+      "revision": "develop-task-113",
+      "status": "CURRENT_IMPLEMENTATION",
+      "backlogTask": "TASK-113",
+      "reference": {
+        "path": "docs/evidence/task-113-confirmation/comparison-16x9.png",
+        "sha256": "86e66e8a4efa97d1f529d7945e0d1693cd7b971e024445b376de657e8197fef5"
+      },
+      "themeKeys": [
+        "layout.exitMenu",
+        "layout.potionDiscard.actionHeight",
+        "font.confirmationAction"
+      ],
+      "supersedes": [],
+      "note": "Develop 后续改进。退出、覆盖及放弃共用等比确认按钮及四态，官方设备待验。"
+    },
+    {
       "codePath": "scripts/official-map-return-controls.mjs",
       "codePaths": [
         "scripts/native-rounded-button.mjs",
@@ -343,7 +368,9 @@
       "revision": "develop",
       "status": "CURRENT_IMPLEMENTATION",
       "backlogTask": "TASK-107",
-      "retiredCodePaths": ["scripts/controls-guide-layout.mjs"],
+      "retiredCodePaths": [
+        "scripts/controls-guide-layout.mjs"
+      ],
       "reference": {
         "path": "docs/evidence/v2-ui-20261119/p1/runtime-exit-confirm.png",
         "sha256": "d3f7411bda8185e2fb09700475861899d607f5d7711e49b12514970e25028a1a"
@@ -616,7 +643,9 @@
     },
     {
       "codePath": "scripts/sts-reward-row-layout.mjs",
-      "codePaths": ["scripts/v25-node-layout.mjs"],
+      "codePaths": [
+        "scripts/v25-node-layout.mjs"
+      ],
       "targetVersion": "v2.0.0",
       "state": "rewardList",
       "revision": "develop",
@@ -746,6 +775,31 @@
       "supersedes": [],
       "note": "商店与选角按固定源码实施分层入场。保留项目素材与最终排布，107271 纹理和设备效果待验。",
       "source": "https://github.com/aeubanks/sts/tree/319009d5df0a82d9fb0f23cc22322286c6a87ec0"
+    },
+    {
+      "codePath": "scripts/exit-ui-layout.mjs",
+      "codePaths": [
+        "scripts/potion-discard-layout.mjs",
+        "scripts/native-rounded-button.mjs",
+        "scripts/official-run-layout.mjs",
+        "src/lua/abyss_game_ui_navigation_view.lua"
+      ],
+      "targetVersion": "v2.2.0",
+      "state": "confirmationShared",
+      "revision": "develop-task-113",
+      "status": "CURRENT_IMPLEMENTATION",
+      "backlogTask": "TASK-115.10",
+      "reference": {
+        "path": "docs/evidence/task-113-confirmation/comparison-16x9.png",
+        "sha256": "86e66e8a4efa97d1f529d7945e0d1693cd7b971e024445b376de657e8197fef5"
+      },
+      "themeKeys": [
+        "layout.exitMenu",
+        "layout.potionDiscard.actionHeight",
+        "font.confirmationAction"
+      ],
+      "supersedes": [],
+      "note": "沿用 TASK-113 的 168×72 确认按钮和四态样式，历史紧凑弹窗中的非等比缩放已退役。官方设备待验。"
     }
   ]
 }

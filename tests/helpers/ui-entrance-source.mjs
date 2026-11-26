@@ -7,6 +7,28 @@ import {gunzipSync} from 'node:zlib';
 import {exactSourceMatches as matches} from './source-fingerprint.mjs';
 import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
 import {beforeCurrentReplayFixes} from './current-replay-fix-sources.mjs';
+import confirmationPredecessors from './ui-confirmation-predecessors.json' with {type:'json'};
+import confirmationV220Predecessors from './ui-confirmation-v220-predecessors.json' with {type:'json'};
+const confirmationEditions=[confirmationV220Predecessors,confirmationPredecessors];
+
+export function beforeConfirmation(path,source){
+ // Live product tests still use the updated sources. Only exact input bytes
+ // can be projected into the older, unchanged test receipt.
+ for(const predecessors of confirmationEditions){
+  const row=Object.hasOwn(predecessors,path)?predecessors[path]:null;
+  if(!row||typeof source!=='string'||source.replaceAll('\r\n','\n').length!==row.afterLength)continue;
+  const prior=restoreExactFixtureHunks(row,path,source);
+  if(prior!==source)source=source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+ }
+ return source;
+}
+
+function isConfirmationPredecessor(path,source){
+ const rows=confirmationEditions.filter(proofs=>Object.hasOwn(proofs,path)).map(proofs=>proofs[path]);
+ if(!rows.length||typeof source!=='string')return false;
+ const sha=createHash('sha256').update(source.replaceAll('\r\n','\n')).digest('hex');
+ return rows.some(row=>row.beforeSha256===sha);
+}
 
 const archive=readFileSync(new URL('../fixtures/ui-entrance-source.json.gz',import.meta.url));
 assert.equal(createHash('sha256').update(archive).digest('hex'),
@@ -54,7 +76,7 @@ export function beforeUiEntrance(path,source){
 }
 
 export function beforeUiEntranceWitness(path,source){
- return project(path,source,Object.hasOwn(witnesses,path)?witnesses[path]:undefined);
+ return project(path,beforeConfirmation(path,source),Object.hasOwn(witnesses,path)?witnesses[path]:undefined);
 }
 
 export function authenticateUiEntrance(read){
@@ -86,7 +108,28 @@ export function assertCurrentUiEntrance(path,source){
  if(row)assert(currentMatches(path,source,row.after),'fresh current production owner: '+path);
 }
 
+export function confirmationReader(path,source,read){
+ const confirmed=beforeConfirmation(path,source);
+ const expected=confirmed!==source||isConfirmationPredecessor(path,source)?source.replaceAll('\r\n','\n'):undefined;
+ function readOwner(owner,encoding){
+  let live;
+  try{live=read(owner,encoding);}catch(error){
+   if(owner===path&&expected!==undefined)assert.fail('combined linked owner missing: '+path+': '+error.message);
+   throw error;
+  }
+  const earlier=beforeConfirmation(owner,live);
+  if(owner===path&&(expected!==undefined||earlier!==live)){
+   assert(typeof live==='string'&&live.replaceAll('\r\n','\n')===expected,
+    'combined linked owner identity: '+path+' during confirmation validation');
+  }
+  return earlier;
+ }
+ if(expected!==undefined)readOwner(path,'utf8');
+ return {source:confirmed,read:readOwner,matched:expected!==undefined};
+}
+
 export function entrancePredecessor(path,source,read=readLive,{allowConfigLayout=false}={}){
+ ({source,read}=confirmationReader(path,source,read));
  const input=source;
  if(allowConfigLayout&&path==='config/architecture.json'&&typeof source==='string'
   &&!matches(source,files[path].after)){

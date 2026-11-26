@@ -5,6 +5,7 @@ import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {exactSourceMatches as matches} from './source-fingerprint.mjs';
 import {authenticateInputRetirement,beforeInputRetirement} from './input-retirement-source.mjs';
+import {beforeConfirmation} from './ui-entrance-source.mjs';
 const hash=(s,algorithm='sha256')=>createHash(algorithm).update(s).digest('hex');
 const archive=readFileSync(new URL('./rebased-release-source.json.gz',import.meta.url));
 assert.equal(hash(archive),'9ae910d679bdc8386063c58043a43e496ee34b7c6f22fc1a27cbaeca7b27222d','exact reconciled source archive');
@@ -45,8 +46,10 @@ const nativeButtonRepair=Object.freeze({
   ],
  },
 });
+const confirmationNavigation='src/lua/abyss_game_ui_navigation_view.lua';
+const beforeConfirmationNavigation=(path,source)=>path===confirmationNavigation?beforeConfirmation(path,source):source;
 export function beforeNativeButtonRepair(path,source){
- source=beforeInputRetirement(path,source);
+ source=beforeInputRetirement(path,beforeConfirmationNavigation(path,source));
  const row=Object.hasOwn(nativeButtonRepair,path)?nativeButtonRepair[path]:null;
  if(!row||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const current=source.replaceAll('\r\n','\n');
@@ -86,9 +89,11 @@ export function authorizeRebasedRelease(samples,read,sources=production){
   seen.add(path);
   authenticateInputRetirement(path,source,read);
   const retiredInput=beforeInputRetirement(path,source)!==source,repaired=current!==source;
+  const confirmation=beforeConfirmationNavigation(path,source)!==source;
   const sameRevision=bytes=>{
    const before=beforeNativeButtonRepair(path,bytes);
    return (beforeInputRetirement(path,bytes)!==bytes)===retiredInput
+    &&(beforeConfirmationNavigation(path,bytes)!==bytes)===confirmation
     &&(before!==bytes)===repaired&&matches(before,after);
   };
   assert(samples.every(([owner,bytes])=>owner!==path||sameRevision(bytes)),'combined linked owner identity: '+path+' mixed live and predecessor sources');

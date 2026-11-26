@@ -6,6 +6,7 @@
 
 | 目标版本 | 代码组件 · 视觉状态 | 设计修订 | 参考 | 设计状态 | Backlog | 取代修订 | 范围 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| v2.0.0 | [scripts/exit-ui-layout.mjs](../../scripts/exit-ui-layout.mjs) · `confirmationShared` | develop-task-113 | [打开图片](../evidence/task-113-confirmation/comparison-16x9.png) | CURRENT_IMPLEMENTATION | TASK-113 | — | Develop 后续改进。退出、覆盖及放弃共用等比确认按钮及四态，官方设备待验。 |
 | v2.0.0 | [scripts/official-map-return-controls.mjs](../../scripts/official-map-return-controls.mjs) · `actionButtons` | develop-task-112 | [打开参考](../reviews/TASK-112-ACTION-BUTTONS.md) | CURRENT_IMPLEMENTATION | TASK-112 | — | 统一局内操作的圆角材质、状态色与地图返回位置。示意来自真实生成布局，官方设备待验。 |
 | v2.0.0 | [scripts/official-run-layout.mjs](../../scripts/official-run-layout.mjs) · `potionPopup` | shared-rounded-palette | [打开参考](../reviews/develop-potion-popup.md) | CURRENT_IMPLEMENTATION | TASK-4.15 | — | Release #871 回流。战斗与非战斗共用紧凑弹窗，保留等宽按钮、状态色及战后遗物栏。 |
 | v2.0.0 | [scripts/v25-menu-layout.mjs](../../scripts/v25-menu-layout.mjs) · `menuPanel` | sts1-pc-20261121 | [打开参考](reference-assets/v2.0.0/sts1-main-menu-20261121/REFERENCE.md) · [来源](https://interfaceingame.com/screenshots/slay-the-spire-main-menu/) | APPROVED | TASK-103.5 | 2026-11-19 | Owner 本轮明确指定的唯一标准：初代 PC 主菜单。批准设计方向与范围；绘画成图/官方设备验收另记。 |
@@ -48,3 +49,4 @@
 | v2.0.0 | [src/lua/abyss_game_ui_menu_view.lua](../../src/lua/abyss_game_ui_menu_view.lua) · `result` | develop | [打开图片](../evidence/v2-ui-20261119/p1/runtime-victory.png) | CURRENT_IMPLEMENTATION | TASK-103 | — | 当前胜利结算，失败态及结算信号另见同批核对。 1280×720 离线投影，官方候选待验。 |
 | v2.0.0 | [src/lua/abyss_page_reveal.lua](../../src/lua/abyss_page_reveal.lua) · `pageReveal` | p1-20261119-offline | [打开图片](../evidence/v2-ui-20261119/p1/runtime-transition-room.png) | CURRENT_IMPLEMENTATION | TASK-103.6 | — | 首战准备时的普通遮罩。复用璃月印记、七元素、就绪边界及输入隔离。 1280×720 离线投影，官方候选待验。 |
 | v2.0.0 | [scripts/ui-entrance-layout.mjs](../../scripts/ui-entrance-layout.mjs) · `entrance` | sts1-timing-20261123 | [打开参考](../plans/2026-11-23-ui-entrance.md) · [来源](https://github.com/aeubanks/sts/tree/319009d5df0a82d9fb0f23cc22322286c6a87ec0) | CURRENT_IMPLEMENTATION | TASK-111 | — | 商店与选角按固定源码实施分层入场。保留项目素材与最终排布，107271 纹理和设备效果待验。 |
+| v2.2.0 | [scripts/exit-ui-layout.mjs](../../scripts/exit-ui-layout.mjs) · `confirmationShared` | develop-task-113 | [打开图片](../evidence/task-113-confirmation/comparison-16x9.png) | CURRENT_IMPLEMENTATION | TASK-115.10 | — | 沿用 TASK-113 的 168×72 确认按钮和四态样式，历史紧凑弹窗中的非等比缩放已退役。官方设备待验。 |

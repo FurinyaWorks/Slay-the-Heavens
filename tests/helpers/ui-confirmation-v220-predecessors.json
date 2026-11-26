@@ -1,0 +1,293 @@
+{
+  "data/presentation/ui_theme.json": {
+    "path": "data/presentation/ui_theme.json",
+    "beforeSha256": "72cae11890ce1a018fa145152188cd6ff6779f899db201f9d3799171db7abb4e",
+    "afterSha256": "5b991eda1c13099265c02a846ce39b44b2157f463229467ac79f351bbb48089b",
+    "afterLength": 95005,
+    "hunks": [
+      {
+        "at": 433,
+        "before": "    \"body\": 24,\n    \"label\": 22,\n    \"card\": 15,\n    \"cardName\": 14,",
+        "after": "    \"body\": 24,\n    \"label\": 22,\n    \"confirmationAction\": 24,\n    \"card\": 15,\n    \"cardName\": 14,"
+      },
+      {
+        "at": 1304,
+        "before": "    },\n    \"potionDiscard\": {\n      \"columns\": [\n        -184,",
+        "after": "    },\n    \"potionDiscard\": {\n      \"actionHeight\": 64,\n      \"columns\": [\n        -184,"
+      },
+      {
+        "at": 2730,
+        "before": "      \"message\": [0, 82, 688, 96],\n      \"status\": [0, -44, 688, 40],\n      \"cancel\": [-180, -142, 320, 64],\n      \"confirm\": [180, -142, 320, 64],\n      \"buttonInset\": [\n        8,\n        4\n      ],\n      \"pressedScale\": 0.96,\n      \"nodeNotice\": [-60, 262, 1080, 40],\n      \"whyText\": [0, 10, 688, 40],",
+        "after": "      \"message\": [0, 82, 688, 96],\n      \"status\": [0, -44, 688, 40],\n      \"actions\": {\n        \"size\": [168, 72],\n        \"gap\": 32,\n        \"inset\": [24, 4],\n        \"y\": -142\n      },\n      \"compact\": {\n        \"panel\": [0, 0, 480, 248],\n        \"title\": [0, 78, 430, 48],\n        \"message\": [0, 25, 430, 48],\n        \"status\": [0, -20, 430, 34],\n        \"actionsY\": -76\n      },\n      \"buttonInset\": [\n        8,\n        4\n      ],\n      \"nodeNotice\": [-60, 262, 1080, 40],\n      \"whyText\": [0, 10, 688, 40],"
+      }
+    ]
+  },
+  "docs/legal/assets.json": {
+    "path": "docs/legal/assets.json",
+    "beforeSha256": "3c4b140e7d432bb1de89289e516723dafa14daecd414b1ffe94b4f39d267f5c2",
+    "afterSha256": "ca5fe2b7ab69caf9a9d9b2585fb6b563f618da420e0e1bec0172f52c1a414265",
+    "afterLength": 486670,
+    "hunks": [
+      {
+        "at": 245,
+        "before": "  },\n  \"files\": {\n    \"data/presentation/event-native-controls.json\": {\n      \"sha256\": \"eac9cfc53f1203d635ba1ed77acee1bfd6d12073be53fcb7b4d0af56262bb1b5\",",
+        "after": "  },\n  \"files\": {\n    \"docs/evidence/task-113-confirmation/comparison-iphone14pro-landscape.png\": {\n      \"sha256\": \"81bd49497326c5d2ad42bff52fee0d14120340de47e7c707a4fd77cda6d4bb11\",\n      \"category\": \"v2-native-menu-layout-evidence\",\n      \"evidence\": \"TASK-113 offline comparison of the project Lua Host and authored UI layouts. Rasterized with system Noto Sans CJK glyphs.\"\n    },\n    \"docs/evidence/task-113-confirmation/comparison-16x9.png\": {\n      \"sha256\": \"86e66e8a4efa97d1f529d7945e0d1693cd7b971e024445b376de657e8197fef5\",\n      \"category\": \"v2-native-menu-layout-evidence\",\n      \"evidence\": \"TASK-113 offline comparison of the project Lua Host and authored UI layouts. Rasterized with system Noto Sans CJK glyphs.\"\n    },\n    \"data/presentation/event-native-controls.json\": {\n      \"sha256\": \"eac9cfc53f1203d635ba1ed77acee1bfd6d12073be53fcb7b4d0af56262bb1b5\","
+      }
+    ]
+  },
+  "tests/exit-ui-layout.test.mjs": {
+    "path": "tests/exit-ui-layout.test.mjs",
+    "beforeSha256": "f410a22103f821509cefdf6887ba36c480ab3a2c4372fc1038427e5af638d9a0",
+    "afterSha256": "dcb217effe889ea014dcea4eb5160e94f08bbae0974d5e9815c84ef3311ff5c9",
+    "afterLength": 7138,
+    "hunks": [
+      {
+        "at": 66,
+        "before": "  for (const c of controls) walk(c, item => assert.ok((item.children?.length ?? 0) <= 60, item.name));\n  const entry = child(named(controls, 'exitEntry'), 'open'), panel = named(controls, 'exitPanel');\n  for (const device of [...Object.values(theme.canvas.devices), [2556, 1179]]) {\n    const scale = Math.min(device[0] / theme.canvas.base[0], device[1] / theme.canvas.base[1]);\n    for (const c of [entry, ...['title', 'message', 'status', 'cancel', 'confirm'].map(name => child(panel, name))]) {",
+        "after": "  for (const c of controls) walk(c, item => assert.ok((item.children?.length ?? 0) <= 60, item.name));\n  const entry = child(named(controls, 'exitEntry'), 'open'), panel = named(controls, 'exitPanel');\n  for (const device of [...Object.values(theme.canvas.devices), [1560, 720], [2556, 1179]]) {\n    const scale = Math.min(device[0] / theme.canvas.base[0], device[1] / theme.canvas.base[1]);\n    for (const c of [entry, ...['title', 'message', 'status', 'cancel', 'confirm'].map(name => child(panel, name))]) {"
+      }
+    ]
+  },
+  "tests/noncombat-v25-layout.test.mjs": {
+    "path": "tests/noncombat-v25-layout.test.mjs",
+    "beforeSha256": "3ce8c8fef94bbb9ec63abae5b21ded5a43de89807c3c9179b81e9ce49caf6cbd",
+    "afterSha256": "3a3ad63df6ae9b1b4e137abcc5803139b4ccc84ee84cddf4b7f02abc650deade",
+    "afterLength": 24184,
+    "hunks": [
+      {
+        "at": 154,
+        "before": "  assert(all(panel).every(node=>node.focusable!==true&&node.isolateNavigation!==true),'retire authored navigation: '+name);\n  const prior=restorePriorMenuNavigation(panel,focusPaths);\n  assert.equal(createHash('sha256').update(JSON.stringify(prior)).digest('hex'),sha,\n   'preserve the complete integrated menu layout and remove only its navigation fields: '+name);\n }\n const script=`package.path=${luaString(directory.replaceAll('\\\\','/')+'/?.lua;src/lua/?.lua')}",
+        "after": "  assert(all(panel).every(node=>node.focusable!==true&&node.isolateNavigation!==true),'retire authored navigation: '+name);\n  const prior=restorePriorMenuNavigation(panel,focusPaths);\n  if(name==='menuPanel')for(const action of ['start','continueRun','titleQuit']){\n   // #963 applied the shipped v2.1.1 outline to these three title labels.\n   const label=child(child(prior,action),'label');\n   assert.equal(label.text.outlineOpacity,1,action+' retains the shipped title outline');\n   delete label.text.outlineOpacity;\n  }\n  assert.equal(createHash('sha256').update(JSON.stringify(prior)).digest('hex'),sha,\n   'preserve the complete reviewed menu outside the pinned navigation and label edits: '+name);\n }\n const script=`package.path=${luaString(directory.replaceAll('\\\\','/')+'/?.lua;src/lua/?.lua')}"
+      },
+      {
+        "at": 271,
+        "before": "});\n",
+        "after": "});\n\ntest('confirmation replay retains exact earlier sources and requires a fresh raw match',async()=>{\n const {beforeUiEntranceWitness,entrancePredecessor}=await import('./helpers/ui-entrance-source.mjs');\n const {beforeRebasedCi,authorizeRebasedDevelop}=await import('./helpers/rebased-release-source.mjs');\n const {beforePreflightSource,preflightPriorRead}=await import('./helpers/fork-preflight-source.mjs');\n const {releaseBootstrapCiRead}=await import('./helpers/release-bootstrap-ci-source.mjs');\n const read=path=>readFileSync(path,'utf8');\n for(const [path,sha] of [\n  ['data/presentation/ui_theme.json','72cae11890ce1a018fa145152188cd6ff6779f899db201f9d3799171db7abb4e'],\n  ['scripts/exit-ui-layout.mjs','edc67b79332755e08b5f02725eabcf3bbb72613ec5e89b44490e45427cb6ada3'],\n ]){\n  const current=read(path),prior=entrancePredecessor(path,current,read).source;\n  assert.notEqual(current,prior,path);\n  assert.equal(createHash('sha256').update(prior.replaceAll('\\r\\n','\\n')).digest('hex'),sha);\n  assert.equal(beforeUiEntranceWitness(path,current),prior);\n  const crlf=current.replaceAll('\\r\\n','\\n').replaceAll('\\n','\\r\\n');\n  assert.equal(entrancePredecessor(path,current,owner=>owner===path?crlf:read(owner)).source,prior);\n  assert.equal(entrancePredecessor(path,prior,owner=>owner===path?prior:read(owner)).source,prior);\n  assert.throws(()=>entrancePredecessor(path,prior,read),/during confirmation validation/);\n  for(const invalid of [prior,'!'+current.slice(1),current.replaceAll('\\n','\\r\\r\\n'),null,Buffer.from(current)]){\n   assert.throws(()=>entrancePredecessor(path,current,owner=>owner===path?invalid:read(owner)),\n    {message:'combined linked owner identity: '+path+' during confirmation validation'});\n  }\n  assert.throws(()=>entrancePredecessor(path,current,()=>{throw Error('missing confirmation source');}),\n   /combined linked owner missing/);\n }\n const path='src/lua/abyss_game_ui_navigation_view.lua';\n const current=read(path),prior=entrancePredecessor(path,current,read).source;\n const predecessor=beforeRebasedCi(path,prior);\n assert.notEqual(predecessor,prior);\n assert.equal(beforeRebasedCi(path,current),predecessor);\n authorizeRebasedDevelop([[path,current]],read);\n const stale=owner=>owner===path?prior:read(owner);\n authorizeRebasedDevelop([[path,prior]],stale);\n assert.throws(()=>authorizeRebasedDevelop([[path,current]],stale),/combined linked owner identity/);\n assert.throws(()=>authorizeRebasedDevelop([[path,current],[path,prior]],read),/combined linked owner identity/);\n assert.throws(()=>authorizeRebasedDevelop([[path,prior],[path,current]],stale),/combined linked owner identity/);\n\n const themePath='data/presentation/ui_theme.json',themeSource=read(themePath);\n const earlierTheme=entrancePredecessor(themePath,themeSource,read).source;\n assert.equal(beforePreflightSource(themePath,themeSource,'prior'),earlierTheme);\n assert.equal(preflightPriorRead()(themePath,'utf8'),earlierTheme);\n assert.equal(releaseBootstrapCiRead()(themePath,'utf8'),earlierTheme);\n const older=owner=>owner===themePath?earlierTheme:read(owner);\n assert.equal(beforePreflightSource(themePath,earlierTheme,'prior',older),earlierTheme);\n assert.equal(releaseBootstrapCiRead(older)(themePath,'utf8'),earlierTheme);\n assert.throws(()=>beforePreflightSource(themePath,themeSource,'prior',older),/during confirmation validation/);\n assert.throws(()=>beforePreflightSource(themePath,earlierTheme,'prior'),/during confirmation validation/);\n let reads=0;\n const mixed=owner=>owner===themePath?(++reads===1?themeSource:earlierTheme):read(owner);\n assert.throws(()=>beforePreflightSource(themePath,themeSource,'prior',mixed),/during confirmation validation/);\n assert.ok(reads>1,'nested preflight must verify the live source again');\n\n const {beforeConfirmationCopier}=await import('./helpers/ui-confirmation-copier-source.mjs');\n const copierPath='tests/helpers/copy-integration-source-closure.mjs',copierSource=read(copierPath);\n const earlierCopier=beforeConfirmationCopier(copierPath,copierSource);\n const historicCopier=beforePreflightSource(copierPath,copierSource,'prior');\n const digest=value=>createHash('sha256').update(value.replaceAll('\\r\\n','\\n')).digest('hex');\n assert.equal(digest(earlierCopier),'73a38d069953b7bd095a7cfb33b04ab58a2b4623cf86b219876061188f450e7c');\n assert.equal(digest(historicCopier),'17f1e337b452ed462ee189d026145f1296c9c6992da4ba7ddb0cd1229d5816b0');\n assert.equal(beforePreflightSource(copierPath,copierSource,'release-bootstrap'),historicCopier);\n assert.equal(releaseBootstrapCiRead()(copierPath,'utf8'),historicCopier);\n const readCopier=value=>owner=>owner===copierPath?value:read(owner);\n assert.equal(beforePreflightSource(copierPath,earlierCopier,'prior',readCopier(earlierCopier)),historicCopier);\n const copierCRLF=copierSource.replaceAll('\\r\\n','\\n').replaceAll('\\n','\\r\\n');\n assert.equal(digest(beforePreflightSource(copierPath,copierCRLF,'prior')),digest(historicCopier));\n const copierDrift='!'+copierSource.slice(1);\n const copierForeign=/combined linked owner identity:.*during confirmation copier validation/;\n assert.throws(()=>beforePreflightSource(copierPath,earlierCopier,'prior'),copierForeign);\n for(const invalid of [earlierCopier,copierDrift,copierSource+'\\n',copierSource.replaceAll('\\n','\\r\\r\\n'),null,Buffer.from(copierSource)]){\n  assert.throws(()=>beforePreflightSource(copierPath,copierSource,'prior',readCopier(invalid)),copierForeign);\n }\n assert.throws(()=>beforePreflightSource(copierPath,copierSource,'prior',()=>{throw Error('missing copier');}),\n  /combined linked owner missing:.*missing copier/);\n assert.equal(beforePreflightSource(copierPath,copierDrift,'prior',()=>{throw Error('foreign bytes requested a read');}),copierDrift);\n});\n"
+      }
+    ]
+  },
+  "tests/helpers/ui-entrance-source.mjs": {
+    "path": "tests/helpers/ui-entrance-source.mjs",
+    "beforeSha256": "55bbaca21af744a48dff1c5b445160b993bcf0862f813ce328a630408247e315",
+    "afterSha256": "0f200d67ccd93c5d9ff8391ea4c71fa186c24312168ab5f96a0124a648976a72",
+    "afterLength": 7711,
+    "hunks": [
+      {
+        "at": 7,
+        "before": "import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';\nimport {beforeCurrentReplayFixes} from './current-replay-fix-sources.mjs';\n\nconst archive=readFileSync(new URL('../fixtures/ui-entrance-source.json.gz',import.meta.url));",
+        "after": "import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';\nimport {beforeCurrentReplayFixes} from './current-replay-fix-sources.mjs';\nimport confirmationPredecessors from './ui-confirmation-predecessors.json' with {type:'json'};\nimport confirmationV220Predecessors from './ui-confirmation-v220-predecessors.json' with {type:'json'};\nconst confirmationEditions=[confirmationV220Predecessors,confirmationPredecessors];\n\nexport function beforeConfirmation(path,source){\n // Live product tests still use the updated sources. Only exact input bytes\n // can be projected into the older, unchanged test receipt.\n for(const predecessors of confirmationEditions){\n  const row=Object.hasOwn(predecessors,path)?predecessors[path]:null;\n  if(!row||typeof source!=='string'||source.replaceAll('\\r\\n','\\n').length!==row.afterLength)continue;\n  const prior=restoreExactFixtureHunks(row,path,source);\n  if(prior!==source)source=source.includes('\\r\\n')?prior.replaceAll('\\n','\\r\\n'):prior;\n }\n return source;\n}\n\nfunction isConfirmationPredecessor(path,source){\n const rows=confirmationEditions.filter(proofs=>Object.hasOwn(proofs,path)).map(proofs=>proofs[path]);\n if(!rows.length||typeof source!=='string')return false;\n const sha=createHash('sha256').update(source.replaceAll('\\r\\n','\\n')).digest('hex');\n return rows.some(row=>row.beforeSha256===sha);\n}\n\nconst archive=readFileSync(new URL('../fixtures/ui-entrance-source.json.gz',import.meta.url));"
+      },
+      {
+        "at": 76,
+        "before": "\nexport function beforeUiEntranceWitness(path,source){\n return project(path,source,Object.hasOwn(witnesses,path)?witnesses[path]:undefined);\n}\n",
+        "after": "\nexport function beforeUiEntranceWitness(path,source){\n return project(path,beforeConfirmation(path,source),Object.hasOwn(witnesses,path)?witnesses[path]:undefined);\n}\n"
+      },
+      {
+        "at": 108,
+        "before": "}\n\nexport function entrancePredecessor(path,source,read=readLive,{allowConfigLayout=false}={}){\n const input=source;\n if(allowConfigLayout&&path==='config/architecture.json'&&typeof source==='string'",
+        "after": "}\n\nexport function confirmationReader(path,source,read){\n const confirmed=beforeConfirmation(path,source);\n const expected=confirmed!==source||isConfirmationPredecessor(path,source)?source.replaceAll('\\r\\n','\\n'):undefined;\n function readOwner(owner,encoding){\n  let live;\n  try{live=read(owner,encoding);}catch(error){\n   if(owner===path&&expected!==undefined)assert.fail('combined linked owner missing: '+path+': '+error.message);\n   throw error;\n  }\n  const earlier=beforeConfirmation(owner,live);\n  if(owner===path&&(expected!==undefined||earlier!==live)){\n   assert(typeof live==='string'&&live.replaceAll('\\r\\n','\\n')===expected,\n    'combined linked owner identity: '+path+' during confirmation validation');\n  }\n  return earlier;\n }\n if(expected!==undefined)readOwner(path,'utf8');\n return {source:confirmed,read:readOwner,matched:expected!==undefined};\n}\n\nexport function entrancePredecessor(path,source,read=readLive,{allowConfigLayout=false}={}){\n ({source,read}=confirmationReader(path,source,read));\n const input=source;\n if(allowConfigLayout&&path==='config/architecture.json'&&typeof source==='string'"
+      }
+    ]
+  },
+  "tests/helpers/integrated-ci-source.mjs": {
+    "path": "tests/helpers/integrated-ci-source.mjs",
+    "beforeSha256": "35c66b01602d1b6f956cda4863768f9c1fd7ecdd3f8965ffee6ebc597811b882",
+    "afterSha256": "06f2757cd5b00947385e6377eff72c02a644814919aab2dec1ac767cb874524c",
+    "afterLength": 14260,
+    "hunks": [
+      {
+        "at": 8,
+        "before": "import {releaseBootstrapCiSource,releaseBootstrapCiCheckedSource,assertReleaseBootstrapCiCurrent} from './release-bootstrap-ci-source.mjs';\nimport {exactSourceMatches} from './source-fingerprint.mjs';\nconst hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\\r\\n','\\n');\nconst freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};",
+        "after": "import {releaseBootstrapCiSource,releaseBootstrapCiCheckedSource,assertReleaseBootstrapCiCurrent} from './release-bootstrap-ci-source.mjs';\nimport {exactSourceMatches} from './source-fingerprint.mjs';\nimport {beforeConfirmation} from './ui-entrance-source.mjs';\nconst hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\\r\\n','\\n');\nconst freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};"
+      },
+      {
+        "at": 55,
+        "before": " },\n});\nconst integratedEvidenceSuccessors=Object.freeze({\n 'CHANGELOG.md':{",
+        "after": " },\n});\nconst confirmationTheme='data/presentation/ui_theme.json';\nconst integratedEvidenceSuccessors=Object.freeze({\n 'CHANGELOG.md':{"
+      },
+      {
+        "at": 73,
+        "before": " },\n // #938, #940, #942, #951 and #984 update the approved live theme after #912.\n 'data/presentation/ui_theme.json':{\n  sha256:'72cae11890ce1a018fa145152188cd6ff6779f899db201f9d3799171db7abb4e',gitBlob:'2d5262e17653444c27bba75679748ccc06ea1d09',\n },",
+        "after": " },\n // #938, #940, #942, #951 and #984 update the approved live theme after #912.\n [confirmationTheme]:{\n  sha256:'72cae11890ce1a018fa145152188cd6ff6779f899db201f9d3799171db7abb4e',gitBlob:'2d5262e17653444c27bba75679748ccc06ea1d09',\n },"
+      },
+      {
+        "at": 137,
+        "before": "}\nexport function integratedSource(path,source,target){\n source=beforePreflightSource(path,source);\n assert(Object.hasOwn(integratedCiProof.sources,target),'known integration input');\n if(linkedProductionOwner(path))return source;",
+        "after": "}\nexport function integratedSource(path,source,target){\n // Historical callers may supply the already-projected exact theme witness.\n if(path!==confirmationTheme||!exactSourceMatches(source,integratedEvidenceSuccessors[confirmationTheme]))\n  source=beforePreflightSource(path,source);\n assert(Object.hasOwn(integratedCiProof.sources,target),'known integration input');\n if(linkedProductionOwner(path))return source;"
+      },
+      {
+        "at": 158,
+        "before": "};}\nexport function assertIntegratedCurrent(read=readFileSync){\n assertReleaseBootstrapCiCurrent(read);\n const rawRead=read;\n read=preflightPriorRead(rawRead);\n for(const [path,row]of Object.entries(integratedCiProof.files)){\n  const binding=integratedEvidenceSuccessors[path];\n  const raw=binding?rawRead(path,'utf8'):read(path,'utf8');\n  const source=path==='package.json'?checkedActorAlphaBuildPredecessor(path,raw):raw;\n  if(binding)assert(exactSourceMatches(source,binding),'fresh complete integration source: '+path);\n  const prior=releaseBootstrapCiCheckedSource(path,beforeIntegrationEvidence(path,source),row.current);",
+        "after": "};}\nexport function assertIntegratedCurrent(read=readFileSync){\n const rawRead=assertReleaseBootstrapCiCurrent(read);\n read=preflightPriorRead(rawRead);\n for(const [path,row]of Object.entries(integratedCiProof.files)){\n  const binding=integratedEvidenceSuccessors[path];\n  const live=binding?rawRead(path,'utf8'):read(path,'utf8');\n  let source=live;\n  if(path==='package.json')source=checkedActorAlphaBuildPredecessor(path,live);\n  if(path===confirmationTheme){\n   source=beforeConfirmation(path,live);\n   assert.notEqual(source,live,'fresh complete integration source: '+path);\n  }\n  if(binding)assert(exactSourceMatches(source,binding),'fresh complete integration source: '+path);\n  const prior=releaseBootstrapCiCheckedSource(path,beforeIntegrationEvidence(path,source),row.current);"
+      }
+    ]
+  },
+  "tests/integrated-ci-source.cases.mjs": {
+    "path": "tests/integrated-ci-source.cases.mjs",
+    "beforeSha256": "ff6f8ad1384ec0f988b8b853e13175ee09bf3d71066c671d6bcadaecc8e61a48",
+    "afterSha256": "d056da5222e719698427e431c0e88f6d17306664734c1cd8185c46b07808b214",
+    "afterLength": 8440,
+    "hunks": [
+      {
+        "at": 4,
+        "before": "import {releaseBootstrapCiRead,releaseBootstrapCiPacket,releaseBootstrapCiSource,releaseBootstrapWorkflowBefore,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';\nimport {createHash} from 'node:crypto';\nimport {discoverJs} from '../scripts/ci-shards.mjs';\nimport {integratedCiProof as proof,integratedHistoricalInput,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/integrated-ci-source.mjs';\nconst raw=p=>beforePreflightSource(p,readFileSync(p,'utf8')).replaceAll('\\r\\n','\\n'),hash=s=>createHash('sha256').update(s).digest('hex');\nconst readFileSync=releaseBootstrapCiRead(rawReadFileSync);\n",
+        "after": "import {releaseBootstrapCiRead,releaseBootstrapCiPacket,releaseBootstrapCiSource,releaseBootstrapWorkflowBefore,assertReleaseBootstrapCiCurrent,assertReleaseBootstrapRawInventory} from './helpers/release-bootstrap-ci-source.mjs';\nimport {createHash} from 'node:crypto';\nimport {beforeConfirmation} from './helpers/ui-entrance-source.mjs';\nimport {beforeConfirmationCopier} from './helpers/ui-confirmation-copier-source.mjs';\nimport {discoverJs} from '../scripts/ci-shards.mjs';\nimport {integratedCiProof as proof,integratedHistoricalInput,integratedSource,assertIntegratedCurrent,renderIntegratedCiBinding,extendIntegratedHelperClosure} from './helpers/integrated-ci-source.mjs';\nconst raw=p=>beforePreflightSource(p,readFileSync(p,'utf8'),'prior',readFileSync).replaceAll('\\r\\n','\\n'),hash=s=>createHash('sha256').update(s).digest('hex');\nconst readFileSync=releaseBootstrapCiRead(rawReadFileSync);\n"
+      },
+      {
+        "at": 26,
+        "before": "  for(const foreign of ['__proto__','constructor','foreign/'+path])assert.equal(integratedSource(foreign,source,target),source);\n }\n for(const path of ['.gitattributes','docs/legal/assets.json','tests/helpers/closeout-source-epoch.mjs','tests/helpers/run-hud-ci-source.mjs','tests/helpers/integrated-ci-source.mjs'])\n  assert.throws(()=>assertIntegratedCurrent((p,e)=>{\n   const value=rawReadFileSync(p,e);",
+        "after": "  for(const foreign of ['__proto__','constructor','foreign/'+path])assert.equal(integratedSource(foreign,source,target),source);\n }\n for(const path of ['.gitattributes','data/presentation/ui_theme.json','docs/legal/assets.json','tests/helpers/closeout-source-epoch.mjs','tests/helpers/run-hud-ci-source.mjs','tests/helpers/integrated-ci-source.mjs'])\n  assert.throws(()=>assertIntegratedCurrent((p,e)=>{\n   const value=rawReadFileSync(p,e);"
+      },
+      {
+        "at": 33,
+        "before": " assert.equal(raw('tests/helpers/integrated-ci-binding.mjs'),renderIntegratedCiBinding(hash(readFileSync('tests/helpers/integrated-ci-source.json.gz'))));\n assert.equal(hash(readFileSync('tests/helpers/menu-red-before-integration-production-source.json.gz')),'ee888fd1686beaeffc2e439164619ecedee9ac00d2ca00a2711bd74c63e28cae');\n});\n",
+        "after": " assert.equal(raw('tests/helpers/integrated-ci-binding.mjs'),renderIntegratedCiBinding(hash(readFileSync('tests/helpers/integrated-ci-source.json.gz'))));\n assert.equal(hash(readFileSync('tests/helpers/menu-red-before-integration-production-source.json.gz')),'ee888fd1686beaeffc2e439164619ecedee9ac00d2ca00a2711bd74c63e28cae');\n});\n\ntest('current Integration and Release bootstrap require the current confirmation source editions',()=>{\n for(const path of ['tests/helpers/copy-integration-source-closure.mjs','data/presentation/ui_theme.json',\n  'tests/helpers/integrated-ci-source.mjs','tests/integrated-ci-source.cases.mjs']){\n  const current=rawReadFileSync(path,'utf8');\n  const previous=beforeConfirmation(path,beforeConfirmationCopier(path,current));\n  assert.notEqual(previous,current,'exact #997 predecessor: '+path);\n  for(const validate of [assertIntegratedCurrent,assertReleaseBootstrapCiCurrent]){\n   const rejected=error=>error.message==='fresh complete integration source: '+path;\n   for(const input of [previous,current+'\\n']){\n    const read=(owner,encoding)=>owner===path?input:rawReadFileSync(owner,encoding);\n    assert.throws(()=>validate(read),rejected);\n   }\n   // Bootstrap loads the theme once. Integration reads it again for its seal.\n   if(path==='data/presentation/ui_theme.json'&&validate===assertReleaseBootstrapCiCurrent)continue;\n   let reads=0;\n   const read=(owner,encoding)=>owner===path&&++reads>1?previous:rawReadFileSync(owner,encoding);\n   assert.throws(()=>validate(read),rejected);\n   assert(reads>1,'reject the changed reread of '+path);\n  }\n }\n});\n"
+      }
+    ]
+  },
+  "tests/helpers/v2-p1-ci-source.mjs": {
+    "path": "tests/helpers/v2-p1-ci-source.mjs",
+    "beforeSha256": "b3e7cdda9794e9ba61eb63205fa4cbcbb78c02915f3fea84b16d96ebb0a4c755",
+    "afterSha256": "add40fc31930e44b7b5d62a21aa30f9aa476b818c924c791682df7dd8ccadf46",
+    "afterLength": 7134,
+    "hunks": [
+      {
+        "at": 73,
+        "before": "}\n\nexport function beforeV2UiPreTinyHouseSource(path, source) {\n  source = beforeRelicDetail(path,beforeActionButtons(path,source));\n  source = beforeRecordingUi(path,beforeRelicCrystal(path,source));\n  source = beforeReleaseForgeGridUi(path,beforeRefinedReleaseCiSource(path,source));\n  source = beforeReleaseSharedRelicCi(path,source);\n  source = beforeReleaseSharedRelicUi(path,source);\n  source = beforeReleaseRelicCrystal(path,source);\n  source = beforeReleaseControlsGuideRemovalCi(path,source);\n  source = beforeReleaseRightClick(path,beforeReleaseControlsGuideRemoval(path,source));\n  source = beforeFieldConfirmation(path,source);\n  source = beforeReleaseUiRestoreCi(path,source);",
+        "after": "}\n\nexport function beforeV2UiPreTinyHouseSource(path, source, read) {\n  source = beforeRelicDetail(path,beforeActionButtons(path,source));\n  source = beforeRecordingUi(path,beforeRelicCrystal(path,source),read);\n  source = beforeReleaseForgeGridUi(path,beforeRefinedReleaseCiSource(path,source,read));\n  source = beforeReleaseSharedRelicCi(path,source);\n  source = beforeReleaseSharedRelicUi(path,source);\n  source = beforeReleaseRelicCrystal(path,source);\n  source = beforeReleaseControlsGuideRemovalCi(path,source);\n  source = beforeReleaseRightClick(path,beforeReleaseControlsGuideRemoval(path,source,read));\n  source = beforeFieldConfirmation(path,source);\n  source = beforeReleaseUiRestoreCi(path,source);"
+      },
+      {
+        "at": 87,
+        "before": "}\n\nexport function beforeV2UiEvidence(path, source) {\n  // The P1 merge recognizes the immediate pre-Tiny-House bytes only.\n  source = beforeTinyHouseCiSource(path,beforeV2UiPreTinyHouseSource(path,source));\n  if (path === potionMerge.path && typeof source === 'string' && !source.includes('\\r\\r\\n')\n      && [potionMerge.afterSha256,...potionMerge.successorSha256s].includes(sha256(source.replaceAll('\\r\\n','\\n')))) {",
+        "after": "}\n\nexport function beforeV2UiEvidence(path, source, read) {\n  // The P1 merge recognizes the immediate pre-Tiny-House bytes only.\n  source = beforeTinyHouseCiSource(path,beforeV2UiPreTinyHouseSource(path,source,read));\n  if (path === potionMerge.path && typeof source === 'string' && !source.includes('\\r\\r\\n')\n      && [potionMerge.afterSha256,...potionMerge.successorSha256s].includes(sha256(source.replaceAll('\\r\\n','\\n')))) {"
+      }
+    ]
+  },
+  "tests/helpers/release-ui-restore-source.mjs": {
+    "path": "tests/helpers/release-ui-restore-source.mjs",
+    "beforeSha256": "846781b9a6b31c7b85dfca9cdca0447d1880f9a220d1488c18278c4189d6ad48",
+    "afterSha256": "2ec5855476f1b4c8cf762ca1a7ee366028322841b07996a518af96fdd87259b9",
+    "afterLength": 12547,
+    "hunks": [
+      {
+        "at": 79,
+        "before": " return (path,...args)=>beforeReleaseShopEntry(path,read(path,...args));\n}\nexport const beforeRecordingUi=(path,source)=>beforeReleaseDetailSource(path,recording.project(path,beforeCombatVisualSource(path,source)));\nconst officialRuntimePath='tests/official-assets-runtime.test.mjs';\nconst currentOfficialRuntime={",
+        "after": " return (path,...args)=>beforeReleaseShopEntry(path,read(path,...args));\n}\nexport const beforeRecordingUi=(path,source,read)=>beforeReleaseDetailSource(path,recording.project(path,beforeCombatVisualSource(path,source,read)));\nconst officialRuntimePath='tests/official-assets-runtime.test.mjs';\nconst currentOfficialRuntime={"
+      },
+      {
+        "at": 130,
+        "before": "export const releaseSharedRelicSourcePaths=Object.freeze(Object.keys(sharedRelics.files).filter(path=>path.startsWith('src/lua/')));\nexport const beforeReleaseSharedRelicUi=sharedRelics.project;\nexport const beforeReleaseControlsGuideRemoval=(path,source)=>controlsGuideRemoval.project(path,beforeRecordingUi(path,source));\nexport const releaseRightClickSourcePaths=Object.freeze(Object.keys(rightClick.files));\nexport const releaseUiRestoreSourcePaths=Object.freeze([...new Set([...Object.keys(files),...Object.keys(fieldCancel.files)])]);",
+        "after": "export const releaseSharedRelicSourcePaths=Object.freeze(Object.keys(sharedRelics.files).filter(path=>path.startsWith('src/lua/')));\nexport const beforeReleaseSharedRelicUi=sharedRelics.project;\nexport const beforeReleaseControlsGuideRemoval=(path,source,read)=>controlsGuideRemoval.project(path,beforeRecordingUi(path,source,read));\nexport const releaseRightClickSourcePaths=Object.freeze(Object.keys(rightClick.files));\nexport const releaseUiRestoreSourcePaths=Object.freeze([...new Set([...Object.keys(files),...Object.keys(fieldCancel.files)])]);"
+      }
+    ]
+  },
+  "tests/helpers/refined-release-source.mjs": {
+    "path": "tests/helpers/refined-release-source.mjs",
+    "beforeSha256": "cdc740ca1ab04e423eef6462d2c61f68161a9431955d17b098749e6d473ae303",
+    "afterSha256": "747f63088f1830dad97f7fa116df16f265c555639c9a01161ba9ba3b3b5ecc5c",
+    "afterLength": 8137,
+    "hunks": [
+      {
+        "at": 87,
+        "before": " return source.includes('\\r\\n')?prior.replaceAll('\\n','\\r\\n'):prior;\n}\nexport function beforeRefinedReleaseCiSource(path,source){\n return owners.includes(path)?source:project(path,beforeCombatVisualSource(path,beforeReviewedPackingSource(path,source)));\n}\nexport function beforeRefinedReleaseProduction(path,source){",
+        "after": " return source.includes('\\r\\n')?prior.replaceAll('\\n','\\r\\n'):prior;\n}\nexport function beforeRefinedReleaseCiSource(path,source,read){\n return owners.includes(path)?source:project(path,beforeCombatVisualSource(path,beforeReviewedPackingSource(path,source),read));\n}\nexport function beforeRefinedReleaseProduction(path,source){"
+      }
+    ]
+  },
+  "tests/helpers/release-bootstrap-ci-source.mjs": {
+    "path": "tests/helpers/release-bootstrap-ci-source.mjs",
+    "beforeSha256": "21ff83215e06ee5daf7da35e9d23dd121e6b9ee1d23eb53bfa8efb149fbfe275",
+    "afterSha256": "2f4a5228373268866762bbae8ff073a66755dd3a8475880f7ed432e17e97907a",
+    "afterLength": 12860,
+    "hunks": [
+      {
+        "at": 26,
+        "before": "const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};\nexport const releaseBootstrapCiPacket=freeze(packet);\nfunction historicalSource(path,source){\n source=beforePreflightSource(path,source,'release-bootstrap');\n if(path==='.github/workflows/quick-feedback.yml'&&typeof source==='string'&&!source.includes('\\r\\r\\n')&&['ec23dcec59adc0a6de7a1f1ba30304e6e6e3b0262fdc369b1fdb533b4f4c9800','7eb601d4859afe2aa6331608e544205d94a3c8fdd1d864c351fdc92cad24b5f9'].includes(hash(norm(source)))){\n  const prior=norm(source).replace(\"      - name: Verify affected Release CI contracts explicitly\\n        env:\\n          BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha }}\\n        run: |\\n          node --input-type=module <<'NODE'\\n          import {execFileSync} from 'node:child_process';\\n          const base=process.env.BASE_SHA;\\n          if(!/^[0-9a-f]{40}$/.test(base||''))throw new Error('exact comparison base required');\\n          const changed=execFileSync('git',['diff','--name-only','-z',base,'HEAD'],{encoding:'utf8'}).split('\\\\0');\\n          const contracts=new Set(['.github/workflows/quick-feedback.yml','scripts/release-ci.mjs','tests/helpers/release-ci.cases.mjs','tests/helpers/release-bootstrap-ci-source.mjs']);\\n          if(changed.some(path=>contracts.has(path))){\\n            console.log('Executing affected Release CI contracts: ci-impact and ci-summary-runners');\\n            execFileSync(process.execPath,['--test','tests/ci-impact.test.mjs','tests/ci-summary-runners.test.mjs'],{stdio:'inherit'});\\n          }else console.log('No Release CI contract changes');\\n          NODE\\n\",'').replace(\"    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == true\\n\",'');",
+        "after": "const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};\nexport const releaseBootstrapCiPacket=freeze(packet);\nfunction historicalSource(path,source,read){\n source=beforePreflightSource(path,source,'release-bootstrap',read);\n if(path==='.github/workflows/quick-feedback.yml'&&typeof source==='string'&&!source.includes('\\r\\r\\n')&&['ec23dcec59adc0a6de7a1f1ba30304e6e6e3b0262fdc369b1fdb533b4f4c9800','7eb601d4859afe2aa6331608e544205d94a3c8fdd1d864c351fdc92cad24b5f9'].includes(hash(norm(source)))){\n  const prior=norm(source).replace(\"      - name: Verify affected Release CI contracts explicitly\\n        env:\\n          BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha }}\\n        run: |\\n          node --input-type=module <<'NODE'\\n          import {execFileSync} from 'node:child_process';\\n          const base=process.env.BASE_SHA;\\n          if(!/^[0-9a-f]{40}$/.test(base||''))throw new Error('exact comparison base required');\\n          const changed=execFileSync('git',['diff','--name-only','-z',base,'HEAD'],{encoding:'utf8'}).split('\\\\0');\\n          const contracts=new Set(['.github/workflows/quick-feedback.yml','scripts/release-ci.mjs','tests/helpers/release-ci.cases.mjs','tests/helpers/release-bootstrap-ci-source.mjs']);\\n          if(changed.some(path=>contracts.has(path))){\\n            console.log('Executing affected Release CI contracts: ci-impact and ci-summary-runners');\\n            execFileSync(process.execPath,['--test','tests/ci-impact.test.mjs','tests/ci-summary-runners.test.mjs'],{stdio:'inherit'});\\n          }else console.log('No Release CI contract changes');\\n          NODE\\n\",'').replace(\"    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == true\\n\",'');"
+      },
+      {
+        "at": 44,
+        "before": " return hash(norm(prior))===packet.files[path].current.sha256?prior:source;\n}\nfunction checkedSource(path,source,before){\n const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;\n if(before&&(!row||row.before.sha256!==before.sha256))return source;\n source=historicalSource(path,source);\n if(!row||typeof source!=='string'||source.includes('\\r\\r\\n'))return source;\n if(before&&row.before.sha256!==before.sha256)return source;",
+        "after": " return hash(norm(prior))===packet.files[path].current.sha256?prior:source;\n}\nfunction checkedSource(path,source,before,read){\n const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;\n if(before&&(!row||row.before.sha256!==before.sha256))return source;\n source=historicalSource(path,source,read);\n if(!row||typeof source!=='string'||source.includes('\\r\\r\\n'))return source;\n if(before&&row.before.sha256!==before.sha256)return source;"
+      },
+      {
+        "at": 53,
+        "before": "}\nexport const releaseBootstrapCiCheckedSource=checkedSource;\nexport function releaseBootstrapCiSource(path,source,before){\n if(path==='tests/helpers/draft-quality-workflow.mjs'&&typeof source==='string'&&!source.includes('\\r\\r\\n')&&hash(norm(source))==='357ad5c4d68378063b02cf75396f804c8c2b61d12a925595663a4b533948e4e6'){\n  if(before&&before.sha256!=='5c3cc95c0371927db143c573c1500843b97ca8e138f67737aede03e558b1d986')return source;",
+        "after": "}\nexport const releaseBootstrapCiCheckedSource=checkedSource;\nexport function releaseBootstrapCiSource(path,source,before,read){\n if(path==='tests/helpers/draft-quality-workflow.mjs'&&typeof source==='string'&&!source.includes('\\r\\r\\n')&&hash(norm(source))==='357ad5c4d68378063b02cf75396f804c8c2b61d12a925595663a4b533948e4e6'){\n  if(before&&before.sha256!=='5c3cc95c0371927db143c573c1500843b97ca8e138f67737aede03e558b1d986')return source;"
+      },
+      {
+        "at": 66,
+        "before": " }\n if(path.startsWith('src/')||path==='config/architecture.json')return source;\n return checkedSource(path,source,before);\n}\nfunction guidanceBefore(path,source){",
+        "after": " }\n if(path.startsWith('src/')||path==='config/architecture.json')return source;\n return checkedSource(path,source,before,read);\n}\nfunction guidanceBefore(path,source){"
+      },
+      {
+        "at": 110,
+        "before": "}\nexport function releaseBootstrapCiRead(read=readFileSync){return(path,encoding)=>{\n const raw=readHistoricalPreflightInput(path,encoding,read),text=typeof raw==='string'?raw:raw.toString('utf8'),prior=releaseBootstrapCiSource(path,guidanceBefore(path,beforeRunHudDiskInput(path,text,read)));\n return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);\n};}",
+        "after": "}\nexport function releaseBootstrapCiRead(read=readFileSync){return(path,encoding)=>{\n const raw=readHistoricalPreflightInput(path,encoding,read),text=typeof raw==='string'?raw:raw.toString('utf8'),prior=releaseBootstrapCiSource(path,guidanceBefore(path,beforeRunHudDiskInput(path,text,read)),undefined,read);\n return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);\n};}"
+      },
+      {
+        "at": 138,
+        "before": "}\nexport function assertReleaseBootstrapCiCurrent(read=readFileSync){\n assertIntegrationSuccessorsCurrent(read);\n for(const [path,row]of Object.entries(packet.files))\n  assert.equal(hash(norm(historicalSource(path,read(path,'utf8')))),row.current.sha256,'fresh complete integration source: bootstrap '+path);\n for(const [path,sha]of Object.entries(packet.immutableArchives))\n  assert.equal(hash(read(path)),sha,'retained complete immutable bootstrap predecessor: '+path);\n}\n",
+        "after": "}\nexport function assertReleaseBootstrapCiCurrent(read=readFileSync){\n read=assertIntegrationSuccessorsCurrent(read);\n for(const [path,row]of Object.entries(packet.files))\n  assert.equal(hash(norm(historicalSource(path,read(path,'utf8'),read))),row.current.sha256,'fresh complete integration source: bootstrap '+path);\n for(const [path,sha]of Object.entries(packet.immutableArchives))\n  assert.equal(hash(read(path)),sha,'retained complete immutable bootstrap predecessor: '+path);\n return read;\n}\n"
+      }
+    ]
+  },
+  "tests/helpers/fork-preflight-source.mjs": {
+    "path": "tests/helpers/fork-preflight-source.mjs",
+    "beforeSha256": "969393edcce759ce2a5aa2cd377dca294b54bc8f240335aab4da2dc32767240c",
+    "afterSha256": "ef7714032f6cbaa7be518e9bc891d6370f58af1d8d85fe6c29af30d8d7d8ebea",
+    "afterLength": 82903,
+    "hunks": [
+      {
+        "at": 5,
+        "before": "import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,beforeDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';\nimport {beforeCalibrationReplay,beforeCurrentReplayCopier} from './calibration-replay-sources.mjs';\nimport {beforeNativeHostReplay} from './native-host-replay-source.mjs';\nimport {assertNativeFixturesCurrent,beforeNativeFixtureReplay} from './native-fixture-replay-source.mjs';\nimport {assertNativeFlowFixturesCurrent,beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';\nimport {beforeUiEntranceWitness} from './ui-entrance-source.mjs';\nimport {beforeOfficialBackgroundFixture} from './official-background-fixture-source.mjs';\nimport {assertAudioDeckBrowserCurrent,beforeMapRoomReplayCohort,beforeDevelopReplayMerge} from './develop-replay-merge-source.mjs';",
+        "after": "import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,beforeDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';\nimport {beforeCalibrationReplay,beforeCurrentReplayCopier} from './calibration-replay-sources.mjs';\nimport {assertConfirmationCopierEdition,beforeConfirmationCopier} from './ui-confirmation-copier-source.mjs';\nimport {beforeNativeHostReplay} from './native-host-replay-source.mjs';\nimport {assertNativeFixturesCurrent,beforeNativeFixtureReplay} from './native-fixture-replay-source.mjs';\nimport {assertNativeFlowFixturesCurrent,beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';\nimport {beforeConfirmation,beforeUiEntranceWitness,confirmationReader} from './ui-entrance-source.mjs';\nimport {beforeOfficialBackgroundFixture} from './official-background-fixture-source.mjs';\nimport {assertAudioDeckBrowserCurrent,beforeMapRoomReplayCohort,beforeDevelopReplayMerge} from './develop-replay-merge-source.mjs';"
+      },
+      {
+        "at": 338,
+        "before": " return source.includes('\\r\\n')?prior.replaceAll('\\n','\\r\\n'):prior;\n}\nfunction beforeReleaseUiBuildSource(path,source,read=readFileSync){\n source=beforeIntegratedReleaseCopier(path,source);\n source=beforeShopEntryCopier(path,beforeReleaseShopEntry(path,source));\n source=beforeCombatVisualSource(path,source,shopEntryPreflightRead(owner=>beforeIntegratedReleaseCopier(owner,read(owner,'utf8'))));\n source=beforeSts1MenuCiSource(path,source);\n source=beforeRefinedReleaseCiSource(path,beforeRefinedReleaseCopier(path,beforeReleaseCapacitySource(path,source)));\n if(!Object.hasOwn(releaseUiBuild.files,path)||typeof source!=='string'||source.includes('\\r\\r\\n'))return source;\n const text=normalize(source),{before,after}=releaseUiBuild.files[path];",
+        "after": " return source.includes('\\r\\n')?prior.replaceAll('\\n','\\r\\n'):prior;\n}\nfunction beforeReleaseUiBuildSource(path,source,read=readFileSync,reuseCombatReader=false){\n source=beforeIntegratedReleaseCopier(path,source);\n source=beforeShopEntryCopier(path,beforeReleaseShopEntry(path,source));\n const readCombat=shopEntryPreflightRead(owner=>beforeIntegratedReleaseCopier(owner,read(owner,'utf8')));\n source=beforeCombatVisualSource(path,source,readCombat);\n source=beforeSts1MenuCiSource(path,source);\n source=beforeRefinedReleaseCiSource(path,beforeRefinedReleaseCopier(path,beforeReleaseCapacitySource(path,source)),\n  reuseCombatReader?readCombat:undefined);\n if(!Object.hasOwn(releaseUiBuild.files,path)||typeof source!=='string'||source.includes('\\r\\r\\n'))return source;\n const text=normalize(source),{before,after}=releaseUiBuild.files[path];"
+      },
+      {
+        "at": 527,
+        "before": " return source.includes('\\r\\n')?prior.replaceAll('\\n','\\r\\n'):prior;\n}\nfunction beforeCoopCiSource(path,source){\n source=beforeLuaInventoryTest(path,source);\n source=beforeStsFadeCi(path,source);\n source=beforeReleaseUiBuildSource(path,beforeRebasedCi(path,beforeRebasedCopier(path,source)));\n source=beforePowerMembershipConfig(path,beforePowerMembershipHelper(path,source));\n source=beforeFieldConfirmation(path,beforeRewardScreenCiSource(path,beforeCardFeedbackCiSource(path,beforeRelicCrystal(path,beforeMapCiSource(path,source)))));\n source=beforeDevelopCapacityBuildSource(path,beforeTinyHouseIntegratedSource(path,source));\n source=beforeV2UiEvidence(path,beforeLoadingRecoveryCopier(path,source));\n const row=Object.hasOwn(coopLabCi.files,path)?coopLabCi.files[path]:null;\n if(!row || typeof source!=='string' || source.includes('\\r\\r\\n') || hash(normalize(source))!==row.afterSha)return source;",
+        "after": " return source.includes('\\r\\n')?prior.replaceAll('\\n','\\r\\n'):prior;\n}\nfunction beforeCoopCiSource(path,source,confirmationRead){\n source=beforeLuaInventoryTest(path,source);\n source=beforeStsFadeCi(path,source);\n source=beforeReleaseUiBuildSource(path,beforeRebasedCi(path,beforeRebasedCopier(path,source)),confirmationRead,Boolean(confirmationRead));\n source=beforePowerMembershipConfig(path,beforePowerMembershipHelper(path,source));\n source=beforeFieldConfirmation(path,beforeRewardScreenCiSource(path,beforeCardFeedbackCiSource(path,beforeRelicCrystal(path,beforeMapCiSource(path,source)))));\n source=beforeDevelopCapacityBuildSource(path,beforeTinyHouseIntegratedSource(path,source));\n source=beforeV2UiEvidence(path,beforeLoadingRecoveryCopier(path,source),confirmationRead);\n const row=Object.hasOwn(coopLabCi.files,path)?coopLabCi.files[path]:null;\n if(!row || typeof source!=='string' || source.includes('\\r\\r\\n') || hash(normalize(source))!==row.afterSha)return source;"
+      },
+      {
+        "at": 560,
+        "before": " 'tests/gil-candidate-preflight.test.mjs':'7ec29cdbeaf1572fa9713d37fdc17003e4f7843479c5af5ebe3c3c8787b93068',\n 'tests/gil-candidate.test.mjs':'e8a08db32ea8a237575f428566093ab18cc60fd0d0ce4acb0b5e2d7e30b364de',\n 'tests/production-performance.test.mjs':'102893c9285fc52693ee9a7d1bae36d8cefef418ecf8da5d40e53b4eb98b2947',\n 'tests/release-metadata.test.mjs':'eceb8ab92f616084fdcdac875e69e761cf2c9674a804be9f0295e89213453cb8',",
+        "after": " 'tests/gil-candidate-preflight.test.mjs':'7ec29cdbeaf1572fa9713d37fdc17003e4f7843479c5af5ebe3c3c8787b93068',\n 'tests/gil-candidate.test.mjs':'e8a08db32ea8a237575f428566093ab18cc60fd0d0ce4acb0b5e2d7e30b364de',\n 'tests/official-confirmation-style.test.mjs':'8208d6d90dabe3fd464df0ea24bb7cd0a914040f83938e95ac6bb51eede798e0',\n 'tests/production-performance.test.mjs':'102893c9285fc52693ee9a7d1bae36d8cefef418ecf8da5d40e53b4eb98b2947',\n 'tests/release-metadata.test.mjs':'eceb8ab92f616084fdcdac875e69e761cf2c9674a804be9f0295e89213453cb8',"
+      },
+      {
+        "at": 780,
+        "before": "function beforeCalibrationReplayOwner(path,source){\n if(!calibrationReplayPaths.includes(path))return source;\n if(!calibrationReplayPredecessor){\n  calibrationReplayPredecessor=releaseUiRestoreArchive(",
+        "after": "function beforeCalibrationReplayOwner(path,source){\n if(!calibrationReplayPaths.includes(path))return source;\n source=beforeConfirmation(path,beforeConfirmationCopier(path,source));\n if(!calibrationReplayPredecessor){\n  calibrationReplayPredecessor=releaseUiRestoreArchive("
+      },
+      {
+        "at": 953,
+        "before": " return source.includes('\\r\\n')?prior.source.replaceAll('\\n','\\r\\n'):prior.source;\n}\nexport function assertIntegrationSuccessorsCurrent(read=readFileSync){\n const rawRead=read;\n const alphaBuildPredecessors=Object.fromEntries(Object.keys(actorAlphaBuildInputs).map(path=>\n  [path,checkedActorAlphaBuildPredecessor(path,rawRead(path,'utf8'))]));",
+        "after": " return source.includes('\\r\\n')?prior.source.replaceAll('\\n','\\r\\n'):prior.source;\n}\nconst currentConfirmationOwners=[\n 'tests/helpers/copy-integration-source-closure.mjs',\n 'data/presentation/ui_theme.json',\n 'tests/helpers/integrated-ci-source.mjs',\n 'tests/integrated-ci-source.cases.mjs',\n];\nexport function assertIntegrationSuccessorsCurrent(read=readFileSync){\n const suppliedRead=read;\n // Authenticate each raw reread before handing it to a historical projection.\n const rawRead=(path,encoding)=>{\n  const raw=suppliedRead(path,encoding);\n  if(currentConfirmationOwners.includes(path)){\n   const source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;\n   assert((!Buffer.isBuffer(raw)||Buffer.from(source).equals(raw))&&\n    beforeConfirmation(path,beforeConfirmationCopier(path,source))!==source,'fresh complete integration source: '+path);\n  }\n  return raw;\n };\n for(const path of currentConfirmationOwners)rawRead(path,'utf8');\n const alphaBuildPredecessors=Object.fromEntries(Object.keys(actorAlphaBuildInputs).map(path=>\n  [path,checkedActorAlphaBuildPredecessor(path,rawRead(path,'utf8'))]));"
+      },
+      {
+        "at": 997,
+        "before": "  let raw=beforeNativeFlowFixture(path,live);\n  if(path===replayAssetLedger){\n   const ledger=beforeDeckBrowserAssetLedger(live);\n   assert.notEqual(live,ledger,'fresh complete integration source: '+path);",
+        "after": "  let raw=beforeNativeFlowFixture(path,live);\n  if(path===replayAssetLedger){\n   const source=rawRead(path,encoding);\n   assert.notEqual(beforeConfirmation(path,source),source,'fresh complete integration source: '+path);\n   const ledger=beforeDeckBrowserAssetLedger(live);\n   assert.notEqual(live,ledger,'fresh complete integration source: '+path);"
+      },
+      {
+        "at": 1039,
+        "before": "  assert(typeof source==='string'&&!source.includes('\\r\\r\\n')&&hash(normalize(source))===sha,'fresh complete integration source: '+path);\n }\n}\nexport function beforePreflightSource(path,source,view='prior'){\n source=beforeForkPush(path,beforeCalibrationReplayOwner(path,beforeActorAlphaBuildInput(path,source)));\n if(path==='.github/workflows/quality.yml')source=beforePosixDeadlineWorkflow(beforeWindowsDeadlineWorkflow(source));\n source=beforeUiEntranceWitness(path,beforeCurrentReplayCopier(path,source));\n source=beforeCurrentReplayFixes(path,source);\n source=beforeNativeFlowFixture(path,source);",
+        "after": "  assert(typeof source==='string'&&!source.includes('\\r\\r\\n')&&hash(normalize(source))===sha,'fresh complete integration source: '+path);\n }\n return rawRead;\n}\nexport function beforePreflightSource(path,source,view='prior',read=readFileSync){\n assertConfirmationCopierEdition(path,source,read);\n source=beforeForkPush(path,beforeCalibrationReplayOwner(path,beforeActorAlphaBuildInput(path,source)));\n if(path==='.github/workflows/quality.yml')source=beforePosixDeadlineWorkflow(beforeWindowsDeadlineWorkflow(source));\n const confirmation=confirmationReader(path,beforeCurrentReplayCopier(path,source),read);\n source=beforeUiEntranceWitness(path,confirmation.source);\n source=beforeCurrentReplayFixes(path,source);\n source=beforeNativeFlowFixture(path,source);"
+      },
+      {
+        "at": 1062,
+        "before": " source=beforeNativeButtonRepairCopier(path,beforeNativeButtonRepair(path,source));\n source=beforeStsUiCloseoutSource(path,source);\n source=beforeCharacterPreparationCiSource(path,beforeV2UiAdmission(path,beforeCoopCiSource(path,source)));\n source=beforeIntegrationSuccessor(path,source);\n // Only the exact flag-registry successor enters the earlier Release witness.",
+        "after": " source=beforeNativeButtonRepairCopier(path,beforeNativeButtonRepair(path,source));\n source=beforeStsUiCloseoutSource(path,source);\n source=beforeCharacterPreparationCiSource(path,beforeV2UiAdmission(path,beforeCoopCiSource(path,source,\n  confirmation.matched?confirmation.read:undefined)));\n source=beforeIntegrationSuccessor(path,source);\n // Only the exact flag-registry successor enters the earlier Release witness."
+      },
+      {
+        "at": 1095,
+        "before": " const raw=readHistoricalPreflightInput(path,encoding,read);\n if(typeof raw!=='string'&&!Buffer.isBuffer(raw))return raw;\n const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=beforePreflightSource(path,text,view);\n return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);\n};}",
+        "after": " const raw=readHistoricalPreflightInput(path,encoding,read);\n if(typeof raw!=='string'&&!Buffer.isBuffer(raw))return raw;\n const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=beforePreflightSource(path,text,view,read);\n return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);\n};}"
+      }
+    ]
+  }
+}

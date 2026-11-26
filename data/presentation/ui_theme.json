@@ -433,6 +433,7 @@
     "heading": 28,
     "body": 24,
     "label": 22,
+    "confirmationAction": 24,
     "card": 15,
     "cardName": 14,
     "small": 20,
@@ -1303,6 +1304,7 @@
       "bottleSize": 32
     },
     "potionDiscard": {
+      "actionHeight": 64,
       "columns": [
         -184,
         0,
@@ -2728,13 +2730,23 @@
       "title": [0, 172, 500, 48],
       "message": [0, 82, 688, 96],
       "status": [0, -44, 688, 40],
-      "cancel": [-180, -142, 320, 64],
-      "confirm": [180, -142, 320, 64],
+      "actions": {
+        "size": [168, 72],
+        "gap": 32,
+        "inset": [24, 4],
+        "y": -142
+      },
+      "compact": {
+        "panel": [0, 0, 480, 248],
+        "title": [0, 78, 430, 48],
+        "message": [0, 25, 430, 48],
+        "status": [0, -20, 430, 34],
+        "actionsY": -76
+      },
       "buttonInset": [
         8,
         4
       ],
-      "pressedScale": 0.96,
       "nodeNotice": [-60, 262, 1080, 40],
       "whyText": [0, 10, 688, 40],
       "rule": [0, 138, 688, 2],

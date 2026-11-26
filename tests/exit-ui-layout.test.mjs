@@ -41,7 +41,7 @@ test('exit remains above every game page and the deck, with a separate blocking 
       assert.ok(child(variant, 'label').size[1] >= 40);
     }
     assert.deepEqual(child(hit, 'pressed').scale,
-      [theme.layout.exitMenu.pressedScale, theme.layout.exitMenu.pressedScale]);
+      Array(2).fill(theme.officialAssets.actionButton.pressedScale));
   }
   assert.ok(panel.children.indexOf(child(panel, 'blocker')) < panel.children.indexOf(child(panel, 'cancel')));
 });
@@ -66,7 +66,7 @@ test('exit geometry follows theme and safe device scaling without oversized cont
   const controls = gameLayout().controls;
   for (const c of controls) walk(c, item => assert.ok((item.children?.length ?? 0) <= 60, item.name));
   const entry = child(named(controls, 'exitEntry'), 'open'), panel = named(controls, 'exitPanel');
-  for (const device of [...Object.values(theme.canvas.devices), [1560, 720]]) {
+  for (const device of [...Object.values(theme.canvas.devices), [1560, 720], [2556, 1179]]) {
     const scale = Math.min(device[0] / theme.canvas.base[0], device[1] / theme.canvas.base[1]);
     for (const c of [entry, ...['title', 'message', 'status', 'cancel', 'confirm'].map(name => child(panel, name))]) {
       for (const [i, margin] of [theme.canvas.safe.x, theme.canvas.safe.y].entries()) {
@@ -77,10 +77,13 @@ test('exit geometry follows theme and safe device scaling without oversized cont
   }
   const changed = structuredClone(theme);
   changed.layout.exitMenu.entry[0] -= 20;
-  changed.layout.exitMenu.confirm[0] -= 10;
+  changed.layout.exitMenu.actions.gap += 20;
   const custom = gameLayout(changed).controls;
   assert.deepEqual(child(named(custom, 'exitEntry'), 'open').position, changed.layout.exitMenu.entry.slice(0, 2));
-  assert.deepEqual(child(named(custom, 'exitPanel'), 'confirm').position, changed.layout.exitMenu.confirm.slice(0, 2));
+  for (const [name, sign] of [['cancel', -1], ['confirm', 1]]) {
+    const original = child(panel, name).position;
+    assert.deepEqual(child(named(custom, 'exitPanel'), name).position, [original[0] + sign * 10, original[1]]);
+  }
 });
 
 test('TASK-4.11 exit warning hierarchy: header, consequence, note, status and actions never overlap', () => {

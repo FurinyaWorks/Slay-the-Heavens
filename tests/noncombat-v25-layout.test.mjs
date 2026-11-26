@@ -145,7 +145,8 @@ test('official host uses direct inventory actions, read-only relic details and e
  for(const [name,sha,focusPaths] of [
   ['menuPanel','0a446fd209492789ac70789eddded2a6c23a8c95441462b580d9d13ce4f7958c',
    [['result','viewEasterEgg','hit'],...['start','continueRun','titleQuit','settle'].map(name=>[name,'hit'])]],
-  ['exitPanel','2f839c0755387aa4131ff9a9b72f886bf516ab715385a78b937117ab4c0adaf5',
+  // TASK-113 confirms the shared action geometry and drops the superseded faces.
+  ['exitPanel','e4e9bfe001d4f37254a84995a3d6fb6215e02c0127d1ff4da6a9e7c8de31999c',
    ['cancel','confirm'].map(name=>[name,'hit'])],
   ['runMenu','d18ff3b4edd0af091727ff52ee370c9db1d2628500c3424b02eb246ca53a04d1',
    ['resume','map','mainMenu','abandon','quit'].map(name=>[name,'hit'])],
@@ -153,8 +154,14 @@ test('official host uses direct inventory actions, read-only relic details and e
   const panel=child(stage,name);
   assert(all(panel).every(node=>node.focusable!==true&&node.isolateNavigation!==true),'retire authored navigation: '+name);
   const prior=restorePriorMenuNavigation(panel,focusPaths);
+  if(name==='menuPanel')for(const action of ['start','continueRun','titleQuit']){
+   // #963 applied the shipped v2.1.1 outline to these three title labels.
+   const label=child(child(prior,action),'label');
+   assert.equal(label.text.outlineOpacity,1,action+' retains the shipped title outline');
+   delete label.text.outlineOpacity;
+  }
   assert.equal(createHash('sha256').update(JSON.stringify(prior)).digest('hex'),sha,
-   'preserve the complete integrated menu layout and remove only its navigation fields: '+name);
+   'preserve the complete reviewed menu outside the pinned navigation and label edits: '+name);
  }
  const script=`package.path=${luaString(directory.replaceAll('\\','/')+'/?.lua;src/lua/?.lua')}
 dofile('tests/lua/support/sts_ui_closeout.lua')`;
@@ -262,4 +269,80 @@ test('default opt-out retains its existing backdrop shade and no approved native
  assert.notEqual(child(selection,'officialBackdropVeil').visible,false);
  assert.equal(child(selection,'lumineSelectionBackground'),undefined);
  assert.equal(child(selection,'veil').opacity,1);
+});
+
+test('confirmation replay retains exact earlier sources and requires a fresh raw match',async()=>{
+ const {beforeUiEntranceWitness,entrancePredecessor}=await import('./helpers/ui-entrance-source.mjs');
+ const {beforeRebasedCi,authorizeRebasedDevelop}=await import('./helpers/rebased-release-source.mjs');
+ const {beforePreflightSource,preflightPriorRead}=await import('./helpers/fork-preflight-source.mjs');
+ const {releaseBootstrapCiRead}=await import('./helpers/release-bootstrap-ci-source.mjs');
+ const read=path=>readFileSync(path,'utf8');
+ for(const [path,sha] of [
+  ['data/presentation/ui_theme.json','72cae11890ce1a018fa145152188cd6ff6779f899db201f9d3799171db7abb4e'],
+  ['scripts/exit-ui-layout.mjs','edc67b79332755e08b5f02725eabcf3bbb72613ec5e89b44490e45427cb6ada3'],
+ ]){
+  const current=read(path),prior=entrancePredecessor(path,current,read).source;
+  assert.notEqual(current,prior,path);
+  assert.equal(createHash('sha256').update(prior.replaceAll('\r\n','\n')).digest('hex'),sha);
+  assert.equal(beforeUiEntranceWitness(path,current),prior);
+  const crlf=current.replaceAll('\r\n','\n').replaceAll('\n','\r\n');
+  assert.equal(entrancePredecessor(path,current,owner=>owner===path?crlf:read(owner)).source,prior);
+  assert.equal(entrancePredecessor(path,prior,owner=>owner===path?prior:read(owner)).source,prior);
+  assert.throws(()=>entrancePredecessor(path,prior,read),/during confirmation validation/);
+  for(const invalid of [prior,'!'+current.slice(1),current.replaceAll('\n','\r\r\n'),null,Buffer.from(current)]){
+   assert.throws(()=>entrancePredecessor(path,current,owner=>owner===path?invalid:read(owner)),
+    {message:'combined linked owner identity: '+path+' during confirmation validation'});
+  }
+  assert.throws(()=>entrancePredecessor(path,current,()=>{throw Error('missing confirmation source');}),
+   /combined linked owner missing/);
+ }
+ const path='src/lua/abyss_game_ui_navigation_view.lua';
+ const current=read(path),prior=entrancePredecessor(path,current,read).source;
+ const predecessor=beforeRebasedCi(path,prior);
+ assert.notEqual(predecessor,prior);
+ assert.equal(beforeRebasedCi(path,current),predecessor);
+ authorizeRebasedDevelop([[path,current]],read);
+ const stale=owner=>owner===path?prior:read(owner);
+ authorizeRebasedDevelop([[path,prior]],stale);
+ assert.throws(()=>authorizeRebasedDevelop([[path,current]],stale),/combined linked owner identity/);
+ assert.throws(()=>authorizeRebasedDevelop([[path,current],[path,prior]],read),/combined linked owner identity/);
+ assert.throws(()=>authorizeRebasedDevelop([[path,prior],[path,current]],stale),/combined linked owner identity/);
+
+ const themePath='data/presentation/ui_theme.json',themeSource=read(themePath);
+ const earlierTheme=entrancePredecessor(themePath,themeSource,read).source;
+ assert.equal(beforePreflightSource(themePath,themeSource,'prior'),earlierTheme);
+ assert.equal(preflightPriorRead()(themePath,'utf8'),earlierTheme);
+ assert.equal(releaseBootstrapCiRead()(themePath,'utf8'),earlierTheme);
+ const older=owner=>owner===themePath?earlierTheme:read(owner);
+ assert.equal(beforePreflightSource(themePath,earlierTheme,'prior',older),earlierTheme);
+ assert.equal(releaseBootstrapCiRead(older)(themePath,'utf8'),earlierTheme);
+ assert.throws(()=>beforePreflightSource(themePath,themeSource,'prior',older),/during confirmation validation/);
+ assert.throws(()=>beforePreflightSource(themePath,earlierTheme,'prior'),/during confirmation validation/);
+ let reads=0;
+ const mixed=owner=>owner===themePath?(++reads===1?themeSource:earlierTheme):read(owner);
+ assert.throws(()=>beforePreflightSource(themePath,themeSource,'prior',mixed),/during confirmation validation/);
+ assert.ok(reads>1,'nested preflight must verify the live source again');
+
+ const {beforeConfirmationCopier}=await import('./helpers/ui-confirmation-copier-source.mjs');
+ const copierPath='tests/helpers/copy-integration-source-closure.mjs',copierSource=read(copierPath);
+ const earlierCopier=beforeConfirmationCopier(copierPath,copierSource);
+ const historicCopier=beforePreflightSource(copierPath,copierSource,'prior');
+ const digest=value=>createHash('sha256').update(value.replaceAll('\r\n','\n')).digest('hex');
+ assert.equal(digest(earlierCopier),'73a38d069953b7bd095a7cfb33b04ab58a2b4623cf86b219876061188f450e7c');
+ assert.equal(digest(historicCopier),'17f1e337b452ed462ee189d026145f1296c9c6992da4ba7ddb0cd1229d5816b0');
+ assert.equal(beforePreflightSource(copierPath,copierSource,'release-bootstrap'),historicCopier);
+ assert.equal(releaseBootstrapCiRead()(copierPath,'utf8'),historicCopier);
+ const readCopier=value=>owner=>owner===copierPath?value:read(owner);
+ assert.equal(beforePreflightSource(copierPath,earlierCopier,'prior',readCopier(earlierCopier)),historicCopier);
+ const copierCRLF=copierSource.replaceAll('\r\n','\n').replaceAll('\n','\r\n');
+ assert.equal(digest(beforePreflightSource(copierPath,copierCRLF,'prior')),digest(historicCopier));
+ const copierDrift='!'+copierSource.slice(1);
+ const copierForeign=/combined linked owner identity:.*during confirmation copier validation/;
+ assert.throws(()=>beforePreflightSource(copierPath,earlierCopier,'prior'),copierForeign);
+ for(const invalid of [earlierCopier,copierDrift,copierSource+'\n',copierSource.replaceAll('\n','\r\r\n'),null,Buffer.from(copierSource)]){
+  assert.throws(()=>beforePreflightSource(copierPath,copierSource,'prior',readCopier(invalid)),copierForeign);
+ }
+ assert.throws(()=>beforePreflightSource(copierPath,copierSource,'prior',()=>{throw Error('missing copier');}),
+  /combined linked owner missing:.*missing copier/);
+ assert.equal(beforePreflightSource(copierPath,copierDrift,'prior',()=>{throw Error('foreign bytes requested a read');}),copierDrift);
 });

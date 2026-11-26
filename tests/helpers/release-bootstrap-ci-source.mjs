@@ -26,8 +26,8 @@ for(const [path,row]of Object.entries(packet.files)){
 }
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const releaseBootstrapCiPacket=freeze(packet);
-function historicalSource(path,source){
- source=beforePreflightSource(path,source,'release-bootstrap');
+function historicalSource(path,source,read){
+ source=beforePreflightSource(path,source,'release-bootstrap',read);
  if(path==='.github/workflows/quick-feedback.yml'&&typeof source==='string'&&!source.includes('\r\r\n')&&['ec23dcec59adc0a6de7a1f1ba30304e6e6e3b0262fdc369b1fdb533b4f4c9800','7eb601d4859afe2aa6331608e544205d94a3c8fdd1d864c351fdc92cad24b5f9'].includes(hash(norm(source)))){
   const prior=norm(source).replace("      - name: Verify affected Release CI contracts explicitly\n        env:\n          BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha }}\n        run: |\n          node --input-type=module <<'NODE'\n          import {execFileSync} from 'node:child_process';\n          const base=process.env.BASE_SHA;\n          if(!/^[0-9a-f]{40}$/.test(base||''))throw new Error('exact comparison base required');\n          const changed=execFileSync('git',['diff','--name-only','-z',base,'HEAD'],{encoding:'utf8'}).split('\\0');\n          const contracts=new Set(['.github/workflows/quick-feedback.yml','scripts/release-ci.mjs','tests/helpers/release-ci.cases.mjs','tests/helpers/release-bootstrap-ci-source.mjs']);\n          if(changed.some(path=>contracts.has(path))){\n            console.log('Executing affected Release CI contracts: ci-impact and ci-summary-runners');\n            execFileSync(process.execPath,['--test','tests/ci-impact.test.mjs','tests/ci-summary-runners.test.mjs'],{stdio:'inherit'});\n          }else console.log('No Release CI contract changes');\n          NODE\n",'').replace("    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == true\n",'');
   return hash(prior)===packet.files[path].current.sha256?prior:source;
@@ -44,16 +44,16 @@ function historicalSource(path,source){
  const prior=source.replace(block,'').replace(push,'  push:'+eol+"    branches: [develop, master, 'release/**']"+eol);
  return hash(norm(prior))===packet.files[path].current.sha256?prior:source;
 }
-function checkedSource(path,source,before){
+function checkedSource(path,source,before,read){
  const row=Object.hasOwn(packet.files,path)?packet.files[path]:null;
  if(before&&(!row||row.before.sha256!==before.sha256))return source;
- source=historicalSource(path,source);
+ source=historicalSource(path,source,read);
  if(!row||typeof source!=='string'||source.includes('\r\r\n'))return source;
  if(before&&row.before.sha256!==before.sha256)return source;
  return hash(norm(source))===row.current.sha256?row.before.source:source;
 }
 export const releaseBootstrapCiCheckedSource=checkedSource;
-export function releaseBootstrapCiSource(path,source,before){
+export function releaseBootstrapCiSource(path,source,before,read){
  if(path==='tests/helpers/draft-quality-workflow.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(norm(source))==='357ad5c4d68378063b02cf75396f804c8c2b61d12a925595663a4b533948e4e6'){
   if(before&&before.sha256!=='5c3cc95c0371927db143c573c1500843b97ca8e138f67737aede03e558b1d986')return source;
   const prior=norm(source).replace("import {beforeReleaseFullGate} from './release-ci-workflow.mjs';\n",'').replace('  text = beforeReleaseFullGate(text);\n','');
@@ -66,7 +66,7 @@ export function releaseBootstrapCiSource(path,source,before){
   if(hash(prior)==='bc325f953a1a8d6b44b24e7d7481e174386df3a5a102dc78581d19397dd0d602')source=prior;
  }
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
- return checkedSource(path,source,before);
+ return checkedSource(path,source,before,read);
 }
 function guidanceBefore(path,source){
  if(path==='scripts/check-agent-guidance.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')){
@@ -110,7 +110,7 @@ function beforeRunHudDiskInput(path,source,read){
  return original;
 }
 export function releaseBootstrapCiRead(read=readFileSync){return(path,encoding)=>{
- const raw=readHistoricalPreflightInput(path,encoding,read),text=typeof raw==='string'?raw:raw.toString('utf8'),prior=releaseBootstrapCiSource(path,guidanceBefore(path,beforeRunHudDiskInput(path,text,read)));
+ const raw=readHistoricalPreflightInput(path,encoding,read),text=typeof raw==='string'?raw:raw.toString('utf8'),prior=releaseBootstrapCiSource(path,guidanceBefore(path,beforeRunHudDiskInput(path,text,read)),undefined,read);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function releaseBootstrapWorkflowBefore(path,source){
@@ -138,9 +138,10 @@ export function assertReleaseBootstrapRawInventory(paths,kind='js'){
  }catch(error){throw new Error('complete Release bootstrap raw discovery inventory: '+error.message,{cause:error});}
 }
 export function assertReleaseBootstrapCiCurrent(read=readFileSync){
- assertIntegrationSuccessorsCurrent(read);
+ read=assertIntegrationSuccessorsCurrent(read);
  for(const [path,row]of Object.entries(packet.files))
-  assert.equal(hash(norm(historicalSource(path,read(path,'utf8')))),row.current.sha256,'fresh complete integration source: bootstrap '+path);
+  assert.equal(hash(norm(historicalSource(path,read(path,'utf8'),read))),row.current.sha256,'fresh complete integration source: bootstrap '+path);
  for(const [path,sha]of Object.entries(packet.immutableArchives))
   assert.equal(hash(read(path)),sha,'retained complete immutable bootstrap predecessor: '+path);
+ return read;
 }

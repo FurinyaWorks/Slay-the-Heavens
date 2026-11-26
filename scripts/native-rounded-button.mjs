@@ -47,13 +47,14 @@ export function roundedButtonState(state,size,colours,name='roundedButton',optio
  state.children.splice(label?state.children.indexOf(label):0,0,face);
 }
 
-export function roundedPresetButton(button,theme,role,{name='roundedButton',size=button.size,fontSize}={}){
+export function roundedPresetButton(button,theme,role,{name='roundedButton',size=button.size,fontSize,keepLegacyFaces=true}={}){
  const material=theme.officialAssets.actionButton;
  button.size=[...size];
  for(const state of button.children){
   const label=child(state,'label');
   state.size=[...size];
   if(state.name==='pressed')state.scale=[material.pressedScale,material.pressedScale];
+  if(!keepLegacyFaces)state.children=state.children.filter(part=>!legacyFaces.includes(part.name));
   roundedButtonState(state,size,actionColours(theme,role,state.name),name,{material,images:theme.image});
   if(fontSize)Object.assign(label.text,{fontSize,minFontSize:theme.font.minimum});
   label.text.colour=state.name==='disabled'?theme.color.textMuted:theme.officialAssets.buttonInk;

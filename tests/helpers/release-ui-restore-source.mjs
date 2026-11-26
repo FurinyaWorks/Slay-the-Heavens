@@ -79,7 +79,7 @@ export function beforeReleaseShopEntry(path,source){
 export function shopEntryPriorRead(read){
  return (path,...args)=>beforeReleaseShopEntry(path,read(path,...args));
 }
-export const beforeRecordingUi=(path,source)=>beforeReleaseDetailSource(path,recording.project(path,beforeCombatVisualSource(path,source)));
+export const beforeRecordingUi=(path,source,read)=>beforeReleaseDetailSource(path,recording.project(path,beforeCombatVisualSource(path,source,read)));
 const officialRuntimePath='tests/official-assets-runtime.test.mjs';
 const currentOfficialRuntime={
  sha256:'a3341b88551a035189ccc811fa7aa2b7f2eb9c1b6377baa22df6ff3b1fc8c828',
@@ -130,7 +130,7 @@ export const beforeReleaseForgeGridUi=forgeGrid.project;
 export const releaseControlsGuideRemovalSourcePaths=Object.freeze(Object.keys(controlsGuideRemoval.files).filter(path=>path.startsWith('src/lua/')));
 export const releaseSharedRelicSourcePaths=Object.freeze(Object.keys(sharedRelics.files).filter(path=>path.startsWith('src/lua/')));
 export const beforeReleaseSharedRelicUi=sharedRelics.project;
-export const beforeReleaseControlsGuideRemoval=(path,source)=>controlsGuideRemoval.project(path,beforeRecordingUi(path,source));
+export const beforeReleaseControlsGuideRemoval=(path,source,read)=>controlsGuideRemoval.project(path,beforeRecordingUi(path,source,read));
 export const releaseRightClickSourcePaths=Object.freeze(Object.keys(rightClick.files));
 export const releaseUiRestoreSourcePaths=Object.freeze([...new Set([...Object.keys(files),...Object.keys(fieldCancel.files)])]);
 export const beforeReleaseRightClick=(path,source)=>rightClick.project(path,fieldCancel.project(path,source));

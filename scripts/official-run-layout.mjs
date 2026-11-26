@@ -72,7 +72,8 @@ function roundRunActions(host,theme){
   exitPanel:{cancel:'secondary',confirm:'danger'},
  };
  for(const [panel,actions] of Object.entries(panels))for(const [name,role] of Object.entries(actions)){
-  roundedPresetButton(required(required(required(host,panel),name),'hit'),theme,role);
+  roundedPresetButton(required(required(required(host,panel),name),'hit'),theme,role,
+   {keepLegacyFaces:panel!=='exitPanel'});
  }
  const deck=required(host,'deckPanel');
  for(const [name,frame] of Object.entries(theme.layout.deckView.browser.footer)){

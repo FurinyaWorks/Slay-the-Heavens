@@ -4,7 +4,7 @@ export function exitControls(theme = nativeTheme) {
   const { plate, text } = nativeControls(theme);
   const { color: c, font: f, space: s } = theme, l = theme.layout.exitMenu;
   // Native presets keep all four states visible on mouse and touch.
-  const button = (name, frame, label, primary = false) => {
+  const button = (name, frame, label, primary = false, fontSize = f.label, inset = l.buttonInset) => {
     const size = frame.slice(2);
     const variants = {
       normal: [primary ? c.gold : c.panelRaised, primary ? c.textOnLight : c.goldBright, c.gold],
@@ -16,15 +16,17 @@ export function exitControls(theme = nativeTheme) {
         states: Object.fromEntries(Object.keys(variants).map(state => [state, state])),
         children: Object.entries(variants).map(([state, [fill, ink, border]]) => ({
           name: state, kind: 'container', size: [...size],
-          scale: state === 'pressed' ? [l.pressedScale, l.pressedScale] : [1, 1], children: [
+          scale: state === 'pressed' ? [pressedScale, pressedScale] : [1, 1], children: [
             plate('border', [0, 0, ...size], border),
             plate('plate', [0, 0, ...size.map(value => value - s.border * 2)], fill),
-            text('label', [0, 0, ...size.map((value, i) => value - l.buttonInset[i])], label, f.label, ink),
+            text('label', [0, 0, ...size.map((value, i) => value - inset[i])], label, fontSize, ink),
           ],
         })),
       },
     ] };
   };
+  const { pressedScale } = theme.officialAssets.actionButton;
+  const { size, gap, inset, y } = l.actions, offset = (size[0] + gap) / 2;
   // Map.dc.html/Main.dc.html: a small dark circular menu with three short
   // strokes (M4 7h16 / M4 12h16 / M4 17h16). Reuse native disc/rect images;
   // the 48px native hit remains larger than the 36px artwork for touch/focus.
@@ -57,8 +59,8 @@ export function exitControls(theme = nativeTheme) {
       // 局内存档需创作者 4 级；开放前用一行小字如实说明，不打扰玩家。
       { ...text('whyText', l.whyText, '', f.small, c.textMuted), visible: false },
       text('status', l.status, '', f.small, c.textDim),
-      button('cancel', l.cancel, '继续游戏'),
-      button('confirm', l.confirm, '退出并结算', true),
+      button('cancel', [-offset, y, ...size], '继续游戏', false, f.confirmationAction, inset),
+      button('confirm', [offset, y, ...size], '退出并结算', true, f.confirmationAction, inset),
     ] },
     { name: 'runMenu', kind: 'container', size: [...theme.canvas.base], visible: false, children: [
       plate('veil', [0, 0, ...theme.canvas.base], c.backdropVeil),

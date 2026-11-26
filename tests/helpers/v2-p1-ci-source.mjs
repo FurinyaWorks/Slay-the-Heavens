@@ -73,23 +73,23 @@ export function beforeRelicCrystal(path,source){
   return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;
 }
 
-export function beforeV2UiPreTinyHouseSource(path, source) {
+export function beforeV2UiPreTinyHouseSource(path, source, read) {
   source = beforeRelicDetail(path,beforeActionButtons(path,source));
-  source = beforeRecordingUi(path,beforeRelicCrystal(path,source));
-  source = beforeReleaseForgeGridUi(path,beforeRefinedReleaseCiSource(path,source));
+  source = beforeRecordingUi(path,beforeRelicCrystal(path,source),read);
+  source = beforeReleaseForgeGridUi(path,beforeRefinedReleaseCiSource(path,source,read));
   source = beforeReleaseSharedRelicCi(path,source);
   source = beforeReleaseSharedRelicUi(path,source);
   source = beforeReleaseRelicCrystal(path,source);
   source = beforeReleaseControlsGuideRemovalCi(path,source);
-  source = beforeReleaseRightClick(path,beforeReleaseControlsGuideRemoval(path,source));
+  source = beforeReleaseRightClick(path,beforeReleaseControlsGuideRemoval(path,source,read));
   source = beforeFieldConfirmation(path,source);
   source = beforeReleaseUiRestoreCi(path,source);
   return beforePc13RewardCover(path,beforeM05ShopCiSource(path,source));
 }
 
-export function beforeV2UiEvidence(path, source) {
+export function beforeV2UiEvidence(path, source, read) {
   // The P1 merge recognizes the immediate pre-Tiny-House bytes only.
-  source = beforeTinyHouseCiSource(path,beforeV2UiPreTinyHouseSource(path,source));
+  source = beforeTinyHouseCiSource(path,beforeV2UiPreTinyHouseSource(path,source,read));
   if (path === potionMerge.path && typeof source === 'string' && !source.includes('\r\r\n')
       && [potionMerge.afterSha256,...potionMerge.successorSha256s].includes(sha256(source.replaceAll('\r\n','\n')))) {
     return beforePriorEvidence(path,source.includes('\r\n') ? potionMerge.before.replaceAll('\n','\r\n') : potionMerge.before);

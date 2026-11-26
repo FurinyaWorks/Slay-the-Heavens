@@ -5,10 +5,11 @@ import {assertReleaseCandidateToolsCurrent,beforeDeckPagesSuiteSource} from './i
 export {beforeInputRetirementTestInventory} from './input-retirement-inventory.mjs';
 import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,beforeDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
 import {beforeCalibrationReplay,beforeCurrentReplayCopier} from './calibration-replay-sources.mjs';
+import {assertConfirmationCopierEdition,beforeConfirmationCopier} from './ui-confirmation-copier-source.mjs';
 import {beforeNativeHostReplay} from './native-host-replay-source.mjs';
 import {assertNativeFixturesCurrent,beforeNativeFixtureReplay} from './native-fixture-replay-source.mjs';
 import {assertNativeFlowFixturesCurrent,beforeNativeFlowFixture} from './native-flow-fixture-source.mjs';
-import {beforeUiEntranceWitness} from './ui-entrance-source.mjs';
+import {beforeConfirmation,beforeUiEntranceWitness,confirmationReader} from './ui-entrance-source.mjs';
 import {beforeOfficialBackgroundFixture} from './official-background-fixture-source.mjs';
 import {assertAudioDeckBrowserCurrent,beforeMapRoomReplayCohort,beforeDevelopReplayMerge} from './develop-replay-merge-source.mjs';
 import {beforeStsUiCloseoutSource} from './sts-ui-closeout-source.mjs';
@@ -337,12 +338,14 @@ function beforeRebasedCopier(path,source){
  assert.equal(hash(prior),'fbc236306831104020bf6d83133ab8b978ad9ffd5d6dae1bde13ee12176651e2','exact final develop copier predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
-function beforeReleaseUiBuildSource(path,source,read=readFileSync){
+function beforeReleaseUiBuildSource(path,source,read=readFileSync,reuseCombatReader=false){
  source=beforeIntegratedReleaseCopier(path,source);
  source=beforeShopEntryCopier(path,beforeReleaseShopEntry(path,source));
- source=beforeCombatVisualSource(path,source,shopEntryPreflightRead(owner=>beforeIntegratedReleaseCopier(owner,read(owner,'utf8'))));
+ const readCombat=shopEntryPreflightRead(owner=>beforeIntegratedReleaseCopier(owner,read(owner,'utf8')));
+ source=beforeCombatVisualSource(path,source,readCombat);
  source=beforeSts1MenuCiSource(path,source);
- source=beforeRefinedReleaseCiSource(path,beforeRefinedReleaseCopier(path,beforeReleaseCapacitySource(path,source)));
+ source=beforeRefinedReleaseCiSource(path,beforeRefinedReleaseCopier(path,beforeReleaseCapacitySource(path,source)),
+  reuseCombatReader?readCombat:undefined);
  if(!Object.hasOwn(releaseUiBuild.files,path)||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const text=normalize(source),{before,after}=releaseUiBuild.files[path];
  if(hash(text)!==after.sha256||blob(text)!==after.gitBlob)return source;
@@ -524,14 +527,14 @@ function beforeLuaInventoryTest(path,source){
  assert.equal(blob(prior),'dfc38c230b942012183773414d04d5e89ca37315','exact Lua inventory test predecessor blob');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
-function beforeCoopCiSource(path,source){
+function beforeCoopCiSource(path,source,confirmationRead){
  source=beforeLuaInventoryTest(path,source);
  source=beforeStsFadeCi(path,source);
- source=beforeReleaseUiBuildSource(path,beforeRebasedCi(path,beforeRebasedCopier(path,source)));
+ source=beforeReleaseUiBuildSource(path,beforeRebasedCi(path,beforeRebasedCopier(path,source)),confirmationRead,Boolean(confirmationRead));
  source=beforePowerMembershipConfig(path,beforePowerMembershipHelper(path,source));
  source=beforeFieldConfirmation(path,beforeRewardScreenCiSource(path,beforeCardFeedbackCiSource(path,beforeRelicCrystal(path,beforeMapCiSource(path,source)))));
  source=beforeDevelopCapacityBuildSource(path,beforeTinyHouseIntegratedSource(path,source));
- source=beforeV2UiEvidence(path,beforeLoadingRecoveryCopier(path,source));
+ source=beforeV2UiEvidence(path,beforeLoadingRecoveryCopier(path,source),confirmationRead);
  const row=Object.hasOwn(coopLabCi.files,path)?coopLabCi.files[path]:null;
  if(!row || typeof source!=='string' || source.includes('\r\r\n') || hash(normalize(source))!==row.afterSha)return source;
  return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;
@@ -557,6 +560,7 @@ const currentReleaseTests=Object.freeze({
  'tests/formal-startup-budget.test.mjs':'8a3d66d9b7c963cd3592c92750d6b41cecba2fed3cde933a81f34aee048df2ef',
  'tests/gil-candidate-preflight.test.mjs':'7ec29cdbeaf1572fa9713d37fdc17003e4f7843479c5af5ebe3c3c8787b93068',
  'tests/gil-candidate.test.mjs':'e8a08db32ea8a237575f428566093ab18cc60fd0d0ce4acb0b5e2d7e30b364de',
+ 'tests/official-confirmation-style.test.mjs':'8208d6d90dabe3fd464df0ea24bb7cd0a914040f83938e95ac6bb51eede798e0',
  'tests/production-performance.test.mjs':'102893c9285fc52693ee9a7d1bae36d8cefef418ecf8da5d40e53b4eb98b2947',
  'tests/release-metadata.test.mjs':'eceb8ab92f616084fdcdac875e69e761cf2c9674a804be9f0295e89213453cb8',
  'tests/release-performance-artifacts.test.mjs':'c1d0d51314ab0dffac68236a3f722a4a4cdb8a0ebbfc292d1ca36cd0b2b2a941',
@@ -776,6 +780,7 @@ const calibrationReplayPaths=Object.freeze([
 let calibrationReplayPredecessor;
 function beforeCalibrationReplayOwner(path,source){
  if(!calibrationReplayPaths.includes(path))return source;
+ source=beforeConfirmation(path,beforeConfirmationCopier(path,source));
  if(!calibrationReplayPredecessor){
   calibrationReplayPredecessor=releaseUiRestoreArchive(
    readFileSync(new URL('./calibration-v220-replay-owners.json.gz',import.meta.url)),
@@ -948,8 +953,25 @@ function beforeIntegrationSuccessor(path,source){
  assert.equal(hash(prior.source),prior.sha256,'immutable integration predecessor: '+path);
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
+const currentConfirmationOwners=[
+ 'tests/helpers/copy-integration-source-closure.mjs',
+ 'data/presentation/ui_theme.json',
+ 'tests/helpers/integrated-ci-source.mjs',
+ 'tests/integrated-ci-source.cases.mjs',
+];
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
- const rawRead=read;
+ const suppliedRead=read;
+ // Authenticate each raw reread before handing it to a historical projection.
+ const rawRead=(path,encoding)=>{
+  const raw=suppliedRead(path,encoding);
+  if(currentConfirmationOwners.includes(path)){
+   const source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
+   assert((!Buffer.isBuffer(raw)||Buffer.from(source).equals(raw))&&
+    beforeConfirmation(path,beforeConfirmationCopier(path,source))!==source,'fresh complete integration source: '+path);
+  }
+  return raw;
+ };
+ for(const path of currentConfirmationOwners)rawRead(path,'utf8');
  const alphaBuildPredecessors=Object.fromEntries(Object.keys(actorAlphaBuildInputs).map(path=>
   [path,checkedActorAlphaBuildPredecessor(path,rawRead(path,'utf8'))]));
  const liveRead=(path,encoding)=>{
@@ -975,6 +997,8 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
   const live=read(path,encoding);
   let raw=beforeNativeFlowFixture(path,live);
   if(path===replayAssetLedger){
+   const source=rawRead(path,encoding);
+   assert.notEqual(beforeConfirmation(path,source),source,'fresh complete integration source: '+path);
    const ledger=beforeDeckBrowserAssetLedger(live);
    assert.notEqual(live,ledger,'fresh complete integration source: '+path);
    raw=beforeReplayArchiveStorage(path,ledger);
@@ -1015,11 +1039,14 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
   const source=beforeV2UiAdmission(path,beforeCoopCiSource(path,beforeStsUiCloseoutSource(path,current)));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha,'fresh complete integration source: '+path);
  }
+ return rawRead;
 }
-export function beforePreflightSource(path,source,view='prior'){
+export function beforePreflightSource(path,source,view='prior',read=readFileSync){
+ assertConfirmationCopierEdition(path,source,read);
  source=beforeForkPush(path,beforeCalibrationReplayOwner(path,beforeActorAlphaBuildInput(path,source)));
  if(path==='.github/workflows/quality.yml')source=beforePosixDeadlineWorkflow(beforeWindowsDeadlineWorkflow(source));
- source=beforeUiEntranceWitness(path,beforeCurrentReplayCopier(path,source));
+ const confirmation=confirmationReader(path,beforeCurrentReplayCopier(path,source),read);
+ source=beforeUiEntranceWitness(path,confirmation.source);
  source=beforeCurrentReplayFixes(path,source);
  source=beforeNativeFlowFixture(path,source);
  source=beforeOfficialBackgroundFixture(path,source);
@@ -1035,7 +1062,8 @@ export function beforePreflightSource(path,source,view='prior'){
  source=beforeNativeFixtureReplay(path,source);
  source=beforeNativeButtonRepairCopier(path,beforeNativeButtonRepair(path,source));
  source=beforeStsUiCloseoutSource(path,source);
- source=beforeCharacterPreparationCiSource(path,beforeV2UiAdmission(path,beforeCoopCiSource(path,source)));
+ source=beforeCharacterPreparationCiSource(path,beforeV2UiAdmission(path,beforeCoopCiSource(path,source,
+  confirmation.matched?confirmation.read:undefined)));
  source=beforeIntegrationSuccessor(path,source);
  // Only the exact flag-registry successor enters the earlier Release witness.
  if(view==='release-bootstrap'&&path==='scripts/ui-profile.mjs'&&typeof source==='string'&&!source.includes('\r\r\n')
@@ -1067,6 +1095,6 @@ export function readHistoricalPreflightInput(path,encoding,read=readFileSync){
 export function preflightPriorRead(read=readFileSync,view='prior'){return(path,encoding)=>{
  const raw=readHistoricalPreflightInput(path,encoding,read);
  if(typeof raw!=='string'&&!Buffer.isBuffer(raw))return raw;
- const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=beforePreflightSource(path,text,view);
+ const text=typeof raw==='string'?raw:raw.toString('utf8'),prior=beforePreflightSource(path,text,view,read);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}

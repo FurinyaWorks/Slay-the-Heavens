@@ -87,8 +87,8 @@ function project(path,source){
  const prior=files[path].before.source;
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
-export function beforeRefinedReleaseCiSource(path,source){
- return owners.includes(path)?source:project(path,beforeCombatVisualSource(path,beforeReviewedPackingSource(path,source)));
+export function beforeRefinedReleaseCiSource(path,source,read){
+ return owners.includes(path)?source:project(path,beforeCombatVisualSource(path,beforeReviewedPackingSource(path,source),read));
 }
 export function beforeRefinedReleaseProduction(path,source){
  source=beforeCombatVisualSource(path,source);

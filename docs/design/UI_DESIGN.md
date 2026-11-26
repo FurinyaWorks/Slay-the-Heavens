@@ -83,6 +83,19 @@
 - **动效**：fast 0.12、base 0.2、slow 0.35；横幅 0.9；伤害数字 0.6；血条残影延迟 0.25、时长 0.45；抖屏 0.15、幅度 6；敌人逐个行动间隔 0.45。
 - **语义色**：hp 红、block 蓝、energy 琥珀、positive 绿、danger 红、buff 橙、debuff 紫。语义色和金色强调色分开使用。
 
+### 语义文字与确认弹窗（TASK-113）
+
+正式界面的字体和组件规格从 [`ui_theme.json`](../../data/presentation/ui_theme.json) 进入 UI 生成器与 Lua 主题。以初代《杀戮尖塔》的语义层级、有效画布占比和输入区为参照。原版合并了通用按钮和主菜单的基础字体资源。结束回合、事件选项、提示和面板标题仍按各自用途处理。千星使用内置字形，当前生成器可控制字号、色彩、描边和排版。不同画布沿用 `min(宽/1280, 高/720)` 等比适配；触屏尺寸按逻辑画布核对，设备截图另记实际安全区。采用统一字形比例，使用容器内边距、正文换行与整行高度容纳中文。 [原版合并公告](https://store.steampowered.com/news/app/646570/view/4249665521687556276) · [原版字体定义](https://github.com/Li-Binghui/MySlayTheSpire/blob/c76684426329d59ec95a472792dacb703e59918c/src/main/java/com/megacrit/cardcrawl/helpers/FontHelper.java)
+
+| 确认面板角色 | 正式规格与来源 |
+| --- | --- |
+| 标题与正文 | 标题用 `font.heading` 和暖金，正文用 `font.body` 和浅色。居中。紧凑、标准两种排布在 `layout.exitMenu` 定义，标题、正文、状态与操作各有独立行盒。平台结算保留完整说明和重试提示。 |
+| 取消与确认 | 共用 `layout.exitMenu.actions` 的 168×72 可见外框及点击区，水平间距 32，文字盒左右各留 12。所有状态固定使用 `font.confirmationAction`（24 设计单位），水平、垂直居中。 |
+| 按钮状态 | 用 `officialAssets.actionButton` 的四态材质。取消使用次操作色，清除进度或结束结算使用风险色。按下时仅状态面以等比 0.96 缩放，命中区维持原尺寸。 |
+| 屏幕与输入 | 1280×720 有效画布上宽约 13.13%、高 10.00%。桌面也使用这套触屏可读规格，保持鼠标与触屏的共同布局及既有事件绑定。 |
+
+原版 `ConfirmPopup` 的 NO/YES 很接近，分别是 161×74 与 173×74。触屏两图按 1.5 倍绘制，在 1920×1080 有效画布上的范围约为宽 12.58–13.52%、高 10.28%，共享约 12.50%×10.19% 的独立命中区。项目以对称按钮容纳「确认放弃」「退出并结算」等完整中文操作，面板本身沿用项目的紧凑警示与平台说明构图。24 为千星设计单位，采用字体行盒和中文宽度验证。 [原版弹窗实现](https://github.com/Li-Binghui/MySlayTheSpire/blob/c76684426329d59ec95a472792dacb703e59918c/src/main/java/com/megacrit/cardcrawl/screens/options/ConfirmPopup.java)
+
 ## 4. 组件规格
 
 **卡牌**（148×208，客户端模板 + 每张卡挂一份脚本）

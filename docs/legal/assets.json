@@ -245,6 +245,16 @@
     }
   },
   "files": {
+    "docs/evidence/task-113-confirmation/comparison-iphone14pro-landscape.png": {
+      "sha256": "81bd49497326c5d2ad42bff52fee0d14120340de47e7c707a4fd77cda6d4bb11",
+      "category": "v2-native-menu-layout-evidence",
+      "evidence": "TASK-113 offline comparison of the project Lua Host and authored UI layouts. Rasterized with system Noto Sans CJK glyphs."
+    },
+    "docs/evidence/task-113-confirmation/comparison-16x9.png": {
+      "sha256": "86e66e8a4efa97d1f529d7945e0d1693cd7b971e024445b376de657e8197fef5",
+      "category": "v2-native-menu-layout-evidence",
+      "evidence": "TASK-113 offline comparison of the project Lua Host and authored UI layouts. Rasterized with system Noto Sans CJK glyphs."
+    },
     "data/presentation/event-native-controls.json": {
       "sha256": "eac9cfc53f1203d635ba1ed77acee1bfd6d12073be53fcb7b4d0af56262bb1b5",
       "category": "native-event-illustrations"

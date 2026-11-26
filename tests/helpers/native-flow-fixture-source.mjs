@@ -30,8 +30,11 @@ for(const [path,{before,after}] of Object.entries(files)){
  assert.notEqual(before.gitBlob,after.gitBlob);
 }
 
-// Approved release backflows #912, #940, #942 and #951 supersede these witnesses.
+// Approved release backflows and the v2.2.0 confirmation fixture supersede these witnesses.
 const releaseFixtures=Object.freeze({
+ 'scripts/potion-discard-layout.mjs':{
+  sha256:'76d82e1933ec00aca5cf18a4b4fdbcd9f794be17f99fb56e7fd66d6a5728fed4',gitBlob:'ef706fa822ee91fc3302fc39b2b41bc33bc54ca4',
+ },
  'tests/lua/support/native_monster_only_entry.lua':{
   sha256:'0c192425a730c27bab65e5ebc18fc340c9b2414e8558485922041e01fbaf00c1',gitBlob:'29e0bb8b789624f2128780c7711d122bb0687368',
  },

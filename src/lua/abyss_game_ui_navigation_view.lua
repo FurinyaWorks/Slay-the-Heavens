@@ -13,17 +13,14 @@ local function frame(control,at,inset)
 end
 local function dialogGeometry(panel,compact)
     local layout=Theme.layout.exitMenu
-    local size=compact and {0,0,480,204} or layout.panel
-    frame(panel:GetChild('border'),size,0)
-    frame(panel:GetChild('face'),size,Theme.space.border*2)
-    local title=compact and {0,64,430,48} or layout.title
-    frame(panel:GetChild('title'),title,0)
-    frame(panel:GetChild('message'),compact and {0,12,430,48} or layout.message,0)
-    local buttons=compact and {cancel={-110,-58},confirm={110,-58}} or layout
+    local geometry=compact and layout.compact or layout
+    frame(panel:GetChild('border'),geometry.panel,0)
+    frame(panel:GetChild('face'),geometry.panel,Theme.space.border*2)
+    for _,name in ipairs({'title','message','status'})do frame(panel:GetChild(name),geometry[name],0)end
+    local y=compact and geometry.actionsY or layout.actions.y
     for _,name in ipairs({'cancel','confirm'})do
-        local control,at=panel:GetChild(name),buttons[name]
-        control:SetAnchoredPosition(at[1],at[2])
-        control:SetLocalScale(compact and .58 or 1,compact and .85 or 1,1)
+        local control=panel:GetChild(name)
+        control:SetAnchoredPosition(control.anchoredPositionX or control.x,y)
     end
     for _,name in ipairs({'border','rule'})do panel:GetChild(name):SetVisible(not compact)end
 end

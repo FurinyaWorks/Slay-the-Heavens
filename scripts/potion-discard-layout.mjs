@@ -6,6 +6,7 @@ import { potionSlotVisual } from './potion-slot-visual.mjs';
 export function potionDiscardControls(theme = nativeTheme) {
   const { plate, text }=nativeControls(theme);
   const {color:c,font:f,layout:l,space:s}=theme;
+  const {pressedScale}=theme.officialAssets.actionButton;
   // Button tiers: primary (gold), secondary (raised neutral), ghost (quiet close),
   // danger (destructive discard). Disabled ink stays >=4.5:1 on its sunken plate.
   const tiers={
@@ -21,13 +22,13 @@ export function potionDiscardControls(theme = nativeTheme) {
       name:'hit',kind:'presetButton',size,
       states:Object.fromEntries(Object.keys(variants).map(state=>[state,state])),
       children:Object.entries(variants).map(([state,[fill,ink,border]])=>({name:state,kind:'container',size,
-        scale:state==='pressed'?[l.exitMenu.pressedScale,l.exitMenu.pressedScale]:[1,1],children:[
+        scale:state==='pressed'?[pressedScale,pressedScale]:[1,1],children:[
           plate('border',[0,0,...size],border),plate('plate',[0,0,...size.map(v=>v-s.border*2)],fill),
           text('label',[0,0,...size.map((v,i)=>v-l.exitMenu.buttonInset[i])],label,font,ink)]}))} ]};
   };
   const [w,h]=[560,450],entry=l.nativeNode.topBar.potions;
-  const y=-h/2+s.l+l.exitMenu.cancel[3]/2;
   const slots=l.potionDiscard;
+  const {actionHeight}=slots,y=-h/2+s.l+actionHeight/2;
   const actionWidth=(w-s.xxl*2-s.m*2)/3, actionStep=actionWidth+s.m;
   // One unchanged management action; physical bottle silhouettes are not new
   // direct-use buttons. Runtime paints sparse inventory and actual 3/5 capacity.
@@ -72,9 +73,9 @@ export function potionDiscardControls(theme = nativeTheme) {
       }),
       plate('detailWell',[0,-52,500,172],c.panel),
       text('detail',[0,-52,468,160],'',f.label,c.text),
-      button('cancel',[-actionStep,y,actionWidth,l.exitMenu.cancel[3]],'关闭','ghost'),
-      button('use',[0,y,actionWidth,l.exitMenu.confirm[3]],'使用药水','primary'),
-      button('discard',[actionStep,y,actionWidth,l.exitMenu.confirm[3]],'确认丢弃','danger'),
+      button('cancel',[-actionStep,y,actionWidth,actionHeight],'关闭','ghost'),
+      button('use',[0,y,actionWidth,actionHeight],'使用药水','primary'),
+      button('discard',[actionStep,y,actionWidth,actionHeight],'确认丢弃','danger'),
     ]},
   ];
 }

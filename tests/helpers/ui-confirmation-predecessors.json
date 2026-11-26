@@ -1,0 +1,156 @@
+{
+  "data/presentation/ui_theme.json": {
+    "path": "data/presentation/ui_theme.json",
+    "beforeSha256": "eb2a080bbd74b1c8c49fabea6ca1f7c5363bc59709d85acc22a920cd54f0ef1d",
+    "afterSha256": "cbd0982535c5af39442a73145c5977d9d28a75e1be613468c3cd8f059fef52bb",
+    "afterLength": 94793,
+    "hunks": [
+      {
+        "at": 431,
+        "before": "    \"body\": 24,\n    \"label\": 22,\n    \"card\": 15,\n    \"cardName\": 14,",
+        "after": "    \"body\": 24,\n    \"label\": 22,\n    \"confirmationAction\": 24,\n    \"card\": 15,\n    \"cardName\": 14,"
+      },
+      {
+        "at": 1302,
+        "before": "    },\n    \"potionDiscard\": {\n      \"columns\": [\n        -184,",
+        "after": "    },\n    \"potionDiscard\": {\n      \"actionHeight\": 64,\n      \"columns\": [\n        -184,"
+      },
+      {
+        "at": 2721,
+        "before": "      \"message\": [0, 82, 688, 96],\n      \"status\": [0, -44, 688, 40],\n      \"cancel\": [-180, -142, 320, 64],\n      \"confirm\": [180, -142, 320, 64],\n      \"buttonInset\": [\n        8,\n        4\n      ],\n      \"pressedScale\": 0.96,\n      \"nodeNotice\": [-60, 262, 1080, 40],\n      \"whyText\": [0, 10, 688, 40],",
+        "after": "      \"message\": [0, 82, 688, 96],\n      \"status\": [0, -44, 688, 40],\n      \"actions\": {\n        \"size\": [168, 72],\n        \"gap\": 32,\n        \"inset\": [24, 4],\n        \"y\": -142\n      },\n      \"compact\": {\n        \"panel\": [0, 0, 480, 248],\n        \"title\": [0, 78, 430, 48],\n        \"message\": [0, 25, 430, 48],\n        \"status\": [0, -20, 430, 34],\n        \"actionsY\": -76\n      },\n      \"buttonInset\": [\n        8,\n        4\n      ],\n      \"nodeNotice\": [-60, 262, 1080, 40],\n      \"whyText\": [0, 10, 688, 40],"
+      }
+    ]
+  },
+  "scripts/exit-ui-layout.mjs": {
+    "path": "scripts/exit-ui-layout.mjs",
+    "beforeSha256": "edc67b79332755e08b5f02725eabcf3bbb72613ec5e89b44490e45427cb6ada3",
+    "afterSha256": "d299c0262346fbcdd50d5b584585860a2eac535770fb25877e9e6714de17cb7d",
+    "afterLength": 5079,
+    "hunks": [
+      {
+        "at": 4,
+        "before": "  const { color: c, font: f, space: s } = theme, l = theme.layout.exitMenu;\n  // Native presets keep all four states visible on mouse and touch.\n  const button = (name, frame, label, primary = false) => {\n    const size = frame.slice(2);\n    const variants = {",
+        "after": "  const { color: c, font: f, space: s } = theme, l = theme.layout.exitMenu;\n  // Native presets keep all four states visible on mouse and touch.\n  const button = (name, frame, label, primary = false, fontSize = f.label, inset = l.buttonInset) => {\n    const size = frame.slice(2);\n    const variants = {"
+      },
+      {
+        "at": 16,
+        "before": "        children: Object.entries(variants).map(([state, [fill, ink, border]]) => ({\n          name: state, kind: 'container', size: [...size],\n          scale: state === 'pressed' ? [l.pressedScale, l.pressedScale] : [1, 1], children: [\n            plate('border', [0, 0, ...size], border),\n            plate('plate', [0, 0, ...size.map(value => value - s.border * 2)], fill),\n            text('label', [0, 0, ...size.map((value, i) => value - l.buttonInset[i])], label, f.label, ink),\n          ],\n        })),",
+        "after": "        children: Object.entries(variants).map(([state, [fill, ink, border]]) => ({\n          name: state, kind: 'container', size: [...size],\n          scale: state === 'pressed' ? [pressedScale, pressedScale] : [1, 1], children: [\n            plate('border', [0, 0, ...size], border),\n            plate('plate', [0, 0, ...size.map(value => value - s.border * 2)], fill),\n            text('label', [0, 0, ...size.map((value, i) => value - inset[i])], label, fontSize, ink),\n          ],\n        })),"
+      },
+      {
+        "at": 25,
+        "before": "    ] };\n  };\n  // Map.dc.html/Main.dc.html: a small dark circular menu with three short\n  // strokes (M4 7h16 / M4 12h16 / M4 17h16). Reuse native disc/rect images;",
+        "after": "    ] };\n  };\n  const { pressedScale } = theme.officialAssets.actionButton;\n  const { size, gap, inset, y } = l.actions, offset = (size[0] + gap) / 2;\n  // Map.dc.html/Main.dc.html: a small dark circular menu with three short\n  // strokes (M4 7h16 / M4 12h16 / M4 17h16). Reuse native disc/rect images;"
+      },
+      {
+        "at": 59,
+        "before": "      { ...text('whyText', l.whyText, '', f.small, c.textMuted), visible: false },\n      text('status', l.status, '', f.small, c.textDim),\n      button('cancel', l.cancel, '继续游戏'),\n      button('confirm', l.confirm, '退出并结算', true),\n    ] },\n    { name: 'runMenu', kind: 'container', size: [...theme.canvas.base], visible: false, children: [",
+        "after": "      { ...text('whyText', l.whyText, '', f.small, c.textMuted), visible: false },\n      text('status', l.status, '', f.small, c.textDim),\n      button('cancel', [-offset, y, ...size], '继续游戏', false, f.confirmationAction, inset),\n      button('confirm', [offset, y, ...size], '退出并结算', true, f.confirmationAction, inset),\n    ] },\n    { name: 'runMenu', kind: 'container', size: [...theme.canvas.base], visible: false, children: ["
+      }
+    ]
+  },
+  "scripts/native-rounded-button.mjs": {
+    "path": "scripts/native-rounded-button.mjs",
+    "beforeSha256": "ac58464c2d15750da79f935a34dc0a578863747ac7f960e13d50a24f6971f732",
+    "afterSha256": "8160caa67764da1099b236302f3da277c7963f892d38b9b55facf1835ebe0d43",
+    "afterLength": 3781,
+    "hunks": [
+      {
+        "at": 47,
+        "before": "}\n\nexport function roundedPresetButton(button,theme,role,{name='roundedButton',size=button.size,fontSize}={}){\n const material=theme.officialAssets.actionButton;\n button.size=[...size];",
+        "after": "}\n\nexport function roundedPresetButton(button,theme,role,{name='roundedButton',size=button.size,fontSize,keepLegacyFaces=true}={}){\n const material=theme.officialAssets.actionButton;\n button.size=[...size];"
+      },
+      {
+        "at": 54,
+        "before": "  state.size=[...size];\n  if(state.name==='pressed')state.scale=[material.pressedScale,material.pressedScale];\n  roundedButtonState(state,size,actionColours(theme,role,state.name),name,{material,images:theme.image});\n  if(fontSize)Object.assign(label.text,{fontSize,minFontSize:theme.font.minimum});",
+        "after": "  state.size=[...size];\n  if(state.name==='pressed')state.scale=[material.pressedScale,material.pressedScale];\n  if(!keepLegacyFaces)state.children=state.children.filter(part=>!legacyFaces.includes(part.name));\n  roundedButtonState(state,size,actionColours(theme,role,state.name),name,{material,images:theme.image});\n  if(fontSize)Object.assign(label.text,{fontSize,minFontSize:theme.font.minimum});"
+      }
+    ]
+  },
+  "scripts/official-run-layout.mjs": {
+    "path": "scripts/official-run-layout.mjs",
+    "beforeSha256": "a7d415866fef7a8e955339336c310fb39da59bf432fd5a31f67a9f43f36e61e1",
+    "afterSha256": "85a21de7bacac07318c1b0c45e0b96707209b2b736f281e299495f9ce0e6e0ae",
+    "afterLength": 9020,
+    "hunks": [
+      {
+        "at": 72,
+        "before": " };\n for(const [panel,actions] of Object.entries(panels))for(const [name,role] of Object.entries(actions)){\n  roundedPresetButton(required(required(required(host,panel),name),'hit'),theme,role);\n }\n const deck=required(host,'deckPanel');",
+        "after": " };\n for(const [panel,actions] of Object.entries(panels))for(const [name,role] of Object.entries(actions)){\n  roundedPresetButton(required(required(required(host,panel),name),'hit'),theme,role,\n   {keepLegacyFaces:panel!=='exitPanel'});\n }\n const deck=required(host,'deckPanel');"
+      }
+    ]
+  },
+  "scripts/potion-discard-layout.mjs": {
+    "path": "scripts/potion-discard-layout.mjs",
+    "beforeSha256": "e2565cf29c8f3510eaeb1de5f99e219af2d0dc8def702d88fcde6f7d716da915",
+    "afterSha256": "76d82e1933ec00aca5cf18a4b4fdbcd9f794be17f99fb56e7fd66d6a5728fed4",
+    "afterLength": 5086,
+    "hunks": [
+      {
+        "at": 6,
+        "before": "  const { plate, text }=nativeControls(theme);\n  const {color:c,font:f,layout:l,space:s}=theme;\n  // Button tiers: primary (gold), secondary (raised neutral), ghost (quiet close),\n  // danger (destructive discard). Disabled ink stays >=4.5:1 on its sunken plate.",
+        "after": "  const { plate, text }=nativeControls(theme);\n  const {color:c,font:f,layout:l,space:s}=theme;\n  const {pressedScale}=theme.officialAssets.actionButton;\n  // Button tiers: primary (gold), secondary (raised neutral), ghost (quiet close),\n  // danger (destructive discard). Disabled ink stays >=4.5:1 on its sunken plate."
+      },
+      {
+        "at": 22,
+        "before": "      states:Object.fromEntries(Object.keys(variants).map(state=>[state,state])),\n      children:Object.entries(variants).map(([state,[fill,ink,border]])=>({name:state,kind:'container',size,\n        scale:state==='pressed'?[l.exitMenu.pressedScale,l.exitMenu.pressedScale]:[1,1],children:[\n          plate('border',[0,0,...size],border),plate('plate',[0,0,...size.map(v=>v-s.border*2)],fill),\n          text('label',[0,0,...size.map((v,i)=>v-l.exitMenu.buttonInset[i])],label,font,ink)]}))} ]};\n  };\n  const [w,h]=[560,450],entry=l.nativeNode.topBar.potions;\n  const y=-h/2+s.l+l.exitMenu.cancel[3]/2;\n  const slots=l.potionDiscard;\n  const actionWidth=(w-s.xxl*2-s.m*2)/3, actionStep=actionWidth+s.m;\n  // One unchanged management action; physical bottle silhouettes are not new",
+        "after": "      states:Object.fromEntries(Object.keys(variants).map(state=>[state,state])),\n      children:Object.entries(variants).map(([state,[fill,ink,border]])=>({name:state,kind:'container',size,\n        scale:state==='pressed'?[pressedScale,pressedScale]:[1,1],children:[\n          plate('border',[0,0,...size],border),plate('plate',[0,0,...size.map(v=>v-s.border*2)],fill),\n          text('label',[0,0,...size.map((v,i)=>v-l.exitMenu.buttonInset[i])],label,font,ink)]}))} ]};\n  };\n  const [w,h]=[560,450],entry=l.nativeNode.topBar.potions;\n  const slots=l.potionDiscard;\n  const {actionHeight}=slots,y=-h/2+s.l+actionHeight/2;\n  const actionWidth=(w-s.xxl*2-s.m*2)/3, actionStep=actionWidth+s.m;\n  // One unchanged management action; physical bottle silhouettes are not new"
+      },
+      {
+        "at": 73,
+        "before": "      plate('detailWell',[0,-52,500,172],c.panel),\n      text('detail',[0,-52,468,160],'',f.label,c.text),\n      button('cancel',[-actionStep,y,actionWidth,l.exitMenu.cancel[3]],'关闭','ghost'),\n      button('use',[0,y,actionWidth,l.exitMenu.confirm[3]],'使用药水','primary'),\n      button('discard',[actionStep,y,actionWidth,l.exitMenu.confirm[3]],'确认丢弃','danger'),\n    ]},\n  ];",
+        "after": "      plate('detailWell',[0,-52,500,172],c.panel),\n      text('detail',[0,-52,468,160],'',f.label,c.text),\n      button('cancel',[-actionStep,y,actionWidth,actionHeight],'关闭','ghost'),\n      button('use',[0,y,actionWidth,actionHeight],'使用药水','primary'),\n      button('discard',[actionStep,y,actionWidth,actionHeight],'确认丢弃','danger'),\n    ]},\n  ];"
+      }
+    ]
+  },
+  "src/lua/abyss_game_ui_navigation_view.lua": {
+    "path": "src/lua/abyss_game_ui_navigation_view.lua",
+    "beforeSha256": "c369ab3c0695e12223dc2aaa8cc42149846dea8cbe39740516f7c98c60974c81",
+    "afterSha256": "c8e3bc272f3b19c6650bbda35565ad16b125ecc0fd51dd813a388d40045eeb14",
+    "afterLength": 4963,
+    "hunks": [
+      {
+        "at": 13,
+        "before": "local function dialogGeometry(panel,compact)\n    local layout=Theme.layout.exitMenu\n    local size=compact and {0,0,480,204} or layout.panel\n    frame(panel:GetChild('border'),size,0)\n    frame(panel:GetChild('face'),size,Theme.space.border*2)\n    local title=compact and {0,64,430,48} or layout.title\n    frame(panel:GetChild('title'),title,0)\n    frame(panel:GetChild('message'),compact and {0,12,430,48} or layout.message,0)\n    local buttons=compact and {cancel={-110,-58},confirm={110,-58}} or layout\n    for _,name in ipairs({'cancel','confirm'})do\n        local control,at=panel:GetChild(name),buttons[name]\n        control:SetAnchoredPosition(at[1],at[2])\n        control:SetLocalScale(compact and .58 or 1,compact and .85 or 1,1)\n    end\n    for _,name in ipairs({'border','rule'})do panel:GetChild(name):SetVisible(not compact)end",
+        "after": "local function dialogGeometry(panel,compact)\n    local layout=Theme.layout.exitMenu\n    local geometry=compact and layout.compact or layout\n    frame(panel:GetChild('border'),geometry.panel,0)\n    frame(panel:GetChild('face'),geometry.panel,Theme.space.border*2)\n    for _,name in ipairs({'title','message','status'})do frame(panel:GetChild(name),geometry[name],0)end\n    local y=compact and geometry.actionsY or layout.actions.y\n    for _,name in ipairs({'cancel','confirm'})do\n        local control=panel:GetChild(name)\n        control:SetAnchoredPosition(control.anchoredPositionX or control.x,y)\n    end\n    for _,name in ipairs({'border','rule'})do panel:GetChild(name):SetVisible(not compact)end"
+      }
+    ]
+  },
+  "tests/exit-ui-layout.test.mjs": {
+    "path": "tests/exit-ui-layout.test.mjs",
+    "beforeSha256": "31ea25f6144933e4f2720fb2de6444fa29c5baa5c075feb7f469f4472c86597c",
+    "afterSha256": "f410a22103f821509cefdf6887ba36c480ab3a2c4372fc1038427e5af638d9a0",
+    "afterLength": 7125,
+    "hunks": [
+      {
+        "at": 41,
+        "before": "    }\n    assert.deepEqual(child(hit, 'pressed').scale,\n      [theme.layout.exitMenu.pressedScale, theme.layout.exitMenu.pressedScale]);\n  }\n  assert.ok(panel.children.indexOf(child(panel, 'blocker')) < panel.children.indexOf(child(panel, 'cancel')));",
+        "after": "    }\n    assert.deepEqual(child(hit, 'pressed').scale,\n      Array(2).fill(theme.officialAssets.actionButton.pressedScale));\n  }\n  assert.ok(panel.children.indexOf(child(panel, 'blocker')) < panel.children.indexOf(child(panel, 'cancel')));"
+      },
+      {
+        "at": 66,
+        "before": "  for (const c of controls) walk(c, item => assert.ok((item.children?.length ?? 0) <= 60, item.name));\n  const entry = child(named(controls, 'exitEntry'), 'open'), panel = named(controls, 'exitPanel');\n  for (const device of [...Object.values(theme.canvas.devices), [1560, 720]]) {\n    const scale = Math.min(device[0] / theme.canvas.base[0], device[1] / theme.canvas.base[1]);\n    for (const c of [entry, ...['title', 'message', 'status', 'cancel', 'confirm'].map(name => child(panel, name))]) {",
+        "after": "  for (const c of controls) walk(c, item => assert.ok((item.children?.length ?? 0) <= 60, item.name));\n  const entry = child(named(controls, 'exitEntry'), 'open'), panel = named(controls, 'exitPanel');\n  for (const device of [...Object.values(theme.canvas.devices), [2556, 1179]]) {\n    const scale = Math.min(device[0] / theme.canvas.base[0], device[1] / theme.canvas.base[1]);\n    for (const c of [entry, ...['title', 'message', 'status', 'cancel', 'confirm'].map(name => child(panel, name))]) {"
+      },
+      {
+        "at": 77,
+        "before": "  const changed = structuredClone(theme);\n  changed.layout.exitMenu.entry[0] -= 20;\n  changed.layout.exitMenu.confirm[0] -= 10;\n  const custom = gameLayout(changed).controls;\n  assert.deepEqual(child(named(custom, 'exitEntry'), 'open').position, changed.layout.exitMenu.entry.slice(0, 2));\n  assert.deepEqual(child(named(custom, 'exitPanel'), 'confirm').position, changed.layout.exitMenu.confirm.slice(0, 2));\n});\n",
+        "after": "  const changed = structuredClone(theme);\n  changed.layout.exitMenu.entry[0] -= 20;\n  changed.layout.exitMenu.actions.gap += 20;\n  const custom = gameLayout(changed).controls;\n  assert.deepEqual(child(named(custom, 'exitEntry'), 'open').position, changed.layout.exitMenu.entry.slice(0, 2));\n  for (const [name, sign] of [['cancel', -1], ['confirm', 1]]) {\n    const original = child(panel, name).position;\n    assert.deepEqual(child(named(custom, 'exitPanel'), name).position, [original[0] + sign * 10, original[1]]);\n  }\n});\n"
+      }
+    ]
+  },
+  "tests/noncombat-v25-layout.test.mjs": {
+    "path": "tests/noncombat-v25-layout.test.mjs",
+    "beforeSha256": "c2d275a928d9f168c28d5dea5c78d60e3b7a480447463723eabe2bcb4d34ca13",
+    "afterSha256": "3ce8c8fef94bbb9ec63abae5b21ded5a43de89807c3c9179b81e9ce49caf6cbd",
+    "afterLength": 18117,
+    "hunks": [
+      {
+        "at": 145,
+        "before": "  ['menuPanel','0a446fd209492789ac70789eddded2a6c23a8c95441462b580d9d13ce4f7958c',\n   [['result','viewEasterEgg','hit'],...['start','continueRun','titleQuit','settle'].map(name=>[name,'hit'])]],\n  ['exitPanel','2f839c0755387aa4131ff9a9b72f886bf516ab715385a78b937117ab4c0adaf5',\n   ['cancel','confirm'].map(name=>[name,'hit'])],\n  ['runMenu','d18ff3b4edd0af091727ff52ee370c9db1d2628500c3424b02eb246ca53a04d1',",
+        "after": "  ['menuPanel','0a446fd209492789ac70789eddded2a6c23a8c95441462b580d9d13ce4f7958c',\n   [['result','viewEasterEgg','hit'],...['start','continueRun','titleQuit','settle'].map(name=>[name,'hit'])]],\n  // TASK-113 confirms the shared action geometry and drops the superseded faces.\n  ['exitPanel','e4e9bfe001d4f37254a84995a3d6fb6215e02c0127d1ff4da6a9e7c8de31999c',\n   ['cancel','confirm'].map(name=>[name,'hit'])],\n  ['runMenu','d18ff3b4edd0af091727ff52ee370c9db1d2628500c3424b02eb246ca53a04d1',"
+      }
+    ]
+  }
+}

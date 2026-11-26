@@ -8,6 +8,7 @@ import {gunzipSync} from 'node:zlib';
 import {integratedCiBytes} from './integrated-ci-binding.mjs';
 import {releaseBootstrapCiSource,releaseBootstrapCiCheckedSource,assertReleaseBootstrapCiCurrent} from './release-bootstrap-ci-source.mjs';
 import {exactSourceMatches} from './source-fingerprint.mjs';
+import {beforeConfirmation} from './ui-entrance-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
 const freeze=v=>{if(v&&typeof v==='object'&&!Object.isFrozen(v)){Object.values(v).forEach(freeze);Object.freeze(v);}return v;};
 export const integratedCiProof=freeze(JSON.parse(gunzipSync(integratedCiBytes)));
@@ -54,6 +55,7 @@ const jsInventorySuccessors=Object.freeze({
   gitBlob:'7dcb8cedafdd5ca8b9a58f57662c2c5940422bd2',
  },
 });
+const confirmationTheme='data/presentation/ui_theme.json';
 const integratedEvidenceSuccessors=Object.freeze({
  'CHANGELOG.md':{
   sha256:'8df706839da1f445aae118f5483af85c68a910e6b279c5207534e604d651513b',gitBlob:'41409da7947a7b3b688810473e94a64b72367081',
@@ -71,7 +73,7 @@ const integratedEvidenceSuccessors=Object.freeze({
   sha256:'11656534ea60482edbdce97c0cd1298ea0f43410f74264c1eae4893e16b33dd0',gitBlob:'501272bd18fbd6054d8f5cefcf93fb9fb7867125',
  },
  // #938, #940, #942, #951 and #984 update the approved live theme after #912.
- 'data/presentation/ui_theme.json':{
+ [confirmationTheme]:{
   sha256:'72cae11890ce1a018fa145152188cd6ff6779f899db201f9d3799171db7abb4e',gitBlob:'2d5262e17653444c27bba75679748ccc06ea1d09',
  },
  // #951 adds release-text checks to the active syntax and platform scripts.
@@ -135,7 +137,9 @@ export function integratedHistoricalInput(path,source){
  return linkedProductionOwner(path)?source:beforeIntegrationEvidence(path,source);
 }
 export function integratedSource(path,source,target){
- source=beforePreflightSource(path,source);
+ // Historical callers may supply the already-projected exact theme witness.
+ if(path!==confirmationTheme||!exactSourceMatches(source,integratedEvidenceSuccessors[confirmationTheme]))
+  source=beforePreflightSource(path,source);
  assert(Object.hasOwn(integratedCiProof.sources,target),'known integration input');
  if(linkedProductionOwner(path))return source;
  const row=Object.hasOwn(integratedCiProof.files,path)?integratedCiProof.files[path]:null;
@@ -154,13 +158,17 @@ export function integratedRead(target,{read=readFileSync}={}){read=preflightPrio
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function assertIntegratedCurrent(read=readFileSync){
- assertReleaseBootstrapCiCurrent(read);
- const rawRead=read;
+ const rawRead=assertReleaseBootstrapCiCurrent(read);
  read=preflightPriorRead(rawRead);
  for(const [path,row]of Object.entries(integratedCiProof.files)){
   const binding=integratedEvidenceSuccessors[path];
-  const raw=binding?rawRead(path,'utf8'):read(path,'utf8');
-  const source=path==='package.json'?checkedActorAlphaBuildPredecessor(path,raw):raw;
+  const live=binding?rawRead(path,'utf8'):read(path,'utf8');
+  let source=live;
+  if(path==='package.json')source=checkedActorAlphaBuildPredecessor(path,live);
+  if(path===confirmationTheme){
+   source=beforeConfirmation(path,live);
+   assert.notEqual(source,live,'fresh complete integration source: '+path);
+  }
   if(binding)assert(exactSourceMatches(source,binding),'fresh complete integration source: '+path);
   const prior=releaseBootstrapCiCheckedSource(path,beforeIntegrationEvidence(path,source),row.current);
   assert.equal(hash(norm(prior)),row.current.sha256,'fresh complete integration source: '+path);
