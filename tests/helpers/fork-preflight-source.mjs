@@ -761,6 +761,8 @@ function closeoutPredecessor(path){
  }
  return closeoutPredecessors.get(path);
 }
+const officialLegibilityFixture='tests/official-assets-legibility.test.mjs';
+const reviewedSelectionFixture='tests/helpers/replay-reviewed-selection.mjs';
 const calibrationReplayPaths=Object.freeze([
  'tests/helpers/integrated-ci-source.mjs',
  'tests/helpers/copy-integration-source-closure.mjs',
@@ -772,6 +774,8 @@ const calibrationReplayPaths=Object.freeze([
  'tests/helpers/reward-query-boundary-source-inverse.mjs',
  'tests/helpers/m7-core-final-source-inverse.mjs',
  'tests/helpers/relic-query-source-inverse.mjs',
+ officialLegibilityFixture,
+ reviewedSelectionFixture,
 ]);
 let calibrationReplayPredecessor;
 function beforeCalibrationReplayOwner(path,source){
@@ -779,7 +783,7 @@ function beforeCalibrationReplayOwner(path,source){
  if(!calibrationReplayPredecessor){
   calibrationReplayPredecessor=releaseUiRestoreArchive(
    readFileSync(new URL('./calibration-v220-replay-owners.json.gz',import.meta.url)),
-   '72bb3d5b6959847b874d358457eb7f27492883b202b5e06f140b6db08b1d3ca2','8b4172d59779ad9fa21b4ba91ef750ab22fcdaf1');
+   '180009ee25a276c4c1ed3a9f1b7d07a9323582e72296ffc066f898e890355ae3','8b4172d59779ad9fa21b4ba91ef750ab22fcdaf1');
   assert.deepEqual(Object.keys(calibrationReplayPredecessor.files),calibrationReplayPaths,'ordered v2.2 calibration replay owners');
  }
  return calibrationReplayPredecessor.project(path,source);
@@ -948,8 +952,22 @@ function beforeIntegrationSuccessor(path,source){
  assert.equal(hash(prior.source),prior.sha256,'immutable integration predecessor: '+path);
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
+export function currentReviewedSelectionRead(read){
+ return (path,encoding)=>{
+  const source=read(path,encoding);
+  if(path===reviewedSelectionFixture){
+   const text=!encoding&&Buffer.isBuffer(source)?source.toString('utf8'):source;
+   assert.notEqual(beforeCalibrationReplayOwner(path,text),text,'fresh current reviewed Selection replay fixture: '+path);
+  }
+  return source;
+ };
+}
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
- const rawRead=read;
+ const rawRead=currentReviewedSelectionRead(read);
+ const legibilitySource=rawRead(officialLegibilityFixture,'utf8');
+ assert.notEqual(beforeCalibrationReplayOwner(officialLegibilityFixture,legibilitySource),legibilitySource,
+  'fresh current official legibility fixture: '+officialLegibilityFixture);
+ rawRead(reviewedSelectionFixture,'utf8');
  const alphaBuildPredecessors=Object.fromEntries(Object.keys(actorAlphaBuildInputs).map(path=>
   [path,checkedActorAlphaBuildPredecessor(path,rawRead(path,'utf8'))]));
  const liveRead=(path,encoding)=>{

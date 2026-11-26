@@ -1,4 +1,4 @@
-import {assertCurrentJsInventory,assertCurrentLuaInventory,assertIntegrationSuccessorsCurrent,beforePreflightSource,exactReviewedBuildInput,beforeM05ShopCiSource,assertDevelopBackflowCurrent,authenticateDevelopBackflow,developBackflowOwns,readHistoricalPreflightInput} from './fork-preflight-source.mjs';
+import {assertCurrentJsInventory,assertCurrentLuaInventory,assertIntegrationSuccessorsCurrent,beforePreflightSource,currentReviewedSelectionRead,exactReviewedBuildInput,beforeM05ShopCiSource,assertDevelopBackflowCurrent,authenticateDevelopBackflow,developBackflowOwns,readHistoricalPreflightInput} from './fork-preflight-source.mjs';
 import {beforeInputRetirement} from './input-retirement-source.mjs';
 // CI-only complete bootstrap continuation. No gameplay source or production projector.
 import assert from 'node:assert/strict';
@@ -138,6 +138,7 @@ export function assertReleaseBootstrapRawInventory(paths,kind='js'){
  }catch(error){throw new Error('complete Release bootstrap raw discovery inventory: '+error.message,{cause:error});}
 }
 export function assertReleaseBootstrapCiCurrent(read=readFileSync){
+ read=currentReviewedSelectionRead(read);
  assertIntegrationSuccessorsCurrent(read);
  for(const [path,row]of Object.entries(packet.files))
   assert.equal(hash(norm(historicalSource(path,read(path,'utf8')))),row.current.sha256,'fresh complete integration source: bootstrap '+path);

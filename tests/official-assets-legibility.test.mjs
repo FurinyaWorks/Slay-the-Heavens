@@ -91,9 +91,18 @@ test('treasure details and room backdrop retain authored materials with room for
 test('official battle HUD can render at least one full native text line without hiding its values',()=>{
  const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme);applyOfficialAssets([layout],theme);
  const battle=child(layout,'battlePanel');
- for(const key of ['player','piles','title']){
-  const n=child(battle,key),minimum=n.text.minFontSize;
-  assert(n.text.autoSize&&minimum*1.45+4<=n.size[1],key+' has no fitting native text size');
+ const numberSize=theme.officialAssets.battleHud.numberSize;
+ assert.equal(numberSize,18,'approved native HUD number size');
+ const fullValues={player:'2147483647/2147483647',piles:'2147483647',title:'99'};
+ for(const [key,value]of Object.entries(fullValues)){
+  const label=child(battle,key),minimum=label.text.minFontSize;
+  assert.notEqual(label.visible,false,key+' remains visible');
+  assert.equal(label.text.autoSize,false,key+' uses the fixed official resource font');
+  assert.equal(label.text.fontSize,numberSize);
+  assert.equal(minimum,numberSize);
+  assert(minimum>=Math.max(14,theme.font.minimum),key+' keeps the native reading minimum');
+  assert(minimum*1.45+4<=label.size[1],key+' has no fitting native text size');
+  assert(value.length*.6*numberSize+8<=label.size[0],key+' fits the complete native value with padding');
  }
 });
 test('official selection flags retain readable shared ink and their aligned native hit surface',()=>{
@@ -108,13 +117,39 @@ test('historical official card host capacity and readability retain all original
  t.diagnostic(replayReviewedSelection('tests/official-assets-legibility.test.mjs'));
 });
 
+const originalCardHosts=[
+ ...Array.from({length:10},(_,i)=>'/SlayTheAbyss/battlePanel/card'+(i+1)),
+ ...Array.from({length:7},(_,i)=>'/SlayTheAbyss/nodePanel/shopView/card'+(i+1)),
+ ...Array.from({length:3},(_,i)=>'/SlayTheAbyss/nodePanel/pickerView/card'+(i+1)),
+ ...['before','after','target'].map(n=>'/SlayTheAbyss/nodePanel/pickerView/'+n),
+ ...Array.from({length:12},(_,i)=>'/SlayTheAbyss/nodePanel/pickerView/forgeGrid/card'+(i+1)),
+ ...Array.from({length:2},(_,i)=>'/SlayTheAbyss/choicePanel/card'+(i+1)+'/face'),
+ '/AbyssDeckCard/face',
+].sort();
+const paths=(node,prefix='')=>{
+ const path=prefix+'/'+node.name;return [[path,node],...children(node).flatMap(c=>paths(c,path))];
+};
+const focusFacePath='/SlayTheAbyss/deckPanel/cardFocus/face';
+function assertCardHostPaths(layout,cards){
+ const original=cards.map(([path])=>path).filter(path=>path!==focusFacePath).sort();
+ assert.equal(original.length,38,'retain every original official card host');
+ assert.deepEqual(original,originalCardHosts,'retain exact original card host paths');
+ const extras=cards.filter(([path])=>path===focusFacePath);
+ assert.equal(extras.length,1,'the approved deck detail has exactly one face');
+ const detail=child(child(layout,'deckPanel'),'cardFocus');
+ assert.strictEqual(extras[0][1],child(detail,'face'));
+ assert.equal(detail.visible,false,'read-only deck focus starts closed');
+ assert(!all(detail).some(node=>node.kind==='cursorArea'),'deck detail adds no duplicate input receiver');
+}
+
 test('official card hosts share the measured back/front frame, visible cost and native reading minimum',()=>{
  const source=JSON.stringify(nativeTheme),theme=officialAssetsTheme(nativeTheme);
  const layout=gameLayout(),template=deckCardTemplate();applyOfficialAssets([layout,template],theme);
  const battleCards=new Set(all(child(layout,'battlePanel')).filter(n=>child(n,'roundFrame')&&child(n,'costDisc')));
  assert.equal(battleCards.size,10);
- const cards=[...all(layout),...all(template)].filter(n=>child(n,'roundFrame')&&child(n,'costDisc'));
- assert.equal(cards.length,38,'current two-choice and three-picker profile plus the shared deck template');
+ const hosts=[...paths(layout),...paths(template)].filter(([,node])=>child(node,'roundFrame')&&child(node,'costDisc'));
+ assertCardHostPaths(layout,hosts);
+ const cards=hosts.map(([,node])=>node);
  for(const card of cards)assertSharedCard(card,theme);
  const old=structuredClone(cards[0]);old.children=children(old).filter(n=>!['stsReferenceBack','stsReferenceChrome'].includes(n.name));
  assert.throws(()=>assertSharedCard(old,theme),/shared StS back and front/,'old card frame rollback must fail');
@@ -127,18 +162,6 @@ test('official card hosts share the measured back/front frame, visible cost and 
 });
 
 test('both official build orders retain exact choice and picker semantics and every readable card face',()=>{
- const expected=[
-  ...Array.from({length:10},(_,i)=>'/SlayTheAbyss/battlePanel/card'+(i+1)),
-  ...Array.from({length:7},(_,i)=>'/SlayTheAbyss/nodePanel/shopView/card'+(i+1)),
-  ...Array.from({length:3},(_,i)=>'/SlayTheAbyss/nodePanel/pickerView/card'+(i+1)),
-  ...['before','after','target'].map(n=>'/SlayTheAbyss/nodePanel/pickerView/'+n),
-  ...Array.from({length:12},(_,i)=>'/SlayTheAbyss/nodePanel/pickerView/forgeGrid/card'+(i+1)),
-  ...Array.from({length:2},(_,i)=>'/SlayTheAbyss/choicePanel/card'+(i+1)+'/face'),
-  '/AbyssDeckCard/face',
- ].sort();
- const paths=(node,prefix='')=>{
-  const path=prefix+'/'+node.name;return [[path,node],...children(node).flatMap(c=>paths(c,path))];
- };
  for(const themeFirst of [false,true]){
   const theme=officialAssetsTheme(nativeTheme),layout=gameLayout(themeFirst?theme:nativeTheme),template=deckCardTemplate();
   const picker=child(child(layout,'nodePanel'),'pickerView'),choice=child(layout,'choicePanel');
@@ -154,7 +177,7 @@ test('both official build orders retain exact choice and picker semantics and ev
   }
   retained.forEach((n,i)=>assert.strictEqual(child(n,'hit'),hits[i],'retained native receiver identity'));
   const cards=[...paths(layout),...paths(template)].filter(([,n])=>child(n,'stsReferenceChrome'));
-  assert.deepEqual(cards.map(([p])=>p).sort(),expected,'both build orders preserve exactly the same active card hosts');
+  assertCardHostPaths(layout,cards);
   assert.equal(result.cardHosts,cards.length+12,'host accounting retires only the twelve-card duplicate selection deck');
   for(const [,card]of cards)assertSharedCard(card,theme);
   assert(!all(layout).some(n=>n.name==='StsAngerReferencePrototype'));

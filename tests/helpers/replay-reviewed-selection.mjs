@@ -9,6 +9,7 @@ import {integratedCiProof,assertIntegratedCurrent} from './integrated-ci-source.
 import {beforeCurrentProductionSource,beforeCharacterPreparationSource} from './character-preparation-source.mjs';
 import {exactReviewedBuildInput} from './rebased-release-source.mjs';
 import {beforeReviewedBuildInput} from './fork-preflight-source.mjs';
+import {reviewedSelectionRead} from './reviewed-selection-current-source.mjs';
 import {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';
 import {beforeDeckPagesSuiteSource,readRetiredController,retiredControllerPath} from './input-retirement-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex'),norm=s=>s.replaceAll('\r\n','\n');
@@ -22,7 +23,7 @@ export function replayReviewedSelection(script='tests/sts-character-reference.te
  assert(Object.hasOwn(reviewedContracts,script),'exact reviewed selection contract');
  const expected=reviewedContracts[script],root=process.cwd();
  assertIntegratedCurrent();
- const readOwner=path=>readFileSync(path,'utf8');
+ const readOwner=reviewedSelectionRead();
  const retiredInput=readRetiredController(readOwner);
  assert(retiredInput.restored,'only the exact pointer successor can restore the retired input owner');
  for(const [path,row]of Object.entries(sourceEpoch.proof.current)){
@@ -38,7 +39,7 @@ export function replayReviewedSelection(script='tests/sts-character-reference.te
   const paths=execFileSync('git',['ls-files','scripts','data','config','tools','tests/helpers'],{encoding:'utf8'}).trim().split('\n');
   for(const path of paths){
    assert(!isAbsolute(path)&&!path.split('/').includes('..'));const target=join(directory,path);mkdirSync(dirname(target),{recursive:true});
-   const predecessor=exactReviewedBuildInput(path,readFileSync,{beforeReviewedInput:beforeReviewedBuildInput});
+   const predecessor=exactReviewedBuildInput(path,readOwner,{beforeReviewedInput:beforeReviewedBuildInput});
    if(predecessor===undefined)copyFileSync(path,target);
    else writeFileSync(target,predecessor);
   }

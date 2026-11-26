@@ -1,4 +1,4 @@
-import {beforeCoopJsInventory,beforeShopEntryInventory,beforePreflightSource,checkedActorAlphaBuildPredecessor,preflightPriorRead} from './fork-preflight-source.mjs';
+import {beforeCoopJsInventory,beforeShopEntryInventory,beforePreflightSource,checkedActorAlphaBuildPredecessor,currentReviewedSelectionRead,preflightPriorRead} from './fork-preflight-source.mjs';
 // Explicit immutable source views for the reviewed integration inputs.
 // Production projectors never import this CI-only archive.
 import assert from 'node:assert/strict';
@@ -154,8 +154,8 @@ export function integratedRead(target,{read=readFileSync}={}){read=preflightPrio
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
 export function assertIntegratedCurrent(read=readFileSync){
- assertReleaseBootstrapCiCurrent(read);
- const rawRead=read;
+ const rawRead=currentReviewedSelectionRead(read);
+ assertReleaseBootstrapCiCurrent(rawRead);
  read=preflightPriorRead(rawRead);
  for(const [path,row]of Object.entries(integratedCiProof.files)){
   const binding=integratedEvidenceSuccessors[path];
