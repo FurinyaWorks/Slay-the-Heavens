@@ -346,7 +346,7 @@ function beforeReleaseUiBuildSource(path,source,read=readFileSync){
  return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
 }
 function releaseHistoricalInput(path,source){
- source=beforeCurrentReplayCopier(path,source);
+ source=beforeCurrentReplayCopier(path,beforeActorAlphaBuildInput(path,source));
  return beforeRebasedCopier(path,source)!==source?historicalReleaseCopier(source):beforeRebasedRelease(path,source);
 }
 export function beforeReleaseTinyHouseSource(path,source,read=readFileSync){
@@ -556,10 +556,39 @@ const currentReleaseTests=Object.freeze({
  'tests/gil-candidate.test.mjs':'e8a08db32ea8a237575f428566093ab18cc60fd0d0ce4acb0b5e2d7e30b364de',
  'tests/production-performance.test.mjs':'102893c9285fc52693ee9a7d1bae36d8cefef418ecf8da5d40e53b4eb98b2947',
  'tests/release-metadata.test.mjs':'eceb8ab92f616084fdcdac875e69e761cf2c9674a804be9f0295e89213453cb8',
- 'tests/release-performance-artifacts.test.mjs':'16048e83d321cd8505e0d1b56bd8707da3ea0ad506f4aa317c44b2ff62722413',
- 'tests/release-performance-verification.test.mjs':'1da7b985590b6cfeaadb12fa128fb97c690b930f620bf4f546041be8c617b098',
+ 'tests/release-performance-artifacts.test.mjs':'c1d0d51314ab0dffac68236a3f722a4a4cdb8a0ebbfc292d1ca36cd0b2b2a941',
+ 'tests/release-performance-verification.test.mjs':'81aad82bba133bcf372158c5163cb328438a7b4027065436105c2dbaea243fbf',
  'tests/release-performance.test.mjs':'0b46f448880c6d981b1b2048003af59bce8953ca1c5e4544c0d2ec3dbe33b0cc',
 });
+// The live alpha entry point and portable preview extend the exact #996 inputs.
+// Only historical CI readers receive the preceding bytes.
+const actorAlphaBuildInputs=Object.freeze({
+ 'package.json':{
+  current:['d91d720bcde425c27f93e34f41619c9c4ee7120fd5c922dc5099163c46c7b55c','057a6efe7a97fa4530087d69f31c2c6b874fd82d'],
+  before:['ba29a08fc203195bba8c9acd047274167f2de046f8a29e54a681f72faa314e77','8b3f35c25c42aa7276a5ab334ae7112fe9dbe01b'],
+  undo:source=>source.replace('    "verify:actor-alpha": "node scripts/art/check-actor-alpha.mjs",\n',''),
+ },
+ 'scripts/native-candidate-preview.mjs':{
+  current:['d64df368f17f626e8949ac6abae9177307914c3211ce8d91047022f78841e5ec','29e9563e4500302c5c080d0e62589addd58e4f76'],
+  before:['dc3534fa5a2eb34fb1e7c5b30873893ae663e42d331ba9dfe926e5600845f56d','cdc9acd403d8ab0d01bdcfe34f91d21e88a3a400'],
+  undo:source=>source.replace("import {hostedCandidatePath} from './hosted-gil-receipt.mjs';\n",'')
+   .replace('const gil=hostedCandidatePath(candidatePath,candidate)??candidate.mapPath;',
+    'const gil=candidate.candidate.path??candidate.mapPath;'),
+ },
+});
+function beforeActorAlphaBuildInput(path,source){
+ if(!Object.hasOwn(actorAlphaBuildInputs,path))return source;
+ const {current,before,undo}=actorAlphaBuildInputs[path];
+ if(!exactSourceBinding(source,current))return source;
+ const prior=undo(normalize(source));
+ assert(exactSourceBinding(prior,before),'exact alpha build predecessor: '+path);
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
+export function checkedActorAlphaBuildPredecessor(path,source){
+ assert(Object.hasOwn(actorAlphaBuildInputs,path)&&exactSourceBinding(source,actorAlphaBuildInputs[path].current),
+  'fresh alpha build input: '+path);
+ return beforeActorAlphaBuildInput(path,source);
+}
 const newerTests={
  js:{
   ...currentReleaseTests,
@@ -584,13 +613,13 @@ const additionalReleaseLuaFixtures=Object.freeze({
  'tests/lua/card_body_focus.lua':['bb5683abf45cb5427fbbd9e40841d54d966f722b2879f84b0dedfebb6a8f9937','5889006b9cc8e4217a098c60dbb21eb431f0f029'],
  'tests/lua/traveling_merchant_event_content.lua':['19872217244484f650323e9332ab7bbb3903540dd9ae718e5b28192759a03b60','2e287211403fdb4f0923f387161565389df3fa40'],
 });
-function exactReleaseLuaFixture(source,binding){
+function exactSourceBinding(source,binding){
  if(!binding||typeof source!=='string'||source.includes('\r\r\n'))return false;
  const normalized=normalize(source);
  return hash(normalized)===binding[0]&&gitBlob(normalized)===binding[1];
 }
 function exactCurrentReleaseLuaFixture(path,source){
- return exactReleaseLuaFixture(source,currentReleaseLuaFixtures[path]);
+ return exactSourceBinding(source,currentReleaseLuaFixtures[path]);
 }
 function assertCurrentReleaseLuaFixtureSources(read){
  for(const path of Object.keys(currentReleaseLuaFixtures))
@@ -605,7 +634,7 @@ function beforeCurrentReleaseLuaNames(paths,read,{required=false}={}){
  for(const path of currentPaths){
   const found=names.delete(path);
   if(required)assert(found,'missing live Release Lua inventory source: '+path);
-  if(found)assert(exactReleaseLuaFixture(read(path,'utf8'),additionalReleaseLuaFixtures[path]),'fresh added inventory source: '+path);
+  if(found)assert(exactSourceBinding(read(path,'utf8'),additionalReleaseLuaFixtures[path]),'fresh added inventory source: '+path);
  }
  if(paths.includes('tests/lua/traveling_merchant_event_content.lua')){
   const retired='tests/lua/addict_event_content.lua';
@@ -744,7 +773,7 @@ function beforeCalibrationReplayOwner(path,source){
  if(!calibrationReplayPredecessor){
   calibrationReplayPredecessor=releaseUiRestoreArchive(
    readFileSync(new URL('./calibration-v220-replay-owners.json.gz',import.meta.url)),
-   '965f3edcbfdbb8d0c1d2563f3da7fc73647cc56900526772593bf17070a179b4','8b4172d59779ad9fa21b4ba91ef750ab22fcdaf1');
+   '6d7da50c5b4954af8a7b6061805a90d86069e404d77f2ed21f2c8b1eabbca2d5','8b4172d59779ad9fa21b4ba91ef750ab22fcdaf1');
   assert.deepEqual(Object.keys(calibrationReplayPredecessor.files),calibrationReplayPaths,'ordered v2.2 calibration replay owners');
  }
  return calibrationReplayPredecessor.project(path,source);
@@ -894,8 +923,11 @@ function beforeReplayArchiveStorage(path,source){
 }
 export function beforeReviewedBuildInput(path,source,read){
  source=beforeForkPush(path,source);
- const reviewed=(owner,raw)=>owner.startsWith('src/')||owner==='config/architecture.json'?raw:
-  beforeCurrentReplayFixes(owner,beforeUiEntranceWitness(owner,beforeCurrentReplayCopier(owner,beforeForkPush(owner,raw))));
+ const reviewed=(owner,raw)=>{
+  if(owner.startsWith('src/')||owner==='config/architecture.json')return raw;
+  const input=beforeActorAlphaBuildInput(owner,raw);
+  return beforeCurrentReplayFixes(owner,beforeUiEntranceWitness(owner,beforeCurrentReplayCopier(owner,beforeForkPush(owner,input))));
+ };
  const live=owner=>reviewed(owner,read(owner,'utf8'));
  const production=authenticateDevelopBackflow(path,reviewed(path,source),live);
  const deck=beforeDeckPagesSuiteSource(path,production);
@@ -912,7 +944,12 @@ function beforeIntegrationSuccessor(path,source){
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  const rawRead=read;
- const liveRead=(path,encoding)=>beforeForkPush(path,beforeCalibrationReplayOwner(path,rawRead(path,encoding)));
+ const alphaBuildPredecessors=Object.fromEntries(Object.keys(actorAlphaBuildInputs).map(path=>
+  [path,checkedActorAlphaBuildPredecessor(path,rawRead(path,'utf8'))]));
+ const liveRead=(path,encoding)=>{
+  const input=Object.hasOwn(alphaBuildPredecessors,path)?alphaBuildPredecessors[path]:rawRead(path,encoding);
+  return beforeForkPush(path,beforeCalibrationReplayOwner(path,input));
+ };
  assertReleaseCandidateToolsCurrent(rawRead);
  assertAudioDeckBrowserCurrent(rawRead);
  assertRefinedReleasePackingCurrent(rawRead);
@@ -974,7 +1011,7 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  }
 }
 export function beforePreflightSource(path,source,view='prior'){
- source=beforeForkPush(path,beforeCalibrationReplayOwner(path,source));
+ source=beforeForkPush(path,beforeCalibrationReplayOwner(path,beforeActorAlphaBuildInput(path,source)));
  if(path==='.github/workflows/quality.yml')source=beforePosixDeadlineWorkflow(beforeWindowsDeadlineWorkflow(source));
  source=beforeUiEntranceWitness(path,beforeCurrentReplayCopier(path,source));
  source=beforeCurrentReplayFixes(path,source);

@@ -16,6 +16,16 @@ node scripts/runtime-baseline/verify-release-performance.mjs <final.gil> <candid
 
 正式发布前必须通过[同候选平台负载门禁](PLATFORM_LOAD.md)：对含最终音频/资产的候选执行 `npm run verify:platform-load -- <最终candidate.json> <official-load.json>`，并保留 source SHA、buildId、hash、客户端版本、时间和脱敏原始报告/截图。关卡≤20MB、服务器≤3MB分别核验；关卡>16MB为内部预警。全局/区域静态超标未解决、官方动态四类异常报告缺失、高峰战斗/复杂手牌/敌人特效并发/切换/重复进出未覆盖、官方试玩上传与启动操作或必要手机验收未完成，状态必须BLOCKED/UNVERIFIED，禁止发布。静态/动态推荐指标与平台禁止上传的硬限分别记录，不能提高负载需求档位掩盖问题。CI通过、旧候选基线8.96MB/0.01MB或GIL文件大小均不构成新候选放行证据。发布仍由人完成。
 
+v2.2.0 的最终候选还须通过[正式美术入库覆盖检查](art/NATIVE_MONSTER_PRODUCTION.md#v220-正式美术入库回执)。从 `release-ci verify` 的 `performance.gil` 下载获准访问的最终归档，使用 `node scripts/native-candidate-preview.mjs <最终candidate.json> <新的.artifacts目录>` 绑定 GIL 与 Simulator 存档。独立审查实际读取原生回读，复核以同一 GIL 投影产生的三底实渲、截图摘要、原图掩模及对应正式配置。
+
+审稿后按现有受保护分支 PR 流程将脱敏的摘要记录登记到 [发布捕获批准清单](../data/release/actor-alpha-release-captures.json)。批准提交独立于冻结 Release。仅登记 `sourceCommit`、`branch`、`gilArtifactId`、`candidateSha256`、`candidateReceiptSha256`、`artConfigSha256`、`uiConfigSha256`、`nativeReadbackSha256`、`simulatorSaveSha256`、捕获文件 `captureSha256` 和 `approvalReference`，一份冻结源码对应一条捕获。文件登记提交须在实际远端 `develop` 的祖先链中。
+
+```sh
+npm run verify:actor-alpha -- <capture.json> <mask-locators.json> <new-report.json> --release <捕获批准提交完整SHA>
+```
+
+正式捕获的 `scope` 使用 `production Lua actor painters from final native GIL readback`，`releaseEvidence` 记录最终 GIL 摘要 `candidateSha256`、`buildId`、`payloadDigest`、`officialAssetsProfile`、`artConfigSha256`、`uiConfigSha256`、`candidateReceiptSha256`、`nativeReadbackSha256` 与 `simulatorSaveSha256`。命令重新核验相同正式性能、冻结 Full、真实托管 GIL 归档及独立批准的捕获。批准原图掩模或捕获记录缺失时，美术发版门禁保持待验。此步骤在最终发布前执行，早期候选构建和 Full 仍可独立运行。
+
 > 名称更新：2026-10-24，用户确认正式名称《杀戮原塔2》（原名《杀戮深渊》）。其余流程更新：2026-10-22。适用：原神国服 7.1「千星之约·奇域创作大赛」。执行对应 TASK-1、TASK-18、TASK-19、TASK-6、TASK-20、TASK-21。**这是一份人工执行的发布流程，不表示已成功投稿。**
 
 ## 当前比赛内容边界（2026-10-29用户确认）
