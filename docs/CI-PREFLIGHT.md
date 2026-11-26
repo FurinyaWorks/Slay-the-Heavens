@@ -4,14 +4,14 @@
 
 1. 从最新主仓 `develop` 建任务短分支，先用 `node scripts/test-affected.mjs --plan --base <BASE>` 估算影响。推送 Fork A 后，`quick-feedback.yml` 自动执行 advisory Quick（全部映射 Fast JS 与按 90 秒 Lua 调度估算筛选的子集；自动作业硬上限 10 分钟，不是整体 90 秒期限）；仅修改 Markdown 的推送不启动 Quick。
 2. Quick 在运行时固定主仓 `develop` 的比较 BASE，记录 HEAD/BASE；新 Push 取消同分支旧运行。比较 BASE 可能随主仓推进，不冒充开发初始基线。
-3. 只有核心路径、共享 CI 或覆盖未知等风险要求 Full 时，把同一候选推到 Fork B 的 `ci/full/<task>` 短分支；`quality.yml` 自动运行 hosted Full。不要对普通任务重复启动 Full。
-   Fork B 的比较 BASE 记在 impact 作业摘要，并经输出传给首个 rules 分片的质量棘轮；该分片从固定主仓获取此精确 SHA，首次 Push 的全零 before 不作棘轮基线；其 Full checkout 收据仍按正式 Push 合同记录 `event.before`，不把两者混为同一基线。Fork A 自动 Quick 只写 advisory 摘要，不生成或上传完整 preflight 收据；integration 和延后的 Lua 仍需正式 Full。手动 `workflow_dispatch` 保留原完整 `--preflight`、30 分钟作业上限及记录实际选测 BASE 的收据和 artifact。
+3. 只有核心路径、共享 CI 或覆盖未知等风险要求 Full 时，把同一候选推到 Fork A 的 `ci/full/<task>` 短分支；`quality.yml` 自动运行 hosted Full。不要对普通任务重复启动 Full。
+   Fork A 的比较 BASE 记在 impact 作业摘要，并经输出传给首个 rules 分片的质量棘轮；该分片从固定主仓获取此精确 SHA，首次 Push 的全零 before 不作棘轮基线；其 Full checkout 收据仍按正式 Push 合同记录 `event.before`，不把两者混为同一基线。Fork A 自动 Quick 只写 advisory 摘要，不生成或上传完整 preflight 收据；integration 和延后的 Lua 仍需正式 Full。手动 `workflow_dispatch` 保留原完整 `--preflight`、30 分钟作业上限及记录实际选测 BASE 的收据和 artifact。
 4. 验证后同步精确候选到主仓短分支，创建同仓 PR，继续正式 Quality/Licenses、独立 Review 与 Merge Queue Full。
 
 ```sh
 git push fork-a HEAD:refs/heads/<task-branch>       # 自动 Quick
 # 仅确有必要时：
-git push fork-b HEAD:refs/heads/ci/full/<task-name>  # 自动 Full
+git push fork-a HEAD:refs/heads/ci/full/<task-name>  # 自动 Full
 ```
 
 **新任务分支必须从包含本配置的最新主仓 `develop` 创建**，因为 GitHub 使用被 Push 提交内的工作流定义。旧分支不强行改写历史，可按正常主仓 PR 的自动检查交付。手动 `workflow_dispatch` 只保留为诊断回退，不作为常规合并前置条件；不需要 Agent 拥有 `Actions: Write`。

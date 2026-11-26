@@ -108,8 +108,35 @@ assert.equal(hash(forkPushBytes),'d8f0cb25d3884387b232a67ce8a99bf6570bdb50dcbecb
 const forkPushPacket=JSON.parse(gunzipSync(forkPushBytes));
 assert.equal(forkPushPacket.baseCommit,'73c21489efaab409d4c0c46bee517d410d3427fc');
 for(const row of Object.values(forkPushPacket.files))assert.equal(hash(row.before),row.beforeSha256);
+const hygieneQualityWorkflow=['1d65e28abe24384f601daab1bc742f11a864561a785455bb137415b578c80dba','a036d140701e111dc75d49f255576e046d593d12'];
+const preHygieneQualityWorkflow=['280d7e3f58ddb88935cbd2e0b0f1e1bdc74ceff1858f5a3b0b03f48b8152aef1','7a0156689893c5b7cce7220e41cdea0f3252c119'];
+function beforeRepositoryHygieneWorkflow(source){
+ if(!exactCheckoutSource(source,hygieneQualityWorkflow))return source;
+ const prior=normalize(source)
+  .replace(', unlabeled, edited]',', unlabeled]')
+  .replace(/^      - name: Enforce repository hygiene on the integration tree\n[\s\S]*?(?=^      - name: Validate agent guidance and UI reference governance$)/m,'')
+  .replace('Fork A alone uses explicitly requested full-preflight pushes.','Fork B alone uses explicitly requested full-preflight pushes.')
+  .replaceAll('github.event.repository.id == 1460097312','github.event.repository.id == 1460133275')
+  .replace('Pin upstream comparison for explicit Fork A Full','Pin upstream comparison for explicit Fork B Full')
+  .replace('Fetch exact upstream base for Fork A Full ratchet','Fetch exact upstream base for Fork B Full ratchet');
+ assert(exactSourceBinding(prior,preHygieneQualityWorkflow),'exact pre-hygiene Quality workflow');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
+const hygieneDeliveryTest=['a2862c6984be3266e3accbbeff190406648f0bcbfe0b5b0792799c10de36ad57','eb9916ef4d446a38766f87405e494d2caed48283'];
+const preHygieneDeliveryTest=['7a0f5169fd0dfd51b5eef6cbb0f11cbd84fdfe430af2e59534a91de8e4c0913b','21f9aa13b9de54d6157d3887d6edca4517b10a3e'];
+function beforeRepositoryHygieneDeliveryTest(source){
+ if(!exactCheckoutSource(source,hygieneDeliveryTest))return source;
+ const prior=normalize(source)
+  .replace('Fork push routing skips every Quality runner outside Fork A Full','Fork push routing skips every Quality runner outside Fork B Full')
+  .replace("repositoryId===1460097312&&ref==='refs/heads/ci/full/probe'","repositoryId===1460133275&&ref==='refs/heads/ci/full/probe'")
+  .replace('first Fork A Full push uses its pinned upstream base','first Fork B Full push uses its pinned upstream base')
+  .replace('Fetch exact upstream base for Fork A Full ratchet','Fetch exact upstream base for Fork B Full ratchet');
+ assert(exactSourceBinding(prior,preHygieneDeliveryTest),'exact pre-hygiene delivery test');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 export function beforeForkPush(path,source){
- if(path==='.github/workflows/quality.yml'&&typeof source==='string')source=beforeHotfixPublicationGate(source);
+ if(path==='.github/workflows/quality.yml'&&typeof source==='string')source=beforeHotfixPublicationGate(beforeRepositoryHygieneWorkflow(source));
+ if(path==='tests/delivery.test.mjs')source=beforeRepositoryHygieneDeliveryTest(source);
  const row=Object.hasOwn(forkPushPacket.files,path)?forkPushPacket.files[path]:undefined;
  if(!row||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const digest=hash(normalize(source));

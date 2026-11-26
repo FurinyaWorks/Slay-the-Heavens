@@ -120,7 +120,7 @@ test('native Node four-shard selection executes every current JS file name exact
 });
 
 test('current Fork POSIX aggregate retains its complete push and draft scope',()=>{
-  assert.ok(aggregate.includes("    if: ${{ !cancelled() && (github.event_name != 'push' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' || (github.event.repository.id == 1460133275 && startsWith(github.ref, 'refs/heads/ci/full/'))) && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}"));
+  assert.ok(aggregate.includes("    if: ${{ !cancelled() && (github.event_name != 'push' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' || (github.event.repository.id == 1460097312 && startsWith(github.ref, 'refs/heads/ci/full/'))) && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}"));
   assert.match(aggregate,/^    needs: \[impact, engineering-posix-shards, fast\]$/m);
   assert.doesNotMatch(aggregate,/continue-on-error:|\|\| true/);
 });

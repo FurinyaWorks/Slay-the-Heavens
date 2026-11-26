@@ -5,7 +5,7 @@
 从主仓库 `FurinyaWorks/Slay-the-Heavens` 克隆一份即可。三个仓库共享项目和 Backlog。日常开发使用 Fork，主仓负责正式集成和发布。旧 `release/v2.0.0` 已冻结，本版修复从 `develop` 接续。按任务读相关步骤。
 
 1. 运行 `backlog instructions overview`，读根 `AGENTS.md`、[范围](SCOPE.md)、[交接](HANDOFF.md)；再查目标 Backlog 任务及附件。任务记录必须区分已实现、待集成、待正式 CI、待实机，不把 In Progress 当作可重复领取。
-2. 按 [三仓库分流](CI.md#三仓库按需验证) 的固定 ID 解析当前名称，配置 origin/fork-a/fork-b；核对远端分支、三个仓库的开放 PR 和相关 dispatch。只取本任务需要的分支，不同步全部历史。主仓库在 develop 统一接续，旧 release/v2.0.0 冻结；A 优先 Fast、B 优先 Full。
+2. 按 [三仓库分流](CI.md#三仓库按需验证) 的固定 ID 解析当前名称，配置 origin/fork-a/fork-b；核对远端分支、三个仓库的开放 PR 和相关 dispatch。只取本任务需要的分支，不同步全部历史。主仓库在 develop 统一接续，旧 release/v2.0.0 冻结；A 负责重型 CI 与工程验证，B 负责美术生产及候选设计。
 3. 按下文核对认领、审批、依赖和文件范围，再用 Fork-First 检查选定短分支。发版修复从最新 develop 基线接续，按 [2.0 重建交接](versions/V2-RELEASE-HANDOFF.md) 核对旧来源并逐项接回。
 4. 首次 `npm ci --ignore-scripts`，工具及生成物按 [TOOLCHAIN](TOOLCHAIN.md)、验证按 [ENGINEERING](ENGINEERING.md)；日常先看 `npm run test:related -- --plan --base <准确目标SHA>`，需要时分配现有 hosted Fast/Full。源码、构建、官方导入、ready、设备体验是不同证据，不用一项代替其余。
 5. 按 [CI](CI.md) 完成独立复审及精确 HEAD/BASE 准入，读回原生授权后异步交接。离开前经 Backlog CLI 记录任务、目标分支、准确提交、PR/run 链接、已验证范围、具体阻塞和下一动作；代码及必要证据推到对应远端，不能仅留本机文件或聊天摘要。未合入不写 Done，不守候队列。
@@ -58,7 +58,7 @@ git -C ../feature-card-upgrade push "$remote" "HEAD:refs/heads/$branch"
 
 开发提交、实验和迭代验证留在 Fork。用 [Fork 预检](CI-PREFLIGHT.md)按风险选择已有测试，记录任务、Fork 仓库及分支、完整 HEAD/BASE、定向结果、适用的 run/attempt 和接续人。同一证据以原记录复用。
 
-成熟候选通过必要验证后，重读主仓 `develop` 和来源 Fork ref。用所测完整 SHA 设置 `base` 和 `head`，核对它们与远端一致，并用 `git merge-base --is-ancestor "$base" "$head"` 验证来源历史。HEAD 或 BASE 移动时先更新候选并重核受影响范围。用 `git push origin "$head:refs/heads/$branch"` 同步已核对的完整候选 SHA，建立同仓 `develop` PR，注明 Fork 来源、验证和已有任务。后续采用现有独立 Review、Required Checks、Merge Queue 与 squash。正式 PR 的修正先回 Fork 验证，成熟后同步新 SHA。
+成熟候选通过必要验证后，重读主仓 `develop` 和来源 Fork ref。用所测完整 SHA 设置 `base` 和 `head`，核对它们与远端一致，并用 `git merge-base --is-ancestor "$base" "$head"` 验证来源历史。HEAD 或 BASE 移动时先更新候选并重核受影响范围。用 `git push origin "$head:refs/heads/$branch"` 同步已核对的完整候选 SHA，建立同仓 `develop` PR，注明 Fork 来源、验证和已有任务。后续采用现有独立 Review、Required Checks、Merge Queue 与 squash。正式 PR 的修正先回 Fork 验证，成熟后同步新 SHA。路径、存储边界和 `Fork-Source` 格式见[仓库卫生](REPOSITORY_HYGIENE.md)。
 
 ## 小批量集成
 
