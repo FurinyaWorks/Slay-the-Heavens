@@ -31,12 +31,14 @@ Review/test the complete combined candidate; source green checks are not inherit
 
 ## Backlog closeout
 Backlog: none
+Backlog-none-reason: [specific reason, if none]
 <!-- List every changed task: TASK-1=done, TASK-2=verify, TASK-3=continue,
 TASK-4=superseded:TASK-3. done requires all AC already evidenced and checked;
 verify keeps started work In Progress with open acceptance; superseded preserves history and its successor.
-Use recorded for cleanup/status updates already committed; it validates without mutating the task again.
+Use recorded for changed native task files already committed; it validates the record without another task edit.
+Declare any additional task scope with Tracks: TASK-123 or in the PR title.
 verify:delivery --merged applies this line via CLI after exact merged verification.
-Use none only when this PR has no task updates. -->
+Use none and a specific reason only when no formal task is involved. Remove the reason line for task dispositions. -->
 
 ## Integration slice
 <!-- Describe the independently verified behavior, the next dependent slice if any, and the

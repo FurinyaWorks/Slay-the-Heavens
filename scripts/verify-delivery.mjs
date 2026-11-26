@@ -631,8 +631,14 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
       const filePages=JSON.parse(gh('api','--paginate','--slurp',`repos/${repo}/pulls/${number}/files?per_page=100`));
       if(!Array.isArray(filePages)||filePages.some(page=>!Array.isArray(page))||filePages.flat().length!==evidence.pr.changed_files)
         throw Error('Backlog pending: incomplete PR file list');
-      const target=JSON.parse(gh('api',`repos/${repo}/git/ref/heads/develop`));
-      const backlog=syncBacklogCloseout({pr:evidence.pr,files:filePages.flat(),targetSha:target.object?.sha});
+      const readTargetSha=()=>JSON.parse(gh('api',`repos/${repo}/git/ref/heads/develop`)).object?.sha;
+      const targetSha=readTargetSha();
+      const latestPr=JSON.parse(gh('api',`repos/${repo}/pulls/${number}`));
+      if(latestPr.merged!==true||latestPr.base?.ref!==evidence.pr.base?.ref||
+        latestPr.head?.sha!==evidence.pr.head?.sha||latestPr.merge_commit_sha!==evidence.pr.merge_commit_sha||
+        latestPr.title!==evidence.pr.title||latestPr.body!==evidence.pr.body)
+        throw Error('Backlog pending: PR identity or declaration changed during verification');
+      const backlog=syncBacklogCloseout({pr:evidence.pr,files:filePages.flat(),targetSha,readTargetSha});
       writeFileSync(join(dir,'backlog.json'),JSON.stringify(backlog,null,2)+'\n');
       console.log(`Backlog state: ${backlog.state}; ${backlog.taskIds.join(', ')||'no tasks declared'}`);
       process.exitCode=0;

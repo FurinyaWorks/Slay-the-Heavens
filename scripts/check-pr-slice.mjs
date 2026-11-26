@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
+import { backlogDeclaration, backlogTaskMoves, backlogTaskPaths, changedBacklogTasks } from './backlog-closeout.mjs';
 import { checkTaskIntake } from './check-task-intake.mjs';
 
 const production = /^(?:src|scripts|tools|experiments|config|data|schemas|\.github\/workflows)\/|^package(?:-lock)?\.json$/;
@@ -94,6 +95,15 @@ export function checkHostedSlice(env = process.env) {
     throw new Error('PR slice checkout differs from the event HEAD/BASE');
   }
   checkSlice(base, candidate, pr.body ?? '');
+  if (pr.base.ref === 'develop') {
+    const git = (...args) => execFileSync('git', args, { encoding: 'utf8' });
+    const files = git('diff', '--name-only', '-z', '--no-renames', base, candidate, '--')
+      .split('\0').filter(Boolean).map(filename => ({filename}));
+    const changeScope = changedBacklogTasks(files, backlogTaskPaths(git, base), backlogTaskPaths(git, candidate),
+      path => git('show', `${candidate}:${path}`), backlogTaskMoves(git, base, candidate));
+    const { errors } = backlogDeclaration(pr.body, changeScope, pr.title);
+    if (errors.length) throw Error(errors.join('\n'));
+  }
 }
 
 const developmentRemotes = {

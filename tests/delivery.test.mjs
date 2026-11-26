@@ -9,6 +9,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { verifyDelivery, verifyMergedDelivery, collectPrDelivery, collectMergedDelivery, checkoutReceipt, isLowRiskDocumentationChange, fullQualityJobs, currentFullQualityJobs, deliverySchemaVersion, qualityWorkflowPath } from '../scripts/verify-delivery.mjs';
 import {qualityShardMatrices,qualityShardJobs} from '../scripts/ci-quality-shape.mjs';
 import * as delivery from '../scripts/verify-delivery.mjs';
+import {changedBacklogTasks} from '../scripts/backlog-closeout.mjs';
 import { auditHistory } from '../scripts/branch-hygiene-history.mjs';
 
 const handoffRepo = 'FurinyaWorks/Slay-the-Heavens';
@@ -182,7 +183,7 @@ test('merged delivery requires an explicit, AC-safe Backlog disposition',()=>{
   assert.match(delivery.planBacklogCloseout({...input,body:''}).errors.join(' '),/Backlog/);
 });
 test('verification is started work, stays In Progress and cannot implicitly reopen Blocked',()=>{
-  const mergeSha='a'.repeat(40),base={body:'Backlog: TASK-1=verify',mergeSha,prNumber:10};
+  const mergeSha='a'.repeat(40),base={body:'Tracks: TASK-1\nBacklog: TASK-1=verify',mergeSha,prNumber:10};
   const task={id:'TASK-1',status:'To Do',acCount:2,acCompleted:1,labels:[],source:'',location:'tasks',dependencies:[]};
   const plan=delivery.planBacklogCloseout({...base,records:[task]});
   assert.deepEqual(plan.errors,[]);
@@ -220,7 +221,7 @@ test('supersession preserves a real successor, rejects cycles and does not guess
 test('closeout retries only the missing move and requires the actual successor reference',()=>{
   const mergeSha='a'.repeat(40),marker=`[delivery:${mergeSha}]`;
   const done={id:'TASK-1',status:'Done',acCount:1,acCompleted:1,labels:[],source:`${marker} done`,location:'tasks',dependencies:[]};
-  const base={records:[done],mergeSha,prNumber:10,body:'Backlog: TASK-1=done'};
+  const base={records:[done],mergeSha,prNumber:10,title:'Close out TASK-1',body:'Backlog: TASK-1=done'};
   assert.deepEqual(delivery.planBacklogCloseout(base).commands,[['task','complete','TASK-1']]);
   const old={...done,status:'To Do',location:'archive',source:`${marker} superseded:TASK-2`,references:[]};
   const target={...done,id:'TASK-2',status:'To Do',acCompleted:0,source:'',metadataErrors:[]};
@@ -229,6 +230,25 @@ test('closeout retries only the missing move and requires the actual successor r
   assert.equal(delivery.planBacklogCloseout({...input,records:[{...old,references:['TASK-2']},target]}).errors.length,0);
   assert.ok(delivery.planBacklogCloseout({...input,records:[{...old,location:'tasks'},
     {...target,metadataErrors:['duplicate status']}]}).errors.length);
+});
+test('delivery dispositions bind visible scope and recorded claims require changed task files',()=>{
+  const task={id:'TASK-1',status:'In Progress',acCount:1,acCompleted:1,source:'',location:'tasks'};
+  const plan=(body,options={})=>delivery.planBacklogCloseout({body,records:[task],mergeSha:'a'.repeat(40),prNumber:10,...options});
+  assert.match(plan('Backlog: TASK-1=done').errors.join(' '),/outside declared delivery scope/);
+  assert.match(plan('<!-- Tracks: TASK-1 -->\nBacklog: TASK-1=done').errors.join(' '),/outside declared delivery scope/);
+  assert.match(plan('<!--\nBacklog: TASK-1=done\n-->').errors.join(' '),/exactly one Backlog/);
+  assert.match(plan('Tracks: TASK-1\nBacklog: none\nBacklog-none-reason: no native task file').errors.join(' '),/TASK-1: missing Backlog disposition/);
+  assert.match(plan('Tracks: TASK-1\nBacklog: TASK-1=recorded').errors.join(' '),/changed native task file/);
+  assert.deepEqual(plan('Tracks: TASK-1\nBacklog: TASK-1=done').errors,[]);
+  assert.deepEqual(plan('Tracks: task-1.\nBacklog: TASK-1=done').errors,[]);
+  assert.deepEqual(plan('Backlog: TASK-1=done',{title:'Fix task-1.'}).errors,[]);
+  assert.match(plan('Tracks: TASK-1.2x\nBacklog: TASK-1=done').errors.join(' '),/outside declared delivery scope/);
+  assert.match(plan('Backlog: TASK-1=done',{title:'Fix TASK-1.2x'}).errors.join(' '),/outside declared delivery scope/);
+  const moved={filename:'backlog/completed/task-1 - 旧记录.md',previous_filename:'backlog/tasks/task-1 - 旧记录.md'};
+  const changeScope=changedBacklogTasks([moved,{filename:'docs/task-2 - note.md'},{filename:'backlog/tasks/task-3 - no.txt'}],
+    [moved.previous_filename],[moved.filename],()=> '---\nid: TASK-1\nstatus: Done\n---\n',new Map([[moved.filename,moved.previous_filename]]));
+  assert.deepEqual(changeScope,{requiredTaskIds:['TASK-1'],changedTaskIds:['TASK-1'],scopeErrors:[]});
+  assert.deepEqual(plan('Backlog: TASK-1=recorded',changeScope),{errors:[],commands:[]});
 });
 function closeoutFixture(t) {
   const root=mkdtempSync(join(tmpdir(),'backlog-closeout-'));
@@ -241,9 +261,12 @@ function closeoutFixture(t) {
     const result=spawnSync('git',args,{cwd:root,encoding:'utf8'});
     assert.equal(result.status,0,result.stderr);return result.stdout.trim();
   };
-  git('init','-q');git('add','.');git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixture');
+  git('init','-q');
+  git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','--allow-empty','-qm','fixture parent');
+  git('add','.');git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixture');
   const mergeSha=git('rev-parse','HEAD');
-  return {root,path,source,git,mergeSha,pr:{number:10,merged:true,base:{ref:'develop'},merge_commit_sha:mergeSha,body:'Backlog: TASK-1=verify'},files:[]};
+  const pr={number:10,title:'Deliver TASK-1',merged:true,base:{ref:'develop'},merge_commit_sha:mergeSha,body:'Backlog: TASK-1=verify'};
+  return {root,path,source,git,mergeSha,pr,files:[],readTargetSha:()=>git('rev-parse','HEAD')};
 }
 test('closeout refuses an old worktree and a task revised after the verified merge without writing',t=>{
   const f=closeoutFixture(t),run=()=>assert.fail('must not write an obsolete task');
@@ -266,11 +289,127 @@ test('current task snapshots outrank same-ID legacy archives while real active d
     writeFileSync(join(f.root,`backlog/archive/tasks/task-${id} - 历史同号.md`),source+'\nUnrelated legacy identity.\n');
     f.git('add','.');f.git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','legacy archive');
     f.pr.merge_commit_sha=f.git('rev-parse','HEAD');f.pr.body=`Backlog: TASK-${id}=recorded`;
+    f.pr.title=`Record TASK-${id}`;
+    f.files=[{filename:`backlog/tasks/task-${id} - 当前任务.md`}];
     const input={...f,targetSha:f.pr.merge_commit_sha};
     assert.equal(delivery.syncBacklogCloseout(input,()=>assert.fail('recorded cleanup never mutates')).state,'backlog_synced',id);
     writeFileSync(join(f.root,`backlog/tasks/task-${id} - 冲突.md`),source);
     assert.throws(()=>delivery.syncBacklogCloseout(input,()=>assert.fail('duplicate must fail before writes')),/ambiguous/,id);
   }
+});
+test('archive-only edits cannot grant merged scope for a different same-ID current task',t=>{
+  const f=closeoutFixture(t),active='backlog/tasks/task-61 - 当前任务.md',archive='backlog/archive/tasks/task-61 - 历史同号.md';
+  const source=f.source.replace('TASK-1','TASK-61').replace('- [ ]','- [x]');
+  renameSync(f.path,join(f.root,active));
+  writeFileSync(join(f.root,active),source);
+  writeFileSync(join(f.root,archive),source+'\nHistorical material.\n');
+  f.git('add','.');f.git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','same-ID fixture');
+  writeFileSync(join(f.root,archive),source+'\nReconcile archive details.\n');
+  f.git('add','.');f.git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','archive only');
+  const targetSha=f.git('rev-parse','HEAD'),pr={...f.pr,title:'Reconcile archive details',merge_commit_sha:targetSha};
+  const input={...f,targetSha,files:[{filename:archive,status:'modified'}]},refuse=()=>assert.fail('archive change cannot write current task');
+  assert.throws(()=>delivery.syncBacklogCloseout({...input,pr:{...pr,body:'Backlog: TASK-61=done'}},refuse),/outside declared delivery scope/);
+  assert.throws(()=>delivery.syncBacklogCloseout({...input,pr:{...pr,body:'Backlog: TASK-61=recorded'}},refuse),/changed native task file/);
+  assert.equal(readFileSync(join(f.root,active),'utf8'),source);
+});
+test('merged closeout requires a disposition even when a changed current identity is removed or invalid',t=>{
+  const substitutions={'archive-rename':'backlog/archive/tasks','archive-promote':'backlog/tasks',
+    'archive-complete':'backlog/completed','draft-promote':'backlog/tasks'};
+  for (const variant of ['removed','malformed','renumbered','archive-fallback',...Object.keys(substitutions)]) {
+    const f=closeoutFixture(t),active='backlog/tasks/task-1 - 交付.md',archive='backlog/archive/tasks/task-1 - 同号历史.md';
+    const oldArchive=variant==='archive-complete'?f.source.replace('In Progress','Done').replace('- [ ]','- [x]'):f.source;
+    writeFileSync(join(f.root,archive),oldArchive+'\nUnrelated archived task.\n');
+    const draft='backlog/drafts/unrelated.md';
+    if(variant==='draft-promote') {
+      mkdirSync(join(f.root,'backlog/drafts'));
+      writeFileSync(join(f.root,draft),f.source+'\nUnrelated draft.\n');
+    }
+    f.git('add','.');f.git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','same-ID active and archive');
+    const folder=substitutions[variant];
+    const removed=variant==='removed'||variant==='archive-fallback'||folder!==undefined;
+    if(removed)f.git('rm',active);
+    else writeFileSync(f.path,variant==='malformed'?f.source.replace('id: TASK-1','id:') : f.source.replace('id: TASK-1','id: TASK-99'));
+    const files=[{filename:active,status:removed?'removed':'modified'}];
+    if(variant==='archive-fallback') {
+      writeFileSync(join(f.root,archive),f.source+'\nChanged archived task.\n');
+      files.push({filename:archive,status:'modified'});
+    }
+    const donor=variant==='draft-promote'?draft:archive;
+    const substitute=folder&&`${folder}/task-1 - substituted history.md`;
+    if(substitute) {
+      mkdirSync(join(f.root,folder),{recursive:true});
+      f.git('mv',donor,substitute);
+      files.push({filename:substitute,previous_filename:donor,status:'renamed'});
+    }
+    f.git('add','.');f.git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm',variant);
+    const targetSha=f.git('rev-parse','HEAD'),pr={...f.pr,title:'Reconcile task details',merge_commit_sha:targetSha};
+    if(substitute)
+      assert(f.git('diff','--name-status','-z','--find-renames','HEAD^','HEAD').includes(`R100\0${donor}\0${substitute}\0`),variant);
+    const input={...f,targetSha,files},refuse=()=>assert.fail('lost or invalid current identity cannot write');
+    assert.throws(()=>delivery.syncBacklogCloseout({...input,pr:{...pr,body:'Backlog: none\nBacklog-none-reason: isolated fixture detail'}},refuse),
+      /TASK-1: changed native task.*TASK-1: missing Backlog disposition/,variant);
+    assert.throws(()=>delivery.syncBacklogCloseout({...input,pr:{...pr,body:'Backlog: TASK-1=recorded'}},refuse),
+      /recorded requires a changed native task file/,variant);
+    if(substitute)assert.throws(()=>delivery.syncBacklogCloseout({...input,
+      pr:{...pr,body:'Tracks: TASK-1\nBacklog: TASK-1=verify'}},refuse),/Git rename from its unique BASE path/,variant);
+  }
+});
+test('merged closeout accepts exact Git moves from the uniquely selected native task',t=>{
+  for (const variant of ['archive','rename','promote']) {
+    const f=closeoutFixture(t),active='backlog/tasks/task-1 - 交付.md',archive='backlog/archive/tasks/task-1 - 历史.md';
+    if(variant==='promote') f.git('mv',active,archive);
+    if(variant==='rename') writeFileSync(join(f.root,archive),f.source+'\nOlder unrelated record.\n');
+    if(variant!=='archive') {
+      f.git('add','.');f.git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','BASE native owner');
+    }
+    const origin=variant==='promote'?archive:active;
+    const folder=variant==='archive'?'backlog/archive/tasks':'backlog/tasks';
+    const destination=`${folder}/task-1 - actual move.md`;
+    f.git('mv',origin,destination);
+    f.git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','record native move');
+    const targetSha=f.git('rev-parse','HEAD');
+    assert(f.git('diff','--name-status','-z','--find-renames','HEAD^','HEAD').includes(`R100\0${origin}\0${destination}\0`),variant);
+    const pr={...f.pr,title:'Record native movement',merge_commit_sha:targetSha,body:'Backlog: TASK-1=recorded'};
+    const files=[{filename:destination,previous_filename:origin,status:'renamed'}];
+    assert.equal(delivery.syncBacklogCloseout({...f,pr,targetSha,files},()=>assert.fail('recorded move never writes')).commands,0,variant);
+  }
+});
+test('merged closeout accepts canonical equivalents on the unique current path ahead of history',t=>{
+  for(const alias of ['task-1','TASK-01']) {
+    const f=closeoutFixture(t),active='backlog/tasks/task-1 - 交付.md';
+    writeFileSync(join(f.root,'backlog/archive/tasks/task-1 - 同号历史.md'),f.source+'\nUnrelated archive.\n');
+    f.git('add','.');f.git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','same-ID archive');
+    writeFileSync(f.path,f.source.replace('id: TASK-1',`id: ${alias}`));
+    f.git('add','.');f.git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','valid native ID alias');
+    const targetSha=f.git('rev-parse','HEAD');
+    const pr={...f.pr,title:'Record canonical identity',merge_commit_sha:targetSha,body:'Backlog: TASK-1=recorded'};
+    const result=delivery.syncBacklogCloseout({...f,pr,targetSha,files:[{filename:active,status:'modified'}]},
+      ()=>assert.fail('recorded alias never mutates any task'));
+    assert.equal(result.commands,0,alias);
+    assert.deepEqual(result.taskIds,['TASK-1'],alias);
+  }
+});
+test('merged closeout binds scope to the actual destination of a native task move',t=>{
+  const f=closeoutFixture(t),destination='backlog/completed/task-1 - 交付.md';
+  renameSync(f.path,join(f.root,destination));
+  writeFileSync(join(f.root,destination),f.source.replace('In Progress','Done').replace('- [ ]','- [x]'));
+  f.git('add','.');f.git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','move native task');
+  const mergeSha=f.git('rev-parse','HEAD'),pr={...f.pr,title:'Record reconciliation',merge_commit_sha:mergeSha,body:'Backlog: TASK-1=recorded'};
+  const input={...f,pr,targetSha:mergeSha,files:[{filename:destination,previous_filename:'backlog/tasks/task-1 - 交付.md',status:'renamed'}]};
+  const refuse=()=>assert.fail('recorded move never mutates a task');
+  assert.equal(delivery.syncBacklogCloseout(input,refuse).commands,0);
+  renameSync(join(f.root,destination),join(f.root,'backlog/completed/task-1 - 后续改名.md'));
+  f.git('add','.');f.git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','later rename');
+  assert.throws(()=>delivery.syncBacklogCloseout({...input,targetSha:f.git('rev-parse','HEAD')},refuse),/task changed since this PR/);
+});
+test('merged closeout declines malformed task mention prefixes before mutating a completed AC',t=>{
+  const f=closeoutFixture(t);
+  writeFileSync(f.path,f.source.replace('- [ ]','- [x]'));
+  f.git('add','.');f.git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','AC evidenced');
+  const targetSha=f.git('rev-parse','HEAD'),pr={...f.pr,merge_commit_sha:targetSha,body:'Backlog: TASK-1=done'};
+  const refuse=()=>assert.fail('malformed identity cannot authorize closeout');
+  assert.throws(()=>delivery.syncBacklogCloseout({...f,targetSha,pr:{...pr,title:'Fix TASK-1.2x'}},refuse),/outside declared delivery scope/);
+  assert.throws(()=>delivery.syncBacklogCloseout({...f,targetSha,pr:{...pr,title:'Fix scope',body:'Tracks: TASK-1.2x\n'+pr.body}},refuse),/outside declared delivery scope/);
 });
 test('an old delivery marker cannot authorize overwriting a later Blocked decision with unchanged AC',t=>{
   const f=closeoutFixture(t);
@@ -300,6 +439,41 @@ test('an interrupted closeout resumes from its exact CLI readback once without d
   assert.equal(delivery.syncBacklogCloseout(input,()=>assert.fail('already synchronized')).commands,0);
   writeFileSync(completed,readFileSync(completed,'utf8')+'Later independent edit.\n');
   assert.throws(()=>delivery.syncBacklogCloseout(input,()=>assert.fail('edited receipt must not authorize writes')),/task changed since this PR/);
+});
+
+test('closeout requires a fresh remote develop proof before each CLI command and after readback',t=>{
+  const f=closeoutFixture(t),pr={...f.pr,body:'Backlog: TASK-1=continue'};
+  const input={...f,pr,targetSha:f.mergeSha};
+  const refuse=()=>assert.fail('must not write without current remote develop');
+  assert.throws(()=>delivery.syncBacklogCloseout({...input,readTargetSha:undefined},refuse),/remote develop reader is required/);
+  let reads=0;
+  assert.throws(()=>delivery.syncBacklogCloseout({...input,readTargetSha:()=>++reads===1?f.mergeSha:'b'.repeat(40)},refuse),/remote develop advanced/);
+  let remote=f.mergeSha;
+  assert.throws(()=>delivery.syncBacklogCloseout({...input,readTargetSha:()=>remote},args=>{
+    writeFileSync(f.path,f.source+args.at(-1)+'\n');
+    remote='b'.repeat(40);
+  }),/remote develop advanced/);
+});
+
+test('closeout will not archive a task that acquires a new active dependent',t=>{
+  for (const dependency of ['TASK-1','task-1','TASK-01']) {
+    const f=closeoutFixture(t);
+    const successor=join(f.root,'backlog/tasks/task-2 - 承接.md');
+    const dependent=join(f.root,'backlog/tasks/task-3 - 新依赖.md');
+    writeFileSync(successor,f.source.replace('TASK-1','TASK-2'));
+    writeFileSync(dependent,f.source.replace('TASK-1','TASK-3'));
+    f.git('add','.');f.git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','initial scope');
+    const targetSha=f.git('rev-parse','HEAD');
+    const pr={...f.pr,merge_commit_sha:targetSha,body:'Backlog: TASK-1=superseded:TASK-2'};
+    const calls=[];
+    assert.throws(()=>delivery.syncBacklogCloseout({...f,pr,targetSha},args=>{
+      calls.push(args[1]);
+      if(args[1]!=='edit')assert.fail('new active dependent must prevent archive');
+      writeFileSync(f.path,f.source.replace('dependencies: []','dependencies: []\nreferences: [TASK-2]')+args.at(-1)+'\n');
+      writeFileSync(dependent,f.source.replace('TASK-1','TASK-3').replace('dependencies: []',`dependencies: [${dependency}]`));
+    }),/migrate active dependencies/,dependency);
+    assert.deepEqual(calls,['edit'],dependency);
+  }
 });
 
 const sha = letter => letter.repeat(40);

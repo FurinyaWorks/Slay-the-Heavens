@@ -96,6 +96,23 @@ for(const [path,row] of Object.entries(transport.files)){
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(row.before)}\0`).update(row.before).digest('hex'),row.gitBlob,path);
 }
 const normalize=s=>s.replaceAll('\r\n','\n');
+const backlogDeliveryBytes=readFileSync(new URL('../fixtures/backlog-delivery-scope-source.json.gz',import.meta.url));
+assert.equal(hash(backlogDeliveryBytes),'942bfbde2f4e55bf9b369a8e3f9602be72fd525429f05e6ef9efcd1b311d08cb','exact Backlog delivery predecessor archive');
+const backlogDelivery=JSON.parse(gunzipSync(backlogDeliveryBytes));
+assert.equal(backlogDelivery.schemaVersion,1);
+assert.equal(backlogDelivery.baseCommit,'8a5f86813e993a9b8cd85dd8016a2943d4a7c629');
+for(const [path,{before}] of Object.entries(backlogDelivery.files)){
+ assert.equal(hash(before.source),before.sha256,path+' exact Backlog predecessor');
+ assert.equal(gitBlob(before.source),before.gitBlob,path+' exact Backlog predecessor blob');
+}
+function beforeBacklogDelivery(path,source){
+ if(!Object.hasOwn(backlogDelivery.files,path)||typeof source!=='string')return source;
+ const lf=normalize(source),crlf=source.includes('\r');
+ if(crlf&&lf.replaceAll('\n','\r\n')!==source)return source;
+ const {before,after}=backlogDelivery.files[path];
+ if(hash(lf)!==after.sha256||gitBlob(lf)!==after.gitBlob)return source;
+ return crlf?before.source.replaceAll('\n','\r\n'):before.source;
+}
 // Exact complete successor bytes preserve the existing immutable historical CI views.
 const forkPushBytes=readFileSync(new URL('../fixtures/fork-push-ci-source.json.gz',import.meta.url));
 assert.equal(hash(forkPushBytes),'3e336d4dc79dc2dcb5f5d2297212034bf074aed8eea184dca73c0d02bab91f18','complete Fork push CI continuation');
@@ -103,6 +120,7 @@ const forkPushPacket=JSON.parse(gunzipSync(forkPushBytes));
 assert.equal(forkPushPacket.baseCommit,'73c21489efaab409d4c0c46bee517d410d3427fc');
 for(const row of Object.values(forkPushPacket.files))assert.equal(hash(row.before),row.beforeSha256);
 export function beforeForkPush(path,source){
+ source=beforeBacklogDelivery(path,source);
  if(path==='.github/workflows/quality.yml'&&typeof source==='string')source=beforeHotfixPublicationGate(source);
  const row=forkPushPacket.files[path];
  return row&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha256?(source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before):source;
@@ -110,6 +128,7 @@ export function beforeForkPush(path,source){
 // Receipt readers retain the actual Q1 current-source predecessor before their existing replay layers.
 for(const row of Object.values(forkPushPacket.receiptSuccessors??{}))assert.equal(hash(row.before),row.beforeSha256);
 export function beforeForkReceiptSource(path,source){
+ source=beforeBacklogDelivery(path,source);
  const row=forkPushPacket.receiptSuccessors?.[path];
  if(row&&typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===row.afterSha256)
   return source.includes('\r\n')?row.before.replaceAll('\n','\r\n'):row.before;

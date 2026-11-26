@@ -160,7 +160,21 @@ test('hosted size check binds both exact PR parents and consumes the visible exc
   git('config', 'user.email', 'integration@example.invalid');
   mkdirSync(join(root, 'src'));
   writeFileSync(join(root, 'src', 'runtime.lua'), 'local runtime\n'.repeat(250));
-  git('add', 'src');
+  const nativeTask = (id, status = 'In Progress') => `---\nid: TASK-${id}\nstatus: ${status}\n---\n`;
+  const currentTask = 'backlog/tasks/task-61 - current.md';
+  const archiveTask = 'backlog/archive/tasks/task-61 - archive.md';
+  const uniqueTask = 'backlog/tasks/task-62 - unique.md';
+  const promotable = 'backlog/archive/tasks/task-63 - sole.md';
+  const unrelatedDraft = 'backlog/drafts/unrelated.md';
+  mkdirSync(join(root, 'backlog', 'tasks'), { recursive: true });
+  mkdirSync(join(root, 'backlog', 'archive', 'tasks'), { recursive: true });
+  mkdirSync(join(root, 'backlog', 'drafts'));
+  writeFileSync(join(root, currentTask), nativeTask(61));
+  writeFileSync(join(root, archiveTask), nativeTask(61)+'Historical record.\n');
+  writeFileSync(join(root, uniqueTask), nativeTask(62));
+  writeFileSync(join(root, promotable), nativeTask(63));
+  writeFileSync(join(root, unrelatedDraft), nativeTask(61)+'Unrelated draft.\n');
+  git('add', 'src', 'backlog');
   git('commit', '-qm', 'base');
   const base = git('rev-parse', 'HEAD');
   function candidate(branch, change) {
@@ -176,9 +190,10 @@ test('hosted size check binds both exact PR parents and consumes the visible exc
 
   const event = join(root, 'event.json');
   const guard = fileURLToPath(new URL('../scripts/check-pr-slice.mjs', import.meta.url)).replaceAll('\\', '/');
-  function run({ head, merge }, ref, sha, body = '') {
+  const noTask = 'Backlog: none\nBacklog-none-reason: isolated fixture for the production-size limit';
+  function run({ head, merge }, ref, sha, body = noTask, title = '') {
     git('checkout', '--detach', '-q', merge);
-    writeFileSync(event, JSON.stringify({ pull_request: { base: { ref, sha }, head: { sha: head }, body } }));
+    writeFileSync(event, JSON.stringify({ pull_request: { base: { ref, sha }, head: { sha: head }, body, title } }));
     return spawnSync(process.execPath, ['--input-type=module', '-e',
       `import { checkHostedSlice } from ${JSON.stringify(new URL('../scripts/check-pr-slice.mjs', import.meta.url).href)}; checkHostedSlice();`],
       { cwd: root, encoding: 'utf8', env: { ...process.env, GITHUB_ACTIONS: 'true', GITHUB_EVENT_NAME: 'pull_request',
@@ -189,6 +204,45 @@ test('hosted size check binds both exact PR parents and consumes the visible exc
   const moved = candidate('moved', () => {
     mkdirSync(join(root, 'tests'));
     git('mv', 'src/runtime.lua', 'tests/runtime.test.lua');
+  });
+  const recorded = candidate('tracked-task', () => {
+    writeFileSync(join(root, 'backlog', 'tasks', 'task-7 - tracked.md'), nativeTask(7));
+  });
+  const archiveOnly = candidate('archive-only', () => writeFileSync(join(root, archiveTask), nativeTask(61)+'Archive details.\n'));
+  const deletedTask = candidate('deleted-task', () => git('rm', currentTask));
+  const archivedSubstitution = candidate('substitute-archive', () => {
+    git('rm', currentTask);
+    writeFileSync(join(root, archiveTask), nativeTask(61)+'Changed historic task.\n');
+  });
+  const archivedRename = candidate('rename-archive-substitute', () => {
+    git('rm', currentTask);
+    git('mv', archiveTask, 'backlog/archive/tasks/task-61 - renamed history.md');
+  });
+  const substitutes = [
+    ['promote-archive-substitute', archiveTask, 'backlog/tasks'],
+    ['complete-archive-substitute', archiveTask, 'backlog/completed'],
+    ['promote-draft-substitute', unrelatedDraft, 'backlog/tasks'],
+  ].map(([branch, source, folder]) => candidate(branch, () => {
+    git('rm', currentTask);
+    mkdirSync(join(root, folder), { recursive: true });
+    git('mv', source, `${folder}/task-61 - unauthorized replacement.md`);
+  }));
+  const actualArchiveMove = candidate('archive-current', () =>
+    git('mv', uniqueTask, 'backlog/archive/tasks/task-62 - actual move.md'));
+  const actualCurrentRename = candidate('rename-current', () =>
+    git('mv', currentTask, 'backlog/tasks/task-61 - actual rename.md'));
+  const actualPromotion = candidate('promote-sole-task', () =>
+    git('mv', promotable, 'backlog/tasks/task-63 - actual promotion.md'));
+  const idChanged = (branch, id) => candidate(branch, () => writeFileSync(join(root, currentTask),
+    nativeTask(61).replace('id: TASK-61', id)));
+  const invalidTask = idChanged('invalid-task-header', 'id:');
+  const renumberedTask = idChanged('renumbered-task', 'id: TASK-99');
+  const lowercaseTask = idChanged('lowercase-task', 'id: task-61');
+  const zeroPaddedTask = idChanged('zero-padded-task', 'id: TASK-061');
+  const movedTask = candidate('moved-task', () => {
+    mkdirSync(join(root, 'backlog', 'completed'));
+    git('mv', currentTask, 'backlog/completed/task-61 - current.md');
+    writeFileSync(join(root, 'backlog', 'completed', 'task-61 - current.md'), nativeTask(61, 'Done'));
   });
   const exception = 'Slice-exception: atomic | compatibility migration | npm run test:related';
   for (const ref of ['develop', 'release/v2.0.0']) {
@@ -201,7 +255,7 @@ test('hosted size check binds both exact PR parents and consumes the visible exc
     const oversized = run(large, ref, base);
     assert.notEqual(oversized.status, 0, ref);
     assert.match(oversized.stderr, /Split the production change/, ref);
-    const reviewed = run(large, ref, base, exception);
+    const reviewed = run(large, ref, base, noTask + '\n' + exception);
     assert.equal(reviewed.status, 0, reviewed.stderr);
     assert.match(reviewed.stdout, /REVIEW_EXCEPTION/, ref);
     const movedProduction = run(moved, ref, base);
@@ -210,6 +264,37 @@ test('hosted size check binds both exact PR parents and consumes the visible exc
     assert.match(movedProduction.stderr, /Split the production change/, ref);
   }
   assert.equal(run(large, 'master', base).stdout, '');
+  assert.match(run(small, 'develop', base, 'Backlog: none').stderr, /Backlog-none-reason/);
+  assert.match(run(small, 'develop', base, noTask, 'fix: reconcile TASK-25').stderr, /TASK-25: missing Backlog disposition/);
+  assert.match(run(small, 'develop', base, 'Tracks: TASK-7\nBacklog: TASK-7=recorded').stderr, /changed native task file/);
+  assert.match(run(recorded, 'develop', base).stderr, /TASK-7: missing Backlog disposition/);
+  assert.match(run(small, 'develop', base, 'Tracks: TASK-61.2x\nBacklog: TASK-61=done').stderr, /outside declared delivery scope/);
+  assert.match(run(small, 'develop', base, 'Backlog: TASK-61=done', 'Fix TASK-61.2x').stderr, /outside declared delivery scope/);
+  const validMention = run(small, 'develop', base, 'Backlog: TASK-61=done', 'Fix task-61.');
+  assert.equal(validMention.status, 0, validMention.stderr);
+  assert.match(run(archiveOnly, 'develop', base, 'Backlog: TASK-61=done').stderr, /outside declared delivery scope/);
+  assert.match(run(archiveOnly, 'develop', base, 'Backlog: TASK-61=recorded').stderr, /changed native task file/);
+  for (const broken of [deletedTask, archivedSubstitution, archivedRename, ...substitutes, invalidTask, renumberedTask]) {
+    const none = run(broken, 'develop', base);
+    assert.match(none.stderr, /TASK-61: changed native task/);
+    assert.match(none.stderr, /TASK-61: missing Backlog disposition/);
+    assert.match(run(broken, 'develop', base, 'Backlog: TASK-61=recorded').stderr, /recorded requires a changed native task file/);
+  }
+  for (const substitute of [archivedRename, ...substitutes]) {
+    assert.match(run(substitute, 'develop', base, 'Tracks: TASK-61\nBacklog: TASK-61=verify').stderr, /Git rename from its unique BASE path/);
+  }
+  for (const [move, id] of [[actualArchiveMove,62],[actualCurrentRename,61],[actualPromotion,63]]) {
+    const valid = run(move, 'develop', base, `Backlog: TASK-${id}=recorded`);
+    assert.equal(valid.status, 0, valid.stderr);
+  }
+  for (const alias of [lowercaseTask, zeroPaddedTask]) {
+    const recordedAlias = run(alias, 'develop', base, 'Backlog: TASK-61=recorded');
+    assert.equal(recordedAlias.status, 0, recordedAlias.stderr);
+  }
+  const validMove = run(movedTask, 'develop', base, 'Backlog: TASK-61=recorded');
+  assert.equal(validMove.status, 0, validMove.stderr);
+  const scoped = run(recorded, 'develop', base, 'Backlog: TASK-7=recorded');
+  assert.equal(scoped.status, 0, scoped.stderr);
 
   mkdirSync(join(root, 'backlog', 'tasks'), { recursive: true });
   mkdirSync(join(root, 'config'));
