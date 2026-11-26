@@ -73,9 +73,10 @@ function verifyExtreme(extreme, candidate, executions, artFeatures) {
   verifySample(extreme.recovery.sample, profiles.stress, executions, candidate.runtime, artFeatures);
 }
 
-function verifyRuntime(runtime, gilSha256) {
+function verifyRuntime(runtime, gilSha256, sourceCommit) {
   assert(runtime?.kind === gilRuntimeKind && hash.test(gilSha256) && runtime.gilSha256 === gilSha256,
     'Exact audited and published GIL readback required for both arms');
+  assert.equal(runtime.bgmSourceCommit, sourceCommit, 'BGM source differs from the measured arm');
   assert(runtime.readerCommit === toolCommit && runtime.encoderSha256 === encoderSha256 &&
     Number.isSafeInteger(runtime.moduleCount) && runtime.moduleCount > 0 && hash.test(runtime.moduleDigestsSha256) &&
     Number.isSafeInteger(runtime.templateCount) && runtime.templateCount > 0 && runtime.nativeBgmEnabled === true &&
@@ -111,8 +112,8 @@ export function verifyResourceReport(report, sourceCommit, sourceTree, published
   assert.equal(report.candidate.lockfile.dependencies, report.baseline.lockfile.dependencies, 'Dependency graphs differ');
   const candidateGil = receipt.candidate?.sha256 ?? receipt.gil?.gilSha256;
   assert.notEqual(candidateGil, published.gilSha256, 'Use a distinct previously published GIL');
-  verifyRuntime(report.candidate.runtime, candidateGil);
-  verifyRuntime(report.baseline.runtime, published.gilSha256);
+  verifyRuntime(report.candidate.runtime, candidateGil, sourceCommit);
+  verifyRuntime(report.baseline.runtime, published.gilSha256, published.commit);
   assert.equal(report.candidate.runtime.moduleDigestsSha256,
     receipt.moduleDigests ? gilModuleInventoryHash(receipt.moduleDigests) : receipt.moduleDigestsSha256,
     'Measured packed Lua module inventory differs from the audited GIL receipt');

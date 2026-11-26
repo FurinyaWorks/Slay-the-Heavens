@@ -55,6 +55,7 @@ function snapshot(root, production, harnessRoot) {
   const git = (...args) => run('git', [...lfsFilters, ...args], root, lfsEnvironment());
   assert.equal(realpathSync(git('rev-parse', '--show-toplevel')), root, 'use a repository worktree root');
   git('diff', '--quiet', 'HEAD', '--');
+  const commit = git('rev-parse', 'HEAD');
   const inputs = production ? ['art', 'config', 'data', 'docs', 'scripts', 'src', 'tests', 'tools'] : sourceInputs;
   assert.equal(git('ls-files', '--others', '--exclude-standard', '-z', '--', ...inputs), '', 'runtime inputs have untracked files');
   const directory = production?.directory ?? resolve(root, 'build/lua');
@@ -63,6 +64,7 @@ function snapshot(root, production, harnessRoot) {
   const hashFiles = (from, paths) => workloadIdentity(paths, path => readFileSync(resolve(from, path)));
   const runtime = production?.runtime;
   if (runtime) {
+    assert.equal(runtime.bgmSourceCommit, commit, 'BGM source differs from the measured arm');
     const modules = {};
     for (const file of generated) {
       const name = file.slice(0, -4);
@@ -75,7 +77,7 @@ function snapshot(root, production, harnessRoot) {
     assert.deepEqual(JSON.parse(readFileSync(resolve(directory, 'performance-readback.json'))), runtime, 'Native readback receipt changed');
   }
   return {
-    commit: git('rev-parse', 'HEAD'),
+    commit,
     tree: git('rev-parse', 'HEAD^{tree}'),
     workloadSha256: production ? hashFiles(harnessRoot, productionWorkload) : hashFiles(root, workload),
     lockfile: lockfileIdentity(readFileSync(resolve(root, 'package-lock.json'))),

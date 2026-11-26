@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+import {mkdirSync, mkdtempSync, rmSync, writeFileSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import test from 'node:test';
 import {resourceResultStatus} from '../scripts/runtime-baseline/resource-receipt.mjs';
+import {verifyGilBgmSource} from '../scripts/runtime-baseline/gil-inputs.mjs';
 import {resolvePublishedBaseline} from '../scripts/runtime-baseline/published-baseline.mjs';
 import {frozenReleaseVersion, verifyAuditedBuild, verifyResourceReport as verifyFormalReport} from '../scripts/runtime-baseline/verify-release-performance.mjs';
 
@@ -32,6 +37,9 @@ test('rejects regenerated, swapped, altered and unexecuted GIL payloads', () => 
   const swapped = reportFixture();
   swapped.baseline.runtime.gilSha256 = swapped.candidate.runtime.gilSha256;
   assert.throws(() => verifyResourceReport(swapped, head, tree, published, receipt), /GIL readback required/);
+  const swappedAudio = reportFixture();
+  swappedAudio.baseline.runtime.bgmSourceCommit = swappedAudio.candidate.commit;
+  assert.throws(() => verifyResourceReport(swappedAudio, head, tree, published, receipt), /BGM source differs/);
   const changed = reportFixture();
   changed.candidate.runtime.moduleDigestsSha256 = sha256;
   assert.throws(() => verifyResourceReport(changed, head, tree, published, receipt), /inventory differs/);
@@ -171,4 +179,47 @@ test('chooses the latest confirmed prior engineering Release and authenticates i
   assert.equal((await resolvePublishedBaseline('2.3.0', request)).releaseId, 22);
   comparison.assets[0].digest = 'sha256:' + '1'.repeat(64);
   await assert.rejects(resolvePublishedBaseline('2.3.0', request), /asset digest does not match/);
+});
+
+const oldCues = {map:10040, battle:10044, elite:10071, boss:10140, victory:10152, defeat:10179};
+const withMenu = {menu:10041, ...oldCues};
+const oldSha256 = 'a'.repeat(64);
+const newSha256 = 'b'.repeat(64);
+const signals = cues => [...Object.keys(cues), 'stop'].map(cue => `ABYSS_BGM_${cue.toUpperCase()}`);
+const embedded = cues => 'return {' + signals(cues).map(signal => JSON.stringify(signal)).join(',') + '}';
+const inspection = (cues, sha256) => ({
+  sha256, graphs:[{name:'_GSTS_ABYSS_BGM', nodeCount:1}], signals:signals(cues).map(name => ({name})),
+});
+
+test('use each measured arm’s committed BGM inventory and require all of its bundled signals', t => {
+  const directory = mkdtempSync(join(tmpdir(), 'resource-bgm-arms-'));
+  t.after(() => rmSync(directory, {recursive:true, force:true}));
+  const candidate = join(directory, 'candidate');
+  const baseline = join(directory, 'baseline');
+  const config = 'data/presentation/native_bgm.json';
+  mkdirSync(join(candidate, 'data/presentation'), {recursive:true});
+  const git = (...args) => execFileSync('git', [...args], {cwd:candidate, encoding:'utf8', timeout:10_000}).trim();
+  const writeCueFile = cues => writeFileSync(join(candidate, config), JSON.stringify({
+    cues:Object.fromEntries(Object.entries(cues).map(([name, id]) => [name, {id}])),
+  }));
+  const commit = cues => {
+    writeCueFile(cues);
+    git('add', config);
+    git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.org', '-c', 'core.hooksPath=/dev/null', 'commit', '-qm', 'audio inventory');
+    return git('rev-parse', 'HEAD');
+  };
+  git('init', '-q');
+  const oldHead = commit(oldCues);
+  const newHead = commit(withMenu);
+  git('worktree', 'add', '-q', '--detach', baseline, oldHead);
+
+  assert.equal(verifyGilBgmSource(baseline, embedded(oldCues), inspection(oldCues, oldSha256), oldSha256), oldHead);
+  assert.equal(verifyGilBgmSource(candidate, embedded(withMenu), inspection(withMenu, newSha256), newSha256), newHead);
+  assert.throws(() => verifyGilBgmSource(candidate, embedded(withMenu), inspection(oldCues, newSha256), newSha256), /full audio graph and cue signals/);
+  assert.throws(() => verifyGilBgmSource(candidate, embedded(oldCues), inspection(oldCues, oldSha256), oldSha256), /Embedded BGM cue inventory differs/);
+  assert.throws(() => verifyGilBgmSource(baseline, embedded(withMenu), inspection(withMenu, newSha256), newSha256), /Embedded BGM cue inventory differs/);
+  assert.throws(() => verifyGilBgmSource(baseline, embedded(oldCues), inspection(oldCues, newSha256), oldSha256), /full audio graph and cue signals/);
+  writeCueFile(oldCues);
+  assert.throws(() => verifyGilBgmSource(candidate, embedded(withMenu), inspection(oldCues, newSha256), newSha256), /full audio graph and cue signals/);
+  assert.throws(() => verifyGilBgmSource(join(baseline, 'data'), embedded(oldCues), inspection(oldCues, oldSha256), oldSha256), /measured arm worktree root/);
 });

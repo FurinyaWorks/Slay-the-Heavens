@@ -561,7 +561,7 @@ const currentReleaseTests=Object.freeze({
  'tests/release-metadata.test.mjs':'eceb8ab92f616084fdcdac875e69e761cf2c9674a804be9f0295e89213453cb8',
  'tests/release-performance-artifacts.test.mjs':'c1d0d51314ab0dffac68236a3f722a4a4cdb8a0ebbfc292d1ca36cd0b2b2a941',
  'tests/release-performance-verification.test.mjs':'81aad82bba133bcf372158c5163cb328438a7b4027065436105c2dbaea243fbf',
- 'tests/release-performance.test.mjs':'0b46f448880c6d981b1b2048003af59bce8953ca1c5e4544c0d2ec3dbe33b0cc',
+ 'tests/release-performance.test.mjs':'95c9fae47f63841957292b11f0c576c2703af9a2e5d7f0cf102d14be064f655b',
 });
 // The live alpha entry point and portable preview extend the exact #996 inputs.
 // Only historical CI readers receive the preceding bytes.

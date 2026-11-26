@@ -1,12 +1,11 @@
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
-import {readFileSync, writeFileSync} from 'node:fs';
+import {readFileSync, realpathSync, writeFileSync} from 'node:fs';
 import {join, resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {toLua} from '../build-lua-data.mjs';
 import {encoderSha256, toolCommit} from '../gil-candidate-preflight.mjs';
-import {nativeBgmSignals} from '../native-bgm-graph.mjs';
 import {embeddedScripts} from '../native-script-inventory.mjs';
 import {loadNativeUiEncoder} from '../native-ui-encoder.mjs';
 
@@ -14,6 +13,30 @@ const sha256 = value => createHash('sha256').update(value).digest('hex');
 export const gilRuntimeKind = 'gil-native-readback';
 export const gilModuleInventoryHash = digests => sha256(JSON.stringify(Object.keys(digests).sort().map(name => [name, digests[name]])));
 const fixtureNames = ['abyss_ui_layout', 'abyss_ui_templates', 'performance_templates'];
+const coreBgmCues = ['map', 'battle', 'elite', 'boss', 'victory', 'defeat'];
+
+export function verifyGilBgmSource(sourceRoot, embeddedBgm, inspection, gilSha256) {
+  const root = realpathSync(sourceRoot);
+  const git = (...args) => execFileSync('git', ['--no-replace-objects', ...args],
+    {cwd:root, encoding:'utf8', timeout:10_000}).trim();
+  assert.equal(realpathSync(git('rev-parse', '--show-toplevel')), root, 'BGM source must be the measured arm worktree root');
+  const commit = git('rev-parse', '--verify', 'HEAD^{commit}');
+  assert(/^[a-f0-9]{40}$/.test(commit), 'BGM source commit is unavailable');
+  const {cues} = JSON.parse(git('show', `${commit}:data/presentation/native_bgm.json`));
+  const names = Object.keys(cues ?? {});
+  assert(coreBgmCues.every(cue => names.includes(cue)) && !names.includes('stop') &&
+    names.every(cue => /^[a-z][a-z0-9_]*$/.test(cue) && Number.isSafeInteger(cues[cue]?.id) && cues[cue].id > 0),
+  'Invalid BGM cue inventory in measured source commit');
+  const expected = [...names, 'stop'].map(cue => `ABYSS_BGM_${cue.toUpperCase()}`).sort();
+  // Pack compaction changes whitespace but retains the literal signal names.
+  const embedded = [...new Set(embeddedBgm.match(/"ABYSS_BGM_[A-Z][A-Z0-9_]*"/g))]
+    .map(signal => signal.slice(1, -1)).sort();
+  assert.deepEqual(embedded, expected, 'Embedded BGM cue inventory differs from the measured source commit');
+  assert(inspection.sha256 === gilSha256 && inspection.graphs.some(graph => graph.name === '_GSTS_ABYSS_BGM' && graph.nodeCount > 0) &&
+    expected.every(signal => inspection.signals.some(ref => ref.name === signal)),
+  'Measured GIL lacks the full audio graph and cue signals');
+  return commit;
+}
 
 export async function prepareGilProductionInputs(directory, mapPath, toolRoot) {
   const git = (...args) => execFileSync('git', args, {cwd:toolRoot, encoding:'utf8', timeout:10_000}).trim();
@@ -78,13 +101,12 @@ export async function prepareGilProductionInputs(directory, mapPath, toolRoot) {
     fields(one(one(field.data, 4), 106)).some(value => value.id === 1 && value.value === 1n)),
   'Native entry does not enable BGM');
   const inspection = inspectFile(mapPath);
-  assert(inspection.sha256 === gilSha256 && inspection.graphs.some(graph => graph.name === '_GSTS_ABYSS_BGM' && graph.nodeCount > 0) &&
-    Object.values(nativeBgmSignals).every(signal => inspection.signals.some(ref => ref.name === signal)),
-  'Measured GIL lacks the full audio graph and cue signals');
+  // The shared reader runs from each measured worktree in turn.
+  const bgmSourceCommit = verifyGilBgmSource(process.cwd(), scripts.find(script => script.name === 'abyss_bgm').source, inspection, gilSha256);
   assert.equal(sha256(readFileSync(mapPath)), gilSha256, 'GIL changed during native readback');
   const runtime = {
     kind:gilRuntimeKind, gilSha256, readerCommit:toolCommit, encoderSha256, moduleCount:scripts.length,
-    moduleDigestsSha256:gilModuleInventoryHash(moduleDigests), fixtureDigests, templateCount:ids.size, nativeBgmEnabled:true,
+    moduleDigestsSha256:gilModuleInventoryHash(moduleDigests), fixtureDigests, templateCount:ids.size, nativeBgmEnabled:true, bgmSourceCommit,
   };
   writeFileSync(join(directory, 'performance-readback.json'), JSON.stringify(runtime) + '\n', {flag:'wx'});
   return runtime;
