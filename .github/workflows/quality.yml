@@ -3,7 +3,7 @@ run-name: ${{ github.event_name == 'workflow_dispatch' && format('Full / {0} / {
 on:
   pull_request:
     branches: [develop, master, 'release/**']
-    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft, labeled, unlabeled]
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft, labeled, unlabeled, edited]
   merge_group:
     types: [checks_requested]
     branches: [develop]
@@ -99,6 +99,21 @@ jobs:
             git -c credential.helper= -c http.lowSpeedLimit=1024 -c http.lowSpeedTime=30 fetch --depth=1 --no-tags origin "$BASE_SHA"
           fi
           git diff --check "$BASE_SHA" HEAD
+      - name: Enforce repository hygiene on the integration tree
+        if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
+          GITLEAKS_BIN: ${{ runner.temp }}/gitleaks
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/gitleaks-linux-x64.tar.gz"
+          curl --fail --silent --show-error --location --retry 2 --connect-timeout 10 --max-time 40 \
+            https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz \
+            --output "$archive"
+          printf '%s  %s\n' 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb "$archive" | sha256sum --check
+          tar -xzf "$archive" -C "$RUNNER_TEMP" gitleaks
+          node --test scripts/repository-hygiene.test.mjs
+          node scripts/repository-hygiene.mjs "$BASE_SHA"
       - name: Validate agent guidance and UI reference governance
         run: npm run check:guidance
       - name: Validate versioned UI references
