@@ -1,10 +1,10 @@
 # 《杀戮原塔2》参赛发布操作单
 
-Release 日常修复走受影响 Fast；集成完成才按 [CI 候选入口](CI-FAST.md)冻结准确 HEAD 并显式请求一次 Full。正式上线前须执行 `node scripts/release-ci.mjs verify release/<版本> <候选source SHA>` 并保存通过结果；当前 Release HEAD、候选来源或最新 Full 任一变化即重新验收。Release→master 的必需 Quality 会自动校验同一门禁。此入口不创建 Tag、不自动上传或发布，平台与设备验收仍适用。
+Release 日常修复走受影响 Fast；通过[版本治理与 Release 准入](versions/GOVERNANCE.md)后从已验证的 develop 创建 Release 分支。按 [CI 候选入口](CI-FAST.md)冻结准确 HEAD 并显式请求一次 Full。正式上线前须执行 `node scripts/release-ci.mjs verify-publish release/v<工程版本> <候选source SHA>` 并保存通过结果。Release→master 的必需 Quality 会自动校验同一门禁。当前 Release HEAD、候选来源或最新 Full 任一变化即重新验收。
 
 同一 `release/v<工程版本>` 或 `hotfix/v<工程版本>` 的冻结 Full 和 **GIL candidate** 构建成功后，在 **Performance regression** 选该分支运行 `formal`，将本次有声 GIL 下载链接末尾的数字填入 `gil_artifact_id`。作业根据已确认的平台发布记录独立解析上个正式工程版本、构建源码、源码树与产物摘要。v2.2.0 对应 [v2.1.1 正式构建来源](versions/ENGINEERING.md)。作业下载并校验本次候选和上一版正式 GIL，从两份产物读回并执行实际打包的 Lua，使用实际 UI 与模板索引建立离线 Host 夹具。两边沿用同一玩家路径、六档 Docker 实限及三组正反交错配对。归档 `release-performance-<run>-<attempt>` 的 `report.json`、`evidence.json` 及独立复核。日常受影响 PR 执行轻量 Fast，源码重生成结果用于日常离线诊断。
 
-正式发布 Quality 入口验证最新成功的 `formal` run、attempt、原始报告和正式 GIL，绑定当前冻结 source SHA、GIL SHA-256 及 Full 的 run、attempt 和 checkout artifact。Full 或 `formal` 新增复跑后，在正式发布 PR 复跑必需的 Quality 检查。实际发布操作人必须在执行官方客户端发布前立即运行 `node scripts/release-ci.mjs verify release/v<工程版本> <候选source SHA>`，保存当时校验结果并使用其中精确 GIL SHA-256。持有本地完整读回审计的独立验证者也可在同一冻结源码工作树执行以下校验。
+正式发布 Quality 入口验证最新成功的 `formal` run、attempt、原始报告和正式 GIL，绑定当前冻结 source SHA、GIL SHA-256 及 Full 的 run、attempt 和 checkout artifact。Full 或 `formal` 新增复跑后，在正式发布 PR 复跑必需的 Quality 检查。实际发布操作人必须在执行官方客户端发布前立即运行 `node scripts/release-ci.mjs verify-publish release/v<工程版本> <候选source SHA>`，保存当时校验结果并使用其中精确 GIL SHA-256。候选技术核验使用 `verify`。持有本地完整读回审计的独立验证者也可在同一冻结源码工作树执行以下校验。
 
 ```sh
 node scripts/runtime-baseline/verify-release-performance.mjs <final.gil> <candidate.json> <audit.json> <report.json>
@@ -12,7 +12,7 @@ node scripts/runtime-baseline/verify-release-performance.mjs <final.gil> <candid
 
 归档生成的 `build/release-performance-evidence.json`、原始测量和对应运行环境。失败、少档、实限不一致、候选身份不符或不可比均阻塞。六档之外的独立诊断需保存极端内存限制下的 OOM 退出和回到支持档后的完整 Host 复跑。`REVIEW_REQUIRED` 保留原信号，待独立评审核对已知开销、设备预算和候选原因。正式线上门禁还要求真实平台冷暖加载、可点击、帧时间及持续游玩等设备证据，按下文同候选负载门禁执行。
 
-正式 Hotfix 发布使用同仓库 `hotfix/v<工程版本>` → `master` PR，并在官方客户端操作前立即执行 `node scripts/release-ci.mjs verify hotfix/v<工程版本> <候选source SHA>`。沿用既有生产 Environment 审批。历史 Hotfix 继续引用各自归档回执。
+正式 Hotfix 发布使用同仓库 `hotfix/v<工程版本>` → `master` PR，并在官方客户端操作前立即执行 `node scripts/release-ci.mjs verify-publish hotfix/v<工程版本> <候选source SHA>`。沿用既有生产 Environment 审批。历史 Hotfix 继续引用各自归档回执。
 
 正式发布前必须通过[同候选平台负载门禁](PLATFORM_LOAD.md)：对含最终音频/资产的候选执行 `npm run verify:platform-load -- <最终candidate.json> <official-load.json>`，并保留 source SHA、buildId、hash、客户端版本、时间和脱敏原始报告/截图。关卡≤20MB、服务器≤3MB分别核验；关卡>16MB为内部预警。全局/区域静态超标未解决、官方动态四类异常报告缺失、高峰战斗/复杂手牌/敌人特效并发/切换/重复进出未覆盖、官方试玩上传与启动操作或必要手机验收未完成，状态必须BLOCKED/UNVERIFIED，禁止发布。静态/动态推荐指标与平台禁止上传的硬限分别记录，不能提高负载需求档位掩盖问题。CI通过、旧候选基线8.96MB/0.01MB或GIL文件大小均不构成新候选放行证据。发布仍由人完成。
 
@@ -35,6 +35,56 @@ npm run verify:actor-alpha -- <capture.json> <mask-locators.json> <new-report.js
 ### 10/28边界中继续生效的章节与平台约束
 
 只宣传同一RC已经验收的第一幕、第二幕、角色与前10分钟体验。第三幕、隐藏第四幕、真结局和所有依赖持久Save的退出续玩、跨局进度/解锁/历史功能不在本次比赛承诺中，不写进候选玩家介绍。无需Lv.4、账号升级或额外存储后端；本局资源连续、失败重开和本局结算仍须验收。正式入口双幕终点由TASK-77实现并验证后才可冻结候选；本次文档调整不证明已实现或投稿。10/29同候选冻结及10/30人工投稿安排不变。
+
+## 版本治理工具
+
+- 主任务同时标记 `version-main` 和工程版本，例如 `v2.2.0`。其文档字段指向版本规划。规划写入 `<!-- release-plan: v2.2.0 TASK-115 -->`。
+- Scope 和 Release Gate 任务分别使用 `release-scope`、`release-gate`，各自只标一个版本。规划的「正式范围」表将每个交付目标关联到任务和证据，包含 `核心交付`、`维度`、`Backlog` 和 `交付证据入口` 四列。
+- 通用能力单独标记 `engineering`，其版本标签清空。在「独立工程轨道」表的 `本版直接验收的成果` 中引用本版真正依赖的检查、报告或回执。工程项目可继续推进，实际产物仍要通过相同的发布门禁。
+- 每版通常有 3～5 个核心目标，直接子任务超过 8 个时做范围评审。超出任一预警范围时记录 `<!-- scope-review: YYYY-MM-DD | 评审者 | 决策和原因 -->`，保留全部追溯关系。
+- 「PR 对账与延期」的 `本版 PR`、`处置要求`、`准入处置` 表将 PR 定为 `必须合入`、`核对` 或 `可选`。延期表使用 `延期项`、`固定来源`、`接续 Task`、`目标版本`，保留 PR 和完整提交、固定 Git 链接或仓库已有证据，并关联有效接续任务。
+
+`npm run verify:backlog` 检查规划唯一性、任务归属、结构、依赖、范围评审和延期。在 Backlog 展示实际任务状态，验收视图登记源码实现、实际合入、同候选验收和平台实发各自的证据。
+
+### Release 准入与范围冻结
+
+在精确 `develop` 工作树完成待集成核对、版本元数据和 CHANGELOG，然后运行。
+
+```sh
+node scripts/verify-release-admission.mjs vX.Y.Z <develop-HEAD>
+```
+
+准入检查最新远端、必需 PR 的真实合并提交、当前 develop 的 Full 与 Licenses、当前 master 完整祖先链。回执同时列出需要人工核对的 PR。保存回执，核实这些 PR 和线上修复的实际继承，再从回执的 `develop` 创建 `release/vX.Y.Z`。
+
+冻结后单个必要修复 PR 使用 `fix(...)` 标题，在正文写 `Release-Fix: TASK-编号 | 影响和必要性 | 复现与回归证据`。必要测试和证据可随修复交付，纯证据 PR 使用 `docs(release)` 或 `test(release)`。新增产品范围默认进入后续版本。
+
+经明确批准的例外，在正式规划加入 `<!-- scope-exception: #PR编号 | 决策摘要 -->`，保留相应 Backlog 决策。协调者核对实际独立审查，在准确 HEAD 提交 `Release scope approved: 决策摘要` 原生 Review。将 `Release-Exception: Review编号 | 决策摘要` 填入 PR 正文，再重跑该 HEAD 的 Quality。Quality 重新读取当前 PR 正文，校验实际合成树、原生 Review 与当前协调者权限。
+
+### 正式上线
+
+使用现有 Full、正式 GIL、六档压力、事故负对照与共享平台负载入口，技术预验入口仍为 `release-ci.mjs verify`。收集同一候选的 Simulator、PC、实体手机、官方平台、美术质量和稳定性原始证据。受保护 `develop` 的正式版本规划通过单独 PR 登记以下实测回执。通过前保留待验状态。
+
+```markdown
+<!-- release-acceptance: 完整候选源码SHA 完整GIL-SHA256 #验收PR编号 -->
+
+## 同候选人工验收证据
+
+| 项目 | 原始证据 | 签署协调者 |
+| --- | --- | --- |
+| Simulator | [原始证据](https://example.invalid/receipt) | @协调者GitHub账号 |
+```
+
+第二列填写真实可读取的原始报告、录像或归档链接。将实测条件、终端或客户端版本、候选身份、独立评审身份及结果一并归档。每个项目一行。可信协调者实际核对独立评审与设备结果，并在验收 PR 的准确 HEAD 提交原生 Review，包含单独一行 `Release acceptance approved: <候选源码SHA> <GIL SHA-256>`。发布 PR 与人工发布入口校验该受保护记录、最新审查和同源 GIL。
+
+```sh
+node scripts/release-ci.mjs verify-publish release/vX.Y.Z <frozen-HEAD>
+```
+
+已准入的正式 Hotfix 使用 `hotfix/vX.Y.Z`。Owner 按发布操作单执行官方上线并记录实际平台凭证。
+
+### 发布后结项
+
+按发布操作单确认工程注释 Tag、GitHub Release、平台实发凭证、正式归档和摘要。Release 或 Hotfix 进入 master 后按现有回流工作流完全合回 develop。检查原始提交祖先链、线上修复的实际继承和合后 Full 与 Licenses。在正式规划登记 `<!-- release-closeout: master完整SHA develop完整SHA GitHub-Release链接 回流工作流回执链接 -->`。附上实发和实际继承证据，再通过 Backlog CLI 核对全部验收项并结项。
 
 ## 双版本号与发布记录
 

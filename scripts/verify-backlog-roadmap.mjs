@@ -4,6 +4,7 @@ import { pathToFileURL } from 'node:url';
 import {auditOutcomeTasks} from './product-outcome.mjs';
 import {readTaskHeader} from './backlog-metadata.mjs';
 import {auditDependencies,normalizeTaskId} from './task-dependencies.mjs';
+import {auditVersionGovernance} from './version-governance.mjs';
 export {readTaskHeader} from './backlog-metadata.mjs';
 
 // Priority describes the current queue, not whether a launch requirement matters.
@@ -128,6 +129,8 @@ export function auditRoadmap(tasks, roadmap, milestones, completed = []) {
   }
   for (const task of tasks) {
     if (task.status === 'Done' || !isLaunch(task)) continue;
+    const parent = byId.get(task.parentTaskId);
+    if (!task.milestone && task.labels?.includes('engineering') && parent?.labels?.includes('version-main')) continue;
     if (!task.milestone || !milestones[task.milestone]) errors.push(`${task.id}: 缺少有效首发里程碑`);
     else if (sections.get(task.id) !== milestones[task.milestone]) errors.push(`${task.id}: 未列入 ${milestones[task.milestone]} 排期`);
     if (!task.assignees?.length || task.assignees.some(owner => !owner.trim() || owner.startsWith('--'))) errors.push(`${task.id}: 缺少有效负责人`);
@@ -208,7 +211,8 @@ export function verifyBacklogRoadmap(root = '.') {
     ?['M7: task-intake仍宣称已归档工程里程碑为活动阶段']:[];
   return [...new Set([...stateErrors,...auditRoadmap(tasks, readFileSync(join(root, 'docs/MILESTONES.md'), 'utf8'), milestones, completed),
     ...auditPriorities(tasks), ...auditQueueOwners(tasks), ...auditDependencies(tasks,completed), ...auditRoleCapacityGate(tasks,completed), ...retiredM7Errors, ...intakeM7Errors,
-    ...auditOrderedStageIds(milestoneRecords, requiresCurrent), ...auditOutcomeTasks([...tasks,...completed],root)])];
+    ...auditOrderedStageIds(milestoneRecords, requiresCurrent), ...auditOutcomeTasks([...tasks,...completed],root),
+    ...auditVersionGovernance([...tasks,...completed],root)])];
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   const errors = [...verifyBacklogRoadmap(), ...verifyMilestoneScope()];

@@ -1,6 +1,7 @@
 import {preCloseoutCiSource,closeoutInventory,closeoutRead} from './closeout-ci-source.mjs';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
+import {beforeVersionGovernanceSource} from './version-governance-source.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 const historyBytes=readFileSync(new URL('../fixtures/pr-history-receipt-continuation.json',import.meta.url),'utf8').replaceAll('\r\n','\n');
 if(hash(historyBytes)!=='b1285eef27a83f1296f2ed9e7f5a5d3f1a3dd118b14935044532104833a91717')throw Error('Invalid history receipt continuation');
@@ -21,7 +22,7 @@ export function preIntegrationCalibrationSource(path,source){
 // current CI execute the new tools; foreign/partial source remains visible.
 export function receiptToolingSource(path,source,view){
  if(view==='official'&&path===historyProof.path&&typeof source==='string'&&!source.includes('\r\r\n')){
-  const lf=source.replaceAll('\r\n','\n');
+  const lf=beforeVersionGovernanceSource(path,source).replaceAll('\r\n','\n');
   if(lf===historyProof.after.source&&hash(lf)===historyProof.after.sha256)return historyProof.before.source;
  }
  const allowed=view==='official'&&path==='scripts/check-network-policy.mjs'||view==='curses'&&path==='scripts/lua-quality-metrics.mjs';

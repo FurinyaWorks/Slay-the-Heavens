@@ -146,19 +146,21 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
  try {
   let [command,branch,head]=process.argv.slice(2);
   const repo='FurinyaWorks/Slay-the-Heavens';
+  const publication=['verify-publish','verify-pr','verify-hotfix-pr'].includes(command);
   if(command==='verify-pr'||command==='verify-hotfix-pr') {
    const event=JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));
    ({branch,head}=publicationTarget(event,repo,command==='verify-hotfix-pr'));
    command='verify';
   }
-  if(!['freeze','verify'].includes(command)||!frozenBranch(branch)||!validSha(head))
-   throw Error('Usage: node scripts/release-ci.mjs freeze|verify <release/name|hotfix/vX.Y.Z> <frozen-HEAD>');
+  if(!['freeze','verify','verify-publish'].includes(command)||!frozenBranch(branch)||!validSha(head))
+   throw Error('Usage: node scripts/release-ci.mjs freeze|verify|verify-publish <release/name|hotfix/vX.Y.Z> <frozen-HEAD>');
   if(command==='freeze') {
    console.log(JSON.stringify(await freezeReleaseFull(repo,branch,head,githubRequest)));
   } else {
    const full=await verifyReleaseFull(repo,branch,head,githubRequest);
    const performance=await (await import('./runtime-baseline/require-release-performance.mjs')).requireReleasePerformance(full,githubRequest);
-   console.log(JSON.stringify({...full,performance},null,2));
+   const acceptance=publication&&await (await import('./verify-release-acceptance.mjs')).verifyReleaseAcceptance(full,performance,githubRequest);
+   console.log(JSON.stringify({...full,performance,...(acceptance?{acceptance}:{})},null,2));
   }
  } catch(error) {console.error(error.message);process.exitCode=1;}
 }

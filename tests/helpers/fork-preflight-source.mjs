@@ -4,6 +4,7 @@ import {assertInputRetirementLuaCurrent,beforeInputRetirementTestInventory,readR
 import {assertReleaseCandidateToolsCurrent,beforeDeckPagesSuiteSource} from './input-retirement-source.mjs';
 import {beforeChapterBattleScene,beforeChapterPoolFixtureInventory,chapterBattleSceneReader,chapterSceneCurrentRead} from './chapter-battle-scene-source.mjs';
 import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
+import {beforeVersionGovernanceSource} from './version-governance-source.mjs';
 import {beforeVisualLegibility} from './visual-selection-source.mjs';
 export {beforeInputRetirementTestInventory} from './input-retirement-inventory.mjs';
 import {assertDevelopBackflowCurrent,authenticateDevelopBackflow,beforeDevelopBackflow,developBackflowOwns} from './develop-release-backflow-source.mjs';
@@ -567,6 +568,7 @@ const currentReleaseTests=Object.freeze({
  'tests/release-performance-artifacts.test.mjs':'c1d0d51314ab0dffac68236a3f722a4a4cdb8a0ebbfc292d1ca36cd0b2b2a941',
  'tests/release-performance-verification.test.mjs':'81aad82bba133bcf372158c5163cb328438a7b4027065436105c2dbaea243fbf',
  'tests/release-performance.test.mjs':'95c9fae47f63841957292b11f0c576c2703af9a2e5d7f0cf102d14be064f655b',
+ 'tests/version-governance.test.mjs':'55c400fa5ffbef800ac641c952664cca521e5623398b8e159b6575ada99b4c41',
 });
 // The live alpha entry point and portable preview extend the exact #996 inputs.
 // Only historical CI readers receive the preceding bytes.
@@ -1266,7 +1268,7 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
   // Raw production owners reach their own fresh admission guard unchanged.
   // Only CI and helper receipts need the pure historical source projections.
   if(path.startsWith('src/')||path==='config/architecture.json')return raw;
-  const historical=beforeBattlePeriphery(path,beforeChapterBattleScene(path,raw));
+  const historical=beforeVersionGovernanceSource(path,beforeBattlePeriphery(path,beforeChapterBattleScene(path,raw)));
   return beforeCalibrationReplay(path,beforeCurrentReplayFixes(path,beforeUiEntranceWitness(path,beforeCurrentReplayCopier(path,historical))));
  };
  const readCurrent=(path,encoding)=>{
@@ -1341,6 +1343,7 @@ function beforeV220HostedTiming(path,source){
  return source.includes('\r\n')?current.replaceAll('\n','\r\n'):current;
 }
 export function beforePreflightSource(path,source,view='prior',read=readFileSync){
+ source=beforeVersionGovernanceSource(path,source);
  source=beforeCursesReceiptFixture(path,source);
  const integratedPrior=beforeRelicCloseoutIntegratedFixture(path,source);
  if(integratedPrior!==source){

@@ -1,0 +1,80 @@
+{
+  "scripts/check-pr-history.mjs": {
+    "path": "scripts/check-pr-history.mjs",
+    "beforeSha256": "521edad4de907232928e9f0fee1414bf88cdfde6bab8aa8400502ceb646d45d9",
+    "afterSha256": "8e451cc5e4fce89be7c332f632bd00a6fb4aa0c911b2f813aa9f62b6f95c5569",
+    "hunks": [
+      {
+        "at": 2,
+        "before": "import { pathToFileURL } from 'node:url';\n",
+        "after": "import { pathToFileURL } from 'node:url';\nimport { auditReleaseFreeze } from './check-release-freeze.mjs';\n"
+      },
+      {
+        "at": 64,
+        "before": "    console.log(JSON.stringify(await auditHistory(event, process.env.GITHUB_REPOSITORY, request)));\n  } catch (error) { console.error(error.message); process.exitCode = 1; }",
+        "after": "    console.log(JSON.stringify(await auditHistory(event, process.env.GITHUB_REPOSITORY, request)));\n    if (event.pull_request?.base.ref.startsWith('release/')) {\n      console.log(JSON.stringify(await auditReleaseFreeze(event.pull_request, process.env.GITHUB_REPOSITORY, request)));\n    }\n  } catch (error) { console.error(error.message); process.exitCode = 1; }"
+      }
+    ]
+  },
+  "scripts/verify-backlog-roadmap.mjs": {
+    "path": "scripts/verify-backlog-roadmap.mjs",
+    "beforeSha256": "1d535b694c4d6a6d62cef7c973105fe02d48c55dc3e109e5f3eab0ebcdd3affb",
+    "afterSha256": "0cfef0ce42bd1c20de89ac189cbb2b65139f23c917ccd88bb80977a0984305c6",
+    "hunks": [
+      {
+        "at": 5,
+        "before": "import {auditDependencies,normalizeTaskId} from './task-dependencies.mjs';\nexport {readTaskHeader} from './backlog-metadata.mjs';",
+        "after": "import {auditDependencies,normalizeTaskId} from './task-dependencies.mjs';\nimport {auditVersionGovernance} from './version-governance.mjs';\nexport {readTaskHeader} from './backlog-metadata.mjs';"
+      },
+      {
+        "at": 130,
+        "before": "    if (task.status === 'Done' || !isLaunch(task)) continue;\n    if (!task.milestone || !milestones[task.milestone]) errors.push(`${task.id}: 缺少有效首发里程碑`);",
+        "after": "    if (task.status === 'Done' || !isLaunch(task)) continue;\n    const parent = byId.get(task.parentTaskId);\n    if (!task.milestone && task.labels?.includes('engineering') && parent?.labels?.includes('version-main')) continue;\n    if (!task.milestone || !milestones[task.milestone]) errors.push(`${task.id}: 缺少有效首发里程碑`);"
+      },
+      {
+        "at": 212,
+        "before": "    ...auditPriorities(tasks), ...auditQueueOwners(tasks), ...auditDependencies(tasks,completed), ...auditRoleCapacityGate(tasks,completed), ...retiredM7Errors, ...intakeM7Errors,\n    ...auditOrderedStageIds(milestoneRecords, requiresCurrent), ...auditOutcomeTasks([...tasks,...completed],root)])];\n}",
+        "after": "    ...auditPriorities(tasks), ...auditQueueOwners(tasks), ...auditDependencies(tasks,completed), ...auditRoleCapacityGate(tasks,completed), ...retiredM7Errors, ...intakeM7Errors,\n    ...auditOrderedStageIds(milestoneRecords, requiresCurrent), ...auditOutcomeTasks([...tasks,...completed],root),\n    ...auditVersionGovernance([...tasks,...completed],root)])];\n}"
+      }
+    ]
+  },
+  "scripts/release-ci.mjs": {
+    "path": "scripts/release-ci.mjs",
+    "beforeSha256": "b852f1e5e5c43d028f4cb5627ed9f8a637771d55e462af5b69e37cf7a6c5b7d8",
+    "afterSha256": "a450763a5021fcfb2148ced4b960abec4d2be62863e104e879e177b36279b257",
+    "hunks": [
+      {
+        "at": 147,
+        "before": "  const repo='FurinyaWorks/Slay-the-Heavens';\n  if(command==='verify-pr'||command==='verify-hotfix-pr') {",
+        "after": "  const repo='FurinyaWorks/Slay-the-Heavens';\n  const publication=['verify-publish','verify-pr','verify-hotfix-pr'].includes(command);\n  if(command==='verify-pr'||command==='verify-hotfix-pr') {"
+      },
+      {
+        "at": 153,
+        "before": "  }\n  if(!['freeze','verify'].includes(command)||!frozenBranch(branch)||!validSha(head))\n   throw Error('Usage: node scripts/release-ci.mjs freeze|verify <release/name|hotfix/vX.Y.Z> <frozen-HEAD>');\n  if(command==='freeze') {",
+        "after": "  }\n  if(!['freeze','verify','verify-publish'].includes(command)||!frozenBranch(branch)||!validSha(head))\n   throw Error('Usage: node scripts/release-ci.mjs freeze|verify|verify-publish <release/name|hotfix/vX.Y.Z> <frozen-HEAD>');\n  if(command==='freeze') {"
+      },
+      {
+        "at": 160,
+        "before": "   const performance=await (await import('./runtime-baseline/require-release-performance.mjs')).requireReleasePerformance(full,githubRequest);\n   console.log(JSON.stringify({...full,performance},null,2));\n  }",
+        "after": "   const performance=await (await import('./runtime-baseline/require-release-performance.mjs')).requireReleasePerformance(full,githubRequest);\n   const acceptance=publication&&await (await import('./verify-release-acceptance.mjs')).verifyReleaseAcceptance(full,performance,githubRequest);\n   console.log(JSON.stringify({...full,performance,...(acceptance?{acceptance}:{})},null,2));\n  }"
+      }
+    ]
+  },
+  "tests/helpers/integration-1111-tooling.mjs": {
+    "path": "tests/helpers/integration-1111-tooling.mjs",
+    "beforeSha256": "76c61f297e837449183320bea6afe821a91f11ca0821e122b4261b36c4d4a4ab",
+    "afterSha256": "550466e3dcafcce2ef3ac55f8e35bf9393276439e8594bc94ac8c5ba4d066bb5",
+    "hunks": [
+      {
+        "at": 2,
+        "before": "import {createHash} from 'node:crypto';\nconst hash=s=>createHash('sha256').update(s).digest('hex');",
+        "after": "import {createHash} from 'node:crypto';\nimport {beforeVersionGovernanceSource} from './version-governance-source.mjs';\nconst hash=s=>createHash('sha256').update(s).digest('hex');"
+      },
+      {
+        "at": 23,
+        "before": " if(view==='official'&&path===historyProof.path&&typeof source==='string'&&!source.includes('\\r\\r\\n')){\n  const lf=source.replaceAll('\\r\\n','\\n');\n  if(lf===historyProof.after.source&&hash(lf)===historyProof.after.sha256)return historyProof.before.source;",
+        "after": " if(view==='official'&&path===historyProof.path&&typeof source==='string'&&!source.includes('\\r\\r\\n')){\n  const lf=beforeVersionGovernanceSource(path,source).replaceAll('\\r\\n','\\n');\n  if(lf===historyProof.after.source&&hash(lf)===historyProof.after.sha256)return historyProof.before.source;"
+      }
+    ]
+  }
+}
