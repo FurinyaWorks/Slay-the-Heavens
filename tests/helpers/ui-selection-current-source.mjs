@@ -612,10 +612,28 @@ const prologueEntranceCopier=Object.freeze({
   }
  ]
 });
+// #1051 restores the exact vocabulary witness only in detached replays.
+const releaseVocabularyCopier=Object.freeze({
+ "current": {
+  "sha256": "5eb4de29003a48b6640b16064585a962e34840de31c227f6b9e9a94f57eab606",
+  "gitBlob": "fb1cbdf4223edc7e67d7ed7dbca217c2fcab7dfb"
+ },
+ "previous": {
+  "sha256": "edf64f732310e44e83ae8ee17d0d9f494073fc0257fdc1b44f1138827ae20c4c",
+  "gitBlob": "804e700e80ada64cee4a92c5210fd890de42d4a8"
+ },
+ "hunks": [
+  {
+   "at": 919,
+   "before": "});\nfunction beforeReleaseReplayReader(path,raw){\n if(!Object.hasOwn(releaseReplayReaders,path))return raw;",
+   "after": "});\n\nconst releaseVocabularyReplay=Object.freeze({\n \"current\": {\n  \"sha256\": \"39c2ba9ecd776c5a7e3e485639c0d9a2acd1b9a8732e9621735fa99cd0466e56\",\n  \"gitBlob\": \"ef85a7a0559170947d4810cb777287404ae424db\"\n },\n \"previous\": {\n  \"sha256\": \"a70cfaf283d1c758fffa9a2035bec86e122afa871e4104c11e80ae7660c82727\",\n  \"gitBlob\": \"0ca4f24023d2fe9ed5af4fdeaf0b25a0b73ebbaf\"\n },\n \"hunks\": [\n  {\n   \"at\": 8,\n   \"before\": \" '2b3d606fc142f2c8c5cfaaff386c70f6e1f741f24fbc1879b78399b7c477e914','exact Release vocabulary continuation');\",\n   \"after\": \" '9377ea3fc9aa22e1e1afed2df671413df0e11403e0862b955b929b06abc33dad','exact Release vocabulary continuation');\"\n  }\n ]\n});\nconst vocabularyReplayArchive='tests/fixtures/develop-release-vocabulary-source.json.gz';\nfunction beforeReleaseVocabularyReplay(path,raw){\n if(path===vocabularyReplayArchive){\n  if(hash(raw)!=='9377ea3fc9aa22e1e1afed2df671413df0e11403e0862b955b929b06abc33dad')return raw;\n  const before=readFileSync(new URL('../fixtures/develop-release-vocabulary-prior.json.gz',import.meta.url));\n  assert.equal(hash(before),'2b3d606fc142f2c8c5cfaaff386c70f6e1f741f24fbc1879b78399b7c477e914','exact prior vocabulary replay archive');\n  return before;\n }\n if(path!=='tests/helpers/develop-release-vocabulary-source.mjs')return raw;\n const text=integrationClosureBytes(path,raw).toString('utf8');\n if(!exactSourceMatches(text,releaseVocabularyReplay.current))return raw;\n assert(raw.equals(Buffer.from(text))||raw.equals(Buffer.from(text.replaceAll('\\n','\\r\\n'))),'uniform vocabulary replay owner');\n const prior=restoreExactFixtureHunks({path,beforeSha256:releaseVocabularyReplay.previous.sha256,\n  afterSha256:releaseVocabularyReplay.current.sha256,hunks:releaseVocabularyReplay.hunks},path,text);\n assert(exactSourceMatches(prior,releaseVocabularyReplay.previous),'exact vocabulary replay owner predecessor');\n return Buffer.from(prior);\n}\nfunction beforeReleaseReplayReader(path,raw){\n raw=beforeReleaseVocabularyReplay(path,raw);\n if(!Object.hasOwn(releaseReplayReaders,path))return raw;"
+  }
+ ]
+});
 function activeReceipt(path){
  if(path===mapRouteIconFixturePath)return mapRouteIconFixture;
  if(path===selectionLayoutPath)return releaseSelectionOverlay;
- if(path===copierPath)return releaseEntranceCopier;
+ if(path===copierPath)return releaseVocabularyCopier;
  if(path===returnedReadingReplayPath)return returnedReadingReplay;
  return combinedReceipt(path)??receipt(path);
 }
@@ -636,6 +654,7 @@ export function beforeSelectionReceiptSource(path,source){
  if(path===selectionLayoutPath)source=beforeReceipt(path,source,releaseSelectionOverlay);
  if(path===selectionLayoutPath)source=beforeReceipt(path,source,selectionLayoutCurrent);
  if(path===returnedReadingReplayPath)source=beforeReceipt(path,source,returnedReadingReplay);
+ if(path===copierPath)source=beforeReceipt(path,source,releaseVocabularyCopier);
  if(path===copierPath)source=beforeReceipt(path,source,releaseEntranceCopier);
  if(path===copierPath)source=beforeReceipt(path,source,currentBackflowCopier);
  if(path===copierPath)source=beforeReceipt(path,source,returnedCardReadingCopier);

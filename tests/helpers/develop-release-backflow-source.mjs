@@ -15,6 +15,7 @@ import {beforeNodeNoticeSource} from './reward-current-source.mjs';
 import {beforeKnownMasterBackflowSource,beforeProductionReadingBackflow} from './master-backflow-source.mjs';
 import {beforeReleaseVocabulary,isReleaseVocabularyPredecessor,releaseVocabularyOwns} from './develop-release-vocabulary-source.mjs';
 import {beforeRunHudDeckLabel} from './run-hud-successors.mjs';
+import {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';
 import {beforeReleaseEntranceOwner,readReleaseEntrancePredecessor} from './release-entrance-owner-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
@@ -334,6 +335,7 @@ function currentRecentBackflowOwner(path,source){
  return matches(source,roomEntry.files[path].after);
 }
 export function assertDevelopBackflowCurrent(path,source){
+ if(path===deckPath)source=beforeReleaseDeckPointer(path,source);
  if(path===libraryEventPath){
   assert(uniformSource(source)&&matches(source,libraryPromptCurrent),'fresh current production owner: '+path);
   return;
@@ -405,6 +407,7 @@ function beforeVocabularyOwner(path,source){
  return beforeReleaseVocabulary(path,beforeKnownMasterBackflowSource(path,source));
 }
 export function beforeCurrentDeckEntranceOwner(path,source){
+ if(path===deckPath)source=beforeReleaseDeckPointer(path,source);
  if(!uiEntranceOwns(path)||!uniformSource(source))return source;
  if(chapterEntranceOwners.has(path))return beforeChapterEntranceOwner(path,source);
  try{assertCurrentUiEntrance(path,source);return source;}
@@ -415,7 +418,8 @@ function recentBackflowOwnerReader(read,historicalOwners){
  let epoch;
  const readEntrancePrior=entranceReader(path=>{
   const raw=readReleaseEntrancePredecessor(path,read(path),underlyingEntranceReader(read));
-  const source=beforeArchitectureOwner(path,path===deckLayoutPath?beforeRunHudDeckLabel(raw):raw);
+  const source=beforeArchitectureOwner(path,path===deckLayoutPath?beforeRunHudDeckLabel(raw):
+   path===deckPath?beforeReleaseDeckPointer(path,raw):raw);
   const vocabulary=releaseVocabularyOwns(path);
   if(!uiEntranceOwns(path)&&!vocabulary&&path!==battleActionsPath&&!Object.hasOwn(battleInputHistory,path)&&!Object.hasOwn(linkedBackflow,path))return source;
   const frozen=historicalOwners?.[path]?.source;
@@ -484,7 +488,7 @@ export function bindDevelopBackflow(read,historicalOwners){
    const current=beforeLinkedBackflow(path,beforeBattleInputHistory(path,beforeMapRoomBattleActions(path,beforeVocabularyOwner(path,source))));
    // The chapter reader authenticates a responsive source against raw owners
    // before the linked Develop reader enters its older source epoch.
-   const readLive=beforeResponsiveHand(path,current)!==current?read:readOwner;
+   const readLive=path===deckPath||beforeResponsiveHand(path,current)!==current?read:readOwner;
    return authenticateDevelopBackflowWithReaders(path,current,readLive,readOwner,options);
   },
  };
@@ -535,6 +539,7 @@ function beforeSessionRelic(path,source,options){
  return source.includes('\r\n')?before.replaceAll('\n','\r\n'):before;
 }
 export function beforeDevelopBackflow(path,source,options){
+ if(path===deckPath)source=beforeReleaseDeckPointer(path,source);
  source=beforeReleaseEntranceOwner(path,source);
  if(path==='src/lua/abyss_potion_discard_ui.lua')source=beforeKnownMasterBackflowSource(path,source);
  source=beforeLibraryReadPrompt(path,source);
@@ -559,6 +564,18 @@ function readBackflowOwner(read,path){
  catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
 }
 function authenticateDevelopBackflowWithReaders(path,source,readLive,readLinked,options){
+ if(path===deckPath){
+  const prior=beforeReleaseDeckPointer(path,source);
+  if(prior!==source){
+   const live=readBackflowOwner(readLive,path);
+   const lf=value=>value.replaceAll('\r\n','\n');
+   const livePrior=beforeReleaseDeckPointer(path,live);
+   assert(livePrior!==live&&lf(livePrior)===lf(prior),'fresh Release deck pointer owner');
+   source=prior;
+  }
+ }
+ const rawLive=readLive;
+ readLive=owner=>owner===deckPath?beforeReleaseDeckPointer(owner,rawLive(owner)):rawLive(owner);
  const libraryPrior=beforeLibraryReadPrompt(path,source);
  if(libraryPrior!==source){
   const live=readBackflowOwner(readLive,path);

@@ -1,10 +1,56 @@
 import assert from 'node:assert/strict';
 import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
 import {exactSourceMatches} from './source-fingerprint.mjs';
+import {beforeReleaseMetadata} from './release-metadata-source.mjs';
+import {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';
 
 // Current Host checks exercise production. Historical Host and CI replays
 // preserve the exact earlier test sources from the production backflow.
 const fixtures=Object.freeze({
+ "tests/molten-egg-source.test.mjs": {
+  "current": {
+   "sha256": "a524f6e0d27813b0f6b723c603f931d2d82e9e3d89605d203daacf809467bdfe",
+   "gitBlob": "76ca0e342018cdf2f2678ebc39a23abc36ec91fb"
+  },
+  "previous": {
+   "sha256": "ba608486940a5b7374742324bb4e8d085f470cd0fbd924db050dddbb63910527",
+   "gitBlob": "9571494f3b25371d7c0ffaedd073619d7fc3c239"
+  },
+  "hunks": [
+   {
+    "at": 3,
+    "before": "import {requireRelicCompletionSource,preRelicCompletionSource} from './helpers/relic-completion-inverse.mjs';\nimport {closeoutRead} from './helpers/closeout-ci-source.mjs';\nconst read=path=>JSON.parse(readFileSync(path,'utf8'));",
+    "after": "import {requireRelicCompletionSource,preRelicCompletionSource} from './helpers/relic-completion-inverse.mjs';\nimport {withHistoricalBaseline} from './helpers/historical-baseline-inputs.mjs';\nconst read=path=>JSON.parse(readFileSync(path,'utf8'));"
+   },
+   {
+    "at": 36,
+    "before": " // today's production identity checks above still read the complete pool.\n const current=closeoutRead('pr620')('data/relics.json','utf8');\n requireRelicCompletionSource('data/relics.json',current);\n const historical=JSON.parse(preRelicCompletionSource('data/relics.json',current));\n for(const id of ['question_card','busted_crown','singing_bowl'])assert.ok(!historical.relics.some(r=>r.id===id));",
+    "after": " // today's production identity checks above still read the complete pool.\n const historical=withHistoricalBaseline(()=>{\n  const path='data/relics.json',source=readFileSync(path,'utf8');\n  requireRelicCompletionSource(path,source);\n  return JSON.parse(preRelicCompletionSource(path,source));\n });\n for(const id of ['question_card','busted_crown','singing_bowl'])assert.ok(!historical.relics.some(r=>r.id===id));"
+   }
+  ]
+ },
+ "tests/ruby-recall.test.mjs": {
+  "current": {
+   "sha256": "8d69c82bcbeb6a8b0b5bd2c18776c6df4d9bf5177b6e32b640e65ee897910a44",
+   "gitBlob": "a6554f017663d5e3eb571887b5ef51c822276d12"
+  },
+  "previous": {
+   "sha256": "ec4a275d02b2aa07a91f652251815e7949430712fa6a854abe08f49ece9f4df4",
+   "gitBlob": "292255294546a7e2889c36ad0b67ff0e036085bc"
+  },
+  "hunks": [
+   {
+    "at": 4,
+    "before": "import { runLua } from '../scripts/test-lua.mjs';\nimport { readBeforeMobileQaSource } from './helpers/mobile-qa-source-inverse.mjs';",
+    "after": "import { runLua } from '../scripts/test-lua.mjs';\nimport { historicalTest } from './helpers/historical-baseline-inputs.mjs';\nimport { readBeforeMobileQaSource } from './helpers/mobile-qa-source-inverse.mjs';"
+   },
+   {
+    "at": 92,
+    "before": "\ntest('three original camp commands retain frozen bodies around the reviewed Toxic Egg adapter',()=>{\n  const code=readBeforeMobileQaSource('src/lua/abyss_nodes.lua').replaceAll('\\r\\n','\\n');",
+    "after": "\nhistoricalTest('three original camp commands retain frozen bodies around the reviewed Toxic Egg adapter',()=>{\n  const code=readBeforeMobileQaSource('src/lua/abyss_nodes.lua').replaceAll('\\r\\n','\\n');"
+   }
+  ]
+ },
  "tests/colorless-catalog-source.test.mjs": {
   "current": {
    "sha256": "da577b404aeca08d7ee98580da6186204589a1c429b71e7b4ef945f874555d17",
@@ -575,7 +621,8 @@ const permanentDeckRuntimeFixture=Object.freeze({
 });
 
 export function beforeReleaseClosureFixture(path,raw){
- if(!Object.hasOwn(fixtures,path))return raw;
+ raw=beforeReleaseMetadata(path,raw);
+ if(!Object.hasOwn(fixtures,path))return beforeReleaseDeckPointer(path,raw);
  let source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
  if(typeof source!=='string'||Buffer.isBuffer(raw)&&!Buffer.from(source).equals(raw))return raw;
  const normalized=source.replaceAll('\r\n','\n');
@@ -587,6 +634,10 @@ export function beforeReleaseClosureFixture(path,raw){
   source=source===normalized?predecessor:predecessor.replaceAll('\n','\r\n');
   // The immediately preceding fixture may itself have no older authorized
   // projection in this adapter, but its authenticated bytes still carry forward.
+  raw=Buffer.isBuffer(raw)?Buffer.from(source):source;
+ }
+ if(path==='tests/official-assets-runtime.test.mjs'){
+  source=beforeReleaseDeckPointer(path,source);
   raw=Buffer.isBuffer(raw)?Buffer.from(source):source;
  }
  if(path==='tests/gil-candidate.test.mjs'&&exactSourceMatches(source,unifiedGilFixture.current)){

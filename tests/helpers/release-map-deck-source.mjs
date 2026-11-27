@@ -8,6 +8,7 @@ import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {beforeLoadingRecoverySource} from './loading-recovery-source.mjs';
 import {beforeHotfixMapDeckHelperSource} from './hotfix-map-deck-helper-source.mjs';
+import {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const normalize=source=>source.replaceAll('\r\n','\n');
@@ -175,6 +176,10 @@ export function beforeMapRoomSource(path,source){
 }
 
 export function beforeMapDeckSource(path,source,read){
+ const deckPath='src/lua/abyss_deck_ui.lua';
+ const rawRead=read;
+ source=path===deckPath?beforeReleaseDeckPointer(path,source):source;
+ read=(owner,...args)=>owner===deckPath?beforeReleaseDeckPointer(owner,rawRead(owner,...args)):rawRead(owner,...args);
   assertProductionMapDeckOwners(path,source,read);
   const forethoughtPrior=beforeProductionForethought(path,source,read);
   if(forethoughtPrior!==source)return forethoughtPrior;
