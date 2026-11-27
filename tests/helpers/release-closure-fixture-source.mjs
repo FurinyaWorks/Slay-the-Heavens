@@ -797,6 +797,56 @@ const fixtures=Object.freeze({
     "after": " 'the queued same-role refresh stranded a completed but hidden portrait')\nassert(a:release() and LiveCount()==0)\nselectionHost.SetSizeDelta=function(self,...)\n a:sync('menu',true,false,nil)\n return resize(self,...)\nend\nassert(a:sync('menu',true,false,'ironclad'))\nfor _=1,120 do a:tick(1/60)end\nassert(not selectionHost.visible and backing.visible and LiveCount()==0,\n 'a newer empty selection was discarded during native configuration')\nassert(a:release())\n`,{runtimeV2:true,officialAssets:true});\n});"
    }
   ]
+ },
+ // Max HP historical archives still execute the original approved-UI helper.
+ "tests/helpers/approved-ui-inverse.mjs": {
+  "current": {
+   "sha256": "515cc86198104355318e98e8d17aa614a6600cd3f6fa7f6b19b817f81a77d354",
+   "gitBlob": "3648a38052cc1f5ad1cb0a9299722d5b687cf733"
+  },
+  "previous": {
+   "sha256": "5d6fab1429f81bf072cfa72e63d520b1e5d0dc1cf8faf9d8353c6bae3b1b15c8",
+   "gitBlob": "ef2b465dd6de4c3225312f08b80fb794e8aed341"
+  },
+  "hunks": [
+   {
+    "at": 6,
+    "before": "import {preIntegratedNodeUiSource} from './approved-node-ui-refactor.mjs';\nimport assert from 'node:assert/strict';",
+    "after": "import {preIntegratedNodeUiSource} from './approved-node-ui-refactor.mjs';\nimport {beforeReleaseClosureFixture} from './release-closure-fixture-source.mjs';\nimport {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';\nimport {exactSourceMatches} from './source-fingerprint.mjs';\nimport assert from 'node:assert/strict';"
+   },
+   {
+    "at": 33,
+    "before": "}\n// One additional test-only layer, never a replacement for PR302's frozen 26",
+    "after": "}\n// #391 adds native monster control selectors after the exact #313 fixture.\n// Compose its successor solely for this earlier approved-UI witness.\nconst nemesisControlFixture=Object.freeze({\n \"path\": \"tests/lua/nemesis_ui.lua\",\n \"beforeSha256\": \"736a67ba3158850ad67d716b7ec62fe8ac6629d0b24ff673b1b7e975ddd340d9\",\n \"beforeBlob\": \"b615f3f06cc8fad9a78c7aa88360bea1c1df08b0\",\n \"afterSha256\": \"4c3655ba6d08705d742e307aa56d6d2fadfb67c5379df2462e0a04792ebee4d7\",\n \"afterBlob\": \"02fc4d2e206fe7447fc8e8a186494603faa25b66\",\n \"hunks\": [\n  {\n   \"at\": 0,\n   \"before\": \"local testStart=dofile('tests/lua/support/game_ui_fixture.lua').start\",\n   \"after\": \"local monsterControl=dofile('tests/lua/support/monster_control_fixture.lua')\\nlocal testStart=dofile('tests/lua/support/game_ui_fixture.lua').start\"\n  },\n  {\n   \"at\": 13,\n   \"before\": \"assert(N.Run.startRoomCombat(r,'elite'));N.force(r.combat,'burn');host:refresh()\\nlocal panel=root:GetChild('battlePanel');local box=panel:GetChild('enemy1');local _,tap=H.controls(panel)\\neq(box:GetChild('name').text,'天罚');eq(box:GetChild('hp').text,'185/185')\",\n   \"after\": \"assert(N.Run.startRoomCombat(r,'elite'));N.force(r.combat,'burn');host:refresh()\\nlocal panel=root:GetChild('battlePanel');local box=monsterControl(panel,'enemy1');local _,tap=H.controls(panel)\\neq(box:GetChild('name').text,'天罚');eq(box:GetChild('hp').text,'185/185')\"\n  },\n  {\n   \"at\": 20,\n   \"before\": \"assert(N.Run.endTurn(r));N.force(r.combat,'fire');host:refresh()\\neq(box:GetChild('intent').text,'6×3')\\nbox:GetChild('statusRow'):GetChild('hit').click({touchId=92})\\nlocal info=panel:GetChild('statusInfo');assert(info.visible)\",\n   \"after\": \"assert(N.Run.endTurn(r));N.force(r.combat,'fire');host:refresh()\\neq(box:GetChild('intent').text,'6x3')\\ndofile('tests/lua/support/monster_power_control_fixture.lua')(box,'nemesis_intangible'):GetChild('hit').click({touchId=92})\\nlocal info=panel:GetChild('statusInfo');assert(info.visible)\"\n  }\n ]\n});\nfunction preNemesisControlFixture(path,source){\n if(path!==nemesisControlFixture.path||typeof source!=='string')return source;\n const lf=source.replaceAll('\\r\\n','\\n');\n if(source!==lf&&source!==lf.replaceAll('\\n','\\r\\n'))return source;\n const current=beforeReleaseClosureFixture(path,source);\n if(!exactSourceMatches(current,{sha256:nemesisControlFixture.afterSha256,gitBlob:nemesisControlFixture.afterBlob}))return current;\n assert.equal(approvedUi.files[path].afterSha256,nemesisControlFixture.beforeSha256,'exact approved Nemesis control predecessor binding');\n const prior=restoreExactFixtureHunks(nemesisControlFixture,path,current);\n assert(exactSourceMatches(prior,{sha256:nemesisControlFixture.beforeSha256,gitBlob:nemesisControlFixture.beforeBlob}),\n  'exact approved Nemesis control predecessor');\n return source===lf?prior:prior.replaceAll('\\n','\\r\\n');\n}\n// One additional test-only layer, never a replacement for PR302's frozen 26"
+   },
+   {
+    "at": 74,
+    "before": "export function preApprovedUiOuterSource(path,source){\n source=preBattleLifeSource(path,source);\n return approvedUi.files[path]?preEventProductionSource(path,preRelicViewUiSource(path,preHeroVisualSource(path,source))):source;",
+    "after": "export function preApprovedUiOuterSource(path,source){\n source=preNemesisControlFixture(path,preBattleLifeSource(path,source));\n return approvedUi.files[path]?preEventProductionSource(path,preRelicViewUiSource(path,preHeroVisualSource(path,source))):source;"
+   }
+  ]
+ },
+ "tests/run-max-hp-config-inverse.test.mjs": {
+  "current": {
+   "sha256": "686c21dcaa962cdad470d14d9c7f7f8a0caa9fdde53f571bf88c1bf75d7f8c74",
+   "gitBlob": "a1a66afd909d88b43b4b706f130689be53e93c6b"
+  },
+  "previous": {
+   "sha256": "a40879d35601e22bfbd5622fce1604d0a9ee7a2222d15525f66d7e82b862928f",
+   "gitBlob": "408137bf30fd65836eb8a0eaba40de3a3902bdd5"
+  },
+  "hunks": [
+   {
+    "at": 9,
+    "before": "import {createHash} from 'node:crypto';\nimport {analyzeSources} from '../scripts/check-architecture.mjs';",
+    "after": "import {createHash} from 'node:crypto';\nimport {beforeReleaseClosureFixture} from './helpers/release-closure-fixture-source.mjs';\nimport {analyzeSources} from '../scripts/check-architecture.mjs';"
+   },
+   {
+    "at": 28,
+    "before": "  const raw=binding.existing?readInput(path):Buffer.from(binding.source);\n  const source=path.endsWith('.gz')?raw:Buffer.from(raw.toString('utf8').replaceAll('\\r\\n','\\n'));\n  assert.equal(hash(source),binding.sha256,'original complete Run and Nodes chain bytes: '+path);",
+    "after": "  const raw=binding.existing?readInput(path):Buffer.from(binding.source);\n  const original=binding.existing&&path==='tests/helpers/approved-ui-inverse.mjs'?beforeReleaseClosureFixture(path,raw):raw;\n  const source=path.endsWith('.gz')?original:Buffer.from(original.toString('utf8').replaceAll('\\r\\n','\\n'));\n  assert.equal(hash(source),binding.sha256,'original complete Run and Nodes chain bytes: '+path);"
+   }
+  ]
  }
 });
 
