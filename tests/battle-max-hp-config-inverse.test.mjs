@@ -113,10 +113,10 @@ currentTest('Battle config replay authenticates its original helper closure and 
  }
 });
 
-currentTest('current Battle config facade rejects incompatible modern owners instead of borrowing historical admission',async()=>{
+currentTest('current Battle config facade rejects the unrecognized Release configuration',async()=>{
  const current=await import('./helpers/battle-max-hp-config-inverse.mjs');
  const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n');
  assert.notEqual(raw,originalInputs[path].toString('utf8'),'historical contract is not current production acceptance');
- for(const target of ['battle','maxHp'])assert.throws(()=>current.projectBattleMaxHpConfig(path,raw,target),/delivery linked source identity: src\/lua\/abyss_monster_intent_particle_view\.lua/);
- assert.throws(()=>current.preCompositeBattleMaxHpConfig(path,raw),/delivery linked source identity: src\/lua\/abyss_monster_intent_particle_view\.lua/);
+ for(const target of ['battle','maxHp'])assert.throws(()=>current.projectBattleMaxHpConfig(path,raw,target),/unreviewed combined Battle Max HP config source/);
+ assert.equal(current.preCompositeBattleMaxHpConfig(path,raw),raw,'the optional projection must preserve an unrecognized Release configuration');
 });
