@@ -458,19 +458,31 @@ test('official targeting keeps arrows and live HP without detached combat simula
 local Damage=require('abyss_battle_damage_view')
 Damage.preview=function()error('official card aim simulated the whole battle')end
 Damage.potionPreview=function()error('official potion aim simulated the whole battle')end
-local h,u,p,event,_,drain=H.setup({'strike','defend'},{'raven_adept'})
+local h,u,p,event,tap,drain=H.setup({'strike','defend'},{'raven_adept'})
 h.run.potions={'fire_potion'};h:refresh()
 local enemy=assert(require('abyss_monster_surfaces').get(p):find(h.run.combat.enemies[1].id))
 local hp=h.run.combat.enemies[1].hp
 event('potion1','down',7);event('potion1','drag',7,enemy.x,enemy.y)
-assert(u.potionAim and u.potionAim.moving)
-assert(p:GetChild('dragLayer'):GetChild('aim1').visible)
+event('potion1','up',7,enemy.x,enemy.y);event('potion1','click',7,enemy.x,enemy.y)
+assert(not u.potionAim and not u.potionMenu,'dragged bottle cannot arm or open the menu')
+assert(h.run.potions[1]=='fire_potion' and h.run.combat.enemies[1].hp==hp)
+tap('potion1',8);assert(u.potionMenu and not u.potionAim)
+local use=p:GetChild('potionHelp'):GetChild('potionPopup'):GetChild('use')
+use.listeners.down({touchId=9});use.listeners.up({touchId=9});assert(use.click({touchId=9}))
+assert(u.potionAim and not u.potionAim.moving and not u.potionMenu)
+assert(not p:GetChild('dragLayer').visible,'click-only potion aim must not render the drag arrow')
 assert(not enemy:GetChild('damagePreview').visible)
 assert(h.run.combat.enemies[1].hp==hp)
-event('dragLayer','up',7,enemy.x,enemy.y);drain()
+tap('enemy1',10);drain()
 assert(h.run.combat.enemies[1].hp==hp-20 and h.run.potions[1]==nil)
-event('card1','down',8);event('card1','drag',8,enemy.x,enemy.y)
+event('enemy1','click',10)
+assert(h.run.combat.enemies[1].hp==hp-20,'late target click cannot apply potion damage twice')
+local strike
+for index,card in ipairs(h.run.combat.hand)do if card.cardId=='strike'then strike='card'..index;break end end
+assert(strike,'missing actual attack in the hand')
+event(strike,'down',11);event(strike,'drag',11,enemy.x,enemy.y)
 assert(u.gesture and u.gesture.moving)
+assert(p:GetChild('dragLayer'):GetChild('aim1').visible,'card targeting must retain the arrow')
 assert(not enemy:GetChild('damagePreview').visible)
 assert(h.run.combat.enemies[1].hp==hp-20)
 -- Group targeting is a reticle rule, independent of simulated future HP.
@@ -905,7 +917,7 @@ unchanged(win.run,before,'late battle pointer acted after return to map')
 `, 'OFFICIAL_RUNTIME_FLOW_PASS');
 });
 
-test('official three-bottle HUD renders metadata while popup, drag and use validate fresh core state',t=>{
+test('official three-bottle HUD renders metadata while click-only use validates fresh core state',t=>{
  runOfficial(t,`
 local Run=require('abyss_run');local Candidate=require('abyss_run_potion_candidate')
 local deck={};for i=1,10 do deck[i]='strike'end
@@ -950,12 +962,21 @@ count=#calls
 assert(popup:GetChild('use').click());drain()
 for i=count+1,#calls do assert(calls[i]==3,'selected potion Use staged another inventory slot')end
 assert(not h.run.potions[3] and battle.player.block==12)
--- In-place pending choice after Down is rejected by the actual drag validator.
-event('potion1','down',8);battle.pendingChoice={}
-count=#calls;event('potion1','drag',8,enemy.x,enemy.y)
-assert(#calls>count and not u.potionAim,'potion drag trusted stale metadata')
-assert(h.run.potions[1]=='fire_potion')
-battle.pendingChoice=nil;event('potion1','up',8)
+-- A dragged bottle must remain inert and cannot become a late popup click.
+event('potion1','down',8);count=#calls
+event('potion1','drag',8,enemy.x,enemy.y)
+event('potion1','up',8,enemy.x,enemy.y);event('potion1','click',8,enemy.x,enemy.y)
+assert(#calls==count and not u.potionAim and not u.potionMenu,'dragged bottle entered click-only use')
+-- Fresh action checks still apply when an in-place choice appears after Down.
+tap('potion1',9);assert(u.potionMenu and not u.potionAim)
+local use=popup:GetChild('use')
+use.listeners.down({touchId=10});battle.pendingChoice={}
+count=#calls;use.listeners.up({touchId=10})
+assert(use.click({touchId=10})==false and #calls>count and not u.potionAim,'Use trusted stale potion metadata')
+assert(u.potionMenu and h.run.potions[1]=='fire_potion','stale Use closed the popup or consumed the bottle')
+battle.pendingChoice=nil
+local dismiss=popup:GetChild('dismiss')
+dismiss.listeners.down({touchId=11});dismiss.listeners.up({touchId=11});assert(dismiss.click({touchId=11}))
 Candidate.prepare=prepare
 -- Unknown stored IDs remain occupied physical slots, never fabricated vacancies.
 h.run.potions[3]='not_a_potion';u:render()
