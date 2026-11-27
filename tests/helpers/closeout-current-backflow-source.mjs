@@ -8,6 +8,7 @@ import {beforeRunHudDeckLabel,beforeRunHudMapIcon} from './run-hud-successors.mj
 import {exactSourceMatches} from './source-fingerprint.mjs';
 import {readReleaseEntrancePredecessor} from './release-entrance-owner-source.mjs';
 import {beforeReleaseClosureFixture} from './release-closure-fixture-source.mjs';
+import {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';
 
 const bytes=readFileSync(new URL('../fixtures/closeout-current-backflow-source.json.gz',import.meta.url));
 assert.equal(createHash('sha256').update(bytes).digest('hex'),
@@ -159,9 +160,31 @@ export function beforeCloseoutJoustCiFixture(path,source){
  return source===lf?prior:prior.replaceAll('\n','\r\n');
 }
 
+const officialLayoutPath='scripts/official-assets-layout.mjs';
+const frozenOfficialLayout={
+ sha256:'0b6e02f9f98ee6310f556091e416e10716756eb5efd39dc2242ea2012dd694ec',
+ gitBlob:'0a51f14283165b1fb867dbb61b877e88473cca3e',
+};
+function readOfficialLayoutReceipt(read){
+ const raw=read(officialLayoutPath,'utf8');
+ const source=beforeReleaseDeckPointer(officialLayoutPath,raw);
+ if(source===raw)return;
+ const archive=readFileSync(new URL('./run-hud-ci-source.json.gz',import.meta.url));
+ assert.equal(createHash('sha256').update(archive).digest('hex'),
+  '685bddcc6bed77545eadc456f82ed4de10a75402cfcf597533190eb1732cbe3b','immutable Run HUD layout receipt');
+ const proof=JSON.parse(gunzipSync(archive));
+ assert.equal(proof.base,'903bf2a31e91f10fb24763ab4cea23d586d0bb83');
+ const row=proof.files[officialLayoutPath].before;
+ assert.equal(row.sha256,frozenOfficialLayout.sha256);
+ assert.equal(row.gitBlob,frozenOfficialLayout.gitBlob);
+ assert(exactSourceMatches(row.source,frozenOfficialLayout),'exact frozen Closeout layout source');
+ return row.source;
+}
+
 // These are reads of the original frozen Closeout hashes. Verify the live
 // Joust projection's linked production cohort before reconstructing old bytes.
 export function readCloseoutCurrentBackflowReceipt(path,digest,read){
+ if(path===officialLayoutPath&&digest===frozenOfficialLayout.sha256)return readOfficialLayoutReceipt(read);
  // Test and tooling inputs have their own Git histories and complete byte proofs.
  const independent=path===tooling.path?tooling:Object.hasOwn(independentFiles,path)?independentFiles[path]:null;
  if(independent&&digest===independent.beforeSha256)return readCloseoutFixture(path,independent,read).prior;

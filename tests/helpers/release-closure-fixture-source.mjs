@@ -348,8 +348,8 @@ const fixtures=Object.freeze({
  },
  "tests/lua/nemesis_ui.lua": {
   "current": {
-   "sha256": "efd4d31e4143a5dc9abb48277d97f03d504b332f9798054885d1c571edfe519b",
-   "gitBlob": "3a5e355bfab48211ae31305a03b3224cdd95218c"
+   "sha256": "34cd648ad0346bcfff547b83dc7c1c64a657efea34c3356cfe3962de4667b7c3",
+   "gitBlob": "24567abeed8017331b039d0fc23b3c18fa849986"
   },
   "previous": {
    "sha256": "4c3655ba6d08705d742e307aa56d6d2fadfb67c5379df2462e0a04792ebee4d7",
@@ -357,14 +357,14 @@ const fixtures=Object.freeze({
   },
   "hunks": [
    {
-    "at": 17,
-    "before": "local text=inspectDetails(host.battleUI,panel)\nassert(text:find('3',1,true)and text:find(r.combat.catalog.cards.burn.name,1,true)and text:find('弃牌堆',1,true),text)\nassert(not text:find('未知',1,true),text)\nassert(N.Run.endTurn(r));N.force(r.combat,'fire');host:refresh()",
-    "after": "local text=inspectDetails(host.battleUI,panel)\neq(text,'<color=#F5D78A>策略</color>\\n这名敌人将要对你施加一种负面效果。')\n-- The compact tooltip shows the approved category. The detailed projection\n-- still exposes the exact pending Burn count, card and destination.\nlocal intent=require('abyss_battle_intent_view').intentView(r.combat,1)\neq(intent.tooltipEnum,'DEBUFF')\neq(intent.text,'将 3 张「'..r.combat.catalog.cards.burn.name..'」放入你的弃牌堆')\nassert(N.Run.endTurn(r));N.force(r.combat,'fire');host:refresh()"
+    "at": 16,
+    "before": "tap('enemy1',91)\nlocal text=inspectDetails(host.battleUI,panel)\nassert(text:find('3',1,true)and text:find(r.combat.catalog.cards.burn.name,1,true)and text:find('弃牌堆',1,true),text)\nassert(not text:find('未知',1,true),text)\nassert(N.Run.endTurn(r));N.force(r.combat,'fire');host:refresh()",
+    "after": "tap('enemy1',91)\nassert(host.battleUI.info and host.battleUI.info.powerTips,'enemy tap must use the original compact tooltip')\nlocal text=inspectDetails(host.battleUI,panel)\neq(text,'<color=#F5D78A>策略</color>\\n这名敌人将要对你施加一种负面效果。')\n-- The compact tooltip shows the approved category. The detailed projection\n-- still exposes the exact pending Burn count, card and destination.\nlocal intent=require('abyss_battle_intent_view').intentView(r.combat,1)\neq(intent.tooltipEnum,'DEBUFF')\neq(intent.text,'将 3 张「'..r.combat.catalog.cards.burn.name..'」放入你的弃牌堆')\nassert(N.Run.endTurn(r));N.force(r.combat,'fire');host:refresh()"
    },
    {
-    "at": 26,
+    "at": 27,
     "before": "dofile('tests/lua/support/monster_power_control_fixture.lua')(box,'nemesis_intangible'):GetChild('hit').click({touchId=92})\nlocal info=panel:GetChild('statusInfo');assert(info.visible)\nlocal shown=false\nfor i=1,F.Theme.layout.statusInfo.rows do\n local name=info:GetChild('name'..i)\n if name.visible and name.text:find('无实体',1,true)then shown=true end\nend\nassert(shown,'monster Intangible must be named in the existing status panel')\nprint('NEMESIS_UI 1 groups; 0 failed')",
-    "after": "dofile('tests/lua/support/monster_power_control_fixture.lua')(box,'nemesis_intangible'):GetChild('hit').click({touchId=92})\nlocal power=inspectDetails(host.battleUI,panel)\nassert(power:find('无实体',1,true),'monster Intangible must be named in the existing status panel: '..power)\nprint('NEMESIS_UI 1 groups; 0 failed')"
+    "after": "dofile('tests/lua/support/monster_power_control_fixture.lua')(box,'nemesis_intangible'):GetChild('hit').click({touchId=92})\nlocal power=inspectDetails(host.battleUI,panel)\nassert(power:find('无实体',1,true) and power:find('最多为1',1,true),power)\nprint('NEMESIS_UI 1 groups; 0 failed')"
    }
   ]
  },
@@ -479,8 +479,8 @@ const fixtures=Object.freeze({
  'tests/helpers/replay-reviewed-selection.mjs':selectionRawEntranceReplay,
  "tests/lore-v2.test.mjs": {
   "current": {
-   "sha256": "75d8cc3adf030c2ff6aa09e664bd1abc5c7559eec33c50a0edd295350075c79b",
-   "gitBlob": "20b8f34ca1e7cff2ea8d790edfc4fa262db28042"
+   "sha256": "7e5fe50774f35af13df83ac4206bb7f4356f56bc7e745ce891caa0395d70248b",
+   "gitBlob": "5a2da5a37f0cd4a43dc571f8d15cceeb695aac79"
   },
   "previous": {
    "sha256": "2291dec3b039b914d31e64b366fe9718913636b1095f60005becab39c1823fb8",
@@ -495,7 +495,7 @@ const fixtures=Object.freeze({
    {
     "at": 115,
     "before": "  }\n});",
-    "after": "  }\n  const alias = structuredClone(copy);\n  alias.combatIntros.cultist = alias.combatIntros.raven_adept;\n  assert.throws(() => assertNarrativeCopy(alias, core, support), { code: 'ERR_ASSERTION' });\n  delete alias.combatIntros.raven_adept;\n  assert.throws(() => assertNarrativeCopy(alias, core, support), { code: 'ERR_ASSERTION' });\n});"
+    "after": "  }\n  const alias = structuredClone(copy);\n  alias.combatIntros.cultist = alias.combatIntros.raven_adept;\n  assert.throws(() => assertNarrativeCopy(alias, core, support), { code: 'ERR_ASSERTION' });\n  delete alias.combatIntros.raven_adept;\n  assert.throws(() => assertNarrativeCopy(alias, core, support), { code: 'ERR_ASSERTION' });\n  const migratedArchive = structuredClone(support);\n  migratedArchive.combatIntros.raven_adept = migratedArchive.combatIntros.cultist;\n  delete migratedArchive.combatIntros.cultist;\n  assert.throws(() => assertNarrativeCopy(copy, core, migratedArchive), /archived Cultist introduction/);\n});"
    }
   ]
  },

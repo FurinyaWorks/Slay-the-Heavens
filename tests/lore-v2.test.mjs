@@ -119,6 +119,10 @@ test('reviewed display-name migration rejects rollback, broader names and edits 
   assert.throws(() => assertNarrativeCopy(alias, core, support), { code: 'ERR_ASSERTION' });
   delete alias.combatIntros.raven_adept;
   assert.throws(() => assertNarrativeCopy(alias, core, support), { code: 'ERR_ASSERTION' });
+  const migratedArchive = structuredClone(support);
+  migratedArchive.combatIntros.raven_adept = migratedArchive.combatIntros.cultist;
+  delete migratedArchive.combatIntros.cultist;
+  assert.throws(() => assertNarrativeCopy(copy, core, migratedArchive), /archived Cultist introduction/);
 });
 
 test('event-copy guard rejects unregistered keys and changes to Living Wall intro or choices', () => {
