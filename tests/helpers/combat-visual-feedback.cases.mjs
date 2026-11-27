@@ -79,6 +79,8 @@ test('historical adapter only recognises exact current bytes and rejects changed
 import {assertIntegrationSuccessorsCurrent} from './fork-preflight-source.mjs';
 import {beforeCurrentProductionSource} from './character-preparation-source.mjs';
 import {beforeDeckPagesSuiteSource} from './input-retirement-source.mjs';
+import {beforeKnownMasterBackflowSource} from './master-backflow-source.mjs';
+import {beforeDevelopBackflow} from './develop-release-backflow-source.mjs';
 test('fresh guards reject mixed old/new sources and integrated readback drift',()=>{
  const path='src/lua/abyss_card_skin.lua',source=readFileSync(path,'utf8');
  let reads=0;
@@ -87,9 +89,12 @@ test('fresh guards reject mixed old/new sources and integrated readback drift',(
  const before=beforeCombatVisualSource(path,source);
  assert.throws(()=>beforeCurrentProductionSource(path,before,p=>readFileSync(p,'utf8')),/fresh (?:current production owner|combat visual source)/);
  const layout='scripts/official-run-layout.mjs',current=readFileSync(layout,'utf8');
- const readSuite=p=>beforeDeckPagesSuiteSource(p,readFileSync(p,'utf8'));
+ const readBackflow=p=>beforeKnownMasterBackflowSource(p,readFileSync(p,'utf8'));
+ const backflow=readBackflow(layout);
+ assert.notEqual(backflow,current,'exact current master backflow layout');
+ const readSuite=p=>beforeDeckPagesSuiteSource(p,readBackflow(p));
  const preDeck=readSuite(layout),old=beforeCombatVisualSource(layout,preDeck,readSuite);
- assert.notEqual(preDeck,current,'exact current input-retirement layout');
+ assert.notEqual(preDeck,backflow,'exact current input-retirement layout');
  assert.notEqual(old,preDeck,'exact earlier combat-visual layout');
  assert.throws(()=>assertIntegrationSuccessorsCurrent(p=>p===layout?old:readFileSync(p,'utf8')),
   /fresh (?:complete integration source|current production owner|combat visual source): scripts\/official-run-layout\.mjs/);
@@ -97,12 +102,16 @@ test('fresh guards reject mixed old/new sources and integrated readback drift',(
 
 import {beforeEnergyReferenceSource,energyReferencePriorRead,assertEnergyReferenceCurrent} from './energy-reference-source.mjs';
 test('reference correction keeps exact history while rejecting stale source and changed readers',()=>{
- const path='src/lua/abyss_battle_render_hud.lua',source=readFileSync(path,'utf8');
- const previous=beforeEnergyReferenceSource(path,source);assert.notEqual(previous,source);
- assert.equal(beforeEnergyReferenceSource(path,previous),previous);
- assert.equal(beforeEnergyReferenceSource(path,source+'-- unknown'),source+'-- unknown');
- assert.throws(()=>assertEnergyReferenceCurrent(path,previous,p=>readFileSync(p,'utf8')),/fresh energy reference source/);
+ const path='src/lua/abyss_battle_render_hud.lua',current=readFileSync(path,'utf8');
+ const readBackflow=p=>beforeDevelopBackflow(p,readFileSync(p,'utf8'));
+ const source=readBackflow(path);
+ assert.notEqual(source,current,'exact current develop backflow renderer');
+ const previous=beforeEnergyReferenceSource(path,source,readBackflow);assert.notEqual(previous,source);
+ assert.equal(beforeEnergyReferenceSource(path,previous,readBackflow),previous);
+ assert.equal(beforeEnergyReferenceSource(path,source+'-- unknown',readBackflow),source+'-- unknown');
+ assert.throws(()=>assertEnergyReferenceCurrent(path,previous,readBackflow),/fresh energy reference source/);
  let reads=0;
- assert.throws(()=>energyReferencePriorRead(()=>++reads===1?source:source+'-- changed')(path,'utf8'),/linked owner identity/);
+ const changingRead=p=>beforeDevelopBackflow(p,++reads===1?current:current+'-- changed');
+ assert.throws(()=>energyReferencePriorRead(changingRead)(path,'utf8'),/linked owner identity/);
  assertIntegrationSuccessorsCurrent();
 });
