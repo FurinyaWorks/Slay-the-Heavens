@@ -35,6 +35,38 @@ export const selectionRawEntranceReplay=Object.freeze({
 // Current Host checks exercise production. Historical Host and CI replays
 // preserve the exact earlier test sources from the production backflow.
 const fixtures=Object.freeze({
+ "tests/defect-utility-planning.test.mjs": {
+  "current": {
+   "sha256": "14f647fae87f83b72919ce2e77f70503b6726e656b7283af75092dde5ba55be4",
+   "gitBlob": "e20a63120443b83a177bbd75a2809cdd4ece2b09"
+  },
+  "previous": {
+   "sha256": "d7b64a1189fce508eab45275d33dbbf442a46f085d0c2c3fe10c6c2caccab6ab",
+   "gitBlob": "ba92ddb97178c4ccf977c5148db23d69f06b4485"
+  },
+  "hunks": [
+   {
+    "at": 0,
+    "before": "import {pointerInputPath,readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';\nimport {currentProductionRereads} from './helpers/current-production-source-reads.mjs';\nimport {preDefectActorSource,defectActorEpoch} from './helpers/defect-actor-source-epoch.mjs';",
+    "after": "import {pointerInputPath,readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';\nimport {currentProductionRereads,releaseArchitectureReadTrace} from './helpers/current-production-source-reads.mjs';\nimport {preDefectActorSource,defectActorEpoch} from './helpers/defect-actor-source-epoch.mjs';"
+   },
+   {
+    "at": 41,
+    "before": " const admittedReads=[...reads];\n const entranceBytes=readFileSync('tests/fixtures/ui-entrance-source.json.gz');",
+    "after": " const admittedReads=[...reads];\n assert.equal(admittedReads[0],config,'outer Actor reads its input before admission');\n const releaseReads=admittedReads.slice(1);\n assert.equal(releaseReads.length,releaseArchitectureReadTrace.count);\n assert.equal(createHash('sha256').update(JSON.stringify(releaseReads)).digest('hex'),\n  releaseArchitectureReadTrace.sha256,'exact current Actor admission order');\n // These indexed rereads were added to the shared release architecture closure.\n const releaseRereads=new Set([4,5,10,11,17,19,20,21,22,23,31,32,116,222,223,224,368,369,370]);\n const priorReads=admittedReads.filter((_path,position)=>!releaseRereads.has(position));\n const entranceBytes=readFileSync('tests/fixtures/ui-entrance-source.json.gz');"
+   },
+   {
+    "at": 54,
+    "before": " assert.equal(entranceOwners.length,20);\n assert.deepEqual(admittedReads.slice(1,21),entranceOwners,'complete fresh entrance owner admission');\n const additionalProductionReads=new Map([",
+    "after": " assert.equal(entranceOwners.length,20);\n assert.deepEqual(priorReads.slice(1,21),entranceOwners,'complete fresh entrance owner admission');\n const additionalProductionReads=new Map(["
+   },
+   {
+    "at": 63,
+    "before": " ]);\n for(const [position,path] of additionalProductionReads)assert.equal(admittedReads[position],path,'exact production reread');\n const originalReads=admittedReads.filter((_path,position)=>!additionalProductionReads.has(position));\n assert.equal(admittedReads.length,487);\n assert.equal(createHash('sha256').update(JSON.stringify(admittedReads)).digest('hex'),\n  '639281271a32cb71112b038ccd040873109bb6f24ac51f79597445e706ff4abb','complete production Actor admission order');",
+    "after": " ]);\n for(const [position,path] of additionalProductionReads)assert.equal(priorReads[position],path,'exact production reread');\n const originalReads=priorReads.filter((_path,position)=>!additionalProductionReads.has(position));\n assert.equal(priorReads.length,487);\n assert.equal(createHash('sha256').update(JSON.stringify(priorReads)).digest('hex'),\n  '639281271a32cb71112b038ccd040873109bb6f24ac51f79597445e706ff4abb','complete production Actor admission order');"
+   }
+  ]
+ },
  "tests/helpers/defect-actor-vm.mjs": {
   "current": {
    "sha256": "1ee4632b34f37909c22431a10faeacedf36f67969081dffe051e8f7cfffcc94e",

@@ -1,5 +1,5 @@
 import {pointerInputPath,readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';
-import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
+import {currentProductionRereads,releaseArchitectureReadTrace} from './helpers/current-production-source-reads.mjs';
 import {preDefectActorSource,defectActorEpoch} from './helpers/defect-actor-source-epoch.mjs';
 import {currentDefectActorReader} from './helpers/m7-core-final-source-inverse.mjs';
 import {sourceEpoch as currentEpoch} from './helpers/closeout-source-epoch.mjs';
@@ -40,12 +40,20 @@ test('the explicit historical reader requires current owners and rejects a stale
  const expected=defectActorEpoch.proof.current[config].source;
  assert.equal(reader(config),expected);
  const admittedReads=[...reads];
+ assert.equal(admittedReads[0],config,'outer Actor reads its input before admission');
+ const releaseReads=admittedReads.slice(1);
+ assert.equal(releaseReads.length,releaseArchitectureReadTrace.count);
+ assert.equal(createHash('sha256').update(JSON.stringify(releaseReads)).digest('hex'),
+  releaseArchitectureReadTrace.sha256,'exact current Actor admission order');
+ // These indexed rereads were added to the shared release architecture closure.
+ const releaseRereads=new Set([4,5,10,11,17,19,20,21,22,23,31,32,116,222,223,224,368,369,370]);
+ const priorReads=admittedReads.filter((_path,position)=>!releaseRereads.has(position));
  const entranceBytes=readFileSync('tests/fixtures/ui-entrance-source.json.gz');
  assert.equal(createHash('sha256').update(entranceBytes).digest('hex'),
   '7ac3f53b242819cdb569c0a1ebf60de0605b72297a1072ea612bfeb11b0597c9');
  const entranceOwners=Object.keys(JSON.parse(gunzipSync(entranceBytes)).files);
  assert.equal(entranceOwners.length,20);
- assert.deepEqual(admittedReads.slice(1,21),entranceOwners,'complete fresh entrance owner admission');
+ assert.deepEqual(priorReads.slice(1,21),entranceOwners,'complete fresh entrance owner admission');
  const additionalProductionReads=new Map([
   [79,'src/lua/abyss_battle_enemy_view.lua'],
   [143,'src/lua/abyss_feedback.lua'],
@@ -54,10 +62,10 @@ test('the explicit historical reader requires current owners and rejects a stale
   [397,'src/lua/abyss_feedback.lua'],
   [461,'src/lua/abyss_feedback.lua'],
  ]);
- for(const [position,path] of additionalProductionReads)assert.equal(admittedReads[position],path,'exact production reread');
- const originalReads=admittedReads.filter((_path,position)=>!additionalProductionReads.has(position));
- assert.equal(admittedReads.length,487);
- assert.equal(createHash('sha256').update(JSON.stringify(admittedReads)).digest('hex'),
+ for(const [position,path] of additionalProductionReads)assert.equal(priorReads[position],path,'exact production reread');
+ const originalReads=priorReads.filter((_path,position)=>!additionalProductionReads.has(position));
+ assert.equal(priorReads.length,487);
+ assert.equal(createHash('sha256').update(JSON.stringify(priorReads)).digest('hex'),
   '639281271a32cb71112b038ccd040873109bb6f24ac51f79597445e706ff4abb','complete production Actor admission order');
  assert.equal(originalReads.length,481);
  assert.equal(createHash('sha256').update(JSON.stringify(originalReads)).digest('hex'),
