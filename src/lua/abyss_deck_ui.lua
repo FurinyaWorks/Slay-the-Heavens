@@ -8,6 +8,7 @@ local CardKeywords = require('abyss_card_keywords')
 local OriginalDisplay = require('abyss_original_v4_display')
 local M = {}
 local Pointer = require('abyss_pointer_input')
+local RoundedButton = require('abyss_rounded_button')
 local Browser = require('abyss_deck_browser')
 local NativeArt = require('abyss_card_art_runtime')
 local pileNames = {draw="抽牌堆",discard="弃牌堆",exhaust="消耗堆"}
@@ -15,6 +16,71 @@ local rarityOrder = {basic=1,special=2,common=3,uncommon=4,rare=5,curse=6}
 local noPlayPreview = {}
 local NativeGrid = require('abyss_deck_grid')
 local typeNames = NativeGrid.typeNames
+
+local function bindPileReturn(deck, button, platform, cursor, clickEvent, revision)
+    local hit,art=button:GetChild('hit'),button:GetChild('art')
+    local chrome=art:GetChild('roundedButton')
+    local palette=Theme.officialAssets.pileReturnPalette
+    local held,released,observed,hovered
+    local painted='normal'
+    local function available()
+        return deck.visible and deck.browserShell and not deck.choiceToken and not deck.detailOnly
+    end
+    local function current(token)
+        return token and available() and token.generation==deck.generation and token.run==deck.run
+            and token.revision==revision()
+    end
+    local function paint(state)
+        if painted==state then return end
+        painted=state
+        RoundedButton.paint(chrome,palette[state],platform.color)
+        local scale=state=='pressed' and Theme.layout.deckView.pressedScale or 1
+        art:SetLocalScale(scale,scale,1)
+    end
+    local function reset()
+        held,released,hovered=nil,nil,nil
+        paint('normal')
+    end
+    local function touch(event) return event and event.touchId end
+    if cursor.CursorEnter then
+        hit:AddCursorEventListener(cursor.CursorEnter,function()
+            if not available() or Pointer.blocked(platform) then return end
+            hovered=true
+            if not held then paint('hover') end
+        end)
+    end
+    for _,kind in pairs({cursor.CursorExit,cursor.CursorEndDrag})do
+        hit:AddCursorEventListener(kind,function(event)
+            local owner=held or released
+            if not owner or not event or owner.touch==touch(event) then reset() end
+        end)
+    end
+    if cursor.CursorDown and cursor.CursorUp then
+        hit:AddCursorEventListener(cursor.CursorDown,function(event)
+            if current(held) and held.touch~=touch(event) then return end
+            observed,held,released=true,nil,nil
+            if not available() or Pointer.blocked(platform) then reset();return end
+            if touch(event)~=nil then hovered=nil end
+            held={generation=deck.generation,run=deck.run,revision=revision(),touch=touch(event)}
+            paint('pressed')
+        end)
+        hit:AddCursorEventListener(cursor.CursorUp,function(event)
+            if not held or held.touch~=touch(event) then return end
+            released,held=current(held) and held or nil,nil
+            paint(released and hovered and 'hover' or 'normal')
+        end)
+    end
+    hit:AddCursorEventListener(clickEvent,function(event)
+        if not available() or Pointer.blocked(platform) then return false end
+        if observed or cursor.CursorDown and cursor.CursorUp and touch(event)~=nil then
+            if not current(released) or released.touch~=touch(event) then return false end
+            released=nil
+        end
+        return deck:back()
+    end)
+    return reset
+end
+
 -- ClientUIGridScrollerControl: current item size/spacing, top/bottom padding,
 -- fixed columns and viewport determine visible rows, including clipped edges.
 -- Only those logical indices must be painted; virtual offscreen items may not exist.
@@ -173,6 +239,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     local pileReturn=official and root:GetChild('pileReturn')
     local titleControl=root:GetChild('title')
     local returnRevision=0
+    local resetPileReturn
     local indexBases=setmetatable({},{__mode='k'})
     self.browserWarmupPending=NativeGrid.canPrepare(official,platform,pileGrid)
     function self.prepareBrowser() NativeGrid.prepare(self,pileGrid,indexBases) end
@@ -505,6 +572,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         if not paintCardDetail(context,context.current) then return false end
         self.cardDetail=context
         returnRevision=returnRevision+1
+        if resetPileReturn then resetPileReturn() end
         invalidateDetailGrid()
         details:SetAnchoredPosition(360,30);details:SetSizeDelta(noteWidth,noteHeight)
         detailHit:SetAnchoredPosition(360,30);detailHit:SetSizeDelta(noteWidth,noteHeight)
@@ -768,6 +836,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     end
     function self.open(_, run, choice, onPick, pileKind)
         if self.visible then return false end
+        if resetPileReturn then resetPileReturn() end
         self.openSession=self.openSession+1
         self.generation = self.generation + 1
         local cards, catalog
@@ -926,6 +995,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         self.pileView,self.browserShell=nil,nil;grid=browserGrid
         root:GetChild('veil'):SetVisible(true)
         if Theme.presentationProfile=='official-assets-first' then
+            resetPileReturn()
             for _,name in ipairs({'pileChrome','pileReturn'})do root:GetChild(name):SetVisible(false)end
         end
         paintBrowse()
@@ -987,6 +1057,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         if self.focusRead then return onClose() end
         if self.cardDetail then
             returnRevision=returnRevision+1
+            if resetPileReturn then resetPileReturn() end
             local repaint=self.detailGridInvalidated
             self.detailGridInvalidated=nil
             hideCardDetail();details:SetVisible(false);detailHit:SetVisible(false);grid:SetVisible(not self.paged)
@@ -1040,35 +1111,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
                 return self.browserShell and self:setSort(mode) or false
             end)
         end
-        local hit=root:GetChild('pileReturn'):GetChild('hit')
-        local held,released,observed
-        local function available()
-            return self.visible and self.browserShell and not self.choiceToken and not self.detailOnly
-        end
-        local function current(token)
-            return token and available() and token.generation==self.generation and token.run==self.run
-                and token.revision==returnRevision
-        end
-        if cursor.CursorDown and cursor.CursorUp then
-            hit:AddCursorEventListener(cursor.CursorDown,function(event)
-                observed=true;held,released=nil,nil
-                if available() then held={generation=self.generation,run=self.run,revision=returnRevision,touch=event and event.touchId}end
-            end)
-            hit:AddCursorEventListener(cursor.CursorUp,function(event)
-                if held and held.touch==(event and event.touchId)then released=current(held) and held or nil;held=nil end
-            end)
-            for _,kind in pairs({cursor.CursorExit,cursor.CursorEndDrag})do
-                hit:AddCursorEventListener(kind,function()held,released=nil,nil end)
-            end
-        end
-        hit:AddCursorEventListener(clickEvent,function(event)
-            if not available() or Pointer.blocked(platform)then return false end
-            if observed or cursor.CursorDown and cursor.CursorUp and event and event.touchId~=nil then
-                local token=released;released=nil
-                if not current(token) or token.touch~=(event and event.touchId)then return false end
-            end
-            return self:back()
-        end)
+        resetPileReturn=bindPileReturn(self,pileReturn,platform,cursor,clickEvent,function()return returnRevision end)
     end
     bindOfficialBrowser()
     for _,name in ipairs({'previous','next'})do

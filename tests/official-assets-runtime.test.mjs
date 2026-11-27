@@ -1172,7 +1172,7 @@ local button=panel:GetChild('pileReturn')
 local hit,art=button:GetChild('hit'),button:GetChild('art')
 local chrome=art:GetChild('roundedButton')
 local theme=require('abyss_theme')
-local palette=theme.officialAssets.roundedButtonPalettes.cancel
+local palette=assert(theme.officialAssets.pileReturnPalette,'missing approved pile return colors')
 local function state(expected)
  for i,role in ipairs({'rim','cloth'})do
   for _,part in ipairs(chrome:GetChild(role):GetChildren())do

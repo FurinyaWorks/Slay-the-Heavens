@@ -8,6 +8,7 @@ import {styleTreasure} from './v25-node-layout.mjs';
 import {v25Theme,applyV25BattleLayout,rebuildV25CardFaces} from './v25-layout.mjs';
 import {officialBattleHud,officialBattleUtilityFaces} from './official-battle-hud.mjs';
 import {officialBattleCardChrome} from './official-battle-card-chrome.mjs';
+import {battlePileReturnPalette} from './official-battle-pile-chrome.mjs';
 import {installStsReferenceCardChrome,stsReferenceRuntimeGeometry,geoCardReferenceTokens} from './sts-card-reference-profile.mjs';
 import {loadLowCostArt,attachLowCostArt} from './lowcost-art.mjs';
 import {preflightOfficialRoots,composeOfficialRun,finishOfficialComposition} from './official-run-layout.mjs';
@@ -47,6 +48,7 @@ export function officialAssetsTheme(source){
    disabled:theme.officialAssets.neowChoice.disabled,ink:theme.officialAssets.buttonInk});
  theme.officialAssets.stsCardReference={...geoCardReferenceTokens(theme),geometry:structuredClone(stsReferenceRuntimeGeometry)};
  theme.presentationProfile='official-assets-first';
+ theme.officialAssets.pileReturnPalette=structuredClone(battlePileReturnPalette);
  theme.lowCostArt=loadLowCostArt();
  theme.cardSkin.text.body=theme.officialAssets.cardInk;
   theme.cardSkin.costText=theme.officialAssets.battleCostInk;

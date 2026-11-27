@@ -15,14 +15,15 @@ export function battlePileChrome(theme) {
  ]};
 }
 
+export const battlePileReturnPalette={
+ normal:['#BCA348','#8C3739'],hover:['#D9BE60','#A84D43'],
+ pressed:['#C6A858','#592A2B'],disabled:['#716650','#483332'],
+};
+
 export function battlePileReturn(button, ink){
  button.position=[-550,-237];
- const palettes={
-  normal:['#BCA348','#8C3739'],hover:['#D9BE60','#A84D43'],
-  pressed:['#C6A858','#592A2B'],disabled:['#716650','#483332'],
- };
  for(const state of button.children[0].children){
-  roundedButtonState(state,button.size,palettes[state.name]);
+  roundedButtonState(state,button.size,battlePileReturnPalette[state.name]);
   const label=state.children.find(part=>part.name==='label');
   label.text.colour=state.name==='disabled'?'#AFA18C':ink;
   label.text.content='返回';
