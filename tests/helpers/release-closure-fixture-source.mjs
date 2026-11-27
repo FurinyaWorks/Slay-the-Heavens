@@ -493,6 +493,48 @@ const fixtures=Object.freeze({
    }
   ]
  },
+ "tests/session-menu-navigation.test.mjs": {
+  "current": {
+   "sha256": "26b72dbb78c945d991a18e00ce6c73653b41676f2855f05ae3e08856c778ebde",
+   "gitBlob": "0af89cb251f99e534a2c17c4a4e863c673314a23"
+  },
+  "previous": {
+   "sha256": "bd957b1c65c16d2b60f2f4a1853b73655a5ed913d2eaff1f48a391ccf160ab9e",
+   "gitBlob": "394b8024a5e4a0860e455adb7cc8b75b6530ca04"
+  },
+  "hunks": [
+   {
+    "at": 3,
+    "before": "import {entranceInventory} from './helpers/ui-entrance-source.mjs';\nimport {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';",
+    "after": "import {entranceInventory} from './helpers/ui-entrance-source.mjs';\nimport {actorFocusPreStyleReader} from './helpers/defect-actor-vm.mjs';\nimport {reviewedRenamedStsStyleRead,reviewedStsStyleInventory} from './helpers/reviewed-selection-current-source.mjs';\nimport {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';"
+   },
+   {
+    "at": 21,
+    "before": "const neowFeedbackPath='src/lua/abyss_node_ui_feedback.lua';\nconst readCurrentMenuPrior=liveEpoch.combinedReader(readLive,'v2RunMenuPrior');\nfunction readHistoricalMenu(path){",
+    "after": "const neowFeedbackPath='src/lua/abyss_node_ui_feedback.lua';\nconst readCurrentMenuPrior=liveEpoch.combinedReader(reviewedRenamedStsStyleRead(readLive),'v2RunMenuPrior');\nconst readPreStyle=actorFocusPreStyleReader(readLive);\nfunction readHistoricalMenu(path){"
+   },
+   {
+    "at": 143,
+    "before": "test('menu source continuation retains the complete release corpus and rejects new owner drift',()=>{\n const read=p=>readHistoricalMenu(p).replaceAll('\\r\\n','\\n');\n const luaPaths=readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p).sort();",
+    "after": "test('menu source continuation retains the complete release corpus and rejects new owner drift',()=>{\n const read=p=>{\n  const prior=readHistoricalMenu(p).replaceAll('\\r\\n','\\n');\n  const expected=sourceEpoch.proof.current[p]?.source;\n  return expected&&prior!==expected?readPreStyle(p,expected):prior;\n };\n const luaPaths=readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p).sort();"
+   },
+   {
+    "at": 153,
+    "before": " const later=['src/lua/abyss_power_membership.lua',...stasisUpgradeAddedPaths,...actorFocusAdded,...deckPagesAdded,pointerInputPath];\n assert.deepEqual(entranceInventory(['config/architecture.json',...luaPaths].sort(),readLive),[...paths.filter(path=>path!==retiredControllerPath),...later].sort());\n assert.throws(()=>readLive(retiredControllerPath),{code:'ENOENT'});",
+    "after": " const later=['src/lua/abyss_power_membership.lua',...stasisUpgradeAddedPaths,...actorFocusAdded,...deckPagesAdded,pointerInputPath];\n const reviewed=reviewedStsStyleInventory(['config/architecture.json',...luaPaths],readLive);\n assert.deepEqual(entranceInventory(reviewed,readLive),[...paths.filter(path=>path!==retiredControllerPath),...later].sort());\n assert.throws(()=>readLive(retiredControllerPath),{code:'ENOENT'});"
+   },
+   {
+    "at": 166,
+    "before": " assert.deepEqual(added,['src/lua/abyss_game_ui_navigation.lua','src/lua/abyss_game_ui_navigation_view.lua']);\n for(const p of paths)assert.equal(beforeCharacterPreparationSource(p,read(p)),sourceEpoch.proof.current[p].source,p);\n for(const p of added){",
+    "after": " assert.deepEqual(added,['src/lua/abyss_game_ui_navigation.lua','src/lua/abyss_game_ui_navigation_view.lua']);\n for(const p of paths)assert.equal(read(p),sourceEpoch.proof.current[p].source,p);\n for(const p of added){"
+   },
+   {
+    "at": 183,
+    "before": "  const raw=readLive(path);\n  assert.equal(beforeCharacterPreparationSource(path,raw,readLive).replaceAll('\\r\\n','\\n'),liveEpoch.proof.current[path].source);\n  assert.equal(liveEpoch.preCombinedSource(path,raw,{target:'v2RunMenuPrior',readSource:readLive}),sourceEpoch.proof.current[path].source);",
+    "after": "  const raw=readLive(path);\n  const current=liveEpoch.proof.current[path].source;\n  assert.equal(readPreStyle(path,current),current,path);\n  assert.equal(liveEpoch.preCombinedSource(path,raw,{target:'v2RunMenuPrior',readSource:readLive}),sourceEpoch.proof.current[path].source);"
+   }
+  ]
+ },
  "tests/sts-selection-fade.test.mjs": {
   "current": {
    "sha256": "dd1bd49b30bf240cef6fbc729f470c94cc2eb38f89e130a10c3acc65e628718b",

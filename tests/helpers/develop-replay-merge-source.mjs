@@ -106,7 +106,7 @@ export function beforeMapRoomReplayCohort(path,source){
  if(!mapRoomCohortPaths.has(path))return source;
  mapRoomReplayCohort??=releaseUiRestoreArchive(readFileSync(new URL('./map-room-replay-cohort-source.json.gz',import.meta.url)),
   '6af29058c13b798d571e11355bca6af33a9912c4363a627a7618f6979ec8a61f','67fc8750dd6ef9a13067c6a43137f910b6a44228');
- if(path===runOwnerTracePath)source=beforeReleaseClosureFixture(path,source);
+ if(path===runOwnerTracePath||path==='tests/session-menu-navigation.test.mjs')source=beforeReleaseClosureFixture(path,source);
  source=beforeRunOwnerTracePin(path,source,mapRoomReplayCohort);
  return mapRoomReplayCohort.project(path,beforeAudioDeckBrowserReceipt(path,source,mapRoomReplayCohort));
 }
