@@ -78,7 +78,12 @@ print('SOURCE_COMBAT_GOLD_VECTORS_PASS 42')`);
 test('combat gold bounds, escape, explicit ownership and atomic failure guards',()=>{
  const source=readFileSync('tests/lua/support/combat_gold_cases.lua','utf8').replaceAll('\r\n','\n');
  const body=source.slice(source.indexOf('\ntest('),source.lastIndexOf('\nassert(registered')).trim();
- assert.equal(createHash('sha256').update(body).digest('hex'),'55d702dc8de66e9f0385693ccc702d8fa9137a54b5d96e742fd60ab060b7e696','all thirteen original case bodies remain unchanged');
+ // #951 renamed this encounter. Reverse the exact line only for the hash.
+ const originalEncounter=" local run=Run.new(Data,'42');assert(Run.startCombat(run,'cultist_solo'))";
+ const currentEncounter=originalEncounter.replace("'cultist_solo'","'raven_adept_solo'");
+ assert.equal(body.split(currentEncounter).length,2,'the reviewed encounter migration must occur exactly once');
+ const historical=body.replace(currentEncounter,originalEncounter);
+ assert.equal(createHash('sha256').update(historical).digest('hex'),'55d702dc8de66e9f0385693ccc702d8fa9137a54b5d96e742fd60ab060b7e696','all thirteen original case bodies remain unchanged');
  const seen=[];
  for(const [file,first,last]of [['combat_gold.lua',1,7],['combat_gold_transactions.lua',8,9],['combat_gold_potion_rollback.lua',10,10],['combat_gold_claims.lua',11,13]]){
   const started=Date.now();
