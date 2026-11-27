@@ -7,7 +7,22 @@ import {extendIntegratedHelperClosure} from './integrated-ci-source.mjs';
 import {readFileSync,writeFileSync,mkdirSync,realpathSync,existsSync} from 'node:fs';
 import {join,dirname,relative,isAbsolute} from 'node:path';
 import {createHash} from 'node:crypto';
+import {exactSourceMatches} from './source-fingerprint.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex');
+const approvedEntrancePath='tests/helpers/ui-entrance-approved-sources.mjs';
+const approvedEntranceCurrent={sha256:'484c3a3e4f2aeb96fc84bbfc45a890576f6d615311a0c823bc63728bb7055d43',gitBlob:'b3ec751c07b240729b8454f05e19962060b6d3ce'};
+const approvedEntrancePrevious={sha256:'b5c903614eb19f512e365c8c4024e1c40c37f5ab5df790a016dbeecf7b0efdcb',gitBlob:'01d014fa21cf6ff4c88ef8fb99a55ae3d644802f'};
+
+function beforePrologueEntranceHelper(path,text,lf){
+ if(path!==approvedEntrancePath||!exactSourceMatches(lf,approvedEntranceCurrent))return lf;
+ assert(text===lf||text===lf.replaceAll('\n','\r\n'),'uniform live Prologue entrance helper: '+path);
+ const parts=lf.split('\n// #1035 changes the two archived entrance owners');
+ assert.equal(parts.length,2,'exact Prologue entrance helper continuation');
+ const prior=parts[0].replace("\nimport {exactSourceMatches} from './source-fingerprint.mjs';",'')
+  .replace('\n source=beforeNativePrologueOwner(path,source);','');
+ assert(exactSourceMatches(prior,approvedEntrancePrevious),'exact Prologue entrance helper predecessor');
+ return prior;
+}
 // Git source identities use LF; binary witnesses (especially gzip) retain
 // their exact bytes. Never decode an arbitrary helper dependency as text.
 export function integrationClosureBytes(path,content){
@@ -15,7 +30,7 @@ export function integrationClosureBytes(path,content){
  if(!/\.(?:mjs|js|json|lua|md|yml|yaml)$/.test(path))return content;
  const text=content.toString('utf8');
  assert(Buffer.from(text).equals(content),'helper source must be valid UTF-8: '+path);
- return Buffer.from(text.replaceAll('\r\n','\n'));
+ return Buffer.from(beforePrologueEntranceHelper(path,text,text.replaceAll('\r\n','\n')));
 }
 const bytes=readFileSync(new URL('./integration-source-closure.json',import.meta.url));
 assert.equal(hash(bytes),'800fcc9efd889f482259d0e1e9f1501f0e9597ac05552622ede00dd3dcdb4a94','complete integration helper closure identity');

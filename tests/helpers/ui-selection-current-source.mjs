@@ -165,8 +165,30 @@ const cardReadingCopier=Object.freeze({
   }
  ]
 });
+const prologueEntranceCopier=Object.freeze({
+ "current": {
+  "sha256": "4ee5561bd44b64e5e231356a856cb5c5c41b650c3c9b39cc6039f8c65f6ae973",
+  "gitBlob": "f2dbae3d773c2d42f0b31d798638eb6a26129c0a"
+ },
+ "previous": {
+  "sha256": "6601d0b9ff0c1e9633efdf3fa2e8a8d498599f3ded3d0fab007e6ce918cd70e3",
+  "gitBlob": "8fea5e45c5e6d034a5d6807bf5546f396b0f78c9"
+ },
+ "hunks": [
+  {
+   "at": 8,
+   "before": "import {createHash} from 'node:crypto';\nconst hash=b=>createHash('sha256').update(b).digest('hex');\n// Git source identities use LF; binary witnesses (especially gzip) retain",
+   "after": "import {createHash} from 'node:crypto';\nimport {exactSourceMatches} from './source-fingerprint.mjs';\nconst hash=b=>createHash('sha256').update(b).digest('hex');\nconst approvedEntrancePath='tests/helpers/ui-entrance-approved-sources.mjs';\nconst approvedEntranceCurrent={sha256:'484c3a3e4f2aeb96fc84bbfc45a890576f6d615311a0c823bc63728bb7055d43',gitBlob:'b3ec751c07b240729b8454f05e19962060b6d3ce'};\nconst approvedEntrancePrevious={sha256:'b5c903614eb19f512e365c8c4024e1c40c37f5ab5df790a016dbeecf7b0efdcb',gitBlob:'01d014fa21cf6ff4c88ef8fb99a55ae3d644802f'};\n\nfunction beforePrologueEntranceHelper(path,text,lf){\n if(path!==approvedEntrancePath||!exactSourceMatches(lf,approvedEntranceCurrent))return lf;\n assert(text===lf||text===lf.replaceAll('\\n','\\r\\n'),'uniform live Prologue entrance helper: '+path);\n const parts=lf.split('\\n// #1035 changes the two archived entrance owners');\n assert.equal(parts.length,2,'exact Prologue entrance helper continuation');\n const prior=parts[0].replace(\"\\nimport {exactSourceMatches} from './source-fingerprint.mjs';\",'')\n  .replace('\\n source=beforeNativePrologueOwner(path,source);','');\n assert(exactSourceMatches(prior,approvedEntrancePrevious),'exact Prologue entrance helper predecessor');\n return prior;\n}\n// Git source identities use LF; binary witnesses (especially gzip) retain"
+  },
+  {
+   "at": 31,
+   "before": " assert(Buffer.from(text).equals(content),'helper source must be valid UTF-8: '+path);\n return Buffer.from(text.replaceAll('\\r\\n','\\n'));\n}",
+   "after": " assert(Buffer.from(text).equals(content),'helper source must be valid UTF-8: '+path);\n return Buffer.from(beforePrologueEntranceHelper(path,text,text.replaceAll('\\r\\n','\\n')));\n}"
+  }
+ ]
+});
 export const selectionCopierReceipt=Object.freeze({path:copierPath,
- afterSha256:cardReadingCopier.current.sha256,afterBlob:cardReadingCopier.current.gitBlob});
+ afterSha256:prologueEntranceCopier.current.sha256,afterBlob:prologueEntranceCopier.current.gitBlob});
 
 function beforeReceipt(path,source,binding){
  if(!binding||!uniformSelectionSource(source)||!exactSourceMatches(source,binding.current))return source;
@@ -178,6 +200,7 @@ function beforeReceipt(path,source,binding){
 
 export function beforeSelectionReceiptSource(path,source){
  if(path===copierPath){
+  source=beforeReceipt(path,source,prologueEntranceCopier);
   source=beforeReceipt(path,source,cardReadingCopier);
   source=beforeReceipt(path,source,nodeNoticeCopier);
  }
@@ -186,7 +209,7 @@ export function beforeSelectionReceiptSource(path,source){
 
 export function checkedSelectionReceiptRead(read){
  const checked=(path,encoding)=>{
-  const raw=read(path,encoding),binding=path===copierPath?cardReadingCopier:receipt(path);
+  const raw=read(path,encoding),binding=path===copierPath?prologueEntranceCopier:receipt(path);
   if(binding){
    const source=decodedSelectionSource(raw);
    assert(uniformSelectionSource(source)&&exactSourceMatches(source,binding.current),
