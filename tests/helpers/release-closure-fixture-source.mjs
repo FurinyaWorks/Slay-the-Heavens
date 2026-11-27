@@ -222,6 +222,23 @@ const fixtures=Object.freeze({
    }
   ]
  },
+ "tests/relic-equip-source-epoch.test.mjs": {
+  "current": {
+   "sha256": "0f76bc55d3aebef2d72ab39e2e3658e7738612275f3ae243364f5cc1500efc55",
+   "gitBlob": "a4200ca2943ed6ad287284a492ee3c2dc8906007"
+  },
+  "previous": {
+   "sha256": "cc552a1f69f99ff624a232444959405017ae81eb67de2057c2d8ed81e650e4bb",
+   "gitBlob": "5aa4c123a3128320b69b6bb8fead3fba5d410c46"
+  },
+  "hunks": [
+   {
+    "at": 39,
+    "before": " assert.notEqual(raw(mapOwner),currentMapOwner);\n assert.throws(()=>sourceEpoch.preCombinedSource(file,source,{target,readSource:p=>p===mapOwner?currentMapOwner:raw(p)}),\n  /(?:linked owner identity: src\\/lua\\/abyss_traveler_portraits\\.lua.*map-room validation|linked owner missing: src\\/lua\\/abyss_traveler_portraits\\.lua: combined linked owner identity: config\\/architecture\\.json during entrance validation)/);\n for(const owner of proof.owners){",
+    "after": " assert.notEqual(raw(mapOwner),currentMapOwner);\n const selectOwner='src/lua/abyss_character_select_view.lua';\n const portraitDiagnostic='combined linked owner missing: '+mapOwner+': combined linked owner identity: '+selectOwner+\n  ' (fresh Selection portrait owner: '+selectOwner+')';\n assert.throws(()=>sourceEpoch.preCombinedSource(file,source,{target,readSource:p=>p===mapOwner?currentMapOwner:raw(p)}),\n  error=>error.message===portraitDiagnostic||\n   /(?:linked owner identity: src\\/lua\\/abyss_traveler_portraits\\.lua.*map-room validation|linked owner missing: src\\/lua\\/abyss_traveler_portraits\\.lua: combined linked owner identity: config\\/architecture\\.json during entrance validation)/.test(error.message));\n for(const owner of proof.owners){"
+   }
+  ]
+ },
  "tests/helpers/defect-actor-vm.mjs": {
   "current": {
    "sha256": "1ee4632b34f37909c22431a10faeacedf36f67969081dffe051e8f7cfffcc94e",
