@@ -5,16 +5,31 @@ import {beforeReleaseMetadata} from './release-metadata-source.mjs';
 import {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';
 
 export const selectionRawEntranceReplay=Object.freeze({
- current:{sha256:'af6b69b1543a688f9b23a8941381fd8534c95cc5dfe7f0f096a2a8b61328d188',gitBlob:'69a44aaa47230c0fd10cac2f8fe6c0e7e6a12d55'},
- previous:{sha256:'5cd7ad3d5a728418bb89cb8dbf0d4fea7fa199fb005b399b71772e63e0ec2851',gitBlob:'2128fceb1bff074e04d02f911264194e2415037f'},
- hunks:[
-  {at:13,
-   before:"import {checkedSelectionEntranceRead,selectionNodeNoticePath} from './ui-selection-current-source.mjs';",
-   after:"import {checkedSelectionEntranceRead,selectionNodeNoticePath} from './ui-selection-current-source.mjs';\nimport {releaseEntranceOwns} from './release-entrance-owner-source.mjs';"},
-  {at:33,
-   before:'  if(productionReadingBackflowOwns(path)||path===selectionNodeNoticePath||beforeOfficialCharacterBackflow(path,source)!==source)return raw;',
-   after:'  // The Selection reader authenticates the entire release entrance cohort from raw checkout bytes.\n  if(releaseEntranceOwns(path)||productionReadingBackflowOwns(path)||path===selectionNodeNoticePath||beforeOfficialCharacterBackflow(path,source)!==source)return raw;'},
- ],
+ "current": {
+  "sha256": "8e559a827f7b38a40082b5788c46d368497edfbd29dbcbfdc75aa5ba35f2fc35",
+  "gitBlob": "9ac20430030fdf2966f8de291c2f01213028f98d"
+ },
+ "previous": {
+  "sha256": "5cd7ad3d5a728418bb89cb8dbf0d4fea7fa199fb005b399b71772e63e0ec2851",
+  "gitBlob": "2128fceb1bff074e04d02f911264194e2415037f"
+ },
+ "hunks": [
+  {
+   "at": 13,
+   "before": "import {checkedSelectionEntranceRead,selectionNodeNoticePath} from './ui-selection-current-source.mjs';\nimport {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';",
+   "after": "import {checkedSelectionEntranceRead,selectionNodeNoticePath} from './ui-selection-current-source.mjs';\nimport {releaseEntranceOwns} from './release-entrance-owner-source.mjs';\nimport {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';"
+  },
+  {
+   "at": 32,
+   "before": "  const source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;\n  if(productionReadingBackflowOwns(path)||path===selectionNodeNoticePath||beforeOfficialCharacterBackflow(path,source)!==source)return raw;\n  return beforeMasterBackflowSource(path,raw);",
+   "after": "  const source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;\n  // The Selection reader authenticates the entire release entrance cohort from raw checkout bytes.\n  if(releaseEntranceOwns(path)||productionReadingBackflowOwns(path)||path===selectionNodeNoticePath||beforeOfficialCharacterBackflow(path,source)!==source)return raw;\n  return beforeMasterBackflowSource(path,raw);"
+  },
+  {
+   "at": 124,
+   "before": "  assert.equal(hash(readFileSync(target)),original.sha256,'unaltered complete historical assertions');\n  if(useArchivedOfficialInputs){",
+   "after": "  assert.equal(hash(readFileSync(target)),original.sha256,'unaltered complete historical assertions');\n  if(script==='tests/sts-character-reference.test.mjs'){\n   // The reviewed fixture counts virtual frames, so use a fixed clock for its\n   // readiness scenario. The original assertions and frame limit still run.\n   const vm=join(directory,'tests/helpers/portrait-runtime-vm.mjs');\n   const source=norm(readFileSync(vm,'utf8'));\n   assert.equal(hash(source),'f1b3d4c5168a77c95300ac09b327399563ddd03d1c24e118ecb4d00e3828988f','exact archived portrait VM');\n   const hook='  if(before)run(before);';\n   const clock=\"  if(code.includes(\\\"'hidden selection held battle readiness'\\\"))run('local elapsed=0;os.clock=function()elapsed=elapsed+.001;return elapsed end');\";\n   assert.equal(source.split(hook).length,2,'one archived portrait VM setup hook');\n   writeFileSync(vm,source.replace(hook,hook+'\\n'+clock));\n  }\n  if(useArchivedOfficialInputs){"
+  }
+ ]
 });
 
 // Current Host checks exercise production. Historical Host and CI replays

@@ -123,6 +123,17 @@ export function replayReviewedSelection(script='tests/sts-character-reference.te
   }
   const target=join(directory,script);mkdirSync(dirname(target),{recursive:true});writeFileSync(target,original.source);
   assert.equal(hash(readFileSync(target)),original.sha256,'unaltered complete historical assertions');
+  if(script==='tests/sts-character-reference.test.mjs'){
+   // The reviewed fixture counts virtual frames, so use a fixed clock for its
+   // readiness scenario. The original assertions and frame limit still run.
+   const vm=join(directory,'tests/helpers/portrait-runtime-vm.mjs');
+   const source=norm(readFileSync(vm,'utf8'));
+   assert.equal(hash(source),'f1b3d4c5168a77c95300ac09b327399563ddd03d1c24e118ecb4d00e3828988f','exact archived portrait VM');
+   const hook='  if(before)run(before);';
+   const clock="  if(code.includes(\"'hidden selection held battle readiness'\"))run('local elapsed=0;os.clock=function()elapsed=elapsed+.001;return elapsed end');";
+   assert.equal(source.split(hook).length,2,'one archived portrait VM setup hook');
+   writeFileSync(vm,source.replace(hook,hook+'\n'+clock));
+  }
   if(useArchivedOfficialInputs){
    for(const path of reviewedOfficialAssetInputPaths){
     const expected=readReviewedOfficialAssetInput(path,readCurrent);
