@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { verifyDownloadedArtifact, verifyPublishedRebase, verifyReceipts } from '../scripts/gil-candidate.mjs';
+import * as preflight from '../scripts/gil-candidate-preflight.mjs';
 import { api, approvedRequest, buildOnlyRequest, candidateTarget, encoderSha256, findArtifact, releaseBuildRequest, releaseBuildTarget, validationTarget, verifySource } from '../scripts/gil-candidate-preflight.mjs';
 import { fileRecord } from '../scripts/evidence-files.mjs';
 import { hostedCandidatePath, verifiedPayloadInputs } from '../scripts/hosted-gil-receipt.mjs';
@@ -41,7 +42,8 @@ test('only the unified workflow builds, audits and publishes a gated release dow
   for (const [name, expression] of Object.entries({
     WORK_KEY: 'steps.candidate.outputs.work_key', BASE_SHA256: 'steps.candidate.outputs.base_sha256',
     REQUEST_ID: 'steps.candidate.outputs.request_id', RELEASE_VERSION: 'steps.candidate.outputs.release_version',
-    GIL_RELEASE_ARTIFACT: 'steps.candidate.outputs.archive', QUALITY_RUN: 'steps.candidate.outputs.quality_run',
+    GIL_RELEASE_ARTIFACT: 'steps.candidate.outputs.archive', GIL_EARLY_TEST_ARTIFACT: 'steps.candidate.outputs.early_test',
+    QUALITY_RUN: 'steps.candidate.outputs.quality_run',
     QUALITY_ATTEMPT: 'steps.candidate.outputs.quality_attempt', QUALITY_CHECKOUT_ARTIFACT: 'steps.candidate.outputs.quality_checkout_artifact',
     LICENSES_RUN: 'steps.candidate.outputs.licenses_run',
   })) assert(audit.includes(`          ${name}: ${'${{'} ${expression} }}\n`), `audit requires ${name}`);
@@ -185,8 +187,40 @@ test('diagnostic refs only upload a manifest and do not trigger tag rebuilds', (
   assert.throws(() => validationTarget('1429751262', 'refs/tags/engine-v2.2.0', sourceSha), /enabled primary ref/);
   assert.match(workflow, /path: source\/build\/gil-artifact\/manifest\.json\n/);
   assert.match(workflow, /outputs\.build == 'true' && steps\.candidate\.outputs\.archive != 'true'/);
-  assert.match(workflow, /outputs\.build == 'true' && steps\.candidate\.outputs\.archive == 'true'/);
+  assert.match(workflow, /outputs\.build == 'true' && \(steps\.candidate\.outputs\.archive == 'true' \|\| steps\.candidate\.outputs\.early_test == 'true'\)/);
   assert.match(workflow, /group: gil-build-.*head_branch.*head_sha/);
+});
+
+test('early GIL downloads require manual primary dispatch and the current protected source; use separate custody', async () => {
+  const { earlyTestTarget, verifyEarlyTestHead, artifactName } = preflight;
+  const dispatch = { repoId: String(repo.id), ref: 'refs/heads/develop', event: 'workflow_dispatch',
+    testReleaseRef: 'release/v2.2.0', testSourceSha: sourceSha };
+  assert.equal(typeof earlyTestTarget, 'function', 'manual release test target is supported');
+  assert.equal(earlyTestTarget({ ...dispatch, testReleaseRef: '', testSourceSha: '' }), undefined);
+  const target = earlyTestTarget(dispatch);
+  assert.deepEqual(target, { branch: 'release/v2.2.0', version: 'v2.2.0', earlyTest: true });
+  for (const changes of [{ event: 'push' }, { event: 'workflow_run' }, { repoId: '3' }, { ref: 'refs/heads/arbitrary' },
+    { ref: 'refs/heads/ci/gil-test-download/v220-early-download' },
+    { testReleaseRef: 'develop' }, { testReleaseRef: '' }, { testSourceSha: '' }, { testSourceSha: sourceSha.slice(1) }]) {
+    assert.throws(() => earlyTestTarget({ ...dispatch, ...changes }), /manual dispatch|frozen release|40-character/);
+  }
+  const api = ({ protected: isProtected = true, head = sourceSha } = {}) => async path => {
+    if (path === `git/ref/heads/${target.branch}`) return { ref: `refs/heads/${target.branch}`, object: { type: 'commit', sha: head } };
+    assert.equal(path, 'branches/release%2Fv2.2.0');
+    return { name: target.branch, protected: isProtected, commit: { sha: head } };
+  };
+  await verifyEarlyTestHead(api(), target.branch, sourceSha);
+  await assert.rejects(verifyEarlyTestHead(api({ protected: false }), target.branch, sourceSha), /protected/);
+  await assert.rejects(verifyEarlyTestHead(api({ head: '3'.repeat(40) }), target.branch, sourceSha), /HEAD changed/);
+  const early = buildOnlyRequest(sourceSha, policy, target);
+  assert.equal(early.configuration.releaseCandidate, true);
+  assert.equal(early.archive, false);
+  assert.match(artifactName(early), /^gil-test-v2\.2\.0-[a-f0-9]{40}-[a-f0-9]{64}$/);
+  assert.doesNotMatch(artifactName(early), /^gil-candidate-/);
+  const workflow = readFileSync(new URL('../.github/workflows/gil-build.yml', import.meta.url), 'utf8');
+  assert.match(workflow, /workflow_dispatch:\n    inputs:[\s\S]*test_release_ref:[\s\S]*test_source_sha:/);
+  assert.match(workflow, /retention-days: \$\{\{ steps\.candidate\.outputs\.early_test == 'true' && 14 \|\| 90 \}\}/);
+  assert.doesNotMatch(workflow, /ci\/gil-test-download/);
 });
 
 test('unified build admits exact primary release events and never a PR, foreign run or tag', () => {

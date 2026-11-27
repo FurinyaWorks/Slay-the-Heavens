@@ -8,6 +8,10 @@
 
 正式工件包含 `candidate.gil`、`candidate.json`、来源及审计清单和校验和。工作流上传后重新下载校验。解压时保留 `candidate.gil` 和 `candidate.json` 在同一目录，用 `sha256sum -c SHA256SUMS` 或 PowerShell `Get-FileHash candidate.gil -Algorithm SHA256` 复核。记录完整源码 SHA、Artifact 链接末尾的数字 ID、GIL SHA-256、`buildId`、`payloadDigest` 和工件到期时间。正式工件保留 90 天。
 
+## 提前真机测试
+
+在主仓 Actions 的 **GIL build** 手动运行选择 `develop`，填写 `test_release_ref`（受保护的 `release/vX.Y.Z` 或 `hotfix/vX.Y.Z`）和 `test_source_sha`（该分支当前 HEAD 的完整 40 位 SHA）。构建和下载校验通过后，从运行摘要下载 `gil-test-*` 工件。工件保留 14 天，仅用于真机测试。正式 Performance regression 和发布继续使用通过 Full 与 Licenses 后生成的正式工件。
+
 ## 在后续门禁沿用同一工件
 
 1. 从构建摘要取数字 ID，运行冻结分支的 **Performance regression** `formal`，将数字填入 `gil_artifact_id`。验证通过后保存 `release-ci verify` 的 `performance.gil` 及对应的 Full 和 formal 证据。
