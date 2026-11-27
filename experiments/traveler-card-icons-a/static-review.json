@@ -1,0 +1,602 @@
+{
+  "anger": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "一剑后方留一张牌",
+    "previewSha256": "3d3d4fbb48e11c9dd11a398a8cbd792fbdcf3b2ac2cd1cffb4c5b7c166d60550",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "58f989ba8b837b2941d53a5edb260b1f8af8dad4146142e2ca1a164026471dae"
+  },
+  "armaments": {
+    "evidence": "R3-true-blind-unlabeled-common-color; 两种主意象成立：独立盾、加工台上的上箭头完整卡片；不再像只锻一把剑。",
+    "freeRead": "薄盾在旁，工作台上的牌面有上箭头；读作防守并升级卡。",
+    "previewSha256": "c69431adf680e139c4d28ff789441ba87c330f142493af05f42b81a02389e173",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "a70331975b1478ad0ad9b09807952c010e67a6a018ebbd20006c0c9432c45e9d"
+  },
+  "barricade": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "岩拱守住中央晶块",
+    "previewSha256": "08afe2a57ea209fa16602014472a227d5bd025213b1d3da2e954c114a2490314",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "109adea28844b6d7198563d8e6a9906a8c0de29a4b884a3f4f9be221090a3ce5"
+  },
+  "bash": {
+    "evidence": "R4 exact blind same-source re-export (60×41 distinction preserved); 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "刀切碎护甲",
+    "previewSha256": "497b1fdd0c92c4285dc4f7620be63a640ac6407a04eb636beac733b82cdf0fa6",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "d34cf165b4faa4f3107be187ca90944e786cf76fa4f01e1d453c7bae360a92af"
+  },
+  "battle_trance": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "眼框内三张牌",
+    "previewSha256": "20d023d38d415f2f534fa61794164da7328632ac9efa6dd1db361d1bf07ece7a",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "83f5d8c23b4b31bebe20496f3821291f8918cd3eb448713c4d2d6377ab81de74"
+  },
+  "berserk": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "裂甲转成晶体，图形右侧向前循环",
+    "previewSha256": "dead8889d8ab0dc0a524b6ffb7d2138ab59ef8f950703c0bdc4f7027ad2332b3",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "6e45c039a10682e14462769ae6c879a693e3afb460172207d85894b4a22dc455"
+  },
+  "blood_for_blood": {
+    "evidence": "R4 exact blind same-source re-export (60×41 distinction preserved); 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "裂盾与弯剑",
+    "previewSha256": "4497127adf4083b6e76d87a137bbdcabdbc6470440dc466bc73427462b0faaf0",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "e1dd9d766ed70ac36022d2dd20283c53cedb84c2eded39769dc183852689fd74"
+  },
+  "bloodletting": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "滴血换闪电",
+    "previewSha256": "9f76551401ee2cda4e365d49307596f3d9115a5db7a2efb265ab7d3b6c1cd8bc",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "4065e9d3d59febaff0cf4d05dc15029a85640356541217b83ad173f4c518c4fa"
+  },
+  "bludgeon": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "锤向下砸地",
+    "previewSha256": "ab9d558121840931e8ed3c46a8f7265c9adedfd851c970bfed75cc04b35bdf33",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "e7a37240ef0e5b9441bc285522bf6ff1eec9c5af9a83f38a155f3159bb18b864"
+  },
+  "body_slam": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "盾向外撞击",
+    "previewSha256": "b5b2f36d37d2f0b646e5545291c326555f3ddfd1b34dfaecd26078d64ffe7692",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "67cafe80354614fe7dc7486fcbb2be7f476b64e77f903613e57098822deb7bda"
+  },
+  "brutality": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "心破并带牌",
+    "previewSha256": "7795fdb507595e85ce4666d53eecf63f1f253318f7b1823e670dc52ecb1f176d",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "51e353984021eac0c0b570d9e42e4cc20ae23030771bde53366621ac1b7dd368"
+  },
+  "burning_pact": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "一张碎掉的牌向右进为两张分开的完整牌",
+    "previewSha256": "697a8befe1a5081985ce06fc3ab600ea89c0fbe338ef9df736f13f5f54e2acb5",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "00204768fabee983ac181464e2b0a5294aafc1ee5b8d4c9caaa48d84d4d532ff"
+  },
+  "carnage": {
+    "evidence": "R3-true-blind-unlabeled-common-color; 沙漏和横斩同时辨清；几何修补没有遮住沙漏腰部。",
+    "freeRead": "长剑直接横切沙漏；读作必须及时出斩。",
+    "previewSha256": "df8df8ddd57ddc83d08db7076c6526b72419a7502e0d966552276e7831635c36",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "613b56c9a0905669126c9bd674a04f60275801caa8abaf1958f785cd32614366"
+  },
+  "clash": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "三张牌并列开启中央的剑",
+    "previewSha256": "4bc365041bb0264fecee20dd460c016a5c4f6d035ca6665c9934cedfb877f8a4",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "1ce2e77a8f5155467e0030b5ad1394f159c9e135dcdb6320faf8eb8f34635844"
+  },
+  "cleave": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "落石横扫三个目标",
+    "previewSha256": "b265354c9123dd81b6ff5b98445e0efc6e407897a8570528937be65db49053fd",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "d5517056df543cc5b79db6d7a47fb0261d82680e20e2013d649e7c65b557c49f"
+  },
+  "clothesline": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "宽刃将下方物体压低",
+    "previewSha256": "fd466ab3cab436d246cd7275e32496c15586bafb03605f2c8428cef0e56e7f31",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "b74afd412b059ddd3dd55f78466dfb70b0f7f4352362ce778092c8e92b3842a0"
+  },
+  "combust": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "一滴落下给予左右冲击",
+    "previewSha256": "16f6821d797416ea80ceb7772dada9ad08b7e2db96ca7e86ae363251a2aed89b",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "6c1b25466a350ddfc21116f1963636c1a4f2099beb7d106699c524b4a4bdb760"
+  },
+  "corruption": {
+    "evidence": "R3-true-blind-unlabeled-common-color; 封住的费用晶体、盾牌卡和裂解的牌三个主形可分，旧稿斜刀误解已消失；范围和次数由牌文承担。",
+    "freeRead": "左边有带横杠的圆晶，中央盾牌卡向右裂解；读作省费用换消耗防守类牌。",
+    "previewSha256": "e193c4544f71d18dd793f47a4e754303eae38f95f4424d4fdc42b4d265317bc7",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "98086b442387315ac6adb4c623d2ceaf2f8474019b824761898846aeb8140985"
+  },
+  "dark_embrace": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "碎裂方片向完整牌",
+    "previewSha256": "f5f51a8cb3af71b51901ac53413b08afe51fa421b2acfbd40b7f0c2b465ca64f",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "ec7e108f8dff3fa15ab7b67f1b46ef709e85cb997d2528b5cadd6de5da2509cb"
+  },
+  "defend": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "完整盾",
+    "previewSha256": "a1b8d4fe90b09f362ecf3711b09e9945a600b921a954806187b7544820f6c7b6",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "337ee862ca3ee18eaf351a2704eadf90e8b60277952fee92ca80b9f337a34a6a"
+  },
+  "demon_form": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "阶梯与斜坡发光",
+    "previewSha256": "cb8c8abe5db63c51ab5a88ae2a77a8eea84a29a40c1c23f45dbe252a54c5e31c",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "e0871c975574adf144618934479c87c32092acc3a5eaeb8206abb3b58bc67381"
+  },
+  "disarm": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "盘落在剑锋上方",
+    "previewSha256": "1397bd048f3f254571954cc2d4fe04fcac1200f098896af98c56592e1eef966f",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "13ffc587880a77a42f961d1087bdba200532d2c7c284d0ab40b6a1dbbfa81673"
+  },
+  "double_tap": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "单张牌打开后轨迹出现两个印记",
+    "previewSha256": "0f86082f8db61ed43c8f6ed53cd262c1f7b7a0ce810127d4f30030e2234c07b7",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "710704530d286dec41901731499e03b77e26a26f808216ed2de6b1c43b2d4dae"
+  },
+  "dropkick": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "短刃正向穿入上下张开的两岩块",
+    "previewSha256": "680d60bd06a4188d2074b6ee435df8bd61887743048e596c42b21ebfeddff400",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "dfa5a955e0eb7cc8ac2f4714ec1ae3b732a8f4f9bec9c0d6b7ca3a9f7b24fad0"
+  },
+  "dual_wield": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "两张同样有剑的牌，中间有单向复制箭头",
+    "previewSha256": "49c6a775297531d947b8e3377381fa1a9f3a5dee6fdc9f5cc355e5fee3dc586c",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "20eef2448f76b33844a40380295a8d0bd00d20ca4d0d560fae6df9a0209c9349"
+  },
+  "entrench": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "盾加一层碉堡",
+    "previewSha256": "3940084a3b3c34ecc45a178e73595a6e73f066246d0efdaa7bdfa457c996bbd8",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "b5259cadfe1ee8c6975973d4651e97ea678a32da327ba8049d57ebcaada9232a"
+  },
+  "evolve": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "左带闪电牌，右完整牌从牌堆往上弹起",
+    "previewSha256": "d4c67bf27559b8b2ebea02b1eaedcc404066e6160825193930931c1f8172fbd1",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "65f7985203781bf6cf875623dc245b543dc4f97fa5ced8a1ce509590cc6fa85e"
+  },
+  "exhume": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "牌从土中升起",
+    "previewSha256": "5cc06064ab4fce104900bba441f5dbac7dcc443b79c232b2429a1396b0520a0f",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "0622596496ce825f484caee96e37b464f33753094928f0aac86c8994f5028990"
+  },
+  "feed": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "斜刺压碎锁住的目标后，产生一颗心",
+    "previewSha256": "70e658b181a6d17ab978770965aae3e3a68671298cea3ebf5f5fcdac6d91ee5f",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "f93bdb8bdde07bbfc30dc31c69ddc6a54eb1b3075727295a1e5aef8f87ed7113"
+  },
+  "feel_no_pain": {
+    "evidence": "R3-true-blind-unlabeled-common-color; 左碎卡与右完整盾有足够间距，护盾较大而稳定，碎卡不是飞出的伤害；每次被动触发由牌文限定。",
+    "freeRead": "左方小纸牌裂开碎掉，右侧完整盾得以形成；读作失牌换格挡。",
+    "previewSha256": "bed81458ebf5b8c8fcc1fc20566cb89caa81ac147cd404d2b0d5d355800159a8",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "b6459ba336f1d839d51e2e20a6209f402a7edea4ea450a686b27d085661435f4"
+  },
+  "fiend_fire": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "多个碎牌变成大刃",
+    "previewSha256": "b811a18e0622a4ac5928cbd183bcbc014857ce5418a260fcae1d7dad46bf6657",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "b83b2f3f51d928cd9ec0a3b7d844d9b0edb31b6118de2514bbd2f29e77f3dd72"
+  },
+  "fire_breathing": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "伤痕方块引出冲击",
+    "previewSha256": "7867c7068c6b205c3ff960232b1b070f37d2fa926428535fe86095faec19203e",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "3f536c2eb4eb6a610e53fe93c678be15a550ac1988dc5d4a125fc628b84faf0b"
+  },
+  "flame_barrier": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "入射击盾再反弹",
+    "previewSha256": "8b5c26cff5400842899fec288f3e89fe0cc016edee56d72952360383dd75aa40",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "d804655549ee4af40a302c03e4a31d1efef10afb72582e9c0e3d06ffc3bb2280"
+  },
+  "flex": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "一枚能量晶上升",
+    "previewSha256": "fb403bd0ea8e8c9dccbd4dd421db2a1d1f7c34172a25420746347ef19daefd0c",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "e5e9dbef8617d96bbb44498d65983bb31d1210c325f4e5d476d67593e622c3f5"
+  },
+  "ghostly_armor": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "神秘刻线盾",
+    "previewSha256": "347edc13b1bb6e2ac668271aa2e571a40f7744f93f22c7966d29ab6f70b1ba47",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "89f7754cbdc91cc9b367abd1637088cf076f5470eedf868723f24155fad0bc3a"
+  },
+  "havoc": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "卡从堆顶窜出",
+    "previewSha256": "56b8ca26b18ae9d9d648a1753de3561030bb4ac9fda24a95b4b4f3a3ac869092",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "c0eabf9c2bfc73e0f4de6c733dba97ed89e37f3e5f2f146a33acdb1b0c0eb6b2"
+  },
+  "headbutt": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "剑回身，卡沿轨迹放回三层牌顶",
+    "previewSha256": "1c313c524f8cc1a5419b8a077e811b9ce17ee401cb27a335b38e46c51b2d12ff",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "c26c6b7d0a7fb90cfefbbc9c1e613eed01c31ffd09beedad212398be83eafc80"
+  },
+  "heavy_blade": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "厚锋加重",
+    "previewSha256": "95ccc0ba88d0410483ee8f83b997e37f79515ed38a8b48857d783569404201d7",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "194e4de3d9e5755dcb5f6b005147aec98d2a678f2fa5270f105dff954c7856e4"
+  },
+  "hemokinesis": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "血滴靠剑",
+    "previewSha256": "6c6308d4c65721bbb3fce99a85d82f6ddda6ccb1d13acfb1992176ea5889cd19",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "9d90c466fc98492f733b785c55f19f4348180943185e7640e0f710365522812f"
+  },
+  "immolate": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "大刃落地碎石",
+    "previewSha256": "7b3d12505ee19e0381b459dd050cb1e9a21eb36e1ba0d22d33b7be2e5028fc6f",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "8f22000111320dc9dce5d2ee3c74700e0626dd493bdb2e50485549f4c327c124"
+  },
+  "impervious": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "闭合的重盾多层",
+    "previewSha256": "888797031e7b4678750d5484030997bb952d746d8441c20c00bb73a6ca92b843",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "84340e938b797cd1feb3e555a2be266ba0a9d309655a7a44d33dfbd0bcaae64d"
+  },
+  "infernal_blade": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "牌上剑并一晶点",
+    "previewSha256": "b2137f3cb317e8e636783ac8d3a2e8000f8ce31af9b230a593184a3aed35f2b6",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "54c27ad34b7257e6fde5eeccbbad43aaab9a040a1017674147e729c9f9bd2024"
+  },
+  "inflame": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "剑强化发光",
+    "previewSha256": "bfd57ca75a2e480ef90080c5112ceac608e91f796b5588af2bf4d00595d03f09",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "b23b446177e7712f7b347ce4005b0299be95861746379ec921022e2db9c35f32"
+  },
+  "intimidate": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "王冠压三个目标",
+    "previewSha256": "8d4cb7c15aaf74b3767a680acf262b24b135075d9e97261727cf786b1a039076",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "5cebead1da1cb5e217dae6ff2866d4a37c79657c89f89d62168d3d42ce252947"
+  },
+  "iron_wave": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "独立整盾和完整单剑，出剑斜向右上",
+    "previewSha256": "8c3f1d67adb0b4487c96f16dbf4ff42876c7ce44bc337258194f51ca5c26df2b",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "5359c3fddb3df84d08c6d52dd8837865aef893179342efc79bf647c13f5b607e"
+  },
+  "juggernaut": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "固定立盾发出一枚远程尖晶",
+    "previewSha256": "a94071ebaf887ea2f13fc5d0109c5bd4ca9d26dd881ca14755e03cc8b17a4823",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "6171ca32e53d2ee1313b40c118ab63116d1e040651fbb7189108ade509d6bac6"
+  },
+  "limit_break": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "剑突破左右墙",
+    "previewSha256": "b6553e2fc60817f361ff043a0314cdf107713d3644d645800a09f7a7c8c1e314",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "faf7e80fb76c04bca9e7f73f5c49e56923ef9bd23b419ed4e68ac32edf6aad6d"
+  },
+  "metallicize": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "三层交错薄甲逐层托起上方盾片",
+    "previewSha256": "71a268eb926286b80172edacc0de95f7e7b656b4b78388e572aa804970cfe973",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "47e90e612897d0bdefc96f8c01316ed3f4bb49a695dcbc79215a019d1570ff93"
+  },
+  "offering": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "血滴、能量星、三张牌",
+    "previewSha256": "ba701e24f713532af37d95a87aea141c6e92bba6fa76d21e8589f3f54fdb4869",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "19a85ca7e6793b846a87a4797d4e4cff94770d0f037baf23c0d65331c0ac4938"
+  },
+  "perfected_strike": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "三张同芯牌汇入上方一击",
+    "previewSha256": "48196e32a91ab46268f7f4a2fa13bf0e36631617a5ea33344860da389cf4d24e",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "a8ec95faec6c32902b1ec4351994b5f7d32c6040969e1904d9d2c28195d11c11"
+  },
+  "pommel_strike": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "剑另一侧，有明确方牌抽入上扬",
+    "previewSha256": "3bb3237e81a43d128ceb6f8f2e91594a3af70efad2947bbe7cefaebfc40ecee2",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "319e74775e48db7a1a1b100cf6312748cc788b037674582add7366b72dfbbedf"
+  },
+  "power_through": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "两张裂电牌，前面厚盾",
+    "previewSha256": "46bf8fcc755f3ac9c641b1f92f2b4eed70f3ca4ff92221166d42cb0630372e2e",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "050cc0cfba8ecd736c36176161be1abf9810463034357518dd03077f07096b14"
+  },
+  "pummel": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "四道线击一点",
+    "previewSha256": "85961885b6cdd2d1bc59a3c89771f86136f5270683572c75e622b13e3b960c98",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "0d269129272c824030046bf7808b00615b3309a6d6e514834f16247d54d0a4ce"
+  },
+  "rage": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "剑指向盾",
+    "previewSha256": "f536e94e5a5e7d372f8e906759355270f618aa100abc3c3688c75ebf61a862b7",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "6867692797a5f788aa12d2c1cfea99d6fd5d907e2accdda62a1129dfd577768c"
+  },
+  "rampage": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "剑与递升阶梯",
+    "previewSha256": "91eb4a83870c5f9b21aa8db440900f481d513dc5bc9888a53c18e179f237aa42",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "23bfa47124f802d0e6e4b6144fe6e80998a3055c21adbd51e8bfedf55ad3d58c"
+  },
+  "reaper": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "多点镰弧收向一颗心，回收生命",
+    "previewSha256": "cc4c2ed2c4b11cc98ff9cde8bbefd1fd8250ed61db6bb6c3f969414559c576aa",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "4c0ab95c387a6a693399604c7bc89514a67f26fe9ae88a281eddc59275e7644d"
+  },
+  "reckless_charge": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "快速剑和脚步路径，尾部有带星卡",
+    "previewSha256": "9181d1eaef6d0e6b37c3822385557a21bf36fb4500b044298a1eb66a58fff5a6",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "87a4f39e562e81f3e1a884869ce92b923b1fbe38f2de07ce677aa40b07c95d2c"
+  },
+  "rupture": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "一滴血变成上扬尖形",
+    "previewSha256": "e8e25cf09080c34b97d252baf7a5ec3584f38fbd72ef0e3697a1b496edbfa479",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "dd4d5b302fe29dc2b7bec93d793d26281f982f3bcf3c9015a1850c4a5db10787"
+  },
+  "searing_blow": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "砧上立剑与火星",
+    "previewSha256": "ae7c4d4f8ae012b38e1952dd7b352168658bca3bb93c43fe523ff2ede493a7d0",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "426f61793864b5c2efe6f2ea9998caa41a446e9d4633bbc5d27b362cce8ce557"
+  },
+  "second_wind": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "方片破碎变盾",
+    "previewSha256": "8688135651b12b502cd2de40ccdbbe846310bb8e9fd8af13a5632db546c2d7bd",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "d03f498640759cc38c997ae5862045333d6c047ae39b9c0e55494917a1ddad8b"
+  },
+  "seeing_red": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "旗加两闪电",
+    "previewSha256": "051729f00f627a44813bd03ec6d7a426fbcdc41bb0cbfc899afb5c2477b2c26c",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "4f39a3e2e573ab4ebb7770c8cebbce21b1ac6d2c4c256ac36f929bac51a84f77"
+  },
+  "sentinel": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "完整盾后单独储备一颗晶体",
+    "previewSha256": "5305372ae148c1acca49d2cfd41b4b6eb277eb6a4c42837785b0842156156d83",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "5fe096746d844678c0206ffe47b64ff63ea8692832bfaead02231504d4895fb2"
+  },
+  "sever_soul": {
+    "evidence": "R3-true-blind-unlabeled-common-color; 消耗的一张带盾牌与保留的主动攻击剑分离；可读为放弃防守资源后出剑，不像连续攻击或单纯盾剑组合。",
+    "freeRead": "左带盾的牌被向下击碎，右侧单剑仍完整且无接触；读作弃掉防守类牌，唯保留主动剑击。",
+    "previewSha256": "930fbdec75b12bcce01340971f607e1ca313066e8851631c00de25271f33c010",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "b279136b61f11f128ec410c03ae6b0a6ac676c18f1b7b8daa0f5ecb75f9ccbe6"
+  },
+  "shockwave": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "波扫多目标",
+    "previewSha256": "580326ae36eba2de26f6f52bc04e998997664be3cf68b9204ad0c837e056c75c",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "62c7de386b80575f46dd11a67c694bdeac571052a1dba55d2aebcaad23434960"
+  },
+  "shrug_it_off": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "卡靠近盾",
+    "previewSha256": "09f9929aa1c97261adc86afb4b22ff1e9691e54dadaae2137d20c8ce58ca9acf",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "af6cd34fc2b18ce5cc3baf83fa5dc6bbea76b4414698792de28dd313f0026440"
+  },
+  "spot_weakness": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "眼睛看剑",
+    "previewSha256": "e31ba03d35d5c5ad4d30dc40e9f7bcf9f4dfb9f5d8ada6ed199bf86cbe026a93",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "1e163899f62efc5f7559fc8f66993c321e3ee4d43b62ac701d281ff88b587453"
+  },
+  "strike": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "一剑斜挥",
+    "previewSha256": "87bb43b14d4bcf6181431a2b5d44f0db358d5630b80ceaae86cdce5a66fa5aed",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "a076963c0b30d3d57772e163d79942a6019eba0fe76fd13651e0d6b74f3dedaf"
+  },
+  "sword_boomerang": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "剑沿环轨回旋",
+    "previewSha256": "c148d6506b7e92209a20c067ca921308666126fa2023fcd602585d93b3be87d6",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "e2858892f64c252f9fd55f92c5a39ae945190e9c9867d04e548a6e28ae382bf4"
+  },
+  "thunderclap": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "横扫三片断裂徽章",
+    "previewSha256": "fde4597fbe96fbe87a4e4bfc749a1ba14605df3285b902ae6e6c6e131c573585",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "d0de329bad6a6f6a19b40212f79917a93e2183604a4ed7fa3f3830e983fa5442"
+  },
+  "true_grit": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "盾与单独一张牌（有撕去一角）",
+    "previewSha256": "874b9564ddc1827a6bc21a827c3fa682ecd2e70c1b7b82971cc83d7401b2ed61",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "4313d6c1fcd33ac0db840d90666f1bd4f2618b366f5778283c0b38a0f3a1ec64"
+  },
+  "twin_strike": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "两道线击中同一物体",
+    "previewSha256": "b896e8a4743989b547f56e13a933207999a51ef949073f86290ea06662901676",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "b150f10162ad376c0732be92c5a1b408d1cbdffec5602915ebe4fd78145ae184"
+  },
+  "uppercut": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "刃向上挑起物品",
+    "previewSha256": "6d1af7ec61b352efb97a758c5b04d7d4d86ff954806db82b564bd8a156b42808",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "34ff5283d24db80548d6a104095309f64010f87cb744858d39e8fb6c745fc471"
+  },
+  "warcry": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "两张牌相互循环",
+    "previewSha256": "6de11b579eeee1609930e3cf41e54ee5e1eba3eb637defaff40fa1f6faeb4116",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "925fb7cdecb13a29750f7a0b29ee06264ac9689a74650f09d0e71bddf9ceec83"
+  },
+  "whirlwind": {
+    "evidence": "R1-static-label-visible; 主物与动作在 120×82 和 60×41 可区分；确切条件/数值仍由牌面文本承担。",
+    "freeRead": "三岩峰扫过",
+    "previewSha256": "90db1d480ba36be56ba28061ee4a4caeca96bb54be4a240643550c69a3a06c95",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "5b644868b20377770ea49ce13996570d01f7eb2132fd4ef7234ee77589d47600"
+  },
+  "wild_strike": {
+    "evidence": "R2-true-blind-unlabeled-common-color; 修订稿在共底 120×82 和 60×41 可辨别原近邻混淆；触发、数值及牌堆标准由牌文承担。",
+    "freeRead": "剑尾有破纸/伤疤记号",
+    "previewSha256": "7236b6a5a240e861439f5f5d3f3868637e7eff633c9b8afc66eaf6f89bff8734",
+    "reviewer": "independent visual review; did not author the assets",
+    "smallArtVerdict": "PASS",
+    "sourceSha256": "e43ee8be11ac1c4f24136d2af36670221965bb8d548bb328351bc8df3af6c898"
+  }
+}

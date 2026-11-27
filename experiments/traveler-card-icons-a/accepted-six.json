@@ -1,0 +1,38 @@
+{
+  "strike": {
+    "approved": "approved/strike.json",
+    "approvedSha256": "a076963c0b30d3d57772e163d79942a6019eba0fe76fd13651e0d6b74f3dedaf",
+    "intent": "一次斜斩",
+    "reference": "已审六张 A/B/C 小样；旅人单手剑普攻、雷电将军梦想真说"
+  },
+  "cleave": {
+    "approved": "approved/cleave.json",
+    "approvedSha256": "d5517056df543cc5b79db6d7a47fb0261d82680e20e2013d649e7c65b557c49f",
+    "intent": "一次横向攻击波及全体",
+    "reference": "已审六张 A/B/C 小样；万叶千早振的横弧；岩旅风格的岩质剑刃"
+  },
+  "defend": {
+    "approved": "approved/defend.json",
+    "approvedSha256": "337ee862ca3ee18eaf351a2704eadf90e8b60277952fee92ca80b9f337a34a6a",
+    "intent": "完整岩盾拦击",
+    "reference": "已审六张 A/B/C 小样；钟离地心、诺艾尔护心铠"
+  },
+  "flame_barrier": {
+    "approved": "approved/flame_barrier.json",
+    "approvedSha256": "d804655549ee4af40a302c03e4a31d1efef10afb72582e9c0e3d06ffc3bb2280",
+    "intent": "盾上接住来势、反向弹开",
+    "reference": "已审六张 A/B/C 小样；钟离地心、万叶千早振的粗细弧带"
+  },
+  "shrug_it_off": {
+    "approved": "approved/shrug_it_off.json",
+    "approvedSha256": "af6cd34fc2b18ce5cc3baf83fa5dc6bbea76b4414698792de28dd313f0026440",
+    "intent": "保持防备，机会牌滑入",
+    "reference": "已审六张 A/B/C 小样；雷电将军恶曜开眼的观察负形、钟离地心"
+  },
+  "barricade": {
+    "approved": "approved/barricade.json",
+    "approvedSha256": "109adea28844b6d7198563d8e6a9906a8c0de29a4b884a3f4f9be221090a3ce5",
+    "intent": "岩障保存既有格挡",
+    "reference": "已审六张 A/B/C 小样；钟离地心的竖碑、纳西妲心景幻成的拱形轮廓"
+  }
+}

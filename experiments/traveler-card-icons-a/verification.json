@@ -1,0 +1,511 @@
+{
+  "approvedSixPreserved": true,
+  "cards": 75,
+  "generatedPackSha256": "6e62113fe4ae80c4bf7757fec23d315000e956c0d36e38fd21bfc03375753d09",
+  "minMedianMaxImageControlsPerIcon": [
+    22,
+    39,
+    59
+  ],
+  "nativeInventory": {
+    "AImageCount": 2994,
+    "BImageCount": 3444,
+    "bytes": 426966,
+    "cardCount": 75,
+    "counts": {
+      "anger": {
+        "A": 30,
+        "B": 36,
+        "icon": 29,
+        "masked": 12
+      },
+      "armaments": {
+        "A": 36,
+        "B": 42,
+        "icon": 35,
+        "masked": 8
+      },
+      "barricade": {
+        "A": 52,
+        "B": 58,
+        "icon": 51,
+        "masked": 8
+      },
+      "bash": {
+        "A": 26,
+        "B": 32,
+        "icon": 25,
+        "masked": 8
+      },
+      "battle_trance": {
+        "A": 35,
+        "B": 41,
+        "icon": 34,
+        "masked": 14
+      },
+      "berserk": {
+        "A": 51,
+        "B": 57,
+        "icon": 50,
+        "masked": 8
+      },
+      "blood_for_blood": {
+        "A": 48,
+        "B": 54,
+        "icon": 47,
+        "masked": 16
+      },
+      "bloodletting": {
+        "A": 46,
+        "B": 52,
+        "icon": 45,
+        "masked": 20
+      },
+      "bludgeon": {
+        "A": 45,
+        "B": 51,
+        "icon": 44,
+        "masked": 24
+      },
+      "body_slam": {
+        "A": 28,
+        "B": 34,
+        "icon": 27,
+        "masked": 6
+      },
+      "brutality": {
+        "A": 42,
+        "B": 48,
+        "icon": 41,
+        "masked": 10
+      },
+      "burning_pact": {
+        "A": 32,
+        "B": 38,
+        "icon": 31,
+        "masked": 4
+      },
+      "carnage": {
+        "A": 52,
+        "B": 58,
+        "icon": 51,
+        "masked": 28
+      },
+      "clash": {
+        "A": 33,
+        "B": 39,
+        "icon": 32,
+        "masked": 6
+      },
+      "cleave": {
+        "A": 60,
+        "B": 66,
+        "icon": 59,
+        "masked": 22
+      },
+      "clothesline": {
+        "A": 33,
+        "B": 39,
+        "icon": 32,
+        "masked": 18
+      },
+      "combust": {
+        "A": 34,
+        "B": 40,
+        "icon": 33,
+        "masked": 10
+      },
+      "corruption": {
+        "A": 43,
+        "B": 49,
+        "icon": 42,
+        "masked": 6
+      },
+      "dark_embrace": {
+        "A": 29,
+        "B": 35,
+        "icon": 28,
+        "masked": 6
+      },
+      "defend": {
+        "A": 50,
+        "B": 56,
+        "icon": 49,
+        "masked": 2
+      },
+      "demon_form": {
+        "A": 23,
+        "B": 29,
+        "icon": 22,
+        "masked": 2
+      },
+      "disarm": {
+        "A": 25,
+        "B": 31,
+        "icon": 24,
+        "masked": 4
+      },
+      "double_tap": {
+        "A": 51,
+        "B": 57,
+        "icon": 50,
+        "masked": 28
+      },
+      "dropkick": {
+        "A": 42,
+        "B": 48,
+        "icon": 41,
+        "masked": 16
+      },
+      "dual_wield": {
+        "A": 42,
+        "B": 48,
+        "icon": 41,
+        "masked": 16
+      },
+      "entrench": {
+        "A": 44,
+        "B": 50,
+        "icon": 43,
+        "masked": 16
+      },
+      "evolve": {
+        "A": 37,
+        "B": 43,
+        "icon": 36,
+        "masked": 12
+      },
+      "exhume": {
+        "A": 36,
+        "B": 42,
+        "icon": 35,
+        "masked": 10
+      },
+      "feed": {
+        "A": 46,
+        "B": 52,
+        "icon": 45,
+        "masked": 14
+      },
+      "feel_no_pain": {
+        "A": 45,
+        "B": 51,
+        "icon": 44,
+        "masked": 18
+      },
+      "fiend_fire": {
+        "A": 43,
+        "B": 49,
+        "icon": 42,
+        "masked": 16
+      },
+      "fire_breathing": {
+        "A": 32,
+        "B": 38,
+        "icon": 31,
+        "masked": 14
+      },
+      "flame_barrier": {
+        "A": 55,
+        "B": 61,
+        "icon": 54,
+        "masked": 2
+      },
+      "flex": {
+        "A": 32,
+        "B": 38,
+        "icon": 31,
+        "masked": 10
+      },
+      "ghostly_armor": {
+        "A": 40,
+        "B": 46,
+        "icon": 39,
+        "masked": 10
+      },
+      "havoc": {
+        "A": 30,
+        "B": 36,
+        "icon": 29,
+        "masked": 6
+      },
+      "headbutt": {
+        "A": 41,
+        "B": 47,
+        "icon": 40,
+        "masked": 12
+      },
+      "heavy_blade": {
+        "A": 31,
+        "B": 37,
+        "icon": 30,
+        "masked": 10
+      },
+      "hemokinesis": {
+        "A": 40,
+        "B": 46,
+        "icon": 39,
+        "masked": 18
+      },
+      "immolate": {
+        "A": 37,
+        "B": 43,
+        "icon": 36,
+        "masked": 6
+      },
+      "impervious": {
+        "A": 33,
+        "B": 39,
+        "icon": 32,
+        "masked": 6
+      },
+      "infernal_blade": {
+        "A": 43,
+        "B": 49,
+        "icon": 42,
+        "masked": 16
+      },
+      "inflame": {
+        "A": 29,
+        "B": 35,
+        "icon": 28,
+        "masked": 14
+      },
+      "intimidate": {
+        "A": 34,
+        "B": 40,
+        "icon": 33,
+        "masked": 6
+      },
+      "iron_wave": {
+        "A": 32,
+        "B": 38,
+        "icon": 31,
+        "masked": 8
+      },
+      "juggernaut": {
+        "A": 30,
+        "B": 36,
+        "icon": 29,
+        "masked": 8
+      },
+      "limit_break": {
+        "A": 30,
+        "B": 36,
+        "icon": 29,
+        "masked": 4
+      },
+      "metallicize": {
+        "A": 42,
+        "B": 48,
+        "icon": 41,
+        "masked": 18
+      },
+      "offering": {
+        "A": 29,
+        "B": 35,
+        "icon": 28,
+        "masked": 2
+      },
+      "perfected_strike": {
+        "A": 41,
+        "B": 47,
+        "icon": 40,
+        "masked": 14
+      },
+      "pommel_strike": {
+        "A": 36,
+        "B": 42,
+        "icon": 35,
+        "masked": 14
+      },
+      "power_through": {
+        "A": 40,
+        "B": 46,
+        "icon": 39,
+        "masked": 18
+      },
+      "pummel": {
+        "A": 39,
+        "B": 45,
+        "icon": 38,
+        "masked": 10
+      },
+      "rage": {
+        "A": 39,
+        "B": 45,
+        "icon": 38,
+        "masked": 14
+      },
+      "rampage": {
+        "A": 50,
+        "B": 56,
+        "icon": 49,
+        "masked": 30
+      },
+      "reaper": {
+        "A": 48,
+        "B": 54,
+        "icon": 47,
+        "masked": 16
+      },
+      "reckless_charge": {
+        "A": 53,
+        "B": 59,
+        "icon": 52,
+        "masked": 26
+      },
+      "rupture": {
+        "A": 34,
+        "B": 40,
+        "icon": 33,
+        "masked": 14
+      },
+      "searing_blow": {
+        "A": 50,
+        "B": 56,
+        "icon": 49,
+        "masked": 24
+      },
+      "second_wind": {
+        "A": 44,
+        "B": 50,
+        "icon": 43,
+        "masked": 8
+      },
+      "seeing_red": {
+        "A": 35,
+        "B": 41,
+        "icon": 34,
+        "masked": 16
+      },
+      "sentinel": {
+        "A": 40,
+        "B": 46,
+        "icon": 39,
+        "masked": 6
+      },
+      "sever_soul": {
+        "A": 57,
+        "B": 63,
+        "icon": 56,
+        "masked": 22
+      },
+      "shockwave": {
+        "A": 48,
+        "B": 54,
+        "icon": 47,
+        "masked": 16
+      },
+      "shrug_it_off": {
+        "A": 49,
+        "B": 55,
+        "icon": 48,
+        "masked": 4
+      },
+      "spot_weakness": {
+        "A": 46,
+        "B": 52,
+        "icon": 45,
+        "masked": 12
+      },
+      "strike": {
+        "A": 36,
+        "B": 42,
+        "icon": 35,
+        "masked": 2
+      },
+      "sword_boomerang": {
+        "A": 43,
+        "B": 49,
+        "icon": 42,
+        "masked": 16
+      },
+      "thunderclap": {
+        "A": 48,
+        "B": 54,
+        "icon": 47,
+        "masked": 16
+      },
+      "true_grit": {
+        "A": 42,
+        "B": 48,
+        "icon": 41,
+        "masked": 4
+      },
+      "twin_strike": {
+        "A": 29,
+        "B": 35,
+        "icon": 28,
+        "masked": 2
+      },
+      "uppercut": {
+        "A": 46,
+        "B": 52,
+        "icon": 45,
+        "masked": 22
+      },
+      "warcry": {
+        "A": 39,
+        "B": 45,
+        "icon": 38,
+        "masked": 8
+      },
+      "whirlwind": {
+        "A": 43,
+        "B": 49,
+        "icon": 42,
+        "masked": 16
+      },
+      "wild_strike": {
+        "A": 40,
+        "B": 46,
+        "icon": 39,
+        "masked": 16
+      }
+    },
+    "maskedControls": 924,
+    "maxIcon": 59,
+    "missing": []
+  },
+  "sourceBlobsSha256": {
+    "art/cards/traveler-geo/catalog.json": "d148515f184b46074e39135276241c1daac95f946900ea296bf481f02c70d558",
+    "data/cards.json": "7794eaabe6f17e0c6c4f08d2a6f7a0e2bc479e4ef8a01c010ce90cded752adbf",
+    "data/presentation/traveler.zh-CN.json": "8de60140407573df5e2a6097f11a5a9ee09150d0401acaead4566ea3bb14b500",
+    "scripts/build-ui.mjs": "fd387ceae0b70600cf3e58d82797b3b392261607e4967370e4cfe00358603d04",
+    "tools/render_traveler_cards.py": "ba26eb03eaef4641159dee66b0c2c6192aa4d5147ec55ffd848c9eb2a0b56916"
+  },
+  "sourceGit": "aaf8008875896f24acc8fda0d4df47df2564ec1d",
+  "stage": "isolated experiment / not runtime enabled",
+  "staticReview": {
+    "hold": 0,
+    "pass": 75,
+    "round1": {
+      "hold": 25,
+      "pass": 50
+    },
+    "round2": {
+      "blindHold": 2,
+      "blindPass": 23
+    },
+    "round3": {
+      "blindHold": 0,
+      "blindPass": 5
+    },
+    "round4TwoGeometryReadbacks": "pass",
+    "scope": "120×82 + 60×41 offline; only changed batch R2–R4 blind"
+  },
+  "types": {
+    "attack": 32,
+    "power": 14,
+    "skill": 29
+  },
+  "verification": {
+    "mobile": false,
+    "nameTests": 3,
+    "officialClient": false,
+    "officialGIL": false,
+    "productionReady": false,
+    "standaloneLuaTemplateBridge": true
+  }
+}
