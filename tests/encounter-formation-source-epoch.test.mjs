@@ -1,6 +1,5 @@
-import {beforeDevelopUiBackflows,readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';
-import {beforeCharacterPreparationSource,beforeCurrentProductionSource} from './helpers/character-preparation-source.mjs';
-import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
+import {retiredControllerPath} from './helpers/input-retirement-source.mjs';
+import {currentProductionRereads,releaseArchitectureReadTrace} from './helpers/current-production-source-reads.mjs';
 import {beforePc13ThenV2UiHudSource} from './helpers/pc13-reward-cover-source.mjs';
 import {preDefectActorSource} from './helpers/defect-actor-source-epoch.mjs';
 import test from 'node:test';
@@ -204,26 +203,40 @@ test('source and configuration reject unknown targets and malformed live readers
 });
 
 test('official repair adds exact complete-file identities without rewriting the battle predecessor',()=>{
- const files=officialUiRepairProof.files,pileChrome='scripts/official-battle-pile-chrome.mjs';
- const pileChromeAfter={sha256:'1a7d9023534a02d57af4e6b9749bb0ce2b5fd7a388a616379ff0614175c37683',
-  gitBlob:'e06cdaca1d6c23efd3931270b925866ca480c03f'};
- const fromNativeButtons=(file,encoding)=>{
-  const source=diskReadFileSync(file,encoding);
-  if(file!==pileChrome)return source;
-  assert(exactSourceMatches(beforeDevelopUiBackflows(file,source),pileChromeAfter),'fresh Native Buttons pile-chrome source');
-  return closeoutCiProof.records[closeoutCiProof.current[file]];
+ const files=officialUiRepairProof.files;
+ // These committed Release owners have newer HUD, deck, viewport or test code.
+ // Authenticate their raw bytes before selecting the sealed repair inputs.
+ const releaseRepairOwners={
+  'scripts/official-battle-hud.mjs':{sha256:'af6ffdb50e11d77cf9c2046931f3e455d3bc780fcde9b265fd003d33b1c07a9b',
+   gitBlob:'9956f4ded7b99023522ffc3f59b49b11b1916e85'},
+  'scripts/official-battle-pile-chrome.mjs':{sha256:'7bdc6045f843dfcc049cb9fab2a299a35f6253b08a0e61dcd93bb1cd2eb82d20',
+   gitBlob:'8c9de93f2313806ea5e9ba11ac9eb32df0a6fb50'},
+  'src/lua/abyss_battle_card_view.lua':{sha256:'a754a1c70a92ee789fa8c8266ee0ede46f22427b271ab464b85b8ce17d59e158',
+   gitBlob:'1affa0043815bb45816077e74bd723abb8a4e8ac'},
+  'src/lua/abyss_deck_ui.lua':{sha256:'1bfaa0cff56eea75e2173e90393fb76e23c8ce7a18fb336ffb394e50557df2af',
+   gitBlob:'379cf49278f2cc79c892f6109c96dc2cede98b91'},
+  'tests/runtime-ui-hotpaths.test.mjs':{sha256:'0db4dc2f24c5d58f3c04833576e6f8f050662c5558dc5d503918a8ebdfef0b3c',
+   gitBlob:'6c19ed17128fbebb4d505bcf5567eaac135b9c5a'},
+ };
+ function authenticateReleaseOwner(file){
+  if(!Object.hasOwn(releaseRepairOwners,file))return false;
+  const raw=rawCurrent(file),lf=raw.replaceAll('\r\n','\n');
+  assert((raw===lf||raw===lf.replaceAll('\n','\r\n'))&&exactSourceMatches(lf,releaseRepairOwners[file]),
+   'fresh Release repair replay owner: '+file);
+  return true;
+ }
+ const readRepairOwner=(file,encoding)=>{
+  if(!authenticateReleaseOwner(file))return diskReadFileSync(file,encoding);
+  return closeoutCiProof.records[files[file].current.sha256];
  };
  const readRuntime=file=>{
   const frozen=closeoutEpoch.proof.current[file];
   if(!frozen)return null;
-  const live=file===retiredControllerPath?readRetiredController(rawCurrent):null;
-  if(live)assert(live.restored,'exact pointer successor for the retired Controller');
-  const source=live?beforeCharacterPreparationSource(file,live.source,rawCurrent)
-   :beforeCurrentProductionSource(file,rawCurrent(file),rawCurrent);
-  assert.equal(source.replaceAll('\r\n','\n'),frozen.source,'fresh official repair replay owner: '+file);
-  return source;
+  authenticateReleaseOwner(file);
+  // The repair predates the current runtime cohort, which is read below in its own case.
+  return frozen.source;
  };
- const repairRead=closeoutRead('pr629',fromNativeButtons,{readRuntime});
+ const repairRead=closeoutRead('pr629',readRepairOwner,{readRuntime});
  for(const [file,row]of Object.entries(files)){
   const actual=repairRead(file,'utf8').replaceAll('\r\n','\n');
   assert.equal(actual,row.current.source,'raw repair source: '+file);
@@ -290,9 +303,14 @@ test('current UI facade authenticates all 118 disk owners and their continuation
  const expected=current.targets[target].files[file].source,admittedReads=[];
  const record=owner=>{admittedReads.push(owner);return diskReadFileSync(owner,'utf8');};
  assert.equal(currentSourceEpoch.preCombinedSource(file,input,{target,readSource:record}),expected);
- assert.equal(admittedReads.length,480,'complete live owner read trace');
- assert.equal(createHash('sha256').update(JSON.stringify(admittedReads)).digest('hex'),
-  'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd','ordered Develop owner read trace');
+ const digest=reads=>createHash('sha256').update(JSON.stringify(reads)).digest('hex');
+ assert.equal(admittedReads.length,releaseArchitectureReadTrace.count,'complete live owner read trace');
+ assert.equal(digest(admittedReads),releaseArchitectureReadTrace.sha256,'ordered Release owner read trace');
+ const added=[[3,5],[9,11],[16,17],[18,23],[30,32],[90,91],[115,116],
+  [155,157],[221,224],[317,318],[367,370],[413,414],[479,480]];
+ const original=admittedReads.filter((_,index)=>!added.some(([start,end])=>index>=start&&index<end));
+ assert.equal(original.length,480);
+ assert.equal(digest(original),'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd','ordered Develop owner read trace');
  let position=-1;
  for(const owner of [...current.owners,...currentProductionRereads]){
   position=admittedReads.indexOf(owner,position+1);

@@ -806,6 +806,38 @@ const fixtures=Object.freeze({
   ]
  },
  'tests/helpers/replay-reviewed-selection.mjs':selectionRawEntranceReplay,
+ "tests/encounter-formation-source-epoch.test.mjs": {
+   "current": {
+     "sha256": "b272d2bed86eea32b1db4e0627990b57f2497e940a0094ac65cbd63b29fd5f0d",
+     "gitBlob": "1680aa396a2188621c444bbdfb3891e9a8555eae"
+   },
+   "previous": {
+     "sha256": "1eb67ff503600165775494ca783b843f3355f61db89c1ff15e6fc9c6fe113643",
+     "gitBlob": "755eb1807c0b7a737d719fc6789a91a5d942f757"
+   },
+   "hunks": [
+     {
+       "at": 0,
+       "before": "import {beforeDevelopUiBackflows,readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';\nimport {beforeCharacterPreparationSource,beforeCurrentProductionSource} from './helpers/character-preparation-source.mjs';\nimport {currentProductionRereads} from './helpers/current-production-source-reads.mjs';\nimport {beforePc13ThenV2UiHudSource} from './helpers/pc13-reward-cover-source.mjs';",
+       "after": "import {retiredControllerPath} from './helpers/input-retirement-source.mjs';\nimport {currentProductionRereads,releaseArchitectureReadTrace} from './helpers/current-production-source-reads.mjs';\nimport {beforePc13ThenV2UiHudSource} from './helpers/pc13-reward-cover-source.mjs';"
+     },
+     {
+       "at": 204,
+       "before": "test('official repair adds exact complete-file identities without rewriting the battle predecessor',()=>{\n const files=officialUiRepairProof.files,pileChrome='scripts/official-battle-pile-chrome.mjs';\n const pileChromeAfter={sha256:'1a7d9023534a02d57af4e6b9749bb0ce2b5fd7a388a616379ff0614175c37683',\n  gitBlob:'e06cdaca1d6c23efd3931270b925866ca480c03f'};\n const fromNativeButtons=(file,encoding)=>{\n  const source=diskReadFileSync(file,encoding);\n  if(file!==pileChrome)return source;\n  assert(exactSourceMatches(beforeDevelopUiBackflows(file,source),pileChromeAfter),'fresh Native Buttons pile-chrome source');\n  return closeoutCiProof.records[closeoutCiProof.current[file]];\n };",
+       "after": "test('official repair adds exact complete-file identities without rewriting the battle predecessor',()=>{\n const files=officialUiRepairProof.files;\n // These committed Release owners have newer HUD, deck, viewport or test code.\n // Authenticate their raw bytes before selecting the sealed repair inputs.\n const releaseRepairOwners={\n  'scripts/official-battle-hud.mjs':{sha256:'af6ffdb50e11d77cf9c2046931f3e455d3bc780fcde9b265fd003d33b1c07a9b',\n   gitBlob:'9956f4ded7b99023522ffc3f59b49b11b1916e85'},\n  'scripts/official-battle-pile-chrome.mjs':{sha256:'7bdc6045f843dfcc049cb9fab2a299a35f6253b08a0e61dcd93bb1cd2eb82d20',\n   gitBlob:'8c9de93f2313806ea5e9ba11ac9eb32df0a6fb50'},\n  'src/lua/abyss_battle_card_view.lua':{sha256:'a754a1c70a92ee789fa8c8266ee0ede46f22427b271ab464b85b8ce17d59e158',\n   gitBlob:'1affa0043815bb45816077e74bd723abb8a4e8ac'},\n  'src/lua/abyss_deck_ui.lua':{sha256:'1bfaa0cff56eea75e2173e90393fb76e23c8ce7a18fb336ffb394e50557df2af',\n   gitBlob:'379cf49278f2cc79c892f6109c96dc2cede98b91'},\n  'tests/runtime-ui-hotpaths.test.mjs':{sha256:'0db4dc2f24c5d58f3c04833576e6f8f050662c5558dc5d503918a8ebdfef0b3c',\n   gitBlob:'6c19ed17128fbebb4d505bcf5567eaac135b9c5a'},\n };\n function authenticateReleaseOwner(file){\n  if(!Object.hasOwn(releaseRepairOwners,file))return false;\n  const raw=rawCurrent(file),lf=raw.replaceAll('\\r\\n','\\n');\n  assert((raw===lf||raw===lf.replaceAll('\\n','\\r\\n'))&&exactSourceMatches(lf,releaseRepairOwners[file]),\n   'fresh Release repair replay owner: '+file);\n  return true;\n }\n const readRepairOwner=(file,encoding)=>{\n  if(!authenticateReleaseOwner(file))return diskReadFileSync(file,encoding);\n  return closeoutCiProof.records[files[file].current.sha256];\n };"
+     },
+     {
+       "at": 233,
+       "before": "  if(!frozen)return null;\n  const live=file===retiredControllerPath?readRetiredController(rawCurrent):null;\n  if(live)assert(live.restored,'exact pointer successor for the retired Controller');\n  const source=live?beforeCharacterPreparationSource(file,live.source,rawCurrent)\n   :beforeCurrentProductionSource(file,rawCurrent(file),rawCurrent);\n  assert.equal(source.replaceAll('\\r\\n','\\n'),frozen.source,'fresh official repair replay owner: '+file);\n  return source;\n };\n const repairRead=closeoutRead('pr629',fromNativeButtons,{readRuntime});\n for(const [file,row]of Object.entries(files)){",
+       "after": "  if(!frozen)return null;\n  authenticateReleaseOwner(file);\n  // The repair predates the current runtime cohort, which is read below in its own case.\n  return frozen.source;\n };\n const repairRead=closeoutRead('pr629',readRepairOwner,{readRuntime});\n for(const [file,row]of Object.entries(files)){"
+     },
+     {
+       "at": 304,
+       "before": " assert.equal(currentSourceEpoch.preCombinedSource(file,input,{target,readSource:record}),expected);\n assert.equal(admittedReads.length,480,'complete live owner read trace');\n assert.equal(createHash('sha256').update(JSON.stringify(admittedReads)).digest('hex'),\n  'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd','ordered Develop owner read trace');\n let position=-1;",
+       "after": " assert.equal(currentSourceEpoch.preCombinedSource(file,input,{target,readSource:record}),expected);\n const digest=reads=>createHash('sha256').update(JSON.stringify(reads)).digest('hex');\n assert.equal(admittedReads.length,releaseArchitectureReadTrace.count,'complete live owner read trace');\n assert.equal(digest(admittedReads),releaseArchitectureReadTrace.sha256,'ordered Release owner read trace');\n const added=[[3,5],[9,11],[16,17],[18,23],[30,32],[90,91],[115,116],\n  [155,157],[221,224],[317,318],[367,370],[413,414],[479,480]];\n const original=admittedReads.filter((_,index)=>!added.some(([start,end])=>index>=start&&index<end));\n assert.equal(original.length,480);\n assert.equal(digest(original),'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd','ordered Develop owner read trace');\n let position=-1;"
+     }
+   ]
+ },
  "tests/silent-final-source-epoch.test.mjs": {
    "current": {
      "sha256": "04836e2a405797c90636725642db44ed7b3e197c43b498cdf859fd2941e7b29a",
