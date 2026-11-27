@@ -21,6 +21,14 @@ export function preEncounterFormationCiSource(path,source){
 // The original planning floors record the #576 test bytes. These known fixture
 // continuations remain live in Full; only the named Formation receipt views reverse them.
 const formationReceiptFixtures={
+ "tests/helpers/encounter-formation-vm.mjs":{
+  "current":{"sha256":"b89e7f69e87615c08037205f8ebebc7961481bdd11823fe846777bb92ff8a814","gitBlob":"28b7da8cf06e3a7bbaa14b9c3d4513358f89f48d"},
+  "previous":{"sha256":"a2e35c5e0f638fab98003885810eb4d4baaf81a3e43519d2ffc6ecefed250603","gitBlob":"1317cdc8945ef63173942ff0d29c6c3e838fe7e5"},
+  "hunks":[
+   [5,1,["const {source,fixture,output}=JSON.parse(readFileSync(0,'utf8'));"]],
+   [30,1,["dofile(${luaString(fixture)})`;"]]
+  ]
+ },
  "tests/encounter-formation-responsibilities.test.mjs":{
   "current":{
    "sha256":"ef27421d1d66a71a9f2674906893f5d4f53647a7e4de1ab10c15e4edd3852274",
