@@ -4,6 +4,28 @@ import {exactSourceMatches} from './source-fingerprint.mjs';
 
 // #1038 changes only these exact inputs for older release replay readers.
 const inputs=Object.freeze({
+ "package-lock.json": {
+  "current": {
+   "sha256": "0818467b2938dc0516045b7a3641ff0940f93fb221b24b6051f20473eb38b226",
+   "gitBlob": "ca8da59cde0ccb166fbe4e610cc9e32e95354528"
+  },
+  "previous": {
+   "sha256": "b5a3c0c22a4ddfe66bfb3e79a33cd35074ca73781f620cd88af335fe30b2f6ec",
+   "gitBlob": "0a9d6e19e5fd4bd94b17ed8f8998e3cf5cc060c6"
+  },
+  "hunks": [
+   {
+    "at": 1,
+    "before": "  \"name\": \"slay-the-abyss\",\n  \"version\": \"2.1.1\",\n  \"lockfileVersion\": 3,",
+    "after": "  \"name\": \"slay-the-abyss\",\n  \"version\": \"2.2.0\",\n  \"lockfileVersion\": 3,"
+   },
+   {
+    "at": 7,
+    "before": "      \"name\": \"slay-the-abyss\",\n      \"version\": \"2.1.1\",\n      \"license\": \"SEE LICENSE IN LICENSE\",",
+    "after": "      \"name\": \"slay-the-abyss\",\n      \"version\": \"2.2.0\",\n      \"license\": \"SEE LICENSE IN LICENSE\","
+   }
+  ]
+ },
  "package.json": {
   "current": {
    "sha256": "60a08b0a51427fcdfb6db06469c07879f44877fbd81b42893dcf9083a8a98dcb",
