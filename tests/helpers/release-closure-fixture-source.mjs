@@ -534,12 +534,61 @@ const unifiedGilFixture={
  ]
 };
 
+// The current legacy browser fixture exercises warm detail reuse and genuine
+// generation retirement. Historical replays still read the exact former case.
+const permanentDeckRuntimeFixture=Object.freeze({
+ "previous": {
+  "sha256": "327cea26d0022ebddbc04f833568b9ada9e608ea9872b526b4af91de84c1057e",
+  "gitBlob": "58f48f1073c6d39710aee68e9a055dbddaf7a0f8"
+ },
+ "current": {
+  "sha256": "608f5e266b4b1ab48b762f74088d1e018b7ee8aa0864546a75745356e3a082c7",
+  "gitBlob": "12d5666dc00a9a432141e3bc4ad6d8ccc54e23fb"
+ },
+ "hunks": [
+  {
+   "at": 1312,
+   "before": "`;\n\ntest('official permanent browser handles 0/1/5/6/17 cards, deferred index origins, detail return and recycled late callbacks',t=>{\n runOfficial(t,officialDeckBrowserSetup+`\nfor _,origin in ipairs({0,1})do",
+   "after": "`;\n\ntest('official permanent browser handles 0/1/5/6/17 cards, deferred index origins, warm detail return and retired callbacks',t=>{\n runOfficial(t,officialDeckBrowserSetup+`\nfor _,origin in ipairs({0,1})do"
+  },
+  {
+   "at": 1329,
+   "before": " if amount==0 then assert(not deck.pending and not deck.calibrating and not deck.pendingGrid,'empty browser retained readiness work')end\n grid:flush();deck:update();grid:flush()\n if amount>0 then warmed=true end\n assert(grid.itemCount==amount and grid.scrollProgress==0)",
+   "after": " if amount==0 then assert(not deck.pending and not deck.calibrating and not deck.pendingGrid,'empty browser retained readiness work')end\n grid:flush();deck:update();grid:flush()\n if amount==17 then\n  -- The legacy fixture flushes at most 12 cells; this viewport also\n  -- intersects a third row and still needs indices 12 through 14.\n  assert(deck.pendingGrid,'partial third row was accepted as ready')\n  for i=12,14 do grid:recycle(i,origin+i)end\n end\n assert(not deck.pendingGrid,'complete visible grid remained pending')\n if amount>0 then warmed=true end\n assert(grid.itemCount==amount and grid.scrollProgress==0)"
+  },
+  {
+   "at": 1345,
+   "before": "  assert(uid==201 and not first:GetChild('uid').visible)\n  calibration(first,origin);assert(not deck.pending and deck.bindings[first].uid==uid)\n  local late=grid.refreshCallback;local hit=first:GetChild('hit')\n  grid.scrollProgress=.45\n  assert(hit.listeners.drag==nil and hit.listeners.endDrag==nil)",
+   "after": "  assert(uid==201 and not first:GetChild('uid').visible)\n  calibration(first,origin);assert(not deck.pending and deck.bindings[first].uid==uid)\n  local current=grid.refreshCallback;local hit=first:GetChild('hit')\n  grid.scrollProgress=.45\n  assert(hit.listeners.drag==nil and hit.listeners.endDrag==nil)"
+  },
+  {
+   "at": 1353,
+   "before": "  assert(panel:GetChild('cardFocus').visible and panel:GetChild('pileReturn').visible)\n  assert(not hit.click(),'hidden list receiver replaced the active detail')\n  assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update();grid:flush()\n  assert(not deck.cardDetail and grid.visible and grid.scrollProgress==.45)\n  local fresh=grid.items[0];local freshUid=deck.bindings[fresh].uid\n  late(fresh,origin+amount-1)\n  assert(deck.bindings[fresh].uid==freshUid,'late list callback rebound the returned detail list')\n  assert(first.alive==false and not deck.bindings[first] and not hit.click(),'retired detail receiver remained live')\n  if amount==17 then\n   grid.deferRefresh,grid.destroyOnRefresh=false,false\n   local reused=grid:recycle(0,origin+16)",
+   "after": "  assert(panel:GetChild('cardFocus').visible and panel:GetChild('pileReturn').visible)\n  assert(not hit.click(),'hidden list receiver replaced the active detail')\n  current(first,origin+amount);assert(first.visible and deck.bindings[first].uid==uid,\n   'hidden list refresh mutated the active card')\n  assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update()\n  assert(not deck.cardDetail and grid.visible and grid.scrollProgress==.45)\n  assert(grid.refreshCallback==current and grid.items[0]==first and first.alive~=false and deck.bindings[first].uid==uid,\n   'warm detail return replaced the live list receiver')\n  assert(hit.click() and deck.cardDetail.instance.uid==uid,'warm receiver did not reopen the same card')\n  assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update()\n  if amount==17 then\n   assert(deck:setSort('original'));grid:flush()\n   for i=12,14 do grid:recycle(i,origin+i)end\n   assert(not deck.pendingGrid)\n   local fresh=grid.items[0]\n   assert(grid.refreshCallback~=current and fresh~=first and deck.bindings[fresh].uid==uid,\n    'new list generation did not install its own receiver')\n   current(fresh,origin+16)\n   assert(deck.bindings[fresh].uid==uid,'obsolete refresh rebound a current cell')\n   assert(first.alive==false and not deck.bindings[first] and not hit.click(),'retired refresh receiver remained live')\n   grid.deferRefresh,grid.destroyOnRefresh=false,false\n   local reused=grid:recycle(0,origin+16)"
+  },
+  {
+   "at": 1382,
+   "before": "  end\n end\n local late=grid.refreshCallback;local old=grid.items[0]\n assert(panel:GetChild('pileReturn'):GetChild('hit').click())\n if old then late(old,origin)end\n assert(not deck.visible and not grid.visible and grid.itemCount==0 and not panel:GetChild('pileChrome').visible)\n unchanged(host.run,before,'permanent browsing changed Run or RNG')",
+   "after": "  end\n end\n local late=grid.refreshCallback;local old=grid.items[0];local oldHit=old and old:GetChild('hit')\n assert(panel:GetChild('pileReturn'):GetChild('hit').click())\n if old then late(old,origin);assert(not oldHit.click() and not deck.cardDetail,'closed list accepted a stale click')end\n assert(not deck.visible and not grid.visible and grid.itemCount==0 and not panel:GetChild('pileChrome').visible)\n unchanged(host.run,before,'permanent browsing changed Run or RNG')"
+  }
+ ]
+});
+
 export function beforeReleaseClosureFixture(path,raw){
  if(!Object.hasOwn(fixtures,path))return raw;
  let source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
  if(typeof source!=='string'||Buffer.isBuffer(raw)&&!Buffer.from(source).equals(raw))return raw;
  const normalized=source.replaceAll('\r\n','\n');
  if(normalized.includes('\r')||source!==normalized&&source!==normalized.replaceAll('\n','\r\n'))return raw;
+ if(path==='tests/official-assets-runtime.test.mjs'&&exactSourceMatches(source,permanentDeckRuntimeFixture.current)){
+  const {current,previous,hunks}=permanentDeckRuntimeFixture;
+  const predecessor=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,source);
+  assert(exactSourceMatches(predecessor,previous),'exact prior permanent browser runtime fixture');
+  source=source===normalized?predecessor:predecessor.replaceAll('\n','\r\n');
+  // The immediately preceding fixture may itself have no older authorized
+  // projection in this adapter, but its authenticated bytes still carry forward.
+  raw=Buffer.isBuffer(raw)?Buffer.from(source):source;
+ }
  if(path==='tests/gil-candidate.test.mjs'&&exactSourceMatches(source,unifiedGilFixture.current)){
   const {current,previous,hunks}=unifiedGilFixture;
   const predecessor=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,source);
