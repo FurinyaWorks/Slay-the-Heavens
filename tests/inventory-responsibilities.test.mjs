@@ -12,14 +12,17 @@ const file='src/lua/abyss_inventory.lua';
 const normalize=s=>s.replaceAll('\r\n','\n');
 const read=p=>normalize(readFileSync(p,'utf8'));
 const before=read('tests/fixtures/inventory-responsibilities-before.lua');
-const historicalSource=()=>read(file).replace('raven_mask=true','cultist_mask=true');
-function replay(source,group,maskId='raven_mask'){
+const historicalIds={mask:'cultist_mask',opening:'mutagenic_strength',energy:'slavers_collar'};
+const currentIds={mask:'raven_mask',opening:'augmentation_core',energy:'arena_collar'};
+const historicalSource=()=>Object.keys(historicalIds).reduce((source,id)=>
+ source.replaceAll(currentIds[id],historicalIds[id]),read(file));
+function replay(source,group,ids=currentIds){
  mkdirSync('build/inventory-responsibilities',{recursive:true});
  const root=mkdtempSync(join('build/inventory-responsibilities','vm-'));
  try{
   const output=join(root,'full-graph.txt');
   const result=spawnSync(process.execPath,['--max-old-space-size=512','tests/helpers/inventory-responsibilities-runner.mjs',output],{
-   input:JSON.stringify({source,group,maskId}),encoding:'utf8',timeout:30000,maxBuffer:1024*1024,
+   input:JSON.stringify({source,group,ids}),encoding:'utf8',timeout:30000,maxBuffer:1024*1024,
   });
   assert.equal(result.error,undefined,result.error?.message);assert.equal(result.status,0,result.stderr);
   return {...JSON.parse(result.stdout),output:readFileSync(output)};
@@ -30,11 +33,12 @@ test('Inventory frozen full source retains develop 2c85bc61 bytes and Git blob',
  assert.equal(createHash('sha1').update('blob '+Buffer.byteLength(before)+'\0'+before).digest('hex'),'29d00e40b6423839c28d0964817a77f62348a06d');
 });
 for(const group of ['opening','validation','effects','failure'])test(`fresh old/new Inventory VMs preserve complete ${group} graphs, return arity and require order`,t=>{
- const old=replay(before,group,'cultist_mask'),current=replay(read(file),group);
+ const old=replay(before,group,historicalIds),current=replay(read(file),group);
  assert.equal(old.status,LUA_OK,old.error);assert.equal(current.status,LUA_OK,current.error);
  assert(old.output.includes('complete '));assert.equal(current.checkpoints,old.checkpoints);
- const expected=old.output.toString().replaceAll('["string","cultist_mask"]','["string","raven_mask"]');
- assert.equal(current.output.toString(),expected,'complete graph differs beyond the renamed ID');
+ const expected=Object.keys(historicalIds).reduce((graph,id)=>
+  graph.replaceAll(JSON.stringify(['string',historicalIds[id]]),JSON.stringify(['string',currentIds[id]])),old.output.toString());
+ assert.equal(current.output.toString(),expected,'complete graph differs beyond the approved identifier changes');
  t.diagnostic(JSON.stringify({group,checkpoints:current.checkpoints,bytes:current.output.length,sha256:createHash('sha256').update(current.output).digest('hex')}));
 });
 test('Inventory entire module including initialization and future helpers has CC15 hard limit',()=>{
