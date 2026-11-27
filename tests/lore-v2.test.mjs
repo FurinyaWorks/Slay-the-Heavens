@@ -34,6 +34,11 @@ const reviewedEventIntros = {
 function approvedCurrentCopy(core,support){
   const expected=structuredClone({flow:core.flow,merchant:support.merchant,combatIntros:support.combatIntros,
     eventCopy:{...support.eventCopy,living_wall:livingWallCopy}});
+  // #951 b2f74d99 changed the runtime key without rewriting the archived prose.
+  assert.equal(typeof expected.combatIntros.cultist, 'string', 'archived Cultist introduction');
+  assert.ok(!Object.hasOwn(expected.combatIntros, 'raven_adept'), 'archived key must be unambiguous');
+  expected.combatIntros.raven_adept = expected.combatIntros.cultist;
+  delete expected.combatIntros.cultist;
   for(const [path,before,after]of travelerNames){
     const owner=path.slice(0,-1).reduce((row,key)=>row[key],expected),key=path.at(-1);
     assert.equal(owner[key].split(before).length,2,'exact approved name predecessor: '+path.join('.'));
@@ -109,6 +114,11 @@ test('reviewed display-name migration rejects rollback, broader names and edits 
     owner[key]=earlierCopy.replace(after,replacement);
     assert.throws(()=>assertNarrativeCopy(changed,core,support),{code:'ERR_ASSERTION'});
   }
+  const alias = structuredClone(copy);
+  alias.combatIntros.cultist = alias.combatIntros.raven_adept;
+  assert.throws(() => assertNarrativeCopy(alias, core, support), { code: 'ERR_ASSERTION' });
+  delete alias.combatIntros.raven_adept;
+  assert.throws(() => assertNarrativeCopy(alias, core, support), { code: 'ERR_ASSERTION' });
 });
 
 test('event-copy guard rejects unregistered keys and changes to Living Wall intro or choices', () => {

@@ -65,6 +65,28 @@ const fixtures=Object.freeze({
   ]
  },
  'tests/helpers/replay-reviewed-selection.mjs':selectionRawEntranceReplay,
+ "tests/lore-v2.test.mjs": {
+  "current": {
+   "sha256": "75d8cc3adf030c2ff6aa09e664bd1abc5c7559eec33c50a0edd295350075c79b",
+   "gitBlob": "20b8f34ca1e7cff2ea8d790edfc4fa262db28042"
+  },
+  "previous": {
+   "sha256": "2291dec3b039b914d31e64b366fe9718913636b1095f60005becab39c1823fb8",
+   "gitBlob": "f242663a52c58bf7b3583cc96158f0f6196034fa"
+  },
+  "hunks": [
+   {
+    "at": 35,
+    "before": "    eventCopy:{...support.eventCopy,living_wall:livingWallCopy}});\n  for(const [path,before,after]of travelerNames){",
+    "after": "    eventCopy:{...support.eventCopy,living_wall:livingWallCopy}});\n  // #951 b2f74d99 changed the runtime key without rewriting the archived prose.\n  assert.equal(typeof expected.combatIntros.cultist, 'string', 'archived Cultist introduction');\n  assert.ok(!Object.hasOwn(expected.combatIntros, 'raven_adept'), 'archived key must be unambiguous');\n  expected.combatIntros.raven_adept = expected.combatIntros.cultist;\n  delete expected.combatIntros.cultist;\n  for(const [path,before,after]of travelerNames){"
+   },
+   {
+    "at": 115,
+    "before": "  }\n});",
+    "after": "  }\n  const alias = structuredClone(copy);\n  alias.combatIntros.cultist = alias.combatIntros.raven_adept;\n  assert.throws(() => assertNarrativeCopy(alias, core, support), { code: 'ERR_ASSERTION' });\n  delete alias.combatIntros.raven_adept;\n  assert.throws(() => assertNarrativeCopy(alias, core, support), { code: 'ERR_ASSERTION' });\n});"
+   }
+  ]
+ },
  "tests/colorless-catalog-source.test.mjs": {
   "current": {
    "sha256": "da577b404aeca08d7ee98580da6186204589a1c429b71e7b4ef945f874555d17",
