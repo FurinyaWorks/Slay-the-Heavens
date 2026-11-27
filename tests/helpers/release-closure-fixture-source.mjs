@@ -693,6 +693,28 @@ const fixtures=Object.freeze({
   ]
  },
  'tests/helpers/replay-reviewed-selection.mjs':selectionRawEntranceReplay,
+ "tests/silent-final-source-epoch.test.mjs": {
+   "current": {
+     "sha256": "04836e2a405797c90636725642db44ed7b3e197c43b498cdf859fd2941e7b29a",
+     "gitBlob": "507d0fd36cfbea810829c2a2d9dd303da170c0fb"
+   },
+   "previous": {
+     "sha256": "dea883654c05fd3d244dafdd16326853db282b17e63bf7288affb85ebd869314",
+     "gitBlob": "a5c724ddb461951bb3b9e0bb7a8be64d2ed0db16"
+   },
+   "hunks": [
+     {
+       "at": 13,
+       "before": "import {createHash} from 'node:crypto';\n// These original49-owner contracts authenticate the pre-component Silent epoch;",
+       "after": "import {createHash} from 'node:crypto';\nimport {releaseArchitectureReadTrace} from './helpers/current-production-source-reads.mjs';\n// These original49-owner contracts authenticate the pre-component Silent epoch;"
+     },
+     {
+       "at": 121,
+       "before": "   assert.equal(currentEpoch.preCombinedSource(config,input,{target:'actor',readSource:live}),expected);\n   assert.equal(seen.length,480);\n   assert.equal(createHash('sha256').update(JSON.stringify(seen)).digest('hex'),\n    'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd');\n   for(const owner of proof.owners)assert(seen.includes(owner),'retained Silent owner: '+owner);",
+       "after": "   assert.equal(currentEpoch.preCombinedSource(config,input,{target:'actor',readSource:live}),expected);\n   const digest=reads=>createHash('sha256').update(JSON.stringify(reads)).digest('hex');\n   assert.equal(seen.length,releaseArchitectureReadTrace.count);\n   assert.equal(digest(seen),releaseArchitectureReadTrace.sha256);\n   // Release owner rereads are interleaved with the original 480 observations.\n   const added=[[3,5],[9,11],[16,17],[18,23],[30,32],[90,91],[115,116],\n    [155,157],[221,224],[317,318],[367,370],[413,414],[479,480]];\n   const original=seen.filter((_,index)=>!added.some(([start,end])=>index>=start&&index<end));\n   assert.equal(original.length,480);\n   assert.equal(digest(original),'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd');\n   for(const owner of proof.owners)assert(seen.includes(owner),'retained Silent owner: '+owner);"
+     }
+   ]
+ },
  "tests/lore-v2.test.mjs": {
   "current": {
    "sha256": "7e5fe50774f35af13df83ac4206bb7f4356f56bc7e745ce891caa0395d70248b",

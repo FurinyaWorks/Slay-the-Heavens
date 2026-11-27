@@ -1302,7 +1302,8 @@ function beforeReviewedStsFeedbackFixture(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeCalibrationReplayOwner(path,source){
- if(path==='tests/lore-v2.test.mjs'||path==='tests/act1-choice-responsibilities.test.mjs')source=beforeReleaseClosureFixture(path,source);
+ if(path==='tests/lore-v2.test.mjs'||path==='tests/act1-choice-responsibilities.test.mjs'||path==='tests/silent-final-source-epoch.test.mjs')
+  source=beforeReleaseClosureFixture(path,source);
  source=beforeReviewedStsFeedbackFixture(path,beforeReviewedStsStyleFixture(path,source));
  source=beforeReviewedOfficialAssetReplay(path,beforeSelectionReceiptSource(path,source));
  source=beforeBattleSceneCopyClosure(path,source);
