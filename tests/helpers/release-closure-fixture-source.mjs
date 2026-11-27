@@ -22,6 +22,45 @@ const fixtures=Object.freeze({
    }
   ]
  },
+ "tests/lore-v2.test.mjs": {
+  "current": {
+   "sha256": "d4a225b7016392a197ad95e0beb06afcf602d875058c79da1d266382ea2c9b7f",
+   "gitBlob": "5e287d575aa21b66ca8a9e79384dd9640efc858e"
+  },
+  "previous": {
+   "sha256": "2291dec3b039b914d31e64b366fe9718913636b1095f60005becab39c1823fb8",
+   "gitBlob": "f242663a52c58bf7b3583cc96158f0f6196034fa"
+  },
+  "hunks": [
+   {
+    "at": 34,
+    "before": "  const expected=structuredClone({flow:core.flow,merchant:support.merchant,combatIntros:support.combatIntros,\n    eventCopy:{...support.eventCopy,living_wall:livingWallCopy}});\n  for(const [path,before,after]of travelerNames){\n    const owner=path.slice(0,-1).reduce((row,key)=>row[key],expected),key=path.at(-1);",
+    "after": "  const expected=structuredClone({flow:core.flow,merchant:support.merchant,combatIntros:support.combatIntros,\n    eventCopy:{...support.eventCopy,living_wall:livingWallCopy}});\n  // #951 renamed only the shipped encounter ID. The archived Lore v2 key and\n  // introduction remain unchanged; project the key on the cloned expectation.\n  const intros=expected.combatIntros;\n  assert.ok(Object.hasOwn(intros,'cultist')&&!Object.hasOwn(intros,'raven_adept'),'exact archived encounter key');\n  intros.raven_adept=intros.cultist;\n  delete intros.cultist;\n  for(const [path,before,after]of travelerNames){\n    const owner=path.slice(0,-1).reduce((row,key)=>row[key],expected),key=path.at(-1);"
+   },
+   {
+    "at": 117,
+    "before": "});\n\ntest('event-copy guard rejects unregistered keys and changes to Living Wall intro or choices', () => {\n  const copy = read('data/presentation/narrative.zh-CN.json');",
+    "after": "});\n\ntest('combat-intro guard rejects a legacy or duplicate key and a pre-migrated archive', () => {\n  const copy=read('data/presentation/narrative.zh-CN.json');\n  const core=read('docs/lore/v2/04-copy/core.zh-CN.json'),support=read('docs/lore/v2/04-copy/supporting.zh-CN.json');\n  for(const keepNew of [false,true]){\n    const changed=structuredClone(copy);\n    changed.combatIntros.cultist=changed.combatIntros.raven_adept;\n    if(!keepNew)delete changed.combatIntros.raven_adept;\n    assert.throws(()=>assertNarrativeCopy(changed,core,support),{code:'ERR_ASSERTION'});\n  }\n  const changed=structuredClone(support);\n  changed.combatIntros.raven_adept=changed.combatIntros.cultist;\n  delete changed.combatIntros.cultist;\n  assert.throws(()=>assertNarrativeCopy(copy,core,changed),/exact archived encounter key/);\n});\n\ntest('event-copy guard rejects unregistered keys and changes to Living Wall intro or choices', () => {\n  const copy = read('data/presentation/narrative.zh-CN.json');"
+   }
+  ]
+ },
+ "tests/build-ui-input-protection.test.mjs": {
+  "current": {
+   "sha256": "2c560d3bd66ac02fb86724dd3c447f70f9bf602d0746b6337460f97549b081b5",
+   "gitBlob": "03f98f53bc325575af828ffcfd316d1caf5105af"
+  },
+  "previous": {
+   "sha256": "a8d027660c20ce3cb1ad7ab5499a094a6c38a47a5237f3672f6e9dc4232f6cfc",
+   "gitBlob": "630fe376240d1d66493ab821fc7a318af784b2b3"
+  },
+  "hunks": [
+   {
+    "at": 16,
+    "before": "  'game-ui-templates.json', 'abyss_ui_templates.lua', 'abyss_ui_profile.lua', 'abyss_menu_background_asset.lua',",
+    "after": "  'game-ui-templates.json', 'abyss_ui_templates.lua', 'abyss_chapter_battle_scene_data.lua', 'abyss_ui_profile.lua', 'abyss_menu_background_asset.lua',"
+   }
+  ]
+ },
  "tests/colorless-catalog-source.test.mjs": {
   "current": {
    "sha256": "da577b404aeca08d7ee98580da6186204589a1c429b71e7b4ef945f874555d17",
@@ -114,6 +153,48 @@ const fixtures=Object.freeze({
     "at": 10,
     "before": "  local combat={outcome=function() trace[#trace+1]='outcome';return nil end}\n  if entry=='apply' and (label=='valid' or label=='unmarked-partial') then\n   combat=require('abyss_combat');state=combat.new(require('abyss_data'),{seed=42,deck={'strike'},enemies={'cultist','cultist'}})\n  end\n  local f=entry=='private' and GROUP_TARGET or entry=='supported' and GROUP_EFFECTS.supported or function(v)",
     "after": "  local combat={outcome=function() trace[#trace+1]='outcome';return nil end}\n  if entry=='apply' and (label=='valid' or label=='unmarked-partial') then\n   combat=require('abyss_combat');state=combat.new(require('abyss_data'),{seed=42,deck={'strike'},enemies={'raven_adept','raven_adept'}})\n  end\n  local f=entry=='private' and GROUP_TARGET or entry=='supported' and GROUP_EFFECTS.supported or function(v)"
+   }
+  ]
+ },
+ "tests/official-background-build.test.mjs": {
+  "current": {
+   "sha256": "f6d2b6fd7f7edfdabc1c0ef26fb7a9d74b9f47d7aca1cee9e32fd068754cb47b",
+   "gitBlob": "10389b49bea6610b53e57ac4d48ab29ebd0254f0"
+  },
+  "previous": {
+   "sha256": "bff7e52298b5187766692a8153814b7f249057ccc8b82c9c5a72713d5b86afda",
+   "gitBlob": "1c1c859f0cfc54976821346688d8dc7862fdcea3"
+  },
+  "hunks": [
+   {
+    "at": 1,
+    "before": "import assert from 'node:assert/strict';\nimport {mkdtempSync, readFileSync, rmSync} from 'node:fs';",
+    "after": "import assert from 'node:assert/strict';\nimport {createHash} from 'node:crypto';\nimport {mkdtempSync, readFileSync, rmSync} from 'node:fs';"
+   },
+   {
+    "at": 7,
+    "before": "import {gameLayout} from '../scripts/game-ui-layout.mjs';\nimport {buildUI} from '../scripts/build-ui.mjs';",
+    "after": "import {gameLayout} from '../scripts/game-ui-layout.mjs';\nimport {anchorBattlePeriphery} from '../scripts/viewport-layout.mjs';\nimport {buildUI} from '../scripts/build-ui.mjs';"
+   },
+   {
+    "at": 14,
+    "before": "import {createOptInArtFixture} from './helpers/opt-in-art-fixture.mjs';\n",
+    "after": "import {createOptInArtFixture} from './helpers/opt-in-art-fixture.mjs';\n\nconst digest=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');\n"
+   },
+   {
+    "at": 46,
+    "before": " const actor=templates.find(n=>n.name==='AbyssMonsterActor');assert(actor);\n assert.equal(descendants(actor).length,647);assert.equal(actor.children[0].name,'monsterArt');\n assert.equal(actor.visible,false);assert.equal(actor.children[0].visible,false);",
+    "after": " const actor=templates.find(n=>n.name==='AbyssMonsterActor');assert(actor);\n assert.equal(descendants(actor).length,648);assert.equal(actor.children[0].name,'monsterArt');\n // #897 added one initially hidden, read-only HP tooltip receiver; #902\n // removed the former focusable field. Keep the legacy 647-control check.\n const priorActor=structuredClone(actor), hpHit=priorActor.children.findIndex(c=>c.name==='hpHit');\n assert.equal(hpHit,26);\n assert.equal(priorActor.children[hpHit-1].name,'floating');\n assert.equal(priorActor.children[hpHit+1].name,'intentVfxBehind');\n assert.deepEqual(priorActor.children.splice(hpHit,1),\n  [{name:'hpHit',kind:'cursorArea',size:[106.66666666666667,12],visible:false}]);\n assert.equal(descendants(priorActor).length,647);\n assert.equal(digest(priorActor),'d3ab4b09ff6ea44730a05eb45f16e76dc48ac3f07bd2fa0abafa92207c69a690');\n assert.equal(digest(actor),'5cc75124b391761cb86793ea17e9fec2e0e96b6aaf4a9e1563314cf5bfaf2b95');\n assert.equal(actor.visible,false);assert.equal(actor.children[0].visible,false);"
+   },
+   {
+    "at": 78,
+    "before": " for(const name of ['confirm','cancel'])character.children.find(n=>n.name===name).visible=false;\n const assertControls=controls=>assert.ok(isDeepStrictEqual(controls,approved),'approved controls/input and entrance groups remain exact apart from explicit empty artwork hosts');",
+    "after": " for(const name of ['confirm','cancel'])character.children.find(n=>n.name===name).visible=false;\n // #1007 is the only change between the original authored oracle and the\n // current control tree. Pin both independent full-tree identities so using\n // the production transform does not let regressions change both sides.\n assert.equal(digest(approved),'1ceab50aded5e448e38de47cba984f74c9bedc8eaa1213ce943968165d082983');\n anchorBattlePeriphery({children:approved},1280,false);\n assert.equal(digest(approved),'c127761d9ef7021f65f8f91528c60ae87e918b1419cbc01fb351c659468a0d13');\n const assertControls=controls=>assert.ok(isDeepStrictEqual(controls,approved),'approved controls/input and entrance groups remain exact apart from explicit empty artwork hosts');"
+   },
+   {
+    "at": 102,
+    "before": " for(const mutate of [c=>{menuOf(c).size[0]++;},c=>{menuOf(c).raycastTarget=true;},\n  c=>{c.find(n=>n.name==='nodePanel').children.find(n=>n.name==='shopView').children.find(n=>n.name==='goods').raycastTarget=true;},",
+    "after": " for(const mutate of [c=>{menuOf(c).size[0]++;},c=>{menuOf(c).raycastTarget=true;},\n  c=>{c.find(n=>n.name==='battlePanel').children.find(n=>n.name==='draw').position[0]++;},\n  c=>{c.find(n=>n.name==='nodePanel').children.find(n=>n.name==='shopView').children.find(n=>n.name==='goods').raycastTarget=true;},"
    }
   ]
  },
