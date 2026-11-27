@@ -35,6 +35,48 @@ export const selectionRawEntranceReplay=Object.freeze({
 // Current Host checks exercise production. Historical Host and CI replays
 // preserve the exact earlier test sources from the production backflow.
 const fixtures=Object.freeze({
+ "tests/integration-source-epoch.test.mjs": {
+  "current": {
+   "sha256": "c01c05a38b05b9a405f009da808c1af295f48bf3653d70fbeb8346ec1d8feaf2",
+   "gitBlob": "95629736179479ea8c9319150c6beafc95360037"
+  },
+  "previous": {
+   "sha256": "fd0cb659920b58cb0354c37acba7344028847c06211bb0339cc0deb38bbc2a8b",
+   "gitBlob": "8ec5fab8e038c2b0a3e1201a353283a28f02293f"
+  },
+  "hunks": [
+   {
+    "at": 22,
+    "before": "import {readHistoricalReleaseCheckpoint} from './helpers/release-historical-source-checkpoints.mjs';\nimport {beforeCurrentSelectionProductionSource,readReviewedSelectionSource,readSelectionProductionOwners} from './helpers/replay-reviewed-selection.mjs';\nimport {reviewedSelectionRead,reviewedStsStyleInventory} from './helpers/reviewed-selection-current-source.mjs';\nimport {beforeShopPurchaseOwner,shopPurchaseOwner} from './helpers/shop-deck-purchase-source.mjs';\nimport {readBeforeMasterBackflowSource} from './helpers/master-backflow-source.mjs';\nconst sandbox=process.cwd();\nconst {sourceEpoch}=await import('./helpers/combined-epoch/source-epoch.mjs');\nconst proof=sourceEpoch.proof,raw=p=>proof.current[p]?.source??null;",
+    "after": "import {readHistoricalReleaseCheckpoint} from './helpers/release-historical-source-checkpoints.mjs';\nimport {beforeCurrentSelectionProductionSource,readReviewedSelectionSource,readSelectionProductionOwners} from './helpers/replay-reviewed-selection.mjs';\nimport {reviewedSelectionRead,reviewedStsStyleInventory} from './helpers/reviewed-selection-current-source.mjs';\nimport {shopPurchaseOwner} from './helpers/shop-deck-purchase-source.mjs';\nimport {productionReadingBackflowOwns,readBeforeMasterBackflowSource} from './helpers/master-backflow-source.mjs';\nconst sandbox=process.cwd();\nconst {sourceEpoch}=await import('./helpers/combined-epoch/source-epoch.mjs');\nconst proof=sourceEpoch.proof,raw=p=>proof.current[p]?.source??null;"
+   },
+   {
+    "at": 31,
+    "before": "const shopDeckPaths=['src/lua/abyss_deck_ui.lua','src/lua/abyss_merchant.lua','src/lua/abyss_game_ui_input.lua','src/lua/abyss_node_ui_feedback.lua','src/lua/abyss_potion_discard_ui.lua'];\nfunction readShopDeckFixture(path){\n if(path!==shopPurchaseOwner)return Object.hasOwn(proof.current,path)?readReviewedSelectionSource(path):readFileSync(path,'utf8');\n const read=(owner,encoding='utf8')=>beforeShopPurchaseOwner(owner,readFileSync(owner,encoding));\n const reviewed=reviewedSelectionRead(read);\n const source=beforeCurrentSelectionProductionSource(path,readSelectionProductionOwners(read,reviewed),reviewed);\n assert.equal(digest(source.replaceAll('\\r\\n','\\n')),proof.current[path].sha256,'exact historical purchase owner');",
+    "after": "const shopDeckPaths=['src/lua/abyss_deck_ui.lua','src/lua/abyss_merchant.lua','src/lua/abyss_game_ui_input.lua','src/lua/abyss_node_ui_feedback.lua','src/lua/abyss_potion_discard_ui.lua'];\nfunction readShopDeckFixture(path){\n if(path!==shopPurchaseOwner)return Object.hasOwn(proof.current,path)?readReviewedSelectionSource(path):readFileSync(path,'utf8');\n const read=(owner,encoding='utf8')=>readFileSync(owner,encoding);\n const reviewed=reviewedSelectionRead(read);\n const source=beforeCurrentSelectionProductionSource(path,readSelectionProductionOwners(read,reviewed),reviewed);\n assert.equal(digest(source.replaceAll('\\r\\n','\\n')),proof.current[path].sha256,'exact historical purchase owner');"
+   },
+   {
+    "at": 52,
+    "before": "\nfunction integrationProductionReaders(read=readFileSync){\n const readOwner=reviewedSelectionRead(read);\n const readSelection=readSelectionProductionOwners(read,readOwner);\n const current=path=>beforeShopPurchaseOwner(path,readSelection(path));\n // The earlier entrance receipt checks its original linked owners after the\n // audited chapter and periphery projections have authenticated their inputs.\n const entrance=path=>beforeBattlePeriphery(path,beforeChapterBattleScene(path,current(path)));\n return {current,entrance,readOwner};\n}\n",
+    "after": "\nfunction integrationProductionReaders(read=readFileSync){\n const readOwner=reviewedSelectionRead(read);\n const current=readSelectionProductionOwners(read,readOwner);\n // The earlier entrance receipt checks its original linked owners after the\n // audited chapter and periphery projections have authenticated their inputs.\n const entrance=path=>productionReadingBackflowOwns(path)||['src/lua/abyss_battle_card_layout.lua','src/lua/abyss_viewport.lua'].includes(path)\n  ?readOwner(path):beforeBattlePeriphery(path,beforeChapterBattleScene(path,current(path)));\n return {current,entrance,readOwner};\n}\n"
+   },
+   {
+    "at": 317,
+    "before": " const incomplete=live.filter(path=>!addedEntranceModules.includes(path));\n assert.throws(()=>entranceInventory(incomplete,read),/complete entrance module inventory/);\n assert.throws(()=>entranceInventory([...live,addedEntranceModules[0]],read),/complete entrance module inventory/);\n assert.throws(()=>assertActorFocusInventory(incomplete.filter(path=>path!==config),read),/complete entrance module inventory/);\n const project=input=>entrancePredecessor(config,source,input).source;\n assert.equal(project(read),prior);\n for(const changedPath of changed){",
+    "after": " const incomplete=live.filter(path=>!addedEntranceModules.includes(path));\n assert.throws(()=>entranceInventory(incomplete,read),/complete entrance module inventory/);\n assert.throws(()=>entranceInventory([...live,addedEntranceModules[0]],read),/complete entrance module inventory/);\n assert.throws(()=>assertActorFocusInventory(incomplete.filter(path=>path!==config)),/complete entrance module inventory/);\n const project=input=>entrancePredecessor(config,source,input).source;\n assert.equal(project(read),prior);\n for(const changedPath of changed){"
+   },
+   {
+    "at": 355,
+    "before": "});\ntest('current PC13 facade rejects every exact immediate predecessor before older views or reads',()=>{\n const disk=path=>readFileSync(path,'utf8');\n const live=readSelectionProductionOwners(disk,reviewedSelectionRead(disk));\n const read=beforeInputRetirementReader(readBeforeMasterBackflowSource(disk));\n const readMapPrior=owner=>beforeSts1MapSource(owner,beforeRebasedCi(owner,read(owner)));\n const readPc13Prior=owner=>pc13RewardCoverSourcePaths.includes(owner)",
+    "after": "});\ntest('current PC13 facade rejects every exact immediate predecessor before older views or reads',()=>{\n const disk=path=>readFileSync(path,'utf8');\n const reviewed=reviewedSelectionRead(disk);\n const live=readSelectionProductionOwners(disk,reviewed);\n const read=beforeInputRetirementReader(readBeforeMasterBackflowSource(disk));\n const readMapPrior=owner=>beforeSts1MapSource(owner,beforeRebasedCi(owner,read(owner)));\n const readPc13Prior=owner=>pc13RewardCoverSourcePaths.includes(owner)"
+   },
+   {
+    "at": 382,
+    "before": "   /combined linked owner identity/,path);\n }\n const unrelated='src/lua/abyss_battle_ui.lua';\n assert.equal(beforeCurrentProductionSource(unrelated,live(unrelated),live).replaceAll('\\r\\n','\\n'),raw(unrelated));\n});\nconst cases=[\n ['m7-core-final','preM7FinalSource','develop','abyss_original_v4'],",
+    "after": "   /combined linked owner identity/,path);\n }\n const unrelated='src/lua/abyss_battle_ui.lua';\n assert.equal(beforeCurrentSelectionProductionSource(unrelated,live,reviewed).replaceAll('\\r\\n','\\n'),raw(unrelated));\n});\nconst cases=[\n ['m7-core-final','preM7FinalSource','develop','abyss_original_v4'],"
+   }
+  ]
+ },
  "tests/defect-utility-planning.test.mjs": {
   "current": {
    "sha256": "14f647fae87f83b72919ce2e77f70503b6726e656b7283af75092dde5ba55be4",
