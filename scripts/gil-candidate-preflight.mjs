@@ -27,9 +27,12 @@ export function candidateTarget(branch, source) {
 
 export function validationTarget(repository, ref, source) {
   requireGate(sha.test(source), 'Validation requires an exact source SHA.');
-  const primary = repository === String(repositoryId) && ref === 'refs/heads/develop';
+  const version = /^refs\/tags\/(v(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))$/.exec(ref)?.[1];
+  const primary = repository === String(repositoryId) &&
+    (version || /^refs\/heads\/(?:develop|master|release\/.+|test\/gil-build\/.+)$/.test(ref));
   const fork = repository === '1460133275' && /^refs\/heads\/ci\/full\/gil-build\/[a-z0-9][a-z0-9._-]*$/.test(ref);
-  requireGate(primary || fork, 'Validation requires primary develop or the assigned Fork B validation branch.');
+  requireGate(primary || fork, 'Validation requires an enabled primary ref or the assigned Fork B validation branch.');
+  if (version) return { branch: version, version };
   return { branch: ref.slice('refs/heads/'.length) };
 }
 
