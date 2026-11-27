@@ -1,0 +1,1175 @@
+{
+  "sourceCommit": "73c21489efaab409d4c0c46bee517d410d3427fc",
+  "sourceDirty": false,
+  "b0": {
+    "options": {
+      "releaseCandidate": true,
+      "workKey": "d-capacity-baseline",
+      "officialAssets": true,
+      "refinedReleaseMonsterArt": true,
+      "nativePageLifecycle": true,
+      "artFeatures": {
+        "cards": false,
+        "menuBackground": false,
+        "selectionAvatar": true,
+        "battlePortrait": true,
+        "monsters": true
+      }
+    },
+    "schemaVersion": 1,
+    "sourceCommit": "73c21489efaab409d4c0c46bee517d410d3427fc",
+    "sourceDirty": false,
+    "measurement": "offline-production-inputs-not-official-storage",
+    "luaBytes": 5943861,
+    "layoutJsonBytes": 4153371,
+    "templateJsonBytes": 244803,
+    "controls": 27264,
+    "hiddenControls": 24875,
+    "templates": 16,
+    "artPools": 0,
+    "maxChildren": 60,
+    "monsterActors": {
+      "templateName": "AbyssMonsterActor",
+      "controlsPerActor": 68,
+      "shapesPerActor": 32,
+      "powerTemplateName": "AbyssMonsterPower",
+      "controlsPerPower": 7,
+      "powerAllocation": "per-power-instance",
+      "allocation": "per-drawable-actor-instance",
+      "measurement": "offline-template-count-not-official-load",
+      "officialImport": "not_run",
+      "devices": "not_run",
+      "tiers": {
+        "AbyssMonsterActor41": {
+          "templateName": "AbyssMonsterActor",
+          "controlsPerActor": 79,
+          "shapesPerActor": 41,
+          "powerTemplateName": "AbyssMonsterPower",
+          "controlsPerPower": 7,
+          "powerAllocation": "per-power-instance",
+          "allocation": "per-drawable-actor-instance",
+          "measurement": "offline-template-count-not-official-load",
+          "officialImport": "not_run",
+          "devices": "not_run"
+        },
+        "AbyssMonsterActor96": {
+          "templateName": "AbyssMonsterActor",
+          "controlsPerActor": 135,
+          "shapesPerActor": 96,
+          "powerTemplateName": "AbyssMonsterPower",
+          "controlsPerPower": 7,
+          "powerAllocation": "per-power-instance",
+          "allocation": "per-drawable-actor-instance",
+          "measurement": "offline-template-count-not-official-load",
+          "officialImport": "not_run",
+          "devices": "not_run"
+        },
+        "AbyssMonsterActor115": {
+          "templateName": "AbyssMonsterActor",
+          "controlsPerActor": 154,
+          "shapesPerActor": 115,
+          "powerTemplateName": "AbyssMonsterPower",
+          "controlsPerPower": 7,
+          "powerAllocation": "per-power-instance",
+          "allocation": "per-drawable-actor-instance",
+          "measurement": "offline-template-count-not-official-load",
+          "officialImport": "not_run",
+          "devices": "not_run"
+        }
+      },
+      "runtimeControlsFormula": "sum(selectedTier.controlsPerActor per drawable actor) + controlsPerPower * (displayedPowers + liveIntentParticles) + actorPowerAndIntentPagingContainers",
+      "peakDrawableActors": null,
+      "peakStatus": "unverified-not-a-static-visibility-cap"
+    },
+    "repeatedPrimitiveInstances": 18728,
+    "artFeatures": {
+      "cards": false,
+      "menuBackground": false,
+      "selectionAvatar": true,
+      "battlePortrait": true,
+      "monsters": true
+    },
+    "runtimePortraits": {
+      "renderProfile": "selection-budget-v1",
+      "hiddenBuild": true,
+      "cache": true,
+      "revealGroupsPerFrame": 4,
+      "selectionUses": "lowpolyLumine",
+      "assets": [
+        {
+          "asset": "traveler-geo/portraits/avatar96",
+          "images": 457,
+          "sourceSha256": "c30551e1fed1cd7f18c61b67fe0ad0cd6e52c61bfa6ae937ccd9e4c90e7f72bb",
+          "groups": 8,
+          "pages": 1
+        },
+        {
+          "asset": "lowpolyLumine",
+          "images": 1600,
+          "sourceSha256": "29c47e50581951d1f3cf509eb39b1a73bf8d6ae4934a5b0606a3c76f9857c050",
+          "groups": 27,
+          "pages": 1
+        },
+        {
+          "asset": "traveler-geo/portraits/lumine-native-v1",
+          "images": 464,
+          "sourceSha256": "bc9118f85b57b2ca70ec027c43a520c3bb2d0f403e4f0f6e167d4297c63a1ff5",
+          "groups": 8,
+          "pages": 1,
+          "jsonSha256": "a0c792109a74f71be0a52d9a59f39828e1d4818ce8d1bba915606b984d89f831",
+          "motion": "shared-actor-root-only",
+          "officialCapacity": "not_measured",
+          "devicePerformance": "not_run"
+        }
+      ],
+      "instances": 3,
+      "batchSize": 64,
+      "peakDynamicControls": 2567,
+      "maxDirectDynamicChildren": 60,
+      "officialCapacity": "not_measured",
+      "measurement": "offline-runtime-control-contract-not-official-capacity",
+      "devicePerformance": "not_run"
+    },
+    "runtimeBackgrounds": [],
+    "excludedModules": [
+      "abyss_random"
+    ],
+    "mappedModules": 373,
+    "mappedManifestSha256": "886fb2949a54b951458d79c1d1a56fcbe209b7805cd605a92779a9a6008b54a3",
+    "layoutSha256": "1763ca8087e9ec6fcd1ed74b9a2a44c0d7dcafd867a33009816b9aad8376e779",
+    "templatesSha256": "d46d9f656a645e8e901aec4093daa788400f3fd895f591ccc4dcd56f47610cf6",
+    "sourcePayloadDigestWithoutEncoder": "9c63de3e81a07000fe50252bb224770163b9ec5080c15785c580453e165a4fb5",
+    "bgmSource": {
+      "sha256": "4c132bc542646b668011e8217c1af1fc5d145dd8db2003be939a25473d0d9764",
+      "status": "not-packaged"
+    }
+  },
+  "experiments": [
+    {
+      "label": "a-control",
+      "options": {},
+      "schemaVersion": 1,
+      "sourceCommit": "73c21489efaab409d4c0c46bee517d410d3427fc",
+      "sourceDirty": false,
+      "measurement": "offline-production-inputs-not-official-storage",
+      "luaBytes": 4057379,
+      "layoutJsonBytes": 1771289,
+      "templateJsonBytes": 54380,
+      "controls": 15464,
+      "hiddenControls": 15057,
+      "templates": 6,
+      "artPools": 0,
+      "maxChildren": 59,
+      "monsterActors": {
+        "templateName": "AbyssMonsterActor",
+        "controlsPerActor": 35,
+        "shapesPerActor": 0,
+        "powerTemplateName": "AbyssMonsterPower",
+        "controlsPerPower": 7,
+        "powerAllocation": "per-power-instance",
+        "allocation": "per-drawable-actor-instance",
+        "measurement": "offline-template-count-not-official-load",
+        "officialImport": "not_run",
+        "devices": "not_run",
+        "runtimeControlsFormula": "controlsPerActor * drawableActors + controlsPerPower * (displayedPowers + liveIntentParticles) + actorPowerAndIntentPagingContainers",
+        "peakDrawableActors": null,
+        "peakStatus": "unverified-not-a-static-visibility-cap"
+      },
+      "repeatedPrimitiveInstances": 10541,
+      "artFeatures": {
+        "cards": false,
+        "menuBackground": false,
+        "selectionAvatar": false,
+        "battlePortrait": false,
+        "monsters": false
+      },
+      "runtimeBackgrounds": [],
+      "excludedModules": [
+        "abyss_random"
+      ],
+      "mappedModules": 373,
+      "mappedManifestSha256": "16faa99c236f53915919624664f45eb03463423766595ee817a6899c0eb83a2a",
+      "layoutSha256": "1716f9c1ab2dd35f0d8f74c3691ce7d47d3dffe64e9f9f48cf4122417a3ffe43",
+      "templatesSha256": "f6f892857e681f81541fdce554340f387f9988b0ae744a73e8916a91123b0695",
+      "changedLua": []
+    },
+    {
+      "label": "a1-armaments",
+      "options": {
+        "nativeCardArt": {
+          "registry": "build/v6-d-evidence/a1-armaments/registry.json",
+          "hosts": [
+            "battlePanel/card1"
+          ]
+        }
+      },
+      "schemaVersion": 1,
+      "sourceCommit": "73c21489efaab409d4c0c46bee517d410d3427fc",
+      "sourceDirty": false,
+      "measurement": "offline-production-inputs-not-official-storage",
+      "luaBytes": 4836936,
+      "layoutJsonBytes": 2008780,
+      "templateJsonBytes": 54489,
+      "controls": 17331,
+      "hiddenControls": 16924,
+      "templates": 7,
+      "artPools": 1,
+      "maxChildren": 60,
+      "monsterActors": {
+        "templateName": "AbyssMonsterActor",
+        "controlsPerActor": 35,
+        "shapesPerActor": 0,
+        "powerTemplateName": "AbyssMonsterPower",
+        "controlsPerPower": 7,
+        "powerAllocation": "per-power-instance",
+        "allocation": "per-drawable-actor-instance",
+        "measurement": "offline-template-count-not-official-load",
+        "officialImport": "not_run",
+        "devices": "not_run",
+        "runtimeControlsFormula": "controlsPerActor * drawableActors + controlsPerPower * (displayedPowers + liveIntentParticles) + actorPowerAndIntentPagingContainers",
+        "peakDrawableActors": null,
+        "peakStatus": "unverified-not-a-static-visibility-cap"
+      },
+      "repeatedPrimitiveInstances": 12374,
+      "artFeatures": {
+        "cards": true,
+        "menuBackground": false,
+        "selectionAvatar": false,
+        "battlePortrait": false,
+        "monsters": false
+      },
+      "runtimePortraits": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "assets": [
+          {
+            "asset": "lowpolyCardFan",
+            "images": 1585,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 1
+          }
+        ],
+        "instances": 1,
+        "batchSize": 64,
+        "peakDynamicControls": 1614,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "runtimeBackgrounds": [],
+      "excludedModules": [
+        "abyss_random"
+      ],
+      "mappedModules": 373,
+      "mappedManifestSha256": "67729bc465307883fe389acdc190f78fb3759a5b5a788b4b498c01609b74b4c7",
+      "layoutSha256": "d6ca6ac835c9cf6f3aad8f316b65d8fb1c2deed519fc91ee39879c85e30dcdda",
+      "templatesSha256": "3a623e40f8e1fd522c4b2cedefb87e546093dd295ac877da8cc7c1ff000c7967",
+      "nativeCardArt": {
+        "schemaVersion": 1,
+        "registrySha256": "2b4f35e99c1f9a51ae191ce66cc77f364f7d002a27466134c3732f976e89df49",
+        "hosts": [
+          "battlePanel/card1"
+        ],
+        "sources": {
+          "armaments": {
+            "luaSha256": "b120cb5d4d30372611c539b69c8b04af1c8ea5feafbdb561c1eabb37443c8a04",
+            "jsonSha256": "277afd4d54a2a6a2688205c81e29663ff3253d19df72759ead8621935f9a3e0a",
+            "images": 1834
+          }
+        },
+        "capacity": 1834,
+        "controlsPerPool": 1866,
+        "staticPools": 1,
+        "staticAddedControls": 1866,
+        "deckTemplateEnabled": false,
+        "officialImport": "not_run",
+        "PC": "not_run",
+        "physicalAndroid": "not_run",
+        "performance": "not_measured",
+        "registry": {
+          "path": "build/v6-d-evidence/a1-armaments/registry.json",
+          "sha256": "2b4f35e99c1f9a51ae191ce66cc77f364f7d002a27466134c3732f976e89df49",
+          "bytes": 537108
+        },
+        "inputs": [
+          {
+            "path": "art/cards/traveler-geo/armaments/native-art.lua",
+            "sha256": "b120cb5d4d30372611c539b69c8b04af1c8ea5feafbdb561c1eabb37443c8a04",
+            "bytes": 350789
+          },
+          {
+            "path": "art/cards/traveler-geo/armaments/native-art.json",
+            "sha256": "277afd4d54a2a6a2688205c81e29663ff3253d19df72759ead8621935f9a3e0a",
+            "bytes": 1214781
+          },
+          {
+            "path": "build/v6-d-evidence/a1-armaments/registry.json",
+            "sha256": "2b4f35e99c1f9a51ae191ce66cc77f364f7d002a27466134c3732f976e89df49",
+            "bytes": 537108
+          }
+        ],
+        "inputDigest": "653b816ae0fdba7b4e919673913a487c6cecfbaf98ab06cf0769ba39f5c921c7",
+        "outputs": [
+          {
+            "path": "build/v6-d-evidence/a1-armaments/game-ui.json",
+            "sha256": "d6ca6ac835c9cf6f3aad8f316b65d8fb1c2deed519fc91ee39879c85e30dcdda",
+            "bytes": 9164625
+          },
+          {
+            "path": "build/v6-d-evidence/a1-armaments/game-ui-templates.json",
+            "sha256": "3a623e40f8e1fd522c4b2cedefb87e546093dd295ac877da8cc7c1ff000c7967",
+            "bytes": 169324
+          },
+          {
+            "path": "build/v6-d-evidence/a1-armaments/abyss_presentation.lua",
+            "sha256": "3204aef096d958ac481740e97603a4543a493ec8d1faf7c23b7acce5a624f763",
+            "bytes": 710223
+          },
+          {
+            "path": "build/v6-d-evidence/a1-armaments/native-card-art-receipt.json",
+            "sha256": "53225e8429adcc3d63e971ae186f70c19b010a3c5fb1e6310e2f27793a678c93",
+            "bytes": 641
+          }
+        ]
+      },
+      "changedLua": [
+        {
+          "name": "abyss_art_features",
+          "bytes": 201,
+          "sha256": "26894b778ac1d997d7ae77477af49e4f1294e412ce4dec2da59573a623f388e0",
+          "bytesDelta": -1
+        },
+        {
+          "name": "abyss_presentation",
+          "bytes": 710223,
+          "sha256": "3204aef096d958ac481740e97603a4543a493ec8d1faf7c23b7acce5a624f763",
+          "bytesDelta": 635709
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "bytes": 143925,
+          "sha256": "32e9831df4ccdace90d2e2b0784a93f5a44a4d182431ff099819a6dfe1ad18dd",
+          "bytesDelta": 143849
+        }
+      ]
+    },
+    {
+      "label": "a1-cleave",
+      "options": {
+        "nativeCardArt": {
+          "registry": "build/v6-d-evidence/a1-cleave/registry.json",
+          "hosts": [
+            "battlePanel/card1"
+          ]
+        }
+      },
+      "schemaVersion": 1,
+      "sourceCommit": "73c21489efaab409d4c0c46bee517d410d3427fc",
+      "sourceDirty": false,
+      "measurement": "offline-production-inputs-not-official-storage",
+      "luaBytes": 5096678,
+      "layoutJsonBytes": 2115314,
+      "templateJsonBytes": 54489,
+      "controls": 18168,
+      "hiddenControls": 17761,
+      "templates": 7,
+      "artPools": 1,
+      "maxChildren": 60,
+      "monsterActors": {
+        "templateName": "AbyssMonsterActor",
+        "controlsPerActor": 35,
+        "shapesPerActor": 0,
+        "powerTemplateName": "AbyssMonsterPower",
+        "controlsPerPower": 7,
+        "powerAllocation": "per-power-instance",
+        "allocation": "per-drawable-actor-instance",
+        "measurement": "offline-template-count-not-official-load",
+        "officialImport": "not_run",
+        "devices": "not_run",
+        "runtimeControlsFormula": "controlsPerActor * drawableActors + controlsPerPower * (displayedPowers + liveIntentParticles) + actorPowerAndIntentPagingContainers",
+        "peakDrawableActors": null,
+        "peakStatus": "unverified-not-a-static-visibility-cap"
+      },
+      "repeatedPrimitiveInstances": 13197,
+      "artFeatures": {
+        "cards": true,
+        "menuBackground": false,
+        "selectionAvatar": false,
+        "battlePortrait": false,
+        "monsters": false
+      },
+      "runtimePortraits": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "assets": [
+          {
+            "asset": "lowpolyCardFan",
+            "images": 1585,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 1
+          }
+        ],
+        "instances": 1,
+        "batchSize": 64,
+        "peakDynamicControls": 1614,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "runtimeBackgrounds": [],
+      "excludedModules": [
+        "abyss_random"
+      ],
+      "mappedModules": 373,
+      "mappedManifestSha256": "7ac7aa01434ad04ba91bfe2210686fafeca0266c5d7c6d91f25aabe182162d1f",
+      "layoutSha256": "264c21d470cc243b54e0d50f7dab9046eb7d7d2f94f3392d07e35d5e4885c8bf",
+      "templatesSha256": "3a623e40f8e1fd522c4b2cedefb87e546093dd295ac877da8cc7c1ff000c7967",
+      "nativeCardArt": {
+        "schemaVersion": 1,
+        "registrySha256": "5082331f2a2748f4611409f5e99a3cf1e2adbcbf02623c732b97eed879366a94",
+        "hosts": [
+          "battlePanel/card1"
+        ],
+        "sources": {
+          "cleave": {
+            "luaSha256": "3c9eaa03741391f594846e59708563d4912a96b8757092112ce3cabb7c2e5185",
+            "jsonSha256": "f60eaf057ea4a94231525047ea9d54afda09a7857bc671209cedebd2677b6eff",
+            "images": 2657
+          }
+        },
+        "capacity": 2657,
+        "controlsPerPool": 2703,
+        "staticPools": 1,
+        "staticAddedControls": 2703,
+        "deckTemplateEnabled": false,
+        "officialImport": "not_run",
+        "PC": "not_run",
+        "physicalAndroid": "not_run",
+        "performance": "not_measured",
+        "registry": {
+          "path": "build/v6-d-evidence/a1-cleave/registry.json",
+          "sha256": "5082331f2a2748f4611409f5e99a3cf1e2adbcbf02623c732b97eed879366a94",
+          "bytes": 752393
+        },
+        "inputs": [
+          {
+            "path": "art/cards/traveler-geo/cleave/native-art.lua",
+            "sha256": "3c9eaa03741391f594846e59708563d4912a96b8757092112ce3cabb7c2e5185",
+            "bytes": 481737
+          },
+          {
+            "path": "art/cards/traveler-geo/cleave/native-art.json",
+            "sha256": "f60eaf057ea4a94231525047ea9d54afda09a7857bc671209cedebd2677b6eff",
+            "bytes": 1748513
+          },
+          {
+            "path": "build/v6-d-evidence/a1-cleave/registry.json",
+            "sha256": "5082331f2a2748f4611409f5e99a3cf1e2adbcbf02623c732b97eed879366a94",
+            "bytes": 752393
+          }
+        ],
+        "inputDigest": "88dd864b94fb48f0ecd3c25354e1ba0390aa81c69cc7dd29dba7a5739c033372",
+        "outputs": [
+          {
+            "path": "build/v6-d-evidence/a1-cleave/game-ui.json",
+            "sha256": "264c21d470cc243b54e0d50f7dab9046eb7d7d2f94f3392d07e35d5e4885c8bf",
+            "bytes": 9641205
+          },
+          {
+            "path": "build/v6-d-evidence/a1-cleave/game-ui-templates.json",
+            "sha256": "3a623e40f8e1fd522c4b2cedefb87e546093dd295ac877da8cc7c1ff000c7967",
+            "bytes": 169324
+          },
+          {
+            "path": "build/v6-d-evidence/a1-cleave/abyss_presentation.lua",
+            "sha256": "999eff9fd9d7eaed2eceb350595166938b6699ab9070edf3ed9bd3c2a1a5e802",
+            "bytes": 969965
+          },
+          {
+            "path": "build/v6-d-evidence/a1-cleave/native-card-art-receipt.json",
+            "sha256": "3949f0047e01aaf33f843b5e47f4a2c5133325c6f973541cdf4b9223db59d2f7",
+            "bytes": 638
+          }
+        ]
+      },
+      "changedLua": [
+        {
+          "name": "abyss_art_features",
+          "bytes": 201,
+          "sha256": "26894b778ac1d997d7ae77477af49e4f1294e412ce4dec2da59573a623f388e0",
+          "bytesDelta": -1
+        },
+        {
+          "name": "abyss_presentation",
+          "bytes": 969965,
+          "sha256": "999eff9fd9d7eaed2eceb350595166938b6699ab9070edf3ed9bd3c2a1a5e802",
+          "bytesDelta": 895451
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "bytes": 143925,
+          "sha256": "32e9831df4ccdace90d2e2b0784a93f5a44a4d182431ff099819a6dfe1ad18dd",
+          "bytesDelta": 143849
+        }
+      ]
+    },
+    {
+      "label": "a1-heavy_blade",
+      "options": {
+        "nativeCardArt": {
+          "registry": "build/v6-d-evidence/a1-heavy_blade/registry.json",
+          "hosts": [
+            "battlePanel/card1"
+          ]
+        }
+      },
+      "schemaVersion": 1,
+      "sourceCommit": "73c21489efaab409d4c0c46bee517d410d3427fc",
+      "sourceDirty": false,
+      "measurement": "offline-production-inputs-not-official-storage",
+      "luaBytes": 4887132,
+      "layoutJsonBytes": 2035872,
+      "templateJsonBytes": 54489,
+      "controls": 17544,
+      "hiddenControls": 17137,
+      "templates": 7,
+      "artPools": 1,
+      "maxChildren": 60,
+      "monsterActors": {
+        "templateName": "AbyssMonsterActor",
+        "controlsPerActor": 35,
+        "shapesPerActor": 0,
+        "powerTemplateName": "AbyssMonsterPower",
+        "controlsPerPower": 7,
+        "powerAllocation": "per-power-instance",
+        "allocation": "per-drawable-actor-instance",
+        "measurement": "offline-template-count-not-official-load",
+        "officialImport": "not_run",
+        "devices": "not_run",
+        "runtimeControlsFormula": "controlsPerActor * drawableActors + controlsPerPower * (displayedPowers + liveIntentParticles) + actorPowerAndIntentPagingContainers",
+        "peakDrawableActors": null,
+        "peakStatus": "unverified-not-a-static-visibility-cap"
+      },
+      "repeatedPrimitiveInstances": 12583,
+      "artFeatures": {
+        "cards": true,
+        "menuBackground": false,
+        "selectionAvatar": false,
+        "battlePortrait": false,
+        "monsters": false
+      },
+      "runtimePortraits": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "assets": [
+          {
+            "asset": "lowpolyCardFan",
+            "images": 1585,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 1
+          }
+        ],
+        "instances": 1,
+        "batchSize": 64,
+        "peakDynamicControls": 1614,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "runtimeBackgrounds": [],
+      "excludedModules": [
+        "abyss_random"
+      ],
+      "mappedModules": 373,
+      "mappedManifestSha256": "668434bd8319e006c8eed2bf2ec87ca0cb9b418d91680d5597769a59a87b9703",
+      "layoutSha256": "367211b82fb300894690e2d27af7d61ccb0fd2df1b4d9b7c3febafb5d1a42ecf",
+      "templatesSha256": "3a623e40f8e1fd522c4b2cedefb87e546093dd295ac877da8cc7c1ff000c7967",
+      "nativeCardArt": {
+        "schemaVersion": 1,
+        "registrySha256": "22f158e17f06c66a954eab910c27d411600d65f2c198053598f19edc24118b07",
+        "hosts": [
+          "battlePanel/card1"
+        ],
+        "sources": {
+          "heavy_blade": {
+            "luaSha256": "6e0b632d02e285e6412a2cfbc13c95ae6b28498259b031d0b23f5992cfd8903f",
+            "jsonSha256": "38708d271df2b168f71e90fae0f8780bb0acefc522bde1f313cb0d4a4e6fdee0",
+            "images": 2043
+          }
+        },
+        "capacity": 2043,
+        "controlsPerPool": 2079,
+        "staticPools": 1,
+        "staticAddedControls": 2079,
+        "deckTemplateEnabled": false,
+        "officialImport": "not_run",
+        "PC": "not_run",
+        "physicalAndroid": "not_run",
+        "performance": "not_measured",
+        "registry": {
+          "path": "build/v6-d-evidence/a1-heavy_blade/registry.json",
+          "sha256": "22f158e17f06c66a954eab910c27d411600d65f2c198053598f19edc24118b07",
+          "bytes": 576028
+        },
+        "inputs": [
+          {
+            "path": "art/cards/traveler-geo/heavy_blade/native-art.lua",
+            "sha256": "6e0b632d02e285e6412a2cfbc13c95ae6b28498259b031d0b23f5992cfd8903f",
+            "bytes": 368509
+          },
+          {
+            "path": "art/cards/traveler-geo/heavy_blade/native-art.json",
+            "sha256": "38708d271df2b168f71e90fae0f8780bb0acefc522bde1f313cb0d4a4e6fdee0",
+            "bytes": 1343390
+          },
+          {
+            "path": "build/v6-d-evidence/a1-heavy_blade/registry.json",
+            "sha256": "22f158e17f06c66a954eab910c27d411600d65f2c198053598f19edc24118b07",
+            "bytes": 576028
+          }
+        ],
+        "inputDigest": "c9f1657d94902af6296c911e4202bc58f3f12575801e5ca9cdc382c0bd95517d",
+        "outputs": [
+          {
+            "path": "build/v6-d-evidence/a1-heavy_blade/game-ui.json",
+            "sha256": "367211b82fb300894690e2d27af7d61ccb0fd2df1b4d9b7c3febafb5d1a42ecf",
+            "bytes": 9285837
+          },
+          {
+            "path": "build/v6-d-evidence/a1-heavy_blade/game-ui-templates.json",
+            "sha256": "3a623e40f8e1fd522c4b2cedefb87e546093dd295ac877da8cc7c1ff000c7967",
+            "bytes": 169324
+          },
+          {
+            "path": "build/v6-d-evidence/a1-heavy_blade/abyss_presentation.lua",
+            "sha256": "9ec13bc6fd2bd22f24de1f290226ad9b5a22289d872754a70d214aa6719931e7",
+            "bytes": 760419
+          },
+          {
+            "path": "build/v6-d-evidence/a1-heavy_blade/native-card-art-receipt.json",
+            "sha256": "73a6351869d9b101b86939250245d22fb9a42301455c1f731342aa59cff0965e",
+            "bytes": 643
+          }
+        ]
+      },
+      "changedLua": [
+        {
+          "name": "abyss_art_features",
+          "bytes": 201,
+          "sha256": "26894b778ac1d997d7ae77477af49e4f1294e412ce4dec2da59573a623f388e0",
+          "bytesDelta": -1
+        },
+        {
+          "name": "abyss_presentation",
+          "bytes": 760419,
+          "sha256": "9ec13bc6fd2bd22f24de1f290226ad9b5a22289d872754a70d214aa6719931e7",
+          "bytesDelta": 685905
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "bytes": 143925,
+          "sha256": "32e9831df4ccdace90d2e2b0784a93f5a44a4d182431ff099819a6dfe1ad18dd",
+          "bytesDelta": 143849
+        }
+      ]
+    },
+    {
+      "label": "a2-three-ids",
+      "options": {
+        "nativeCardArt": {
+          "registry": "build/v6-d-evidence/a2-three-ids/registry.json",
+          "hosts": [
+            "battlePanel/card1"
+          ]
+        }
+      },
+      "schemaVersion": 1,
+      "sourceCommit": "73c21489efaab409d4c0c46bee517d410d3427fc",
+      "sourceDirty": false,
+      "measurement": "offline-production-inputs-not-official-storage",
+      "luaBytes": 6418292,
+      "layoutJsonBytes": 2115314,
+      "templateJsonBytes": 54489,
+      "controls": 18168,
+      "hiddenControls": 17761,
+      "templates": 7,
+      "artPools": 1,
+      "maxChildren": 60,
+      "monsterActors": {
+        "templateName": "AbyssMonsterActor",
+        "controlsPerActor": 35,
+        "shapesPerActor": 0,
+        "powerTemplateName": "AbyssMonsterPower",
+        "controlsPerPower": 7,
+        "powerAllocation": "per-power-instance",
+        "allocation": "per-drawable-actor-instance",
+        "measurement": "offline-template-count-not-official-load",
+        "officialImport": "not_run",
+        "devices": "not_run",
+        "runtimeControlsFormula": "controlsPerActor * drawableActors + controlsPerPower * (displayedPowers + liveIntentParticles) + actorPowerAndIntentPagingContainers",
+        "peakDrawableActors": null,
+        "peakStatus": "unverified-not-a-static-visibility-cap"
+      },
+      "repeatedPrimitiveInstances": 13197,
+      "artFeatures": {
+        "cards": true,
+        "menuBackground": false,
+        "selectionAvatar": false,
+        "battlePortrait": false,
+        "monsters": false
+      },
+      "runtimePortraits": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "assets": [
+          {
+            "asset": "lowpolyCardFan",
+            "images": 1585,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 1
+          }
+        ],
+        "instances": 1,
+        "batchSize": 64,
+        "peakDynamicControls": 1614,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "runtimeBackgrounds": [],
+      "excludedModules": [
+        "abyss_random"
+      ],
+      "mappedModules": 373,
+      "mappedManifestSha256": "17629d638c6db34614e9b8c3990bbc46daea9687a2b4e956c003371e4069c52c",
+      "layoutSha256": "264c21d470cc243b54e0d50f7dab9046eb7d7d2f94f3392d07e35d5e4885c8bf",
+      "templatesSha256": "3a623e40f8e1fd522c4b2cedefb87e546093dd295ac877da8cc7c1ff000c7967",
+      "nativeCardArt": {
+        "schemaVersion": 1,
+        "registrySha256": "2ec3b9fe63abfd7afde527b8be6523a4c5d7f2cec98709e7a3c2bb5f5ed7ee99",
+        "hosts": [
+          "battlePanel/card1"
+        ],
+        "sources": {
+          "armaments": {
+            "luaSha256": "b120cb5d4d30372611c539b69c8b04af1c8ea5feafbdb561c1eabb37443c8a04",
+            "jsonSha256": "277afd4d54a2a6a2688205c81e29663ff3253d19df72759ead8621935f9a3e0a",
+            "images": 1834
+          },
+          "cleave": {
+            "luaSha256": "3c9eaa03741391f594846e59708563d4912a96b8757092112ce3cabb7c2e5185",
+            "jsonSha256": "f60eaf057ea4a94231525047ea9d54afda09a7857bc671209cedebd2677b6eff",
+            "images": 2657
+          },
+          "heavy_blade": {
+            "luaSha256": "6e0b632d02e285e6412a2cfbc13c95ae6b28498259b031d0b23f5992cfd8903f",
+            "jsonSha256": "38708d271df2b168f71e90fae0f8780bb0acefc522bde1f313cb0d4a4e6fdee0",
+            "images": 2043
+          }
+        },
+        "capacity": 2657,
+        "controlsPerPool": 2703,
+        "staticPools": 1,
+        "staticAddedControls": 2703,
+        "deckTemplateEnabled": false,
+        "officialImport": "not_run",
+        "PC": "not_run",
+        "physicalAndroid": "not_run",
+        "performance": "not_measured",
+        "registry": {
+          "path": "build/v6-d-evidence/a2-three-ids/registry.json",
+          "sha256": "2ec3b9fe63abfd7afde527b8be6523a4c5d7f2cec98709e7a3c2bb5f5ed7ee99",
+          "bytes": 1865283
+        },
+        "inputs": [
+          {
+            "path": "art/cards/traveler-geo/armaments/native-art.lua",
+            "sha256": "b120cb5d4d30372611c539b69c8b04af1c8ea5feafbdb561c1eabb37443c8a04",
+            "bytes": 350789
+          },
+          {
+            "path": "art/cards/traveler-geo/armaments/native-art.json",
+            "sha256": "277afd4d54a2a6a2688205c81e29663ff3253d19df72759ead8621935f9a3e0a",
+            "bytes": 1214781
+          },
+          {
+            "path": "art/cards/traveler-geo/cleave/native-art.lua",
+            "sha256": "3c9eaa03741391f594846e59708563d4912a96b8757092112ce3cabb7c2e5185",
+            "bytes": 481737
+          },
+          {
+            "path": "art/cards/traveler-geo/cleave/native-art.json",
+            "sha256": "f60eaf057ea4a94231525047ea9d54afda09a7857bc671209cedebd2677b6eff",
+            "bytes": 1748513
+          },
+          {
+            "path": "art/cards/traveler-geo/heavy_blade/native-art.lua",
+            "sha256": "6e0b632d02e285e6412a2cfbc13c95ae6b28498259b031d0b23f5992cfd8903f",
+            "bytes": 368509
+          },
+          {
+            "path": "art/cards/traveler-geo/heavy_blade/native-art.json",
+            "sha256": "38708d271df2b168f71e90fae0f8780bb0acefc522bde1f313cb0d4a4e6fdee0",
+            "bytes": 1343390
+          },
+          {
+            "path": "build/v6-d-evidence/a2-three-ids/registry.json",
+            "sha256": "2ec3b9fe63abfd7afde527b8be6523a4c5d7f2cec98709e7a3c2bb5f5ed7ee99",
+            "bytes": 1865283
+          }
+        ],
+        "inputDigest": "6e3b57fa137d109dfee4ece531efe4dcb6f261a8df3c6e40cf2741d230e364c7",
+        "outputs": [
+          {
+            "path": "build/v6-d-evidence/a2-three-ids/game-ui.json",
+            "sha256": "264c21d470cc243b54e0d50f7dab9046eb7d7d2f94f3392d07e35d5e4885c8bf",
+            "bytes": 9641205
+          },
+          {
+            "path": "build/v6-d-evidence/a2-three-ids/game-ui-templates.json",
+            "sha256": "3a623e40f8e1fd522c4b2cedefb87e546093dd295ac877da8cc7c1ff000c7967",
+            "bytes": 169324
+          },
+          {
+            "path": "build/v6-d-evidence/a2-three-ids/abyss_presentation.lua",
+            "sha256": "8787019c353de28ec2932dfe0666d22267119be3d91c01a1c29d6c638482a07b",
+            "bytes": 2291579
+          },
+          {
+            "path": "build/v6-d-evidence/a2-three-ids/native-card-art-receipt.json",
+            "sha256": "b86b3b45ef2055b18cdcb6dce31137729533a8ec33c23a0367ae699e958747e0",
+            "bytes": 1084
+          }
+        ]
+      },
+      "changedLua": [
+        {
+          "name": "abyss_art_features",
+          "bytes": 201,
+          "sha256": "26894b778ac1d997d7ae77477af49e4f1294e412ce4dec2da59573a623f388e0",
+          "bytesDelta": -1
+        },
+        {
+          "name": "abyss_presentation",
+          "bytes": 2291579,
+          "sha256": "8787019c353de28ec2932dfe0666d22267119be3d91c01a1c29d6c638482a07b",
+          "bytesDelta": 2217065
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "bytes": 143925,
+          "sha256": "32e9831df4ccdace90d2e2b0784a93f5a44a4d182431ff099819a6dfe1ad18dd",
+          "bytesDelta": 143849
+        }
+      ]
+    },
+    {
+      "label": "a2-three-pools",
+      "options": {
+        "nativeCardArt": {
+          "registry": "build/v6-d-evidence/a2-three-pools/registry.json",
+          "hosts": [
+            "battlePanel/card1",
+            "battlePanel/card2",
+            "battlePanel/card3"
+          ]
+        }
+      },
+      "schemaVersion": 1,
+      "sourceCommit": "73c21489efaab409d4c0c46bee517d410d3427fc",
+      "sourceDirty": false,
+      "measurement": "offline-production-inputs-not-official-storage",
+      "luaBytes": 6418292,
+      "layoutJsonBytes": 2803364,
+      "templateJsonBytes": 54489,
+      "controls": 23574,
+      "hiddenControls": 23167,
+      "templates": 7,
+      "artPools": 3,
+      "maxChildren": 60,
+      "monsterActors": {
+        "templateName": "AbyssMonsterActor",
+        "controlsPerActor": 35,
+        "shapesPerActor": 0,
+        "powerTemplateName": "AbyssMonsterPower",
+        "controlsPerPower": 7,
+        "powerAllocation": "per-power-instance",
+        "allocation": "per-drawable-actor-instance",
+        "measurement": "offline-template-count-not-official-load",
+        "officialImport": "not_run",
+        "devices": "not_run",
+        "runtimeControlsFormula": "controlsPerActor * drawableActors + controlsPerPower * (displayedPowers + liveIntentParticles) + actorPowerAndIntentPagingContainers",
+        "peakDrawableActors": null,
+        "peakStatus": "unverified-not-a-static-visibility-cap"
+      },
+      "repeatedPrimitiveInstances": 18511,
+      "artFeatures": {
+        "cards": true,
+        "menuBackground": false,
+        "selectionAvatar": false,
+        "battlePortrait": false,
+        "monsters": false
+      },
+      "runtimePortraits": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "assets": [
+          {
+            "asset": "lowpolyCardFan",
+            "images": 1585,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 1
+          }
+        ],
+        "instances": 1,
+        "batchSize": 64,
+        "peakDynamicControls": 1614,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "runtimeBackgrounds": [],
+      "excludedModules": [
+        "abyss_random"
+      ],
+      "mappedModules": 373,
+      "mappedManifestSha256": "17629d638c6db34614e9b8c3990bbc46daea9687a2b4e956c003371e4069c52c",
+      "layoutSha256": "4d04b3ed894bfd1b0542e1cf7c90eee226e51b57527cc70b58bdd53125c5d51f",
+      "templatesSha256": "3a623e40f8e1fd522c4b2cedefb87e546093dd295ac877da8cc7c1ff000c7967",
+      "nativeCardArt": {
+        "schemaVersion": 1,
+        "registrySha256": "2ec3b9fe63abfd7afde527b8be6523a4c5d7f2cec98709e7a3c2bb5f5ed7ee99",
+        "hosts": [
+          "battlePanel/card1",
+          "battlePanel/card2",
+          "battlePanel/card3"
+        ],
+        "sources": {
+          "armaments": {
+            "luaSha256": "b120cb5d4d30372611c539b69c8b04af1c8ea5feafbdb561c1eabb37443c8a04",
+            "jsonSha256": "277afd4d54a2a6a2688205c81e29663ff3253d19df72759ead8621935f9a3e0a",
+            "images": 1834
+          },
+          "cleave": {
+            "luaSha256": "3c9eaa03741391f594846e59708563d4912a96b8757092112ce3cabb7c2e5185",
+            "jsonSha256": "f60eaf057ea4a94231525047ea9d54afda09a7857bc671209cedebd2677b6eff",
+            "images": 2657
+          },
+          "heavy_blade": {
+            "luaSha256": "6e0b632d02e285e6412a2cfbc13c95ae6b28498259b031d0b23f5992cfd8903f",
+            "jsonSha256": "38708d271df2b168f71e90fae0f8780bb0acefc522bde1f313cb0d4a4e6fdee0",
+            "images": 2043
+          }
+        },
+        "capacity": 2657,
+        "controlsPerPool": 2703,
+        "staticPools": 3,
+        "staticAddedControls": 8109,
+        "deckTemplateEnabled": false,
+        "officialImport": "not_run",
+        "PC": "not_run",
+        "physicalAndroid": "not_run",
+        "performance": "not_measured",
+        "registry": {
+          "path": "build/v6-d-evidence/a2-three-pools/registry.json",
+          "sha256": "2ec3b9fe63abfd7afde527b8be6523a4c5d7f2cec98709e7a3c2bb5f5ed7ee99",
+          "bytes": 1865283
+        },
+        "inputs": [
+          {
+            "path": "art/cards/traveler-geo/armaments/native-art.lua",
+            "sha256": "b120cb5d4d30372611c539b69c8b04af1c8ea5feafbdb561c1eabb37443c8a04",
+            "bytes": 350789
+          },
+          {
+            "path": "art/cards/traveler-geo/armaments/native-art.json",
+            "sha256": "277afd4d54a2a6a2688205c81e29663ff3253d19df72759ead8621935f9a3e0a",
+            "bytes": 1214781
+          },
+          {
+            "path": "art/cards/traveler-geo/cleave/native-art.lua",
+            "sha256": "3c9eaa03741391f594846e59708563d4912a96b8757092112ce3cabb7c2e5185",
+            "bytes": 481737
+          },
+          {
+            "path": "art/cards/traveler-geo/cleave/native-art.json",
+            "sha256": "f60eaf057ea4a94231525047ea9d54afda09a7857bc671209cedebd2677b6eff",
+            "bytes": 1748513
+          },
+          {
+            "path": "art/cards/traveler-geo/heavy_blade/native-art.lua",
+            "sha256": "6e0b632d02e285e6412a2cfbc13c95ae6b28498259b031d0b23f5992cfd8903f",
+            "bytes": 368509
+          },
+          {
+            "path": "art/cards/traveler-geo/heavy_blade/native-art.json",
+            "sha256": "38708d271df2b168f71e90fae0f8780bb0acefc522bde1f313cb0d4a4e6fdee0",
+            "bytes": 1343390
+          },
+          {
+            "path": "build/v6-d-evidence/a2-three-pools/registry.json",
+            "sha256": "2ec3b9fe63abfd7afde527b8be6523a4c5d7f2cec98709e7a3c2bb5f5ed7ee99",
+            "bytes": 1865283
+          }
+        ],
+        "inputDigest": "70a412faa87d33c63e8360ed87d65eb0ad6ae6c0975aa3800ce518e69f731bae",
+        "outputs": [
+          {
+            "path": "build/v6-d-evidence/a2-three-pools/game-ui.json",
+            "sha256": "4d04b3ed894bfd1b0542e1cf7c90eee226e51b57527cc70b58bdd53125c5d51f",
+            "bytes": 12719051
+          },
+          {
+            "path": "build/v6-d-evidence/a2-three-pools/game-ui-templates.json",
+            "sha256": "3a623e40f8e1fd522c4b2cedefb87e546093dd295ac877da8cc7c1ff000c7967",
+            "bytes": 169324
+          },
+          {
+            "path": "build/v6-d-evidence/a2-three-pools/abyss_presentation.lua",
+            "sha256": "8787019c353de28ec2932dfe0666d22267119be3d91c01a1c29d6c638482a07b",
+            "bytes": 2291579
+          },
+          {
+            "path": "build/v6-d-evidence/a2-three-pools/native-card-art-receipt.json",
+            "sha256": "339517c1a178c22a4e650ac6a424fcb44ecb2e8df08e62cb06534f212fea9eb5",
+            "bytes": 1134
+          }
+        ]
+      },
+      "changedLua": [
+        {
+          "name": "abyss_art_features",
+          "bytes": 201,
+          "sha256": "26894b778ac1d997d7ae77477af49e4f1294e412ce4dec2da59573a623f388e0",
+          "bytesDelta": -1
+        },
+        {
+          "name": "abyss_presentation",
+          "bytes": 2291579,
+          "sha256": "8787019c353de28ec2932dfe0666d22267119be3d91c01a1c29d6c638482a07b",
+          "bytesDelta": 2217065
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "bytes": 143925,
+          "sha256": "32e9831df4ccdace90d2e2b0784a93f5a44a4d182431ff099819a6dfe1ad18dd",
+          "bytesDelta": 143849
+        }
+      ]
+    },
+    {
+      "label": "historical-75-ready",
+      "options": {
+        "artFeatures": {
+          "cards": true
+        }
+      },
+      "schemaVersion": 1,
+      "sourceCommit": "73c21489efaab409d4c0c46bee517d410d3427fc",
+      "sourceDirty": false,
+      "measurement": "offline-production-inputs-not-official-storage",
+      "luaBytes": 8973441,
+      "layoutJsonBytes": 1777589,
+      "templateJsonBytes": 54804,
+      "controls": 15528,
+      "hiddenControls": 15121,
+      "templates": 7,
+      "artPools": 63,
+      "maxChildren": 59,
+      "monsterActors": {
+        "templateName": "AbyssMonsterActor",
+        "controlsPerActor": 35,
+        "shapesPerActor": 0,
+        "powerTemplateName": "AbyssMonsterPower",
+        "controlsPerPower": 7,
+        "powerAllocation": "per-power-instance",
+        "allocation": "per-drawable-actor-instance",
+        "measurement": "offline-template-count-not-official-load",
+        "officialImport": "not_run",
+        "devices": "not_run",
+        "runtimeControlsFormula": "controlsPerActor * drawableActors + controlsPerPower * (displayedPowers + liveIntentParticles) + actorPowerAndIntentPagingContainers",
+        "peakDrawableActors": null,
+        "peakStatus": "unverified-not-a-static-visibility-cap"
+      },
+      "repeatedPrimitiveInstances": 10603,
+      "artFeatures": {
+        "cards": true,
+        "menuBackground": false,
+        "selectionAvatar": false,
+        "battlePortrait": false,
+        "monsters": false
+      },
+      "runtimeCardArt": {
+        "assetCount": 75,
+        "preciseAssets": 3,
+        "compactAssets": 72,
+        "maxLivePools": 10,
+        "maxShapesPerPool": 2657,
+        "maxGroupsPerPool": 45,
+        "peakDynamicControls": 27020,
+        "maxCreatesPerUpdate": 64,
+        "measurement": "offline-allocation-bound-not-official-load",
+        "officialImport": "not_run",
+        "devices": "not_run"
+      },
+      "runtimePortraits": {
+        "renderProfile": "lowpoly-mixed-v1",
+        "assets": [
+          {
+            "asset": "lowpolyCardFan",
+            "images": 1585,
+            "groups": 27,
+            "pages": 1,
+            "instances": 1,
+            "hosts": 1
+          }
+        ],
+        "instances": 1,
+        "batchSize": 64,
+        "peakDynamicControls": 1614,
+        "maxDirectDynamicChildren": 60,
+        "officialCapacity": "not_measured",
+        "measurement": "offline-runtime-control-contract-not-official-capacity",
+        "devicePerformance": "not_run"
+      },
+      "runtimeBackgrounds": [],
+      "excludedModules": [
+        "abyss_random"
+      ],
+      "mappedModules": 373,
+      "mappedManifestSha256": "e1a8517e469acab5f09c4b5ef78a6b04ad632475cd32bd77028ba042a649bcbd",
+      "layoutSha256": "3f749cf93be9c16bff5b002981b71a67edcd4c9be21e78d11d223961739fc167",
+      "templatesSha256": "db979bc3227af502744715970a812730f9726c6011983a3e70aa6eda07f5aff6",
+      "changedLua": [
+        {
+          "name": "abyss_art_features",
+          "bytes": 201,
+          "sha256": "26894b778ac1d997d7ae77477af49e4f1294e412ce4dec2da59573a623f388e0",
+          "bytesDelta": -1
+        },
+        {
+          "name": "abyss_ready_card_assets",
+          "bytes": 4772295,
+          "sha256": "fbe9c8000c4f702bf515970562c59df30ef1a8a7ef15ec1dfa2de42132666b41",
+          "bytesDelta": 4772214
+        },
+        {
+          "name": "abyss_traveler_portrait_assets",
+          "bytes": 143925,
+          "sha256": "32e9831df4ccdace90d2e2b0784a93f5a44a4d182431ff099819a6dfe1ad18dd",
+          "bytesDelta": 143849
+        }
+      ]
+    }
+  ]
+}
