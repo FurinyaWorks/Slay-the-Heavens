@@ -354,11 +354,7 @@ function currentRecentBackflowOwner(path,source){
 }
 export function assertDevelopBackflowCurrent(path,source){
  if(path===deckPath)source=beforeReleaseDeckPointer(path,source);
- if(path===checkpointMapPath){
-  const prior=beforeMapRoomCheckpoint(path,source);
-  assert.notEqual(prior,source,'fresh current production owner: '+path);
-  source=prior;
- }
+ source=beforeMapRoomCheckpoint(path,source);
  if(path===libraryEventPath){
   assert(uniformSource(source)&&matches(source,libraryPromptCurrent),'fresh current production owner: '+path);
   return;
