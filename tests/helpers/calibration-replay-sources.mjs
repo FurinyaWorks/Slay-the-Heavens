@@ -346,6 +346,19 @@ function readRelicCatalogTestReceipt(readCurrent){
  return prior;
 }
 
+const colorlessReceiptPath='tests/helpers/colorless-catalog-source-inverse.mjs';
+function beforeColorlessReceipt(source,expected){
+ if(!matches(source,{
+  sha256:'ca654dba3b490f2d5f857933931992d1b72b346df246165499631cca7f6f717d',gitBlob:'94c5af24ef7e9e76b53116e97fc55d25d353f482',
+ }))return source;
+ const normalized=lf(source);
+ assert(source===normalized||source===normalized.replaceAll('\n','\r\n'),'mixed Colorless receipt line endings');
+ const prior=normalized.replace('as original,colorlessCatalogSourceProof }','as original }')
+  .replace(" if(!Object.hasOwn(colorlessCatalogSourceProof.files[path]??{},'beforeSource'))return source;\n",'');
+ assert(matches(prior,expected),'exact Colorless receipt predecessor');
+ return prior;
+}
+
 // A frozen receipt may read a registered old blob only after checking the
 // corresponding current file. Raw Full discovery and inputs use their normal readers.
 function readOfficialCalibrationReceipt(path,digest,readCurrent){
@@ -413,6 +426,7 @@ export function readCalibrationReceiptInput(path,digest,read,readCurrent=readFil
  else{
   const raw=beforeCurrentHistoricalStsSource(path,readCurrent(path,'utf8'));
   let current=raw;
+  if(path===colorlessReceiptPath)current=beforeColorlessReceipt(raw,row.current);
   if(path==='tests/helpers/combined-epoch/source-epoch-runtime.mjs'||path==='tests/helpers/copy-integration-source-closure.mjs'||
      path==='tests/helpers/round3-catalog-source-inverse.mjs'){
    current=beforeMapRoomReplayCohort(path,raw);
