@@ -682,8 +682,8 @@ const fixtures=Object.freeze({
  },
  "tests/sts-selection-fade.test.mjs": {
   "current": {
-   "sha256": "125fbb29aaa658c84f1858ed81fc30985c656d65aa03a396b5b4b76382f0e9fd",
-   "gitBlob": "23ba59d0554eaf924f1c8c003b5d242820bbe928"
+   "sha256": "dd1bd49b30bf240cef6fbc729f470c94cc2eb38f89e130a10c3acc65e628718b",
+   "gitBlob": "4d836e63c5af1a492170626418872b7a1b212275"
   },
   "previous": {
    "sha256": "5a581dce3b17bffef0e1e736efbe14186d5c4eca2a3d25017b0842d97c859e97",
@@ -694,11 +694,6 @@ const fixtures=Object.freeze({
     "at": 94,
     "before": " const prior=beforeV220SelectionFadeSource(path,lf);\n const read=owner=>beforeV220SelectionFadeSource(owner,readFileSync(owner,'utf8'));\n assert.equal(beforeStsSelectionFade(path,prior),files[path].before);",
     "after": " const prior=beforeV220SelectionFadeSource(path,lf);\n // The entrance and fade validators read current owners at different stages.\n // Only the legacy bootstrap remains outside their current entrance cohort.\n const read=owner=>{\n  const raw=readFileSync(owner,'utf8');\n  return owner==='src/lua/abyss_ui.lua'?beforeV220SelectionFadeSource(owner,raw):raw;\n };\n assert.equal(beforeStsSelectionFade(path,prior),files[path].before);"
-   },
-   {
-    "at": 217,
-    "before": " const source=readFileSync(new URL('./fixtures/page-reveal-pr839.lua',import.meta.url),'utf8');",
-    "after": " const source=readFileSync(new URL('./fixtures/page-reveal-pr839.lua',import.meta.url),'utf8').replaceAll('\\r\\n','\\n');"
    }
   ]
  },
@@ -1714,6 +1709,17 @@ const unifiedGilFixture={
  ]
 };
 
+// Keep the exact frozen Selection Fade fixture admissible beside its Windows fix.
+const selectionFadeWindowsFixture={
+ path:'tests/sts-selection-fade.test.mjs',
+ current:{sha256:'125fbb29aaa658c84f1858ed81fc30985c656d65aa03a396b5b4b76382f0e9fd',gitBlob:'23ba59d0554eaf924f1c8c003b5d242820bbe928'},
+ hunks:[{
+  at:217,
+  before:" const source=readFileSync(new URL('./fixtures/page-reveal-pr839.lua',import.meta.url),'utf8');",
+  after:" const source=readFileSync(new URL('./fixtures/page-reveal-pr839.lua',import.meta.url),'utf8').replaceAll('\\r\\n','\\n');",
+ }],
+};
+
 // The current legacy browser fixture exercises warm detail reuse and genuine
 // generation retirement. Historical replays still read the exact former case.
 const permanentDeckRuntimeFixture=Object.freeze({
@@ -1763,6 +1769,13 @@ export function beforeReleaseClosureFixture(path,raw,{reviewedBuild=false}={}){
  if(typeof source!=='string'||Buffer.isBuffer(raw)&&!Buffer.from(source).equals(raw))return raw;
  const normalized=source.replaceAll('\r\n','\n');
  if(normalized.includes('\r')||source!==normalized&&source!==normalized.replaceAll('\n','\r\n'))return raw;
+ if(path===selectionFadeWindowsFixture.path&&exactSourceMatches(source,selectionFadeWindowsFixture.current)){
+  const {current,hunks}=selectionFadeWindowsFixture;
+  const previous=fixtures[path].current;
+  const predecessor=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,source);
+  assert(exactSourceMatches(predecessor,previous),'exact frozen Selection Fade fixture');
+  source=source===normalized?predecessor:predecessor.replaceAll('\n','\r\n');
+ }
  if(path==='tests/official-assets-runtime.test.mjs'&&exactSourceMatches(source,permanentDeckRuntimeFixture.current)){
   const {current,previous,hunks}=permanentDeckRuntimeFixture;
   const predecessor=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,source);
