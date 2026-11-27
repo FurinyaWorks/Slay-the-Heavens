@@ -63,7 +63,7 @@ async function preflight() {
     'build=true', `base_sha256=${request.baseSha256}`, `work_key=${request.configuration.workKey}`,
     `tool_commit=${toolCommit}`, `request_id=${request.id}`, `release_version=${target.version ?? ''}`,
     `artifact_name=${artifactName(request)}`, ...(checks ? [`quality_run=${checks.quality}`, `licenses_run=${checks.licenses}`] : []),
-    ...(target.version ? [`quality_attempt=${checks.qualityAttempt}`, `quality_checkout_artifact=${checks.qualityCheckoutArtifact}`] : []),
+    ...(checks && target.version ? [`quality_attempt=${checks.qualityAttempt}`, `quality_checkout_artifact=${checks.qualityCheckoutArtifact}`] : []),
   ].join('\n') + '\n');
 }
 
