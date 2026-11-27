@@ -6,7 +6,7 @@ import {exactSourceMatches} from './source-fingerprint.mjs';
 
 const archive=readFileSync(new URL('../fixtures/develop-release-vocabulary-source.json.gz',import.meta.url));
 assert.equal(createHash('sha256').update(archive).digest('hex'),
- '2b3d606fc142f2c8c5cfaaff386c70f6e1f741f24fbc1879b78399b7c477e914','exact Release vocabulary continuation');
+ '9377ea3fc9aa22e1e1afed2df671413df0e11403e0862b955b929b06abc33dad','exact Release vocabulary continuation');
 const {base,head,files}=JSON.parse(gunzipSync(archive));
 assert.equal(base,'7348ab8598c8607712d525bd732239f89bb52830');
 assert.equal(head,'b2f74d99a3d80e60b99165b6380987cda8b4488d');
