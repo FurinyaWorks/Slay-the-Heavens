@@ -670,10 +670,37 @@ const tinyHouseTraceCopier=Object.freeze({
   }
  ]
 });
+const currentDetachedCopier=Object.freeze({
+ "current": {
+  "sha256": "d4c2594f75279b7ab78a2c8562013ab7d4ecd98e2eddaa55bcf4cbc74bd8ab0c",
+  "gitBlob": "ccf385de19c8caf2cf89477bd32e8ebe68187dc6"
+ },
+ "previous": {
+  "sha256": "943774e7b3ed3f69f23a75facd64e66bd6c9bbef3a5a4d321a53eff3d2caeab7",
+  "gitBlob": "ec2a4796a957f036e3bcc504d40928f7f68a9d30"
+ },
+ "hunks": [
+  {
+   "at": 2,
+   "before": "import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';\nimport {beforeDetachedReleaseBackflow} from './release-detached-backflow-source.mjs';\n// Copies only immutable test helper dependencies; production owners remain explicit fixtures.",
+   "after": "import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';\nimport {beforeDetachedReleaseBackflow,currentDetachedInputs} from './release-detached-backflow-source.mjs';\n// Copies only immutable test helper dependencies; production owners remain explicit fixtures."
+  },
+  {
+   "at": 1021,
+   "before": " const liveSource=sourceDirectory===realpathSync.native(new URL('../../',import.meta.url));\n for(const [path,previousSha]of Object.entries(entranceFiles)){\n  const exactCurrent=currentProduction&&currentEntranceHelpers.has(path);\n  const sha=exactCurrent?reviewedCopySources[path].current.sha256:previousSha;",
+   "after": " const liveSource=sourceDirectory===realpathSync.native(new URL('../../',import.meta.url));\n for(const [path,previousSha]of Object.entries(currentProduction?{...entranceFiles,...currentDetachedInputs}:entranceFiles)){\n  const exactRelease=currentProduction&&Object.hasOwn(currentDetachedInputs,path);\n  const exactCurrent=currentProduction&&!exactRelease&&currentEntranceHelpers.has(path);\n  const sha=exactCurrent?reviewedCopySources[path].current.sha256:previousSha;"
+  },
+  {
+   "at": 1027,
+   "before": "  const source=join(sourceDirectory,path),bytes=readFileSync(source);\n  const raw=liveSource?beforeReleaseReplayReader(path,bytes):bytes;\n  let prior=raw;\n  if(exactCurrent){\n   const current=integrationClosureBytes(path,raw);",
+   "after": "  const source=join(sourceDirectory,path),bytes=readFileSync(source);\n  const raw=liveSource&&!exactRelease?beforeReleaseReplayReader(path,bytes):bytes;\n  let prior=raw;\n  if(exactRelease){\n   const current=integrationClosureBytes(path,raw);\n   assert(raw.equals(current)||raw.equals(Buffer.from(current.toString('utf8').replaceAll('\\n','\\r\\n'))),\n    'uniform current detached owner: '+path);\n  }else if(exactCurrent){\n   const current=integrationClosureBytes(path,raw);"
+  }
+ ]
+});
 function activeReceipt(path){
  if(path===mapRouteIconFixturePath)return mapRouteIconFixture;
  if(path===selectionLayoutPath)return releaseSelectionOverlay;
- if(path===copierPath)return tinyHouseTraceCopier;
+ if(path===copierPath)return currentDetachedCopier;
  if(path===returnedReadingReplayPath)return selectionRawEntranceReplay;
  return combinedReceipt(path)??receipt(path);
 }
@@ -694,7 +721,7 @@ export function beforeSelectionReceiptSource(path,source){
  if(path===selectionLayoutPath)source=beforeReceipt(path,source,releaseSelectionOverlay);
  if(path===selectionLayoutPath)source=beforeReceipt(path,source,selectionLayoutCurrent);
  if(path===returnedReadingReplayPath)source=beforeReceipt(path,beforeReceipt(path,source,selectionRawEntranceReplay),returnedReadingReplay);
- if(path===copierPath)source=beforeReceipt(path,source,tinyHouseTraceCopier);
+ if(path===copierPath)source=beforeReceipt(path,beforeReceipt(path,source,currentDetachedCopier),tinyHouseTraceCopier);
  if(path===copierPath)source=beforeReceipt(path,source,releaseDetachedBackflowCopier);
  if(path===copierPath)source=beforeReceipt(path,source,releaseVocabularyCopier);
  if(path===copierPath)source=beforeReceipt(path,source,releaseEntranceCopier);

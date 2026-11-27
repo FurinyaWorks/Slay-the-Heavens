@@ -160,6 +160,27 @@ const owners=Object.freeze({
  }
 });
 
+// The current detached caller keeps the complete reviewed entrance reader and its inputs.
+export const currentDetachedInputs=Object.freeze({
+ 'tests/fixtures/develop-release-vocabulary-prior.json.gz':'2b3d606fc142f2c8c5cfaaff386c70f6e1f741f24fbc1879b78399b7c477e914',
+ 'tests/fixtures/develop-release-vocabulary-source.json.gz':'9377ea3fc9aa22e1e1afed2df671413df0e11403e0862b955b929b06abc33dad',
+ 'tests/fixtures/selection-portrait-recovery-source.json.gz':'a24db4522db31669259bec007f6ab458419ea8b20abcd8a45dc37c29f3270e79',
+ 'tests/helpers/develop-release-backflow-source.mjs':'52fdda1e1a111ada443b4a1d1109906e99f98d107e92025fbf9e7f0c4f76a851',
+ 'tests/helpers/develop-release-vocabulary-source.mjs':'39c2ba9ecd776c5a7e3e485639c0d9a2acd1b9a8732e9621735fa99cd0466e56',
+ 'tests/helpers/master-backflow-source.mjs':'308c6ef6ac8987b9becc4ead9f3a1efaa2c3c20ea8a697bdf26f6233fa71b8ac',
+ 'tests/helpers/release-closure-fixture-source.mjs':'d925abb34fc492c731ca1f517d9f4fe43eb5d925acf4316006cbe81e6e4f7634',
+ 'tests/helpers/release-deck-pointer-source.mjs':'a1cfebcea1c53c017315a9762ba2d9509d395218b358a500d7ca22fe565dec38',
+ 'tests/helpers/release-entrance-owner-source.mjs':'970a41e91888711768d917ab2970d069ec891aea4f098f3930b1b5d04c87a30a',
+ 'tests/helpers/release-metadata-source.mjs':'5897d9d479841a5fa7fe1f86925fa7daedd06a8facdc7277247f2ac376610cf8',
+ 'tests/helpers/reviewed-selection-current-source.json.gz':'ae2612caad5be7b4589812d9f0580b17bf99e775e53db38c093f79ff46c4cebb',
+ 'tests/helpers/reviewed-selection-current-source.mjs':'c98fb7605e578f1b909d51822729218fb9cbbf630db1f7b727c86ef5f6d24a64',
+ 'tests/helpers/run-hud-successors.mjs':'cbf8c1cc66b68d77dd981d7515d99f2fc975760bd9030bfd4a823cdaff71f64e',
+ 'tests/helpers/shop-deck-purchase-source.mjs':'11505a35f812f9632044724e91f94495455934ee67223f963e1c71c6d688716b',
+ 'tests/helpers/ui-entrance-source.mjs':'134d5b8fa6f23226b47681a424fd7549660e61de033cec0f78cf5e48a6104935',
+ 'tests/helpers/ui-selection-current-source.mjs':'cd8a475a75ad484549744393c1c45a59ced6903cbe3fa1f2f50d776be39263b8',
+ 'tests/helpers/visual-selection-source.mjs':'3066522a5ed048b3bff4bac6424c0368676955d2c458076a1093b323761119c1',
+});
+
 export function beforeDetachedReleaseBackflow(path,raw){
  if(!Object.hasOwn(owners,path))return raw;
  const source=raw.toString('utf8'),lf=source.replaceAll('\r\n','\n');

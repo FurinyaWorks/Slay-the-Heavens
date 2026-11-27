@@ -1,7 +1,7 @@
 import {beforeMasterBackflowSource} from './master-backflow-source.mjs';
 import {exactSourceMatches} from './source-fingerprint.mjs';
 import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
-import {beforeDetachedReleaseBackflow} from './release-detached-backflow-source.mjs';
+import {beforeDetachedReleaseBackflow,currentDetachedInputs} from './release-detached-backflow-source.mjs';
 // Copies only immutable test helper dependencies; production owners remain explicit fixtures.
 import assert from 'node:assert/strict';
 import {officialUiRepairClosure} from './official-ui-repair-closure.mjs';
@@ -1020,14 +1020,19 @@ export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()
  const sourceDirectory=realpathSync.native(sourceRoot);
  assert.notEqual(destination,sourceDirectory,'isolated helper copy destination');
  const liveSource=sourceDirectory===realpathSync.native(new URL('../../',import.meta.url));
- for(const [path,previousSha]of Object.entries(entranceFiles)){
-  const exactCurrent=currentProduction&&currentEntranceHelpers.has(path);
+ for(const [path,previousSha]of Object.entries(currentProduction?{...entranceFiles,...currentDetachedInputs}:entranceFiles)){
+  const exactRelease=currentProduction&&Object.hasOwn(currentDetachedInputs,path);
+  const exactCurrent=currentProduction&&!exactRelease&&currentEntranceHelpers.has(path);
   const sha=exactCurrent?reviewedCopySources[path].current.sha256:previousSha;
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceDirectory,path),bytes=readFileSync(source);
-  const raw=liveSource?beforeReleaseReplayReader(path,bytes):bytes;
+  const raw=liveSource&&!exactRelease?beforeReleaseReplayReader(path,bytes):bytes;
   let prior=raw;
-  if(exactCurrent){
+  if(exactRelease){
+   const current=integrationClosureBytes(path,raw);
+   assert(raw.equals(current)||raw.equals(Buffer.from(current.toString('utf8').replaceAll('\n','\r\n'))),
+    'uniform current detached owner: '+path);
+  }else if(exactCurrent){
    const current=integrationClosureBytes(path,raw);
    const source=current.toString('utf8');
    assert(raw.equals(current)||raw.equals(Buffer.from(source.replaceAll('\n','\r\n'))),'uniform current copy owner: '+path);
