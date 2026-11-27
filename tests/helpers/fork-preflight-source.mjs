@@ -1576,6 +1576,19 @@ function beforePrologueRuntimeFixture(path,source){
  assert(exactCheckoutSource(prior,prologuePrevious),'exact Prologue runtime fixture predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+// #1035 appends native-input coverage to the live fixture. Only the archived
+// CI readers use the exact fixture as it was before that addition.
+const prologueReadinessPath='tests/lua/game_ui_prologue_readiness.lua';
+const prologueReadinessCurrent=['2ac7d82ac274e8ede9d3858fbd7a012ef8c5d1589be76d0f2fa3089a40e86893','0e943bbc8711b565196879554ea78163d57e79ff'];
+const prologueReadinessPrevious=['7f6dd189490b895dabf014c6a633374a8b87920d653cd33643a83c908f63c2bf','e872dc23c6c7006d1f7d092eac250ef1acfebf29'];
+function beforePrologueReadinessFixture(path,source){
+ if(path!==prologueReadinessPath||!exactCheckoutSource(source,prologueReadinessCurrent))return source;
+ const parts=normalize(source).split("\nlocal F=dofile('tests/lua/support/game_ui_fixture.lua')");
+ assert.equal(parts.length,2,'exact Prologue readiness addition boundary');
+ const [prior]=parts;
+ assert(exactCheckoutSource(prior,prologueReadinessPrevious),'exact Prologue readiness predecessor');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 export function beforePreflightSource(path,source,view='prior',read=readFileSync){
  if(path===replayAssetLedger&&typeof source==='string'){
   const lf=normalize(source);
@@ -1616,7 +1629,7 @@ export function beforePreflightSource(path,source,view='prior',read=readFileSync
  source=beforeDevelopReplayMerge(path,source);
  source=beforeReplayFingerprintSource(path,source);
  source=beforeDevelopEpochReplayRuntime(path,source);
- source=beforePrologueRuntimeFixture(path,source);
+ source=beforePrologueRuntimeFixture(path,beforePrologueReadinessFixture(path,source));
  source=beforeDevelopBackflow(path,beforeDeckPagesSuiteSource(path,source));
  source=beforeNativeHostReplay(path,source);
  source=beforeNativeFixtureReplay(path,source);
