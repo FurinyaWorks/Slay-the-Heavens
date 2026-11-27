@@ -7,6 +7,7 @@ import {preJoustCiSource} from './joust-ci-source-inverse.mjs';
 // Exact source and inventory views for immutable CI receipts; current Full stays raw.
 import {preBattleQueueCiSource,preBattleQueueCiInventory} from './battle-queue-ci-source-epoch.mjs';
 import {preNoncombatCiSource,noncombatPriorInventory} from './noncombat-ci-source-inverse.mjs';
+import {formationFloorReceiptSource} from './encounter-formation-ci-source-inverse.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
@@ -73,6 +74,7 @@ export function preRatchetInventory(paths,readSource=readFileSync){
 }
 const views=['componentAliasFix','officialAssetsFlow','defectReceipt','formationReceipt','officialFirstReceipt','officialFlowReceipt'];
 export function jointCiMatches(path,source,target){
+ if(target==='formationReceipt'&&formationFloorReceiptSource(path,source)!==null)return true;
  source=preCloseoutCiSource(path,source,'pr620');
  source=preNoncombatCiSource(path,source);
  source=preDefectActorCiSource(path,source);
@@ -84,6 +86,8 @@ export function jointCiMatches(path,source,target){
  return !!(row&&Object.hasOwn(row.targets,target)&&sourceMatches(path,source,row));
 }
 export function jointCiSourceAt(path,source,target){
+ const formation=target==='formationReceipt'?formationFloorReceiptSource(path,source):null;
+ if(formation!==null)return formation;
  const original=source;
  source=preCloseoutCiSource(path,source,'pr620');
  source=preNoncombatCiSource(path,source);

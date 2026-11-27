@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
+import {exactSourceMatches} from './source-fingerprint.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const archive=readFileSync(new URL('./encounter-formation-ci-source-epoch.json.gz',import.meta.url));
 assert.equal(hash(archive),'cd039ffe6b0f7fd2959776b84cf199290b3621b8a82266bc6929876e1ce46fbf');
@@ -15,4 +16,50 @@ export function preEncounterFormationCiSource(path,source){
  const binding=Object.hasOwn(proof.files,path)?proof.files[path]:null;
  if(!binding||typeof source!=='string'||hash(source.replaceAll('\r\n','\n'))!==binding.afterSha256)return source;
  return binding.beforeSource;
+}
+
+// The original planning floors record the #576 test bytes. These known fixture
+// continuations remain live in Full; only the named Formation receipt views reverse them.
+const formationReceiptFixtures={
+ "tests/encounter-formation-responsibilities.test.mjs":{
+  "current":{
+   "sha256":"ef27421d1d66a71a9f2674906893f5d4f53647a7e4de1ab10c15e4edd3852274",
+   "gitBlob":"f1097117ec84c035f491b169482f7dc65a11379f"
+  },
+  "previous":{
+   "sha256":"3b738419197c308d6e9e0a52ad050e8b28c7d887d29245f6b2e7e941f6865671",
+   "gitBlob":"ea0d3de29f20fcdb6278842939c92eed2bd39f44"
+  },
+  "hunks":[
+   [4,13,["function run(source,fixture){const dir=mkdtempSync(join(tmpdir(),'formation-responsibilities-'));try{",
+     " const output=join(dir,'graphs.jsonl');const child=spawnSync(process.execPath,['tests/helpers/encounter-formation-vm.mjs'],{input:JSON.stringify({source,fixture,output}),encoding:'utf8',timeout:120000,maxBuffer:8*1024**2});"]],
+   [23,5,["for(const fixture of ['tests/helpers/encounter-formation-edges.lua','tests/lua/encounter_formations.lua'])test(`${fixture}: independent old/new complete graphs and original assertions`,()=>{",
+     " const a=run(before,fixture),b=run(read(path),fixture);assert.equal(a.status,0,a.error);assert.equal(b.status,0,b.error);assert(b.checkpoints>0);",
+     " assert.deepEqual(b.logs,a.logs);assert.deepEqual(b.labels,a.labels);assert.equal(b.graph,a.graph);"]]
+  ]
+ },
+ "tests/encounter-formation-source-epoch.test.mjs":{
+  "current":{"sha256":"5a48e640d23b571851eeaa0b3464992c7521562e418f2c07072cdd68efb62dcb","gitBlob":"0d8b9a7c4d4a8998529ef2ec19f6d6a3f52a76f4"},
+  "previous":{"sha256":"cc49af6185255c8b877e1fdc0d79028d1f676534fd65a0d1fd28f43536af29c0","gitBlob":"211c05ae77e758ae0ca827832b4483afba9b949c"},
+  "hunks":[
+   [2,1,["import {readFileSync,mkdtempSync,rmSync} from 'node:fs';"]],
+   [6,4,["import {sourceEpoch,preEncounterFormationEpoch} from './helpers/combined-epoch/source-epoch.mjs';"]],
+   [14,10,[]],
+   [67,1,["  const isolated=(await import(pathToFileURL(join(directory,'tests/helpers/combined-epoch/source-epoch.mjs')).href)).sourceEpoch;"]],
+   [83,1,[" const {sourceEpoch}=await import('./helpers/combined-epoch/source-epoch.mjs');"]],
+   [150,17,[]]
+  ]
+ }
+};
+export function formationFloorReceiptSource(path,source){
+ if(!Object.hasOwn(formationReceiptFixtures,path))return null;
+ const {current,previous,hunks}=formationReceiptFixtures[path];
+ if(!exactSourceMatches(source,current))return null;
+ const normalized=source.replaceAll('\r\n','\n');
+ if(source!==normalized&&source!==normalized.replaceAll('\n','\r\n'))return null;
+ const lines=normalized.split('\n');
+ for(const [at,count,prior] of [...hunks].reverse())lines.splice(at,count,...prior);
+ const restored=lines.join('\n');
+ assert(exactSourceMatches(restored,previous),'exact Formation planning fixture predecessor: '+path);
+ return restored;
 }
