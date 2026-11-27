@@ -182,6 +182,22 @@ for(const [path,{before,after}] of Object.entries(roomEntry.files)){
  assert.match(after.sha256,/^[a-f0-9]{64}$/);
  assert.match(after.gitBlob,/^[a-f0-9]{40}$/);
 }
+const checkpointMapPath='src/lua/abyss_map.lua';
+const checkpointMapCurrent={
+ sha256:'f7d1efcab96f768ab5e9251c0c1d92d9d9f5ead058e1cbc9d023312dd6a58f12',
+ gitBlob:'9b0a3730466cb5c2a2749f976a2b7271d09a7b83',
+};
+// The #951 checkpoint migration follows the frozen Map Room owner.
+function beforeMapRoomCheckpoint(path,source){
+ if(path!==checkpointMapPath||!uniformSource(source)||!matches(source,checkpointMapCurrent))return source;
+ const prior=source.replaceAll('\r\n','\n')
+  .replace("local CheckpointIdentities=require('abyss_checkpoint_identities')\n",'')
+  .replace(/^local function migratedSignature\(source\)\n[\s\S]*?^end\n\n/m,'')
+  .replace(/^    if snapshot\.sourceSignature ~= map\.sourceSignature then\n[\s\S]*?(?=^    local jumps=\{\}\n)/m,
+   '    if snapshot.sourceSignature ~= map.sourceSignature then return nil, "configuration_mismatch" end\n');
+ assert(matches(prior,roomEntry.files[path].after),'exact Map Room owner before checkpoint migration');
+ return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+}
 const battleActionsPath='src/lua/abyss_battle_actions.lua';
 const battleActionsArchive=readFileSync(new URL('../fixtures/map-room-battle-actions-source.json.gz',import.meta.url));
 assert.equal(hash(battleActionsArchive),'45918da82006880941ab23f10ccc49b7fe11fc2c7978b4f1508f923216e142ec','exact production battle actions continuation');
@@ -319,6 +335,7 @@ export const deckPagesAdded=Object.freeze(Object.keys(deckPages.added));
 function deckPagesPrior(path,source){return predecessor(deckPages.files,path,source);}
 const deckLayoutPath='scripts/deck-ui-layout.mjs';
 export function beforeDeckPages(path,source,options){
+ source=beforeMapRoomCheckpoint(path,source);
  source=beforeLinkedBackflow(path,beforeBattleInputHistory(path,beforeMapRoomBattleActions(path,source)));
  return deckPagesPrior(path,beforeInputRetirement(path,beforeCombatEvents(path,beforeActionButtons(path,beforeDevelopUiBackflows(path,source))),options));
 }
@@ -337,6 +354,11 @@ function currentRecentBackflowOwner(path,source){
 }
 export function assertDevelopBackflowCurrent(path,source){
  if(path===deckPath)source=beforeReleaseDeckPointer(path,source);
+ if(path===checkpointMapPath){
+  const prior=beforeMapRoomCheckpoint(path,source);
+  assert.notEqual(prior,source,'fresh current production owner: '+path);
+  source=prior;
+ }
  if(path===libraryEventPath){
   assert(uniformSource(source)&&matches(source,libraryPromptCurrent),'fresh current production owner: '+path);
   return;
@@ -648,13 +670,15 @@ function authenticateDevelopBackflowWithReaders(path,source,readLive,readLinked,
   assert(matches(live,deckPages.files[path].after),'combined linked owner identity: '+path+' during deck-pages validation');
  }
  source=deckPrior;
- const roomPrior=predecessor(roomEntry.files,path,source);
- if(roomPrior!==source){
-  let live;
-  try{live=readDeckLive(path);}catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
-  assert(matches(live,roomEntry.files[path].after),mapRoomOwnerError(path));
+ const roomSource=beforeMapRoomCheckpoint(path,source);
+ const roomPrior=predecessor(roomEntry.files,path,roomSource);
+ if(roomPrior!==roomSource){
+  const live=readBackflowOwner(readDeckLive,path);
+  const expected=roomSource===source?roomEntry.files[path].after:checkpointMapCurrent;
+  assert(matches(live,expected)&&(roomSource===source||uniformSource(live)),mapRoomOwnerError(path));
  }
- const read=owner=>predecessor(roomEntry.files,owner,owner===path?readDeckLive(owner):deckPagesPrior(owner,readInputLinked(owner)));
+ const read=owner=>predecessor(roomEntry.files,owner,
+  beforeMapRoomCheckpoint(owner,owner===path?readDeckLive(owner):deckPagesPrior(owner,readInputLinked(owner))));
  source=roomPrior;
  source=authenticateRelicDetail(path,source,read);
  const sessionPrior=beforeSessionRelic(path,source,options);
