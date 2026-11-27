@@ -495,7 +495,8 @@ export function bindDevelopBackflow(read,historicalOwners){
    const current=beforeLinkedBackflow(path,beforeBattleInputHistory(path,beforeMapRoomBattleActions(path,beforeVocabularyOwner(path,source))));
    // The chapter reader authenticates a responsive source against raw owners
    // before the linked Develop reader enters its older source epoch.
-   const readLive=path===deckPath||beforeResponsiveHand(path,current)!==current?read:readOwner;
+   const releaseDeck=path===deckPath&&beforeReleaseDeckPointer(path,current)!==current;
+   const readLive=releaseDeck||beforeResponsiveHand(path,current)!==current?read:readOwner;
    return authenticateDevelopBackflowWithReaders(path,current,readLive,readOwner,options);
   },
  };

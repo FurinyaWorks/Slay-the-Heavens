@@ -631,10 +631,32 @@ const releaseVocabularyCopier=Object.freeze({
   }
  ]
 });
+const releaseDetachedBackflowCopier=Object.freeze({
+ "current": {
+  "sha256": "028abbf63774ab7cdfb6bc20f35b97817e87b4c773b1f64bdb6c5fd390291e17",
+  "gitBlob": "37cb3814b5dd6c3f7eba01c00bda55f71aa989e6"
+ },
+ "previous": {
+  "sha256": "5eb4de29003a48b6640b16064585a962e34840de31c227f6b9e9a94f57eab606",
+  "gitBlob": "fb1cbdf4223edc7e67d7ed7dbca217c2fcab7dfb"
+ },
+ "hunks": [
+  {
+   "at": 2,
+   "before": "import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';\n// Copies only immutable test helper dependencies; production owners remain explicit fixtures.",
+   "after": "import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';\nimport {beforeDetachedReleaseBackflow} from './release-detached-backflow-source.mjs';\n// Copies only immutable test helper dependencies; production owners remain explicit fixtures."
+  },
+  {
+   "at": 956,
+   "before": "function beforeReleaseReplayReader(path,raw){\n raw=beforeReleaseVocabularyReplay(path,raw);\n if(!Object.hasOwn(releaseReplayReaders,path))return raw;",
+   "after": "function beforeReleaseReplayReader(path,raw){\n raw=beforeReleaseVocabularyReplay(path,beforeDetachedReleaseBackflow(path,raw));\n if(!Object.hasOwn(releaseReplayReaders,path))return raw;"
+  }
+ ]
+});
 function activeReceipt(path){
  if(path===mapRouteIconFixturePath)return mapRouteIconFixture;
  if(path===selectionLayoutPath)return releaseSelectionOverlay;
- if(path===copierPath)return releaseVocabularyCopier;
+ if(path===copierPath)return releaseDetachedBackflowCopier;
  if(path===returnedReadingReplayPath)return selectionRawEntranceReplay;
  return combinedReceipt(path)??receipt(path);
 }
@@ -655,6 +677,7 @@ export function beforeSelectionReceiptSource(path,source){
  if(path===selectionLayoutPath)source=beforeReceipt(path,source,releaseSelectionOverlay);
  if(path===selectionLayoutPath)source=beforeReceipt(path,source,selectionLayoutCurrent);
  if(path===returnedReadingReplayPath)source=beforeReceipt(path,beforeReceipt(path,source,selectionRawEntranceReplay),returnedReadingReplay);
+ if(path===copierPath)source=beforeReceipt(path,source,releaseDetachedBackflowCopier);
  if(path===copierPath)source=beforeReceipt(path,source,releaseVocabularyCopier);
  if(path===copierPath)source=beforeReceipt(path,source,releaseEntranceCopier);
  if(path===copierPath)source=beforeReceipt(path,source,currentBackflowCopier);

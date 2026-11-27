@@ -1,6 +1,7 @@
 import {beforeMasterBackflowSource} from './master-backflow-source.mjs';
 import {exactSourceMatches} from './source-fingerprint.mjs';
 import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
+import {beforeDetachedReleaseBackflow} from './release-detached-backflow-source.mjs';
 // Copies only immutable test helper dependencies; production owners remain explicit fixtures.
 import assert from 'node:assert/strict';
 import {officialUiRepairClosure} from './official-ui-repair-closure.mjs';
@@ -954,7 +955,7 @@ function beforeReleaseVocabularyReplay(path,raw){
  return Buffer.from(prior);
 }
 function beforeReleaseReplayReader(path,raw){
- raw=beforeReleaseVocabularyReplay(path,raw);
+ raw=beforeReleaseVocabularyReplay(path,beforeDetachedReleaseBackflow(path,raw));
  if(!Object.hasOwn(releaseReplayReaders,path))return raw;
  const {current,previous,hunks}=releaseReplayReaders[path];
  const text=integrationClosureBytes(path,raw).toString('utf8');
