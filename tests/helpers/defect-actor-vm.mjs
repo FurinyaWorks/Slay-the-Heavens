@@ -4,6 +4,41 @@ import {gunzipSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
 import {installLuaGraphObserver} from './lua-graph-observer.mjs';
 import {luaString} from '../../scripts/build-lua-data.mjs';
+import {beforeCurrentProductionSource} from './character-preparation-source.mjs';
+import {beforePreflightSource} from './fork-preflight-source.mjs';
+import {beforeInputRetirementReader,retiredControllerPath} from './input-retirement-source.mjs';
+import {reviewedRenamedStsStyleRead,reviewedStsStyleRead} from './reviewed-selection-current-source.mjs';
+
+const preStyleRawOwners=new Set(['config/architecture.json',...[
+ 'actor','battle_enemy_view','card_display','character_select_view','choice_ui','game_ui_lifecycle','game_ui_navigation',
+ 'game_ui_overlays','game_ui_run','node_ui','node_ui_faces','node_ui_feedback','node_ui_input','node_ui_lifecycle',
+ 'node_ui_shop','page_reveal','shop_ui','traveler_portraits','ui',
+].map(name=>'src/lua/abyss_'+name+'.lua')]);
+const guideInputs=new Set(['game_ui','game_ui_input','game_ui_view'].map(name=>'src/lua/abyss_'+name+'.lua'));
+const guideOwners=new Set(['game_ui_navigation','game_ui_navigation_view','game_ui_overlays'].map(name=>'src/lua/abyss_'+name+'.lua'));
+const reviewedReaders=new Set(['battle_intent_view','character_profiles'].map(name=>'src/lua/abyss_'+name+'.lua'));
+// Retain the pre-style bytes via the owning Release receipts. The entrance and
+// Guide checks still get the precise raw or restored view each one authenticates.
+export function actorFocusPreStyleReader(readLive){
+ const readRenamed=reviewedRenamedStsStyleRead(readLive);
+ const readReviewed=reviewedStsStyleRead(readLive);
+ const readRetired=beforeInputRetirementReader(readReviewed);
+ return (path,expected)=>{
+  const reviewed=path===retiredControllerPath?readRetired(path):readReviewed(path);
+  if(reviewed===expected)return reviewed;
+  if(path==='src/lua/abyss_game_ui_navigation_view.lua'){
+   return beforePreflightSource(path,readLive(path),'prior',readLive).replaceAll('\r\n','\n');
+  }
+  if(guideInputs.has(path)){
+   const readGuide=owner=>guideOwners.has(owner)?readReviewed(owner):readRenamed(owner);
+   return beforeCurrentProductionSource(path,readLive(path),readGuide).replaceAll('\r\n','\n');
+  }
+  if(preStyleRawOwners.has(path))return beforeCurrentProductionSource(path,readLive(path),readRenamed).replaceAll('\r\n','\n');
+  const readOwner=reviewedReaders.has(path)?readReviewed:owner=>owner===path?readReviewed(owner):readRenamed(owner);
+  return beforeCurrentProductionSource(path,reviewed,readOwner).replaceAll('\r\n','\n');
+ };
+}
+
 const require=createRequire(import.meta.url);
 const {lua,lauxlib,lualib,to_luastring,to_jsstring}=require('fengari');
 export function baseline(){return JSON.parse(gunzipSync(readFileSync('tests/fixtures/defect-actor-before.json.gz')));}

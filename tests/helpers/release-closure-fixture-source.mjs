@@ -35,6 +35,97 @@ export const selectionRawEntranceReplay=Object.freeze({
 // Current Host checks exercise production. Historical Host and CI replays
 // preserve the exact earlier test sources from the production backflow.
 const fixtures=Object.freeze({
+ "tests/defect-actor-boundary.test.mjs": {
+  "current": {
+   "sha256": "a73f32bd0a1702a2c4b6461433b173d0f4ac3cb382d1f55807ae480dd64fe3d7",
+   "gitBlob": "fe9e70589091324fd406113a57feb18eb684c3c8"
+  },
+  "previous": {
+   "sha256": "8c6018ed92a5783613bdf73c6b73cb48c77bb6b22d7d28debef82ca3a1c5dbc8",
+   "gitBlob": "2e931db893975ea9b8d13cc6eaf3a39213a9ff77"
+  },
+  "hunks": [
+   {
+    "at": 4,
+    "before": "import {createRequire} from 'node:module';\nimport {baseline,defectVm} from './helpers/defect-actor-vm.mjs';\nimport {analyzeSources} from '../scripts/check-architecture.mjs';",
+    "after": "import {createRequire} from 'node:module';\nimport {actorFocusPreStyleReader,baseline,defectVm} from './helpers/defect-actor-vm.mjs';\nimport {analyzeSources} from '../scripts/check-architecture.mjs';"
+   },
+   {
+    "at": 10,
+    "before": "import {sourceEpoch,ciRepairSourceEpoch} from './helpers/closeout-source-epoch.mjs';\nimport {beforeCurrentProductionSource} from './helpers/character-preparation-source.mjs';\nimport {entranceInventory} from './helpers/ui-entrance-source.mjs';\nimport {actorFocusAdded,assertActorFocusInventory,deckPagesAdded,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';\nimport {beforeCombatEvents,beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';\nconst require=createRequire(import.meta.url),luaparse=require('luaparse');",
+    "after": "import {sourceEpoch,ciRepairSourceEpoch} from './helpers/closeout-source-epoch.mjs';\nimport {entranceInventory} from './helpers/ui-entrance-source.mjs';\nimport {reviewedRenamedStsStyleRead,reviewedStsStyleInventory} from './helpers/reviewed-selection-current-source.mjs';\nimport {actorFocusAdded,assertActorFocusInventory,deckPagesAdded,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';\nimport {beforeCombatEvents,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';\nconst require=createRequire(import.meta.url),luaparse=require('luaparse');"
+   },
+   {
+    "at": 25,
+    "before": " const readLive=path=>Object.hasOwn(live,path)?live[path]:read(path);\n const expected=[...Object.keys(proof.current),...actorFocusAdded,...stasisUpgradeAddedPaths,...deckPagesAdded];\n assert(expected.includes(retiredControllerPath),'preStyle inventory includes the historical controller');\n assert.deepEqual(entranceInventory(Object.keys(live).sort(),readLive),[...expected.filter(path=>path!==retiredControllerPath),pointerInputPath].sort(),'complete live source inventory before preStyle');\n assertActorFocusInventory(Object.keys(raw),readLive);\n const historicalRead=beforeInputRetirementReader(readLive);\n for(const [path,binding]of Object.entries(proof.current)){\n  const source=path===retiredControllerPath?historicalRead(path):live[path];\n  assert.equal(beforeCurrentProductionSource(path,source,readLive).replaceAll('\\r\\n','\\n'),binding.source,'live preStyle input identity: '+path);\n }",
+    "after": " const readLive=path=>Object.hasOwn(live,path)?live[path]:read(path);\n const liveInventory=reviewedStsStyleInventory(Object.keys(live),readLive);\n const readRenamed=reviewedRenamedStsStyleRead(readLive);\n const expected=[...Object.keys(proof.current),...actorFocusAdded,...stasisUpgradeAddedPaths,...deckPagesAdded];\n assert(expected.includes(retiredControllerPath),'preStyle inventory includes the historical controller');\n assert.deepEqual(entranceInventory(liveInventory,readRenamed),[...expected.filter(path=>path!==retiredControllerPath),pointerInputPath].sort(),'complete live source inventory before preStyle');\n assertActorFocusInventory(Object.keys(raw),readLive);\n const readPreStyle=actorFocusPreStyleReader(readLive);\n for(const [path,binding]of Object.entries(proof.current)){\n  assert.equal(readPreStyle(path,binding.source),binding.source,'live preStyle input identity: '+path);\n }"
+   },
+   {
+    "at": 114,
+    "before": " const reverted={...discoverSources(),[updated]:sourceEpoch.proof.current[updated].source};\n assert.throws(()=>capabilityPreStyle(reverted),{message:'fresh current production owner: '+updated},'frozen predecessor bytes cannot pass as current input');\n});",
+    "after": " const reverted={...discoverSources(),[updated]:sourceEpoch.proof.current[updated].source};\n assert.throws(()=>capabilityPreStyle(reverted),{message:'fresh master backflow source: '+updated},'frozen predecessor bytes cannot pass as current input');\n});"
+   }
+  ]
+ },
+ "tests/defect-final-source-epoch.test.mjs": {
+  "current": {
+   "sha256": "9add24ff9569f96789d1c894161254e18229c906a5909021b200252136f4c118",
+   "gitBlob": "381b9f064ae7544fc2a2e9a13f6910dfd4b8b002"
+  },
+  "previous": {
+   "sha256": "32c51cb3f6a4ec49aa2169a0f872733195497e90925b9a6ad0896d73379e8999",
+   "gitBlob": "64403b49fb222f057746ad6ef8a32ba9571d6355"
+  },
+  "hunks": [
+   {
+    "at": 1,
+    "before": "import {readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';\nimport {currentProductionRereads} from './helpers/current-production-source-reads.mjs';\nimport {closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch} from './helpers/closeout-source-epoch.mjs';",
+    "after": "import {readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';\nimport {currentProductionRereads,releaseArchitectureReadTrace} from './helpers/current-production-source-reads.mjs';\nimport {closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch} from './helpers/closeout-source-epoch.mjs';"
+   },
+   {
+    "at": 194,
+    "before": " const admittedReads=[...reads];\n assert.equal(admittedReads.length,480);\n assert.equal(createHash('sha256').update(JSON.stringify(admittedReads)).digest('hex'),\n  'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd','exact current owner read order');\n let prior=-1;",
+    "after": " const admittedReads=[...reads];\n assert.equal(admittedReads.length,releaseArchitectureReadTrace.count);\n assert.equal(createHash('sha256').update(JSON.stringify(admittedReads)).digest('hex'),\n  releaseArchitectureReadTrace.sha256,'exact current owner read order');\n let prior=-1;"
+   }
+  ]
+ },
+ "tests/watcher-actor-boundary.test.mjs": {
+  "current": {
+   "sha256": "adb0dce04f7f675bb34fb08ae9409bcb740007d40cd2457f13361f3920b8fc4a",
+   "gitBlob": "9cf2f4beb97038b213edfc6f5488e353dc4ceb90"
+  },
+  "previous": {
+   "sha256": "3d98a36a8a1550ca19214a9c0aa6e3772427332bb2c7fa8af4608565459366ad",
+   "gitBlob": "e9c2e16553f0d5cefc73a7ebd9d72e6b8460069d"
+  },
+  "hunks": [
+   {
+    "at": 11,
+    "before": "import {ciRepairSourceEpoch} from './helpers/closeout-source-epoch.mjs';\nimport {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';\nimport {beforeCurrentProductionSource} from './helpers/character-preparation-source.mjs';\nimport {addedEntranceModules,entranceInventory} from './helpers/ui-entrance-source.mjs';",
+    "after": "import {ciRepairSourceEpoch} from './helpers/closeout-source-epoch.mjs';\nimport {pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';\nimport {actorFocusPreStyleReader} from './helpers/defect-actor-vm.mjs';\nimport {reviewedRenamedStsStyleRead,reviewedStsStyleInventory} from './helpers/reviewed-selection-current-source.mjs';\nimport {addedEntranceModules,entranceInventory} from './helpers/ui-entrance-source.mjs';"
+   },
+   {
+    "at": 65,
+    "before": " assertActorFocusInventory(Object.keys(raw),read);\n const historicalRead=beforeInputRetirementReader(read);\n const historical=Object.fromEntries(entranceInventory(Object.keys(raw),read).map(path=>[path,raw[path]]));\n historical[retiredControllerPath]=historicalRead(retiredControllerPath);\n delete historical[pointerInputPath];\n const prior=Object.keys(ciRepairSourceEpoch.proof.current).filter(p=>p.startsWith('src/lua/')).sort();\n const added=Object.keys(historical).filter(p=>!Object.hasOwn(ciRepairSourceEpoch.proof.current,p)).sort();\n const uiAdded=['game_ui_navigation','game_ui_navigation_view','lowcost_art','merchant_pages','page_reveal'].map(name=>'src/lua/abyss_'+name+'.lua');",
+    "after": " assertActorFocusInventory(Object.keys(raw),read);\n const readRenamed=reviewedRenamedStsStyleRead(read);\n const releaseInventory=reviewedStsStyleInventory(Object.keys(raw),read);\n const historical=[...entranceInventory(releaseInventory,readRenamed).filter(path=>path!==pointerInputPath),retiredControllerPath];\n const prior=Object.keys(ciRepairSourceEpoch.proof.current).filter(p=>p.startsWith('src/lua/')).sort();\n const added=historical.filter(p=>!Object.hasOwn(ciRepairSourceEpoch.proof.current,p)).sort();\n const uiAdded=['game_ui_navigation','game_ui_navigation_view','lowcost_art','merchant_pages','page_reveal'].map(name=>'src/lua/abyss_'+name+'.lua');"
+   },
+   {
+    "at": 73,
+    "before": " assert.deepEqual(added,[...uiAdded,...coreAdded,...deckPagesAdded].sort());\n assert.deepEqual(Object.keys(historical).filter(p=>!added.includes(p)).sort(),prior,'complete original 346-module corpus retained');\n const recorded=Object.keys(currentEpoch.proof.current).filter(p=>p.startsWith('src/lua/'));\n assert.equal(recorded.length,352,'complete predecessor inventory');\n assert.deepEqual(Object.keys(historical).sort(),[...recorded,...stasisUpgradeAddedPaths,...actorFocusAdded,...deckPagesAdded].sort());\n assert.equal(Object.keys(raw).length,357+addedEntranceModules.length,'complete raw current inventory');\n for(const [path,source]of Object.entries(historical)){\n  if(deckPagesAdded.includes(path))continue; // Authenticated by the exact live inventory above.\n  if(actorFocusAdded.includes(path)){\n   assertDevelopBackflowCurrent(path,source);",
+    "after": " assert.deepEqual(added,[...uiAdded,...coreAdded,...deckPagesAdded].sort());\n assert.deepEqual(historical.filter(p=>!added.includes(p)).sort(),prior,'complete original 346-module corpus retained');\n const recorded=Object.keys(currentEpoch.proof.current).filter(p=>p.startsWith('src/lua/'));\n assert.equal(recorded.length,352,'complete predecessor inventory');\n assert.deepEqual([...historical].sort(),[...recorded,...stasisUpgradeAddedPaths,...actorFocusAdded,...deckPagesAdded].sort());\n assert.equal(releaseInventory.length,357+addedEntranceModules.length,'complete pre-release inventory');\n assert.equal(Object.keys(raw).length,releaseInventory.length+10,'complete raw current inventory');\n const readPreStyle=actorFocusPreStyleReader(read);\n for(const path of historical){\n  if(deckPagesAdded.includes(path))continue; // Authenticated by the exact live inventory above.\n  if(actorFocusAdded.includes(path)){\n   const source=read(path);\n   assertDevelopBackflowCurrent(path,source);"
+   },
+   {
+    "at": 89,
+    "before": "  if(stasisUpgradeAddedPaths.includes(path)){\n   assertStasisUpgradeAdded(path,source);",
+    "after": "  if(stasisUpgradeAddedPaths.includes(path)){\n   const source=read(path);\n   assertStasisUpgradeAdded(path,source);"
+   },
+   {
+    "at": 94,
+    "before": "  }\n  assert.equal(beforeCurrentProductionSource(path,source,read).replaceAll('\\r\\n','\\n'),currentEpoch.proof.current[path].source,path);\n }",
+    "after": "  }\n  const expected=currentEpoch.proof.current[path].source;\n  assert.equal(readPreStyle(path,expected),expected,path);\n }"
+   }
+  ]
+ },
  "tests/readable-unit-typography-inverse.test.mjs": {
   "current": {
    "sha256": "fe863ccfc674a8a75cb72f15087dcd3d1ffa3d8d7875709a6f038596ab8453d9",
