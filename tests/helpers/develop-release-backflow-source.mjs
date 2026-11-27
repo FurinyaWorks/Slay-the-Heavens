@@ -560,6 +560,7 @@ function beforeSessionRelic(path,source,options){
 }
 export function beforeDevelopBackflow(path,source,options){
  if(path===deckPath)source=beforeReleaseDeckPointer(path,source);
+ if(path===deckLayoutPath)source=beforeLinkedBackflow(path,beforeRunHudDeckLabel(source));
  source=beforeReleaseEntranceOwner(path,source);
  if(actorFocusOwners.includes(path))source=beforeVocabularyOwner(path,source);
  if(path==='src/lua/abyss_potion_discard_ui.lua')source=beforeKnownMasterBackflowSource(path,source);
@@ -597,6 +598,18 @@ function authenticateDevelopBackflowWithReaders(path,source,readLive,readLinked,
  }
  const rawLive=readLive;
  readLive=owner=>owner===deckPath?beforeReleaseDeckPointer(owner,rawLive(owner)):rawLive(owner);
+ if(path===deckPath||path===deckLayoutPath){
+  const deckPrior=(owner,value)=>beforeLinkedBackflow(owner,owner===deckLayoutPath?beforeRunHudDeckLabel(value):value);
+  const prior=deckPrior(path,source);
+  if(prior!==source){
+   const live=readBackflowOwner(readLive,path);
+   assert(uniformSource(live)&&live.replaceAll('\r\n','\n')===source.replaceAll('\r\n','\n'),
+    'combined linked owner identity: '+path+' during deck backflow validation');
+   source=prior;
+   const beforeDeck=readLive;
+   readLive=owner=>owner===path?deckPrior(owner,beforeDeck(owner)):beforeDeck(owner);
+  }
+ }
  const libraryPrior=beforeLibraryReadPrompt(path,source);
  if(libraryPrior!==source){
   const live=readBackflowOwner(readLive,path);
