@@ -16,10 +16,10 @@ const fixtureNames = ['abyss_ui_layout', 'abyss_ui_templates', 'performance_temp
 const coreBgmCues = ['map', 'battle', 'elite', 'boss', 'victory', 'defeat'];
 
 export function verifyGilBgmSource(sourceRoot, embeddedBgm, inspection, gilSha256) {
-  const root = realpathSync(sourceRoot);
+  const root = realpathSync.native(sourceRoot);
   const git = (...args) => execFileSync('git', ['--no-replace-objects', ...args],
     {cwd:root, encoding:'utf8', timeout:10_000}).trim();
-  assert.equal(realpathSync(git('rev-parse', '--show-toplevel')), root, 'BGM source must be the measured arm worktree root');
+  assert.equal(realpathSync.native(git('rev-parse', '--show-toplevel')), root, 'BGM source must be the measured arm worktree root');
   const commit = git('rev-parse', '--verify', 'HEAD^{commit}');
   assert(/^[a-f0-9]{40}$/.test(commit), 'BGM source commit is unavailable');
   const {cues} = JSON.parse(git('show', `${commit}:data/presentation/native_bgm.json`));
