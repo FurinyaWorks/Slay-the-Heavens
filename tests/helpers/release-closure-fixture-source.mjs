@@ -267,6 +267,58 @@ const fixtures=Object.freeze({
      }
    ]
  },
+ "tests/act1-choice-responsibilities.test.mjs": {
+   "current": {
+     "sha256": "485c0e068be1bc34aad4b698f0944fd49b1ce5d2e398da6a89939572d9772dcc",
+     "gitBlob": "af59b5dac5f065de3bbc6ca303bd92625926abf9"
+   },
+   "previous": {
+     "sha256": "6378c8df20c4cff729438be831af842a0fde9a70213a6cb74f55c2f5343ebedc",
+     "gitBlob": "26a085852562046ff4f5dfa7b87c9bf23f1b77f8"
+   },
+   "hunks": [
+     {
+       "at": 23,
+       "before": "import {gunzipSync} from 'node:zlib';\nimport {act1ChoiceBefore as before,preAct1ChoiceSource,act1ChoiceReader} from './helpers/act1-choice-source-inverse.mjs';\nimport {copyCurrentSourceFixture} from './helpers/isolated-current-source.mjs';",
+       "after": "import {gunzipSync} from 'node:zlib';\nimport {act1ChoiceBefore as before,preAct1ChoiceSource,act1ChoiceReader} from './helpers/epochs/act1/tests/helpers/act1-choice-source-inverse.mjs';\nimport {beforeReleaseVocabulary} from './helpers/develop-release-vocabulary-source.mjs';\nimport {act1ChoiceReader as currentAct1ChoiceReader} from './helpers/act1-choice-source-inverse.mjs';\nimport {copyCurrentSourceFixture} from './helpers/isolated-current-source.mjs';"
+     },
+     {
+       "at": 78,
+       "before": "test('Act1 source inverse authenticates fresh current bytes with exact LF and Git identity',()=>{\n const current=read(file);let live=current,reads=0;const raw=p=>{assert.equal(p,file);reads++;return live;};\n const reader=act1ChoiceReader(raw);assert.equal(act1ChoiceReader(reader),reader);\n assert.equal(preAct1ChoiceSource(file,current,{readSource:reader}),before);assert.equal(reads,1);\n assert.equal(preAct1ChoiceSource(file,current.replaceAll('\\n','\\r\\n'),{readSource:raw}),before);\n for(live of [current+'\\n',before,null,undefined])assert.throws(()=>preAct1ChoiceSource(file,current,{readSource:reader}),/linked owner/);\n assert.throws(()=>preAct1ChoiceSource(file,current,{readSource(){throw Error('missing');}}),/linked owner missing/);\n assert.throws(()=>preAct1ChoiceSource(file,current,{readSource:null}),/linked reader/);\n reads=0;for(const unknown of [null,undefined,'',current+'\\n',before])assert.equal(preAct1ChoiceSource(file,unknown,{readSource:raw}),unknown);",
+       "after": "test('Act1 source inverse authenticates fresh current bytes with exact LF and Git identity',()=>{\n const current=read(file),projected=beforeReleaseVocabulary(file,current);\n assert.notEqual(projected,current,'approved Release copy has distinct bytes');\n let live=current,reads=0;\n const raw=p=>{assert.equal(p,file);reads++;const prior=beforeReleaseVocabulary(p,live);return prior===live?null:prior;};\n const reader=act1ChoiceReader(raw);assert.equal(act1ChoiceReader(reader),reader);\n assert.equal(preAct1ChoiceSource(file,projected,{readSource:reader}),before);assert.equal(reads,1);\n assert.equal(preAct1ChoiceSource(file,beforeReleaseVocabulary(file,current.replaceAll('\\n','\\r\\n')),{readSource:raw}),before);\n for(live of [current+'\\n',projected,before,null,undefined])assert.throws(()=>preAct1ChoiceSource(file,projected,{readSource:reader}),/linked owner/);\n assert.throws(()=>preAct1ChoiceSource(file,projected,{readSource(){throw Error('missing');}}),/linked owner missing/);\n assert.throws(()=>preAct1ChoiceSource(file,projected,{readSource:null}),/linked reader/);\n reads=0;for(const unknown of [null,undefined,'',current+'\\n',before])assert.equal(preAct1ChoiceSource(file,unknown,{readSource:raw}),unknown);"
+     },
+     {
+       "at": 120,
+       "before": "  const readSource=copyCurrentSourceFixture(dir,{crlf:true});\n  const module=await import(pathToFileURL(join(dir,'tests/helpers/act1-choice-source-inverse.mjs')).href);\n  assert.equal(module.act1ChoiceBefore,before);\n  const source=readSource(file);\n  assert.equal(module.preAct1ChoiceSource(file,source,{readSource}),before);\n  writeFileSync(join(dir,file),source+'\\r\\n');\n  assert.throws(()=>module.preAct1ChoiceSource(file,source,{readSource}),/linked owner/);\n  rmSync(join(dir,file));\n  assert.throws(()=>module.preAct1ChoiceSource(file,source,{readSource}),/linked owner missing/);\n }finally{rmSync(dir,{recursive:true,force:true});}",
+       "after": "  const readSource=copyCurrentSourceFixture(dir,{crlf:true});\n  const helper='tests/helpers/epochs/act1/tests/helpers/act1-choice-source-inverse.mjs';\n  const module=await import(pathToFileURL(join(dir,helper)).href);\n  assert.equal(module.act1ChoiceBefore,before);\n  const source=readSource(file),projected=beforeReleaseVocabulary(file,source);\n  const readOwner=path=>{const raw=readSource(path),prior=beforeReleaseVocabulary(path,raw);return prior===raw?null:prior;};\n  assert.notEqual(projected,source,'current CRLF bytes need the reviewed copy predecessor');\n  assert.equal(module.preAct1ChoiceSource(file,projected,{readSource:readOwner}),before);\n  writeFileSync(join(dir,file),source+'\\r\\n');\n  assert.throws(()=>module.preAct1ChoiceSource(file,projected,{readSource:readOwner}),/linked owner/);\n  rmSync(join(dir,file));\n  assert.throws(()=>module.preAct1ChoiceSource(file,projected,{readSource:readOwner}),/linked owner missing/);\n }finally{rmSync(dir,{recursive:true,force:true});}"
+     },
+     {
+       "at": 166,
+       "before": "  }\n  const source=target.files[file].source;assert.equal(source,read(file));\n  for(const path of [file,'config/architecture.json']){",
+       "after": "  }\n  const source=target.files[file].source,liveSource=read(file);\n  assert.notEqual(liveSource,source,'the Release copy has its own exact identity');\n  assert.equal(beforeReleaseVocabulary(file,liveSource),source);\n  assert.equal(beforeReleaseVocabulary(file,liveSource+'\\n'),liveSource+'\\n');\n  for(const path of [file,'config/architecture.json']){"
+     },
+     {
+       "at": 215,
+       "before": "  if(!admittedReads){\n   // Keep the complete current trace and the ordered original contract.\n   assert.equal(reads.length,466);\n   assert.equal(createHash('sha256').update(JSON.stringify(reads)).digest('hex'),'049af1e21af40d804c1201c01f79da465c7ee0a2b1c4a2544a0c4c3cd1da0500');\n   const entranceBytes=readFileSync('tests/fixtures/ui-entrance-source.json.gz');",
+       "after": "  if(!admittedReads){\n   // The Release adds fresh portrait, Prologue and battle-feedback reads.\n   // All 466 reads from #912 remain in their original order.\n   assert.equal(reads.length,543);\n   const traceDigest=trace=>createHash('sha256').update(JSON.stringify(trace)).digest('hex');\n   assert.equal(traceDigest(reads),'4fce5e9a9dc7a2c45cb0973b8a88c3cc6964f9983f99f4f0ab8ee488b77c4fa2');\n   const releaseReads=[\n    [4,6],[10,12],[17,18],[19,24],[31,33],[76,77],\n    [101,104],[143,145],[157,159],[160,162],[163,165],[166,168],\n    [209,212],[213,216],[223,226],[262,264],[265,267],[268,270],\n    [311,313],[327,328],[338,340],[341,343],[344,346],[347,349],\n    [378,381],[382,385],[391,394],[408,410],[411,413],[414,416],\n    [445,446],[473,474],[476,478],[479,484],[517,518],\n   ];\n   const originalReads=reads.filter((_,index)=>!releaseReads.some(([from,to])=>index>=from&&index<to));\n   assert.equal(originalReads.length,466);\n   assert.equal(traceDigest(originalReads),'049af1e21af40d804c1201c01f79da465c7ee0a2b1c4a2544a0c4c3cd1da0500');\n   const entranceBytes=readFileSync('tests/fixtures/ui-entrance-source.json.gz');"
+     },
+     {
+       "at": 235,
+       "before": "   assert.equal(entranceOwners.length,20);\n   assert.deepEqual(reads.slice(1,21),entranceOwners,'complete current entrance cohort');\n   assert.equal(createHash('sha256').update(JSON.stringify([reads[0],...reads.slice(21)])).digest('hex'),\n    '5dad58d855f93d4169fa5877eff635d77f2c0b99af76f12e8f5cb68a4d659a4f','unchanged complete original Act1 order');",
+       "after": "   assert.equal(entranceOwners.length,20);\n   assert.deepEqual(originalReads.slice(1,21),entranceOwners,'complete original entrance cohort');\n   assert.equal(traceDigest([originalReads[0],...originalReads.slice(21)]),\n    '5dad58d855f93d4169fa5877eff635d77f2c0b99af76f12e8f5cb68a4d659a4f','unchanged complete original Act1 order');"
+     },
+     {
+       "at": 247,
+       "before": "  for(const owner of owners.filter(owner=>owner!==retiredControllerPath))for(replacement of [read(owner)+'\\n',null,undefined]){\n   changed=owner;reads=[];assert.throws(()=>preRelicQuerySource(file,source,{readSource}),/combined linked owner identity/);\n   assert.deepEqual(reads,admittedReads.slice(0,admittedReads.indexOf(owner)+1),'fresh reads stop at the actual bad owner: '+owner);",
+       "after": "  for(const owner of owners.filter(owner=>owner!==retiredControllerPath))for(replacement of [read(owner)+'\\n',null,undefined]){\n   changed=owner;reads=[];\n   assert.throws(()=>preRelicQuerySource(file,source,{readSource}),error=>\n    /combined linked owner (identity|missing)|fresh (Selection portrait|prologue button) owner/.test(error.message)&&error.message.includes(owner));\n   assert.deepEqual(reads,admittedReads.slice(0,admittedReads.indexOf(owner)+1),'fresh reads stop at the actual bad owner: '+owner);"
+     },
+     {
+       "at": 271,
+       "before": " // Accepting it would silently combine #546 architecture with the current tree.\n const act1Reader=act1ChoiceReader(read);\n assert.equal(act1Reader('config/architecture.json'),sourceEpoch.proof.targets.act1.files['config/architecture.json'].source);",
+       "after": " // Accepting it would silently combine #546 architecture with the current tree.\n const act1Reader=currentAct1ChoiceReader(read);\n assert.equal(act1Reader('config/architecture.json'),sourceEpoch.proof.targets.act1.files['config/architecture.json'].source);"
+     }
+   ]
+ },
  "tests/lua/nemesis_ui.lua": {
   "current": {
    "sha256": "efd4d31e4143a5dc9abb48277d97f03d504b332f9798054885d1c571edfe519b",
