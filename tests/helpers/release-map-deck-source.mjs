@@ -149,6 +149,7 @@ function assertProductionMapDeckOwners(path,source,read){
     try{live=read(name,'utf8');}catch{assert.fail('map deck linked owner missing: '+name);}
     assert(uniformCurrent(live,after),'map deck linked owner identity: '+name);
   }
+  return true;
 }
 
 function beforeProductionForethought(path,source,read){
@@ -180,7 +181,10 @@ export function beforeMapDeckSource(path,source,read){
  const rawRead=read;
  source=path===deckPath?beforeReleaseDeckPointer(path,source):source;
  read=(owner,...args)=>owner===deckPath?beforeReleaseDeckPointer(owner,rawRead(owner,...args)):rawRead(owner,...args);
-  assertProductionMapDeckOwners(path,source,read);
+  if(assertProductionMapDeckOwners(path,source,read)&&path==='src/lua/abyss_map_ui.lua'){
+    const prior=files[path].before.source;
+    return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+  }
   const forethoughtPrior=beforeProductionForethought(path,source,read);
   if(forethoughtPrior!==source)return forethoughtPrior;
   const readBackflow=read;

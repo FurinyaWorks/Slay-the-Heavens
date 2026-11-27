@@ -1210,6 +1210,28 @@ const fixtures=Object.freeze({
     "after": " assert.notEqual(hash(accepted),expected.combined,'current develop target is not the ancient Run target');\n // The release adds nineteen raw reads and retains the prior periphery trace.\n const admittedReads=[...reads];\n assert.equal(admittedReads.length,releaseArchitectureReadTrace.count,'complete fresh raw closure size');\n assert.equal(hash(JSON.stringify(admittedReads)),releaseArchitectureReadTrace.sha256,\n  'complete fresh raw closure in admission order on the current Release sources');\n const releaseReadPositions=new Set([3,4,9,10,16,18,19,20,21,22,30,31,115,221,222,223,367,368,369]);\n const battlePeripheryReads=new Map([\n  [90,'src/lua/abyss_battle_enemy_view.lua'],\n  [155,'src/lua/abyss_feedback.lua'],\n  [156,'src/lua/abyss_feedback_actor_painter.lua'],\n  [317,'src/lua/abyss_feedback.lua'],\n  [415,'src/lua/abyss_feedback.lua'],\n  [479,'src/lua/abyss_feedback.lua'],\n ]);\n for(const [position,owner]of battlePeripheryReads)assert.equal(admittedReads[position],owner,'exact battle periphery read');\n const priorReads=admittedReads.filter((_owner,position)=>!releaseReadPositions.has(position));\n assert.equal(priorReads.length,486,'the complete battle periphery trace is retained');\n assert.equal(hash(JSON.stringify(priorReads)),'266836ee07bb2c4145aba3c488f17109029f614d38793fe54a295ef6eb3e495b',\n  'exact prior battle periphery admission order');\n const originalReads=admittedReads.filter((_owner,position)=>!releaseReadPositions.has(position)&&!battlePeripheryReads.has(position));\n assert.equal(originalReads.length,480,'the prior owner closure was retained');"
    }
   ]
+ },
+ "tests/v25-map-layout.test.mjs": {
+  "current": {
+   "sha256": "00dd0b2a7c03c35ee2410952030afd5b7818f0b92688815aa988255988c4990b",
+   "gitBlob": "8a51496ab15aae494f32a11da371bcfbe85599f2"
+  },
+  "previous": {
+   "sha256": "24976b84103484e73cf8f646c42a30cc9dbeb1bb7a99c6449e01e61674cad2b4",
+   "gitBlob": "a4c4760723d4f7f2b8e474df3519353f461e525c"
+  },
+  "hunks": [
+   {
+    "at": 128,
+    "before": "import {gunzipSync} from 'node:zlib';\nimport {beforeAuthenticatedRecordingStage} from './helpers/release-ui-restore-source.mjs';\nimport {beforeCurrentReplayFixes} from './helpers/current-replay-fix-sources.mjs';\ntest('recording historical continuation accepts exact owners and rejects stale, drifted or mixed reads',()=>{\n const {files}=JSON.parse(gunzipSync(readFileSync('tests/helpers/recording-0401-source.json.gz')));",
+    "after": "import {gunzipSync} from 'node:zlib';\nimport {beforeAuthenticatedRecordingStage} from './helpers/release-ui-restore-source.mjs';\nimport {beforeUiEntrance} from './helpers/ui-entrance-source.mjs';\ntest('recording historical continuation accepts exact owners and rejects stale, drifted or mixed reads',()=>{\n const {files}=JSON.parse(gunzipSync(readFileSync('tests/helpers/recording-0401-source.json.gz')));"
+   },
+   {
+    "at": 145,
+    "before": " const expectedLf=expected.replaceAll('\\r\\n','\\n');\n for(const owner of ['src/lua/abyss_game_ui.lua','src/lua/abyss_node_ui_faces.lua','src/lua/abyss_game_ui_run.lua']){\n  const raw=readFileSync(owner,'utf8'),stale=beforeCurrentReplayFixes(owner,raw);\n  assert.notEqual(stale,raw,'negative control must change production bytes');\n  for(const bad of [stale,raw+'\\n-- unreviewed drift\\n']){",
+    "after": " const expectedLf=expected.replaceAll('\\r\\n','\\n');\n for(const owner of ['src/lua/abyss_game_ui.lua','src/lua/abyss_node_ui_faces.lua','src/lua/abyss_game_ui_run.lua']){\n  const raw=readFileSync(owner,'utf8'),stale=beforeUiEntrance(owner,raw);\n  assert.notEqual(stale,raw,'negative control must change production bytes');\n  for(const bad of [stale,raw+'\\n-- unreviewed drift\\n']){"
+   }
+  ]
  }
 });
 

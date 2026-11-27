@@ -84,8 +84,8 @@ const owners=Object.freeze({
  },
  "tests/helpers/release-map-deck-source.mjs": {
   "current": {
-   "sha256": "6f12662593a70a404e726acf52264c8986db2080cb78fb126436066cbbbde1ad",
-   "gitBlob": "6439fcb091ffa55f709f5fcffaedd29a044f6bd3"
+   "sha256": "9086aca76fdf24939d374d94d6150dbebecc33da93bdfc300e4b2196a5936a45",
+   "gitBlob": "f7a5e6f10bf5884f12fe039fda7bd350dce7a36e"
   },
   "previous": {
    "sha256": "ddaf9067612caa2e279e4702e6c7bf94a70a4201c0b87b87466060ec7abaf79b",
@@ -93,14 +93,19 @@ const owners=Object.freeze({
   },
   "hunks": [
    {
-    "at": 9,
-    "before": "import {beforeHotfixMapDeckHelperSource} from './hotfix-map-deck-helper-source.mjs';\n",
-    "after": "import {beforeHotfixMapDeckHelperSource} from './hotfix-map-deck-helper-source.mjs';\nimport {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';\n"
+    "at": 8,
+    "before": "import {beforeLoadingRecoverySource} from './loading-recovery-source.mjs';\nimport {beforeHotfixMapDeckHelperSource} from './hotfix-map-deck-helper-source.mjs';\n\nconst hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');",
+    "after": "import {beforeLoadingRecoverySource} from './loading-recovery-source.mjs';\nimport {beforeHotfixMapDeckHelperSource} from './hotfix-map-deck-helper-source.mjs';\nimport {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';\n\nconst hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');"
+   },
+   {
+    "at": 149,
+    "before": "    assert(uniformCurrent(live,after),'map deck linked owner identity: '+name);\n  }\n}\n",
+    "after": "    assert(uniformCurrent(live,after),'map deck linked owner identity: '+name);\n  }\n  return true;\n}\n"
    },
    {
     "at": 177,
-    "before": "export function beforeMapDeckSource(path,source,read){\n  assertProductionMapDeckOwners(path,source,read);",
-    "after": "export function beforeMapDeckSource(path,source,read){\n const deckPath='src/lua/abyss_deck_ui.lua';\n const rawRead=read;\n source=path===deckPath?beforeReleaseDeckPointer(path,source):source;\n read=(owner,...args)=>owner===deckPath?beforeReleaseDeckPointer(owner,rawRead(owner,...args)):rawRead(owner,...args);\n  assertProductionMapDeckOwners(path,source,read);"
+    "before": "\nexport function beforeMapDeckSource(path,source,read){\n  assertProductionMapDeckOwners(path,source,read);\n  const forethoughtPrior=beforeProductionForethought(path,source,read);\n  if(forethoughtPrior!==source)return forethoughtPrior;",
+    "after": "\nexport function beforeMapDeckSource(path,source,read){\n const deckPath='src/lua/abyss_deck_ui.lua';\n const rawRead=read;\n source=path===deckPath?beforeReleaseDeckPointer(path,source):source;\n read=(owner,...args)=>owner===deckPath?beforeReleaseDeckPointer(owner,rawRead(owner,...args)):rawRead(owner,...args);\n  if(assertProductionMapDeckOwners(path,source,read)&&path==='src/lua/abyss_map_ui.lua'){\n    const prior=files[path].before.source;\n    return source.includes('\\r\\n')?prior.replaceAll('\\n','\\r\\n'):prior;\n  }\n  const forethoughtPrior=beforeProductionForethought(path,source,read);\n  if(forethoughtPrior!==source)return forethoughtPrior;"
    }
   ]
  },
@@ -118,6 +123,38 @@ const owners=Object.freeze({
     "at": 122,
     "before": "  if(sourceConfigLayoutMatches(source,'3924ed90aa88922ca9fc97df398cb67b7cf61892933901213ef911fc3b6f3e52')){\n   source=read(path);\n   assert(currentMatches(path,source,files[path].after),'combined linked owner identity: '+path+' during entrance validation');",
     "after": "  const releaseConfig={sha256:'cec427dcede62ac3efe295bfc976eb58cffb073a69bab7be12da02051de58dbe',\n   gitBlob:'fc35277cdbd7809afbe934cfdb63b6ee0828abe5'};\n  const releaseLayout=sourceConfigLayoutMatches(source,'8b379d37dce76982ae88bd20bca81058510426d6eb2972b48a90ff9c864ad8dc');\n  if(releaseLayout||sourceConfigLayoutMatches(source,'3924ed90aa88922ca9fc97df398cb67b7cf61892933901213ef911fc3b6f3e52')){\n   source=read(path);\n   assert(currentMatches(path,source,files[path].after)&&(!releaseLayout||matches(source,releaseConfig)),\n    'combined linked owner identity: '+path+' during entrance validation');"
+   }
+  ]
+ },
+ "tests/helpers/release-ui-restore-source.mjs": {
+  "current": {
+   "sha256": "9f56948b5d5f76f31c1780a27f6e1993d637a95de3ac2bafd19dacad2cbb0618",
+   "gitBlob": "f4ed5ab66931fc3eb1ef758820a5e740716eee57"
+  },
+  "previous": {
+   "sha256": "6e55f1df651dd08072160b73cd41deb46b530f29bd285a21f008fd7f3c8a105a",
+   "gitBlob": "3a55a0f43c14a6f1290aebc886d7181ea19cd058"
+  },
+  "hunks": [
+   {
+    "at": 5,
+    "before": "import {beforeStsFadeCi} from './sts-fade-ci-source.mjs';\nimport {beforeCurrentReplayFixes} from './current-replay-fix-sources.mjs';\nimport {beforeUiEntranceWitness} from './ui-entrance-source.mjs';\nimport assert from 'node:assert/strict';\nimport {createHash} from 'node:crypto';",
+    "after": "import {beforeStsFadeCi} from './sts-fade-ci-source.mjs';\nimport {beforeCurrentReplayFixes} from './current-replay-fix-sources.mjs';\nimport {authenticateUiEntrance,beforeUiEntranceWitness} from './ui-entrance-source.mjs';\nimport {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';\nimport {beforeKnownMasterBackflowSource} from './master-backflow-source.mjs';\nimport assert from 'node:assert/strict';\nimport {createHash} from 'node:crypto';"
+   },
+   {
+    "at": 87,
+    "before": " gitBlob:'82bdb7dda43d8772e1d1d5ffac3a9690509d9dd4',\n};\nconst deckLayoutPath='scripts/deck-ui-layout.mjs';\nconst pileReturnLayout={",
+    "after": " gitBlob:'82bdb7dda43d8772e1d1d5ffac3a9690509d9dd4',\n};\nconst releaseOfficialRuntime={\n sha256:'fd43e53300bdb0f7f178a6887a0e8a5a7c329ad5d0075b7a99a5d343c6f390b7',\n gitBlob:'b7b75635e0ead0544e430a94f110315b5e81f2ea',\n};\nconst releaseRecordingSources=new Set([officialRuntimePath,'scripts/v25-map-layout.mjs',\n 'scripts/sts-reward-row-layout.mjs','tests/v25-map-layout.test.mjs']);\nconst deckLayoutPath='scripts/deck-ui-layout.mjs';\nconst pileReturnLayout={"
+   },
+   {
+    "at": 101,
+    "before": " // Production owners must remain raw for the entrance cohort's fresh identity check.\n if(path.startsWith('src/')||path==='config/architecture.json')return source;\n source=beforeCurrentReplayFixes(path,beforeUiEntranceWitness(path,source));\n if(path!==officialRuntimePath||!matches(source,currentOfficialRuntime))return source;\n return beforeStsFadeCi(path,inputRetirementStsFixtureSource(path,source));\n}",
+    "after": " // Production owners must remain raw for the entrance cohort's fresh identity check.\n if(path.startsWith('src/')||path==='config/architecture.json')return source;\n if(releaseRecordingSources.has(path))source=beforeKnownMasterBackflowSource(path,source);\n source=beforeCurrentReplayFixes(path,beforeUiEntranceWitness(path,source));\n if(path!==officialRuntimePath||!matches(source,currentOfficialRuntime)&&!matches(source,releaseOfficialRuntime))return source;\n return beforeStsFadeCi(path,inputRetirementStsFixtureSource(path,source));\n}"
+   },
+   {
+    "at": 116,
+    "before": "}\nexport function beforeAuthenticatedRecordingStage(path,source,read){\n const input=recordingRuntimeInput(path,source);\n if(input!==source){",
+    "after": "}\nexport function beforeAuthenticatedRecordingStage(path,source,read){\n if(path==='src/lua/abyss_deck_ui.lua'&&beforeReleaseDeckPointer(path,source)!==source)\n  authenticateUiEntrance(owner=>read(owner,'utf8'));\n const input=recordingRuntimeInput(path,source);\n if(input!==source){"
    }
   ]
  }

@@ -5,7 +5,9 @@ import {authorizeRefinedReleaseProduction,beforeRefinedReleaseProduction} from '
 import {inputRetirementStsFixtureSource} from './input-retirement-sts-binding.mjs';
 import {beforeStsFadeCi} from './sts-fade-ci-source.mjs';
 import {beforeCurrentReplayFixes} from './current-replay-fix-sources.mjs';
-import {beforeUiEntranceWitness} from './ui-entrance-source.mjs';
+import {authenticateUiEntrance,beforeUiEntranceWitness} from './ui-entrance-source.mjs';
+import {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';
+import {beforeKnownMasterBackflowSource} from './master-backflow-source.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
@@ -85,6 +87,12 @@ const currentOfficialRuntime={
  sha256:'a3341b88551a035189ccc811fa7aa2b7f2eb9c1b6377baa22df6ff3b1fc8c828',
  gitBlob:'82bdb7dda43d8772e1d1d5ffac3a9690509d9dd4',
 };
+const releaseOfficialRuntime={
+ sha256:'fd43e53300bdb0f7f178a6887a0e8a5a7c329ad5d0075b7a99a5d343c6f390b7',
+ gitBlob:'b7b75635e0ead0544e430a94f110315b5e81f2ea',
+};
+const releaseRecordingSources=new Set([officialRuntimePath,'scripts/v25-map-layout.mjs',
+ 'scripts/sts-reward-row-layout.mjs','tests/v25-map-layout.test.mjs']);
 const deckLayoutPath='scripts/deck-ui-layout.mjs';
 const pileReturnLayout={
  sha256:'0f57f26a4fb520c8feb1df92d48417a6b445900a9ae453c160f500e5a9ee2272',
@@ -93,8 +101,9 @@ const pileReturnLayout={
 function recordingRuntimeInput(path,source){
  // Production owners must remain raw for the entrance cohort's fresh identity check.
  if(path.startsWith('src/')||path==='config/architecture.json')return source;
+ if(releaseRecordingSources.has(path))source=beforeKnownMasterBackflowSource(path,source);
  source=beforeCurrentReplayFixes(path,beforeUiEntranceWitness(path,source));
- if(path!==officialRuntimePath||!matches(source,currentOfficialRuntime))return source;
+ if(path!==officialRuntimePath||!matches(source,currentOfficialRuntime)&&!matches(source,releaseOfficialRuntime))return source;
  return beforeStsFadeCi(path,inputRetirementStsFixtureSource(path,source));
 }
 function recordingLayoutInput(path,source){
@@ -107,6 +116,8 @@ function recordingLayoutInput(path,source){
  return prior;
 }
 export function beforeAuthenticatedRecordingStage(path,source,read){
+ if(path==='src/lua/abyss_deck_ui.lua'&&beforeReleaseDeckPointer(path,source)!==source)
+  authenticateUiEntrance(owner=>read(owner,'utf8'));
  const input=recordingRuntimeInput(path,source);
  if(input!==source){
   const live=read(path,'utf8');
