@@ -175,6 +175,55 @@ const fixtures=Object.freeze({
    }
   ]
  },
+ "tests/golden-idol-source-epoch.test.mjs": {
+  "current": {
+   "sha256": "bb4ef50dafe8406968193ad974f12bdae0b3af3d3cd3600485070f327655e328",
+   "gitBlob": "bb33ded4964b8a5d2f5d1fde228e4b3c21e012f9"
+  },
+  "previous": {
+   "sha256": "0597f48fb68fd5b98e1170e4f78f4ba50a25ccec6a163b1d3d056bc4409a6c52",
+   "gitBlob": "9cf7adc438249202c97f8d1053c82565bffe845a"
+  },
+  "hunks": [
+   {
+    "at": 0,
+    "before": "import {beforeCharacterPreparationSource,beforeCurrentProductionSource} from './helpers/character-preparation-source.mjs';\nimport {pointerInputPath,readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';\nimport {sourceSlice} from './helpers/closeout-source-epoch.mjs';\nimport {beforePc13ThenV2UiHudSource} from './helpers/pc13-reward-cover-source.mjs';",
+    "after": "import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';\nimport {pointerInputPath,readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';\nimport {closeoutRead} from './helpers/closeout-ci-source.mjs';\nimport {beforePc13ThenV2UiHudSource} from './helpers/pc13-reward-cover-source.mjs';"
+   },
+   {
+    "at": 15,
+    "before": "function goldenReader(read){\n const admitted=file=>{\n  if(file===retiredControllerPath){",
+    "after": "function goldenReader(read){\n const replay=closeoutRead('pr614',read);\n return file=>{\n  if(file===retiredControllerPath){"
+   },
+   {
+    "at": 20,
+    "before": "   assert(restored,'current Controller must be retired');\n   return beforeCharacterPreparationSource(file,source,read);\n  }\n  return beforeCurrentProductionSource(file,read(file),read);\n };\n return file=>beforePc13ThenV2UiHudSource(file,sourceSlice(file,admitted(file),'pr614',admitted),read);\n}",
+    "after": "   assert(restored,'current Controller must be retired');\n   return beforePc13ThenV2UiHudSource(file,beforeCharacterPreparationSource(file,source,read),read);\n  }\n  return beforePc13ThenV2UiHudSource(file,replay(file,'utf8'),read);\n };\n}"
+   }
+  ]
+ },
+ "tests/room-ui-source-epoch.test.mjs": {
+  "current": {
+   "sha256": "86a971463b90b112bf54eb8bc0e1f6ac71ae24065f1125f0e1d5b10cf65e4c36",
+   "gitBlob": "225f0db0a358ba83b14bb7f95398bfbe6c15c000"
+  },
+  "previous": {
+   "sha256": "0b5f8200d62fc590ea3b8fe75c18394c68ab033eb4b4e15c8f3f848c266f589f",
+   "gitBlob": "e5f428bf4f4c4ff0c9ceb4ad1a34ff5be0f21a35"
+  },
+  "hunks": [
+   {
+    "at": 0,
+    "before": "import {sourceEpoch as combinedCurrent,sourceSlice,ciRepairSourceEpoch} from './helpers/closeout-source-epoch.mjs';\nimport test from 'node:test';",
+    "after": "import {sourceEpoch as combinedCurrent,sourceSlice,ciRepairSourceEpoch} from './helpers/closeout-source-epoch.mjs';\nimport {closeoutRead} from './helpers/closeout-ci-source.mjs';\nimport test from 'node:test';"
+   },
+   {
+    "at": 29,
+    "before": "function joustReader(read){\n const admitted=path=>admittedRaw(path,read);\n return path=>{\n  try{return sourceSlice(path,admitted(path),'pr612',admitted).replaceAll('\\r\\n','\\n');}\n  catch(error){if(error.code==='ENOENT')return null;throw error;}\n };",
+    "after": "function joustReader(read){\n const replay=closeoutRead('pr612',read);\n return path=>{\n  try{\n   const source=path===retiredControllerPath?sourceSlice(path,admittedRaw(path,read),'pr612',read):replay(path,'utf8');\n   return source.replaceAll('\\r\\n','\\n');\n  }catch(error){if(error.code==='ENOENT')return null;throw error;}\n };"
+   }
+  ]
+ },
  "scripts/verify-delivery.mjs": {
    "current": {
      "sha256": "0cc36bf1fc188d5a0cf40163fbeb9fbbd227d1d62d98b991036b83b7d2dbd818",

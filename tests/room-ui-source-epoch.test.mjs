@@ -1,4 +1,5 @@
 import {sourceEpoch as combinedCurrent,sourceSlice,ciRepairSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {closeoutRead} from './helpers/closeout-ci-source.mjs';
 import test from 'node:test';
 import {entranceInventory} from './helpers/ui-entrance-source.mjs';
 import assert from 'node:assert/strict';
@@ -27,10 +28,12 @@ import {preJoustEpoch as joint,joustIntegratedEpoch as current} from './helpers/
 import {joustSourceProof} from './helpers/joust-source-epoch.mjs';
 import {readdirSync} from 'node:fs';
 function joustReader(read){
- const admitted=path=>admittedRaw(path,read);
+ const replay=closeoutRead('pr612',read);
  return path=>{
-  try{return sourceSlice(path,admitted(path),'pr612',admitted).replaceAll('\r\n','\n');}
-  catch(error){if(error.code==='ENOENT')return null;throw error;}
+  try{
+   const source=path===retiredControllerPath?sourceSlice(path,admittedRaw(path,read),'pr612',read):replay(path,'utf8');
+   return source.replaceAll('\r\n','\n');
+  }catch(error){if(error.code==='ENOENT')return null;throw error;}
  };
 }
 const currentLive=joustReader(currentRaw);
