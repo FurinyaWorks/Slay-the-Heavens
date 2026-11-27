@@ -918,7 +918,43 @@ const releaseReplayReaders=Object.freeze({
   ]
  }
 });
+
+const releaseVocabularyReplay=Object.freeze({
+ "current": {
+  "sha256": "39c2ba9ecd776c5a7e3e485639c0d9a2acd1b9a8732e9621735fa99cd0466e56",
+  "gitBlob": "ef85a7a0559170947d4810cb777287404ae424db"
+ },
+ "previous": {
+  "sha256": "a70cfaf283d1c758fffa9a2035bec86e122afa871e4104c11e80ae7660c82727",
+  "gitBlob": "0ca4f24023d2fe9ed5af4fdeaf0b25a0b73ebbaf"
+ },
+ "hunks": [
+  {
+   "at": 8,
+   "before": " '2b3d606fc142f2c8c5cfaaff386c70f6e1f741f24fbc1879b78399b7c477e914','exact Release vocabulary continuation');",
+   "after": " '9377ea3fc9aa22e1e1afed2df671413df0e11403e0862b955b929b06abc33dad','exact Release vocabulary continuation');"
+  }
+ ]
+});
+const vocabularyReplayArchive='tests/fixtures/develop-release-vocabulary-source.json.gz';
+function beforeReleaseVocabularyReplay(path,raw){
+ if(path===vocabularyReplayArchive){
+  if(hash(raw)!=='9377ea3fc9aa22e1e1afed2df671413df0e11403e0862b955b929b06abc33dad')return raw;
+  const before=readFileSync(new URL('../fixtures/develop-release-vocabulary-prior.json.gz',import.meta.url));
+  assert.equal(hash(before),'2b3d606fc142f2c8c5cfaaff386c70f6e1f741f24fbc1879b78399b7c477e914','exact prior vocabulary replay archive');
+  return before;
+ }
+ if(path!=='tests/helpers/develop-release-vocabulary-source.mjs')return raw;
+ const text=integrationClosureBytes(path,raw).toString('utf8');
+ if(!exactSourceMatches(text,releaseVocabularyReplay.current))return raw;
+ assert(raw.equals(Buffer.from(text))||raw.equals(Buffer.from(text.replaceAll('\n','\r\n'))),'uniform vocabulary replay owner');
+ const prior=restoreExactFixtureHunks({path,beforeSha256:releaseVocabularyReplay.previous.sha256,
+  afterSha256:releaseVocabularyReplay.current.sha256,hunks:releaseVocabularyReplay.hunks},path,text);
+ assert(exactSourceMatches(prior,releaseVocabularyReplay.previous),'exact vocabulary replay owner predecessor');
+ return Buffer.from(prior);
+}
 function beforeReleaseReplayReader(path,raw){
+ raw=beforeReleaseVocabularyReplay(path,raw);
  if(!Object.hasOwn(releaseReplayReaders,path))return raw;
  const {current,previous,hunks}=releaseReplayReaders[path];
  const text=integrationClosureBytes(path,raw).toString('utf8');
