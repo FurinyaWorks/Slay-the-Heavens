@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-11-25 21:02'
-updated_date: '2026-11-26 03:53'
+updated_date: '2026-11-26 05:11'
 labels:
   - v2.2.0
   - release-scope
@@ -21,6 +21,7 @@ references:
   - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/965'
   - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/992'
   - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/989'
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/1022'
 documentation:
   - docs/versions/V2.2.0-RELEASE.md
 parent_task_id: TASK-115
@@ -58,4 +59,6 @@ ordinal: 222000
 #965 由 #981 合入，合入时 19 个文件与局部原审逐字节一致。#984 接续后至 #1006 保留 18 个，#1007 后为 15 个，战斗坐标沿统一入口。正式联调继续验详情写入、出牌、触屏和目标选择。#924 原公开头 a014d5cb 仍开放，原审对应 454b5897，实际接续需保留 #1005 隐藏详情面及后续原封存测试。#933 独立源 03699495 保留原生 6/6 和旧 Selection 10/10，原全量和当前计时待验。
 
 2026-11-26 必要切片为 #964 及 #924 的未继承差异。#989 只在低成本时合入。#932、#933、#909 的原引用继续保留，延期登记见 TASK-115.12。
+
+选角接续 #1022 已合入 f9513b58a0d2ef836178001773eabbbc3459777a。新增 Git 历史仅本版 21 个文字文件，与原 #924 已验源码树一致。原非战斗12/12和封存6/6、10/10，同一候选的实际 Simulator、PC和实体手机待验。
 <!-- SECTION:NOTES:END -->

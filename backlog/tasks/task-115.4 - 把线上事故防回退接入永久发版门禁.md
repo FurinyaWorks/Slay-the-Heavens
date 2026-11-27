@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-11-25 21:00'
-updated_date: '2026-11-26 03:52'
+updated_date: '2026-11-26 05:11'
 labels:
   - v2.2.0
   - release-gate
@@ -23,6 +23,8 @@ references:
   - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/998'
   - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/1001'
   - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/1008'
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/1012'
+  - 'https://github.com/FurinyaWorks/Slay-the-Heavens/pull/1021'
 documentation:
   - docs/versions/V2.2.0-RELEASE.md
 parent_task_id: TASK-115
@@ -71,4 +73,6 @@ ordinal: 211000
 实际 GIL 每臂曲目来源 #1001 已接续到 0a10bd9c，HEAD 5c96301f8e49f427257a929260efdf0c4fb6728d、树 0cd5db9a0ce6ae87caed2a424686f2b87f7731b6。独立原生评审 6067501339，正式 25/25、历史及奖励 6/6、LF 和 CRLF 各 3/3，Fork A 45738223303 通过。实际线上 GIL 复读 375 模块、16 模板，同一包对不同曲目源码臂拒绝。正式候选的六档、超载恢复和实机继续待验。
 
 #1001 经管理员 PR-only 合入 fb356bf9fd876c48e60cd67fb6ff654ea192b503，实际父为 0a10bd9c、树 0cd5db9a 与独审及精确 Fork 一致。该补丁只负责真实 GIL 曲目来源绑定，首个正式有声包、配对六档及官方客户端继续待验。
+
+第二幕正式压力门禁已合入 #1021。真实线上有声 GIL 完成原14阶段和同档第二幕。新 V3 生成样本在 1 CPU、2 GiB、零 swap 下完成指定场景与 249 个可见图元，候选和恢复拒绝缺背景/低槽。正式双 GIL 六档、连续稳定性以及设备验收仍待同包。
 <!-- SECTION:NOTES:END -->
