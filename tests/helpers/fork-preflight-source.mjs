@@ -824,7 +824,8 @@ function beforeMasterBackflowInventory(paths,bindings,changedTest,read){
  }
  for(const [path,binding] of Object.entries(bindings)){
   assert.equal(paths.filter(candidate=>candidate===path).length,1,'complete current raw discovery inventory: '+path);
-  assert(exactCheckoutSource(read(path,'utf8'),binding),'fresh added inventory source: '+path);
+  const source=beforeReleaseClosureFixture(path,read(path,'utf8'));
+  assert(exactCheckoutSource(source,binding),'fresh added inventory source: '+path);
  }
  return paths.filter(path=>!Object.hasOwn(bindings,path));
 }

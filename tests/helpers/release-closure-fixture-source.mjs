@@ -35,6 +35,72 @@ export const selectionRawEntranceReplay=Object.freeze({
 // Current Host checks exercise production. Historical Host and CI replays
 // preserve the exact earlier test sources from the production backflow.
 const fixtures=Object.freeze({
+ "tests/helpers/defect-actor-vm.mjs": {
+  "current": {
+   "sha256": "1ee4632b34f37909c22431a10faeacedf36f67969081dffe051e8f7cfffcc94e",
+   "gitBlob": "431b87417402ad5f1d01dbda2d78b4f7dbac2b49"
+  },
+  "previous": {
+   "sha256": "79a7794c38e508a0f5318cdfd55dc36980e038f2601ea92989b85a75618a6226",
+   "gitBlob": "e1584962006501dba0fd87173e757382f8299642"
+  },
+  "hunks": [
+   {
+    "at": 5,
+    "before": "import {luaString} from '../../scripts/build-lua-data.mjs';\nconst require=createRequire(import.meta.url);",
+    "after": "import {luaString} from '../../scripts/build-lua-data.mjs';\nimport {beforeCurrentProductionSource} from './character-preparation-source.mjs';\nimport {beforePreflightSource} from './fork-preflight-source.mjs';\nimport {beforeInputRetirementReader,retiredControllerPath} from './input-retirement-source.mjs';\nimport {reviewedRenamedStsStyleRead,reviewedStsStyleRead} from './reviewed-selection-current-source.mjs';\n\nconst preStyleRawOwners=new Set(['config/architecture.json',...[\n 'actor','battle_enemy_view','card_display','character_select_view','choice_ui','game_ui_lifecycle','game_ui_navigation',\n 'game_ui_overlays','game_ui_run','node_ui','node_ui_faces','node_ui_feedback','node_ui_input','node_ui_lifecycle',\n 'node_ui_shop','page_reveal','shop_ui','traveler_portraits','ui',\n].map(name=>'src/lua/abyss_'+name+'.lua')]);\nconst guideInputs=new Set(['game_ui','game_ui_input','game_ui_view'].map(name=>'src/lua/abyss_'+name+'.lua'));\nconst guideOwners=new Set(['game_ui_navigation','game_ui_navigation_view','game_ui_overlays'].map(name=>'src/lua/abyss_'+name+'.lua'));\nconst reviewedReaders=new Set(['battle_intent_view','character_profiles'].map(name=>'src/lua/abyss_'+name+'.lua'));\n// Retain the pre-style bytes via the owning Release receipts. The entrance and\n// Guide checks still get the precise raw or restored view each one authenticates.\nexport function actorFocusPreStyleReader(readLive){\n const readRenamed=reviewedRenamedStsStyleRead(readLive);\n const readReviewed=reviewedStsStyleRead(readLive);\n const readRetired=beforeInputRetirementReader(readReviewed);\n return (path,expected)=>{\n  const reviewed=path===retiredControllerPath?readRetired(path):readReviewed(path);\n  if(reviewed===expected)return reviewed;\n  if(path==='src/lua/abyss_game_ui_navigation_view.lua'){\n   return beforePreflightSource(path,readLive(path),'prior',readLive).replaceAll('\\r\\n','\\n');\n  }\n  if(guideInputs.has(path)){\n   const readGuide=owner=>guideOwners.has(owner)?readReviewed(owner):readRenamed(owner);\n   return beforeCurrentProductionSource(path,readLive(path),readGuide).replaceAll('\\r\\n','\\n');\n  }\n  if(preStyleRawOwners.has(path))return beforeCurrentProductionSource(path,readLive(path),readRenamed).replaceAll('\\r\\n','\\n');\n  const readOwner=reviewedReaders.has(path)?readReviewed:owner=>owner===path?readReviewed(owner):readRenamed(owner);\n  return beforeCurrentProductionSource(path,reviewed,readOwner).replaceAll('\\r\\n','\\n');\n };\n}\n\nconst require=createRequire(import.meta.url);"
+   }
+  ]
+ },
+ "tests/helpers/joint-ui-ci-source-inverse.mjs": {
+  "current": {
+   "sha256": "f4fe1b28a6bb40d00ab80159bd2ac42ce31ff96f61649bf0f442796125ad37f7",
+   "gitBlob": "70bde1f89dae6f812c9336aee03d6eabf1bff947"
+  },
+  "previous": {
+   "sha256": "e181a8f4a343c5ea6b2b8fdd3d7b039624b506aadfefcf9b6975ba770b3b53c3",
+   "gitBlob": "be55b3fd5e197c805e2575486b21213000144ea7"
+  },
+  "hunks": [
+   {
+    "at": 8,
+    "before": "import {preNoncombatCiSource,noncombatPriorInventory} from './noncombat-ci-source-inverse.mjs';\nimport assert from 'node:assert/strict';",
+    "after": "import {preNoncombatCiSource,noncombatPriorInventory} from './noncombat-ci-source-inverse.mjs';\nimport {formationFloorReceiptSource} from './encounter-formation-ci-source-inverse.mjs';\nimport assert from 'node:assert/strict';"
+   },
+   {
+    "at": 75,
+    "before": "export function jointCiMatches(path,source,target){\n source=preCloseoutCiSource(path,source,'pr620');",
+    "after": "export function jointCiMatches(path,source,target){\n if(target==='formationReceipt'&&formationFloorReceiptSource(path,source)!==null)return true;\n source=preCloseoutCiSource(path,source,'pr620');"
+   },
+   {
+    "at": 87,
+    "before": "export function jointCiSourceAt(path,source,target){\n const original=source;",
+    "after": "export function jointCiSourceAt(path,source,target){\n const formation=target==='formationReceipt'?formationFloorReceiptSource(path,source):null;\n if(formation!==null)return formation;\n const original=source;"
+   }
+  ]
+ },
+ "tests/forethought-selection.test.mjs": {
+  "current": {
+   "sha256": "5483a9c9cc1dbdbc17809103821564f7838d1c63e431f953c29548a3b2d5fb42",
+   "gitBlob": "9db7e17c76f3d4eb0d8d605657a2948d98429c2c"
+  },
+  "previous": {
+   "sha256": "efe0d72d48c9c281f9af7f77fe432cdb2c6cb0edca8ee508f0897ea447a7ffab",
+   "gitBlob": "4bb817f80d9bd2b81305cae20590b4130085a51b"
+  },
+  "hunks": [
+   {
+    "at": 42,
+    "before": "  const read = path => readFileSync(path, 'utf8');\n  const hash = value => createHash('sha256').update(value).digest('hex');\n  const priorLua = beforeMapDeckSource(lua, read(lua), read);",
+    "after": "  const read = path => readFileSync(path, 'utf8');\n  const lf = value => value.replaceAll('\\r\\n', '\\n');\n  const hash = value => createHash('sha256').update(lf(value)).digest('hex');\n  const priorLua = beforeMapDeckSource(lua, read(lua), read);"
+   },
+   {
+    "at": 48,
+    "before": "  assert.equal(hash(priorLayout), 'f43c5472a1afacf23e8b2a908fa7eb5082e561314c90abbb65d7ccd7ca799d85');\n  const crlf = source => source.replaceAll('\\n', '\\r\\n');\n  assert.equal(beforeMapDeckSource(lua, crlf(read(lua)), path => crlf(read(path))), crlf(priorLua));",
+    "after": "  assert.equal(hash(priorLayout), 'f43c5472a1afacf23e8b2a908fa7eb5082e561314c90abbb65d7ccd7ca799d85');\n  const crlf = source => lf(source).replaceAll('\\n', '\\r\\n');\n  assert.equal(beforeMapDeckSource(lua, crlf(read(lua)), path => crlf(read(path))), crlf(priorLua));"
+   }
+  ]
+ },
  "tests/defect-actor-boundary.test.mjs": {
   "current": {
    "sha256": "a73f32bd0a1702a2c4b6461433b173d0f4ac3cb382d1f55807ae480dd64fe3d7",

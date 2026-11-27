@@ -168,7 +168,7 @@ export const currentDetachedInputs=Object.freeze({
  'tests/helpers/develop-release-backflow-source.mjs':'52fdda1e1a111ada443b4a1d1109906e99f98d107e92025fbf9e7f0c4f76a851',
  'tests/helpers/develop-release-vocabulary-source.mjs':'39c2ba9ecd776c5a7e3e485639c0d9a2acd1b9a8732e9621735fa99cd0466e56',
  'tests/helpers/master-backflow-source.mjs':'308c6ef6ac8987b9becc4ead9f3a1efaa2c3c20ea8a697bdf26f6233fa71b8ac',
- 'tests/helpers/release-closure-fixture-source.mjs':'da60a7c2eae2fd07fc9e78e6b5164b5a897952ea39e7228e4066b4fec351dbda',
+ 'tests/helpers/release-closure-fixture-source.mjs':'909bec9e93053908a3959e8fe8932baa356ed8a2bfa96797c8320defceedd39f',
  'tests/helpers/release-deck-pointer-source.mjs':'a1cfebcea1c53c017315a9762ba2d9509d395218b358a500d7ca22fe565dec38',
  'tests/helpers/release-entrance-owner-source.mjs':'970a41e91888711768d917ab2970d069ec891aea4f098f3930b1b5d04c87a30a',
  'tests/helpers/release-metadata-source.mjs':'5897d9d479841a5fa7fe1f86925fa7daedd06a8facdc7277247f2ac376610cf8',
