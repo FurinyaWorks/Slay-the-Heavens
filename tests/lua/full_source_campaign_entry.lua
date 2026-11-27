@@ -4,8 +4,8 @@
 -- no keys or historical wins are granted. This is not a natural playthrough.
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Map,Run=require('abyss_map'),require('abyss_run')
-local function awaitNativePage(host)
-    for _=1,80 do
+local function awaitNativePage(host,maxTicks)
+    for _=1,maxTicks or 80 do
         if not host.starting and not(host.prologue and host.prologue:covering())
             and not(host.pageReveal and host.pageReveal:covered())then assert(not host.disabled);return end
         OnUpdate(0.05)
@@ -84,7 +84,9 @@ local function fight(host,root,floor)
     assert(nextNode and nextNode.floor==floor)
     local accepted,state=host.mapUI:choose(nextNode.id)
     assert(accepted and state=='selection_pending' and host.mode=='map' and host.run.phase=='map')
-    awaitNativePage(host)
+    -- Match the formal fixture: only the Act I Guardian narration has the longer budget.
+    local guardianEntry=host.run.act==1 and nextNode.type=='boss'
+    awaitNativePage(host,guardianEntry and 140 or nil)
     assert(host.map.currentNodeId==nextNode.id and host.mode=='battle' and host.run.phase=='combat')
     -- Controlled final-damage boundary; encounter construction and rewards stay real.
     for _,enemy in ipairs(host.run.combat.enemies)do enemy.hp=0 end

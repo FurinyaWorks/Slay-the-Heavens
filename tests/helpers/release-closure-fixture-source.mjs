@@ -5,6 +5,23 @@ import {exactSourceMatches} from './source-fingerprint.mjs';
 // Current Host checks exercise production. Historical Host and CI replays
 // preserve the exact earlier test sources from the production backflow.
 const fixtures=Object.freeze({
+ "tests/lua/nemesis_ui.lua": {
+  "current": {
+   "sha256": "1ef5dc3c6d138b1afc2258cd099502f001b9bf963081d68cb4e3506e08ee759e",
+   "gitBlob": "d4f5e13c1f530d307115a29263c57b354b60287a"
+  },
+  "previous": {
+   "sha256": "4c3655ba6d08705d742e307aa56d6d2fadfb67c5379df2462e0a04792ebee4d7",
+   "gitBlob": "02fc4d2e206fe7447fc8e8a186494603faa25b66"
+  },
+  "hunks": [
+   {
+    "at": 14,
+    "before": "local panel=root:GetChild('battlePanel');local box=monsterControl(panel,'enemy1');local _,tap=H.controls(panel)\neq(box:GetChild('name').text,'天罚');eq(box:GetChild('hp').text,'185/185')\ntap('enemy1',91)\nlocal text=inspectDetails(host.battleUI,panel)\nassert(text:find('3',1,true)and text:find(r.combat.catalog.cards.burn.name,1,true)and text:find('弃牌堆',1,true),text)\nassert(not text:find('未知',1,true),text)\nassert(N.Run.endTurn(r));N.force(r.combat,'fire');host:refresh()\neq(box:GetChild('intent').text,'6x3')\ndofile('tests/lua/support/monster_power_control_fixture.lua')(box,'nemesis_intangible'):GetChild('hit').click({touchId=92})\nlocal info=panel:GetChild('statusInfo');assert(info.visible)\nlocal shown=false\nfor i=1,F.Theme.layout.statusInfo.rows do\n local name=info:GetChild('name'..i)\n if name.visible and name.text:find('无实体',1,true)then shown=true end\nend\nassert(shown,'monster Intangible must be named in the existing status panel')\nprint('NEMESIS_UI 1 groups; 0 failed')",
+    "after": "local panel=root:GetChild('battlePanel');local box=monsterControl(panel,'enemy1');local _,tap=H.controls(panel)\neq(box:GetChild('name').text,'天罚');eq(box:GetChild('hp').text,'185/185')\ntap('enemy1',91)\nassert(host.battleUI.info and host.battleUI.info.powerTips,'enemy tap must use the original compact tooltip')\nlocal text=inspectDetails(host.battleUI,panel)\nassert(text:find('策略',1,true)and text:find('这名敌人将要对你施加一种负面效果。',1,true),text)\nassert(not text:find('弃牌堆',1,true)and not text:find('未知',1,true),text)\n-- The effect remains exact in the detailed preview, not in the original intent tooltip.\nlocal detail=require('abyss_battle_intent_view').intentView(r.combat,1)\neq(detail.text,'将 3 张「'..r.combat.catalog.cards.burn.name..'」放入你的弃牌堆')\nassert(N.Run.endTurn(r));N.force(r.combat,'fire');host:refresh()\neq(box:GetChild('intent').text,'6x3')\ndofile('tests/lua/support/monster_power_control_fixture.lua')(box,'nemesis_intangible'):GetChild('hit').click({touchId=92})\nlocal powerText=inspectDetails(host.battleUI,panel)\nassert(powerText:find('无实体',1,true)and powerText:find('最多为1',1,true),powerText)\nprint('NEMESIS_UI 1 groups; 0 failed')"
+   }
+  ]
+ },
  "tests/colorless-catalog-source.test.mjs": {
   "current": {
    "sha256": "da577b404aeca08d7ee98580da6186204589a1c429b71e7b4ef945f874555d17",
@@ -534,18 +551,186 @@ const unifiedGilFixture={
  ]
 };
 
+// The current legacy browser fixture exercises warm detail reuse and genuine
+// generation retirement. Historical replays still read the exact former case.
+const permanentDeckRuntimeFixture=Object.freeze({
+ "previous": {
+  "sha256": "327cea26d0022ebddbc04f833568b9ada9e608ea9872b526b4af91de84c1057e",
+  "gitBlob": "58f48f1073c6d39710aee68e9a055dbddaf7a0f8"
+ },
+ "current": {
+  "sha256": "608f5e266b4b1ab48b762f74088d1e018b7ee8aa0864546a75745356e3a082c7",
+  "gitBlob": "12d5666dc00a9a432141e3bc4ad6d8ccc54e23fb"
+ },
+ "hunks": [
+  {
+   "at": 1312,
+   "before": "`;\n\ntest('official permanent browser handles 0/1/5/6/17 cards, deferred index origins, detail return and recycled late callbacks',t=>{\n runOfficial(t,officialDeckBrowserSetup+`\nfor _,origin in ipairs({0,1})do",
+   "after": "`;\n\ntest('official permanent browser handles 0/1/5/6/17 cards, deferred index origins, warm detail return and retired callbacks',t=>{\n runOfficial(t,officialDeckBrowserSetup+`\nfor _,origin in ipairs({0,1})do"
+  },
+  {
+   "at": 1329,
+   "before": " if amount==0 then assert(not deck.pending and not deck.calibrating and not deck.pendingGrid,'empty browser retained readiness work')end\n grid:flush();deck:update();grid:flush()\n if amount>0 then warmed=true end\n assert(grid.itemCount==amount and grid.scrollProgress==0)",
+   "after": " if amount==0 then assert(not deck.pending and not deck.calibrating and not deck.pendingGrid,'empty browser retained readiness work')end\n grid:flush();deck:update();grid:flush()\n if amount==17 then\n  -- The legacy fixture flushes at most 12 cells; this viewport also\n  -- intersects a third row and still needs indices 12 through 14.\n  assert(deck.pendingGrid,'partial third row was accepted as ready')\n  for i=12,14 do grid:recycle(i,origin+i)end\n end\n assert(not deck.pendingGrid,'complete visible grid remained pending')\n if amount>0 then warmed=true end\n assert(grid.itemCount==amount and grid.scrollProgress==0)"
+  },
+  {
+   "at": 1345,
+   "before": "  assert(uid==201 and not first:GetChild('uid').visible)\n  calibration(first,origin);assert(not deck.pending and deck.bindings[first].uid==uid)\n  local late=grid.refreshCallback;local hit=first:GetChild('hit')\n  grid.scrollProgress=.45\n  assert(hit.listeners.drag==nil and hit.listeners.endDrag==nil)",
+   "after": "  assert(uid==201 and not first:GetChild('uid').visible)\n  calibration(first,origin);assert(not deck.pending and deck.bindings[first].uid==uid)\n  local current=grid.refreshCallback;local hit=first:GetChild('hit')\n  grid.scrollProgress=.45\n  assert(hit.listeners.drag==nil and hit.listeners.endDrag==nil)"
+  },
+  {
+   "at": 1353,
+   "before": "  assert(panel:GetChild('cardFocus').visible and panel:GetChild('pileReturn').visible)\n  assert(not hit.click(),'hidden list receiver replaced the active detail')\n  assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update();grid:flush()\n  assert(not deck.cardDetail and grid.visible and grid.scrollProgress==.45)\n  local fresh=grid.items[0];local freshUid=deck.bindings[fresh].uid\n  late(fresh,origin+amount-1)\n  assert(deck.bindings[fresh].uid==freshUid,'late list callback rebound the returned detail list')\n  assert(first.alive==false and not deck.bindings[first] and not hit.click(),'retired detail receiver remained live')\n  if amount==17 then\n   grid.deferRefresh,grid.destroyOnRefresh=false,false\n   local reused=grid:recycle(0,origin+16)",
+   "after": "  assert(panel:GetChild('cardFocus').visible and panel:GetChild('pileReturn').visible)\n  assert(not hit.click(),'hidden list receiver replaced the active detail')\n  current(first,origin+amount);assert(first.visible and deck.bindings[first].uid==uid,\n   'hidden list refresh mutated the active card')\n  assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update()\n  assert(not deck.cardDetail and grid.visible and grid.scrollProgress==.45)\n  assert(grid.refreshCallback==current and grid.items[0]==first and first.alive~=false and deck.bindings[first].uid==uid,\n   'warm detail return replaced the live list receiver')\n  assert(hit.click() and deck.cardDetail.instance.uid==uid,'warm receiver did not reopen the same card')\n  assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update()\n  if amount==17 then\n   assert(deck:setSort('original'));grid:flush()\n   for i=12,14 do grid:recycle(i,origin+i)end\n   assert(not deck.pendingGrid)\n   local fresh=grid.items[0]\n   assert(grid.refreshCallback~=current and fresh~=first and deck.bindings[fresh].uid==uid,\n    'new list generation did not install its own receiver')\n   current(fresh,origin+16)\n   assert(deck.bindings[fresh].uid==uid,'obsolete refresh rebound a current cell')\n   assert(first.alive==false and not deck.bindings[first] and not hit.click(),'retired refresh receiver remained live')\n   grid.deferRefresh,grid.destroyOnRefresh=false,false\n   local reused=grid:recycle(0,origin+16)"
+  },
+  {
+   "at": 1382,
+   "before": "  end\n end\n local late=grid.refreshCallback;local old=grid.items[0]\n assert(panel:GetChild('pileReturn'):GetChild('hit').click())\n if old then late(old,origin)end\n assert(not deck.visible and not grid.visible and grid.itemCount==0 and not panel:GetChild('pileChrome').visible)\n unchanged(host.run,before,'permanent browsing changed Run or RNG')",
+   "after": "  end\n end\n local late=grid.refreshCallback;local old=grid.items[0];local oldHit=old and old:GetChild('hit')\n assert(panel:GetChild('pileReturn'):GetChild('hit').click())\n if old then late(old,origin);assert(not oldHit.click() and not deck.cardDetail,'closed list accepted a stale click')end\n assert(not deck.visible and not grid.visible and grid.itemCount==0 and not panel:GetChild('pileChrome').visible)\n unchanged(host.run,before,'permanent browsing changed Run or RNG')"
+  }
+ ]
+});
+
+// Retain the exact pre-v2.2.0 metadata and browser fixture for historical replay.
+const releaseHistoricalInputs=Object.freeze({
+ "package.json": {
+  "previous": {
+   "sha256": "4fb5b1280263635ae4519ec3bcf770545040485904a36659224a6b88acb6b613",
+   "gitBlob": "cf6ccf739391efb3da0b2552c6bd5f2e78dd51ce"
+  },
+  "current": {
+   "sha256": "60a08b0a51427fcdfb6db06469c07879f44877fbd81b42893dcf9083a8a98dcb",
+   "gitBlob": "f43701d1c755f70062160c13eaa7ebc978c6ea9a"
+  },
+  "hunks": [
+   {
+    "at": 0,
+    "before": "{\n  \"name\": \"slay-the-abyss\",\n  \"version\": \"2.1.1\",\n  \"private\": true,\n  \"license\": \"SEE LICENSE IN LICENSE\",",
+    "after": "{\n  \"name\": \"slay-the-abyss\",\n  \"version\": \"2.2.0\",\n  \"private\": true,\n  \"license\": \"SEE LICENSE IN LICENSE\","
+   }
+  ]
+ },
+ ".release-please-manifest.json": {
+  "previous": {
+   "sha256": "67e95d962da4978f64c3f9656a9602f85d2ed7ae097e92ab16e9124fa83991a2",
+   "gitBlob": "48fbed9138c465728757742777f05de0f5d5a2a2"
+  },
+  "current": {
+   "sha256": "07b8bb45bc8f88ecddc657a1b14a42e986e9e60f44149bc7dd1a0523b7c9a90e",
+   "gitBlob": "a5d1cf2884c2db4168988713a84ce78383b7ed5a"
+  },
+  "hunks": [
+   {
+    "at": 0,
+    "before": "{\n  \".\": \"2.1.1\"\n}\n",
+    "after": "{\n  \".\": \"2.2.0\"\n}\n"
+   }
+  ]
+ },
+ "tests/official-assets-runtime.test.mjs": {
+  "previous": {
+   "sha256": "56d9e5044909206d42755c0d90f5236285acd434c11290e0e5024616a50aa1aa",
+   "gitBlob": "a84fee17a6bd7f2a1dfc4c4295c0bc70e5f40af4"
+  },
+  "current": {
+   "sha256": "327cea26d0022ebddbc04f833568b9ada9e608ea9872b526b4af91de84c1057e",
+   "gitBlob": "58f48f1073c6d39710aee68e9a055dbddaf7a0f8"
+  },
+  "hunks": [
+   {
+    "at": 185,
+    "before": "for i=3,26 do host.run.relics[i]='burning_blood' end\nhost:refresh()\nlocal overflow=bar:GetChild('slot25'):GetChild('more')\nassert(overflow.visible and overflow.text=='+4','wide relic count must preserve the exact overflow count')\nhost.run.relics,host.run.relicCounters=relics,counters\nlocal first=assert(F.Nodes.available(host.run,host.map)[1])",
+    "after": "for i=3,26 do host.run.relics[i]='burning_blood' end\nhost:refresh()\nlocal previous,nextPage=bar:GetChild('previous'),bar:GetChild('next')\nlocal function visibleRelicCount()\n local count=0\n for i=1,25 do\n  local slot=bar:GetChild('slot'..i)\n  if slot.visible then count=count+1 end\n  assert(not slot:GetChild('more').visible,'owned relic pages must not replace relics with an overflow label')\n end\n return count\nend\nassert(visibleRelicCount()==23 and not previous.visible and nextPage.visible)\nassert(nextPage:GetChild('hit').click() and visibleRelicCount()==3 and previous.visible and not nextPage.visible)\nassert(previous:GetChild('hit').click() and visibleRelicCount()==23,'wide counter paging preserves every owned relic')\nhost.run.relics,host.run.relicCounters=relics,counters\nlocal first=assert(F.Nodes.available(host.run,host.map)[1])"
+   },
+   {
+    "at": 458,
+    "before": "Damage.preview=function()error('official card aim simulated the whole battle')end\nDamage.potionPreview=function()error('official potion aim simulated the whole battle')end\nlocal h,u,p,event,_,drain=H.setup({'strike','defend'},{'raven_adept'})\nh.run.potions={'fire_potion'};h:refresh()\nlocal enemy=assert(require('abyss_monster_surfaces').get(p):find(h.run.combat.enemies[1].id))\nlocal hp=h.run.combat.enemies[1].hp\nevent('potion1','down',7);event('potion1','drag',7,enemy.x,enemy.y)\nassert(u.potionAim and u.potionAim.moving)\nassert(p:GetChild('dragLayer'):GetChild('aim1').visible)\nassert(not enemy:GetChild('damagePreview').visible)\nassert(h.run.combat.enemies[1].hp==hp)\nevent('dragLayer','up',7,enemy.x,enemy.y);drain()\nassert(h.run.combat.enemies[1].hp==hp-20 and h.run.potions[1]==nil)\nevent('card1','down',8);event('card1','drag',8,enemy.x,enemy.y)\nassert(u.gesture and u.gesture.moving)\nassert(not enemy:GetChild('damagePreview').visible)\nassert(h.run.combat.enemies[1].hp==hp-20)",
+    "after": "Damage.preview=function()error('official card aim simulated the whole battle')end\nDamage.potionPreview=function()error('official potion aim simulated the whole battle')end\nlocal h,u,p,event,tap,drain=H.setup({'strike','defend'},{'raven_adept'})\nh.run.potions={'fire_potion'};h:refresh()\nlocal enemy=assert(require('abyss_monster_surfaces').get(p):find(h.run.combat.enemies[1].id))\nlocal hp=h.run.combat.enemies[1].hp\nevent('potion1','down',7);event('potion1','drag',7,enemy.x,enemy.y)\nevent('potion1','up',7,enemy.x,enemy.y);event('potion1','click',7,enemy.x,enemy.y)\nassert(not u.potionAim and not u.potionMenu,'dragged bottle cannot arm or open the menu')\nassert(h.run.potions[1]=='fire_potion' and h.run.combat.enemies[1].hp==hp)\ntap('potion1',8);assert(u.potionMenu and not u.potionAim)\nlocal use=p:GetChild('potionHelp'):GetChild('potionPopup'):GetChild('use')\nuse.listeners.down({touchId=9});use.listeners.up({touchId=9});assert(use.click({touchId=9}))\nassert(u.potionAim and not u.potionAim.moving and not u.potionMenu)\nassert(not p:GetChild('dragLayer').visible,'click-only potion aim must not render the drag arrow')\nassert(not enemy:GetChild('damagePreview').visible)\nassert(h.run.combat.enemies[1].hp==hp)\ntap('enemy1',10);drain()\nassert(h.run.combat.enemies[1].hp==hp-20 and h.run.potions[1]==nil)\nevent('enemy1','click',10)\nassert(h.run.combat.enemies[1].hp==hp-20,'late target click cannot apply potion damage twice')\nlocal strike\nfor index,card in ipairs(h.run.combat.hand)do if card.cardId=='strike'then strike='card'..index;break end end\nassert(strike,'missing actual attack in the hand')\nevent(strike,'down',11);event(strike,'drag',11,enemy.x,enemy.y)\nassert(u.gesture and u.gesture.moving)\nassert(p:GetChild('dragLayer'):GetChild('aim1').visible,'card targeting must retain the arrow')\nassert(not enemy:GetChild('damagePreview').visible)\nassert(h.run.combat.enemies[1].hp==hp-20)"
+   },
+   {
+    "at": 662,
+    "before": "local back=root:GetChild('mapPanel'):GetChild('previewBack')\nlocal label,hit,face=back:GetChild('label'),back:GetChild('hit'),assert(back:GetChild('v25Face'))\nlocal function state(expected)\n for _,name in ipairs({'normal','hover','pressed','disabled'})do\n  assert(face:GetChild(name).visible==(name==expected),'map return state '..name)\n end\nend\nassert(label.text=='返回战斗');state('normal')\nhit.listeners.enter({});state('hover')\nhit.listeners.down({touchId=703});state('pressed')",
+    "after": "local back=root:GetChild('mapPanel'):GetChild('previewBack')\nlocal label,hit,face=back:GetChild('label'),back:GetChild('hit'),assert(back:GetChild('v25Face'))\nlocal surface=assert(face:GetChild('roundedButtonState'))\nlocal material=assert(surface:GetChild('v25Flag'))\nlocal action=H.F.Theme.officialAssets.actionButton\nlocal function state(expected)\n assert(#face:GetChildren()==1 and surface.visible,'map return must reuse one visible material')\n local scale=expected=='pressed' and action.pressedScale or 1\n assert(surface.localScaleX==scale and surface.localScaleY==scale and surface.scale[3]==1,\n     'map return scale '..expected)\n local palette=expected=='disabled' and action.disabled or action.secondary[expected]\n for index,layer in ipairs({'rim','cloth'})do\n  local parts=material:GetChild(layer):GetChildren()\n  assert(#parts>0,'missing map return material '..layer)\n  for _,part in ipairs(parts)do\n   sameColour(part.imageColor,palette[index],'map return '..expected..' '..layer..' '..part.name)\n  end\n end\nend\nassert(back.visible and label.text=='返回战斗');state('normal')\nhit.listeners.enter({});state('hover')\nhit.listeners.down({touchId=703});state('pressed')"
+   },
+   {
+    "at": 686,
+    "before": "hit.listeners.down({touchId=704});hit.listeners.up({touchId=704})\nassert(hit.click({touchId=704})and not host.routeOpen and host.mode=='battle')\nassert(label.text~='返回战斗');state('disabled')\nprint('OFFICIAL_MAP_RETURN_STATES_PASS')\n`, 'OFFICIAL_MAP_RETURN_STATES_PASS');",
+    "after": "hit.listeners.down({touchId=704});hit.listeners.up({touchId=704})\nassert(hit.click({touchId=704})and not host.routeOpen and host.mode=='battle')\nassert(not back.visible and label.text~='返回战斗');state('disabled')\nprint('OFFICIAL_MAP_RETURN_STATES_PASS')\n`, 'OFFICIAL_MAP_RETURN_STATES_PASS');"
+   },
+   {
+    "at": 781,
+    "before": "local label=card:GetChild('label')\nlocal text=require('abyss_card_display')\nassert(label.text:find('提升3点伤害。',1,true)\n and select(2,text.fitBody(label.text,{label.sizeDeltaX,label.sizeDeltaY})),\n 'upgraded long reward body overflowed')\nevent('card1','down',210);host:update(.36)\nassert(ui.info and ui.info.kind=='rewardCard' and not battle:GetChild('statusInfo').visible)",
+    "after": "local label=card:GetChild('label')\nlocal text=require('abyss_card_display')\nlocal expected='造成6点伤害。手牌、抽牌堆和弃牌堆中每有一张『剑势』系列牌，基础伤害增加3点。'\nassert(label.text==expected,'upgraded long reward body lost the approved full wording: '..label.text)\nlocal font,fits=text.fitBody(label.text,{label.sizeDeltaX,label.sizeDeltaY})\nassert(fits and not text.bodyOverflows(label),'upgraded long reward body overflowed')\nassert(label.fontSize==font and label.fontSize>=F.Theme.font.minimum and not label.adaptiveFontSize,\n 'upgraded long reward body lost its measured font')\nevent('card1','down',210);host:update(.36)\nassert(ui.info and ui.info.kind=='rewardCard' and not battle:GetChild('statusInfo').visible)"
+   },
+   {
+    "at": 917,
+    "before": "});\n\ntest('official three-bottle HUD renders metadata while popup, drag and use validate fresh core state',t=>{\n runOfficial(t,`\nlocal Run=require('abyss_run');local Candidate=require('abyss_run_potion_candidate')",
+    "after": "});\n\ntest('official three-bottle HUD renders metadata while click-only use validates fresh core state',t=>{\n runOfficial(t,`\nlocal Run=require('abyss_run');local Candidate=require('abyss_run_potion_candidate')"
+   },
+   {
+    "at": 962,
+    "before": "for i=count+1,#calls do assert(calls[i]==3,'selected potion Use staged another inventory slot')end\nassert(not h.run.potions[3] and battle.player.block==12)\n-- In-place pending choice after Down is rejected by the actual drag validator.\nevent('potion1','down',8);battle.pendingChoice={}\ncount=#calls;event('potion1','drag',8,enemy.x,enemy.y)\nassert(#calls>count and not u.potionAim,'potion drag trusted stale metadata')\nassert(h.run.potions[1]=='fire_potion')\nbattle.pendingChoice=nil;event('potion1','up',8)\nCandidate.prepare=prepare\n-- Unknown stored IDs remain occupied physical slots, never fabricated vacancies.",
+    "after": "for i=count+1,#calls do assert(calls[i]==3,'selected potion Use staged another inventory slot')end\nassert(not h.run.potions[3] and battle.player.block==12)\n-- A dragged bottle must remain inert and cannot become a late popup click.\nevent('potion1','down',8);count=#calls\nevent('potion1','drag',8,enemy.x,enemy.y)\nevent('potion1','up',8,enemy.x,enemy.y);event('potion1','click',8,enemy.x,enemy.y)\nassert(#calls==count and not u.potionAim and not u.potionMenu,'dragged bottle entered click-only use')\n-- Fresh action checks still apply when an in-place choice appears after Down.\ntap('potion1',9);assert(u.potionMenu and not u.potionAim)\nlocal use=popup:GetChild('use')\nuse.listeners.down({touchId=10});battle.pendingChoice={}\ncount=#calls;use.listeners.up({touchId=10})\nassert(use.click({touchId=10})==false and #calls>count and not u.potionAim,'Use trusted stale potion metadata')\nassert(u.potionMenu and h.run.potions[1]=='fire_potion','stale Use closed the popup or consumed the bottle')\nbattle.pendingChoice=nil\nlocal dismiss=popup:GetChild('dismiss')\ndismiss.listeners.down({touchId=11});dismiss.listeners.up({touchId=11});assert(dismiss.click({touchId=11}))\nCandidate.prepare=prepare\n-- Unknown stored IDs remain occupied physical slots, never fabricated vacancies."
+   },
+   {
+    "at": 1121,
+    "before": "local button=assert(page:GetChild('back'))\nlocal label=assert(button:GetChild('label'))\nlocal function ink(expected)\n assert(label.fontColor.r==expected.r and label.fontColor.g==expected.g and label.fontColor.b==expected.b,'official dark button ink was overwritten by light-button ink')\nend\nassert(button.visible and label.text=='离开' and not page:GetChild('confirm').visible)\nink(Theme.officialAssets.buttonInk)\nlocal hit=button:GetChild('hit')",
+    "after": "local button=assert(page:GetChild('back'))\nlocal label=assert(button:GetChild('label'))\nlocal shelf=assert(page:GetChild('shopView'))\nlocal advanceShop=dofile('tests/lua/support/shop_timeline.lua')\nlocal function tapControl(box,id)\n local listeners=box:GetChild('hit').listeners\n listeners.down({touchId=id});listeners.up({touchId=id});return listeners.click({touchId=id})\nend\nassert(button.visible and label.text=='离开' and not page:GetChild('confirm').visible)\nassert(tapControl(page:GetChild('merchant'):GetChild('talk'),799))\nadvanceShop(host.nodeUI)\nassert(shelf.visible and host.nodeUI.shopOpen and not host.nodeUI.shopBusy and label.text=='关闭')\nlocal function ink(expected)\n assert(label.fontColor.r==expected.r and label.fontColor.g==expected.g and label.fontColor.b==expected.b,'official dark button ink was overwritten by light-button ink')\nend\nink(Theme.officialAssets.buttonInk)\nlocal hit=button:GetChild('hit')"
+   },
+   {
+    "at": 1154,
+    "before": "host:refresh();ink(Theme.officialAssets.buttonInk)\nassert(shelf.visible and button.visible,'map preview must return to the same shelf')\nassert(tapControl(button,804) and host.nodeUI.shopBusy,'visible leave control starts the close animation')\nassert(not host.run.nodeFlow.complete,'leave must not commit before the shelf closes')\nassert(not hit.listeners.click({touchId=804}),'duplicate leave click accepted')\nadvanceShop(host)\nassert(host.run.nodeFlow.complete and not shelf.visible,'leaving through the visible control must finish the shop')\n`, 'OFFICIAL_SHOP_ROUTE_INK_PASS');\n});",
+    "after": "host:refresh();ink(Theme.officialAssets.buttonInk)\nassert(shelf.visible and button.visible,'map preview must return to the same shelf')\nassert(tapControl(button,804) and not host.nodeUI.shopOpen and not shelf.visible,\n 'visible close control starts the shelf close animation')\nassert(not host.run.nodeFlow.complete,'closing the shelf must leave the shop room active')\nassert(not hit.listeners.click({touchId=804}),'duplicate close click accepted')\nadvanceShop(host.nodeUI)\nassert(not host.run.nodeFlow.complete and not shelf.visible and label.text=='离开')\nassert(tapControl(button,805) and host.run.nodeFlow.complete,'leaving through the room control must finish the shop')\n`, 'OFFICIAL_SHOP_ROUTE_INK_PASS');\n});"
+   },
+   {
+    "at": 1172,
+    "before": "local chrome=art:GetChild('roundedButton')\nlocal theme=require('abyss_theme')\nlocal palette=theme.officialAssets.roundedButtonPalettes.cancel\nlocal function state(expected)\n for i,role in ipairs({'rim','cloth'})do",
+    "after": "local chrome=art:GetChild('roundedButton')\nlocal theme=require('abyss_theme')\nlocal palette=assert(theme.officialAssets.pileReturnPalette,'missing approved pile return colors')\nlocal function state(expected)\n for i,role in ipairs({'rim','cloth'})do"
+   },
+   {
+    "at": 1490,
+    "before": " assert(panel:GetChild('pileChrome').visible and not panel:GetChild('header').visible)\n assert(not panel:GetChild('title').visible and not panel:GetChild('browseTitle').visible)\n assert(panel:GetChild('pileChrome'):GetChild('discardBadge').visible)\n assert(panel:GetChild('browserDescription').text=='当抽牌堆被抽空时，这里的牌将会被洗牌并重新放入抽牌堆。')\n assert(not panel:GetChild('rarityTip').visible)",
+    "after": " assert(panel:GetChild('pileChrome').visible and not panel:GetChild('header').visible)\n assert(not panel:GetChild('title').visible and not panel:GetChild('browseTitle').visible)\n local chrome=panel:GetChild('pileChrome');local heading=chrome:GetChild('heading')\n assert(heading.visible and heading.text=='弃牌堆' and not chrome:GetChild('discardBadge'))\n assert(panel:GetChild('browserDescription').text=='当抽牌堆被抽空时，这里的牌将会被洗牌并重新放入抽牌堆。')\n assert(not panel:GetChild('rarityTip').visible)"
+   },
+   {
+    "at": 1507,
+    "before": " local preview=C.cardPreview(host.run.combat,instance)\n local expected=require('abyss_card_display').combatText(F.Presentation[instance.cardId],definition,instance,preview,host.run.combat)\n assert(label.text==expected and label.text:find('提升2点伤害。',1,true)\n  and select(2,fit(label.text,{label.sizeDeltaX,label.sizeDeltaY})),\n  'component-bound pile face clipped its long body')",
+    "after": " local preview=C.cardPreview(host.run.combat,instance)\n local expected=require('abyss_card_display').combatText(F.Presentation[instance.cardId],definition,instance,preview,host.run.combat)\n assert(label.text==expected and label.text:find('基础伤害增加2点。',1,true)\n  and select(2,fit(label.text,{label.sizeDeltaX,label.sizeDeltaY})),\n  'component-bound pile face clipped its long body')"
+   }
+  ]
+ }
+});
+
 export function beforeReleaseClosureFixture(path,raw){
- if(!Object.hasOwn(fixtures,path))return raw;
+ if(!Object.hasOwn(fixtures,path)&&!Object.hasOwn(releaseHistoricalInputs,path))return raw;
  let source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
  if(typeof source!=='string'||Buffer.isBuffer(raw)&&!Buffer.from(source).equals(raw))return raw;
  const normalized=source.replaceAll('\r\n','\n');
  if(normalized.includes('\r')||source!==normalized&&source!==normalized.replaceAll('\n','\r\n'))return raw;
+ if(path==='tests/official-assets-runtime.test.mjs'&&exactSourceMatches(source,permanentDeckRuntimeFixture.current)){
+  const {current,previous,hunks}=permanentDeckRuntimeFixture;
+  const predecessor=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,source);
+  assert(exactSourceMatches(predecessor,previous),'exact prior permanent browser runtime fixture');
+  source=source===normalized?predecessor:predecessor.replaceAll('\n','\r\n');
+  // The immediately preceding fixture may itself have no older authorized
+  // projection in this adapter, but its authenticated bytes still carry forward.
+  raw=Buffer.isBuffer(raw)?Buffer.from(source):source;
+ }
  if(path==='tests/gil-candidate.test.mjs'&&exactSourceMatches(source,unifiedGilFixture.current)){
   const {current,previous,hunks}=unifiedGilFixture;
   const predecessor=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,source);
   assert(exactSourceMatches(predecessor,previous),'exact pre-unification GIL test fixture');
   source=source.includes('\r\n')?predecessor.replaceAll('\n','\r\n'):predecessor;
  }
+ const historical=Object.hasOwn(releaseHistoricalInputs,path)&&releaseHistoricalInputs[path];
+ if(historical&&exactSourceMatches(source,historical.current)){
+  const {current,previous,hunks}=historical;
+  const prior=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,source);
+  assert(exactSourceMatches(prior,previous),'exact historical release input: '+path);
+  const restored=source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+  return Buffer.isBuffer(raw)?Buffer.from(restored):restored;
+ }
+ if(!Object.hasOwn(fixtures,path))return raw;
  const {current,previous,hunks}=fixtures[path];
  if(!exactSourceMatches(source,current))return raw;
  const prior=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,source);

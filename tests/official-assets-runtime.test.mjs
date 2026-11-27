@@ -1312,7 +1312,7 @@ local function instance(uid,id,upgraded)return {uid=uid,cardId=id,upgraded=upgra
 local function tool(mode)return panel:GetChild('deckSort'):GetChild(mode):GetChild('hit').click()end
 `;
 
-test('official permanent browser handles 0/1/5/6/17 cards, deferred index origins, detail return and recycled late callbacks',t=>{
+test('official permanent browser handles 0/1/5/6/17 cards, deferred index origins, warm detail return and retired callbacks',t=>{
  runOfficial(t,officialDeckBrowserSetup+`
 for _,origin in ipairs({0,1})do
  -- The native index origin belongs to a grid instance. Keep the same grid
@@ -1329,6 +1329,13 @@ for _,origin in ipairs({0,1})do
  deck:update();assert(grid.itemCount==(amount>0 and (warmed and amount or 1) or 0),'deferred calibration lost ownership')
  if amount==0 then assert(not deck.pending and not deck.calibrating and not deck.pendingGrid,'empty browser retained readiness work')end
  grid:flush();deck:update();grid:flush()
+ if amount==17 then
+  -- The legacy fixture flushes at most 12 cells; this viewport also
+  -- intersects a third row and still needs indices 12 through 14.
+  assert(deck.pendingGrid,'partial third row was accepted as ready')
+  for i=12,14 do grid:recycle(i,origin+i)end
+ end
+ assert(not deck.pendingGrid,'complete visible grid remained pending')
  if amount>0 then warmed=true end
  assert(grid.itemCount==amount and grid.scrollProgress==0)
  assert(panel:GetChild('pileChrome'):GetChild('empty').visible==(amount==0))
@@ -1338,7 +1345,7 @@ for _,origin in ipairs({0,1})do
   local first=grid.items[0];local uid=deck.bindings[first].uid
   assert(uid==201 and not first:GetChild('uid').visible)
   calibration(first,origin);assert(not deck.pending and deck.bindings[first].uid==uid)
-  local late=grid.refreshCallback;local hit=first:GetChild('hit')
+  local current=grid.refreshCallback;local hit=first:GetChild('hit')
   grid.scrollProgress=.45
   assert(hit.listeners.drag==nil and hit.listeners.endDrag==nil)
   assert(not hit.click({dragging=true}) and not deck.cardDetail and grid.scrollProgress==.45)
@@ -1346,13 +1353,24 @@ for _,origin in ipairs({0,1})do
   assert(not panel:GetChild('deckSort').visible and not tool('cost'),'detail cannot sort the hidden list')
   assert(panel:GetChild('cardFocus').visible and panel:GetChild('pileReturn').visible)
   assert(not hit.click(),'hidden list receiver replaced the active detail')
-  assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update();grid:flush()
+  current(first,origin+amount);assert(first.visible and deck.bindings[first].uid==uid,
+   'hidden list refresh mutated the active card')
+  assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update()
   assert(not deck.cardDetail and grid.visible and grid.scrollProgress==.45)
-  local fresh=grid.items[0];local freshUid=deck.bindings[fresh].uid
-  late(fresh,origin+amount-1)
-  assert(deck.bindings[fresh].uid==freshUid,'late list callback rebound the returned detail list')
-  assert(first.alive==false and not deck.bindings[first] and not hit.click(),'retired detail receiver remained live')
+  assert(grid.refreshCallback==current and grid.items[0]==first and first.alive~=false and deck.bindings[first].uid==uid,
+   'warm detail return replaced the live list receiver')
+  assert(hit.click() and deck.cardDetail.instance.uid==uid,'warm receiver did not reopen the same card')
+  assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update()
   if amount==17 then
+   assert(deck:setSort('original'));grid:flush()
+   for i=12,14 do grid:recycle(i,origin+i)end
+   assert(not deck.pendingGrid)
+   local fresh=grid.items[0]
+   assert(grid.refreshCallback~=current and fresh~=first and deck.bindings[fresh].uid==uid,
+    'new list generation did not install its own receiver')
+   current(fresh,origin+16)
+   assert(deck.bindings[fresh].uid==uid,'obsolete refresh rebound a current cell')
+   assert(first.alive==false and not deck.bindings[first] and not hit.click(),'retired refresh receiver remained live')
    grid.deferRefresh,grid.destroyOnRefresh=false,false
    local reused=grid:recycle(0,origin+16)
    assert(reused==fresh and deck.bindings[reused].uid==217,'native reuse lost the current permanent UID')
@@ -1364,9 +1382,9 @@ for _,origin in ipairs({0,1})do
    grid.destroyOnRecycle=false
   end
  end
- local late=grid.refreshCallback;local old=grid.items[0]
+ local late=grid.refreshCallback;local old=grid.items[0];local oldHit=old and old:GetChild('hit')
  assert(panel:GetChild('pileReturn'):GetChild('hit').click())
- if old then late(old,origin)end
+ if old then late(old,origin);assert(not oldHit.click() and not deck.cardDetail,'closed list accepted a stale click')end
  assert(not deck.visible and not grid.visible and grid.itemCount==0 and not panel:GetChild('pileChrome').visible)
  unchanged(host.run,before,'permanent browsing changed Run or RNG')
 end end
