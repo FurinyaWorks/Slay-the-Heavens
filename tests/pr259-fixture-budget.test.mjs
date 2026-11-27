@@ -28,8 +28,18 @@ test('budget split retains all original held and rollback bodies, source seeds, 
  assert.ok(heldSource.startsWith('local selected=... or 1\n'),'held fixture must have an explicit bounded split');
  assert.equal(sha(heldSource.replace('local selected=... or 1\n','')
   .replace("assert(F.changedRewardActions(false,selected)==5,'five original held changes per slice')",'F.changedRewardActions(false)')),frozen.held);
- const helper=read(lua+'support/looter_potion_ui_fixture.lua');assert.equal(sha(restoreHelper(helper)),frozen.helper);
- const original=read(lua+rollback[0]);assert.ok(original.includes(rollbackHeader));assert.equal(sha(restoreRollback(original)),frozen.rollback);
+ const liveHelper=read(lua+'support/looter_potion_ui_fixture.lua');
+ const currentEncounter=" assert(Run.startCombat(h.run,'raven_adept_solo'))\n";
+ const priorEncounter=" assert(Run.startCombat(h.run,'cultist_solo'))\n";
+ assert.equal(liveHelper.split(currentEncounter).length,2,'one current seed-42 encounter binding');
+ const helper=liveHelper.replace(currentEncounter,priorEncounter);
+ assert.equal(sha(restoreHelper(helper)),frozen.helper);
+ const liveRollback=read(lua+rollback[0]);
+ const currentComment="-- the source Raven Adept's52 HP, energy costs and random streams are unchanged.";
+ const priorComment="-- the source Cultist's52 HP, energy costs and random streams are unchanged.";
+ assert.equal(liveRollback.split(currentComment).length,2,'one reviewed encounter comment');
+ const original=liveRollback.replace(currentComment,priorComment);
+ assert.ok(original.includes(rollbackHeader));assert.equal(sha(restoreRollback(original)),frozen.rollback);
  const releasedSource=read(lua+released[0]);
  assert.ok(releasedSource.startsWith('local selected=... or 1\n'),'released fixture must have the same explicit bounded split');
  assert.equal(sha(releasedSource.replace('local selected=... or 1\n','')
