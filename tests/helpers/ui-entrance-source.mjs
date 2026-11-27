@@ -120,9 +120,13 @@ export function entrancePredecessor(path,source,read=readLive,{allowConfigLayout
  if(allowConfigLayout&&path==='config/architecture.json'&&!currentMatches(path,source,files[path].after)){
   // Only the caller's JSON layout may vary. Tokens retain key order, duplicate
   // keys and string spelling; every linked owner still requires exact bytes.
-  if(sourceConfigLayoutMatches(source,'3924ed90aa88922ca9fc97df398cb67b7cf61892933901213ef911fc3b6f3e52')){
+  const releaseConfig={sha256:'cec427dcede62ac3efe295bfc976eb58cffb073a69bab7be12da02051de58dbe',
+   gitBlob:'fc35277cdbd7809afbe934cfdb63b6ee0828abe5'};
+  const releaseLayout=sourceConfigLayoutMatches(source,'8b379d37dce76982ae88bd20bca81058510426d6eb2972b48a90ff9c864ad8dc');
+  if(releaseLayout||sourceConfigLayoutMatches(source,'3924ed90aa88922ca9fc97df398cb67b7cf61892933901213ef911fc3b6f3e52')){
    source=read(path);
-   assert(currentMatches(path,source,files[path].after),'combined linked owner identity: '+path+' during entrance validation');
+   assert(currentMatches(path,source,files[path].after)&&(!releaseLayout||matches(source,releaseConfig)),
+    'combined linked owner identity: '+path+' during entrance validation');
   }
  }
  const predecessor=beforeUiEntrance(path,source);
