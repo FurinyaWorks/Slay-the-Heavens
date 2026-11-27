@@ -17,6 +17,7 @@ import {beforeReleaseVocabulary,isReleaseVocabularyPredecessor,releaseVocabulary
 import {beforeRunHudDeckLabel} from './run-hud-successors.mjs';
 import {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';
 import {beforeReleaseEntranceOwner,readReleaseEntrancePredecessor} from './release-entrance-owner-source.mjs';
+import {hasReviewedStsStyleModules,reviewedStsStyleInventory,reviewedStsStyleRead} from './reviewed-selection-current-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const blob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
@@ -340,6 +341,7 @@ export function assertDevelopBackflowCurrent(path,source){
   assert(uniformSource(source)&&matches(source,libraryPromptCurrent),'fresh current production owner: '+path);
   return;
  }
+ if(actorFocusOwners.includes(path))source=beforeVocabularyOwner(path,source);
  source=beforeLinkedBackflow(path,beforeBattleInputHistory(path,beforeMapRoomBattleActions(path,source)));
  source=beforeUiEntrance(path,beforeBattlePeriphery(path,beforeChapterBattleScene(path,source)));
  source=beforeDevelopUiBackflows(path,source);
@@ -371,13 +373,18 @@ export function assertStasisUpgradeAdded(path,source){
  assert(Object.hasOwn(stasis.added,path)&&matches(source,stasis.added[path]),'fresh Stasis upgrade module: '+path);
 }
 export function assertActorFocusInventory(paths,read=path=>readFileSync(path,'utf8')){
+ const inventoryError='complete current Actor/Focus Lua module inventory';
+ assert.equal(new Set(paths).size,paths.length,inventoryError);
+ const releaseInventory=hasReviewedStsStyleModules(paths);
+ const readDeck=releaseInventory?reviewedStsStyleRead(read):read;
+ if(releaseInventory)paths=reviewedStsStyleInventory(paths,read);
  paths=entranceInventory(paths,read);
  const expected=[...actorFocus.luaBefore,...actorFocusAdded,...deckPagesAdded];
  assert(expected.includes(retiredControllerPath),'exact controller predecessor in Actor/Focus Lua inventory');
- assert.deepEqual([...paths].sort(),[...expected.filter(path=>path!==retiredControllerPath),pointerInputPath].sort(),'complete current Actor/Focus Lua module inventory');
+ assert.deepEqual([...paths].sort(),[...expected.filter(path=>path!==retiredControllerPath),pointerInputPath].sort(),inventoryError);
  assertPointerInputSource(read(pointerInputPath));
  for(const path of deckPagesAdded){
-  const source=read(path);
+  const source=readDeck(path);
   assertDevelopBackflowCurrent(path,source);
   assert(matches(beforeInputRetirement(path,source),deckPages.added[path]),'fresh deck browser module: '+path);
  }
@@ -541,6 +548,7 @@ function beforeSessionRelic(path,source,options){
 export function beforeDevelopBackflow(path,source,options){
  if(path===deckPath)source=beforeReleaseDeckPointer(path,source);
  source=beforeReleaseEntranceOwner(path,source);
+ if(actorFocusOwners.includes(path))source=beforeVocabularyOwner(path,source);
  if(path==='src/lua/abyss_potion_discard_ui.lua')source=beforeKnownMasterBackflowSource(path,source);
  source=beforeLibraryReadPrompt(path,source);
  source=beforeBattleInputHistory(path,beforeChapterEntranceOwner(path,beforeArchitectureOwner(path,source)));
@@ -576,6 +584,15 @@ function authenticateDevelopBackflowWithReaders(path,source,readLive,readLinked,
  }
  const rawLive=readLive;
  readLive=owner=>owner===deckPath?beforeReleaseDeckPointer(owner,rawLive(owner)):rawLive(owner);
+ const actorPrior=actorFocusOwners.includes(path)?beforeVocabularyOwner(path,source):source;
+ if(actorPrior!==source){
+  const raw=readBackflowOwner(readLive,path);
+  assert(uniformSource(raw)&&raw.replaceAll('\r\n','\n')===source.replaceAll('\r\n','\n'),
+   'combined linked owner identity: '+path+' changed during Actor/Focus vocabulary validation');
+  const readRaw=readLive;
+  readLive=owner=>owner===path?beforeVocabularyOwner(owner,readRaw(owner)):readRaw(owner);
+  source=actorPrior;
+ }
  const libraryPrior=beforeLibraryReadPrompt(path,source);
  if(libraryPrior!==source){
   const live=readBackflowOwner(readLive,path);
