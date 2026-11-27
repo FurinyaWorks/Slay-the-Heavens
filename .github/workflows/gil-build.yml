@@ -180,6 +180,7 @@ jobs:
         if: steps.upload.outputs.artifact-id != ''
         with:
           artifact-ids: ${{ steps.upload.outputs.artifact-id }}
+          merge-multiple: true
           path: source/build/gil-readback/
       - name: Verify the archived download
         if: steps.upload.outputs.artifact-id != ''
