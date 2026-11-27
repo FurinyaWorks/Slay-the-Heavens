@@ -126,6 +126,89 @@ const fixtures=Object.freeze({
    }
   ]
  },
+ "tests/build-ui-input-protection.test.mjs": {
+  "current": {
+   "sha256": "2fda21ffb5f97cbe443583982cb80982e65e6d1feed295d2643f065197ef0cf8",
+   "gitBlob": "07f3d2518f8bae7aad4822838bf4dda7334337ab"
+  },
+  "previous": {
+   "sha256": "acbeaea9178374dd3d90ac52fa216921ba80d9dccf5153d5d5ccda8195ae741a",
+   "gitBlob": "8b45d4c01b0a126acafb56fb47954ae151416398"
+  },
+  "hunks": [
+   {
+    "at": 13,
+    "before": "  'presentation/native-monster-art.json', 'presentation/ui_theme.json', 'presentation/traveler.zh-CN.json', 'presentation/narrative.zh-CN.json'];\nconst outputs = ['abyss_theme.lua', 'map-ui.json', 'abyss_map_layout.lua', 'abyss_map_controls.lua',\n  'abyss_narrative.lua', 'abyss_presentation.lua', 'battle-ui.json', 'game-ui.json', 'abyss_ui_layout.lua',",
+    "after": "  'presentation/native-monster-art.json', 'presentation/ui_theme.json', 'presentation/traveler.zh-CN.json', 'presentation/narrative.zh-CN.json'];\nconst outputs = ['abyss_theme.lua', 'abyss_chapter_battle_scene_data.lua', 'map-ui.json', 'abyss_map_layout.lua', 'abyss_map_controls.lua',\n  'abyss_narrative.lua', 'abyss_presentation.lua', 'battle-ui.json', 'game-ui.json', 'abyss_ui_layout.lua',"
+   },
+   {
+    "at": 17,
+    "before": "  'abyss_ready_card_binding.lua','abyss_ready_card_assets.lua','abyss_traveler_portrait_assets.lua','abyss_monster_art_data.lua','abyss_art_features.lua','abyss_monster_actor_binding.lua',\n  'abyss_component_binding.lua','abyss_deck_browser_binding.lua','abyss_v25_card_assets.lua','art-render-v2.json'];\n// Every fixture gets a fresh copy of the same validated repository inputs.",
+    "after": "  'abyss_ready_card_binding.lua','abyss_ready_card_assets.lua','abyss_traveler_portrait_assets.lua','abyss_monster_art_data.lua','abyss_art_features.lua','abyss_monster_actor_binding.lua',\n  'abyss_component_binding.lua','abyss_v25_card_assets.lua','art-render-v2.json'];\n// Every fixture gets a fresh copy of the same validated repository inputs."
+   }
+  ]
+ },
+ "tests/lua/full_source_campaign_entry.lua": {
+  "current": {
+   "sha256": "3c035a17c7e3e6beb91d33c8240c7116ca392fb511546d1165e2228bfcfc1709",
+   "gitBlob": "f486b0f7484cf8c71979b2ee6bf1da962ae68814"
+  },
+  "previous": {
+   "sha256": "6eb5e8016625dd7d3586d81872814c5d28021371e2d9c4ce78f4741a5f9ea3b3",
+   "gitBlob": "7d9f18b6c5c63d4cf18593f7811fab0334b2d769"
+  },
+  "hunks": [
+   {
+    "at": 5,
+    "before": "local Map,Run=require('abyss_map'),require('abyss_run')\nlocal function awaitNativePage(host)\n    for _=1,80 do\n        if not host.starting and not(host.prologue and host.prologue:covering())",
+    "after": "local Map,Run=require('abyss_map'),require('abyss_run')\nlocal function awaitNativePage(host,maxTicks)\n    for _=1,maxTicks or 80 do\n        if not host.starting and not(host.prologue and host.prologue:covering())"
+   },
+   {
+    "at": 85,
+    "before": "    assert(accepted and state=='selection_pending' and host.mode=='map' and host.run.phase=='map')\n    awaitNativePage(host)\n    assert(host.map.currentNodeId==nextNode.id and host.mode=='battle' and host.run.phase=='combat')",
+    "after": "    assert(accepted and state=='selection_pending' and host.mode=='map' and host.run.phase=='map')\n    -- Match the formal campaign fixture's budget for the Guardian narration and fades.\n    local guardianEntry=host.run.act==1 and nextNode.type=='boss'\n    awaitNativePage(host,guardianEntry and 140 or nil)\n    assert(host.map.currentNodeId==nextNode.id and host.mode=='battle' and host.run.phase=='combat')"
+   }
+  ]
+ },
+ "tests/pr259-fixture-budget.test.mjs": {
+  "current": {
+   "sha256": "331d476e181da95c13a62640c2d47fd35540664d3295e7a86a519c3e14da3bff",
+   "gitBlob": "21ce6350ba113814d3a7d3660ec42a639ada7415"
+  },
+  "previous": {
+   "sha256": "f7abc7f0803d3f6a98568f22a8bb7c2758a7bf96290c18ec3982ccca0987ea75",
+   "gitBlob": "abaa76880ba51ac1cfd0510ef114fcc87a47c894"
+  },
+  "hunks": [
+   {
+    "at": 29,
+    "before": "  .replace(\"assert(F.changedRewardActions(false,selected)==5,'five original held changes per slice')\",'F.changedRewardActions(false)')),frozen.held);\n const helper=read(lua+'support/looter_potion_ui_fixture.lua');assert.equal(sha(restoreHelper(helper)),frozen.helper);\n const original=read(lua+rollback[0]);assert.ok(original.includes(rollbackHeader));assert.equal(sha(restoreRollback(original)),frozen.rollback);\n const releasedSource=read(lua+released[0]);",
+    "after": "  .replace(\"assert(F.changedRewardActions(false,selected)==5,'five original held changes per slice')\",'F.changedRewardActions(false)')),frozen.held);\n const liveHelper=read(lua+'support/looter_potion_ui_fixture.lua');\n const currentEncounter=\" assert(Run.startCombat(h.run,'raven_adept_solo'))\\n\";\n const priorEncounter=\" assert(Run.startCombat(h.run,'cultist_solo'))\\n\";\n assert.equal(liveHelper.split(currentEncounter).length,2,'one current seed-42 encounter binding');\n const helper=liveHelper.replace(currentEncounter,priorEncounter);\n assert.equal(sha(restoreHelper(helper)),frozen.helper);\n const liveRollback=read(lua+rollback[0]);\n const currentComment=\"-- the source Raven Adept's52 HP, energy costs and random streams are unchanged.\";\n const priorComment=\"-- the source Cultist's52 HP, energy costs and random streams are unchanged.\";\n assert.equal(liveRollback.split(currentComment).length,2,'one reviewed encounter comment');\n const original=liveRollback.replace(currentComment,priorComment);\n assert.ok(original.includes(rollbackHeader));assert.equal(sha(restoreRollback(original)),frozen.rollback);\n const releasedSource=read(lua+released[0]);"
+   }
+  ]
+ },
+ "tests/toxic-egg-source.test.mjs": {
+  "current": {
+   "sha256": "dcb4d18fc3a6186812ee7dbe5cbd3ee1f1da5bb0dbdd7db0cb61cda2ecae3005",
+   "gitBlob": "012308fc57639e9e731a9251ec6f00c9c347f2ed"
+  },
+  "previous": {
+   "sha256": "e5f9064c2cc01e3e02cf51b223a0b203ee67470af20a2fb50794f31ccfe1b6e8",
+   "gitBlob": "d0476b47466e166102ab7f036e483d6b3fb3be0e"
+  },
+  "hunks": [
+   {
+    "at": 3,
+    "before": "import {requireRelicCompletionSource,preRelicCompletionSource} from './helpers/relic-completion-inverse.mjs';\nimport {closeoutRead} from './helpers/closeout-ci-source.mjs';\nconst read=path=>JSON.parse(readFileSync(path,'utf8'));",
+    "after": "import {requireRelicCompletionSource,preRelicCompletionSource} from './helpers/relic-completion-inverse.mjs';\nimport {withHistoricalBaseline} from './helpers/historical-baseline-inputs.mjs';\nconst read=path=>JSON.parse(readFileSync(path,'utf8'));"
+   },
+   {
+    "at": 36,
+    "before": " // historical boundary without applying it to today's complete production pool.\n const current=closeoutRead('pr620')('data/relics.json','utf8');\n requireRelicCompletionSource('data/relics.json',current);\n const historical=JSON.parse(preRelicCompletionSource('data/relics.json',current));\n for(const id of ['question_card','busted_crown','singing_bowl'])assert.ok(!historical.relics.some(r=>r.id===id));",
+    "after": " // historical boundary without applying it to today's complete production pool.\n const historical=withHistoricalBaseline(()=>{\n  const path='data/relics.json',source=readFileSync(path,'utf8');\n  requireRelicCompletionSource(path,source);\n  return JSON.parse(preRelicCompletionSource(path,source));\n });\n for(const id of ['question_card','busted_crown','singing_bowl'])assert.ok(!historical.relics.some(r=>r.id===id));"
+   }
+  ]
+ },
  "tests/gil-candidate.test.mjs": {
   "current": {
    "sha256": "d5ec827fa24b3ad3ff33b304723efddc4205599dbc8e8c28141aa3d22d99c1c6",
