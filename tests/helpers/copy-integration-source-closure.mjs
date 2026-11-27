@@ -954,8 +954,42 @@ function beforeReleaseVocabularyReplay(path,raw){
  assert(exactSourceMatches(prior,releaseVocabularyReplay.previous),'exact vocabulary replay owner predecessor');
  return Buffer.from(prior);
 }
+// Keep the historical copier payload at the original helper identity.
+const tinyHouseReplayHelper=Object.freeze({
+ "current": {
+  "sha256": "25c2c46d4ae3a6a4f9a4ef24fc2831f5a4f1f3b752b931e05f08cdf5e91f42a9",
+  "gitBlob": "23d879325a1ef0be02b0ad23b3836dfb8fd8b129"
+ },
+ "previous": {
+  "sha256": "b09df63dd432eaa4796047bd4ba8f64a3d224963eeab15e1bc90f7732c8afae2",
+  "gitBlob": "bb8df89c3ca48e98c48c31ae961d53fd76231fcc"
+ },
+ "hunks": [
+  {
+   "at": 2722,
+   "before": "\n// Retain at most one verified byte-for-byte projection per declared path.",
+   "after": "\n// The authoritative Tiny House trace and the capacity test share one fixture.\nconst tinyHouseBackflowFixture=Object.freeze({\n \"path\": \"tests/tiny-house-pending-ui.cases.mjs\",\n \"beforeSha256\": \"ad5a77d379252e337e8421c8e8d2f784272371032f209145be51e0f2b71abab1\",\n \"afterSha256\": \"24cbb7b9395d5c5e5666586ffb8a6cb476e62309af242c1077aa44eea3f0fd52\",\n \"hunks\": [\n  {\n   \"at\": 32,\n   \"before\": \" const {sourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');\\n const {currentProductionRereads}=await import('./helpers/current-production-source-reads.mjs');\\n const {beforeTinyHouseUiSource}=await import('./helpers/tiny-house-ui-source.mjs');\",\n   \"after\": \" const {sourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');\\n const {currentProductionRereads,releaseArchitectureReadTrace}=await import('./helpers/current-production-source-reads.mjs');\\n const {beforeTinyHouseUiSource}=await import('./helpers/tiny-house-ui-source.mjs');\"\n  },\n  {\n   \"at\": 50,\n   \"before\": \" const expected=[...reads];\\n assert.equal(expected.length,480,'complete fresh raw closure size');\\n assert.equal(createHash('sha256').update(JSON.stringify(expected)).digest('hex'),\\n  'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd','exact current admission order');\\n let position=-1;\",\n   \"after\": \" const expected=[...reads];\\n assert.equal(expected.length,releaseArchitectureReadTrace.count,'complete fresh raw closure size');\\n assert.equal(createHash('sha256').update(JSON.stringify(expected)).digest('hex'),\\n  releaseArchitectureReadTrace.sha256,'exact current admission order');\\n let position=-1;\"\n  },\n  {\n   \"at\": 59,\n   \"before\": \" eventReread=expected.lastIndexOf(event)+1;\\n assert.equal(eventReread,480,'the event owner must be checked again after the initial scan');\\n assert.notEqual(expected.indexOf(event)+1,eventReread,'the injected failure belongs to a fresh repeat read');\",\n   \"after\": \" eventReread=expected.lastIndexOf(event)+1;\\n assert.equal(eventReread,expected.length,'the event owner must be checked again after the initial scan');\\n assert.notEqual(expected.indexOf(event)+1,eventReread,'the injected failure belongs to a fresh repeat read');\"\n  },\n  {\n   \"at\": 104,\n   \"before\": \" const {beforeUiEntranceWitness}=await import('./helpers/ui-entrance-source.mjs');\\n const project=(path,source)=>beforeReleaseCapacitySource(path,beforeRebasedRelease(path,beforeDeckPagesSuiteSource(path,beforeUiEntranceWitness(path,source))));\\n const paths=['scripts/build-native-candidate.mjs','scripts/build-ui.mjs','scripts/monster-art.mjs',\",\n   \"after\": \" const {beforeUiEntranceWitness}=await import('./helpers/ui-entrance-source.mjs');\\n const {beforeKnownMasterBackflowSource}=await import('./helpers/master-backflow-source.mjs');\\n const {beforeChapterBattleScene}=await import('./helpers/chapter-battle-scene-source.mjs');\\n const {beforeBattlePeriphery}=await import('./helpers/battle-periphery-source.mjs');\\n const project=(path,source)=>{\\n  const chapter=beforeBattlePeriphery(path,beforeChapterBattleScene(path,source));\\n  const backflow=beforeKnownMasterBackflowSource(path,chapter);\\n  const historical=beforeRebasedRelease(path,beforeDeckPagesSuiteSource(path,beforeUiEntranceWitness(path,backflow)));\\n  const prior=beforeReleaseCapacitySource(path,historical);\\n  return prior===historical?source:prior;\\n };\\n const paths=['scripts/build-native-candidate.mjs','scripts/build-ui.mjs','scripts/monster-art.mjs',\"\n  }\n ]\n});\n\n// Retain at most one verified byte-for-byte projection per declared path."
+  },
+  {
+   "at": 2756,
+   "before": " source=beforeOfficialCharacterBackflow(path,beforeApprovedUiEntrance(path,source));\n const binding=bindings.get(path);",
+   "after": " source=beforeOfficialCharacterBackflow(path,beforeApprovedUiEntrance(path,source));\n const tinyHousePrior=restoreExactFixtureHunks(tinyHouseBackflowFixture,path,source);\n if(tinyHousePrior!==source)source=source.includes('\\r\\n')?tinyHousePrior.replaceAll('\\n','\\r\\n'):tinyHousePrior;\n const binding=bindings.get(path);"
+  }
+ ]
+});
 function beforeReleaseReplayReader(path,raw){
  raw=beforeReleaseVocabularyReplay(path,beforeDetachedReleaseBackflow(path,raw));
+ if(path==='tests/helpers/current-replay-fix-sources.mjs'){
+  const normalized=integrationClosureBytes(path,raw);
+  const source=normalized.toString('utf8');
+  const {current,previous,hunks}=tinyHouseReplayHelper;
+  if(exactSourceMatches(source,current)){
+   assert(raw.equals(normalized)||raw.equals(Buffer.from(source.replaceAll('\n','\r\n'))),'uniform Tiny House replay helper');
+   const prior=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,source);
+   assert(exactSourceMatches(prior,previous),'exact Tiny House replay helper predecessor');
+   raw=Buffer.from(prior);
+  }
+ }
  if(!Object.hasOwn(releaseReplayReaders,path))return raw;
  const {current,previous,hunks}=releaseReplayReaders[path];
  const text=integrationClosureBytes(path,raw).toString('utf8');

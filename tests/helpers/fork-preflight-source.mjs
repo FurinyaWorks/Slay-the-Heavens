@@ -364,6 +364,7 @@ function beforeReleaseUiBuildSource(path,source,read=readFileSync){
  return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
 }
 function releaseHistoricalInput(path,source){
+ if(path===battleSceneCopyClosure.path)source=beforeCalibrationReplayOwner(path,source);
  source=beforeCurrentReplayCopier(path,beforeActorAlphaBuildInput(path,source));
  return beforeRebasedCopier(path,source)!==source?historicalReleaseCopier(source):beforeRebasedRelease(path,source);
 }

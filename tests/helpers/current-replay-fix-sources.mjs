@@ -2721,11 +2721,42 @@ export function beforeOfficialCharacterBackflow(path,source){
  return prior!==source&&source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 
+// The authoritative Tiny House trace and the capacity test share one fixture.
+const tinyHouseBackflowFixture=Object.freeze({
+ "path": "tests/tiny-house-pending-ui.cases.mjs",
+ "beforeSha256": "ad5a77d379252e337e8421c8e8d2f784272371032f209145be51e0f2b71abab1",
+ "afterSha256": "24cbb7b9395d5c5e5666586ffb8a6cb476e62309af242c1077aa44eea3f0fd52",
+ "hunks": [
+  {
+   "at": 32,
+   "before": " const {sourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');\n const {currentProductionRereads}=await import('./helpers/current-production-source-reads.mjs');\n const {beforeTinyHouseUiSource}=await import('./helpers/tiny-house-ui-source.mjs');",
+   "after": " const {sourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');\n const {currentProductionRereads,releaseArchitectureReadTrace}=await import('./helpers/current-production-source-reads.mjs');\n const {beforeTinyHouseUiSource}=await import('./helpers/tiny-house-ui-source.mjs');"
+  },
+  {
+   "at": 50,
+   "before": " const expected=[...reads];\n assert.equal(expected.length,480,'complete fresh raw closure size');\n assert.equal(createHash('sha256').update(JSON.stringify(expected)).digest('hex'),\n  'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd','exact current admission order');\n let position=-1;",
+   "after": " const expected=[...reads];\n assert.equal(expected.length,releaseArchitectureReadTrace.count,'complete fresh raw closure size');\n assert.equal(createHash('sha256').update(JSON.stringify(expected)).digest('hex'),\n  releaseArchitectureReadTrace.sha256,'exact current admission order');\n let position=-1;"
+  },
+  {
+   "at": 59,
+   "before": " eventReread=expected.lastIndexOf(event)+1;\n assert.equal(eventReread,480,'the event owner must be checked again after the initial scan');\n assert.notEqual(expected.indexOf(event)+1,eventReread,'the injected failure belongs to a fresh repeat read');",
+   "after": " eventReread=expected.lastIndexOf(event)+1;\n assert.equal(eventReread,expected.length,'the event owner must be checked again after the initial scan');\n assert.notEqual(expected.indexOf(event)+1,eventReread,'the injected failure belongs to a fresh repeat read');"
+  },
+  {
+   "at": 104,
+   "before": " const {beforeUiEntranceWitness}=await import('./helpers/ui-entrance-source.mjs');\n const project=(path,source)=>beforeReleaseCapacitySource(path,beforeRebasedRelease(path,beforeDeckPagesSuiteSource(path,beforeUiEntranceWitness(path,source))));\n const paths=['scripts/build-native-candidate.mjs','scripts/build-ui.mjs','scripts/monster-art.mjs',",
+   "after": " const {beforeUiEntranceWitness}=await import('./helpers/ui-entrance-source.mjs');\n const {beforeKnownMasterBackflowSource}=await import('./helpers/master-backflow-source.mjs');\n const {beforeChapterBattleScene}=await import('./helpers/chapter-battle-scene-source.mjs');\n const {beforeBattlePeriphery}=await import('./helpers/battle-periphery-source.mjs');\n const project=(path,source)=>{\n  const chapter=beforeBattlePeriphery(path,beforeChapterBattleScene(path,source));\n  const backflow=beforeKnownMasterBackflowSource(path,chapter);\n  const historical=beforeRebasedRelease(path,beforeDeckPagesSuiteSource(path,beforeUiEntranceWitness(path,backflow)));\n  const prior=beforeReleaseCapacitySource(path,historical);\n  return prior===historical?source:prior;\n };\n const paths=['scripts/build-native-candidate.mjs','scripts/build-ui.mjs','scripts/monster-art.mjs',"
+  }
+ ]
+});
+
 // Retain at most one verified byte-for-byte projection per declared path.
 const lastVerifiedProjection=new Map();
 export function beforeCurrentReplayFixes(path, source){
  source=beforeCombinedCharacterBackflow(path,source);
  source=beforeOfficialCharacterBackflow(path,beforeApprovedUiEntrance(path,source));
+ const tinyHousePrior=restoreExactFixtureHunks(tinyHouseBackflowFixture,path,source);
+ if(tinyHousePrior!==source)source=source.includes('\r\n')?tinyHousePrior.replaceAll('\n','\r\n'):tinyHousePrior;
  const binding=bindings.get(path);
  if(!binding)return source;
  const cached=lastVerifiedProjection.get(path);
