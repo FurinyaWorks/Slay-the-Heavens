@@ -67,6 +67,55 @@ const fixtures=Object.freeze({
    }
   ]
  },
+ "tests/competition-roster-config-composition.test.mjs": {
+  "current": {
+   "sha256": "2d56bc47a7ce372633f6b46c91cb42f01b0ef099236ec2f28e30bf1c8da60c06",
+   "gitBlob": "0b526cd747cb341d2d7b6321fc2a8796b34b1ea3"
+  },
+  "previous": {
+   "sha256": "283322cb20de02801a59baef9e44452592c70692eb6a4b71640ac476abeaa4db",
+   "gitBlob": "8c4d42dd8eec34a62b940d321ef8cdcf5f9f6b7b"
+  },
+  "hunks": [
+   {
+    "at": 0,
+    "before": "import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';\nimport {beforeInputRetirementReader,retiredControllerPath} from './helpers/input-retirement-source.mjs';",
+    "after": "import {currentProductionRereads,releaseArchitectureReadTrace} from './helpers/current-production-source-reads.mjs';\nimport {beforeReleaseClosureFixture} from './helpers/release-closure-fixture-source.mjs';\nimport {beforeInputRetirementReader,retiredControllerPath} from './helpers/input-retirement-source.mjs';"
+   },
+   {
+    "at": 34,
+    "before": "  const raw=binding.existing?readInput(path):Buffer.from(binding.source);\n  const source=path.endsWith('.gz')?raw:Buffer.from(raw.toString('utf8').replaceAll('\\r\\n','\\n'));\n  assert.equal(hash(source),binding.sha256,'original complete Roster chain bytes: '+path);",
+    "after": "  const raw=binding.existing?readInput(path):Buffer.from(binding.source);\n  const continued=path==='tests/helpers/approved-ui-inverse.mjs'||path==='tests/support/formal-entry-source-inverse.mjs';\n  const original=binding.existing&&continued?beforeReleaseClosureFixture(path,raw):raw;\n  const source=path.endsWith('.gz')?original:Buffer.from(original.toString('utf8').replaceAll('\\r\\n','\\n'));\n  assert.equal(hash(source),binding.sha256,'original complete Roster chain bytes: '+path);"
+   },
+   {
+    "at": 210,
+    "before": " const admittedReads=[...reads];\n assert.equal(admittedReads.length,480,'complete raw owner admission');\n assert.equal(hash(JSON.stringify(admittedReads)),'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd','complete raw owner admission in order');\n let position=-1;",
+    "after": " const admittedReads=[...reads];\n assert.equal(admittedReads.length,releaseArchitectureReadTrace.count,'complete release raw owner admission');\n assert.equal(hash(JSON.stringify(admittedReads)),releaseArchitectureReadTrace.sha256,'complete release raw owner admission in order');\n const addedRereads=new Set([3,4,9,10,16,18,19,20,21,22,30,31,90,115,155,156,221,222,223,317,367,368,369,415,479]);\n const originalReads=admittedReads.filter((_owner,position)=>!addedRereads.has(position));\n assert.equal(originalReads.length,480,'complete original raw owner admission');\n assert.equal(hash(JSON.stringify(originalReads)),'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd',\n  'complete original raw owner admission in order');\n let position=-1;"
+   }
+  ]
+ },
+ "tests/support/formal-entry-source-inverse.mjs": {
+  "current": {
+   "sha256": "951deb2fc8dc598cad29a47601e15782c3468ae5bb7a68dab2ef8c07de084425",
+   "gitBlob": "13093e19470d5b524122f6727e252eeb00ac5ee7"
+  },
+  "previous": {
+   "sha256": "ffab54c9d7b2cf877ef759c8894027ac0e6fd71d8e0d236a166d1bdb5b89ebb1",
+   "gitBlob": "20a2f75ec4365fab7e239dfb241ebe91954cf402"
+  },
+  "hunks": [
+   {
+    "at": 0,
+    "before": "import {preCurrentSource} from '../helpers/task77-current-source-layers.mjs';\nimport assert from 'node:assert/strict';",
+    "after": "import {preCurrentSource} from '../helpers/task77-current-source-layers.mjs';\nimport {readCloseoutLuaVocabularyReceipt} from '../helpers/closeout-lua-vocabulary-source.mjs';\nimport assert from 'node:assert/strict';"
+   },
+   {
+    "at": 13,
+    "before": "export function preFormalEntrySource(path, source) {\n  const text = preCurrentSource(path,source);\n  let binding = formalEntryInverses[path];\n  // Compose the same immutable launch hunks with the two reviewed relic glyphs.",
+    "after": "export function preFormalEntrySource(path, source) {\n  let text = preCurrentSource(path,source);\n  let binding = formalEntryInverses[path];\n  // The sealed elite fixture still uses the pre-#951 encounter name.\n  // Authenticate the current file before restoring that exact Git input.\n  if(path==='tests/lua/elite_relic_reward_ui.lua' && ![binding.beforeSha256,binding.afterSha256].includes(hash(text)))\n    text=readCloseoutLuaVocabularyReceipt(path,binding.afterSha256,()=>source)??text;\n  // Compose the same immutable launch hunks with the two reviewed relic glyphs."
+   }
+  ]
+ },
  "tests/helpers/defect-actor-vm.mjs": {
   "current": {
    "sha256": "1ee4632b34f37909c22431a10faeacedf36f67969081dffe051e8f7cfffcc94e",

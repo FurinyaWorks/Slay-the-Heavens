@@ -183,7 +183,7 @@ export const currentDetachedInputs=Object.freeze({
  'tests/helpers/develop-release-backflow-source.mjs':'1ef1001a3f7473408dfe3f4f20933d87797612575179834ea271f2cfec7181f2',
  'tests/helpers/develop-release-vocabulary-source.mjs':'39c2ba9ecd776c5a7e3e485639c0d9a2acd1b9a8732e9621735fa99cd0466e56',
  'tests/helpers/master-backflow-source.mjs':'308c6ef6ac8987b9becc4ead9f3a1efaa2c3c20ea8a697bdf26f6233fa71b8ac',
- 'tests/helpers/release-closure-fixture-source.mjs':'3913376cdc4607d0b8831f5f3420838a061b2103797d73be05b3bdc07bf6cf94',
+ 'tests/helpers/release-closure-fixture-source.mjs':'fe4427a3e1e19abdba7c6641e315cf1d87c6d05749eb93ec827faf77a12cf609',
  'tests/helpers/release-deck-pointer-source.mjs':'a1cfebcea1c53c017315a9762ba2d9509d395218b358a500d7ca22fe565dec38',
  'tests/helpers/release-entrance-owner-source.mjs':'970a41e91888711768d917ab2970d069ec891aea4f098f3930b1b5d04c87a30a',
  'tests/helpers/release-metadata-source.mjs':'5897d9d479841a5fa7fe1f86925fa7daedd06a8facdc7277247f2ac376610cf8',

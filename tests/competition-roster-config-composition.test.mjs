@@ -1,4 +1,5 @@
-import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
+import {currentProductionRereads,releaseArchitectureReadTrace} from './helpers/current-production-source-reads.mjs';
+import {beforeReleaseClosureFixture} from './helpers/release-closure-fixture-source.mjs';
 import {beforeInputRetirementReader,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 import nativeTest,{after} from 'node:test';
 import {historicalTest as test,withHistoricalBaseline,createHistoricalBaseline,historicalInputPath} from './helpers/historical-baseline-inputs.mjs';
@@ -32,7 +33,9 @@ function validateOriginalChain(value,expectedManifest,readInput=readOriginalInpu
   assert.notEqual(Object.hasOwn(binding,'existing'),Object.hasOwn(binding,'source'),'one complete original input: '+path);
   if(binding.existing)assert.equal(binding.existing,path,'original input reference stays at its authenticated path');
   const raw=binding.existing?readInput(path):Buffer.from(binding.source);
-  const source=path.endsWith('.gz')?raw:Buffer.from(raw.toString('utf8').replaceAll('\r\n','\n'));
+  const continued=path==='tests/helpers/approved-ui-inverse.mjs'||path==='tests/support/formal-entry-source-inverse.mjs';
+  const original=binding.existing&&continued?beforeReleaseClosureFixture(path,raw):raw;
+  const source=path.endsWith('.gz')?original:Buffer.from(original.toString('utf8').replaceAll('\r\n','\n'));
   assert.equal(hash(source),binding.sha256,'original complete Roster chain bytes: '+path);
   assert.equal(createHash('sha1').update(`blob ${source.length}\0`).update(source).digest('hex'),binding.gitBlob,'original Roster chain Git blob: '+path);
   return [path,source];
@@ -206,8 +209,13 @@ nativeTest('current Roster registration admission validates every raw owner fres
  const project=input=>sourceEpoch.preCombinedSource(path,input,{target:'develop',readSource:reader});
  const accepted=project(raw);assert.equal(hash(accepted),expected);assert.notEqual(accepted,raw);
  const admittedReads=[...reads];
- assert.equal(admittedReads.length,480,'complete raw owner admission');
- assert.equal(hash(JSON.stringify(admittedReads)),'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd','complete raw owner admission in order');
+ assert.equal(admittedReads.length,releaseArchitectureReadTrace.count,'complete release raw owner admission');
+ assert.equal(hash(JSON.stringify(admittedReads)),releaseArchitectureReadTrace.sha256,'complete release raw owner admission in order');
+ const addedRereads=new Set([3,4,9,10,16,18,19,20,21,22,30,31,90,115,155,156,221,222,223,317,367,368,369,415,479]);
+ const originalReads=admittedReads.filter((_owner,position)=>!addedRereads.has(position));
+ assert.equal(originalReads.length,480,'complete original raw owner admission');
+ assert.equal(hash(JSON.stringify(originalReads)),'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd',
+  'complete original raw owner admission in order');
  let position=-1;
  for(const owner of priorReadOrder){
   position=admittedReads.indexOf(owner,position+1);
