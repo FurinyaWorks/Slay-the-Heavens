@@ -109,7 +109,7 @@ test('EndTurn current source composes into frozen N35 and freshly authenticates 
    assert.equal(reads.length,14190);
    assert.equal(hash(JSON.stringify(reads)),'1f62d6113d65b19d114057a30d8ad7dee5935e8d72ca187e4505d41c17bd499d');
    const entranceBytes=readFileSync('tests/fixtures/ui-entrance-source.json.gz');
-   assert.equal(hash(entranceBytes),'7ac3f53b242819cdb569c0a1aebf60de0605b72297a1072ea612bfeb11b0597c9');
+   assert.equal(hash(entranceBytes),'7ac3f53b242819cdb569c0a1ebf60de0605b72297a1072ea612bfeb11b0597c9');
    const entranceOwners=Object.keys(JSON.parse(gunzipSync(entranceBytes)).files);
    const select='src/lua/abyss_character_select_view.lua', lifecycle='src/lua/abyss_game_ui_lifecycle.lua';
    const portraits='src/lua/abyss_traveler_portraits.lua', feedback='src/lua/abyss_node_ui_feedback.lua';
