@@ -13,9 +13,9 @@ export const round2CanPlayProof=JSON.parse(bytes);
 assert.equal(round2CanPlayProof.schemaVersion,1);
 assert.equal(round2CanPlayProof.base,'a7b03825');
 assert.equal(round2CanPlayProof.path,'src/lua/abyss_combat.lua');
-export function preRound2CanPlaySource(path,source){
+export function preRound2CanPlaySource(path,source,options){
  if(path===round2CanPlayProof.path)source=preRelicRound2CompositionSource(path,source,'round2');
- source=preRound3CatalogSource(path,source);
+ source=preRound3CatalogSource(path,source,options);
  if(path!==round2CanPlayProof.path||typeof source!=='string')return source;
  const normalized=normalize(source);
  // Unknown, partial and future edits must remain visible to inner guards.

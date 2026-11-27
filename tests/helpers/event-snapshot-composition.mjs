@@ -9,8 +9,8 @@ const bytes=readFileSync(new URL('../fixtures/event-snapshot-composition.json',i
 assert.equal(hash(bytes),'1d8bc385f5ed96025babf26c3a1af68ccb38d985332047ba8d865b67e45c6d0b');
 export const eventSnapshotComposition=JSON.parse(bytes);
 for(const binding of Object.values(eventSnapshotComposition.files))for(const target of ['current','event','snapshot'])assert.equal(hash(binding[target]),binding[target+'Hash']);
-export function projectEventSnapshotSource(path,source,target){
- source=preRound2CanPlaySource(path,source);
+export function projectEventSnapshotSource(path,source,target,options){
+ source=preRound2CanPlaySource(path,source,options);
  source=preRelicCompletionSource(path,source);
  if(typeof source!=='string')return source;
  const binding=eventSnapshotComposition.files[path],normalized=source.replaceAll('\r\n','\n');

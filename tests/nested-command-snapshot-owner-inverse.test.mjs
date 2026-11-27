@@ -6,7 +6,8 @@ import {createHash} from 'node:crypto';
 import {nestedSnapshotOwnerProof as proof,preNestedSnapshotOwnerSource as prior} from './helpers/nested-command-snapshot-owner-inverse.mjs';
 import {requirePr323Source,preAcceptedPr323Source,preOriginalPr323Source} from './helpers/pr323-accepted-source-inverse.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
-const read=path=>projectEventSnapshotSource(path,readFileSync(path,'utf8'),'snapshot').replaceAll('\r\n','\n');
+const readSource=path=>readFileSync(path,'utf8');
+const read=path=>projectEventSnapshotSource(path,readSource(path),'snapshot',{readSource}).replaceAll('\r\n','\n');
 test('only the complete two-file owner delta recovers accepted full runtime identities',()=>{
  assert.deepEqual(Object.keys(proof.files),['src/lua/abyss_combat.lua','src/lua/abyss_run.lua']);
  for(const [path,binding]of Object.entries(proof.files)){
