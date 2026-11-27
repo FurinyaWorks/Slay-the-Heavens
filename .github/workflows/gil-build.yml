@@ -1,9 +1,18 @@
 name: GIL build
-run-name: GIL build / ${{ github.event.workflow_run.head_branch || github.ref_name }} / ${{ github.event.workflow_run.head_sha || github.sha }}
+run-name: ${{ (inputs.test_release_ref || inputs.test_source_sha) && 'GIL device test' || 'GIL build' }} / ${{ inputs.test_release_ref || github.event.workflow_run.head_branch || github.ref_name }} / ${{ inputs.test_source_sha || github.event.workflow_run.head_sha || github.sha }}
 on:
   push:
     branches: [develop, master, 'release/**', 'hotfix/**', 'test/gil-build/**', 'ci/full/gil-build/**']
   workflow_dispatch:
+    inputs:
+      test_release_ref:
+        description: 'Early device test: protected release/vX.Y.Z or hotfix/vX.Y.Z'
+        type: string
+        required: false
+      test_source_sha:
+        description: 'Early device test: exact 40-character current source SHA'
+        type: string
+        required: false
   workflow_run:
     workflows: [Quality, Licenses]
     types: [completed]
@@ -24,7 +33,9 @@ jobs:
          (github.event_name != 'workflow_run' &&
           (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' ||
            startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/hotfix/') ||
-           startsWith(github.ref, 'refs/heads/test/gil-build/'))))) ||
+           startsWith(github.ref, 'refs/heads/test/gil-build/'))) ||
+         (github.event_name == 'workflow_dispatch' && (inputs.test_release_ref || inputs.test_source_sha) &&
+          github.ref == 'refs/heads/ci/gil-test-download/v220-early-download'))) ||
       (github.repository_id == '1460133275' && startsWith(github.ref, 'refs/heads/ci/full/gil-build/'))
     runs-on: windows-2025
     timeout-minutes: 45
@@ -32,8 +43,8 @@ jobs:
       MILIASTRA_ALLOW_LIVE_WRITE: '0'
       MILIASTRA_SAVE_ROOTS: '[]'
       GIT_LFS_SKIP_SMUDGE: '1'
-      SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
-      SOURCE_REF: ${{ github.event.workflow_run.head_branch || github.ref_name }}
+      SOURCE_SHA: ${{ inputs.test_source_sha || github.event.workflow_run.head_sha || github.sha }}
+      SOURCE_REF: ${{ inputs.test_release_ref || github.event.workflow_run.head_branch || github.ref_name }}
     steps:
       - name: Start download measurement
         run: |
@@ -55,6 +66,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GIL_PRODUCTION_WORK_KEY: ${{ vars.GIL_PRODUCTION_WORK_KEY }}
+          TEST_RELEASE_REF: ${{ inputs.test_release_ref }}
+          TEST_SOURCE_SHA: ${{ inputs.test_source_sha }}
         run: node control/scripts/gil-candidate.mjs preflight
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         if: steps.candidate.outputs.build == 'true'
@@ -149,6 +162,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GIL_RELEASE_ARTIFACT: ${{ steps.candidate.outputs.archive }}
+          GIL_EARLY_TEST_ARTIFACT: ${{ steps.candidate.outputs.early_test }}
           QUALITY_RUN: ${{ steps.candidate.outputs.quality_run }}
           QUALITY_ATTEMPT: ${{ steps.candidate.outputs.quality_attempt }}
           QUALITY_CHECKOUT_ARTIFACT: ${{ steps.candidate.outputs.quality_checkout_artifact }}
@@ -161,7 +175,7 @@ jobs:
           $env:MILIASTRA_MCP_ROOT = (Resolve-Path ../miliastra-mcp).Path
           node ../control/scripts/gil-candidate.mjs deliver
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        if: steps.candidate.outputs.build == 'true' && steps.candidate.outputs.archive != 'true'
+        if: steps.candidate.outputs.build == 'true' && steps.candidate.outputs.archive != 'true' && steps.candidate.outputs.early_test != 'true'
         with:
           name: gil-build-evidence-${{ github.sha }}
           path: source/build/gil-artifact/manifest.json
@@ -169,12 +183,12 @@ jobs:
           retention-days: 14
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         id: upload
-        if: steps.candidate.outputs.build == 'true' && steps.candidate.outputs.archive == 'true'
+        if: steps.candidate.outputs.build == 'true' && (steps.candidate.outputs.archive == 'true' || steps.candidate.outputs.early_test == 'true')
         with:
           name: ${{ steps.candidate.outputs.artifact_name }}
           path: source/build/gil-artifact/
           if-no-files-found: error
-          retention-days: 90
+          retention-days: ${{ steps.candidate.outputs.early_test == 'true' && 14 || 90 }}
           compression-level: 0
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         if: steps.upload.outputs.artifact-id != ''
@@ -186,7 +200,9 @@ jobs:
         env:
           ARTIFACT_URL: ${{ steps.upload.outputs.artifact-url }}
           ARTIFACT_ID: ${{ steps.upload.outputs.artifact-id }}
+          GIL_EARLY_TEST_ARTIFACT: ${{ steps.candidate.outputs.early_test }}
         run: |
           node control/scripts/gil-candidate.mjs readback
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          "[Download the verified GIL]($env:ARTIFACT_URL) (artifact ID $env:ARTIFACT_ID)" >> $env:GITHUB_STEP_SUMMARY
+          $label = if ($env:GIL_EARLY_TEST_ARTIFACT -eq 'true') { 'Download the verified device-test GIL' } else { 'Download the verified GIL' }
+          "[$label]($env:ARTIFACT_URL) (artifact ID $env:ARTIFACT_ID)" >> $env:GITHUB_STEP_SUMMARY

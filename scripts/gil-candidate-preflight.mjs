@@ -56,10 +56,26 @@ export function releaseBuildTarget({ repoId, ref, controllerSha, source, branch,
   return target;
 }
 
+export function earlyTestTarget({ repoId, ref, event, testReleaseRef, testSourceSha }) {
+  if (!testReleaseRef && !testSourceSha) return;
+  requireGate(event === 'workflow_dispatch' && repoId === String(repositoryId) &&
+    ['refs/heads/develop', 'refs/heads/ci/gil-test-download/v220-early-download'].includes(ref),
+  'An early GIL requires a manual dispatch from the primary workflow controller.');
+  requireGate(/^(?:release|hotfix)\//.test(testReleaseRef ?? ''), 'Select a frozen release or hotfix branch for the early GIL.');
+  return { ...candidateTarget(testReleaseRef, testSourceSha), earlyTest: true };
+}
+
 export async function verifyFrozenHead(api, branch, source) {
   const ref = await api(`git/ref/heads/${branch}`);
   requireGate(ref.ref === `refs/heads/${branch}` && ref.object?.type === 'commit' && ref.object.sha === source,
     'Frozen branch HEAD changed. Freeze and validate the new SHA.');
+}
+
+export async function verifyEarlyTestHead(api, branch, source) {
+  await verifyFrozenHead(api, branch, source);
+  const status = await api(`branches/${encodeURIComponent(branch)}`);
+  requireGate(status.name === branch && status.protected === true, 'The early GIL source branch must be protected.');
+  requireGate(status.commit?.sha === source, 'Frozen branch HEAD changed. Freeze and validate the new SHA.');
 }
 
 export async function verifyFrozenQuality(branch, source,
@@ -125,11 +141,11 @@ export function approvedRequest(raw, sourceSha, policy, { branch = 'develop', ve
   return { ...identity, id: hash(JSON.stringify(identity)) };
 }
 
-export function buildOnlyRequest(sourceSha, policy, { branch, version }) {
+export function buildOnlyRequest(sourceSha, policy, { branch, version, earlyTest }) {
   const configuration = { profile, nativePageLifecycle: true, releaseCandidate: Boolean(version),
     workKey: offlineWorkKey, node: '24.18.0', python: '3.12.10' };
   const identity = { sourceSha, baseSha256: legacyGilArchive.sha256, toolCommit, encoderSha256, branch, version,
-    configuration, policy, archive: false };
+    configuration, policy, archive: false, ...(earlyTest ? { earlyTest: true } : {}) };
   return { ...identity, id: hash(JSON.stringify(identity)) };
 }
 
@@ -148,7 +164,9 @@ export function releaseBuildRequest(configuredWorkKey, sourceSha, { branch, vers
   return { ...identity, id: hash(JSON.stringify(identity)) };
 }
 
-export const artifactName = request => request.version
+export const artifactName = request => request.earlyTest
+  ? `gil-test-${request.version}-${request.sourceSha}-${request.id}`
+  : request.version
   ? `gil-candidate-${request.version}-${request.sourceSha}-${request.id}`
   : `gil-candidate-${request.id}`;
 
