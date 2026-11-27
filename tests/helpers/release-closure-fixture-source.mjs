@@ -947,14 +947,19 @@ const fixtures=Object.freeze({
  },
  "tests/run-max-hp-config-inverse.test.mjs": {
   "current": {
-   "sha256": "686c21dcaa962cdad470d14d9c7f7f8a0caa9fdde53f571bf88c1bf75d7f8c74",
-   "gitBlob": "a1a66afd909d88b43b4b706f130689be53e93c6b"
+   "sha256": "e3aecc0c958104e847c88df5415eeafa84456718c99b1a934ba4ee93d05f1d69",
+   "gitBlob": "c49f02335fba887f334a8495c11d8a4f527a228b"
   },
   "previous": {
    "sha256": "a40879d35601e22bfbd5622fce1604d0a9ee7a2222d15525f66d7e82b862928f",
    "gitBlob": "408137bf30fd65836eb8a0eaba40de3a3902bdd5"
   },
   "hunks": [
+   {
+    "at": 0,
+    "before": "import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';\nimport {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';",
+    "after": "import {currentProductionRereads,releaseArchitectureReadTrace} from './helpers/current-production-source-reads.mjs';\nimport {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';"
+   },
    {
     "at": 9,
     "before": "import {createHash} from 'node:crypto';\nimport {analyzeSources} from '../scripts/check-architecture.mjs';",
@@ -964,6 +969,11 @@ const fixtures=Object.freeze({
     "at": 28,
     "before": "  const raw=binding.existing?readInput(path):Buffer.from(binding.source);\n  const source=path.endsWith('.gz')?raw:Buffer.from(raw.toString('utf8').replaceAll('\\r\\n','\\n'));\n  assert.equal(hash(source),binding.sha256,'original complete Run and Nodes chain bytes: '+path);",
     "after": "  const raw=binding.existing?readInput(path):Buffer.from(binding.source);\n  const original=binding.existing&&path==='tests/helpers/approved-ui-inverse.mjs'?beforeReleaseClosureFixture(path,raw):raw;\n  const source=path.endsWith('.gz')?original:Buffer.from(original.toString('utf8').replaceAll('\\r\\n','\\n'));\n  assert.equal(hash(source),binding.sha256,'original complete Run and Nodes chain bytes: '+path);"
+   },
+   {
+    "at": 190,
+    "before": " assert.notEqual(hash(accepted),expected.combined,'current develop target is not the ancient Run target');\n // Battle periphery adds six raw reads while retaining the entire prior closure.\n const admittedReads=[...reads];\n const battlePeripheryReads=new Map([\n  [78,'src/lua/abyss_battle_enemy_view.lua'],\n  [142,'src/lua/abyss_feedback.lua'],\n  [143,'src/lua/abyss_feedback_actor_painter.lua'],\n  [301,'src/lua/abyss_feedback.lua'],\n  [396,'src/lua/abyss_feedback.lua'],\n  [460,'src/lua/abyss_feedback.lua'],\n ]);\n for(const [position,owner]of battlePeripheryReads)assert.equal(admittedReads[position],owner,'exact battle periphery read');\n assert.equal(admittedReads.length,486,'complete fresh raw closure size');\n assert.equal(hash(JSON.stringify(admittedReads)),'266836ee07bb2c4145aba3c488f17109029f614d38793fe54a295ef6eb3e495b',\n  'complete fresh raw closure in admission order on the current Develop sources');\n const originalReads=admittedReads.filter((_owner,position)=>!battlePeripheryReads.has(position));\n assert.equal(originalReads.length,480,'the prior owner closure was retained');",
+    "after": " assert.notEqual(hash(accepted),expected.combined,'current develop target is not the ancient Run target');\n // The release adds nineteen raw reads and retains the prior periphery trace.\n const admittedReads=[...reads];\n assert.equal(admittedReads.length,releaseArchitectureReadTrace.count,'complete fresh raw closure size');\n assert.equal(hash(JSON.stringify(admittedReads)),releaseArchitectureReadTrace.sha256,\n  'complete fresh raw closure in admission order on the current Release sources');\n const releaseReadPositions=new Set([3,4,9,10,16,18,19,20,21,22,30,31,115,221,222,223,367,368,369]);\n const battlePeripheryReads=new Map([\n  [90,'src/lua/abyss_battle_enemy_view.lua'],\n  [155,'src/lua/abyss_feedback.lua'],\n  [156,'src/lua/abyss_feedback_actor_painter.lua'],\n  [317,'src/lua/abyss_feedback.lua'],\n  [415,'src/lua/abyss_feedback.lua'],\n  [479,'src/lua/abyss_feedback.lua'],\n ]);\n for(const [position,owner]of battlePeripheryReads)assert.equal(admittedReads[position],owner,'exact battle periphery read');\n const priorReads=admittedReads.filter((_owner,position)=>!releaseReadPositions.has(position));\n assert.equal(priorReads.length,486,'the complete battle periphery trace is retained');\n assert.equal(hash(JSON.stringify(priorReads)),'266836ee07bb2c4145aba3c488f17109029f614d38793fe54a295ef6eb3e495b',\n  'exact prior battle periphery admission order');\n const originalReads=admittedReads.filter((_owner,position)=>!releaseReadPositions.has(position)&&!battlePeripheryReads.has(position));\n assert.equal(originalReads.length,480,'the prior owner closure was retained');"
    }
   ]
  }

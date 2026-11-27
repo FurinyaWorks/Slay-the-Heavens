@@ -77,3 +77,9 @@ export const currentProductionRereads = Object.freeze([
   'src/lua/abyss_page_reveal.lua',
   'src/lua/abyss_node_ui_events.lua',
 ]);
+
+// v2.2.0 rereads complete entrance, vocabulary and node owners before replay.
+export const releaseArchitectureReadTrace = Object.freeze({
+  count: 505,
+  sha256: 'e2fa3465e342a3e373efe25568dfe25bb2b0f845995c2dfb0d51cd19c27da8ef',
+});

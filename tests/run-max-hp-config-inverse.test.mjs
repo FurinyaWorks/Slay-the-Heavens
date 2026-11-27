@@ -1,4 +1,4 @@
-import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
+import {currentProductionRereads,releaseArchitectureReadTrace} from './helpers/current-production-source-reads.mjs';
 import {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 import test,{after} from 'node:test';
 import {historicalTest,createHistoricalBaseline,historicalInputPath} from './helpers/historical-baseline-inputs.mjs';
@@ -189,21 +189,26 @@ test('current Run architecture admission uses its declared target and rereads ev
  const project=source=>sourceEpoch.preCombinedSource(path,source,{target:'develop',readSource:reader});
  const accepted=project(raw);assert.equal(hash(accepted),targetHash);assert.notEqual(accepted,raw);
  assert.notEqual(hash(accepted),expected.combined,'current develop target is not the ancient Run target');
- // Battle periphery adds six raw reads while retaining the entire prior closure.
+ // The release adds nineteen raw reads and retains the prior periphery trace.
  const admittedReads=[...reads];
+ assert.equal(admittedReads.length,releaseArchitectureReadTrace.count,'complete fresh raw closure size');
+ assert.equal(hash(JSON.stringify(admittedReads)),releaseArchitectureReadTrace.sha256,
+  'complete fresh raw closure in admission order on the current Release sources');
+ const releaseReadPositions=new Set([3,4,9,10,16,18,19,20,21,22,30,31,115,221,222,223,367,368,369]);
  const battlePeripheryReads=new Map([
-  [78,'src/lua/abyss_battle_enemy_view.lua'],
-  [142,'src/lua/abyss_feedback.lua'],
-  [143,'src/lua/abyss_feedback_actor_painter.lua'],
-  [301,'src/lua/abyss_feedback.lua'],
-  [396,'src/lua/abyss_feedback.lua'],
-  [460,'src/lua/abyss_feedback.lua'],
+  [90,'src/lua/abyss_battle_enemy_view.lua'],
+  [155,'src/lua/abyss_feedback.lua'],
+  [156,'src/lua/abyss_feedback_actor_painter.lua'],
+  [317,'src/lua/abyss_feedback.lua'],
+  [415,'src/lua/abyss_feedback.lua'],
+  [479,'src/lua/abyss_feedback.lua'],
  ]);
  for(const [position,owner]of battlePeripheryReads)assert.equal(admittedReads[position],owner,'exact battle periphery read');
- assert.equal(admittedReads.length,486,'complete fresh raw closure size');
- assert.equal(hash(JSON.stringify(admittedReads)),'266836ee07bb2c4145aba3c488f17109029f614d38793fe54a295ef6eb3e495b',
-  'complete fresh raw closure in admission order on the current Develop sources');
- const originalReads=admittedReads.filter((_owner,position)=>!battlePeripheryReads.has(position));
+ const priorReads=admittedReads.filter((_owner,position)=>!releaseReadPositions.has(position));
+ assert.equal(priorReads.length,486,'the complete battle periphery trace is retained');
+ assert.equal(hash(JSON.stringify(priorReads)),'266836ee07bb2c4145aba3c488f17109029f614d38793fe54a295ef6eb3e495b',
+  'exact prior battle periphery admission order');
+ const originalReads=admittedReads.filter((_owner,position)=>!releaseReadPositions.has(position)&&!battlePeripheryReads.has(position));
  assert.equal(originalReads.length,480,'the prior owner closure was retained');
  assert.equal(hash(JSON.stringify(originalReads)),'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd',
   'all original owners retain their exact admission order');
