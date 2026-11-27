@@ -1,8 +1,8 @@
 # 下载完整有声 GIL
 
 - 主仓 `release/*` 或 `master` 更新后，打开 **Actions → GIL build → 本次运行 → Summary / Artifacts**，下载 `Slay-the-Heavens-GIL-*`。手动构建在同一工作流点击 **Run workflow** 并选择目标分支。候选保留 14 天。
-- 正式 GitHub Release 发布后，从对应 Tag 的源码构建，核对 Tag 和源码工程版本，再将完整 ZIP 挂到该 Release 的 **Assets**。正式 GitHub Release 由维护者发起，Release 需要允许发布后添加附件。
-- 解压得到 `candidate.gil`、`candidate.json`、`manifest.json` 和 `SHA256SUMS`。工作流使用完整精绘资源、原生页面生命周期、BGM 和结算图，做独立审计，并从 GitHub 下载、逐文件复核。核对候选 SHA-256 后，在千星编辑器手动导入同一包并完成 [平台负载、ready 和设备验收](PLATFORM_LOAD.md)。
+- 正式 GitHub Release 发布后，从对应 Tag 的源码构建，核对 Tag 和源码工程版本，再将完整 `.gil` 挂到该 Release 的 **Assets**。正式 GitHub Release 由维护者发起，Release 需要允许发布后添加附件。该运行的 Actions 制品同时保存对应的回执和校验和。
+- Actions 制品解压得到 `candidate.gil`、`candidate.json`、`manifest.json` 和 `SHA256SUMS`。工作流使用完整精绘资源、原生页面生命周期、BGM 和结算图，做独立审计，并从 GitHub 下载、逐文件复核。核对候选 SHA-256 后，在千星编辑器手动导入同一包并完成 [平台负载、ready 和设备验收](PLATFORM_LOAD.md)。
 
 自动构建从[已公开发布的 v2.1.1 GIL](https://github.com/FurinyaWorks/Slay-the-Heavens/releases/tag/v2.1.1) 取回底包，核对固定提交、大小与 SHA-256。源码版本须高于该底包。构建沿用固定的 Windows、Node、Python、MCP 和 Git LFS 资产清单，`offline-candidate` 是可写入回执的构建期文案标识。此路径无需本地底图、作品账号密钥或自建 Token。GitHub 运行时 Token 按作业授权，构建只读，附件作业可写 Releases。若使用自定义私有底图，先核对它适合公开分发，并在受保护环境配置 `GIL_BASE_URL`，使用下述既有正式归档路径。
 

@@ -177,6 +177,7 @@ test('the primary repository builds release, master and test refs and publishes 
     assert.deepEqual(validationTarget(main, 'refs/heads/' + branch, sourceSha), { branch });
   }
   assert.deepEqual(validationTarget(main, 'refs/tags/v2.2.0', sourceSha), { branch: 'v2.2.0', version: 'v2.2.0' });
+  assert.deepEqual(validationTarget(main, 'refs/tags/engine-v2.2.0', sourceSha), { branch: 'engine-v2.2.0', version: 'v2.2.0' });
   assert.deepEqual(validationTarget(fork, forkRef, sourceSha), { branch: forkRef.slice(11) });
   assert.throws(() => validationTarget(main, 'refs/tags/v2.2.0-rc.1', sourceSha), /enabled primary ref/);
   assert.throws(() => validationTarget(main, forkRef, sourceSha), /enabled primary ref/);
@@ -192,7 +193,7 @@ test('the primary repository builds release, master and test refs and publishes 
   assert.doesNotMatch(build, /contents: write/);
   assert.match(attach, /if: .*github\.event_name == 'release'.*prerelease == false/);
   assert.match(attach, /needs: build\n    permissions:\n      contents: write/);
-  assert.match(attach, /sha256sum --check SHA256SUMS[\s\S]+gh release upload/);
+  assert.match(attach, /sha256sum --check SHA256SUMS[\s\S]+cp gil\/candidate\.gil "\$asset"[\s\S]+gh release upload/);
   assert.doesNotMatch(attach, /--clobber|release create/);
 });
 

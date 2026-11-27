@@ -9,7 +9,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: gil-build-${{ github.sha }}
+  group: gil-build-${{ github.event_name }}-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: false
 jobs:
   build:
@@ -191,8 +191,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.event.release.tag_name }}
         run: |
-          [[ "$TAG" =~ ^v[0-9]+[.][0-9]+[.][0-9]+$ ]]
+          [[ "$TAG" =~ ^(engine-)?v[0-9]+[.][0-9]+[.][0-9]+$ ]]
           (cd gil && sha256sum --check SHA256SUMS)
-          package="Slay-the-Heavens-$TAG-GIL.zip"
-          (cd gil && zip -0 "../$package" candidate.gil candidate.json manifest.json SHA256SUMS)
-          gh release upload "$TAG" "$package" --repo "$GITHUB_REPOSITORY"
+          asset="Slay-the-Heavens-${TAG#engine-}.gil"
+          cp gil/candidate.gil "$asset"
+          gh release upload "$TAG" "$asset" --repo "$GITHUB_REPOSITORY"
