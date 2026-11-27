@@ -549,26 +549,61 @@ const fixtures=Object.freeze({
   ]
  },
  "tests/pure-source-projection-cache.test.mjs": {
-  "current": {
-   "sha256": "26bdd45da297d1efc8187a6497b1d77e2dfdc15f9b4be9490d80f57341c12392",
-   "gitBlob": "3c23d7cd24dd86658d0347e16de8b25c6a774f42"
-  },
-  "previous": {
-   "sha256": "675787f6a8d65ceec7c244471b13d244e3f959df978c277667d85dea69588c04",
-   "gitBlob": "985518841dfc5e2aace89985e77324d8061388b3"
-  },
-  "hunks": [
-   {
-    "at": 3,
-    "before": "import {readFileSync} from 'node:fs';",
-    "after": "import {readFileSync} from 'node:fs';\nimport {reviewedRenamedStsStyleRead} from './helpers/reviewed-selection-current-source.mjs';"
+   "current": {
+     "sha256": "cc16f5cf88410959e9f5f3115fb3581c770023effb7a65bd77012eb00da68944",
+     "gitBlob": "fa7825e62efe0af39d73c913f4e913b15c50ddde"
    },
-   {
-    "at": 96,
-    "before": " const current=Object.fromEntries(paths.map(p=>[p,live(p)]));",
-    "after": " const replayInput=reviewedRenamedStsStyleRead(live);\n const current=Object.fromEntries(paths.map(p=>[p,replayInput(p)]));"
-   }
-  ]
+   "previous": {
+     "sha256": "675787f6a8d65ceec7c244471b13d244e3f959df978c277667d85dea69588c04",
+     "gitBlob": "985518841dfc5e2aace89985e77324d8061388b3"
+   },
+   "hunks": [
+     {
+       "at": 3,
+       "before": "import {readFileSync} from 'node:fs';\nimport {createHash} from 'node:crypto';",
+       "after": "import {readFileSync} from 'node:fs';\nimport {reviewedRenamedStsStyleRead} from './helpers/reviewed-selection-current-source.mjs';\nimport {createHash} from 'node:crypto';"
+     },
+     {
+       "at": 17,
+       "before": "import {addedEntranceModules} from './helpers/ui-entrance-source.mjs';\nconst hash=source=>createHash('sha256').update(source).digest('hex');",
+       "after": "import {addedEntranceModules} from './helpers/ui-entrance-source.mjs';\nimport {beforeCurrentReplayFixes} from './helpers/current-replay-fix-sources.mjs';\nimport {beforeKnownMasterBackflowSource} from './helpers/master-backflow-source.mjs';\nimport {beforeChapterBattleScene} from './helpers/chapter-battle-scene-source.mjs';\nconst hash=source=>createHash('sha256').update(source).digest('hex');"
+     },
+     {
+       "at": 98,
+       "before": " const paths=[...Object.keys(sourceEpoch.proof.current),...added].filter(p=>p!==retiredControllerPath);\n const current=Object.fromEntries(paths.map(p=>[p,live(p)]));\n const owners=[...new Set([...sourceEpoch.proof.owners,...added])];",
+       "after": " const paths=[...Object.keys(sourceEpoch.proof.current),...added].filter(p=>p!==retiredControllerPath);\n const replayInput=reviewedRenamedStsStyleRead(live);\n const current=Object.fromEntries(paths.map(p=>[p,replayInput(p)]));\n const owners=[...new Set([...sourceEpoch.proof.owners,...added])];"
+     },
+     {
+       "at": 141,
+       "before": "\ntest('exact production length rejection preserves full byte checks and fresh owner admission',async()=>{\n const {beforeCurrentReplayFixes}=await import('./helpers/current-replay-fix-sources.mjs');\n const {authenticateUiEntrance}=await import('./helpers/ui-entrance-source.mjs');",
+       "after": "\nconst replayCurrentEntranceSource=(path,source)=>\n beforeCurrentReplayFixes(path,beforeChapterBattleScene(path,beforeKnownMasterBackflowSource(path,source)));\nfunction assertCurrentEntranceReads(reads){\n assert.equal(reads.length,32);\n assert.equal(hash(JSON.stringify(reads)),'2d497af031c556a9bb98696393e95f63dce03b9d43d5229926bd3a0af159d2ba');\n // Preserve all 20 original observations, with the linked portrait and Prologue rereads interleaved.\n const additionalReads=new Set([3,4,9,10,16,18,19,20,21,22,30,31]);\n const originalReads=reads.filter((_,index)=>!additionalReads.has(index));\n assert.equal(hash(JSON.stringify(originalReads)),'8752e6ec0e000516387d48cf7a098cf5ffeba61d3db3b17d6d8af78c0396b35c');\n}\n\ntest('exact production length rejection preserves full byte checks and fresh owner admission',async()=>{\n const {authenticateUiEntrance}=await import('./helpers/ui-entrance-source.mjs');"
+     },
+     {
+       "at": 162,
+       "before": "  const source=readFileSync(path,'utf8').replaceAll('\\r\\n','\\n');\n  const prior=beforeCurrentReplayFixes(path,source);assert.notEqual(prior,source);assert.equal(hash(prior),expected);\n  const crlf=source.replaceAll('\\n','\\r\\n');\n  assert.equal(beforeCurrentReplayFixes(path,crlf),prior.replaceAll('\\n','\\r\\n'));\n  const sameLength=source.slice(0,-1)+'!';assert.equal(sameLength.length,source.length);\n  for(const unknown of [source.slice(1),source+'\\n',sameLength,source.replaceAll('\\n','\\r\\r\\n')])\n   assert.equal(beforeCurrentReplayFixes(path,unknown),unknown,'unknown complete bytes cannot project');\n  const bytes=Buffer.from(source);assert.equal(beforeCurrentReplayFixes(path,bytes),bytes,'Buffer inputs remain outside this string-only inverse');\n  assert.equal(beforeCurrentReplayFixes('foreign/'+path,source),source,'path remains part of the exact identity');\n  assert.equal(beforeCurrentReplayFixes(path,source),prior,'unknown inputs do not alter the exact projection');\n }",
+       "after": "  const source=readFileSync(path,'utf8').replaceAll('\\r\\n','\\n');\n  const prior=replayCurrentEntranceSource(path,source);assert.notEqual(prior,source);assert.equal(hash(prior),expected);\n  const crlf=source.replaceAll('\\n','\\r\\n');\n  assert.equal(replayCurrentEntranceSource(path,crlf),prior.replaceAll('\\n','\\r\\n'));\n  const sameLength=source.slice(0,-1)+'!';assert.equal(sameLength.length,source.length);\n  for(const unknown of [source.slice(1),source+'\\n',sameLength,source.replaceAll('\\n','\\r\\r\\n')])\n   assert.equal(replayCurrentEntranceSource(path,unknown),unknown,'unknown complete bytes cannot project');\n  const bytes=Buffer.from(source);assert.equal(beforeCurrentReplayFixes(path,bytes),bytes,'Buffer inputs remain outside this string-only inverse');\n  assert.equal(replayCurrentEntranceSource('foreign/'+path,source),source,'path remains part of the exact identity');\n  assert.equal(replayCurrentEntranceSource(path,source),prior,'unknown inputs do not alter the exact projection');\n }"
+     },
+     {
+       "at": 174,
+       "before": " const read=path=>{reads.push(path);const source=readFileSync(path,'utf8');return path===bad?source.replaceAll('\\r\\n','\\n').slice(0,-1)+'!':source;};\n authenticateUiEntrance(read);const first=[...reads];assert.equal(first.length,20);\n reads=[];authenticateUiEntrance(read);assert.deepEqual(reads,first,'warm calls retain every linked read');",
+       "after": " const read=path=>{reads.push(path);const source=readFileSync(path,'utf8');return path===bad?source.replaceAll('\\r\\n','\\n').slice(0,-1)+'!':source;};\n authenticateUiEntrance(read);const first=[...reads];assertCurrentEntranceReads(first);\n reads=[];authenticateUiEntrance(read);assert.deepEqual(reads,first,'warm calls retain every linked read');"
+     },
+     {
+       "at": 184,
+       "before": "test('current view successor requires fresh raw owner bytes before historical projection',async()=>{\n const {beforeCurrentReplayFixes}=await import('./helpers/current-replay-fix-sources.mjs');\n const {authenticateUiEntrance,beforeUiEntrance}=await import('./helpers/ui-entrance-source.mjs');\n const path='src/lua/abyss_game_ui_view.lua',source=readFileSync(path,'utf8').replaceAll('\\r\\n','\\n');\n const prior=beforeCurrentReplayFixes(path,source);\n assert.notEqual(prior,source);assert.equal(hash(prior),'84d9fb22584a5978d5c04170f3b3b145c26ff71865acf53b36b2496f01489ed1');",
+       "after": "test('current view successor requires fresh raw owner bytes before historical projection',async()=>{\n const {authenticateUiEntrance,beforeUiEntrance}=await import('./helpers/ui-entrance-source.mjs');\n const path='src/lua/abyss_game_ui_view.lua',source=readFileSync(path,'utf8').replaceAll('\\r\\n','\\n');\n const prior=replayCurrentEntranceSource(path,source);\n assert.notEqual(prior,source);assert.equal(hash(prior),'84d9fb22584a5978d5c04170f3b3b145c26ff71865acf53b36b2496f01489ed1');"
+     },
+     {
+       "at": 195,
+       "before": " const read=p=>{reads.push(p);return p===path&&bad!==undefined?bad:readFileSync(p,'utf8');};\n authenticateUiEntrance(read);const first=[...reads];assert.equal(first.length,20);\n reads=[];authenticateUiEntrance(read);assert.deepEqual(reads,first);",
+       "after": " const read=p=>{reads.push(p);return p===path&&bad!==undefined?bad:readFileSync(p,'utf8');};\n authenticateUiEntrance(read);const first=[...reads];assertCurrentEntranceReads(first);\n reads=[];authenticateUiEntrance(read);assert.deepEqual(reads,first);"
+     },
+     {
+       "at": 202,
+       "before": " const crlf=source.replaceAll('\\n','\\r\\n');\n assert.equal(beforeCurrentReplayFixes(path,crlf),prior.replaceAll('\\n','\\r\\n'));\n authenticateUiEntrance(p=>p===path?crlf:readFileSync(p,'utf8'));\n for(const drift of [source+'\\n',source.replaceAll('\\n','\\r\\r\\n')])assert.equal(beforeCurrentReplayFixes(path,drift),drift);\n});",
+       "after": " const crlf=source.replaceAll('\\n','\\r\\n');\n assert.equal(replayCurrentEntranceSource(path,crlf),prior.replaceAll('\\n','\\r\\n'));\n authenticateUiEntrance(p=>p===path?crlf:readFileSync(p,'utf8'));\n for(const drift of [source+'\\n',source.replaceAll('\\n','\\r\\r\\n')])assert.equal(replayCurrentEntranceSource(path,drift),drift);\n});"
+     }
+   ]
  },
  "tests/round3-catalog-source-inverse.test.mjs": {
   "current": {
