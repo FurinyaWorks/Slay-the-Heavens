@@ -19,6 +19,7 @@ import {beforeSelectionReceiptSource,selectionCopierReceipt} from './ui-selectio
 import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
 import {beforeRunHudDeckLabel} from './run-hud-successors.mjs';
 import {beforeCardReadingScope} from './chapter-battle-scene-source.mjs';
+import {beforeKnownMasterBackflowSource} from './master-backflow-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const blob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
@@ -192,6 +193,7 @@ export function beforeCurrentHistoricalStsSource(path,source){
   const text=source.toString('utf8'),prior=beforeCurrentHistoricalStsSource(path,text);
   return prior===text?source:Buffer.from(prior);
  }
+ if(path==='tests/integration-source-epoch.test.mjs')source=beforeKnownMasterBackflowSource(path,source);
  // New exact integration tests first continue to the entrance witness's reviewed input.
  if(['tests/integration-source-epoch.test.mjs','tests/helpers/combined-epoch/source-epoch-runtime.mjs',
   'tests/session-menu-navigation.test.mjs','tests/tiny-house-pending-ui.cases.mjs'].includes(path))source=beforeCurrentReplayFixes(path,source);
