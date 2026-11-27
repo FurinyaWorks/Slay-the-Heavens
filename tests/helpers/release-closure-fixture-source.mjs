@@ -1596,7 +1596,7 @@ const fixtures=Object.freeze({
    }
   ]
  },
- // Max HP historical archives still execute the original approved-UI helper.
+ // Preserve the approved pre-Native Controls fixtures for historical UI replay.
  "tests/lua/spike_slime_l_ui.lua": {
   "current": {
    "sha256": "98972176b8ae21b28ee48bfe7f7a15fb2b720f152ceb9bf4847b1a59083f5c05",
@@ -1614,10 +1614,28 @@ const fixtures=Object.freeze({
    }
   ]
  },
+ "tests/lua/slimed_ui.lua": {
+  "current": {
+   "sha256": "62c3e6a414d6d31e4316630326fc76a5dd779145133cf2a5875fb4e203a3f2ec",
+   "gitBlob": "00dde572f5db8b7335087379e2caf4323e333db0"
+  },
+  "previous": {
+   "sha256": "d991810b91d5ee4ba17e0453b6d9702586670a6f7ad53168ee5667fb103f0952",
+   "gitBlob": "ed1ddc308607d289e50647c56dbf9eadf81303a6"
+  },
+  "hunks": [
+   {
+    "at": 0,
+    "before": "-- Real generated controls, not a model of the new status card UI.\npackage.path='src/lua/?.lua;build/lua/?.lua;'..package.path\nlocal H=dofile('tests/lua/support/battle_action_fixture.lua')\nlocal inspectDetails=dofile('tests/lua/support/status_detail_fixture.lua')\nlocal C=H.F.Combat\nlocal host,ui,panel,emit,tap,drain=H.setup({'defend'},{'spike_slime_m'})\nlocal s=host.run.combat;s.enemies[1].intentIndex=1;host:refresh()\nassert(panel:GetChild('enemy1'):GetChild('intent').text=='8')\ntap('enemy1',1);local detail=inspectDetails(ui,panel)\nassert(detail:find('8',1,true) and detail:find('将 1 张「黏滞」放入你的弃牌堆',1,true))\nassert(panel:GetChild('enemy1'):GetChild('intentBadge').visible,'mixed attack must also show its debuff badge')\ntap('endTurn',2);drain();assert(s.player.hp==72)\nlocal slot,uid;for i,c in ipairs(s.hand)do if c.cardId=='slimed' then slot=i;uid=c.uid end end;assert(slot,'real enemy must generate drawn Slimed')\nlocal box=panel:GetChild('card'..slot)\nassert(box:GetChild('cost').text=='1','visible energy cost')\nassert(box:GetChild('name').text=='黏滞','approved traveler display name')\nassert(box:GetChild('label').text:find('1',1,true),'rendered cost in explanation')\ntap('card'..slot,3);assert(ui.selected==uid);tap('playArea',4);drain()\nassert(s.energy==2 and #s.exhaust==1 and s.exhaust[1].uid==uid,'field-confirmed status play exhausts once')\n-- Repeated stale Up/Click cannot play the moved-out card or charge energy twice.\nemit('card'..slot,'up',4);emit('card'..slot,'click',4);drain();assert(s.energy==2 and #s.exhaust==1)\nprint('SLIMED_GENERATED_UI_PASS intent/detail/generated-draw/cost/field-confirm/exhaust/repeat')",
+    "after": "local monsterControl=dofile('tests/lua/support/monster_control_fixture.lua')\n-- Real generated controls, not a model of the new status card UI.\npackage.path='src/lua/?.lua;build/lua/?.lua;'..package.path\nlocal H=dofile('tests/lua/support/battle_action_fixture.lua')\nlocal inspectDetails=dofile('tests/lua/support/status_detail_fixture.lua')\nlocal C=H.F.Combat\nlocal host,ui,panel,emit,tap,drain=H.setup({'defend'},{'spike_slime_m'})\nlocal s=host.run.combat;s.enemies[1].intentIndex=1\ns=C.copy(s);host.run.combat=s;host:refresh()\nassert(monsterControl(panel,'enemy1'):GetChild('intent').text=='8')\ntap('enemy1',1);local detail=inspectDetails(ui,panel)\nassert(detail:find('这名敌人将要对你施加负面效果并攻击造成 8 点伤害。',1,true))\ndofile('tests/lua/support/intent_face_assertion.lua')(monsterControl(panel,'enemy1'),require('abyss_battle_intent_view').intentView(s,1))\ntap('endTurn',2);drain();assert(s.player.hp==72)\nlocal slot,uid;for i,c in ipairs(s.hand)do if c.cardId=='slimed' then slot=i;uid=c.uid end end;assert(slot,'real enemy must generate drawn Slimed')\nlocal box=panel:GetChild('card'..slot)\nassert(box:GetChild('cost').text=='1','visible energy cost')\nassert(box:GetChild('name').text=='黏滞','approved traveler display name')\nassert(box:GetChild('label').text:find('1',1,true),'rendered cost in explanation')\ntap('card'..slot,3);assert(ui.selected==uid);tap('playArea',4);drain()\nassert(s.energy==2 and #s.exhaust==1 and s.exhaust[1].uid==uid,'field-confirmed status play exhausts once')\n-- Repeated stale Up/Click cannot play the moved-out card or charge energy twice.\nemit('card'..slot,'up',4);emit('card'..slot,'click',4);drain();assert(s.energy==2 and #s.exhaust==1)\nprint('SLIMED_GENERATED_UI_PASS intent/detail/generated-draw/cost/field-confirm/exhaust/repeat')"
+   }
+  ]
+ },
+ // Max HP historical archives still execute the original approved-UI helper.
  "tests/helpers/approved-ui-inverse.mjs": {
   "current": {
-   "sha256": "a34d2d9b8c2a2feb4ccc4e56bdab8b47d7c50d149596175e7f3bf839781df053",
-   "gitBlob": "7bc7ba291ab54c3f48067ba2a4225dbfe3e45958"
+   "sha256": "515cc86198104355318e98e8d17aa614a6600cd3f6fa7f6b19b817f81a77d354",
+   "gitBlob": "3648a38052cc1f5ad1cb0a9299722d5b687cf733"
   },
   "previous": {
    "sha256": "5d6fab1429f81bf072cfa72e63d520b1e5d0dc1cf8faf9d8353c6bae3b1b15c8",
@@ -1637,7 +1655,7 @@ const fixtures=Object.freeze({
    {
     "at": 74,
     "before": "export function preApprovedUiOuterSource(path,source){\n source=preBattleLifeSource(path,source);\n return approvedUi.files[path]?preEventProductionSource(path,preRelicViewUiSource(path,preHeroVisualSource(path,source))):source;",
-    "after": "export function preApprovedUiOuterSource(path,source){\n source=preNemesisControlFixture(path,preBattleLifeSource(path,source));\n if(path==='tests/lua/spike_slime_l_ui.lua')source=beforeReleaseClosureFixture(path,source);\n return approvedUi.files[path]?preEventProductionSource(path,preRelicViewUiSource(path,preHeroVisualSource(path,source))):source;"
+    "after": "export function preApprovedUiOuterSource(path,source){\n source=preNemesisControlFixture(path,preBattleLifeSource(path,source));\n return approvedUi.files[path]?preEventProductionSource(path,preRelicViewUiSource(path,preHeroVisualSource(path,source))):source;"
    }
   ]
  },
@@ -1777,6 +1795,21 @@ const permanentDeckRuntimeFixture=Object.freeze({
  ]
 });
 
+const approvedSpikeUiAdapter=Object.freeze({
+ "path": "tests/helpers/approved-ui-inverse.mjs",
+ "current": {
+  "sha256": "6c620a9daa387bcde9958b19e39f9fa34d2159466ee714085c1944e86d5a7c20",
+  "gitBlob": "cb5b83798b46879874e42243e4fab43fd4096c73"
+ },
+ "hunks": [
+  {
+   "at": 75,
+   "before": " source=preNemesisControlFixture(path,preBattleLifeSource(path,source));",
+   "after": " source=preNemesisControlFixture(path,preBattleLifeSource(path,source));\n if(path==='tests/lua/spike_slime_l_ui.lua'||path==='tests/lua/slimed_ui.lua')\n  source=beforeReleaseClosureFixture(path,source);"
+  }
+ ]
+});
+
 export function beforeReleaseClosureFixture(path,raw,{reviewedBuild=false}={}){
  // Current integration authenticates the live delivery owner through its own archive.
  if(path==='scripts/verify-delivery.mjs'&&!reviewedBuild)return raw;
@@ -1791,6 +1824,13 @@ export function beforeReleaseClosureFixture(path,raw,{reviewedBuild=false}={}){
   const previous=fixtures[path].current;
   const predecessor=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,source);
   assert(exactSourceMatches(predecessor,previous),'exact frozen Selection Fade fixture');
+  source=source===normalized?predecessor:predecessor.replaceAll('\n','\r\n');
+ }
+ if(path===approvedSpikeUiAdapter.path&&exactSourceMatches(source,approvedSpikeUiAdapter.current)){
+  const {current,hunks}=approvedSpikeUiAdapter;
+  const previous=fixtures[path].current;
+  const predecessor=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,source);
+  assert(exactSourceMatches(predecessor,previous),'exact prior approved UI adapter');
   source=source===normalized?predecessor:predecessor.replaceAll('\n','\r\n');
  }
  if(path==='tests/official-assets-runtime.test.mjs'&&exactSourceMatches(source,permanentDeckRuntimeFixture.current)){
