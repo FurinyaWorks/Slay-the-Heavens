@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const {execFileSync}=require('node:child_process');const {join}=require('node:path');const {pathToFileURL}=require('node:url');function block(error){const message='[收工检查] 无法启动检查 '+error.message.slice(0,500);let retry=false;try{retry=JSON.parse(require('node:fs').readFileSync(0,'utf8'))?.stop_hook_active===true}catch{}if(retry){console.log(JSON.stringify({continue:false,stopReason:'收工检查无法启动，此轮阻塞。',systemMessage:message}))}else{console.error(message);process.exitCode=2}}try{const root=execFileSync('git',['rev-parse','--show-toplevel'],{encoding:'utf8',stdio:['ignore','pipe','pipe'],timeout:5000}).replace(process.platform==='win32'?/\\r?\\n$/:/\\n$/,'');import(pathToFileURL(join(root,'.codex','hooks','stop-checks.mjs')).href).catch(block)}catch(error){block(error)}\"",
+            "timeout": 180
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const {execFileSync}=require('node:child_process');const {join}=require('node:path');const {pathToFileURL}=require('node:url');function block(error){const message='[收工检查] 无法启动检查 '+error.message.slice(0,500);let retry=false;try{retry=JSON.parse(require('node:fs').readFileSync(0,'utf8'))?.stop_hook_active===true}catch{}if(retry){console.log(JSON.stringify({continue:false,stopReason:'收工检查无法启动，此轮阻塞。',systemMessage:message}))}else{console.error(message);process.exitCode=2}}try{const root=execFileSync('git',['rev-parse','--show-toplevel'],{encoding:'utf8',stdio:['ignore','pipe','pipe'],timeout:5000}).replace(process.platform==='win32'?/\\r?\\n$/:/\\n$/,'');import(pathToFileURL(join(root,'.codex','hooks','stop-checks.mjs')).href).catch(block)}catch(error){block(error)}\"",
+            "timeout": 180
+          }
+        ]
+      }
+    ]
+  }
+}
