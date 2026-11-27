@@ -500,19 +500,30 @@ export function bindDevelopBackflow(read,historicalOwners){
   },
  };
 }
-function beforePriorDevelopBackflow(path,source){
- source=beforeVocabularyOwner(path,beforeMatchEventRepair(path,source));
+function beforePriorLayers(path,source){
  return layers.reduce((prior,layer)=>predecessor(layer,path,prior),source);
+}
+function beforePriorDevelopBackflow(path,source){
+ return beforePriorLayers(path,beforeVocabularyOwner(path,beforeMatchEventRepair(path,source)));
 }
 const forethoughtOwners=[deckPath,'scripts/deck-ui-layout.mjs'];
 const pileOpenOwners=[...forethoughtOwners,'src/lua/abyss_card_skin.lua'];
 function authenticatePriorDevelopBackflow(path,source,read){
  const repaired=beforeMatchEventRepair(path,source);
  const matchSuccessor=repaired!==source;
- source=repaired;
- const prior=beforePriorDevelopBackflow(path,source);
- if(prior===source)return source;
- const row=layers.find(layer=>Object.hasOwn(layer,path)&&matches(source,layer[path].after))[path];
+ const vocabularyPrior=beforeVocabularyOwner(path,repaired);
+ const prior=beforePriorLayers(path,vocabularyPrior);
+ const vocabularySuccessor=vocabularyPrior!==repaired;
+ const checkVocabulary=live=>{
+  assert(uniformSource(live)&&live.replaceAll('\r\n','\n')===repaired.replaceAll('\r\n','\n'),
+   'combined linked owner identity: '+path+' changed during Develop vocabulary validation');
+  return beforeVocabularyOwner(path,live);
+ };
+ if(prior===vocabularyPrior){
+  if(vocabularySuccessor)checkVocabulary(beforeMatchEventRepair(path,readBackflowOwner(read,path)));
+  return vocabularyPrior;
+ }
+ const row=layers.find(layer=>Object.hasOwn(layer,path)&&matches(vocabularyPrior,layer[path].after))[path];
  const actorOwner=Object.hasOwn(actorFocus.files,path)&&row===actorFocus.files[path];
  const stasisOwner=Object.hasOwn(stasis.files,path)&&(row===stasis.files[path]||(actorOwner&&path===architecturePath));
  const pileOwner=row===pileOpen.files[path];
@@ -526,6 +537,7 @@ function authenticatePriorDevelopBackflow(path,source,read){
    assert(matchSuccessor===(repairedLive!==live),'combined linked owner identity: '+owner+' changed during Match repair validation');
    live=repairedLive;
   }
+  if(owner===path&&vocabularySuccessor)live=checkVocabulary(live);
   const expected=owner===path?row.after:stasisOwner?(priorCurrent(owner)?.after??stasisCurrent[owner]):priorCurrent(owner).after;
   assert(matches(live,expected),'combined linked owner identity: '+owner+' changed during Develop backflow validation');
  }
@@ -584,15 +596,6 @@ function authenticateDevelopBackflowWithReaders(path,source,readLive,readLinked,
  }
  const rawLive=readLive;
  readLive=owner=>owner===deckPath?beforeReleaseDeckPointer(owner,rawLive(owner)):rawLive(owner);
- const actorPrior=actorFocusOwners.includes(path)?beforeVocabularyOwner(path,source):source;
- if(actorPrior!==source){
-  const raw=readBackflowOwner(readLive,path);
-  assert(uniformSource(raw)&&raw.replaceAll('\r\n','\n')===source.replaceAll('\r\n','\n'),
-   'combined linked owner identity: '+path+' changed during Actor/Focus vocabulary validation');
-  const readRaw=readLive;
-  readLive=owner=>owner===path?beforeVocabularyOwner(owner,readRaw(owner)):readRaw(owner);
-  source=actorPrior;
- }
  const libraryPrior=beforeLibraryReadPrompt(path,source);
  if(libraryPrior!==source){
   const live=readBackflowOwner(readLive,path);
