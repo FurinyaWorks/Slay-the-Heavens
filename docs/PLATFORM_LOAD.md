@@ -50,7 +50,7 @@ CI 与 package 的历史回放使用 `tests/helpers/platform-load-wiring.mjs` �
 npm run verify:platform-load -- <最终candidate.json> <official-load.json>
 ```
 
-未提供证据返回 `UNVERIFIED`；不匹配、超限、缺报告、未验收、存在未解决项则 `BLOCKED`，均非零退出。报告写入 `build/platform-load-release.json`，验证异常也覆盖旧报告，不能留下旧 PASS。CLI 重算候选 hash、当前生产 payloadDigest并复验候选专属精绘来源，证据必须匹配 sourceCommit、buildId、candidateSha256、payloadDigest，且候选必须来自干净源码及已有 `--release-candidate` 冻结流程。普通开发 PR 不运行这个官方证据门禁。
+未提供证据返回 `UNVERIFIED`；不匹配、超限、缺报告、未验收、存在未解决项则 `BLOCKED`，均非零退出。报告写入 `build/platform-load-release.json`，验证异常也覆盖旧报告，不能留下旧 PASS。CLI 重算候选 hash、当前生产 payloadDigest并复验候选专属精绘来源，证据必须匹配 sourceCommit、buildId、candidateSha256、payloadDigest，且候选必须来自干净的冻结源码，回执须包含冻结发布说明摘要。发布操作人从 [GIL build](GIL-CANDIDATE.md) 的正式工件取回回执与 GIL，并确认它对应 `release-ci verify` 中的精确工件。普通开发 PR 不运行这个官方证据门禁。
 
 证据 JSON 顶层字段如下（完整可用字段合同见 `scripts/platform-load.mjs` 和拒绝测试 `tests/platform-load.test.mjs`）：
 

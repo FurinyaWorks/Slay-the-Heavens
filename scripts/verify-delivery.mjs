@@ -1,7 +1,7 @@
 import { readFileSync, mkdirSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { randomUUID, createHash } from 'node:crypto';
-import {inflateRawSync} from 'node:zlib';
+import {readVerifiedArtifactZip} from './verified-artifact-zip.mjs';
 import {tmpdir} from 'node:os';
 import {isDeepStrictEqual} from 'node:util';
 import { spawnSync } from 'node:child_process';
@@ -387,25 +387,8 @@ function nativeReviewErrors(preflight){
 // A custom download adapter supplies the original ZIP bytes. Its API digest is
 // the ZIP digest, not a digest of JSON an adapter has reconstructed.
 function nativeProofZip(bytes,artifact){
-  if(!Buffer.isBuffer(bytes)&&!(bytes instanceof Uint8Array))throw Error('Native proof adapter must return original ZIP bytes');
-  bytes=Buffer.from(bytes);
-  if(artifact.digest!=='sha256:'+createHash('sha256').update(bytes).digest('hex'))throw Error('Native proof ZIP digest differs from immutable artifact');
-  const end=bytes.lastIndexOf(Buffer.from([80,75,5,6]));
-  if(end<0||end+22>bytes.length||bytes.readUInt16LE(end+10)!==1)throw Error('Native proof artifact must contain exactly one JSON file');
-  const offset=bytes.readUInt32LE(end+16);
-  if(offset+46>end||bytes.readUInt32LE(offset)!==0x02014b50)throw Error('Malformed native proof ZIP directory');
-  const method=bytes.readUInt16LE(offset+10),size=bytes.readUInt32LE(offset+24),compressed=bytes.readUInt32LE(offset+20);
-  const nameSize=bytes.readUInt16LE(offset+28),local=bytes.readUInt32LE(offset+42);
-  const name=bytes.subarray(offset+46,offset+46+nameSize).toString('utf8');
-  if(name!=='native-ai-review-proof.json'||bytes.readUInt16LE(offset+8)&1||![0,8].includes(method)||size>32*1024*1024||
-    local+30>offset||bytes.readUInt32LE(local)!==0x04034b50||bytes.readUInt16LE(local+8)!==method)
-    throw Error('Unexpected native proof ZIP entry');
-  const localName=bytes.readUInt16LE(local+26),start=local+30+localName+bytes.readUInt16LE(local+28);
-  if(bytes.subarray(local+30,local+30+localName).toString('utf8')!==name||start+compressed>offset)
-    throw Error('Native proof ZIP entry differs from its directory');
-  const data=method===0?bytes.subarray(start,start+compressed):inflateRawSync(bytes.subarray(start,start+compressed),{maxOutputLength:size});
-  if(data.length!==size)throw Error('Native proof ZIP JSON size differs');
-  return data;
+ const name='native-ai-review-proof.json';
+ return readVerifiedArtifactZip(bytes,artifact,[name],32*1024*1024)[name];
 }
 
 export function resolveNativePreflight(intent,query=gh,{loadProof}={}){

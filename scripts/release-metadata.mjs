@@ -36,6 +36,10 @@ function validate(metadata) {
       (metadata.artifact.name !== null && (typeof metadata.artifact.name !== 'string' || !metadata.artifact.name.trim()))) {
     throw Error('Invalid build artifact metadata');
   }
+  if (Object.hasOwn(metadata.artifact, 'actions_id') &&
+      (!Number.isSafeInteger(metadata.artifact.actions_id) || metadata.artifact.actions_id <= 0)) {
+    throw Error('Invalid immutable GitHub Actions artifact ID');
+  }
   return metadata;
 }
 
@@ -43,7 +47,7 @@ export function formatMetadata(metadata) {
   return [marker, '```json', JSON.stringify(validate(metadata), null, 2), '```'].join('\n');
 }
 
-function readMetadata(body = '') {
+export function readMetadata(body = '') {
   const source = (body ?? '').replace(/\r\n/g, '\n');
   if (!source.includes(marker)) return null;
   const match = block.exec(source);
@@ -63,7 +67,7 @@ function verifyBuild(release, metadata, commit, version) {
   return metadata;
 }
 
-export function prepareMetadata(tag, build, previous, name, candidateCommit, sha256) {
+export function prepareMetadata(tag, build, previous, name, candidateCommit, sha256, artifactId) {
   const { version, commit } = build;
   if (tag !== `engine-v${version}` || commit !== candidateCommit) {
     throw Error('Engineering tag must match the accepted build version and commit');
@@ -74,7 +78,9 @@ export function prepareMetadata(tag, build, previous, name, candidateCommit, sha
     throw Error('Expected one SemVer increment from the previous engineering version');
   }
   if (typeof name !== 'string' || !name.trim()) throw Error('Expected an asset name for the accepted build');
-  return validate({ version, platform_version: null, release_type: releaseTypes[index], commit, artifact: { name, sha256 } });
+  const artifact = { name, sha256 };
+  if (artifactId !== undefined) artifact.actions_id = artifactId;
+  return validate({ version, platform_version: null, release_type: releaseTypes[index], commit, artifact });
 }
 
 export function verifyMetadata(release, commit, version) {
@@ -121,16 +127,18 @@ function main([command, ...args]) {
     const releases = rows.trim().split('\n').filter(Boolean).map(line => JSON.parse(line));
     return JSON.stringify(readMappings(releases, args.length === 1), null, 2);
   }
-  if (command === 'prepare' && args.length === 5) {
-    const [tag, previous, name, commit, sha256] = args;
-    return formatMetadata(prepareMetadata(tag, readEngineeringTag(tag), previous, name, commit, sha256));
+  if (command === 'prepare' && [5, 6].includes(args.length)) {
+    const [tag, previous, name, commit, sha256, id] = args;
+    if (id !== undefined && !/^[1-9][0-9]*$/.test(id)) throw Error('Invalid immutable GitHub Actions artifact ID');
+    return formatMetadata(prepareMetadata(tag, readEngineeringTag(tag), previous, name, commit, sha256,
+      id === undefined ? undefined : Number(id)));
   }
   if (command === 'verify' && args.length === 1 && /^[1-9]\d*$/.test(args[0])) {
     const release = githubObject(`${repo}/releases/${args[0]}`);
     const { commit, version } = readEngineeringTag(release.tag_name);
     return formatMetadata(verifyMetadata(release, commit, version));
   }
-  throw Error('Usage: release-metadata.mjs list [--include-drafts] | prepare <tag> <previous-version> <asset-name> <candidate-commit> <candidate-sha256> | verify <release-id>');
+  throw Error('Usage: release-metadata.mjs list [--include-drafts] | prepare <tag> <previous-version> <asset-name> <candidate-commit> <candidate-sha256> [<gil-artifact-id>] | verify <release-id>');
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {

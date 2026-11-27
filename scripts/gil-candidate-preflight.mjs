@@ -10,6 +10,8 @@ export const profile = 'official-assets-battle-v3';
 export const sha = /^[a-f0-9]{40}$/;
 export const digest = /^[a-f0-9]{64}$/;
 const offlineWorkKey = 'offline-candidate';
+const validReleaseWorkKey = value => typeof value === 'string' &&
+  /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value) && !['alpha-test', 'offline-performance'].includes(value);
 const hash = data => createHash('sha256').update(data).digest('hex');
 
 export class GateError extends Error {}
@@ -27,13 +29,31 @@ export function candidateTarget(branch, source) {
 
 export function validationTarget(repository, ref, source) {
   requireGate(sha.test(source), 'Validation requires an exact source SHA.');
-  const version = /^refs\/tags\/(?:engine-)?(v(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))$/.exec(ref)?.[1];
   const primary = repository === String(repositoryId) &&
-    (version || /^refs\/heads\/(?:develop|master|release\/.+|test\/gil-build\/.+)$/.test(ref));
+    /^refs\/heads\/(?:develop|master|test\/gil-build\/.+)$/.test(ref);
   const fork = repository === '1460133275' && /^refs\/heads\/ci\/full\/gil-build\/[a-z0-9][a-z0-9._-]*$/.test(ref);
   requireGate(primary || fork, 'Validation requires an enabled primary ref or the assigned Fork B validation branch.');
-  if (version) return { branch: ref.slice('refs/tags/'.length), version };
   return { branch: ref.slice('refs/heads/'.length) };
+}
+
+export function releaseBuildTarget({ repoId, ref, controllerSha, source, branch, event, upstream }) {
+  const frozen = /^(?:release|hotfix)\//.test(branch ?? '');
+  if (!frozen && event !== 'workflow_run') return;
+  requireGate(repoId === String(repositoryId), 'A formal GIL requires the primary repository.');
+  if (event === 'workflow_run') {
+    requireGate(ref === 'refs/heads/develop' &&
+      upstream?.repository?.id === repositoryId && upstream.head_repository?.id === repositoryId &&
+      upstream.event === 'workflow_dispatch' && upstream.status === 'completed' && upstream.conclusion === 'success' &&
+      ['.github/workflows/quality.yml', '.github/workflows/licenses.yml'].includes(upstream.path) &&
+      upstream.head_branch === branch && upstream.head_sha === source,
+      'Automatic GIL requires a successful primary, manually dispatched release gate.');
+  } else {
+    requireGate(['push', 'workflow_dispatch'].includes(event) && ref === `refs/heads/${branch}` && controllerSha === source,
+      'Release GIL input must match the trusted workflow checkout.');
+  }
+  const target = candidateTarget(branch, source);
+  requireGate(target.version, 'A formal GIL requires a frozen release or hotfix branch.');
+  return target;
 }
 
 export async function verifyFrozenHead(api, branch, source) {
@@ -110,6 +130,21 @@ export function buildOnlyRequest(sourceSha, policy, { branch, version }) {
     workKey: offlineWorkKey, node: '24.18.0', python: '3.12.10' };
   const identity = { sourceSha, baseSha256: legacyGilArchive.sha256, toolCommit, encoderSha256, branch, version,
     configuration, policy, archive: false };
+  return { ...identity, id: hash(JSON.stringify(identity)) };
+}
+
+export function releaseBuildRequest(configuredWorkKey, sourceSha, { branch, version }, checks, checkedFiles) {
+  requireGate(version && candidateTarget(branch, sourceSha).version === version,
+    'A release Artifact requires a frozen engineering version.');
+  const workKey = (configuredWorkKey ?? '') === '' ? offlineWorkKey : configuredWorkKey;
+  requireGate(validReleaseWorkKey(workKey), 'GIL_PRODUCTION_WORK_KEY must be a valid non-Alpha release work key when set.');
+  requireGate(checks && [checks.quality, checks.qualityAttempt, checks.qualityCheckoutArtifact, checks.licenses]
+    .every(value => Number.isSafeInteger(value) && value > 0) &&
+    Array.isArray(checkedFiles) && checkedFiles.length > 0 && checkedFiles.every(value => digest.test(value)),
+    'A release Artifact requires exact Full, checkout, Licenses and build policy identities.');
+  const configuration = { profile, nativePageLifecycle: true, releaseCandidate: true, workKey, node: '24.18.0', python: '3.12.10' };
+  const identity = { sourceSha, baseSha256: legacyGilArchive.sha256, toolCommit, encoderSha256, branch, version, configuration,
+    custody: 'gil-build-v1', checks, checkedFiles };
   return { ...identity, id: hash(JSON.stringify(identity)) };
 }
 

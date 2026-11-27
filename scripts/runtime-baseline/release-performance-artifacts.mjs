@@ -1,9 +1,8 @@
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
-import {lstatSync, mkdtempSync, readFileSync, readdirSync, rmSync} from 'node:fs';
-import {tmpdir} from 'node:os';
-import {join} from 'node:path';
+import {readVerifiedArtifactZip} from '../verified-artifact-zip.mjs';
+import {legacyGilArchive} from './published-baseline.mjs';
 
 const repository = 'FurinyaWorks/Slay-the-Heavens';
 const repo = '/repos/' + repository;
@@ -19,38 +18,40 @@ export function assertFullMatches(gil, full) {
     'Audited GIL and current frozen Full run, attempt or checkout artifact differ');
 }
 
-export function loadArtifact(locator, names) {
-  const directory = mkdtempSync(join(tmpdir(), 'sth-release-performance-'));
-  try {
-    execFileSync('gh', ['run', 'download', String(locator.runId), '--repo', repository, '--name', locator.name, '--dir', directory],
-      {encoding:'utf8', timeout:60_000, maxBuffer:1024 * 1024});
-    assert.deepEqual(readdirSync(directory).sort(), [...names].sort(), 'Trusted artifact file set changed');
-    return Object.fromEntries(names.map(name => {
-      const file = join(directory, name);
-      const stat = lstatSync(file);
-      assert(stat.isFile() && stat.size > 0 && stat.size <= 64 * 1024 ** 2, 'Unexpected file in trusted artifact');
-      return [name, readFileSync(file)];
-    }));
-  } finally {
-    rmSync(directory, {recursive:true, force:true});
-  }
+const maxArchiveBytes = 128 * 1024 ** 2;
+const readGitHub = endpoint => execFileSync('gh', ['api', endpoint], {timeout:60_000, maxBuffer:maxArchiveBytes});
+
+export function loadArtifact(locator, names, download = readGitHub) {
+  assert(validId(locator.id), 'GitHub artifact ID required');
+  const endpoint = repo + '/actions/artifacts/' + locator.id;
+  const artifact = JSON.parse(download(endpoint));
+  assert(artifact.id === locator.id && artifact.name === locator.name && artifact.digest === locator.digest &&
+    artifact.workflow_run?.id === locator.runId && artifact.expired === false &&
+    Date.parse(artifact.expires_at) > Date.now() &&
+    validId(artifact.size_in_bytes) && artifact.size_in_bytes <= maxArchiveBytes, 'Immutable API Artifact record changed or has an invalid size');
+  return readVerifiedArtifactZip(download(endpoint + '/zip'), artifact, names);
 }
 
 export async function readRunArtifact(request, id, expected) {
   assert(validId(id), 'GitHub artifact ID required');
   const artifact = await request(repo + '/actions/artifacts/' + id);
   const runId = artifact?.workflow_run?.id;
-  assert(artifact?.id === id && expected.name.test(artifact.name) && artifact.expired === false &&
+  const producers = Array.isArray(expected) ? expected : [expected];
+  assert(artifact?.id === id && producers.some(producer => producer.name.test(artifact.name) &&
+    artifact.workflow_run?.head_branch === producer.branch) && artifact.expired === false &&
     Date.parse(artifact.expires_at) > Date.now() && /^sha256:[a-f0-9]{64}$/.test(artifact.digest) &&
     artifact.workflow_run.repository_id === repositoryId && artifact.workflow_run.head_repository_id === repositoryId &&
-    artifact.workflow_run.head_branch === expected.branch && validId(runId), 'Active immutable same-project artifact required');
+    validId(runId), 'Active immutable same-project artifact required');
   const run = await request(repo + '/actions/runs/' + runId);
+  const producer = producers.find(candidate => candidate.name.test(artifact.name) &&
+    candidate.path === run?.path && candidate.branch === run.head_branch &&
+    (candidate.events ?? ['workflow_dispatch']).includes(run.event));
   assert(run?.id === runId && validId(run.run_attempt) && run.repository?.id === repositoryId &&
-    run.head_repository?.id === repositoryId && run.path === expected.path && run.event === 'workflow_dispatch' &&
-    run.head_branch === expected.branch && commit.test(run.head_sha) && run.head_sha === artifact.workflow_run.head_sha && run.status === 'completed' &&
+    run.head_repository?.id === repositoryId && producer && run.head_branch === artifact.workflow_run.head_branch &&
+    commit.test(run.head_sha) && run.head_sha === artifact.workflow_run.head_sha && run.status === 'completed' &&
     run.conclusion === 'success', 'Trusted successful workflow run required');
-  if (expected.head) assert.equal(run.head_sha, expected.head, 'Workflow ran outside the frozen source');
-  if (expected.title) assert.equal(run.display_title, expected.title, 'Workflow run request does not match the frozen source');
+  if (producer.head) assert.equal(run.head_sha, producer.head, 'Workflow ran outside the frozen source');
+  if (producer.title) assert.equal(run.display_title, producer.title, 'Workflow run request does not match the frozen source');
   const prefix = repo + '/actions/runs/' + runId + '/attempts/' + run.run_attempt;
   const attempt = await request(prefix);
   assert(attempt?.id === runId && attempt.run_attempt === run.run_attempt && attempt.head_sha === run.head_sha &&
@@ -59,9 +60,10 @@ export async function readRunArtifact(request, id, expected) {
   const {jobs} = await request(prefix + '/jobs?per_page=100');
   assert(Array.isArray(jobs) && jobs.length === 1 && jobs[0].run_attempt === run.run_attempt &&
     jobs[0].head_sha === run.head_sha && jobs[0].conclusion === 'success' &&
-    jobs[0].steps?.some(step => step.name === expected.step && step.conclusion === 'success'),
+    jobs[0].steps?.some(step => step.name === producer.step && step.conclusion === 'success'),
     'Required verified publication step is absent from the trusted workflow attempt');
-  return {id, name:artifact.name, digest:artifact.digest, runId, attempt:run.run_attempt, controllerSha:run.head_sha};
+  return {id, name:artifact.name, digest:artifact.digest, runId, attempt:run.run_attempt, controllerSha:run.head_sha,
+    ...(producer.custody ? {custody:producer.custody} : {})};
 }
 
 function verifyGilFiles(files, locator, target) {
@@ -82,6 +84,11 @@ function verifyGilFiles(files, locator, target) {
     'Production GIL manifest does not certify this frozen source');
   assert.deepEqual(manifest.candidate, {path:'candidate.gil', bytes:files['candidate.gil'].length, sha256:gilSha256});
   assert.deepEqual(receipt.candidate, manifest.candidate, 'Audited candidate files disagree');
+  if (locator.custody) assert(manifest.custody === locator.custody && manifest.archiveApproved === true &&
+    manifest.baseSha256 === legacyGilArchive.sha256 && typeof manifest.parameters.workKey === 'string' &&
+    /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(manifest.parameters.workKey) &&
+    !['alpha-test', 'offline-performance'].includes(manifest.parameters.workKey),
+  'Unified GIL is missing approved published-base production custody');
   assert(receipt.receiptSchema === 'github-actions-gil-v1' && receipt.sourceCommit === target.head &&
     receipt.sourceBranch === target.branch && receipt.sourceDirty === false && receipt.liveWriteEnabled === false &&
     receipt.release?.version === version && receipt.release.workKey && receipt.release.workKey === manifest.parameters.workKey &&
@@ -100,9 +107,15 @@ function verifyGilFiles(files, locator, target) {
 }
 
 export function gilArtifactExpectation(target) {
-  return {name:/^gil-candidate-v[0-9.]+-[a-f0-9]{40}-[a-f0-9]{64}$/,
-    path:'.github/workflows/gil-candidate.yml', branch:'develop',
-    title:'GIL candidate / ' + target.branch + ' / ' + target.head, step:'Verify the archived download'};
+  const shared = {name:/^gil-candidate-v[0-9.]+-[a-f0-9]{40}-[a-f0-9]{64}$/, step:'Verify the archived download'};
+  const unified = {...shared, path:'.github/workflows/gil-build.yml',
+    title:'GIL build / ' + target.branch + ' / ' + target.head, custody:'gil-build-v1'};
+  return [
+    {...shared, path:'.github/workflows/gil-candidate.yml', branch:'develop',
+      title:'GIL candidate / ' + target.branch + ' / ' + target.head},
+    {...unified, branch:target.branch, head:target.head, events:['push', 'workflow_dispatch']},
+    {...unified, branch:'develop', events:['workflow_run']},
+  ];
 }
 
 export async function verifyGilArtifact(request, id, target, load = loadArtifact) {

@@ -2,7 +2,7 @@
 
 Release 日常修复走受影响 Fast；集成完成才按 [CI 候选入口](CI-FAST.md)冻结准确 HEAD 并显式请求一次 Full。正式上线前须执行 `node scripts/release-ci.mjs verify release/<版本> <候选source SHA>` 并保存通过结果；当前 Release HEAD、候选来源或最新 Full 任一变化即重新验收。Release→master 的必需 Quality 会自动校验同一门禁。此入口不创建 Tag、不自动上传或发布，平台与设备验收仍适用。
 
-同一 `release/v<工程版本>` 或 `hotfix/v<工程版本>` 的冻结 Full 和 **GIL candidate** 构建成功后，在 **Performance regression** 选该分支运行 `formal`，将本次有声 GIL 下载链接末尾的数字填入 `gil_artifact_id`。作业根据已确认的平台发布记录独立解析上个正式工程版本、构建源码、源码树与产物摘要。v2.2.0 对应 [v2.1.1 正式构建来源](versions/ENGINEERING.md)。作业下载并校验本次候选和上一版正式 GIL，从两份产物读回并执行实际打包的 Lua，使用实际 UI 与模板索引建立离线 Host 夹具。两边沿用同一玩家路径、六档 Docker 实限及三组正反交错配对。归档 `release-performance-<run>-<attempt>` 的 `report.json`、`evidence.json` 及独立复核。日常受影响 PR 执行轻量 Fast，源码重生成结果用于日常离线诊断。
+同一 `release/v<工程版本>` 或 `hotfix/v<工程版本>` 的冻结 Full 和 Licenses 通过后，从 [GIL build](GIL-CANDIDATE.md) 的成功运行摘要取得唯一正式有声工件。记录工件链接末尾的数字 ID 和 GIL SHA-256。在 **Performance regression** 选该分支运行 `formal`，将该数字填入 `gil_artifact_id`。作业根据已确认的平台发布记录独立解析上个正式工程版本、构建源码、源码树与产物摘要。v2.2.0 对应 [v2.1.1 正式构建来源](versions/ENGINEERING.md)。作业下载并校验本次候选和上一版正式 GIL，从两份产物读回并执行实际打包的 Lua，使用实际 UI 与模板索引建立离线 Host 夹具。两边沿用同一玩家路径、六档 Docker 实限及三组正反交错配对。归档 `release-performance-<run>-<attempt>` 的 `report.json`、`evidence.json` 及独立复核。日常受影响 PR 执行轻量 Fast，源码重生成结果用于日常离线诊断。
 
 正式资源配对在同一档位的独立 Docker 执行中追加第二幕压力场景，两次执行各留实际资源限制和执行 ID。使用受控的第一幕终点，实际点击继续和地图节点，以固定种子进入三名祈火徒的合法阵型。两侧验证满手、一次实际横扫中三名敌人的重叠受击效果、两次敌人回合及退出。候选和同包恢复都须实际绘制批准场景的 249 个可见图元，报告另记旧版实际槽数。v2.1.1 使用共享背景，章节槽数为 0。配对结果衡量同一战斗工作负载下整包的成本，保留新增背景引起的信号。连续游玩稳定性仍需单独验收。
 
@@ -47,10 +47,10 @@ npm run verify:actor-alpha -- <capture.json> <mask-locators.json> <new-report.js
 ### 版本提案、候选与平台确认
 
 1. 按[现有分支通道](BRANCH_LIFECYCLE.md)筹备发布。常规批次用 Actions → **Release proposal (manual only)** → `propose` 手动准备版本 PR。审阅相对上一工程版本的实际交付差异，并同步版本文件和玩家文案。若只发补丁，使用只含目标修复的现有 release/hotfix 通道，按上一正式工程版本升 PATCH。develop 的其他功能不进入补丁批次。Release Please 根据提交类型给出草案，维护者按实际兼容性校对。切换标签命名期间，首次草案从发布线分叉处扫描，可能包含此前已交付的回流提交，按实际候选差异剔除。若上一个工程 Tag 的构建提交不在 develop 祖先链上，Release Please 的扫描范围可能偏大。用 `git diff <上一工程Tag> <候选SHA>` 重核实际交付差异，并修正草案版本和文案。手动归档完成后，如对应提案仍有 `autorelease: pending` 标签，把它换成 `autorelease: tagged`，免得下一提案被旧提案阻塞。
-2. 完成既有冻结、Full、候选构建及同候选平台和设备验收。将不可移动的注释 Tag `engine-v<工程版本>` 指向**实际生成最终产物的提交**，即使之后的 master 合并提交具有相同树，也沿用构建 SHA。旧 `v*` 与归档 Tag 保留。Release Please 手动提案继续跳过 Tag 和 Release 创建。
-3. 用既有工程 Tag 开 GitHub Release 草稿，附上获准分发的最终构建产物。保留同候选构建回执与 GIL 校验值。用 Actions → **Release proposal (manual only)** → `prepare` 输入工程 Tag、上一工程版本、构建回执中的提交与 SHA-256、附件名称。把 Summary 的完整元数据块复制到草稿正文。也可以运行下列只读命令。
-4. 用有权读取草稿的 GitHub CLI 登录账号运行 `verify`，核对 Tag 指向、构建提交的工程版本及 GitHub 附件 SHA-256 与验收产物一致。已公开 Release 也可用该 workflow 的 `verify` 模式，填数字 Release ID。现有 Full 和实机门禁继续适用。
-5. Owner 完成人工平台发布并核对目标作品的成功结果后，将平台实际版号原样写入 `platform_version`，并添加 `platform_evidence`（指向脱敏成功回执的 HTTPS 地址）。回执应能核对作品 ID、版号、上线状态、时间和候选身份。重跑 `verify`，从同一 Release 重新读回。Actions 只校验格式和归档一致性，平台事实以实际成功回执为准。
+2. 完成冻结、完整 CI、GIL build、同包正式性能及平台和设备验收。将不可移动的注释 Tag `engine-v<工程版本>` 指向实际生成最终 GIL 的源码提交。之后的 master 合并提交即使具有同一源码树，也沿用构建 SHA。旧 `v*` 与归档 Tag 保留，Release Please 提案仍跳过 Tag 和 Release 创建。
+3. 用该工程 Tag 开 GitHub Release 草稿。在主仓 `develop` 运行 **Release proposal (manual only)** 的 `prepare`，输入工程 Tag、上一工程版本、最终附件名称、构建源码 SHA、GIL SHA-256 及正式工件数字 ID `gil_artifact_id`。将 Summary 的完整元数据块放入草稿，复核 `commit`、`artifact.sha256` 及 `artifact.actions_id`。
+4. Owner 使用通过验收的同一份 GIL 人工发布官方平台。保存能核对目标作品 ID、实际平台版本、上线状态、时间和候选身份的成功回执。在草稿原样填写 `platform_version`，将脱敏成功回执的 HTTPS 地址填入 `platform_evidence`。
+5. 在主仓 `develop` 运行 **Release proposal (manual only)** 的 `archive`，输入草稿数字 `release_id`。作业校验同一冻结源码、Full、正式性能及原始工件，再将实际 GIL 字节附到这条草稿并复查摘要。沿用原 Tag 和正式工件。归档成功后用 `verify` 读回同一 Release，核对 Tag、工程版本和 GIL SHA-256，再由 Owner 发布 GitHub Release。
 
 ### Release 与 Hotfix 回流结项
 
@@ -68,7 +68,7 @@ gh workflow run release-backflow.yml --ref develop -f master_sha="$(git rev-pars
 
 ### 机器读取与追溯
 
-Release 正文保留一块标记 JSON。以下为待确认的格式示例，提交和摘要均为占位值。
+Release 正文保留一块标记 JSON。以下为平台发布前的草稿示例，提交、摘要和工件 ID 均为示例值。
 
 <!-- release-metadata:v1 -->
 ```json
@@ -79,19 +79,20 @@ Release 正文保留一块标记 JSON。以下为待确认的格式示例，提�
   "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   "artifact": {
     "name": "game.gil",
-    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "actions_id": 1234567890
   }
 }
 ```
 
 ```sh
-node scripts/release-metadata.mjs prepare "$ENGINEERING_TAG" "$PREVIOUS_VERSION" "$ASSET_NAME" "$BUILD_COMMIT" "$BUILD_SHA256"
+node scripts/release-metadata.mjs prepare "$ENGINEERING_TAG" "$PREVIOUS_VERSION" "$ASSET_NAME" "$BUILD_COMMIT" "$BUILD_SHA256" "$GIL_ARTIFACT_ID"
 node scripts/release-metadata.mjs verify "$RELEASE_ID"
 node scripts/release-metadata.mjs list
 node scripts/release-metadata.mjs list --include-drafts
 ```
 
-`list` 分页读取 GitHub Releases API，返回带标记的记录及其实际 Tag、草稿状态和 URL。使用已登录的 GitHub CLI 查询，默认仅返回公开记录。授权维护者可用 `--include-drafts` 查看草稿。由 Release 的 Tag 查源码，用 `commit` 查构建提交，按 `artifact` 与构建回执核对产物。历史记录可保留当年的标签和已核实的构建 SHA；若只留有原始摘要，`artifact.name` 为 `null`，正文链接原始证据，不视为已经通过新发布所需的附件校验。旧源码检查点、无成功凭证的历史编号及试玩草稿不推测平台映射。
+`list` 分页读取 GitHub Releases API，返回带标记的记录及其实际 Tag、草稿状态和 URL。使用已登录的 GitHub CLI 查询，默认仅返回公开记录。授权维护者可用 `--include-drafts` 查看草稿。由 Release 的 Tag 查源码，用 `commit` 查构建提交，按 `artifact` 与构建回执核对产物。历史记录可保留当年的标签和已核实的构建 SHA，旧元数据允许缺少 `artifact.actions_id`；若只留有原始摘要，`artifact.name` 为 `null`，正文链接原始证据，不视为已经通过新发布所需的附件校验。旧源码检查点、无成功凭证的历史编号及试玩草稿不推测平台映射。
 
 ### 官方玩家更新日志
 

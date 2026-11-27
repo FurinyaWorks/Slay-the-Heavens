@@ -1,35 +1,39 @@
 name: GIL build
-run-name: GIL build / ${{ github.ref_name }} / ${{ github.sha }}
+run-name: GIL build / ${{ github.event.workflow_run.head_branch || github.ref_name }} / ${{ github.event.workflow_run.head_sha || github.sha }}
 on:
   push:
-    branches: [develop, master, 'release/**', 'test/gil-build/**', 'ci/full/gil-build/**']
+    branches: [develop, master, 'release/**', 'hotfix/**', 'test/gil-build/**', 'ci/full/gil-build/**']
   workflow_dispatch:
-  release:
-    types: [published]
+  workflow_run:
+    workflows: [Quality, Licenses]
+    types: [completed]
+    branches: ['release/**', 'hotfix/**']
 permissions:
   contents: read
+  actions: read
 concurrency:
-  group: gil-build-${{ github.event_name }}-${{ github.ref }}-${{ github.sha }}
+  group: gil-build-${{ github.event.workflow_run.head_branch || github.ref_name }}-${{ github.event.workflow_run.head_sha || github.sha }}
   cancel-in-progress: false
 jobs:
   build:
     if: >-
       (github.repository_id == '1429751262' &&
-        ((github.event_name == 'release' && github.event.release.prerelease == false) ||
-         github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' ||
-         startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/test/gil-build/'))) ||
+        ((github.event_name == 'workflow_run' && github.ref == 'refs/heads/develop' &&
+          github.event.workflow_run.head_repository.id == github.event.repository.id &&
+          github.event.workflow_run.event == 'workflow_dispatch' && github.event.workflow_run.conclusion == 'success') ||
+         (github.event_name != 'workflow_run' &&
+          (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' ||
+           startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/hotfix/') ||
+           startsWith(github.ref, 'refs/heads/test/gil-build/'))))) ||
       (github.repository_id == '1460133275' && startsWith(github.ref, 'refs/heads/ci/full/gil-build/'))
-    outputs:
-      artifact-name: ${{ steps.download.outputs.artifact-name }}
     runs-on: windows-2025
     timeout-minutes: 45
     env:
       MILIASTRA_ALLOW_LIVE_WRITE: '0'
       MILIASTRA_SAVE_ROOTS: '[]'
       GIT_LFS_SKIP_SMUDGE: '1'
-      PUBLISH_ARTIFACT: 'false'
-      SOURCE_SHA: ${{ github.sha }}
-      SOURCE_REF: ${{ github.ref_name }}
+      SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+      SOURCE_REF: ${{ github.event.workflow_run.head_branch || github.ref_name }}
     steps:
       - name: Start download measurement
         run: |
@@ -38,6 +42,24 @@ jobs:
           git config --global core.autocrlf false
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          path: control
+          persist-credentials: false
+          sparse-checkout: |
+            .github/workflows
+            scripts
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.18.0'
+      - name: Bind the build to its source and release gates
+        id: candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GIL_PRODUCTION_WORK_KEY: ${{ vars.GIL_PRODUCTION_WORK_KEY }}
+        run: node control/scripts/gil-candidate.mjs preflight
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        if: steps.candidate.outputs.build == 'true'
+        with:
+          ref: ${{ env.SOURCE_SHA }}
           path: source
           persist-credentials: false
           sparse-checkout: |
@@ -51,19 +73,13 @@ jobs:
             art/lowpoly-select
             art/performance
             experiments/lumine-native-fit/fit-hybrid-final
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: '24.18.0'
-      - name: Bind the build to the workflow checkout
-        id: candidate
-        run: node source/scripts/gil-candidate.mjs preflight
       - name: Fetch and verify the published project GIL
         if: steps.candidate.outputs.build == 'true'
         working-directory: source
         env:
           GH_TOKEN: ${{ github.token }}
           BASE_SHA256: ${{ steps.candidate.outputs.base_sha256 }}
-        run: node scripts/gil-candidate.mjs base
+        run: node ../control/scripts/gil-candidate.mjs base
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         if: steps.candidate.outputs.build == 'true'
         with:
@@ -92,7 +108,7 @@ jobs:
       - name: Install pinned build dependencies
         if: steps.candidate.outputs.build == 'true'
         run: |
-          node source/scripts/gil-candidate.mjs toolchain
+          node control/scripts/gil-candidate.mjs toolchain
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           npm --prefix miliastra-mcp ci --ignore-scripts --prefer-offline --no-audit --no-fund --fetch-retries=0 --fetch-timeout=30000 --replace-registry-host=always --registry=https://registry.npmjs.org
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -104,7 +120,7 @@ jobs:
         env:
           BASE_SHA256: ${{ steps.candidate.outputs.base_sha256 }}
           CI_LFS_TOKEN: ${{ github.token }}
-        run: node source/scripts/gil-candidate.mjs assets
+        run: node control/scripts/gil-candidate.mjs assets
       - name: Build the complete game with native audio
         if: steps.candidate.outputs.build == 'true'
         working-directory: source
@@ -120,7 +136,7 @@ jobs:
           if ($env:RELEASE_VERSION) { $buildArguments += '--release-candidate' }
           npm run build:native -- @buildArguments *> "$env:RUNNER_TEMP/gil-native.log"
           if ($LASTEXITCODE -ne 0) {
-            node scripts/gil-candidate.mjs diagnose
+            node ../control/scripts/gil-candidate.mjs diagnose
             exit 1
           }
           $seconds = $timer.Elapsed.TotalSeconds.ToString('F1', [Globalization.CultureInfo]::InvariantCulture)
@@ -131,75 +147,46 @@ jobs:
         if: steps.candidate.outputs.build == 'true'
         working-directory: source
         env:
+          GH_TOKEN: ${{ github.token }}
+          GIL_RELEASE_ARTIFACT: ${{ steps.candidate.outputs.archive }}
+          QUALITY_RUN: ${{ steps.candidate.outputs.quality_run }}
+          QUALITY_ATTEMPT: ${{ steps.candidate.outputs.quality_attempt }}
+          QUALITY_CHECKOUT_ARTIFACT: ${{ steps.candidate.outputs.quality_checkout_artifact }}
+          LICENSES_RUN: ${{ steps.candidate.outputs.licenses_run }}
           BASE_SHA256: ${{ steps.candidate.outputs.base_sha256 }}
           WORK_KEY: ${{ steps.candidate.outputs.work_key }}
           REQUEST_ID: ${{ steps.candidate.outputs.request_id }}
           RELEASE_VERSION: ${{ steps.candidate.outputs.release_version }}
         run: |
           $env:MILIASTRA_MCP_ROOT = (Resolve-Path ../miliastra-mcp).Path
-          node scripts/gil-candidate.mjs deliver
+          node ../control/scripts/gil-candidate.mjs deliver
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        if: steps.candidate.outputs.build == 'true' && (github.repository_id != '1429751262' || (github.event_name == 'push' && github.ref == 'refs/heads/develop'))
+        if: steps.candidate.outputs.build == 'true' && steps.candidate.outputs.archive != 'true'
         with:
           name: gil-build-evidence-${{ github.sha }}
           path: source/build/gil-artifact/manifest.json
           if-no-files-found: error
           retention-days: 14
-
-      - name: Name the downloadable candidate
-        id: download
-        if: steps.candidate.outputs.build == 'true' && github.repository_id == '1429751262' && (github.event_name != 'push' || github.ref != 'refs/heads/develop')
-        run: |
-          "artifact-name=Slay-the-Heavens-GIL-$env:GITHUB_SHA-$env:GITHUB_RUN_ATTEMPT" >> $env:GITHUB_OUTPUT
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         id: upload
-        if: steps.download.outputs.artifact-name != ''
+        if: steps.candidate.outputs.build == 'true' && steps.candidate.outputs.archive == 'true'
         with:
-          name: ${{ steps.download.outputs.artifact-name }}
+          name: ${{ steps.candidate.outputs.artifact_name }}
           path: source/build/gil-artifact/
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 90
           compression-level: 0
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         if: steps.upload.outputs.artifact-id != ''
         with:
-          name: ${{ steps.download.outputs.artifact-name }}
+          artifact-ids: ${{ steps.upload.outputs.artifact-id }}
           path: source/build/gil-readback/
       - name: Verify the archived download
         if: steps.upload.outputs.artifact-id != ''
         env:
           ARTIFACT_URL: ${{ steps.upload.outputs.artifact-url }}
+          ARTIFACT_ID: ${{ steps.upload.outputs.artifact-id }}
         run: |
-          node source/scripts/gil-candidate.mjs readback
+          node control/scripts/gil-candidate.mjs readback
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          "[Download the complete GIL]($env:ARTIFACT_URL)" >> $env:GITHUB_STEP_SUMMARY
-
-  attach-release:
-    if: github.repository_id == '1429751262' && github.event_name == 'release' && github.event.release.prerelease == false
-    needs: build
-    permissions:
-      contents: write
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: ${{ needs.build.outputs.artifact-name }}
-          path: gil
-      - name: Attach the verified package to the published release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.event.release.tag_name }}
-          RELEASE_ID: ${{ github.event.release.id }}
-        run: |
-          [[ "$TAG" =~ ^(engine-)?v[0-9]+[.][0-9]+[.][0-9]+$ ]]
-          [[ "$RELEASE_ID" =~ ^[0-9]+$ ]]
-          existing=$(gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" --jq '[.assets[] | select(.state == "uploaded" and (.name | ascii_downcase | endswith(".gil")))] | length')
-          if (( existing > 0 )); then
-            echo "Keeping the GIL already attached to this Release."
-            exit 0
-          fi
-          (cd gil && sha256sum --check SHA256SUMS)
-          asset="Slay-the-Heavens-${TAG#engine-}.gil"
-          cp gil/candidate.gil "$asset"
-          gh release upload "$TAG" "$asset" --repo "$GITHUB_REPOSITORY"
+          "[Download the verified GIL]($env:ARTIFACT_URL) (artifact ID $env:ARTIFACT_ID)" >> $env:GITHUB_STEP_SUMMARY
