@@ -1490,7 +1490,8 @@ for _,amount in ipairs({1,3,5,6,13})do
  assert(grid.visible and visible()==math.min(10,amount) and not panel:GetChild('grid').visible)
  assert(panel:GetChild('pileChrome').visible and not panel:GetChild('header').visible)
  assert(not panel:GetChild('title').visible and not panel:GetChild('browseTitle').visible)
- assert(panel:GetChild('pileChrome'):GetChild('discardBadge').visible)
+ local chrome=panel:GetChild('pileChrome');local heading=chrome:GetChild('heading')
+ assert(heading.visible and heading.text=='弃牌堆' and not chrome:GetChild('discardBadge'))
  assert(panel:GetChild('browserDescription').text=='当抽牌堆被抽空时，这里的牌将会被洗牌并重新放入抽牌堆。')
  assert(not panel:GetChild('rarityTip').visible)
  assert(panel:GetChild('pileReturn').visible and not panel:GetChild('close').visible)
@@ -1506,7 +1507,7 @@ for _,amount in ipairs({1,3,5,6,13})do
  local definition=C.cardDefinition(host.run.combat,instance)
  local preview=C.cardPreview(host.run.combat,instance)
  local expected=require('abyss_card_display').combatText(F.Presentation[instance.cardId],definition,instance,preview,host.run.combat)
- assert(label.text==expected and label.text:find('提升2点伤害。',1,true)
+ assert(label.text==expected and label.text:find('基础伤害增加2点。',1,true)
   and select(2,fit(label.text,{label.sizeDeltaX,label.sizeDeltaY})),
   'component-bound pile face clipped its long body')
  local shared=sharedFace(face)
