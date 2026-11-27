@@ -1501,7 +1501,15 @@ test('Curses CI outer source views reject partial identities and preserve every 
    assert.equal(jointCiMatches(file,foreign,'officialAssetsFlow'),false);assert.equal(jointCiSourceAt(file,foreign,'officialAssetsFlow'),foreign);
   }
   for(const target of ['componentAliasFix','defectReceipt','formationReceipt','officialFirstReceipt','officialFlowReceipt']){
-   assert.equal(jointCiMatches(file,source,target),false);assert.equal(jointCiSourceAt(file,source,target),source);
+   if(file==='tests/encounter-formation-source-epoch.test.mjs'&&target==='formationReceipt'){
+    // The exact Formation continuation has its own receipt; the sealed Curses source does not.
+    assert.equal(jointCiMatches(file,source,target),true);
+    assert.equal(hash(jointCiSourceAt(file,source,target)),'cc49af6185255c8b877e1fdc0d79028d1f676534fd65a0d1fd28f43536af29c0');
+    assert.equal(jointCiMatches(file,row.current,target),false);
+    assert.equal(jointCiSourceAt(file,row.current,target),row.current);
+   }else{
+    assert.equal(jointCiMatches(file,source,target),false);assert.equal(jointCiSourceAt(file,source,target),source);
+   }
   }
  }
  const file='scripts/ci-test-timings.json',source=diskReadFileSync(file,'utf8'),before=archive.files[file].current;

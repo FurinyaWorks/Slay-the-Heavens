@@ -42,8 +42,8 @@ const posix16Sources={
    "gitBlob": "a69967b62ef5a2df1a36d3589901d75b4fe75634"
   },
   "after": {
-   "sha256": "c69803746dcd6cd97ca674236e675fd2dd191d4a84fa5790e01e358f69c987e5",
-   "gitBlob": "3a372200ca0b6557dc37f215ba74d66719aaf083"
+   "sha256": "6bb186af1cfa4f682246c244ccac839f86e9e61db8c014e0841f5a91906215a2",
+   "gitBlob": "9e60d6b7633ecf704adf266acd2ac2a1bc4d8f17"
   },
   "hunks": [
    {
@@ -62,22 +62,27 @@ const posix16Sources={
     "after": " assert.deepEqual(full38Matrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});\n assert.equal(full38ShardJobs.length,33);assert.equal(full38Jobs.length,38);assert.equal(new Set(full38Jobs).size,38);"
    },
    {
-    "at": 1713,
+    "at": 1503,
+    "before": "   assert.equal(jointCiMatches(file,source,target),false);assert.equal(jointCiSourceAt(file,source,target),source);",
+    "after": "   if(file==='tests/encounter-formation-source-epoch.test.mjs'&&target==='formationReceipt'){\n    // The exact Formation continuation has its own receipt; the sealed Curses source does not.\n    assert.equal(jointCiMatches(file,source,target),true);\n    assert.equal(hash(jointCiSourceAt(file,source,target)),'cc49af6185255c8b877e1fdc0d79028d1f676534fd65a0d1fd28f43536af29c0');\n    assert.equal(jointCiMatches(file,row.current,target),false);\n    assert.equal(jointCiSourceAt(file,row.current,target),row.current);\n   }else{\n    assert.equal(jointCiMatches(file,source,target),false);assert.equal(jointCiSourceAt(file,source,target),source);\n   }"
+   },
+   {
+    "at": 1721,
     "before": " assert.deepEqual(currentQualityShardMatrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});\n assert.equal(currentFullQualityJobs.length,38);",
     "after": " assert.deepEqual(full38Matrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});\n assert.equal(full38Jobs.length,38);"
    },
    {
-    "at": 1883,
+    "at": 1891,
     "before": " assert.deepEqual(currentQualityShardMatrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});\n assert.equal(currentFullQualityJobs.length,38);",
     "after": " assert.deepEqual(full38Matrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});\n assert.equal(full38Jobs.length,38);"
    },
    {
-    "at": 2039,
+    "at": 2047,
     "before": " for(const [platform,count,budget]of [['win32',18,1800000],['linux',15,1200000]]){",
     "after": " const platforms=[['win32',currentQualityShardMatrices.windows.length,1800000],['linux',currentQualityShardMatrices.posix.length,1200000]];\n for(const [platform,count,budget]of platforms){"
    },
    {
-    "at": 2067,
+    "at": 2075,
     "before": " assert.deepEqual(currentQualityShardMatrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:15},(_,i)=>i+1)});\n for(const [platform,count,target,guard]of [['win32',18,1800000,10800000],['linux',15,1200000,5400000]]){",
     "after": " assert.deepEqual(currentQualityShardMatrices,{windows:Array.from({length:18},(_,i)=>i+1),posix:Array.from({length:16},(_,i)=>i+1)});\n assert.equal(currentQualityShardJobs.length,34);\n assert.equal(currentFullQualityJobs.length,39);\n assert.equal(new Set(currentFullQualityJobs).size,39);\n for(const [platform,count,target,guard]of [['win32',18,1800000,10800000],['linux',16,1200000,5400000]]){"
    }
