@@ -682,8 +682,8 @@ const fixtures=Object.freeze({
  },
  "tests/sts-selection-fade.test.mjs": {
   "current": {
-   "sha256": "dd1bd49b30bf240cef6fbc729f470c94cc2eb38f89e130a10c3acc65e628718b",
-   "gitBlob": "4d836e63c5af1a492170626418872b7a1b212275"
+   "sha256": "125fbb29aaa658c84f1858ed81fc30985c656d65aa03a396b5b4b76382f0e9fd",
+   "gitBlob": "23ba59d0554eaf924f1c8c003b5d242820bbe928"
   },
   "previous": {
    "sha256": "5a581dce3b17bffef0e1e736efbe14186d5c4eca2a3d25017b0842d97c859e97",
@@ -694,6 +694,11 @@ const fixtures=Object.freeze({
     "at": 94,
     "before": " const prior=beforeV220SelectionFadeSource(path,lf);\n const read=owner=>beforeV220SelectionFadeSource(owner,readFileSync(owner,'utf8'));\n assert.equal(beforeStsSelectionFade(path,prior),files[path].before);",
     "after": " const prior=beforeV220SelectionFadeSource(path,lf);\n // The entrance and fade validators read current owners at different stages.\n // Only the legacy bootstrap remains outside their current entrance cohort.\n const read=owner=>{\n  const raw=readFileSync(owner,'utf8');\n  return owner==='src/lua/abyss_ui.lua'?beforeV220SelectionFadeSource(owner,raw):raw;\n };\n assert.equal(beforeStsSelectionFade(path,prior),files[path].before);"
+   },
+   {
+    "at": 217,
+    "before": " const source=readFileSync(new URL('./fixtures/page-reveal-pr839.lua',import.meta.url),'utf8');",
+    "after": " const source=readFileSync(new URL('./fixtures/page-reveal-pr839.lua',import.meta.url),'utf8').replaceAll('\\r\\n','\\n');"
    }
   ]
  },

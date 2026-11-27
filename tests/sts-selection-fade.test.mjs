@@ -215,7 +215,7 @@ test('Release UI closeout projection rejects drift and stale owner rereads',asyn
  const path='src/lua/abyss_page_reveal.lua';
  // The inverse authenticates the exact #839 owner. #864 changed the live
  // owner, while the historical predecessor and its rejection rules stayed fixed.
- const source=readFileSync(new URL('./fixtures/page-reveal-pr839.lua',import.meta.url),'utf8');
+ const source=readFileSync(new URL('./fixtures/page-reveal-pr839.lua',import.meta.url),'utf8').replaceAll('\r\n','\n');
  const read=file=>{assert.equal(file,path);return source;};
  const previous=beforeReleaseUiCloseoutSource(path,source,read);
  assert.notEqual(previous,source);
