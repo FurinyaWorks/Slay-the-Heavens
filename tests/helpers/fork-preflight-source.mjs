@@ -1510,6 +1510,8 @@ function beforeReleaseScriptStaticGate(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 export function beforeReviewedBuildInput(path,source,read){
+ if(path==='scripts/official-assets-campaign.lua'||path==='scripts/verify-delivery.mjs')
+  source=beforeReleaseClosureFixture(path,source,{reviewedBuild:true});
  source=beforeForkPush(path,source);
  const reviewed=(owner,raw)=>{
   if(owner.startsWith('src/')||owner==='config/architecture.json')return raw;

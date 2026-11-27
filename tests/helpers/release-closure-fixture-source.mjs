@@ -20,6 +20,125 @@ export const selectionRawEntranceReplay=Object.freeze({
 // Current Host checks exercise production. Historical Host and CI replays
 // preserve the exact earlier test sources from the production backflow.
 const fixtures=Object.freeze({
+ "scripts/verify-delivery.mjs": {
+   "current": {
+     "sha256": "0cc36bf1fc188d5a0cf40163fbeb9fbbd227d1d62d98b991036b83b7d2dbd818",
+     "gitBlob": "70c27b3b02de90afe52a2800b1569181d5d5eb3d"
+   },
+   "previous": {
+     "sha256": "ca30e7b350cb4a2a532177d205541fdec9445a72a744f1f48d9f5312c7da6e03",
+     "gitBlob": "7627104b9c447b4bdd6979754ea34653fdb84816"
+   },
+   "hunks": [
+     {
+       "at": 2,
+       "before": "import { randomUUID, createHash } from 'node:crypto';\nimport {inflateRawSync} from 'node:zlib';\nimport {tmpdir} from 'node:os';",
+       "after": "import { randomUUID, createHash } from 'node:crypto';\nimport {readVerifiedArtifactZip} from './verified-artifact-zip.mjs';\nimport {tmpdir} from 'node:os';"
+     },
+     {
+       "at": 9,
+       "before": "import {projectRepositoryId,currentProjectRepository,projectRepositoryMatches,collectIdentityWitness,identityWitnessValid} from './repository-identity.mjs';\nimport {prFastErrors,collectFastCheckout} from './pr-quality-evidence.mjs';\nimport {syncBacklogCloseout} from './backlog-closeout.mjs';",
+       "after": "import {projectRepositoryId,currentProjectRepository,projectRepositoryMatches,collectIdentityWitness,identityWitnessValid} from './repository-identity.mjs';\nimport {prFastErrors,collectFastCheckout,qualityPendingStatusJob,qualityPendingStatusJobErrors} from './pr-quality-evidence.mjs';\nimport {syncBacklogCloseout} from './backlog-closeout.mjs';"
+     },
+     {
+       "at": 36,
+       "before": "}\nfunction qualityErrors(jobs,{attempt,runId,head,schemaVersion,allowRunningAggregate=false}) {\n  // Collect filter=all, not one attempt: reruns preserve GITHUB_SHA/GITHUB_REF",
+       "after": "}\nfunction qualityErrors(jobs,{attempt,runId,head,schemaVersion,allowRunningAggregate=false,run}) {\n  // Collect filter=all, not one attempt: reruns preserve GITHUB_SHA/GITHUB_REF"
+     },
+     {
+       "at": 49,
+       "before": "    const identity=`${job?.name}:${job?.run_attempt}`;\n    if(!expectedJobs.includes(job?.name)||!positiveId(job?.id)||ids.has(job.id)||identities.has(identity)||\n      !positiveId(job?.run_attempt)||job.run_attempt>attempt||job.run_id!==runId||job.head_sha!==head)",
+       "after": "    const identity=`${job?.name}:${job?.run_attempt}`;\n    if((!expectedJobs.includes(job?.name)&&!(schemaVersion===3&&job?.name===qualityPendingStatusJob))||!positiveId(job?.id)||ids.has(job.id)||identities.has(identity)||\n      !positiveId(job?.run_attempt)||job.run_attempt>attempt||job.run_id!==runId||job.head_sha!==head)"
+     },
+     {
+       "at": 63,
+       "before": "  }\n  return errors;",
+       "after": "  }\n  if(schemaVersion===3)errors.push(...qualityPendingStatusJobErrors(jobs,run));\n  return errors;"
+     },
+     {
+       "at": 213,
+       "before": "  if(!Array.isArray(e.run?.pull_requests)||!e.run.pull_requests.some(pr=>pr?.number===e.prNumber))errors.push('Quality run does not belong to this PR');\n  errors.push(...runErrors(e.run,{head:e.head,event:e.event,runId:e.runId,attempt:e.attempt,repo:e.repo}),...qualityErrors(e.jobs,{attempt:e.attempt,runId:e.runId,head:e.head,schemaVersion:e.schemaVersion}));\n  errors.push(...runErrors(e.currentRun,{head:e.head,event:e.event,runId:e.runId,attempt:e.attempt,repo:e.repo}));",
+       "after": "  if(!Array.isArray(e.run?.pull_requests)||!e.run.pull_requests.some(pr=>pr?.number===e.prNumber))errors.push('Quality run does not belong to this PR');\n  errors.push(...runErrors(e.run,{head:e.head,event:e.event,runId:e.runId,attempt:e.attempt,repo:e.repo}),...qualityErrors(e.jobs,{attempt:e.attempt,runId:e.runId,head:e.head,schemaVersion:e.schemaVersion,run:e.run}));\n  errors.push(...runErrors(e.currentRun,{head:e.head,event:e.event,runId:e.runId,attempt:e.attempt,repo:e.repo}));"
+     },
+     {
+       "at": 256,
+       "before": "  errors.push(...runErrors(e.currentRun,{head:e.commit?.sha,event:'push',runId:e.run?.id,attempt:e.run?.run_attempt,branch:preflight.baseRef,repo:e.repo}));\n  errors.push(...qualityErrors(e.jobs,{attempt:e.run?.run_attempt,runId:e.run?.id,head:e.commit?.sha,schemaVersion:e.schemaVersion}));\n  errors.push(...receiptErrors(e.checkout,e.checkoutArtifact,e.jobs,e.run,e.schemaVersion));",
+       "after": "  errors.push(...runErrors(e.currentRun,{head:e.commit?.sha,event:'push',runId:e.run?.id,attempt:e.run?.run_attempt,branch:preflight.baseRef,repo:e.repo}));\n  errors.push(...qualityErrors(e.jobs,{attempt:e.run?.run_attempt,runId:e.run?.id,head:e.commit?.sha,schemaVersion:e.schemaVersion,run:e.run}));\n  errors.push(...receiptErrors(e.checkout,e.checkoutArtifact,e.jobs,e.run,e.schemaVersion));"
+     },
+     {
+       "at": 277,
+       "before": "    ...runErrors(e.currentRun,{head:arm.head,event:'pull_request',runId:run.id,attempt:run.run_attempt,repo}),\n    ...qualityErrors(e.jobs,{attempt:run.run_attempt,runId:run.id,head:arm.head,schemaVersion:3}),\n    ...receiptErrors(checkout,e.checkoutArtifact,e.jobs,run,3));",
+       "after": "    ...runErrors(e.currentRun,{head:arm.head,event:'pull_request',runId:run.id,attempt:run.run_attempt,repo}),\n    ...qualityErrors(e.jobs,{attempt:run.run_attempt,runId:run.id,head:arm.head,schemaVersion:3,run}),\n    ...receiptErrors(checkout,e.checkoutArtifact,e.jobs,run,3));"
+     },
+     {
+       "at": 298,
+       "before": "    ...runErrors(e.currentRun,{head:mergedSha,event:'merge_group',runId:run.id,attempt:run.run_attempt,repo:arm.repo}),\n    ...qualityErrors(e.jobs,{attempt:run.run_attempt,runId:run.id,head:mergedSha,schemaVersion:3}),\n    ...receiptErrors(e.checkout,e.checkoutArtifact,e.jobs,run,3));",
+       "after": "    ...runErrors(e.currentRun,{head:mergedSha,event:'merge_group',runId:run.id,attempt:run.run_attempt,repo:arm.repo}),\n    ...qualityErrors(e.jobs,{attempt:run.run_attempt,runId:run.id,head:mergedSha,schemaVersion:3,run}),\n    ...receiptErrors(e.checkout,e.checkoutArtifact,e.jobs,run,3));"
+     },
+     {
+       "at": 388,
+       "before": "function nativeProofZip(bytes,artifact){\n  if(!Buffer.isBuffer(bytes)&&!(bytes instanceof Uint8Array))throw Error('Native proof adapter must return original ZIP bytes');\n  bytes=Buffer.from(bytes);\n  if(artifact.digest!=='sha256:'+createHash('sha256').update(bytes).digest('hex'))throw Error('Native proof ZIP digest differs from immutable artifact');\n  const end=bytes.lastIndexOf(Buffer.from([80,75,5,6]));\n  if(end<0||end+22>bytes.length||bytes.readUInt16LE(end+10)!==1)throw Error('Native proof artifact must contain exactly one JSON file');\n  const offset=bytes.readUInt32LE(end+16);\n  if(offset+46>end||bytes.readUInt32LE(offset)!==0x02014b50)throw Error('Malformed native proof ZIP directory');\n  const method=bytes.readUInt16LE(offset+10),size=bytes.readUInt32LE(offset+24),compressed=bytes.readUInt32LE(offset+20);\n  const nameSize=bytes.readUInt16LE(offset+28),local=bytes.readUInt32LE(offset+42);\n  const name=bytes.subarray(offset+46,offset+46+nameSize).toString('utf8');\n  if(name!=='native-ai-review-proof.json'||bytes.readUInt16LE(offset+8)&1||![0,8].includes(method)||size>32*1024*1024||\n    local+30>offset||bytes.readUInt32LE(local)!==0x04034b50||bytes.readUInt16LE(local+8)!==method)\n    throw Error('Unexpected native proof ZIP entry');\n  const localName=bytes.readUInt16LE(local+26),start=local+30+localName+bytes.readUInt16LE(local+28);\n  if(bytes.subarray(local+30,local+30+localName).toString('utf8')!==name||start+compressed>offset)\n    throw Error('Native proof ZIP entry differs from its directory');\n  const data=method===0?bytes.subarray(start,start+compressed):inflateRawSync(bytes.subarray(start,start+compressed),{maxOutputLength:size});\n  if(data.length!==size)throw Error('Native proof ZIP JSON size differs');\n  return data;\n}",
+       "after": "function nativeProofZip(bytes,artifact){\n const name='native-ai-review-proof.json';\n return readVerifiedArtifactZip(bytes,artifact,[name],32*1024*1024)[name];\n}"
+     },
+     {
+       "at": 479,
+       "before": "export function checkoutReceipt(repo,run,jobs,dir,query=gh,schemaVersion=deliverySchemaVersion,{allowRunningAggregate=false}={}) {\n  const errors=qualityErrors(jobs,{attempt:run.run_attempt,runId:run.id,head:run.head_sha,schemaVersion,allowRunningAggregate});\n  if(errors.length)throw new Error(errors.join('\\n'));",
+       "after": "export function checkoutReceipt(repo,run,jobs,dir,query=gh,schemaVersion=deliverySchemaVersion,{allowRunningAggregate=false}={}) {\n  const errors=qualityErrors(jobs,{attempt:run.run_attempt,runId:run.id,head:run.head_sha,schemaVersion,allowRunningAggregate,run});\n  if(errors.length)throw new Error(errors.join('\\n'));"
+     }
+   ]
+ },
+ "scripts/official-assets-campaign.lua": {
+   "current": {
+     "sha256": "d9cff929ad0202d0ed46459f10b1a6a9351ae3c6820810cfa1323525d347258b",
+     "gitBlob": "6ef8fa20569b1616bc4ce12b8efb578d59e1df5e"
+   },
+   "previous": {
+     "sha256": "a29124ebd50b80d9d8332039a84a351a4175d8dee6b1d9d2dd8f365a29cd942c",
+     "gitBlob": "0230e9fa3c2ade86df06588cb8bcc9ef621b3b95"
+   },
+   "hunks": [
+     {
+       "at": 20,
+       "before": "local EventCards=dofile('scripts/m3-event-card-policy.lua')\nlocal Pending=require('abyss_relic_pending')",
+       "after": "local EventCards=dofile('scripts/m3-event-card-policy.lua')\nlocal settleShop=dofile('tests/lua/support/shop_timeline.lua')\nlocal Pending=require('abyss_relic_pending')"
+     },
+     {
+       "at": 37,
+       "before": "local run,map=h.run,h.map\nlocal coverage,done,bossWins={},{},{};local actions,rooms=0,0\nlocal function checkpoint(label)",
+       "after": "local run,map=h.run,h.map\nlocal coverage,done,bossWins,bossChests={},{},{},{};local actions,rooms=0,0\nlocal function checkpoint(label)"
+     },
+     {
+       "at": 53,
+       "before": "checkpoint('start')\nlocal function drain()",
+       "after": "checkpoint('start')\nlocal function recordRoom()\n assert(run.floor==rooms+1,'continuous route skipped or duplicated a floor')\n rooms=rooms+1;coverage[run.nodeFlow.type]=true;done={}\n checkpoint('room');print('CAMPAIGN_ROOM '..rooms..' floor='..run.floor..' type='..run.nodeFlow.type..' hp='..run.hp)\nend\nlocal function drain()"
+     },
+     {
+       "at": 141,
+       "before": "  elseif r.stolenGold and not r.stolenGold.claimed then click('stolenGold')\n  else click('continue')end\n elseif h.mode=='node' and h.nodeUI:holding() then press('confirm')",
+       "after": "  elseif r.stolenGold and not r.stolenGold.claimed then click('stolenGold')\n  else\n   local boss=run.nodeFlow.type=='boss'\n   click('continue')\n   if boss then\n    assert(run.nodeFlow.roomKind=='boss_treasure' and h.mode=='node' and not bossChests[run.act],\n      'boss victory did not open its unique mandatory treasure room')\n    assert(run.floor==17*run.act,'boss treasure must occupy the act end floor')\n    bossChests[run.act]=true\n    recordRoom()\n   end\n  end\n elseif h.mode=='node' and h.nodeUI:holding() then press('confirm')"
+     },
+     {
+       "at": 175,
+       "before": "  else\n   if flow.type=='shop' and not h.nodeUI.shopOpen then press('merchant/talk') end\n   local plan=assert(Policy.suggestNodeAction(run,map,coverage,done),'no node plan')",
+       "after": "  else\n   if flow.type=='shop' and not h.nodeUI.shopOpen then\n    press('merchant/talk');settleShop(h.nodeUI)\n    assert(h.nodeUI.shopOpen and not h.nodeUI.shopBusy,'shop shelf did not finish its native opening')\n   end\n   local plan=assert(Policy.suggestNodeAction(run,map,coverage,done),'no node plan')"
+     },
+     {
+       "at": 186,
+       "before": "   elseif plan.method=='removeCard'then press('shopView/removal');selectUID(plan.uid)\n   elseif plan.method=='leaveShop'then press('back')\n   elseif plan.method=='buyPotion'then press('shopView/potion'..plan.slot);press('confirm')",
+       "after": "   elseif plan.method=='removeCard'then press('shopView/removal');selectUID(plan.uid)\n   elseif plan.method=='leaveShop'then\n    assert(h.nodeUI.shopOpen,'shop shelf must be open before closing')\n    press('back')\n    assert(not h.nodeUI.shopOpen and not run.nodeFlow.complete,'closing the shelf must not leave the room')\n    settleShop(h.nodeUI)\n    press('back')\n    assert(run.nodeFlow.complete,'leaving the shop room did not complete the node')\n   elseif plan.method=='buyPotion'then press('shopView/potion'..plan.slot);press('confirm')"
+     },
+     {
+       "at": 201,
+       "before": "  action('enter:'..node.id,function()return h.mapUI:choose(node.id)end)\n  rooms=rooms+1;coverage[run.nodeFlow.type]=true;done={}\n  assert(run.floor==rooms,'continuous route skipped a floor');checkpoint('room');print('CAMPAIGN_ROOM '..rooms..' floor='..run.floor..' type='..run.nodeFlow.type..' hp='..run.hp)\n end",
+       "after": "  action('enter:'..node.id,function()return h.mapUI:choose(node.id)end)\n  recordRoom()\n end"
+     },
+     {
+       "at": 206,
+       "before": "assert(run.phase=='victory'and run.ending=='two_act_complete'and run.floor==34)\nassert(rooms==34 and bossWins[1]and bossWins[2],'both natural boss victories are required')\ncheckpoint('victory');capture('victory')",
+       "after": "assert(run.phase=='victory'and run.ending=='two_act_complete'and run.floor==34)\nassert(rooms==34 and bossWins[1] and bossWins[2] and bossChests[1] and bossChests[2],\n 'both natural boss victories and consecutive treasure floors are required')\ncheckpoint('victory');capture('victory')"
+     }
+   ]
+ },
  "tests/lua/nemesis_ui.lua": {
   "current": {
    "sha256": "efd4d31e4143a5dc9abb48277d97f03d504b332f9798054885d1c571edfe519b",
@@ -919,7 +1038,9 @@ const permanentDeckRuntimeFixture=Object.freeze({
  ]
 });
 
-export function beforeReleaseClosureFixture(path,raw){
+export function beforeReleaseClosureFixture(path,raw,{reviewedBuild=false}={}){
+ // Current integration authenticates the live delivery owner through its own archive.
+ if(path==='scripts/verify-delivery.mjs'&&!reviewedBuild)return raw;
  raw=beforeReleaseMetadata(path,raw);
  if(!Object.hasOwn(fixtures,path))return beforeReleaseDeckPointer(path,raw);
  let source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
