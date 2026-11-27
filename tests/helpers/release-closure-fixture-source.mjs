@@ -739,6 +739,23 @@ const fixtures=Object.freeze({
    }
   ]
  },
+ "tests/lua/game_ui_exit.lua": {
+  "current": {
+   "sha256": "d5a91864a27a4906b424d0f8bf0fd90502976d82725087f3530ef2984ea13ae8",
+   "gitBlob": "894180832718d82ae90827ec89dfcf14e8bb9e6c"
+  },
+  "previous": {
+   "sha256": "a798089f6cd820c80e5d7e306375b4b0a748c8303d0e43fd129cf7109b24874c",
+   "gitBlob": "0e6fbe7d92d3e065979665b18bc5553d2fff49db"
+  },
+  "hunks": [
+   {
+    "at": 104,
+    "before": "    assert(ui.mapUI:choose(available.id))\n    assert(ui:openDeck()); local cards=ui.deckUI.cards\n    local before=Combat.copy(ui.run)\n    assert(open(root) and ui.deckUI.visible)\n    assert(not ui:closeDeck() and not ui.nodeUI:press(\"campView/rest\"))\n    assert(cancel(root) and ui.deckUI.visible and ui.deckUI.cards==cards and same(before,ui.run))\n    assert(ui:closeDeck()); assert(open(root))\n    assert(not ui.nodeUI:press(\"campView/rest\"))\n    assert(cancel(root) and ui.nodeUI:press(\"campView/rest\"))\nend)\n\ntest(\"failed platform requests stay visible and retry submits only once\",function()",
+    "after": "    assert(ui.mapUI:choose(available.id))\n    assert(ui:openDeck()); local cards=ui.deckUI.cards\n    local before=Combat.copy(ui.run)\n    assert(not open(root) and not root:GetChild(\"exitPanel\").visible)\n    assert(ui.deckUI.visible and ui.deckUI.cards==cards and same(before,ui.run))\n    assert(ui:closeDeck()); assert(open(root))\n    assert(not ui:openDeck() and not ui.nodeUI:press(\"campView/rest\"))\n    assert(cancel(root) and same(before,ui.run) and ui.nodeUI:press(\"campView/rest\"))\nend)\n\ntest(\"failed platform requests stay visible and retry submits only once\",function()"
+   }
+  ]
+ },
  "tests/lua/game_ui_phase_four.lua": {
   "current": {
    "sha256": "fe7dfe100d6b9d3df9472e5509ec9a45cb43185255b5f04dc356a011e65eceb6",
