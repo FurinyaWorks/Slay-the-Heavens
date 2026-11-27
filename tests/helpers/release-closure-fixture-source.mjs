@@ -20,6 +20,28 @@ export const selectionRawEntranceReplay=Object.freeze({
 // Current Host checks exercise production. Historical Host and CI replays
 // preserve the exact earlier test sources from the production backflow.
 const fixtures=Object.freeze({
+ "tests/helpers/integrated-ci-source.mjs": {
+  "current": {
+   "sha256": "9c84837be60110e8d91ed0c7ddf8df465cff11b23295fec04d71b1cf0dd6cbcf",
+   "gitBlob": "04548b60bcde99259cd999c6f1a8cf838ad11e2d"
+  },
+  "previous": {
+   "sha256": "857848b99d1f3c21055d3bb9a39773770abb4ef82932154dda3835b1a414171b",
+   "gitBlob": "308cb4abd297aec27f6ccc66d8c31db4f26ecbb3"
+  },
+  "hunks": [
+   {
+    "at": 59,
+    "before": "const integratedEvidenceSuccessors=Object.freeze({\n // #1010 changes the live relic inventory reader; the sealed integration view remains byte-exact.",
+    "after": "const integratedEvidenceSuccessors=Object.freeze({\n // #1047 replaced the legacy artifact handoff with the unified GIL workflow.\n 'scripts/verify-delivery.mjs':{\n  sha256:'0cc36bf1fc188d5a0cf40163fbeb9fbbd227d1d62d98b991036b83b7d2dbd818',gitBlob:'70c27b3b02de90afe52a2800b1569181d5d5eb3d',\n },\n // The verified Master backflow reads the v2.0.0 predecessor of #1038.\n // The exact original integration witness still identifies v1.0.0.\n '.release-please-manifest.json':{\n  sha256:'9e38a481f52b5af8537babca8f5d13d5a0ab72473e1deba2e1aeb71e05dcd5b9',gitBlob:'895bf0e35e87e52e09aff04e9d35f554e99ae4b4',\n },\n // #1010 changes the live relic inventory reader; the sealed integration view remains byte-exact."
+   },
+   {
+    "at": 141,
+    "before": " if(!exactSourceMatches(source,binding))return false;\n if(path!==relicCloseoutOwner)return true;\n const lf=norm(source);",
+    "after": " if(!exactSourceMatches(source,binding))return false;\n if(path!==relicCloseoutOwner&&path!=='.release-please-manifest.json'&&path!=='scripts/verify-delivery.mjs')return true;\n const lf=norm(source);"
+   }
+  ]
+ },
  "tests/molten-egg-source.test.mjs": {
   "current": {
    "sha256": "a524f6e0d27813b0f6b723c603f931d2d82e9e3d89605d203daacf809467bdfe",
