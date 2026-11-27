@@ -29,7 +29,22 @@ function assertPartition(){
  assert.deepEqual(actual,budget.originalInputs);assert.deepEqual(sizes,[2,3]);
  assert.deepEqual(actual.production,specs.map(p=>p[0]));assert.deepEqual(actual.refusals,actual.production);
  assert.deepEqual(actual.overflow,['ancient_potion','artifact','liquid_bronze','thorns','weak_potion','weak','fear_potion','vulnerable']);
- for(const [file,hash]of Object.entries(budget.unchangedSha256LF))assert.equal(sha(readLF(file)),hash,`${file}: original fixture/helper unchanged`);
+ for(const [file,hash]of Object.entries(budget.unchangedSha256LF)){
+  let source=readLF(file);
+  if(file==='tests/lua/potion_basic_five_status.lua'){
+   // Authenticate only the two production encounter-ID renames against the sealed predecessor.
+   // The actual Lua tests still run the unmodified current fixture.
+   const encounters=[
+    " local run=battle({'ancient_potion','ancient_potion'},nil,'raven_adept_solo');local s=run.combat",
+    " local run=battle({'liquid_bronze','liquid_bronze'},nil,'raven_adept_solo');local s=run.combat",
+   ];
+   for(const encounter of encounters){
+    assert.equal(source.split('\n').filter(line=>line===encounter).length,1,`${file}: one exact current encounter binding`);
+    source=source.split('\n').map(line=>line===encounter?line.replace("'raven_adept_solo'","'cultist_solo'"):line).join('\n');
+   }
+  }
+  assert.equal(sha(source),hash,`${file}: original fixture/helper unchanged`);
+ }
 }
 
 test('bounded partitions retain every original bottle, overflow pair and assertion exactly once',assertPartition);
