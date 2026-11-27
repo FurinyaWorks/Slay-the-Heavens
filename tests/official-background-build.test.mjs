@@ -1,16 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
 import {mkdtempSync, readFileSync, rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {isDeepStrictEqual} from 'node:util';
 import {gameLayout} from '../scripts/game-ui-layout.mjs';
+import {anchorBattlePeriphery} from '../scripts/viewport-layout.mjs';
 import {buildUI} from '../scripts/build-ui.mjs';
 import {nativeTheme} from '../scripts/native-ui-theme.mjs';
 import {applyV25RewardLayout} from '../scripts/v25-node-layout.mjs';
 import {sourceInputs} from '../scripts/build-native-candidate.mjs';
 import {writeBackgroundModule} from '../scripts/official-background.mjs';
 import {createOptInArtFixture} from './helpers/opt-in-art-fixture.mjs';
+
+const digest=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 
 // Accept only the two approved menu-exterior plates, not arbitrary artwork drift.
 function removeMenuEdgePlates(controls) {
@@ -41,7 +45,18 @@ test('real UI build registers one shared hidden background host and one native i
  const monsterHosts=descendants(stage).filter(n=>/^monsterArt(?:[2-5])?$/.test(n.name));
  assert.equal(monsterHosts.length,0,'dynamic actor art must not leave fixed scene pools');
  const actor=templates.find(n=>n.name==='AbyssMonsterActor');assert(actor);
- assert.equal(descendants(actor).length,647);assert.equal(actor.children[0].name,'monsterArt');
+ assert.equal(descendants(actor).length,648);assert.equal(actor.children[0].name,'monsterArt');
+ // #897 added one initially hidden, read-only HP tooltip receiver; #902
+ // removed the former focusable field. Keep the legacy 647-control check.
+ const priorActor=structuredClone(actor), hpHit=priorActor.children.findIndex(c=>c.name==='hpHit');
+ assert.equal(hpHit,26);
+ assert.equal(priorActor.children[hpHit-1].name,'floating');
+ assert.equal(priorActor.children[hpHit+1].name,'intentVfxBehind');
+ assert.deepEqual(priorActor.children.splice(hpHit,1),
+  [{name:'hpHit',kind:'cursorArea',size:[106.66666666666667,12],visible:false}]);
+ assert.equal(descendants(priorActor).length,647);
+ assert.equal(digest(priorActor),'d3ab4b09ff6ea44730a05eb45f16e76dc48ac3f07bd2fa0abafa92207c69a690');
+ assert.equal(digest(actor),'5cc75124b391761cb86793ea17e9fec2e0e96b6aaf4a9e1563314cf5bfaf2b95');
  assert.equal(actor.visible,false);assert.equal(actor.children[0].visible,false);
  const original=structuredClone(stage.children.slice(1));
  const strip=nodes=>{for(const node of nodes){if(node.children){node.children=node.children.filter(c=>!['artSamples','officialAvatar','officialFigure','officialSelectionFigure','monsterArt','lowpolyScene'].includes(c.name));strip(node.children);}}};
@@ -62,6 +77,12 @@ test('real UI build registers one shared hidden background host and one native i
  details.children.push({name:'infoMotion',kind:'container',size:[1280,720],
   children:Array.from({length:8},(_,i)=>({name:'info'+(i+1),kind:'container',size:[1280,720],visible:false,children:structuredClone(info)}))});
  for(const name of ['confirm','cancel'])character.children.find(n=>n.name===name).visible=false;
+ // #1007 is the only change between the original authored oracle and the
+ // current control tree. Pin both independent full-tree identities so using
+ // the production transform does not let regressions change both sides.
+ assert.equal(digest(approved),'1ceab50aded5e448e38de47cba984f74c9bedc8eaa1213ce943968165d082983');
+ anchorBattlePeriphery({children:approved},1280,false);
+ assert.equal(digest(approved),'c127761d9ef7021f65f8f91528c60ae87e918b1419cbc01fb351c659468a0d13');
  const assertControls=controls=>assert.ok(isDeepStrictEqual(controls,approved),'approved controls/input and entrance groups remain exact apart from explicit empty artwork hosts');
  removeMenuEdgePlates(original);
  strip(original);
@@ -80,6 +101,7 @@ test('real UI build registers one shared hidden background host and one native i
   c=>{const m=menuOf(c),e=edgeOf(c);m.children=m.children.filter(n=>n!==e);m.children.push(e);},
  ])assert.throws(()=>removeMenuEdgePlates(changed(mutate)),assert.AssertionError);
  for(const mutate of [c=>{menuOf(c).size[0]++;},c=>{menuOf(c).raycastTarget=true;},
+  c=>{c.find(n=>n.name==='battlePanel').children.find(n=>n.name==='draw').position[0]++;},
   c=>{c.find(n=>n.name==='nodePanel').children.find(n=>n.name==='shopView').children.find(n=>n.name==='goods').raycastTarget=true;},
   c=>{c.find(n=>n.name==='characterPanel').children.find(n=>n.name==='details').children.find(n=>n.name==='infoMotion').children[0].children[0].size[0]++;}]){
   const drift=changed(mutate);removeMenuEdgePlates(drift);strip(drift);

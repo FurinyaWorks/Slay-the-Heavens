@@ -20,6 +20,70 @@ export const selectionRawEntranceReplay=Object.freeze({
 // Current Host checks exercise production. Historical Host and CI replays
 // preserve the exact earlier test sources from the production backflow.
 const fixtures=Object.freeze({
+ "tests/lua/nemesis_ui.lua": {
+  "current": {
+   "sha256": "efd4d31e4143a5dc9abb48277d97f03d504b332f9798054885d1c571edfe519b",
+   "gitBlob": "3a5e355bfab48211ae31305a03b3224cdd95218c"
+  },
+  "previous": {
+   "sha256": "4c3655ba6d08705d742e307aa56d6d2fadfb67c5379df2462e0a04792ebee4d7",
+   "gitBlob": "02fc4d2e206fe7447fc8e8a186494603faa25b66"
+  },
+  "hunks": [
+   {
+    "at": 17,
+    "before": "local text=inspectDetails(host.battleUI,panel)\nassert(text:find('3',1,true)and text:find(r.combat.catalog.cards.burn.name,1,true)and text:find('弃牌堆',1,true),text)\nassert(not text:find('未知',1,true),text)\nassert(N.Run.endTurn(r));N.force(r.combat,'fire');host:refresh()",
+    "after": "local text=inspectDetails(host.battleUI,panel)\neq(text,'<color=#F5D78A>策略</color>\\n这名敌人将要对你施加一种负面效果。')\n-- The compact tooltip shows the approved category. The detailed projection\n-- still exposes the exact pending Burn count, card and destination.\nlocal intent=require('abyss_battle_intent_view').intentView(r.combat,1)\neq(intent.tooltipEnum,'DEBUFF')\neq(intent.text,'将 3 张「'..r.combat.catalog.cards.burn.name..'」放入你的弃牌堆')\nassert(N.Run.endTurn(r));N.force(r.combat,'fire');host:refresh()"
+   },
+   {
+    "at": 26,
+    "before": "dofile('tests/lua/support/monster_power_control_fixture.lua')(box,'nemesis_intangible'):GetChild('hit').click({touchId=92})\nlocal info=panel:GetChild('statusInfo');assert(info.visible)\nlocal shown=false\nfor i=1,F.Theme.layout.statusInfo.rows do\n local name=info:GetChild('name'..i)\n if name.visible and name.text:find('无实体',1,true)then shown=true end\nend\nassert(shown,'monster Intangible must be named in the existing status panel')\nprint('NEMESIS_UI 1 groups; 0 failed')",
+    "after": "dofile('tests/lua/support/monster_power_control_fixture.lua')(box,'nemesis_intangible'):GetChild('hit').click({touchId=92})\nlocal power=inspectDetails(host.battleUI,panel)\nassert(power:find('无实体',1,true),'monster Intangible must be named in the existing status panel: '..power)\nprint('NEMESIS_UI 1 groups; 0 failed')"
+   }
+  ]
+ },
+ "tests/official-background-build.test.mjs": {
+  "current": {
+   "sha256": "f6d2b6fd7f7edfdabc1c0ef26fb7a9d74b9f47d7aca1cee9e32fd068754cb47b",
+   "gitBlob": "10389b49bea6610b53e57ac4d48ab29ebd0254f0"
+  },
+  "previous": {
+   "sha256": "bff7e52298b5187766692a8153814b7f249057ccc8b82c9c5a72713d5b86afda",
+   "gitBlob": "1c1c859f0cfc54976821346688d8dc7862fdcea3"
+  },
+  "hunks": [
+   {
+    "at": 1,
+    "before": "import assert from 'node:assert/strict';\nimport {mkdtempSync, readFileSync, rmSync} from 'node:fs';",
+    "after": "import assert from 'node:assert/strict';\nimport {createHash} from 'node:crypto';\nimport {mkdtempSync, readFileSync, rmSync} from 'node:fs';"
+   },
+   {
+    "at": 7,
+    "before": "import {gameLayout} from '../scripts/game-ui-layout.mjs';\nimport {buildUI} from '../scripts/build-ui.mjs';",
+    "after": "import {gameLayout} from '../scripts/game-ui-layout.mjs';\nimport {anchorBattlePeriphery} from '../scripts/viewport-layout.mjs';\nimport {buildUI} from '../scripts/build-ui.mjs';"
+   },
+   {
+    "at": 14,
+    "before": "import {createOptInArtFixture} from './helpers/opt-in-art-fixture.mjs';\n",
+    "after": "import {createOptInArtFixture} from './helpers/opt-in-art-fixture.mjs';\n\nconst digest=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');\n"
+   },
+   {
+    "at": 46,
+    "before": " const actor=templates.find(n=>n.name==='AbyssMonsterActor');assert(actor);\n assert.equal(descendants(actor).length,647);assert.equal(actor.children[0].name,'monsterArt');\n assert.equal(actor.visible,false);assert.equal(actor.children[0].visible,false);",
+    "after": " const actor=templates.find(n=>n.name==='AbyssMonsterActor');assert(actor);\n assert.equal(descendants(actor).length,648);assert.equal(actor.children[0].name,'monsterArt');\n // #897 added one initially hidden, read-only HP tooltip receiver; #902\n // removed the former focusable field. Keep the legacy 647-control check.\n const priorActor=structuredClone(actor), hpHit=priorActor.children.findIndex(c=>c.name==='hpHit');\n assert.equal(hpHit,26);\n assert.equal(priorActor.children[hpHit-1].name,'floating');\n assert.equal(priorActor.children[hpHit+1].name,'intentVfxBehind');\n assert.deepEqual(priorActor.children.splice(hpHit,1),\n  [{name:'hpHit',kind:'cursorArea',size:[106.66666666666667,12],visible:false}]);\n assert.equal(descendants(priorActor).length,647);\n assert.equal(digest(priorActor),'d3ab4b09ff6ea44730a05eb45f16e76dc48ac3f07bd2fa0abafa92207c69a690');\n assert.equal(digest(actor),'5cc75124b391761cb86793ea17e9fec2e0e96b6aaf4a9e1563314cf5bfaf2b95');\n assert.equal(actor.visible,false);assert.equal(actor.children[0].visible,false);"
+   },
+   {
+    "at": 78,
+    "before": " for(const name of ['confirm','cancel'])character.children.find(n=>n.name===name).visible=false;\n const assertControls=controls=>assert.ok(isDeepStrictEqual(controls,approved),'approved controls/input and entrance groups remain exact apart from explicit empty artwork hosts');",
+    "after": " for(const name of ['confirm','cancel'])character.children.find(n=>n.name===name).visible=false;\n // #1007 is the only change between the original authored oracle and the\n // current control tree. Pin both independent full-tree identities so using\n // the production transform does not let regressions change both sides.\n assert.equal(digest(approved),'1ceab50aded5e448e38de47cba984f74c9bedc8eaa1213ce943968165d082983');\n anchorBattlePeriphery({children:approved},1280,false);\n assert.equal(digest(approved),'c127761d9ef7021f65f8f91528c60ae87e918b1419cbc01fb351c659468a0d13');\n const assertControls=controls=>assert.ok(isDeepStrictEqual(controls,approved),'approved controls/input and entrance groups remain exact apart from explicit empty artwork hosts');"
+   },
+   {
+    "at": 102,
+    "before": " for(const mutate of [c=>{menuOf(c).size[0]++;},c=>{menuOf(c).raycastTarget=true;},\n  c=>{c.find(n=>n.name==='nodePanel').children.find(n=>n.name==='shopView').children.find(n=>n.name==='goods').raycastTarget=true;},",
+    "after": " for(const mutate of [c=>{menuOf(c).size[0]++;},c=>{menuOf(c).raycastTarget=true;},\n  c=>{c.find(n=>n.name==='battlePanel').children.find(n=>n.name==='draw').position[0]++;},\n  c=>{c.find(n=>n.name==='nodePanel').children.find(n=>n.name==='shopView').children.find(n=>n.name==='goods').raycastTarget=true;},"
+   }
+  ]
+ },
  "tests/helpers/integrated-ci-source.mjs": {
   "current": {
    "sha256": "9c84837be60110e8d91ed0c7ddf8df465cff11b23295fec04d71b1cf0dd6cbcf",

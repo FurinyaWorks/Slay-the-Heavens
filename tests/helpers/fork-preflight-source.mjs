@@ -1801,9 +1801,10 @@ export function beforePreflightSource(path,source,view='prior',read=readFileSync
   const liveRead=read;
   read=(owner,encoding)=>{
    const raw=liveRead(owner,encoding);
-   if(owner===integratedFixture)assert(exactCheckoutSource(raw,sessionMenuIntegratedIdentity),
-    'fresh complete integration source: '+owner);
-   return beforeRelicCloseoutIntegratedFixture(owner,raw);
+   if(owner!==integratedFixture)return raw;
+   const input=beforeReleaseClosureFixture(owner,raw);
+   assert(exactCheckoutSource(input,sessionMenuIntegratedIdentity),'fresh complete integration source: '+owner);
+   return beforeRelicCloseoutIntegratedFixture(owner,input);
   };
  }
  source=beforeV220HostedTiming(path,source);
