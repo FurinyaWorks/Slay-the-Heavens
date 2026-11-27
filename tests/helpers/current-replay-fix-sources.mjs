@@ -2749,10 +2749,48 @@ const tinyHouseBackflowFixture=Object.freeze({
   }
  ]
 });
+// Preserve the exact older planning receipt while the live portrait trace advances.
+const gameUiPortraitTrace={
+ "path": "tests/game-ui-extraction-source-inverse.test.mjs",
+ "beforeSha256": "baff968d896e057cb66763e7ffdf3c08ff4ea37b2174b0e6bbbb73eede88e031",
+ "afterSha256": "1f34a6ccb4daed6a6da58aa8b2aa9384d11d1ebeb5c0c3ce713ad82c03aaf97e",
+ "hunks": [
+  {
+   "at": 36,
+   "before": "// The authenticated portrait continuation reads these linked owners after the frozen base scan.\nconst portraitRereads=['battle_info_content','battle_render_hud','battle_card_glow','battle_render_hud','battle_render_hud']\n .map(name=>'src/lua/abyss_'+name+'.lua');",
+   "after": "// The authenticated portrait continuation rereads glow once after the base scan.\n// Info content and the battle HUD belong to that scan and still reject raw drift.\nconst portraitRereads=['src/lua/abyss_battle_card_glow.lua'];\nconst portraitLinkedOwners=new Set([...portraitRereads,\n 'src/lua/abyss_battle_info_content.lua','src/lua/abyss_battle_render_hud.lua']);"
+  },
+  {
+   "at": 47,
+   "before": " assert.equal(target.files[path].source,preNoncombatDemandEpoch.proof.current[path].source);",
+   "after": " assert.equal(target.files[path].source,preNoncombatDemandEpoch.proof.current[path].source);\n const expectedReads=[...sourceEpoch.proof.owners,...portraitRereads];"
+  },
+  {
+   "at": 52,
+   "before": "  assert.deepEqual(reads,[...sourceEpoch.proof.owners,...portraitRereads]);",
+   "after": "  assert.deepEqual(reads,expectedReads);"
+  },
+  {
+   "at": 60,
+   "before": " for(const [index,owner] of portraitRereads.entries()){\n  const occurrence=[...sourceEpoch.proof.owners,...portraitRereads.slice(0,index+1)].filter(path=>path===owner).length;",
+   "after": " for(const [index,owner] of expectedReads.entries()){\n  if(!portraitLinkedOwners.has(owner))continue;\n  const occurrence=expectedReads.slice(0,index+1).filter(path=>path===owner).length;"
+  }
+ ]
+};
+function beforeGameUiPortraitTrace(path,source){
+ if(path!==gameUiPortraitTrace.path||typeof source!=='string')return source;
+ const current=source.replaceAll('\r\n','\n');
+ if(source!==current&&source!==current.replaceAll('\n','\r\n'))return source;
+ if(!exactSourceMatches(source,{sha256:gameUiPortraitTrace.afterSha256,gitBlob:'5ce98641788d97fed5a2662888053cb8ddb4d096'}))return source;
+ const prior=restoreExactFixtureHunks(gameUiPortraitTrace,path,current);
+ if(!exactSourceMatches(prior,{sha256:gameUiPortraitTrace.beforeSha256,gitBlob:'6c10f026571af5f05197141bfa9426df54649a68'}))throw Error('Invalid portrait trace predecessor: '+path);
+ return source===current?prior:prior.replaceAll('\n','\r\n');
+}
 
 // Retain at most one verified byte-for-byte projection per declared path.
 const lastVerifiedProjection=new Map();
 export function beforeCurrentReplayFixes(path, source){
+ source=beforeGameUiPortraitTrace(path,source);
  source=beforeCombinedCharacterBackflow(path,source);
  source=beforeOfficialCharacterBackflow(path,beforeApprovedUiEntrance(path,source));
  const tinyHousePrior=restoreExactFixtureHunks(tinyHouseBackflowFixture,path,source);

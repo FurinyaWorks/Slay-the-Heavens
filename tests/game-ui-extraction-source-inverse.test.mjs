@@ -34,9 +34,11 @@ function cursesPriorReader(){
   return cohort.get(p);
  };
 }
-// The authenticated portrait continuation reads these linked owners after the frozen base scan.
-const portraitRereads=['battle_info_content','battle_render_hud','battle_card_glow','battle_render_hud','battle_render_hud']
- .map(name=>'src/lua/abyss_'+name+'.lua');
+// The authenticated portrait continuation rereads glow once after the base scan.
+// Info content and the battle HUD belong to that scan and still reject raw drift.
+const portraitRereads=['src/lua/abyss_battle_card_glow.lua'];
+const portraitLinkedOwners=new Set([...portraitRereads,
+ 'src/lua/abyss_battle_info_content.lua','src/lua/abyss_battle_render_hud.lua']);
 test('portrait demand layer authenticates fresh complete owners and rejects warm drift before entering the prior epoch',()=>{
  const sourceEpoch=portraitDemandEpoch;
  const path='src/lua/abyss_traveler_portraits.lua',raw=cursesPriorReader();
@@ -44,10 +46,11 @@ test('portrait demand layer authenticates fresh complete owners and rejects warm
  assert.equal(sourceEpoch.proof.currentCommit,'6702ed26d779eec4d237aa991471b0344c3c3f92');
  assert.equal(target.commit,'bd9fc7ee15bca14a9ad7fe43f6fc9d1c35aa4bf9');
  assert.equal(target.files[path].source,preNoncombatDemandEpoch.proof.current[path].source);
+ const expectedReads=[...sourceEpoch.proof.owners,...portraitRereads];
  let reads=[];const reader=p=>{reads.push(p);return raw(p);};
  for(const input of [source,source.replaceAll('\n','\r\n')]){
   reads=[];assert.equal(sourceEpoch.preCombinedSource(path,input,{target:'noncombatDemandPrior',readSource:reader}),target.files[path].source);
-  assert.deepEqual(reads,[...sourceEpoch.proof.owners,...portraitRereads]);
+  assert.deepEqual(reads,expectedReads);
  }
  for(const input of [source+'\n',source.slice(1),target.files[path].source,null,{}]){
   reads=[];assert.equal(sourceEpoch.preCombinedSource(path,input,{target:'noncombatDemandPrior',readSource:p=>{reads.push(p);throw Error('foreign linked read');}}),input);assert.deepEqual(reads,[]);
@@ -55,8 +58,9 @@ test('portrait demand layer authenticates fresh complete owners and rejects warm
  let live=source;const mutable=p=>p===path?live:raw(p);
  assert.equal(sourceEpoch.preCombinedSource(path,source,{target:'noncombatDemandPrior',readSource:mutable}),target.files[path].source);
  for(const drift of [source+'\n',null]){live=drift;assert.throws(()=>sourceEpoch.preCombinedSource(path,source,{target:'noncombatDemandPrior',readSource:mutable}),/combined linked owner identity/);}
- for(const [index,owner] of portraitRereads.entries()){
-  const occurrence=[...sourceEpoch.proof.owners,...portraitRereads.slice(0,index+1)].filter(path=>path===owner).length;
+ for(const [index,owner] of expectedReads.entries()){
+  if(!portraitLinkedOwners.has(owner))continue;
+  const occurrence=expectedReads.slice(0,index+1).filter(path=>path===owner).length;
   let seen=0;
   const late=p=>p===owner&&++seen===occurrence?null:raw(p);
   assert.throws(()=>sourceEpoch.preCombinedSource(path,source,{target:'noncombatDemandPrior',readSource:late}),
