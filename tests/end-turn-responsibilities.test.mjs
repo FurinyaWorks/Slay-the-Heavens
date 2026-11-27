@@ -100,7 +100,7 @@ test('EndTurn current source composes into frozen N35 and freshly authenticates 
  };
  const wrapped=relicQueryReader(raw);assert.equal(relicQueryReader(wrapped),wrapped);
  assert.equal(preRelicQuerySource(file,current),old);assert.equal(wrapped(file),old);
- const outerReadCount=466;
+ const outerReadCount=543;
  let validReads;
  for(const readSource of [raw,wrapped]){
   changed=undefined;reads=[];assert.equal(preRelicQuerySource(file,current,{readSource}),old);
@@ -163,10 +163,10 @@ test('EndTurn current source composes into frozen N35 and freshly authenticates 
  const configDrift='combined linked owner missing: '+config+': combined linked owner identity: '+config+
   ' changed during Develop backflow validation (deck-pages validation)';
  assert.throws(()=>preRelicQuerySource(file,current,{readSource:p=>p===config?JSON.stringify(JSON.parse(read(p))):read(p)}),{message:configDrift});
- // The first 466 observations include the new complete entrance cohort.
+ // The outer observations include the complete current entrance cohort.
  // Mutate the first config observation from the wrapped N35 projector.
  const firstInnerConfig=validReads.indexOf(config,outerReadCount);
- assert.equal(firstInnerConfig,468);
+ assert.equal(firstInnerConfig,545);
  const innerOccurrence=validReads.slice(0,firstInnerConfig+1).filter(path=>path===config).length;
  let configReads=0;reads=[];
  assert.throws(()=>preRelicQuerySource(file,current,{readSource:p=>{

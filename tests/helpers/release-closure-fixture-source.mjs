@@ -1099,8 +1099,8 @@ const fixtures=Object.freeze({
  },
  "tests/end-turn-responsibilities.test.mjs": {
   "current": {
-   "sha256": "b84d5d421b9c3348c45d3a5ac511a1a6b67a056bfd86f9e90b6b050899fb11b0",
-   "gitBlob": "48bd7330f715d4a4a87b9e696f7e83813ec26723"
+   "sha256": "65ca362c7b22d24f88c2df37c3d108d222caf011a60e4796e2ec671e76d6744c",
+   "gitBlob": "2f99866b37ed40d7a619f737bf50f62be3f5a39b"
   },
   "previous": {
    "sha256": "8aeaa7ad14f1c5ef274a544e59380ec10b6d450bca1ff197523d31e5becf26cc",
@@ -1108,9 +1108,19 @@ const fixtures=Object.freeze({
   },
   "hunks": [
    {
+    "at": 101,
+    "before": " assert.equal(preRelicQuerySource(file,current),old);assert.equal(wrapped(file),old);\n const outerReadCount=466;\n let validReads;",
+    "after": " assert.equal(preRelicQuerySource(file,current),old);assert.equal(wrapped(file),old);\n const outerReadCount=543;\n let validReads;"
+   },
+   {
     "at": 106,
     "before": "  if(!validReads){\n   // Current replay cohorts add fresh linked reads around the original owner sequence.\n   // Bind the complete live trace after normalizing Windows checkout endings.\n   assert.equal(reads.length,9898);\n   assert.equal(hash(JSON.stringify(reads)),'79bf86a4544d87721356dea6a0e668a4cb1ffbd076b8c97ba227107540d6b8e0');\n   const entranceBytes=readFileSync('tests/fixtures/ui-entrance-source.json.gz');\n   assert.equal(hash(entranceBytes),'7ac3f53b242819cdb569c0a1ebf60de0605b72297a1072ea612bfeb11b0597c9');\n   const entranceOwners=Object.keys(JSON.parse(gunzipSync(entranceBytes)).files),priorReads=[];\n   let entranceGroups=0;\n   for(let i=0;i<reads.length;){\n    if(JSON.stringify(reads.slice(i,i+entranceOwners.length))===JSON.stringify(entranceOwners)){\n     entranceGroups++;i+=entranceOwners.length;\n    }else priorReads.push(reads[i++]);\n   }\n   assert.equal(entranceGroups,22,'all complete fresh entrance cohorts remain observed');\n   assert.equal(priorReads.length,9458);\n   assert.equal(hash(JSON.stringify(priorReads)),'fcf5e049f6c8f284fa248ebe012c2f7a5620546e453ebc8766fea8c1d14bd749','unchanged complete prior admission sequence');\n   let position=-1;",
     "after": "  if(!validReads){\n   // Linked current entrance owners now reread their own complete Release cohorts.\n   assert.equal(reads.length,14190);\n   assert.equal(hash(JSON.stringify(reads)),'1f62d6113d65b19d114057a30d8ad7dee5935e8d72ca187e4505d41c17bd499d');\n   const entranceBytes=readFileSync('tests/fixtures/ui-entrance-source.json.gz');\n   assert.equal(hash(entranceBytes),'7ac3f53b242819cdb569c0a1ebf60de0605b72297a1072ea612bfeb11b0597c9');\n   const entranceOwners=Object.keys(JSON.parse(gunzipSync(entranceBytes)).files);\n   const select='src/lua/abyss_character_select_view.lua', lifecycle='src/lua/abyss_game_ui_lifecycle.lua';\n   const portraits='src/lua/abyss_traveler_portraits.lua', feedback='src/lua/abyss_node_ui_feedback.lua';\n   const input='src/lua/abyss_node_ui_input.lua', camp='src/lua/abyss_node_ui_camp_actions.lua';\n   const treasure='src/lua/abyss_node_ui_treasure.lua';\n   const linkedReads=new Map([\n    [select,[lifecycle,portraits]], [lifecycle,[select,portraits]], [portraits,[select,lifecycle]],\n    [feedback,[camp,input,treasure]], [input,[camp,feedback,treasure]],\n   ]);\n   const entranceReads=entranceOwners.flatMap(owner=>[owner,...(linkedReads.get(owner)??[])]);\n   const outsideEntranceReads=[];\n   let entranceGroups=0;\n   for(let i=0;i<reads.length;){\n    if(entranceReads.every((owner,index)=>reads[i+index]===owner)){\n     entranceGroups++;i+=entranceReads.length;\n    }else outsideEntranceReads.push(reads[i++]);\n   }\n   assert.equal(entranceGroups,27,'all complete fresh entrance cohorts retain their original owner order');\n   assert.equal(outsideEntranceReads.length,13326);\n   assert.equal(hash(JSON.stringify(outsideEntranceReads)),'4b6a77ead601fbe70a160dd283b26a1bb65843c29afa8956f23b767790fd6179',\n    'exact Release admission sequence outside the entrance cohorts');\n   let position=-1;"
+   },
+   {
+    "at": 164,
+    "before": " assert.throws(()=>preRelicQuerySource(file,current,{readSource:p=>p===config?JSON.stringify(JSON.parse(read(p))):read(p)}),{message:configDrift});\n // The first 466 observations include the new complete entrance cohort.\n // Mutate the first config observation from the wrapped N35 projector.\n const firstInnerConfig=validReads.indexOf(config,outerReadCount);\n assert.equal(firstInnerConfig,468);\n const innerOccurrence=validReads.slice(0,firstInnerConfig+1).filter(path=>path===config).length;",
+    "after": " assert.throws(()=>preRelicQuerySource(file,current,{readSource:p=>p===config?JSON.stringify(JSON.parse(read(p))):read(p)}),{message:configDrift});\n // The outer observations include the complete current entrance cohort.\n // Mutate the first config observation from the wrapped N35 projector.\n const firstInnerConfig=validReads.indexOf(config,outerReadCount);\n assert.equal(firstInnerConfig,545);\n const innerOccurrence=validReads.slice(0,firstInnerConfig+1).filter(path=>path===config).length;"
    }
   ]
  },
