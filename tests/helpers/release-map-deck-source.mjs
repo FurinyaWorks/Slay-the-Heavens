@@ -8,6 +8,7 @@ import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {beforeLoadingRecoverySource} from './loading-recovery-source.mjs';
 import {beforeHotfixMapDeckHelperSource} from './hotfix-map-deck-helper-source.mjs';
+import {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const normalize=source=>source.replaceAll('\r\n','\n');
@@ -148,6 +149,7 @@ function assertProductionMapDeckOwners(path,source,read){
     try{live=read(name,'utf8');}catch{assert.fail('map deck linked owner missing: '+name);}
     assert(uniformCurrent(live,after),'map deck linked owner identity: '+name);
   }
+  return true;
 }
 
 function beforeProductionForethought(path,source,read){
@@ -175,7 +177,14 @@ export function beforeMapRoomSource(path,source){
 }
 
 export function beforeMapDeckSource(path,source,read){
-  assertProductionMapDeckOwners(path,source,read);
+ const deckPath='src/lua/abyss_deck_ui.lua';
+ const rawRead=read;
+ source=path===deckPath?beforeReleaseDeckPointer(path,source):source;
+ read=(owner,...args)=>owner===deckPath?beforeReleaseDeckPointer(owner,rawRead(owner,...args)):rawRead(owner,...args);
+  if(assertProductionMapDeckOwners(path,source,read)&&path==='src/lua/abyss_map_ui.lua'){
+    const prior=files[path].before.source;
+    return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+  }
   const forethoughtPrior=beforeProductionForethought(path,source,read);
   if(forethoughtPrior!==source)return forethoughtPrior;
   const readBackflow=read;

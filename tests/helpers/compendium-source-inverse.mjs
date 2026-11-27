@@ -41,6 +41,11 @@ function preRuntimeGameUi(path,source){
  assert.equal(hash(previous),owners[path],'complete pre-Runtime compendium host');
  return previous;
 }
+function preCompendiumVocabulary(path,source){
+ if(path!=='src/lua/abyss_compendium_catalog.lua'||hash(source)!=='471625992a75f564e0af55ae82106e23be5af23ac4f01fad50d42c58df248711')return source;
+ // Restore only the two vocabulary changes reviewed in the v2.1.0 backflow.
+ return source.replace("'raven_mask'","'cultist_mask'").replace("'augmentation_core'","'mutagenic_strength'");
+}
 export function preCompendiumSource(path,source,overrides={}){
  if(typeof source!=='string')return source;
  const current=preRuntimeGameUi(path,preCombatReactionArchitecture(path,preGameUiExtractionSource(path,normalize(source))));let previous;
@@ -64,7 +69,10 @@ export function preCompendiumSource(path,source,overrides={}){
    .replace("        return require('abyss_relic_text').describe(data,id)",oldRelicBody);
   assert.equal(hash(previous),'285281e48bcd5dfeb20bc03c8c2be526eda57e169689ba2e09b10d5babd3986a','complete pre-compendium relic descriptions');
  }else return source;
- for(const [owner,expected]of Object.entries(owners))
-  assert.equal(hash(preRuntimeGameUi(owner,preGameUiExtractionSource(owner,Object.hasOwn(overrides,owner)?normalize(overrides[owner]):read(owner)))),expected,'reviewed compendium owner: '+owner);
+ for(const [owner,expected]of Object.entries(owners)){
+  const currentOwner=Object.hasOwn(overrides,owner)?normalize(overrides[owner]):read(owner);
+  const previousOwner=preRuntimeGameUi(owner,preGameUiExtractionSource(owner,currentOwner));
+  assert.equal(hash(preCompendiumVocabulary(owner,previousOwner)),expected,'reviewed compendium owner: '+owner);
+ }
  return previous;
 }

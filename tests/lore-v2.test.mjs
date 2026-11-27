@@ -34,12 +34,11 @@ const reviewedEventIntros = {
 function approvedCurrentCopy(core,support){
   const expected=structuredClone({flow:core.flow,merchant:support.merchant,combatIntros:support.combatIntros,
     eventCopy:{...support.eventCopy,living_wall:livingWallCopy}});
-  // #951 renamed only the shipped encounter ID. The archived Lore v2 key and
-  // introduction remain unchanged; project the key on the cloned expectation.
-  const intros=expected.combatIntros;
-  assert.ok(Object.hasOwn(intros,'cultist')&&!Object.hasOwn(intros,'raven_adept'),'exact archived encounter key');
-  intros.raven_adept=intros.cultist;
-  delete intros.cultist;
+  // #951 b2f74d99 changed the runtime key without rewriting the archived prose.
+  assert.equal(typeof expected.combatIntros.cultist, 'string', 'archived Cultist introduction');
+  assert.ok(!Object.hasOwn(expected.combatIntros, 'raven_adept'), 'archived key must be unambiguous');
+  expected.combatIntros.raven_adept = expected.combatIntros.cultist;
+  delete expected.combatIntros.cultist;
   for(const [path,before,after]of travelerNames){
     const owner=path.slice(0,-1).reduce((row,key)=>row[key],expected),key=path.at(-1);
     assert.equal(owner[key].split(before).length,2,'exact approved name predecessor: '+path.join('.'));
@@ -115,21 +114,15 @@ test('reviewed display-name migration rejects rollback, broader names and edits 
     owner[key]=earlierCopy.replace(after,replacement);
     assert.throws(()=>assertNarrativeCopy(changed,core,support),{code:'ERR_ASSERTION'});
   }
-});
-
-test('combat-intro guard rejects a legacy or duplicate key and a pre-migrated archive', () => {
-  const copy=read('data/presentation/narrative.zh-CN.json');
-  const core=read('docs/lore/v2/04-copy/core.zh-CN.json'),support=read('docs/lore/v2/04-copy/supporting.zh-CN.json');
-  for(const keepNew of [false,true]){
-    const changed=structuredClone(copy);
-    changed.combatIntros.cultist=changed.combatIntros.raven_adept;
-    if(!keepNew)delete changed.combatIntros.raven_adept;
-    assert.throws(()=>assertNarrativeCopy(changed,core,support),{code:'ERR_ASSERTION'});
-  }
-  const changed=structuredClone(support);
-  changed.combatIntros.raven_adept=changed.combatIntros.cultist;
-  delete changed.combatIntros.cultist;
-  assert.throws(()=>assertNarrativeCopy(copy,core,changed),/exact archived encounter key/);
+  const alias = structuredClone(copy);
+  alias.combatIntros.cultist = alias.combatIntros.raven_adept;
+  assert.throws(() => assertNarrativeCopy(alias, core, support), { code: 'ERR_ASSERTION' });
+  delete alias.combatIntros.raven_adept;
+  assert.throws(() => assertNarrativeCopy(alias, core, support), { code: 'ERR_ASSERTION' });
+  const migratedArchive = structuredClone(support);
+  migratedArchive.combatIntros.raven_adept = migratedArchive.combatIntros.cultist;
+  delete migratedArchive.combatIntros.cultist;
+  assert.throws(() => assertNarrativeCopy(copy, core, migratedArchive), /archived Cultist introduction/);
 });
 
 test('event-copy guard rejects unregistered keys and changes to Living Wall intro or choices', () => {

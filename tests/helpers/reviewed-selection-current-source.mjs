@@ -150,6 +150,13 @@ const addedStsOwners=Object.freeze({
   "gitBlob": "fd762e787f64571ce8e0dc56f91b66744c8ef93f"
  }
 });
+const addedOrRenamedStsOwners=new Set([...Object.keys(addedStsOwners),...Object.values(renamedOwners)]);
+export const hasReviewedStsStyleModules=paths=>paths.some(path=>addedOrRenamedStsOwners.has(path));
+
+export function reviewedRenamedStsStyleRead(read=readFileSync){
+ const reviewed=reviewedSelectionRead(read);
+ return (path,encoding='utf8')=>Object.hasOwn(renamedOwners,path)?reviewed(path,encoding):read(path,encoding);
+}
 
 export function reviewedStsStyleRead(read=readFileSync){
  const selection=reviewedSelectionRead(read);

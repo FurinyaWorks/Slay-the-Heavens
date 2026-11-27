@@ -6,6 +6,7 @@ import {dirname,join} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {gunzipSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
+import {beforeReleaseClosureFixture} from './helpers/release-closure-fixture-source.mjs';
 // Historical source contracts execute their exact original helper closure.
 // The current public facade is exercised separately below on the live tree.
 const archiveBytes=readFileSync(new URL('./fixtures/nodes-battle-original-chain-98fef95d.json.gz',import.meta.url));
@@ -22,7 +23,8 @@ function validateOriginalChain(value,readInput=readOriginalInput){
   assert.notEqual(Object.hasOwn(binding,'existing'),Object.hasOwn(binding,'source'),'one complete original input: '+path);
   if(binding.existing)assert.equal(binding.existing,path,'original input reference stays at its authenticated path');
   const raw=binding.existing?readInput(path):Buffer.from(binding.source);
-  const source=path.endsWith('.gz')?raw:Buffer.from(raw.toString('utf8').replaceAll('\r\n','\n'));
+  const original=binding.existing&&path==='tests/helpers/approved-ui-inverse.mjs'?beforeReleaseClosureFixture(path,raw):raw;
+  const source=path.endsWith('.gz')?original:Buffer.from(original.toString('utf8').replaceAll('\r\n','\n'));
   assert.equal(hash(source),binding.sha256,'original complete Nodes chain bytes: '+path);
   assert.equal(createHash('sha1').update(`blob ${source.length}\0`).update(source).digest('hex'),binding.gitBlob,'original Nodes chain Git blob: '+path);
   return [path,source];
@@ -111,10 +113,10 @@ currentTest('Battle config replay authenticates its original helper closure and 
  }
 });
 
-currentTest('current Battle config facade rejects incompatible modern owners instead of borrowing historical admission',async()=>{
+currentTest('current Battle config facade rejects the unrecognized Release configuration',async()=>{
  const current=await import('./helpers/battle-max-hp-config-inverse.mjs');
  const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n');
  assert.notEqual(raw,originalInputs[path].toString('utf8'),'historical contract is not current production acceptance');
- for(const target of ['battle','maxHp'])assert.throws(()=>current.projectBattleMaxHpConfig(path,raw,target),/delivery linked source identity: src\/lua\/abyss_monster_intent_particle_view\.lua/);
- assert.throws(()=>current.preCompositeBattleMaxHpConfig(path,raw),/delivery linked source identity: src\/lua\/abyss_monster_intent_particle_view\.lua/);
+ for(const target of ['battle','maxHp'])assert.throws(()=>current.projectBattleMaxHpConfig(path,raw,target),/unreviewed combined Battle Max HP config source/);
+ assert.equal(current.preCompositeBattleMaxHpConfig(path,raw),raw,'the optional projection must preserve an unrecognized Release configuration');
 });

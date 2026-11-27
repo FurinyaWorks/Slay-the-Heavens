@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {enemyUnitTemplate,battleLayout} from '../scripts/ui-layout.mjs';
+import {enemyUnitTemplate,battleLayout,theme} from '../scripts/ui-layout.mjs';
 import {preReadableUnitTypography} from './helpers/readable-unit-typography-inverse.mjs';
 const digest=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 function restoreRetiredHitFocus(owner,names){
@@ -20,8 +20,22 @@ test('readability inverse preserves frozen geometry and rejects typography or un
   const project=value=>{
    const old=preReadableUnitTypography(value,{hero});
    restoreRetiredHitFocus(old,hero?['hit']:['intentHit','hit']);
-   if(hero)restoreRetiredHitFocus(old.children.find(n=>n.name==='statusRow'),['hit',...Array.from({length:10},(_,i)=>'hit'+(i+1))]);
-   else{
+   if(hero){
+    const row=old.children.find(n=>n.name==='statusRow');
+    const {statusIcon,nativeText}=theme.layout;
+    // #887 widened the count boxes to the native line-height minimum.
+    for(const count of row.children.filter(n=>/^count\d+$/.test(n.name))){
+     assert.deepEqual(count.size,[Math.max(statusIcon.size,nativeText.lineHeight),nativeText.lineHeight]);
+     count.size[0]=statusIcon.size;
+    }
+    restoreRetiredHitFocus(row,['hit',...Array.from({length:10},(_,i)=>'hit'+(i+1))]);
+   }else{
+    // #897 adds a pointer-only HP hit and makes the actor block the cursor.
+    assert.equal(old.blockCursor,true,'exact enemy cursor blocking');
+    delete old.blockCursor;
+    const hpHitIndex=old.children.findIndex(n=>n.name==='hpHit');
+    assert.deepEqual(old.children[hpHitIndex],{name:'hpHit',kind:'cursorArea',size:theme.layout.hpBar.size,visible:false},'exact enemy HP hit');
+    old.children.splice(hpHitIndex,1);
     old.children=old.children.filter(n=>!['intentVfxBehind','intentVfxAfter'].includes(n.name));
     old.children.find(n=>n.name==='intent').text.valign='top';
    }

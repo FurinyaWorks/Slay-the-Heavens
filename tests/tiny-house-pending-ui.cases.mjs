@@ -31,7 +31,7 @@ dofile('tests/lua/support/tiny_house_pending_ui.lua')`;
 test('Tiny House exact source admission preserves the ordered full owner read and rejects warm drift',async()=>{
  const {readFileSync}=await import('node:fs');
  const {sourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');
- const {currentProductionRereads}=await import('./helpers/current-production-source-reads.mjs');
+ const {currentProductionRereads,releaseArchitectureReadTrace}=await import('./helpers/current-production-source-reads.mjs');
  const {beforeTinyHouseUiSource}=await import('./helpers/tiny-house-ui-source.mjs');
  const {authenticateDevelopBackflow}=await import('./helpers/develop-release-backflow-source.mjs');
  const {proof}=sourceEpoch;
@@ -49,16 +49,16 @@ test('Tiny House exact source admission preserves the ordered full owner read an
  }});
  assert.equal(project(),proof.targets.develop.files[config].source);
  const expected=[...reads];
- assert.equal(expected.length,480,'complete fresh raw closure size');
+ assert.equal(expected.length,releaseArchitectureReadTrace.count,'complete fresh raw closure size');
  assert.equal(createHash('sha256').update(JSON.stringify(expected)).digest('hex'),
-  'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd','exact current admission order');
+  releaseArchitectureReadTrace.sha256,'exact current admission order');
  let position=-1;
  for(const owner of priorReadOrder){
   position=expected.indexOf(owner,position+1);
   assert.notEqual(position,-1,'retained original admission read: '+owner);
  }
  eventReread=expected.lastIndexOf(event)+1;
- assert.equal(eventReread,480,'the event owner must be checked again after the initial scan');
+ assert.equal(eventReread,expected.length,'the event owner must be checked again after the initial scan');
  assert.notEqual(expected.indexOf(event)+1,eventReread,'the injected failure belongs to a fresh repeat read');
  for(readFailure of [null,read(event)+'\n',new Error('unavailable')]){
   reads.length=0;
@@ -103,7 +103,16 @@ test('capacity build exact projection preserves older receipts and rejects mixed
  const {beforeRebasedRelease}=await import('./helpers/rebased-release-source.mjs');
  const {beforeDeckPagesSuiteSource}=await import('./helpers/input-retirement-source.mjs');
  const {beforeUiEntranceWitness}=await import('./helpers/ui-entrance-source.mjs');
- const project=(path,source)=>beforeReleaseCapacitySource(path,beforeRebasedRelease(path,beforeDeckPagesSuiteSource(path,beforeUiEntranceWitness(path,source))));
+ const {beforeKnownMasterBackflowSource}=await import('./helpers/master-backflow-source.mjs');
+ const {beforeChapterBattleScene}=await import('./helpers/chapter-battle-scene-source.mjs');
+ const {beforeBattlePeriphery}=await import('./helpers/battle-periphery-source.mjs');
+ const project=(path,source)=>{
+  const chapter=beforeBattlePeriphery(path,beforeChapterBattleScene(path,source));
+  const backflow=beforeKnownMasterBackflowSource(path,chapter);
+  const historical=beforeRebasedRelease(path,beforeDeckPagesSuiteSource(path,beforeUiEntranceWitness(path,backflow)));
+  const prior=beforeReleaseCapacitySource(path,historical);
+  return prior===historical?source:prior;
+ };
  const paths=['scripts/build-native-candidate.mjs','scripts/build-ui.mjs','scripts/monster-art.mjs',
   'scripts/official-portraits.mjs','tests/official-portraits-build.test.mjs'];
  const crlf=s=>s.replaceAll('\n','\r\n');

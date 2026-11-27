@@ -18,6 +18,7 @@ import {betaSources} from './helpers/beta-integration-source.mjs';
 import {round3CatalogProof} from './helpers/epochs/develop/tests/helpers/round3-catalog-source-inverse.mjs';
 import {preComponentUiCiSource} from './helpers/component-ui-ci-source-inverse.mjs';
 import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
+import {reviewedStsStyleRead} from './helpers/reviewed-selection-current-source.mjs';
 import {pointerInputPath,readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 
 // Execute the exact original 98fef helper closure on the original 98fef inputs.
@@ -307,9 +308,13 @@ test(liveOwnerCase,async()=>{
 });
 
 test('current feature entries preserve unsupported input bytes and never use unknown input to authorize raw reads',()=>{
+ const read=path=>readFileSync(path,'utf8');
+ const reviewed=reviewedStsStyleRead(read);
+ const guideOwners=new Set(['navigation','navigation_view','overlays'].map(name=>'src/lua/abyss_game_ui_'+name+'.lua'));
+ const readOwner=path=>guideOwners.has(path)?reviewed(path):read(path);
  for(const [path,intermediate]of Object.entries(currentTargets)){
   const source=readFileSync(path,'utf8').replaceAll('\r\n','\n');
-  const binding=sourceEpoch.proof.current[path],epochSource=beforeCharacterPreparationSource(path,source);
+  const binding=sourceEpoch.proof.current[path],epochSource=beforeCharacterPreparationSource(path,source,readOwner);
   assert.equal(epochSource,binding.source,'exact approved current source: '+path);
   for(const project of [currentFeature,currentHistory]){
    for(const input of [source+'\n-- unknown',source.slice(1),source+source,null,undefined,{},intermediate]){
@@ -334,7 +339,10 @@ test('pre-component unsupported feature and art compositions expose their exact 
  // The lexical batch guard now differs before the backdrop owner in the
  // pre-component chain. Keep that original rejection, not an identity adapter.
  // The outer admits only a complete known current source, never foreign drift.
- const readSource=path=>preComponentUiCiSource(path,readFileSync(path,'utf8'));
+ const readSource=path=>{
+  const raw=readFileSync(path,'utf8');
+  return path.startsWith('src/lua/')||path==='config/architecture.json'?raw:preComponentUiCiSource(path,raw);
+ };
  const featurePath='scripts/art/ready-card-runtime.mjs',featureOwner='scripts/native-script-batch.mjs';
  const featureActual=hash(readFileSync(featureOwner,'utf8').replaceAll('\r\n','\n')),featureExpected=betaSources[featureOwner].sha256;
  assert.notEqual(featureActual,featureExpected);

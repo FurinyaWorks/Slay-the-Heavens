@@ -1,4 +1,4 @@
-import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
+import {currentProductionRereads,releaseArchitectureReadTrace} from './helpers/current-production-source-reads.mjs';
 import {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 import test,{after} from 'node:test';
 import {historicalTest,createHistoricalBaseline,historicalInputPath} from './helpers/historical-baseline-inputs.mjs';
@@ -8,6 +8,7 @@ import {dirname,join} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {gunzipSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
+import {beforeReleaseClosureFixture} from './helpers/release-closure-fixture-source.mjs';
 import {projectHistoricalNodesBattleMaxHpConfig,preHistoricalNodesBattleMaxHpConfig} from './helpers/nodes-battle-max-hp-config-inverse.mjs';
 
 // Historical source contracts execute their exact original helper closure.
@@ -26,7 +27,8 @@ function validateOriginalChain(value,readInput=readOriginalInput){
   assert.notEqual(Object.hasOwn(binding,'existing'),Object.hasOwn(binding,'source'),'one complete original input: '+path);
   if(binding.existing)assert.equal(binding.existing,path,'original input reference stays at its authenticated path');
   const raw=binding.existing?readInput(path):Buffer.from(binding.source);
-  const source=path.endsWith('.gz')?raw:Buffer.from(raw.toString('utf8').replaceAll('\r\n','\n'));
+  const original=binding.existing&&path==='tests/helpers/approved-ui-inverse.mjs'?beforeReleaseClosureFixture(path,raw):raw;
+  const source=path.endsWith('.gz')?original:Buffer.from(original.toString('utf8').replaceAll('\r\n','\n'));
   assert.equal(hash(source),binding.sha256,'original complete Nodes chain bytes: '+path);
   assert.equal(createHash('sha1').update(`blob ${source.length}\0`).update(source).digest('hex'),binding.gitBlob,'original Nodes chain Git blob: '+path);
   return [path,source];
@@ -185,10 +187,10 @@ test('current architecture admission rereads its complete raw owner closure and 
  // that unrelated modern owners can replay the complete 98fef history.
  const project=()=>sourceEpoch.preCombinedSource(path,raw,{target:'develop',readSource:reader});
  const accepted=project();assert.equal(hash(accepted),sourceEpoch.proof.targets.develop.files[path].sha256,'the declared current target, not the ancient candidate');assert.notEqual(accepted,raw);
- // Pin the complete raw trace, including the three backflow freshness guards.
+ // Pin the complete raw trace, including all backflow freshness guards.
  const admittedReads=[...reads];
- assert.equal(admittedReads.length,480,'complete fresh raw closure size');
- assert.equal(hash(JSON.stringify(admittedReads)),'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd','exact current admission order');
+ assert.equal(admittedReads.length,releaseArchitectureReadTrace.count,'complete fresh raw closure size');
+ assert.equal(hash(JSON.stringify(admittedReads)),releaseArchitectureReadTrace.sha256,'exact current admission order');
  let position=-1;
  for(const owner of priorReadOrder){
   position=admittedReads.indexOf(owner,position+1);

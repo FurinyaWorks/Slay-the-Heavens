@@ -15,7 +15,9 @@ import {beforeNodeNoticeSource} from './reward-current-source.mjs';
 import {beforeKnownMasterBackflowSource,beforeProductionReadingBackflow} from './master-backflow-source.mjs';
 import {beforeReleaseVocabulary,isReleaseVocabularyPredecessor,releaseVocabularyOwns} from './develop-release-vocabulary-source.mjs';
 import {beforeRunHudDeckLabel} from './run-hud-successors.mjs';
+import {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';
 import {beforeReleaseEntranceOwner,readReleaseEntrancePredecessor} from './release-entrance-owner-source.mjs';
+import {hasReviewedStsStyleModules,reviewedStsStyleInventory,reviewedStsStyleRead} from './reviewed-selection-current-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const blob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
@@ -334,10 +336,12 @@ function currentRecentBackflowOwner(path,source){
  return matches(source,roomEntry.files[path].after);
 }
 export function assertDevelopBackflowCurrent(path,source){
+ if(path===deckPath)source=beforeReleaseDeckPointer(path,source);
  if(path===libraryEventPath){
   assert(uniformSource(source)&&matches(source,libraryPromptCurrent),'fresh current production owner: '+path);
   return;
  }
+ if(actorFocusOwners.includes(path))source=beforeVocabularyOwner(path,source);
  source=beforeLinkedBackflow(path,beforeBattleInputHistory(path,beforeMapRoomBattleActions(path,source)));
  source=beforeUiEntrance(path,beforeBattlePeriphery(path,beforeChapterBattleScene(path,source)));
  source=beforeDevelopUiBackflows(path,source);
@@ -369,13 +373,18 @@ export function assertStasisUpgradeAdded(path,source){
  assert(Object.hasOwn(stasis.added,path)&&matches(source,stasis.added[path]),'fresh Stasis upgrade module: '+path);
 }
 export function assertActorFocusInventory(paths,read=path=>readFileSync(path,'utf8')){
+ const inventoryError='complete current Actor/Focus Lua module inventory';
+ assert.equal(new Set(paths).size,paths.length,inventoryError);
+ const releaseInventory=hasReviewedStsStyleModules(paths);
+ const readDeck=releaseInventory?reviewedStsStyleRead(read):read;
+ if(releaseInventory)paths=reviewedStsStyleInventory(paths,read);
  paths=entranceInventory(paths,read);
  const expected=[...actorFocus.luaBefore,...actorFocusAdded,...deckPagesAdded];
  assert(expected.includes(retiredControllerPath),'exact controller predecessor in Actor/Focus Lua inventory');
- assert.deepEqual([...paths].sort(),[...expected.filter(path=>path!==retiredControllerPath),pointerInputPath].sort(),'complete current Actor/Focus Lua module inventory');
+ assert.deepEqual([...paths].sort(),[...expected.filter(path=>path!==retiredControllerPath),pointerInputPath].sort(),inventoryError);
  assertPointerInputSource(read(pointerInputPath));
  for(const path of deckPagesAdded){
-  const source=read(path);
+  const source=readDeck(path);
   assertDevelopBackflowCurrent(path,source);
   assert(matches(beforeInputRetirement(path,source),deckPages.added[path]),'fresh deck browser module: '+path);
  }
@@ -405,6 +414,7 @@ function beforeVocabularyOwner(path,source){
  return beforeReleaseVocabulary(path,beforeKnownMasterBackflowSource(path,source));
 }
 export function beforeCurrentDeckEntranceOwner(path,source){
+ if(path===deckPath)source=beforeReleaseDeckPointer(path,source);
  if(!uiEntranceOwns(path)||!uniformSource(source))return source;
  if(chapterEntranceOwners.has(path))return beforeChapterEntranceOwner(path,source);
  try{assertCurrentUiEntrance(path,source);return source;}
@@ -415,7 +425,8 @@ function recentBackflowOwnerReader(read,historicalOwners){
  let epoch;
  const readEntrancePrior=entranceReader(path=>{
   const raw=readReleaseEntrancePredecessor(path,read(path),underlyingEntranceReader(read));
-  const source=beforeArchitectureOwner(path,path===deckLayoutPath?beforeRunHudDeckLabel(raw):raw);
+  const source=beforeArchitectureOwner(path,path===deckLayoutPath?beforeRunHudDeckLabel(raw):
+   path===deckPath?beforeReleaseDeckPointer(path,raw):raw);
   const vocabulary=releaseVocabularyOwns(path);
   if(!uiEntranceOwns(path)&&!vocabulary&&path!==battleActionsPath&&!Object.hasOwn(battleInputHistory,path)&&!Object.hasOwn(linkedBackflow,path))return source;
   const frozen=historicalOwners?.[path]?.source;
@@ -484,24 +495,36 @@ export function bindDevelopBackflow(read,historicalOwners){
    const current=beforeLinkedBackflow(path,beforeBattleInputHistory(path,beforeMapRoomBattleActions(path,beforeVocabularyOwner(path,source))));
    // The chapter reader authenticates a responsive source against raw owners
    // before the linked Develop reader enters its older source epoch.
-   const readLive=beforeResponsiveHand(path,current)!==current?read:readOwner;
+   const releaseDeck=path===deckPath&&beforeReleaseDeckPointer(path,current)!==current;
+   const readLive=releaseDeck||beforeResponsiveHand(path,current)!==current?read:readOwner;
    return authenticateDevelopBackflowWithReaders(path,current,readLive,readOwner,options);
   },
  };
 }
-function beforePriorDevelopBackflow(path,source){
- source=beforeVocabularyOwner(path,beforeMatchEventRepair(path,source));
+function beforePriorLayers(path,source){
  return layers.reduce((prior,layer)=>predecessor(layer,path,prior),source);
+}
+function beforePriorDevelopBackflow(path,source){
+ return beforePriorLayers(path,beforeVocabularyOwner(path,beforeMatchEventRepair(path,source)));
 }
 const forethoughtOwners=[deckPath,'scripts/deck-ui-layout.mjs'];
 const pileOpenOwners=[...forethoughtOwners,'src/lua/abyss_card_skin.lua'];
 function authenticatePriorDevelopBackflow(path,source,read){
  const repaired=beforeMatchEventRepair(path,source);
  const matchSuccessor=repaired!==source;
- source=repaired;
- const prior=beforePriorDevelopBackflow(path,source);
- if(prior===source)return source;
- const row=layers.find(layer=>Object.hasOwn(layer,path)&&matches(source,layer[path].after))[path];
+ const vocabularyPrior=beforeVocabularyOwner(path,repaired);
+ const prior=beforePriorLayers(path,vocabularyPrior);
+ const vocabularySuccessor=vocabularyPrior!==repaired;
+ const checkVocabulary=live=>{
+  assert(uniformSource(live)&&live.replaceAll('\r\n','\n')===repaired.replaceAll('\r\n','\n'),
+   'combined linked owner identity: '+path+' changed during Develop vocabulary validation');
+  return beforeVocabularyOwner(path,live);
+ };
+ if(prior===vocabularyPrior){
+  if(vocabularySuccessor)checkVocabulary(beforeMatchEventRepair(path,readBackflowOwner(read,path)));
+  return vocabularyPrior;
+ }
+ const row=layers.find(layer=>Object.hasOwn(layer,path)&&matches(vocabularyPrior,layer[path].after))[path];
  const actorOwner=Object.hasOwn(actorFocus.files,path)&&row===actorFocus.files[path];
  const stasisOwner=Object.hasOwn(stasis.files,path)&&(row===stasis.files[path]||(actorOwner&&path===architecturePath));
  const pileOwner=row===pileOpen.files[path];
@@ -515,6 +538,7 @@ function authenticatePriorDevelopBackflow(path,source,read){
    assert(matchSuccessor===(repairedLive!==live),'combined linked owner identity: '+owner+' changed during Match repair validation');
    live=repairedLive;
   }
+  if(owner===path&&vocabularySuccessor)live=checkVocabulary(live);
   const expected=owner===path?row.after:stasisOwner?(priorCurrent(owner)?.after??stasisCurrent[owner]):priorCurrent(owner).after;
   assert(matches(live,expected),'combined linked owner identity: '+owner+' changed during Develop backflow validation');
  }
@@ -535,7 +559,10 @@ function beforeSessionRelic(path,source,options){
  return source.includes('\r\n')?before.replaceAll('\n','\r\n'):before;
 }
 export function beforeDevelopBackflow(path,source,options){
+ if(path===deckPath)source=beforeReleaseDeckPointer(path,source);
+ if(path===deckLayoutPath)source=beforeLinkedBackflow(path,beforeRunHudDeckLabel(source));
  source=beforeReleaseEntranceOwner(path,source);
+ if(actorFocusOwners.includes(path))source=beforeVocabularyOwner(path,source);
  if(path==='src/lua/abyss_potion_discard_ui.lua')source=beforeKnownMasterBackflowSource(path,source);
  source=beforeLibraryReadPrompt(path,source);
  source=beforeBattleInputHistory(path,beforeChapterEntranceOwner(path,beforeArchitectureOwner(path,source)));
@@ -559,6 +586,30 @@ function readBackflowOwner(read,path){
  catch(error){assert.fail('combined linked owner missing: '+path+': '+String(error?.message??error));}
 }
 function authenticateDevelopBackflowWithReaders(path,source,readLive,readLinked,options){
+ if(path===deckPath){
+  const prior=beforeReleaseDeckPointer(path,source);
+  if(prior!==source){
+   const live=readBackflowOwner(readLive,path);
+   const lf=value=>value.replaceAll('\r\n','\n');
+   const livePrior=beforeReleaseDeckPointer(path,live);
+   assert(livePrior!==live&&lf(livePrior)===lf(prior),'fresh Release deck pointer owner');
+   source=prior;
+  }
+ }
+ const rawLive=readLive;
+ readLive=owner=>owner===deckPath?beforeReleaseDeckPointer(owner,rawLive(owner)):rawLive(owner);
+ if(path===deckPath||path===deckLayoutPath){
+  const deckPrior=(owner,value)=>beforeLinkedBackflow(owner,owner===deckLayoutPath?beforeRunHudDeckLabel(value):value);
+  const prior=deckPrior(path,source);
+  if(prior!==source){
+   const live=readBackflowOwner(readLive,path);
+   assert(uniformSource(live)&&live.replaceAll('\r\n','\n')===source.replaceAll('\r\n','\n'),
+    'combined linked owner identity: '+path+' during deck backflow validation');
+   source=prior;
+   const beforeDeck=readLive;
+   readLive=owner=>owner===path?deckPrior(owner,beforeDeck(owner)):beforeDeck(owner);
+  }
+ }
  const libraryPrior=beforeLibraryReadPrompt(path,source);
  if(libraryPrior!==source){
   const live=readBackflowOwner(readLive,path);

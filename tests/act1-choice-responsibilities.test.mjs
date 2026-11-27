@@ -22,7 +22,9 @@ import {join,dirname} from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
-import {act1ChoiceBefore as before,preAct1ChoiceSource,act1ChoiceReader} from './helpers/act1-choice-source-inverse.mjs';
+import {act1ChoiceBefore as before,preAct1ChoiceSource,act1ChoiceReader} from './helpers/epochs/act1/tests/helpers/act1-choice-source-inverse.mjs';
+import {beforeReleaseVocabulary} from './helpers/develop-release-vocabulary-source.mjs';
+import {act1ChoiceReader as currentAct1ChoiceReader} from './helpers/act1-choice-source-inverse.mjs';
 import {copyCurrentSourceFixture} from './helpers/isolated-current-source.mjs';
 function replay(source,fixture,group){
  mkdirSync('build/act1-choice',{recursive:true});
@@ -75,13 +77,16 @@ for(const fixture of ['tests/lua/act1_event_content.lua','tests/lua/scrap_ooze.l
  writeFileSync('build/act1-choice/'+fixture.split('/').at(-1)+'.json',JSON.stringify(proof,null,2)+'\n');t.diagnostic(JSON.stringify(proof));
 });
 test('Act1 source inverse authenticates fresh current bytes with exact LF and Git identity',()=>{
- const current=read(file);let live=current,reads=0;const raw=p=>{assert.equal(p,file);reads++;return live;};
+ const current=read(file),projected=beforeReleaseVocabulary(file,current);
+ assert.notEqual(projected,current,'approved Release copy has distinct bytes');
+ let live=current,reads=0;
+ const raw=p=>{assert.equal(p,file);reads++;const prior=beforeReleaseVocabulary(p,live);return prior===live?null:prior;};
  const reader=act1ChoiceReader(raw);assert.equal(act1ChoiceReader(reader),reader);
- assert.equal(preAct1ChoiceSource(file,current,{readSource:reader}),before);assert.equal(reads,1);
- assert.equal(preAct1ChoiceSource(file,current.replaceAll('\n','\r\n'),{readSource:raw}),before);
- for(live of [current+'\n',before,null,undefined])assert.throws(()=>preAct1ChoiceSource(file,current,{readSource:reader}),/linked owner/);
- assert.throws(()=>preAct1ChoiceSource(file,current,{readSource(){throw Error('missing');}}),/linked owner missing/);
- assert.throws(()=>preAct1ChoiceSource(file,current,{readSource:null}),/linked reader/);
+ assert.equal(preAct1ChoiceSource(file,projected,{readSource:reader}),before);assert.equal(reads,1);
+ assert.equal(preAct1ChoiceSource(file,beforeReleaseVocabulary(file,current.replaceAll('\n','\r\n')),{readSource:raw}),before);
+ for(live of [current+'\n',projected,before,null,undefined])assert.throws(()=>preAct1ChoiceSource(file,projected,{readSource:reader}),/linked owner/);
+ assert.throws(()=>preAct1ChoiceSource(file,projected,{readSource(){throw Error('missing');}}),/linked owner missing/);
+ assert.throws(()=>preAct1ChoiceSource(file,projected,{readSource:null}),/linked reader/);
  reads=0;for(const unknown of [null,undefined,'',current+'\n',before])assert.equal(preAct1ChoiceSource(file,unknown,{readSource:raw}),unknown);
  assert.equal(preAct1ChoiceSource('foreign/'+file,current,{readSource:raw}),current);assert.equal(reads,0);
 });
@@ -114,14 +119,17 @@ test('actual CRLF source and helper checkout retain the frozen LF Git identity',
  const dir=mkdtempSync(join(tmpdir(),'act1-crlf-'));
  try{
   const readSource=copyCurrentSourceFixture(dir,{crlf:true});
-  const module=await import(pathToFileURL(join(dir,'tests/helpers/act1-choice-source-inverse.mjs')).href);
+  const helper='tests/helpers/epochs/act1/tests/helpers/act1-choice-source-inverse.mjs';
+  const module=await import(pathToFileURL(join(dir,helper)).href);
   assert.equal(module.act1ChoiceBefore,before);
-  const source=readSource(file);
-  assert.equal(module.preAct1ChoiceSource(file,source,{readSource}),before);
+  const source=readSource(file),projected=beforeReleaseVocabulary(file,source);
+  const readOwner=path=>{const raw=readSource(path),prior=beforeReleaseVocabulary(path,raw);return prior===raw?null:prior;};
+  assert.notEqual(projected,source,'current CRLF bytes need the reviewed copy predecessor');
+  assert.equal(module.preAct1ChoiceSource(file,projected,{readSource:readOwner}),before);
   writeFileSync(join(dir,file),source+'\r\n');
-  assert.throws(()=>module.preAct1ChoiceSource(file,source,{readSource}),/linked owner/);
+  assert.throws(()=>module.preAct1ChoiceSource(file,projected,{readSource:readOwner}),/linked owner/);
   rmSync(join(dir,file));
-  assert.throws(()=>module.preAct1ChoiceSource(file,source,{readSource}),/linked owner missing/);
+  assert.throws(()=>module.preAct1ChoiceSource(file,projected,{readSource:readOwner}),/linked owner missing/);
  }finally{rmSync(dir,{recursive:true,force:true});}
 });
 test('original Act1 chain preserves exact Git sources, reader unwrapping and one-owner read order',async()=>{
@@ -157,7 +165,10 @@ test('original Act1 chain preserves exact Git sources, reader unwrapping and one
   for(const [path,source]of Object.entries(inputs)){
    mkdirSync(dirname(join(dir,path)),{recursive:true});writeFileSync(join(dir,path),source);
   }
-  const source=target.files[file].source;assert.equal(source,read(file));
+  const source=target.files[file].source,liveSource=read(file);
+  assert.notEqual(liveSource,source,'the Release copy has its own exact identity');
+  assert.equal(beforeReleaseVocabulary(file,liveSource),source);
+  assert.equal(beforeReleaseVocabulary(file,liveSource+'\n'),liveSource+'\n');
   for(const path of [file,'config/architecture.json']){
    mkdirSync(dirname(join(dir,path)),{recursive:true});writeFileSync(join(dir,path),target.files[path].source);
   }
@@ -203,15 +214,28 @@ test('Act1 current source enters the unchanged historical chain and rereads ever
  for(const readSource of [raw,wrapped]){
   changed=undefined;reads=[];assert.equal(preRelicQuerySource(file,source,{readSource}),before);
   if(!admittedReads){
-   // Keep the complete current trace and the ordered original contract.
-   assert.equal(reads.length,466);
-   assert.equal(createHash('sha256').update(JSON.stringify(reads)).digest('hex'),'049af1e21af40d804c1201c01f79da465c7ee0a2b1c4a2544a0c4c3cd1da0500');
+   // The Release adds fresh portrait, Prologue and battle-feedback reads.
+   // All 466 reads from #912 remain in their original order.
+   assert.equal(reads.length,543);
+   const traceDigest=trace=>createHash('sha256').update(JSON.stringify(trace)).digest('hex');
+   assert.equal(traceDigest(reads),'4fce5e9a9dc7a2c45cb0973b8a88c3cc6964f9983f99f4f0ab8ee488b77c4fa2');
+   const releaseReads=[
+    [4,6],[10,12],[17,18],[19,24],[31,33],[76,77],
+    [101,104],[143,145],[157,159],[160,162],[163,165],[166,168],
+    [209,212],[213,216],[223,226],[262,264],[265,267],[268,270],
+    [311,313],[327,328],[338,340],[341,343],[344,346],[347,349],
+    [378,381],[382,385],[391,394],[408,410],[411,413],[414,416],
+    [445,446],[473,474],[476,478],[479,484],[517,518],
+   ];
+   const originalReads=reads.filter((_,index)=>!releaseReads.some(([from,to])=>index>=from&&index<to));
+   assert.equal(originalReads.length,466);
+   assert.equal(traceDigest(originalReads),'049af1e21af40d804c1201c01f79da465c7ee0a2b1c4a2544a0c4c3cd1da0500');
    const entranceBytes=readFileSync('tests/fixtures/ui-entrance-source.json.gz');
    assert.equal(createHash('sha256').update(entranceBytes).digest('hex'),'7ac3f53b242819cdb569c0a1ebf60de0605b72297a1072ea612bfeb11b0597c9');
    const entranceOwners=Object.keys(JSON.parse(gunzipSync(entranceBytes)).files);
    assert.equal(entranceOwners.length,20);
-   assert.deepEqual(reads.slice(1,21),entranceOwners,'complete current entrance cohort');
-   assert.equal(createHash('sha256').update(JSON.stringify([reads[0],...reads.slice(21)])).digest('hex'),
+   assert.deepEqual(originalReads.slice(1,21),entranceOwners,'complete original entrance cohort');
+   assert.equal(traceDigest([originalReads[0],...originalReads.slice(21)]),
     '5dad58d855f93d4169fa5877eff635d77f2c0b99af76f12e8f5cb68a4d659a4f','unchanged complete original Act1 order');
    let position=-1;
    for(const owner of priorReadOrder){
@@ -222,7 +246,9 @@ test('Act1 current source enters the unchanged historical chain and rereads ever
   }
   assert.deepEqual(reads,admittedReads);
   for(const owner of owners.filter(owner=>owner!==retiredControllerPath))for(replacement of [read(owner)+'\n',null,undefined]){
-   changed=owner;reads=[];assert.throws(()=>preRelicQuerySource(file,source,{readSource}),/combined linked owner identity/);
+   changed=owner;reads=[];
+   assert.throws(()=>preRelicQuerySource(file,source,{readSource}),error=>
+    /combined linked owner (identity|missing)|fresh (Selection portrait|prologue button) owner/.test(error.message)&&error.message.includes(owner));
    assert.deepEqual(reads,admittedReads.slice(0,admittedReads.indexOf(owner)+1),'fresh reads stop at the actual bad owner: '+owner);
   }
   changed=retiredControllerPath;replacement=beforeInputRetirementReader(read)(changed);reads=[];
@@ -244,7 +270,7 @@ test('Act1 current source enters the unchanged historical chain and rereads ever
  assert.throws(()=>preRelicQuerySource(file,source,{readSource:p=>{if(p===file)throw Error('missing');return read(p);}}),/combined linked owner missing/);
  // A reader for another target is projected data, not this facade's raw owner.
  // Accepting it would silently combine #546 architecture with the current tree.
- const act1Reader=act1ChoiceReader(read);
+ const act1Reader=currentAct1ChoiceReader(read);
  assert.equal(act1Reader('config/architecture.json'),sourceEpoch.proof.targets.act1.files['config/architecture.json'].source);
  assert.throws(()=>preRelicQuerySource(file,source,{readSource:act1Reader}),/combined linked owner identity: config\/architecture.json/);
 });

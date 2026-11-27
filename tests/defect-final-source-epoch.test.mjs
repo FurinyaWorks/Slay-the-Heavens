@@ -1,6 +1,6 @@
 import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
 import {readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';
-import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
+import {currentProductionRereads,releaseArchitectureReadTrace} from './helpers/current-production-source-reads.mjs';
 import {closeoutPriorEpoch,ciRepairSourceEpoch,stsStyleEpoch,menuRedEpoch} from './helpers/closeout-source-epoch.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -193,9 +193,9 @@ test('current raw production retains the exact power-view owner and complete rel
  const expected=current.targets.develop.files[file].source;
  assert.equal(currentEpoch.preCombinedSource(file,source,{target:'develop',readSource:raw}),expected);
  const admittedReads=[...reads];
- assert.equal(admittedReads.length,480);
+ assert.equal(admittedReads.length,releaseArchitectureReadTrace.count);
  assert.equal(createHash('sha256').update(JSON.stringify(admittedReads)).digest('hex'),
-  'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd','exact current owner read order');
+  releaseArchitectureReadTrace.sha256,'exact current owner read order');
  let prior=-1;
  for(const path of [...current.owners,...currentProductionRereads]){
   prior=admittedReads.indexOf(path,prior+1);

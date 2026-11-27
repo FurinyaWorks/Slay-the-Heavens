@@ -84,7 +84,7 @@ local function fight(host,root,floor)
     assert(nextNode and nextNode.floor==floor)
     local accepted,state=host.mapUI:choose(nextNode.id)
     assert(accepted and state=='selection_pending' and host.mode=='map' and host.run.phase=='map')
-    -- Match the formal fixture: only the Act I Guardian narration has the longer budget.
+    -- Match the formal campaign fixture's budget for the Guardian narration and fades.
     local guardianEntry=host.run.act==1 and nextNode.type=='boss'
     awaitNativePage(host,guardianEntry and 140 or nil)
     assert(host.map.currentNodeId==nextNode.id and host.mode=='battle' and host.run.phase=='combat')

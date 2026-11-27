@@ -41,12 +41,13 @@ test('Forethought source projection keeps exact predecessors and rejects mixed o
   const lua = 'src/lua/abyss_deck_ui.lua';
   const layout = 'scripts/deck-ui-layout.mjs';
   const read = path => readFileSync(path, 'utf8');
-  const hash = value => createHash('sha256').update(value).digest('hex');
+  const lf = value => value.replaceAll('\r\n', '\n');
+  const hash = value => createHash('sha256').update(lf(value)).digest('hex');
   const priorLua = beforeMapDeckSource(lua, read(lua), read);
   const priorLayout = beforeMapDeckSource(layout, read(layout), read);
   assert.equal(hash(priorLua), '7aa3356eb8cd43a4acd956391a2442202f0e83abed49e8487c14befe21739a3e');
   assert.equal(hash(priorLayout), 'f43c5472a1afacf23e8b2a908fa7eb5082e561314c90abbb65d7ccd7ca799d85');
-  const crlf = source => source.replaceAll('\n', '\r\n');
+  const crlf = source => lf(source).replaceAll('\n', '\r\n');
   assert.equal(beforeMapDeckSource(lua, crlf(read(lua)), path => crlf(read(path))), crlf(priorLua));
   assert.throws(() => beforeMapDeckSource(lua, read(lua), path => path === layout ? priorLayout : read(path)),
     /Forethought linked owner identity/);

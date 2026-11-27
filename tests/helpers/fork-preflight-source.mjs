@@ -364,6 +364,7 @@ function beforeReleaseUiBuildSource(path,source,read=readFileSync){
  return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
 }
 function releaseHistoricalInput(path,source){
+ if(path===battleSceneCopyClosure.path)source=beforeCalibrationReplayOwner(path,source);
  source=beforeCurrentReplayCopier(path,beforeActorAlphaBuildInput(path,source));
  return beforeRebasedCopier(path,source)!==source?historicalReleaseCopier(source):beforeRebasedRelease(path,source);
 }
@@ -1300,6 +1301,7 @@ function beforeReviewedStsFeedbackFixture(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeCalibrationReplayOwner(path,source){
+ if(path==='tests/lore-v2.test.mjs'||path==='tests/act1-choice-responsibilities.test.mjs')source=beforeReleaseClosureFixture(path,source);
  source=beforeReviewedStsFeedbackFixture(path,beforeReviewedStsStyleFixture(path,source));
  source=beforeReviewedOfficialAssetReplay(path,beforeSelectionReceiptSource(path,source));
  source=beforeBattleSceneCopyClosure(path,source);
@@ -1509,6 +1511,8 @@ function beforeReleaseScriptStaticGate(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 export function beforeReviewedBuildInput(path,source,read){
+ if(path==='scripts/official-assets-campaign.lua'||path==='scripts/verify-delivery.mjs')
+  source=beforeReleaseClosureFixture(path,source,{reviewedBuild:true});
  source=beforeForkPush(path,source);
  const reviewed=(owner,raw)=>{
   if(owner.startsWith('src/')||owner==='config/architecture.json')return raw;
@@ -1800,9 +1804,10 @@ export function beforePreflightSource(path,source,view='prior',read=readFileSync
   const liveRead=read;
   read=(owner,encoding)=>{
    const raw=liveRead(owner,encoding);
-   if(owner===integratedFixture)assert(exactCheckoutSource(raw,sessionMenuIntegratedIdentity),
-    'fresh complete integration source: '+owner);
-   return beforeRelicCloseoutIntegratedFixture(owner,raw);
+   if(owner!==integratedFixture)return raw;
+   const input=beforeReleaseClosureFixture(owner,raw);
+   assert(exactCheckoutSource(input,sessionMenuIntegratedIdentity),'fresh complete integration source: '+owner);
+   return beforeRelicCloseoutIntegratedFixture(owner,input);
   };
  }
  source=beforeV220HostedTiming(path,source);

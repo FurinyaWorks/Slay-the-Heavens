@@ -58,6 +58,15 @@ const jsInventorySuccessors=Object.freeze({
 });
 const relicCloseoutOwner='tests/helpers/closeout-ci-source.mjs';
 const integratedEvidenceSuccessors=Object.freeze({
+ // #1047 replaced the legacy artifact handoff with the unified GIL workflow.
+ 'scripts/verify-delivery.mjs':{
+  sha256:'0cc36bf1fc188d5a0cf40163fbeb9fbbd227d1d62d98b991036b83b7d2dbd818',gitBlob:'70c27b3b02de90afe52a2800b1569181d5d5eb3d',
+ },
+ // The verified Master backflow reads the v2.0.0 predecessor of #1038.
+ // The exact original integration witness still identifies v1.0.0.
+ '.release-please-manifest.json':{
+  sha256:'9e38a481f52b5af8537babca8f5d13d5a0ab72473e1deba2e1aeb71e05dcd5b9',gitBlob:'895bf0e35e87e52e09aff04e9d35f554e99ae4b4',
+ },
  // #1010 changes the live relic inventory reader; the sealed integration view remains byte-exact.
  [relicCloseoutOwner]:{
   sha256:'34c1a1ae32357055166de58dc68676d9adb9a99a88c7ac97ab3b1f649ef3cbff',
@@ -131,7 +140,7 @@ export function assertIntegratedLuaFixturesCurrent(read){
 }
 function matchesIntegratedEvidence(path,source,binding){
  if(!exactSourceMatches(source,binding))return false;
- if(path!==relicCloseoutOwner)return true;
+ if(path!==relicCloseoutOwner&&path!=='.release-please-manifest.json'&&path!=='scripts/verify-delivery.mjs')return true;
  const lf=norm(source);
  return source===lf||source===lf.replaceAll('\n','\r\n');
 }

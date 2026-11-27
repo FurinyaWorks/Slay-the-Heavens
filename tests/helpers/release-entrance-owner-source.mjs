@@ -95,6 +95,7 @@ const ownerGroups=[
  {owners:portraitSources,label:'Selection portrait'},
 ];
 const ownerGroup=path=>ownerGroups.find(({owners})=>Object.hasOwn(owners,path));
+export const releaseEntranceOwns=path=>ownerGroup(path)!==undefined;
 
 function uniformText(raw){
  const source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
@@ -119,8 +120,11 @@ export function checkedReleaseEntranceOwner(path,raw,read){
  const group=ownerGroup(path);
  if(!group)return raw;
  for(const [owner,binding] of Object.entries(group.owners)){
-  const source=uniformText(owner===path?raw:read(owner,'utf8'));
-  assert(exactSourceMatches(source,binding.current),'fresh '+group.label+' owner: '+owner);
+  let sample;
+  try{sample=owner===path?raw:read(owner,'utf8');}
+  catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
+  assert(exactSourceMatches(uniformText(sample),binding.current),
+   'combined linked owner identity: '+owner+' (fresh '+group.label+' owner: '+owner+')');
  }
  return beforeReleaseEntranceOwner(path,raw);
 }

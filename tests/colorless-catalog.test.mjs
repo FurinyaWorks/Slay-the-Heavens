@@ -5,9 +5,44 @@ import luaparse from 'luaparse';
 import {discoverSources,dependencyCycles} from '../scripts/lua-quality-metrics.mjs';
 import {analyzeSources} from '../scripts/check-architecture.mjs';
 import {reviewResponsibilityComplexity} from '../scripts/check-lua-static.mjs';
-import {runColorlessCatalog} from './helpers/colorless-catalog-vm.mjs';
+import {colorlessHash,runColorlessCatalog} from './helpers/colorless-catalog-vm.mjs';
 const read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
 const leaf='src/lua/abyss_colorless_catalog.lua';
+// #951 changed these display names and one operation label. Keep the raw
+// historical graph on disk and project only the reviewed fields for comparison.
+const releasedCardNames=new Map([
+ ['bite',['Bite','噬咬','迅袭']],
+ ['jax',['J.A.X.','激素','元素增幅']],
+]);
+function historicalComparison(before,fixture){
+ let bytes=0,originalBytes=0;
+ const graphs=readFileSync(before.traceFile,'utf8').trimEnd().split('\n').map((line,index)=>{
+  const {label,graph}=JSON.parse(line),original=JSON.stringify(graph);
+  assert.deepEqual(before.graphs[index],{label,sha256:colorlessHash(original)});
+  originalBytes+=Buffer.byteLength(original);
+  const renamed=new Map();let operations=0;
+  for(const [kind,,fields] of graph.definitions){
+   if(kind!=='table')continue;
+   const stringField=name=>fields.find(([key,value])=>key[0]==='string'&&key[1]===name&&value[0]==='string')?.[1];
+   const card=stringField('id')?.[1],record=releasedCardNames.get(card);
+   const name=record&&stringField('name');
+   if(record&&name?.[1]===record[1]&&stringField('sourceId')?.[1]===record[0]){
+    name[1]=record[2];renamed.set(card,(renamed.get(card)??0)+1);
+   }
+   const op=stringField('op');
+   if(op?.[1]==='daggerSacrifice'){op[1]='daggerExpenditure';operations++;}
+  }
+  const expectedNames={'independent registration copies':2,'dynamic catalog preparation':0}[label]??1;
+  for(const id of releasedCardNames.keys())assert.equal(renamed.get(id)??0,expectedNames,`${label}: reviewed ${id} display names`);
+  assert.equal(operations,fixture==='colorless_catalog_contract'?0:1,'only the reviewed operation changes');
+  const comparison=JSON.stringify(graph);
+  bytes+=Buffer.byteLength(comparison);
+  return {label,sha256:colorlessHash(comparison)};
+ });
+ assert.equal(graphs.length,before.graphs.length);
+ assert.equal(originalBytes,before.bytes);
+ return {graphs,bytes};
+}
 function graph(){const sources=Object.fromEntries(Object.entries(discoverSources()).map(([p,s])=>[p.slice(8,-4),s]));const policy=JSON.parse(read('config/architecture.json'));return {sources,policy,graph:analyzeSources(sources,policy)};}
 function closure(g,root){const found=new Set(),pending=[root];while(pending.length){const n=pending.pop();if(found.has(n))continue;found.add(n);for(const edge of g.edges)if(edge.from===n)pending.push(edge.to);}return [...found].sort();}
 test('preparation and definition registration cannot transitively load combat execution, including deferred edges',()=>{
@@ -34,7 +69,8 @@ for(const fixture of ['colorless_catalog_contract','colorless_cards','colorless_
  const before=runColorlessCatalog('before',path,options),after=runColorlessCatalog('after',path,options);
  assert.equal(before.status,0,before.error);assert.equal(after.status,0,after.error);
  assert(before.graphs.length>0);assert.deepEqual(after.generated,before.generated);assert.deepEqual(after.logs,before.logs);
- assert.deepEqual(after.graphs,before.graphs);assert.equal(after.bytes,before.bytes);
+ const comparison=historicalComparison(before,fixture);
+ assert.deepEqual(after.graphs,comparison.graphs);assert.equal(after.bytes,comparison.bytes);
  mkdirSync('build/colorless-catalog',{recursive:true});writeFileSync(`build/colorless-catalog/${fixture}-equivalence.json`,JSON.stringify({fixture,checkpoints:after.graphs,bytesPerSide:after.bytes,generated:after.generated},null,2)+'\n');
 });
 test('cold preparation loads no runtime and both ordinary interface directions remain one slot',()=>{

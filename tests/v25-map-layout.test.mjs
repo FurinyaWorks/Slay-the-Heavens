@@ -128,7 +128,7 @@ print('ROUTE_CURVE_PASS')
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {beforeAuthenticatedRecordingStage} from './helpers/release-ui-restore-source.mjs';
-import {beforeCurrentReplayFixes} from './helpers/current-replay-fix-sources.mjs';
+import {beforeUiEntrance} from './helpers/ui-entrance-source.mjs';
 test('recording historical continuation accepts exact owners and rejects stale, drifted or mixed reads',()=>{
  const {files}=JSON.parse(gunzipSync(readFileSync('tests/helpers/recording-0401-source.json.gz')));
  for(const [path,row] of Object.entries(files)){
@@ -145,7 +145,7 @@ test('recording continuation authenticates raw current production owners before 
  const expected=beforeAuthenticatedRecordingStage(path,live,readFileSync);
  const expectedLf=expected.replaceAll('\r\n','\n');
  for(const owner of ['src/lua/abyss_game_ui.lua','src/lua/abyss_node_ui_faces.lua','src/lua/abyss_game_ui_run.lua']){
-  const raw=readFileSync(owner,'utf8'),stale=beforeCurrentReplayFixes(owner,raw);
+  const raw=readFileSync(owner,'utf8'),stale=beforeUiEntrance(owner,raw);
   assert.notEqual(stale,raw,'negative control must change production bytes');
   for(const bad of [stale,raw+'\n-- unreviewed drift\n']){
    assert.throws(()=>beforeAuthenticatedRecordingStage(path,live,p=>p===owner?bad:readFileSync(p,'utf8')),/linked owner (?:missing|identity|changed)/,owner);
