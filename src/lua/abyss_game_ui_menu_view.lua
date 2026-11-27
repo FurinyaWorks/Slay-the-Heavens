@@ -89,14 +89,20 @@ local function pose(ctx)
     paintSettlement(ctx)
     paintVista(ctx)
 end
+local function normalCampaignVictory(run)
+    local flow=run.nodeFlow
+    return run.phase=='victory' and run.act==3 and flow and flow.result=='normal_victory'
+end
 local function endingTitle(run)
     if run.ending=='two_act_complete' then return '双幕挑战完成' end
     if run.ending=='true_victory' then return '真结局 · 深渊已被封印' end
+    if normalCampaignVictory(run) then return '三幕冒险完成' end
     return '深渊已被封印'
 end
 local function resultSubtitle(run,mode,victory)
     if victory and run.ending=='two_act_complete' then return '第一幕与第二幕已完成。本局挑战到此结束。' end
     if victory and run.ending=='true_victory' then return '腐化之心已击败。真结局已达成。' end
+    if victory and normalCampaignVictory(run) then return '三幕冒险已完成。本局挑战到此结束。' end
     return Narrative.flow[mode].full
 end
 local function finalFloor(ctx,victory)
@@ -104,6 +110,7 @@ local function finalFloor(ctx,victory)
     if Acts.isCompetition(run) then return Acts.get(2).last end
     local floors=ctx.data.rules.map.floors
     if victory and run.ending=='true_victory' then return ctx.owner.map.terminalFloor or floors end
+    if victory and normalCampaignVictory(run) then return Acts.get(3).last end
     return floors
 end
 local function settlementStatus(ctx,available)
