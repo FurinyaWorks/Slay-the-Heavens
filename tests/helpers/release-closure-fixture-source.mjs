@@ -126,6 +126,33 @@ const fixtures=Object.freeze({
    }
   ]
  },
+ "tests/art-feature-source-inverse.test.mjs": {
+  "current": {
+   "sha256": "2821f960879767a9873017673beb98faa24d98d396349643d40e81a9037d0c55",
+   "gitBlob": "64ac818d7086c34a111ef6973e73143e0841061a"
+  },
+  "previous": {
+   "sha256": "68979368cc5ec145d2c43e4cc00b7ee095bea8b34e74e8f81ee9979e1b3499de",
+   "gitBlob": "cca668dbbbf44d826db7f99f4045fdb138582858"
+  },
+  "hunks": [
+   {
+    "at": 19,
+    "before": "import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';\nimport {pointerInputPath,readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';",
+    "after": "import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';\nimport {reviewedStsStyleRead} from './helpers/reviewed-selection-current-source.mjs';\nimport {pointerInputPath,readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';"
+   },
+   {
+    "at": 309,
+    "before": "test('current feature entries preserve unsupported input bytes and never use unknown input to authorize raw reads',()=>{\n for(const [path,intermediate]of Object.entries(currentTargets)){\n  const source=readFileSync(path,'utf8').replaceAll('\\r\\n','\\n');\n  const binding=sourceEpoch.proof.current[path],epochSource=beforeCharacterPreparationSource(path,source);\n  assert.equal(epochSource,binding.source,'exact approved current source: '+path);",
+    "after": "test('current feature entries preserve unsupported input bytes and never use unknown input to authorize raw reads',()=>{\n const read=path=>readFileSync(path,'utf8');\n const reviewed=reviewedStsStyleRead(read);\n const guideOwners=new Set(['navigation','navigation_view','overlays'].map(name=>'src/lua/abyss_game_ui_'+name+'.lua'));\n const readOwner=path=>guideOwners.has(path)?reviewed(path):read(path);\n for(const [path,intermediate]of Object.entries(currentTargets)){\n  const source=readFileSync(path,'utf8').replaceAll('\\r\\n','\\n');\n  const binding=sourceEpoch.proof.current[path],epochSource=beforeCharacterPreparationSource(path,source,readOwner);\n  assert.equal(epochSource,binding.source,'exact approved current source: '+path);"
+   },
+   {
+    "at": 340,
+    "before": " // The outer admits only a complete known current source, never foreign drift.\n const readSource=path=>preComponentUiCiSource(path,readFileSync(path,'utf8'));\n const featurePath='scripts/art/ready-card-runtime.mjs',featureOwner='scripts/native-script-batch.mjs';",
+    "after": " // The outer admits only a complete known current source, never foreign drift.\n const readSource=path=>{\n  const raw=readFileSync(path,'utf8');\n  return path.startsWith('src/lua/')||path==='config/architecture.json'?raw:preComponentUiCiSource(path,raw);\n };\n const featurePath='scripts/art/ready-card-runtime.mjs',featureOwner='scripts/native-script-batch.mjs';"
+   }
+  ]
+ },
  "tests/readable-unit-typography-inverse.test.mjs": {
   "current": {
    "sha256": "fe863ccfc674a8a75cb72f15087dcd3d1ffa3d8d7875709a6f038596ab8453d9",
