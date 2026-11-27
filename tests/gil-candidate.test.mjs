@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { verifyDownloadedArtifact, verifyPublishedRebase, verifyReceipts } from '../scripts/gil-candidate.mjs';
-import { api, approvedRequest, buildOnlyRequest, candidateTarget, encoderSha256, findArtifact, validationTarget, verifySource } from '../scripts/gil-candidate-preflight.mjs';
+import { api, approvedRequest, buildOnlyRequest, candidateTarget, encoderSha256, findArtifact, releaseBuildRequest, releaseBuildTarget, validationTarget, verifySource } from '../scripts/gil-candidate-preflight.mjs';
 import { fileRecord } from '../scripts/evidence-files.mjs';
 import { hostedCandidatePath, verifiedPayloadInputs } from '../scripts/hosted-gil-receipt.mjs';
 import { downloadLegacyGilArchive, legacyGilArchive, supportsPublishedGilSeed } from '../scripts/runtime-baseline/published-baseline.mjs';
@@ -22,22 +22,26 @@ const branch = 'hotfix/v2.1.1';
 const version = 'v2.1.1';
 const hotfix = candidateTarget(branch, sourceSha);
 
-test('trusted develop owns protection, while audit receives the bound build context', () => {
-  const workflow = readFileSync(new URL('../.github/workflows/gil-candidate.yml', import.meta.url), 'utf8').replaceAll('\r\n', '\n');
-  assert.match(workflow, /^    if: github\.event_name == 'workflow_dispatch' && github\.repository_id == '1429751262' && github\.ref == 'refs\/heads\/develop'$/m);
-  assert.match(workflow, /^          GIL_BASE_URL: \$\{\{ secrets\.GIL_BASE_URL \}\}$/m);
-  assert.equal(workflow.match(/secrets\./g).length, 1);
+test('only the unified workflow builds, audits and publishes a gated release download', () => {
+  const path = new URL('../.github/workflows/gil-build.yml', import.meta.url);
+  const workflow = readFileSync(path, 'utf8').replaceAll('\r\n', '\n');
+  assert.equal(existsSync(new URL('../.github/workflows/gil-candidate.yml', import.meta.url)), false);
+  assert.match(workflow, /workflows: \[Quality, Licenses\]/);
+  assert.match(workflow, /github\.event\.workflow_run\.event == 'workflow_dispatch'/);
+  assert.match(workflow, /GIL_PRODUCTION_WORK_KEY: \$\{\{ vars\.GIL_PRODUCTION_WORK_KEY \}\}/);
+  assert.match(workflow, /ref: \$\{\{ env\.SOURCE_SHA \}\}/);
+  assert.doesNotMatch(workflow, /release:\n|secrets\.|environment:|contents: write|attach-release:/);
   const sourceCheckout = workflow.slice(workflow.indexOf('          path: source\n'), workflow.indexOf('          path: miliastra-mcp\n'));
   const sparse = sourceCheckout.match(/^          sparse-checkout: \|\n((?: {12}\S+\n)+)/m)?.[1];
   assert.deepEqual(sparse?.trim().split('\n').map(path => path.trim()), [
-    'scripts', 'src/lua', 'data', 'config', 'tools', 'art/characters/traveler-geo/portraits',
+    '.github/workflows', 'scripts', 'src/lua', 'data', 'config', 'tools', 'art/characters/traveler-geo/portraits',
     'art/lowpoly-select', 'art/performance', 'experiments/lumine-native-fit/fit-hybrid-final',
   ]);
   const audit = workflow.slice(workflow.indexOf('- name: Audit the final GIL'), workflow.indexOf('- uses: actions/upload-artifact'));
   for (const [name, expression] of Object.entries({
-    SOURCE_REF: 'inputs.source_ref', SOURCE_SHA: 'inputs.source_sha', WORK_KEY: 'steps.candidate.outputs.work_key',
-    BASE_SHA256: 'steps.candidate.outputs.base_sha256', REQUEST_ID: 'steps.candidate.outputs.request_id',
-    RELEASE_VERSION: 'steps.candidate.outputs.release_version', QUALITY_RUN: 'steps.candidate.outputs.quality_run',
+    WORK_KEY: 'steps.candidate.outputs.work_key', BASE_SHA256: 'steps.candidate.outputs.base_sha256',
+    REQUEST_ID: 'steps.candidate.outputs.request_id', RELEASE_VERSION: 'steps.candidate.outputs.release_version',
+    GIL_RELEASE_ARTIFACT: 'steps.candidate.outputs.archive', QUALITY_RUN: 'steps.candidate.outputs.quality_run',
     QUALITY_ATTEMPT: 'steps.candidate.outputs.quality_attempt', QUALITY_CHECKOUT_ARTIFACT: 'steps.candidate.outputs.quality_checkout_artifact',
     LICENSES_RUN: 'steps.candidate.outputs.licenses_run',
   })) assert(audit.includes(`          ${name}: ${'${{'} ${expression} }}\n`), `audit requires ${name}`);
@@ -167,26 +171,61 @@ test('reuse only a version-named Artifact for the exact hotfix from a default br
   assert.equal(await findArtifact(api({ head_branch: branch }), request, '20', now), undefined);
 });
 
-test('automatic build pushes are scoped to primary develop and the diagnostic branch in the known fork', () => {
+test('diagnostic refs only upload a manifest and do not trigger tag rebuilds', () => {
   const workflow = readFileSync(new URL('../.github/workflows/gil-build.yml', import.meta.url), 'utf8').replaceAll('\r\n', '\n');
   const fork = '1460133275';
   const testRef = 'refs/heads/ci/full/gil-build/v2.2.0-closure-20261127';
-  assert.deepEqual(validationTarget('1429751262', 'refs/heads/develop', sourceSha), { branch: 'develop' });
+  for (const branch of ['develop', 'master', 'test/gil-build/probe']) {
+    assert.deepEqual(validationTarget('1429751262', 'refs/heads/' + branch, sourceSha), { branch });
+  }
   assert.deepEqual(validationTarget(fork, testRef, sourceSha), { branch: testRef.slice(11) });
   assert.throws(() => validationTarget(fork, 'refs/heads/develop', sourceSha), /assigned Fork B/);
   assert.throws(() => validationTarget('1429751262', testRef, sourceSha), /assigned Fork B/);
   assert.throws(() => validationTarget('3', testRef, sourceSha), /assigned Fork B/);
-  assert.match(workflow, /push:\n    branches: \[develop, 'ci\/full\/gil-build\/\*\*'\]/);
-  assert.match(workflow, /PUBLISH_ARTIFACT: 'false'/);
+  assert.throws(() => validationTarget('1429751262', 'refs/tags/engine-v2.2.0', sourceSha), /enabled primary ref/);
   assert.match(workflow, /path: source\/build\/gil-artifact\/manifest\.json\n/);
-  assert.doesNotMatch(workflow, /secrets\.|environment:/);
-  const buildSteps = workflow.slice(workflow.indexOf('      - name: Fetch and verify the published project GIL'));
-  assert.equal(buildSteps.match(/^      - (?:name|uses):/gm)?.length, 9);
-  assert.equal(buildSteps.match(/^        if: steps\.candidate\.outputs\.build == 'true'$/gm)?.length, 9);
-  const archive = readFileSync(new URL('../.github/workflows/gil-candidate.yml', import.meta.url), 'utf8');
-  const usedActions = [...workflow.matchAll(/^\s*- uses: (actions\/[a-z-]+@[0-9a-f]+)\b/gm)];
-  assert.equal(usedActions.length, 6);
-  for (const [, action] of usedActions) assert(archive.includes(`uses: ${action} `), `Build action must use the archive pin: ${action}`);
+  assert.match(workflow, /outputs\.build == 'true' && steps\.candidate\.outputs\.archive != 'true'/);
+  assert.match(workflow, /outputs\.build == 'true' && steps\.candidate\.outputs\.archive == 'true'/);
+  assert.match(workflow, /group: gil-build-.*head_branch.*head_sha/);
+});
+
+test('unified build admits exact primary release events and never a PR, foreign run or tag', () => {
+  const release = { repoId: String(repo.id), ref: 'refs/heads/' + branch, controllerSha: sourceSha,
+    source: sourceSha, branch, event: 'workflow_dispatch' };
+  assert.deepEqual(releaseBuildTarget(release), hotfix);
+  assert.deepEqual(releaseBuildTarget({...release, event:'push'}), hotfix);
+  for (const changes of [{event:'release'}, {ref:'refs/tags/engine-v2.1.1'}, {repoId:'3'}, {controllerSha:'3'.repeat(40)}]) {
+    assert.throws(() => releaseBuildTarget({...release, ...changes}), /formal GIL|Release GIL input/);
+  }
+  const upstream = {repository:repo, head_repository:repo, event:'workflow_dispatch', status:'completed', conclusion:'success',
+    path:'.github/workflows/quality.yml', head_branch:branch, head_sha:sourceSha};
+  const automatic = {...release, event:'workflow_run', ref:'refs/heads/develop', controllerSha:policy.controllerSha, upstream};
+  assert.deepEqual(releaseBuildTarget(automatic), hotfix);
+  assert.deepEqual(releaseBuildTarget({...automatic, upstream:{...upstream, path:'.github/workflows/licenses.yml'}}), hotfix);
+  for (const changes of [{event:'pull_request'}, {conclusion:'failure'}, {head_repository:{id:3}}, {head_sha:'3'.repeat(40)},
+    {head_branch:'develop'}, {path:'.github/workflows/arbitrary.yml'}]) {
+    assert.throws(() => releaseBuildTarget({...automatic, upstream:{...upstream, ...changes}}), /successful primary/);
+  }
+});
+
+test('equivalent triggers share one artifact request but changed Full, license or build policy gets a new candidate', () => {
+  const checks = {quality:7, qualityAttempt:1, qualityCheckoutArtifact:8, licenses:9};
+  const request = (key=workKey, evidence=checks, files=policy.checkedFiles) => releaseBuildRequest(key, sourceSha, hotfix, evidence, files);
+  assert.equal(request().baseSha256, legacyGilArchive.sha256);
+  assert.equal(request().custody, 'gil-build-v1');
+  assert.equal(request().id, request().id);
+  const defaultRequest = releaseBuildRequest(undefined, sourceSha, hotfix, checks, policy.checkedFiles);
+  assert.equal(defaultRequest.configuration.workKey, 'offline-candidate');
+  assert.equal(defaultRequest.id, request('').id);
+  assert.equal(defaultRequest.id, request('offline-candidate').id);
+  assert.notEqual(defaultRequest.id, request().id);
+  for (const key of ['alpha-test', 'offline-performance', 'bad label', 99]) {
+    assert.throws(() => request(key), /GIL_PRODUCTION_WORK_KEY/);
+  }
+  assert.throws(() => request(workKey, {...checks, licenses:0}), /exact Full/);
+  assert.notEqual(request().id, request(workKey, {...checks, qualityAttempt:2}).id);
+  assert.notEqual(request().id, request(workKey, {...checks, licenses:10}).id);
+  assert.notEqual(request().id, request(workKey, checks, ['3'.repeat(64)]).id);
 });
 
 test('unattended build selects the pinned public source and a local metadata key', () => {

@@ -51,6 +51,16 @@ test('metadata must match the engineering tag, build version and uploaded asset'
   assert.throws(() => formatMetadata({ ...pending, platform_version: '' }), /platform_version/);
 });
 
+test('new Release metadata binds the immutable Actions ID without changing historical metadata', () => {
+  const annotated = prepareMetadata(release.tag_name, { commit, version }, '2.0.0', 'game.gil', commit, sha256, 42);
+  assert.equal(annotated.artifact.actions_id, 42);
+  assert.deepEqual(verifyMetadata({ ...release, body: formatMetadata(annotated) }, commit, version), annotated);
+  for (const invalid of [0, 1.5, '42', Number.MAX_SAFE_INTEGER + 1]) {
+    assert.throws(() => prepareMetadata(release.tag_name, { commit, version }, '2.0.0', 'game.gil', commit, sha256,
+      invalid), /immutable GitHub Actions artifact ID/);
+  }
+});
+
 test('reader accepts marked published records and opt-in historical drafts', () => {
   const published = { ...release, draft: false, body: formatMetadata(pending).replaceAll('\n', '\r\n') };
   const historical = {

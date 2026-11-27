@@ -1,42 +1,23 @@
-# 完整有声 GIL 按需构建
+# 正式有声 GIL 的构建与交付
 
-主仓 `develop` 更新后自动运行 **GIL build**，也可在 Actions 手动运行。它在 Windows Hosted Runner 生成完整有声 GIL 并执行独立读回，不需要上传底图、配置保护环境或等待其他 CI。Fork B 的 `ci/full/gil-build/` 分支使用相同入口做验证。验证清单标明归档未批准，冻结源码 CI 证据留空。
+**GIL build** 是正式有声候选的唯一构建入口。每轮以主仓 `release/vX.Y.Z` 或 `hotfix/vX.Y.Z` 的冻结 HEAD 为源码。先运行 `node scripts/release-ci.mjs freeze <分支> <完整HEAD>`，等待 Hosted Quality Full 成功。用 **Licenses** 在同一分支手动运行默认审计，确认 `inventory` 与实际 checkout 都对应同一 SHA。
 
-源码 `package.json` 版本必须高于已发布底包 v2.1.1。源码仍使用旧版号时，**GIL build** 在运行摘要记录跳过原因，跳过下载和构建，也不生成验证清单。正式归档使用固定底包时同样校验源码版号。
+在主仓 Actions 的 **GIL build** 运行摘要核对冻结分支和完整源码 SHA，取得正式 Artifact 链接和 GIL SHA-256。自动构建尚未运行时，在同一工作流点 **Run workflow**，选择已冻结的 `release/vX.Y.Z` 或 `hotfix/vX.Y.Z` 分支。工作流从该 ref 复核完整 SHA，无额外输入。复跑前先查同一源码的已有成功归档，沿用该次构建的工件 ID 和摘要。
 
-完成冻结验收后，从主仓 **Actions → GIL candidate → Run workflow** 执行经批准的构建与归档。工作流运行分支始终选受保护的 `develop`。在 `source_ref` 中填 `develop`、`release/vX.Y.Z` 或 `hotfix/vX.Y.Z`，在 `source_sha` 中填通过验收的完整小写源码 SHA。
+构建使用[已发布的 v2.1.1 GIL](https://github.com/FurinyaWorks/Slay-the-Heavens/releases/tag/v2.1.1) 作为固定运行时起点，核对归档来源和实际字节。Windows Hosted Runner 使用锁定的 MCP 提交、v3 生产精绘和原生音频预设，重建 Lua、原生 UI 和结算/BGM 图，审计脚本、模板、节点图及其余继承容器段。构建回执默认使用 `offline-candidate` 标识。维护者可以设置仓库变量 `GIL_PRODUCTION_WORK_KEY` 指定回执标识。实际作品身份由 Owner 根据平台回执确认，底图和音频/资源授权范围见 [LICENSE-SCOPE.md](../LICENSE-SCOPE.md)。
 
-- `develop` 接受已合入且对应 Quality 和 Licenses push 均成功的提交，构建开发候选。
-- `release/vX.Y.Z` 与 `hotfix/vX.Y.Z` 接受冻结的当前分支 HEAD。先运行 `node scripts/release-ci.mjs freeze <分支> <HEAD>`，等待对应的 Hosted Quality Full 成功。用现有 **Licenses** 工作流在同一冻结分支手动运行默认审计并确认精确 HEAD、`inventory` 成功。工作流复核 Full 的实际 checkout 回执并在归档前重新读取冻结分支 HEAD。分支、源码版号、发布说明与批准记录均须对应本次工程版本。
+正式工件包含 `candidate.gil`、`candidate.json`、来源及审计清单和校验和。工作流上传后重新下载校验。解压时保留 `candidate.gil` 和 `candidate.json` 在同一目录，用 `sha256sum -c SHA256SUMS` 或 PowerShell `Get-FileHash candidate.gil -Algorithm SHA256` 复核。记录完整源码 SHA、Artifact 链接末尾的数字 ID、GIL SHA-256、`buildId`、`payloadDigest` 和工件到期时间。正式工件保留 90 天。
 
-默认构建从[本项目已发布的 v2.1.1 GIL](https://github.com/FurinyaWorks/Slay-the-Heavens/releases/tag/v2.1.1) 自动取回运行时起点。工作流核对 Release 与固定的 Git LFS 归档、实际构建提交、包大小和 SHA-256。使用当前源码重建 Lua、原生 UI 和结算/BGM 图并独立审计。其余容器段保留旧包的原始字节，证据清单记录继承源与重建的段。默认构建使用 `offline-candidate` 选择构建期文案，用完整的精绘和原生音频预设编译，只上传 `gil-build-evidence-*` 的摘要清单。仓库公开，完整 GIL 归档需要分发批准。
+## 在后续门禁沿用同一工件
 
-**GIL candidate** 归档使用批准的作品键，把同次构建产物上传到 **Artifacts**，再从 GitHub 下载并复算 GIL、回执与清单的 SHA-256。若已有同一请求且在保留期内的成功制品，运行摘要给出原下载入口。冻结候选的 Artifact 名含工程版本和完整源码 SHA。解压后运行 `sha256sum -c SHA256SUMS` 或使用 PowerShell `Get-FileHash candidate.gil -Algorithm SHA256`。Artifact 保留 14 天。
+1. 从构建摘要取数字 ID，运行冻结分支的 **Performance regression** `formal`，将数字填入 `gil_artifact_id`。验证通过后保存 `release-ci verify` 的 `performance.gil` 及对应的 Full 和 formal 证据。
+2. 用该工件的同一份 GIL 完成 Simulator、官方编辑器导入/负载、PC 和实体手机验收。按[平台负载门禁](PLATFORM_LOAD.md)制作并校验 `official-load.json`，按 [P0 冒烟](P0-SMOKE.md)记录启动、真实游玩及设备结果。
+3. Owner 按[发布操作单](PUBLISHING.md)使用同一 GIL 执行官方发布并提供成功回执，随后用原工件完成 GitHub Release 归档。
 
-## 公开归档配置
+原生独立复审可从冻结源码、已水合的审核素材和清单中的 MCP 检出运行下列命令。将 `MILIASTRA_MCP_ROOT` 指向该检出。
 
-维护者在主仓 **Settings → Environments** 配置 `gil-candidate`，将部署分支限制为受保护的 `develop`。冻结分支源码由控制步骤按精确 SHA 检出。默认构建在审批环境之外运行。
-
-- 使用默认公开归档时不配置 `GIL_BASE_URL`，批准记录中的底图 SHA-256 填 `afe80c0783d0d4b6046c1f44cba3ef2b71cb8bb34fbc7404d939d12e0f5ff831`。既有的自定义底图流程仍支持通过环境 Secret `GIL_BASE_URL` 下载经批准、去除个人及测试数据的 Production 底图。
-- 环境变量 `GIL_CANDIDATE_APPROVAL` 记录本次批准的分支、源码、底图原始字节 SHA-256、实际生产作品键、底图云端处理及最终包公开分发许可。由维护者审查底图、平台资源和音频授权后填写真值。每次换分支、源码或底图都更新批准记录。`reference` 填可追溯的审批编号。项目授权范围见 [LICENSE-SCOPE.md](../LICENSE-SCOPE.md)。
-
-```json
-{
-  "sourceBranch": "develop",
-  "version": null,
-  "sourceSha": "<40 位经过 CI 验证的提交>",
-  "baseSha256": "<64 位基础 GIL SHA-256>",
-  "workKey": "<经核实的实际生产作品键>",
-  "baseProcessingApproved": true,
-  "publicArtifactApproved": true,
-  "reference": "approval/123"
-}
+```sh
+node scripts/audit-native-candidate.mjs --source <SHA> --candidate <解压目录>/candidate.gil --receipt <解压目录>/candidate.json --output <新证据目录> --bgm
 ```
 
-冻结候选的批准记录改用对应 `release/vX.Y.Z` 或 `hotfix/vX.Y.Z`、工程版本及冻结 HEAD。
-
-Windows Job 使用 Node 24.18.0、锁定的 MCP 提交和 v3 生产预设。冻结候选调用 `npm run build:native -- <base.gil> build/hosted-gil --release-candidate --work-key=<作品键>`，复核源码、BGM 图和信号读回、产物大小及 SHA-256，再对下载版 GIL 独立审计脚本、原生 UI、模板与节点图。制品包含最终音频 GIL、可移植回执、清单和校验和。
-
-保留 `candidate.json` 和 `candidate.gil` 在同一解压目录。使用精确源码、已水合的审核素材和清单指定的 MCP 提交，从项目根目录执行 `npm run verify:platform-load -- <解压目录>/candidate.json <official-load.json>`。将 `MILIASTRA_MCP_ROOT` 指向本机 MCP 检出。原生复审可运行 `node scripts/audit-native-candidate.mjs --source <SHA> --candidate <解压目录>/candidate.gil --receipt <解压目录>/candidate.json --output <新证据目录> --bgm`。
-
-清单将平台版本记为 `null`，由 Owner 实机验收及人工发布后依据平台回执确认映射。官方导入、平台负载、ready、PC 和手机验收使用同一候选，见 [v2 交接](versions/V2-RELEASE-HANDOFF.md)。
+旧工作流制品、旧平台回执和本地诊断按原身份留存。开发和 Fork 的诊断只上传摘要，保留 14 天。它们可用于复核当时的结论。正式提测从本轮冻结源码和唯一正式工件开始。

@@ -4,15 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       operation:
-        description: Version proposal or read-only Release metadata
+        description: Version proposal, Release metadata or approved GIL archive
         type: choice
         default: propose
         options:
           - propose
           - prepare
           - verify
+          - archive
       release_id:
-        description: GitHub Release numeric ID (verify)
+        description: GitHub Release numeric ID (verify or archive)
         type: string
       engineering_tag:
         description: Existing annotated engineering tag (prepare)
@@ -28,6 +29,9 @@ on:
         type: string
       candidate_sha256:
         description: Accepted build artifact SHA-256 (prepare)
+        type: string
+      gil_artifact_id:
+        description: Immutable GitHub Actions GIL artifact ID (prepare for archive)
         type: string
 
 permissions:
@@ -53,7 +57,7 @@ jobs:
           skip-github-release: true
 
   metadata:
-    if: github.repository_id == '1429751262' && github.ref == 'refs/heads/develop' && inputs.operation != 'propose'
+    if: github.repository_id == '1429751262' && github.ref == 'refs/heads/develop' && (inputs.operation == 'prepare' || inputs.operation == 'verify')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -74,10 +78,37 @@ jobs:
           ARTIFACT_NAME: ${{ inputs.artifact_name }}
           CANDIDATE_COMMIT: ${{ inputs.candidate_commit }}
           CANDIDATE_SHA256: ${{ inputs.candidate_sha256 }}
+          GIL_ARTIFACT_ID: ${{ inputs.gil_artifact_id }}
         run: |
           if [[ "$OPERATION" == prepare ]]; then
-            block=$(node scripts/release-metadata.mjs prepare "$ENGINEERING_TAG" "$PREVIOUS_VERSION" "$ARTIFACT_NAME" "$CANDIDATE_COMMIT" "$CANDIDATE_SHA256")
+            archive=()
+            if [[ -n "$GIL_ARTIFACT_ID" ]]; then archive=("$GIL_ARTIFACT_ID"); fi
+            block=$(node scripts/release-metadata.mjs prepare "$ENGINEERING_TAG" "$PREVIOUS_VERSION" "$ARTIFACT_NAME" "$CANDIDATE_COMMIT" "$CANDIDATE_SHA256" "${archive[@]}")
             printf '%s\n' '````markdown' "$block" '````' >> "$GITHUB_STEP_SUMMARY"
           else
             node scripts/release-metadata.mjs verify "$RELEASE_ID" >> "$GITHUB_STEP_SUMMARY"
           fi
+
+  archive:
+    if: github.repository_id == '1429751262' && github.ref == 'refs/heads/develop' && inputs.operation == 'archive'
+    concurrency:
+      group: release-archive-${{ inputs.release_id }}
+      cancel-in-progress: false
+    permissions:
+      actions: read
+      contents: write
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.18.0'
+      - name: Attach the exact approved GIL to the GitHub Release draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ inputs.release_id }}
+        run: node scripts/release-archive.mjs "$RELEASE_ID"
