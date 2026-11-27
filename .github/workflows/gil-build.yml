@@ -190,8 +190,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.event.release.tag_name }}
+          RELEASE_ID: ${{ github.event.release.id }}
         run: |
           [[ "$TAG" =~ ^(engine-)?v[0-9]+[.][0-9]+[.][0-9]+$ ]]
+          [[ "$RELEASE_ID" =~ ^[0-9]+$ ]]
+          existing=$(gh api "repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID" --jq '[.assets[] | select(.state == "uploaded" and (.name | ascii_downcase | endswith(".gil")))] | length')
+          if (( existing > 0 )); then
+            echo "Keeping the GIL already attached to this Release."
+            exit 0
+          fi
           (cd gil && sha256sum --check SHA256SUMS)
           asset="Slay-the-Heavens-${TAG#engine-}.gil"
           cp gil/candidate.gil "$asset"
