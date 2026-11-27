@@ -1,4 +1,7 @@
 import {projectEventSnapshotSource} from './helpers/event-snapshot-composition.mjs';
+import {preRound3CatalogSource} from './helpers/round3-catalog-source-inverse.mjs';
+import {preRelicRound2CompositionSource} from './helpers/relic-round2-composition.mjs';
+import {round2CanPlayProof} from './helpers/round2-can-play-source-inverse.mjs';
 import {historicalTest as test} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -7,7 +10,13 @@ import {nestedSnapshotOwnerProof as proof,preNestedSnapshotOwnerSource as prior}
 import {requirePr323Source,preAcceptedPr323Source,preOriginalPr323Source} from './helpers/pr323-accepted-source-inverse.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const readSource=path=>readFileSync(path,'utf8');
-const read=path=>projectEventSnapshotSource(path,readSource(path),'snapshot',{readSource}).replaceAll('\r\n','\n');
+// Resolve Round3 linked owners inside the same archived checkout as the input.
+const read=path=>{
+ const raw=readSource(path);
+ const input=path===round2CanPlayProof.path?preRelicRound2CompositionSource(path,raw,'round2'):raw;
+ const source=preRound3CatalogSource(path,input,{readSource});
+ return projectEventSnapshotSource(path,source,'snapshot').replaceAll('\r\n','\n');
+};
 test('only the complete two-file owner delta recovers accepted full runtime identities',()=>{
  assert.deepEqual(Object.keys(proof.files),['src/lua/abyss_combat.lua','src/lua/abyss_run.lua']);
  for(const [path,binding]of Object.entries(proof.files)){
