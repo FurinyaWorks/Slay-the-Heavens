@@ -1597,10 +1597,27 @@ const fixtures=Object.freeze({
   ]
  },
  // Max HP historical archives still execute the original approved-UI helper.
+ "tests/lua/spike_slime_l_ui.lua": {
+  "current": {
+   "sha256": "98972176b8ae21b28ee48bfe7f7a15fb2b720f152ceb9bf4847b1a59083f5c05",
+   "gitBlob": "a6de1469b516a29fd444c1e5a200565d0626d42e"
+  },
+  "previous": {
+   "sha256": "a4139355b9c68e2ff06001fbd72012e99559f4d41ce1d74e6f80929ccbe8e0b5",
+   "gitBlob": "0b6cf60a14a27c9de7c488c213b9f9debe5da4d8"
+  },
+  "hunks": [
+   {
+    "at": 0,
+    "before": "-- Actual generated controls: visible Large Spike intent, two cards, and Frail.\npackage.path='src/lua/?.lua;build/lua/?.lua;'..package.path\nlocal H=dofile('tests/lua/support/battle_action_fixture.lua')\nlocal inspectDetails=dofile('tests/lua/support/status_detail_fixture.lua')\nlocal C=H.F.Combat\nlocal host,ui,panel,emit,tap,drain=H.setup({'defend'},{'spike_slime_l'})\nlocal s=host.run.combat;s.enemies[1].intentIndex=1;host:refresh()\nassert(panel:GetChild('enemy1'):GetChild('intent').text=='16')\nlocal before=C.copy(s);tap('enemy1',1);local detail=inspectDetails(ui,panel)\nassert(detail:find('16',1,true) and detail:find('将 2 张「黏滞」放入你的弃牌堆',1,true))\nassert(panel:GetChild('enemy1'):GetChild('intentBadge').visible,'mixed attack must also show its debuff badge')\nassert(s.seed==before.seed and s.player.hp==before.player.hp and s.enemies[1].hp==before.enemies[1].hp,'inspect does not mutate combat')\ntap('endTurn',2);drain();assert(s.player.hp==64)\nlocal found={};for i,c in ipairs(s.hand)do if c.cardId=='slimed' then found[#found+1]={slot=i,uid=c.uid} end end\nassert(#found==2 and found[1].uid~=found[2].uid,'two real distinct generated cards')\nlocal card=panel:GetChild('card'..found[1].slot);assert(card:GetChild('name').text=='黏滞' and card:GetChild('cost').text=='1')\ntap('card'..found[1].slot,3);tap('playArea',4);drain();assert(s.energy==2 and #s.exhaust==1)\ns.enemies[1].intentIndex=2;host:refresh();tap('enemy1',5);local frail=inspectDetails(ui,panel)\nassert(frail:find('使你获得 2 回合脆弱',1,true),'upcoming debuff is not an already applied status')\nprint('LARGE_SPIKE_UI_PASS intent16/detail2/read-only/two-generated-cards/real-exhaust/frail2')",
+    "after": "local monsterControl=dofile('tests/lua/support/monster_control_fixture.lua')\n-- Actual generated controls: visible Large Spike intent, two cards, and Frail.\npackage.path='src/lua/?.lua;build/lua/?.lua;'..package.path\nlocal H=dofile('tests/lua/support/battle_action_fixture.lua')\nlocal inspectDetails=dofile('tests/lua/support/status_detail_fixture.lua')\nlocal C=H.F.Combat\nlocal host,ui,panel,emit,tap,drain=H.setup({'defend'},{'spike_slime_l'})\nlocal s=host.run.combat;s.enemies[1].intentIndex=1\ns=C.copy(s);host.run.combat=s;host:refresh()\nassert(monsterControl(panel,'enemy1'):GetChild('intent').text=='16')\nlocal before=C.copy(s);tap('enemy1',1);local detail=inspectDetails(ui,panel)\nassert(detail:find('这名敌人将要对你施加负面效果并攻击造成 16 点伤害。',1,true))\ndofile('tests/lua/support/intent_face_assertion.lua')(monsterControl(panel,'enemy1'),require('abyss_battle_intent_view').intentView(s,1))\nassert(s.seed==before.seed and s.player.hp==before.player.hp and s.enemies[1].hp==before.enemies[1].hp,'inspect does not mutate combat')\ntap('endTurn',2);drain();assert(s.player.hp==64)\nlocal found={};for i,c in ipairs(s.hand)do if c.cardId=='slimed' then found[#found+1]={slot=i,uid=c.uid} end end\nassert(#found==2 and found[1].uid~=found[2].uid,'two real distinct generated cards')\nlocal card=panel:GetChild('card'..found[1].slot);assert(card:GetChild('name').text=='黏滞' and card:GetChild('cost').text=='1')\ntap('card'..found[1].slot,3);tap('playArea',4);drain();assert(s.energy==2 and #s.exhaust==1)\ns.enemies[1].intentIndex=2;host:refresh();tap('enemy1',5);local frail=inspectDetails(ui,panel)\nassert(frail:find('这名敌人将要对你施加一种负面效果。',1,true),'upcoming debuff is not an already applied status')\nprint('LARGE_SPIKE_UI_PASS intent16/strategy/read-only/two-generated-cards/real-exhaust/debuff-preview')"
+   }
+  ]
+ },
  "tests/helpers/approved-ui-inverse.mjs": {
   "current": {
-   "sha256": "515cc86198104355318e98e8d17aa614a6600cd3f6fa7f6b19b817f81a77d354",
-   "gitBlob": "3648a38052cc1f5ad1cb0a9299722d5b687cf733"
+   "sha256": "a34d2d9b8c2a2feb4ccc4e56bdab8b47d7c50d149596175e7f3bf839781df053",
+   "gitBlob": "7bc7ba291ab54c3f48067ba2a4225dbfe3e45958"
   },
   "previous": {
    "sha256": "5d6fab1429f81bf072cfa72e63d520b1e5d0dc1cf8faf9d8353c6bae3b1b15c8",
@@ -1620,7 +1637,7 @@ const fixtures=Object.freeze({
    {
     "at": 74,
     "before": "export function preApprovedUiOuterSource(path,source){\n source=preBattleLifeSource(path,source);\n return approvedUi.files[path]?preEventProductionSource(path,preRelicViewUiSource(path,preHeroVisualSource(path,source))):source;",
-    "after": "export function preApprovedUiOuterSource(path,source){\n source=preNemesisControlFixture(path,preBattleLifeSource(path,source));\n return approvedUi.files[path]?preEventProductionSource(path,preRelicViewUiSource(path,preHeroVisualSource(path,source))):source;"
+    "after": "export function preApprovedUiOuterSource(path,source){\n source=preNemesisControlFixture(path,preBattleLifeSource(path,source));\n if(path==='tests/lua/spike_slime_l_ui.lua')source=beforeReleaseClosureFixture(path,source);\n return approvedUi.files[path]?preEventProductionSource(path,preRelicViewUiSource(path,preHeroVisualSource(path,source))):source;"
    }
   ]
  },

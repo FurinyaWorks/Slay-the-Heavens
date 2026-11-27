@@ -74,6 +74,7 @@ function preNemesisControlFixture(path,source){
 // sources or the original 79543/79757/81392 write proofs and runner budgets.
 export function preApprovedUiOuterSource(path,source){
  source=preNemesisControlFixture(path,preBattleLifeSource(path,source));
+ if(path==='tests/lua/spike_slime_l_ui.lua')source=beforeReleaseClosureFixture(path,source);
  return approvedUi.files[path]?preEventProductionSource(path,preRelicViewUiSource(path,preHeroVisualSource(path,source))):source;
 }
 export function preApprovedUiSource(path,source){
