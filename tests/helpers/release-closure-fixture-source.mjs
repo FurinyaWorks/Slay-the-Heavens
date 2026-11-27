@@ -739,6 +739,33 @@ const fixtures=Object.freeze({
    }
   ]
  },
+ "tests/lua/game_ui_phase_four.lua": {
+  "current": {
+   "sha256": "fe7dfe100d6b9d3df9472e5509ec9a45cb43185255b5f04dc356a011e65eceb6",
+   "gitBlob": "0d2131d6454784d50f13476dbd083a5d8b3cec92"
+  },
+  "previous": {
+   "sha256": "2c9709a9a1a6e4b7004f872f8fa30086770db7355e4e76e2a41f54bdd5f85482",
+   "gitBlob": "fdfa7433eceb65ac73d1b6e1e1622ad13e6bc6d6"
+  },
+  "hunks": [
+   {
+    "at": 179,
+    "before": "local powerCases={",
+    "after": "local readPowerTips=dofile('tests/lua/support/power_tip_fixture.lua')\nlocal powerCases={"
+   },
+   {
+    "at": 219,
+    "before": "  clickControl(powerHit,owner..' power '..id);local info=control(root,'battlePanel/statusInfo')",
+    "after": "  local panel=control(root,'battlePanel');local info=panel:GetChild('statusInfo')\n  clickControl(powerHit,owner..' power '..id)\n  if enemy then\n   local copy=readPowerTips(panel)\n   assert(copy:find(entry.name,1,true) and copy:find(phrase,1,true),id..': '..copy)\n   assert(copy:find(tostring(value),1,true),'missing compact amount '..id);unchanged()\n   click(root,'battlePanel/statusDismiss');eq(info.visible,false);unchanged()\n   assert(ui.battleUI:openHelp({index=1,statusId=id}))\n  end"
+   },
+   {
+    "at": 234,
+    "before": "  click(root,'battlePanel/statusInfo/hit');eq(info.visible,false);unchanged()",
+    "after": "  click(root,'battlePanel/statusDismiss');eq(info.visible,false);unchanged()"
+   }
+  ]
+ },
  "tests/official-background-build.test.mjs": {
   "current": {
    "sha256": "f6d2b6fd7f7edfdabc1c0ef26fb7a9d74b9f47d7aca1cee9e32fd068754cb47b",
