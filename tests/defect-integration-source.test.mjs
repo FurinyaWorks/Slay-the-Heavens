@@ -1,4 +1,4 @@
-import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';
+import {currentProductionRereads,releaseArchitectureReadTrace} from './helpers/current-production-source-reads.mjs';
 import {preDefectActorSource} from './helpers/defect-actor-source-epoch.mjs';
 import {originalPlanningSource} from './helpers/ci-complete-calibration-source-inverse.mjs';
 import test from 'node:test';
@@ -134,7 +134,9 @@ test('foreign capability source bytes cannot trigger reader calls or hide unknow
  const source=actorRaw(actorPaths[1]);let calls=0;
  assert.equal(preDefectActorSource('foreign/'+actorPaths[1],source,{readSource:()=>{calls++;}}),source);assert.equal(calls,0);
 });
-function assertRawActorClosure(project,expected,priorReads,traceLength,traceHash){
+const releaseRereads=new Set([3,4,9,10,16,18,19,20,21,22,30,31,90,115,155,156,221,222,223,317,367,368,369,415,479]);
+const beforeReleaseRereads=reads=>reads.filter((_owner,position)=>!releaseRereads.has(position));
+function assertRawActorClosure(project,expected,priorReads,admitReads){
  const physical=owner=>readFileSync(owner,'utf8');
  let bad,value,reads=[];
  const reader=owner=>{
@@ -146,8 +148,7 @@ function assertRawActorClosure(project,expected,priorReads,traceLength,traceHash
  const replay=()=>project(reader);
  assert.equal(replay(),expected);
  const admittedReads=reads;
- assert.equal(admittedReads.length,traceLength);
- assert.equal(hash(JSON.stringify(admittedReads)),traceHash,'exact current raw owner order');
+ admitReads(admittedReads);
  let position=-1;
  for(const owner of priorReads){
   position=admittedReads.indexOf(owner,position+1);
@@ -182,8 +183,14 @@ test('the full current facade freshly checks every original owner including afte
  const epoch=actorCurrentEpoch,proof=epoch.proof,p=actorPaths[0],source=read(p);
  const project=readSource=>epoch.preCombinedSource(p,source,{target:'develop',readSource});
  const expected=proof.targets.develop.files[p].source;
- assertRawActorClosure(project,expected,[...proof.owners,...currentProductionRereads],480,
-  'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd');
+ assertRawActorClosure(project,expected,[...proof.owners,...currentProductionRereads],reads=>{
+  assert.equal(reads.length,releaseArchitectureReadTrace.count);
+  assert.equal(hash(JSON.stringify(reads)),releaseArchitectureReadTrace.sha256,'exact current raw owner order');
+  const priorReads=beforeReleaseRereads(reads);
+  assert.equal(priorReads.length,480);
+  assert.equal(hash(JSON.stringify(priorReads)),'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd',
+   'exact original raw owner order');
+ });
 });
 test('capability config layout accepts only an input spelling and still binds exact raw owners',()=>{
  const p=actorPaths[0],source=actorRaw(p),old=actorProof.targets.prior.files[p].source;
@@ -239,10 +246,20 @@ test('Actor entry authenticates the complete raw current closure before exposing
  for(const owner of actorPaths)for(const key of ['source','sha256','gitBlob'])
   assert.equal(proof.targets.pr618.files[owner][key],actorProof.current[owner][key]);
  const project=readSource=>preM7FinalSource(p,source,{readSource});
- const admittedReads=assertRawActorClosure(project,beforeUtility(),proof.owners,1443,
-  '1e104db373ce2e1fdcb5c806685240db6bfc851f95ca2514b8a011d2d6981ffe');
- // Each of the three Actor reads now authenticates the actual current anchor,
- // adding this exact nested Actor/Stasis closure before the unchanged scan.
+ const priorClosures=[];
+ const admittedReads=assertRawActorClosure(project,beforeUtility(),proof.owners,reads=>{
+  const width=releaseArchitectureReadTrace.count+1;
+  assert.equal(reads.length,width*3);
+  for(let offset=0;offset<reads.length;offset+=width){
+   assert.equal(reads[offset],actorPaths[0],'each Actor admission reads its input before linked owners');
+   const closure=reads.slice(offset+1,offset+width);
+   assert.equal(hash(JSON.stringify(closure)),releaseArchitectureReadTrace.sha256,'exact current Actor raw owner order');
+   priorClosures.push([reads[offset],...beforeReleaseRereads(closure)]);
+  }
+  assert.equal(hash(JSON.stringify(priorClosures.flat())),
+   '1e104db373ce2e1fdcb5c806685240db6bfc851f95ca2514b8a011d2d6981ffe','exact prior Actor raw owner order');
+ });
+ // Each prior Actor read includes its exact nested Actor/Stasis anchor.
  const anchorReads=[
   ...Array(4).fill('config/architecture.json'),
   ...['actor','focus','stances','actor_artifact','stance_damage','act2_stasis','combat',
@@ -250,8 +267,8 @@ test('Actor entry authenticates the complete raw current closure before exposing
   'config/architecture.json',
  ];
  const priorReads=[];
- for(let offset=0;offset<admittedReads.length;offset+=481){
-  const cohort=admittedReads.slice(offset,offset+481);
+ for(const cohort of priorClosures){
+  assert.equal(cohort.length,481);
   assert.deepEqual(cohort.slice(21,36),anchorReads,'exact current-anchor addition');
   priorReads.push(...cohort.slice(0,21),...cohort.slice(36));
  }

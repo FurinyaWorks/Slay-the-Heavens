@@ -180,6 +180,48 @@ const fixtures=Object.freeze({
    }
   ]
  },
+ "tests/defect-integration-source.test.mjs": {
+  "current": {
+   "sha256": "b3c6140cb719ef99ad497e0f59a230dcf8be1591161c54802fd51c30317dc54f",
+   "gitBlob": "0300cebe749e7adc8df63f54cfaf423e188b6160"
+  },
+  "previous": {
+   "sha256": "3a485ca0a3df9699186422945d54198662abe63ff5af89999f9ca373d0830799",
+   "gitBlob": "d05d2bc41ce68fde7767387088b7b5a5d029b0c7"
+  },
+  "hunks": [
+   {
+    "at": 0,
+    "before": "import {currentProductionRereads} from './helpers/current-production-source-reads.mjs';\nimport {preDefectActorSource} from './helpers/defect-actor-source-epoch.mjs';",
+    "after": "import {currentProductionRereads,releaseArchitectureReadTrace} from './helpers/current-production-source-reads.mjs';\nimport {preDefectActorSource} from './helpers/defect-actor-source-epoch.mjs';"
+   },
+   {
+    "at": 135,
+    "before": "});\nfunction assertRawActorClosure(project,expected,priorReads,traceLength,traceHash){\n const physical=owner=>readFileSync(owner,'utf8');",
+    "after": "});\nconst releaseRereads=new Set([3,4,9,10,16,18,19,20,21,22,30,31,90,115,155,156,221,222,223,317,367,368,369,415,479]);\nconst beforeReleaseRereads=reads=>reads.filter((_owner,position)=>!releaseRereads.has(position));\nfunction assertRawActorClosure(project,expected,priorReads,admitReads){\n const physical=owner=>readFileSync(owner,'utf8');"
+   },
+   {
+    "at": 149,
+    "before": " const admittedReads=reads;\n assert.equal(admittedReads.length,traceLength);\n assert.equal(hash(JSON.stringify(admittedReads)),traceHash,'exact current raw owner order');\n let position=-1;",
+    "after": " const admittedReads=reads;\n admitReads(admittedReads);\n let position=-1;"
+   },
+   {
+    "at": 184,
+    "before": " const expected=proof.targets.develop.files[p].source;\n assertRawActorClosure(project,expected,[...proof.owners,...currentProductionRereads],480,\n  'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd');\n});",
+    "after": " const expected=proof.targets.develop.files[p].source;\n assertRawActorClosure(project,expected,[...proof.owners,...currentProductionRereads],reads=>{\n  assert.equal(reads.length,releaseArchitectureReadTrace.count);\n  assert.equal(hash(JSON.stringify(reads)),releaseArchitectureReadTrace.sha256,'exact current raw owner order');\n  const priorReads=beforeReleaseRereads(reads);\n  assert.equal(priorReads.length,480);\n  assert.equal(hash(JSON.stringify(priorReads)),'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd',\n   'exact original raw owner order');\n });\n});"
+   },
+   {
+    "at": 247,
+    "before": " const project=readSource=>preM7FinalSource(p,source,{readSource});\n const admittedReads=assertRawActorClosure(project,beforeUtility(),proof.owners,1443,\n  '1e104db373ce2e1fdcb5c806685240db6bfc851f95ca2514b8a011d2d6981ffe');\n // Each of the three Actor reads now authenticates the actual current anchor,\n // adding this exact nested Actor/Stasis closure before the unchanged scan.\n const anchorReads=[",
+    "after": " const project=readSource=>preM7FinalSource(p,source,{readSource});\n const priorClosures=[];\n const admittedReads=assertRawActorClosure(project,beforeUtility(),proof.owners,reads=>{\n  const width=releaseArchitectureReadTrace.count+1;\n  assert.equal(reads.length,width*3);\n  for(let offset=0;offset<reads.length;offset+=width){\n   assert.equal(reads[offset],actorPaths[0],'each Actor admission reads its input before linked owners');\n   const closure=reads.slice(offset+1,offset+width);\n   assert.equal(hash(JSON.stringify(closure)),releaseArchitectureReadTrace.sha256,'exact current Actor raw owner order');\n   priorClosures.push([reads[offset],...beforeReleaseRereads(closure)]);\n  }\n  assert.equal(hash(JSON.stringify(priorClosures.flat())),\n   '1e104db373ce2e1fdcb5c806685240db6bfc851f95ca2514b8a011d2d6981ffe','exact prior Actor raw owner order');\n });\n // Each prior Actor read includes its exact nested Actor/Stasis anchor.\n const anchorReads=["
+   },
+   {
+    "at": 268,
+    "before": " const priorReads=[];\n for(let offset=0;offset<admittedReads.length;offset+=481){\n  const cohort=admittedReads.slice(offset,offset+481);\n  assert.deepEqual(cohort.slice(21,36),anchorReads,'exact current-anchor addition');",
+    "after": " const priorReads=[];\n for(const cohort of priorClosures){\n  assert.equal(cohort.length,481);\n  assert.deepEqual(cohort.slice(21,36),anchorReads,'exact current-anchor addition');"
+   }
+  ]
+ },
  "tests/helpers/defect-actor-vm.mjs": {
   "current": {
    "sha256": "1ee4632b34f37909c22431a10faeacedf36f67969081dffe051e8f7cfffcc94e",
