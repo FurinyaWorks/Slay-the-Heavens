@@ -2,6 +2,7 @@ import test from 'node:test';
 import {historicalTest} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {reviewedRenamedStsStyleRead} from './helpers/reviewed-selection-current-source.mjs';
 import {createHash} from 'node:crypto';
 import {cachePureSourceProjection,deepFreezeSourceProof} from './helpers/pure-source-projection-cache.mjs';
 import {relicRound3Composition} from './helpers/relic-round3-composition.mjs';
@@ -93,7 +94,8 @@ test('warm current UI projections preserve their frozen intermediate epoch and r
  const retired=beforeInputRetirementReader(live)(retiredControllerPath);
  const added=['scripts/deck-ui-layout.mjs',...stasisUpgradeAddedPaths,...actorFocusAdded,pointerInputPath,...addedEntranceModules];
  const paths=[...Object.keys(sourceEpoch.proof.current),...added].filter(p=>p!==retiredControllerPath);
- const current=Object.fromEntries(paths.map(p=>[p,live(p)]));
+ const replayInput=reviewedRenamedStsStyleRead(live);
+ const current=Object.fromEntries(paths.map(p=>[p,replayInput(p)]));
  const owners=[...new Set([...sourceEpoch.proof.owners,...added])];
  for(const path of ['config/architecture.json','src/lua/abyss_game_ui.lua']){
   const expected=gameUiExtractionProof.files[path];

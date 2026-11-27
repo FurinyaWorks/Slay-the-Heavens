@@ -173,6 +173,50 @@ const fixtures=Object.freeze({
    }
   ]
  },
+ "tests/pure-source-projection-cache.test.mjs": {
+  "current": {
+   "sha256": "26bdd45da297d1efc8187a6497b1d77e2dfdc15f9b4be9490d80f57341c12392",
+   "gitBlob": "3c23d7cd24dd86658d0347e16de8b25c6a774f42"
+  },
+  "previous": {
+   "sha256": "675787f6a8d65ceec7c244471b13d244e3f959df978c277667d85dea69588c04",
+   "gitBlob": "985518841dfc5e2aace89985e77324d8061388b3"
+  },
+  "hunks": [
+   {
+    "at": 3,
+    "before": "import {readFileSync} from 'node:fs';",
+    "after": "import {readFileSync} from 'node:fs';\nimport {reviewedRenamedStsStyleRead} from './helpers/reviewed-selection-current-source.mjs';"
+   },
+   {
+    "at": 96,
+    "before": " const current=Object.fromEntries(paths.map(p=>[p,live(p)]));",
+    "after": " const replayInput=reviewedRenamedStsStyleRead(live);\n const current=Object.fromEntries(paths.map(p=>[p,replayInput(p)]));"
+   }
+  ]
+ },
+ "tests/round3-catalog-source-inverse.test.mjs": {
+  "current": {
+   "sha256": "494eb862189a110755b2167dabe594f754f17b2d7e2197e0a97483c2aa57f720",
+   "gitBlob": "904b37457efecb0debe87e989e7bb9a99a1b076c"
+  },
+  "previous": {
+   "sha256": "9a611b2e46643cfbb6032dccac3b4b272feb9ddbe67569dbfc0e449d889aaa5f",
+   "gitBlob": "012e333482eb8cc6d1d8119753a2b4b2b94599f3"
+  },
+  "hunks": [
+   {
+    "at": 5,
+    "before": "import {readFileSync,mkdtempSync,mkdirSync,writeFileSync,existsSync,rmSync,symlinkSync,renameSync} from 'node:fs';",
+    "after": "import {readFileSync,mkdtempSync,mkdirSync,writeFileSync,existsSync,rmSync,symlinkSync,renameSync} from 'node:fs';\nimport {reviewedRenamedStsStyleRead} from './helpers/reviewed-selection-current-source.mjs';"
+   },
+   {
+    "at": 139,
+    "before": " const current=Object.fromEntries(paths.map(path=>[path,readLive(path)]));",
+    "after": " const replayInput=reviewedRenamedStsStyleRead(readLive);\n const current=Object.fromEntries(paths.map(path=>[path,replayInput(path)]));"
+   }
+  ]
+ },
  "tests/colorless-catalog-source.test.mjs": {
   "current": {
    "sha256": "da577b404aeca08d7ee98580da6186204589a1c429b71e7b4ef945f874555d17",
