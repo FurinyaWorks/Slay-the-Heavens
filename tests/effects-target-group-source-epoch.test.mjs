@@ -8,8 +8,22 @@ import {pathToFileURL} from 'node:url';
 import {standaloneEffectsTargetGroupEpoch as sourceEpoch,preEffectsTargetGroupEpoch} from './helpers/combined-epoch/pre-defect-source-epoch.mjs';
 import {effectsTargetGroupEpoch} from './helpers/effects-target-group-source-epoch.mjs';
 import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-closure.mjs';
+import {exactSourceMatches} from './helpers/source-fingerprint.mjs';
 const path='src/lua/abyss_effects.lua',proof=sourceEpoch.proof,prior=preEffectsTargetGroupEpoch.proof;
 const raw=p=>proof.current[p]?.source??null;
+// #951 renamed two operations after the frozen Effects witness was recorded.
+const currentVocabulary={sha256:'8e0ceac15d72a48a9c029a08916ad24232f8ebcfe8441eb1a401a2b5bc38db4f',gitBlob:'8c03e96f336842650e2035f4961b0deba749467e'};
+const priorVocabulary={sha256:'f220d8b82875bde72e4f1442bb25743f72a53ece84d8bfe2b4ad278625f16181',gitBlob:'f669759d766698e39088b840b6ac5df7e3b020c2'};
+const live=file=>{
+ const source=readFileSync(file,'utf8');
+ if(file!==path)return source;
+ const lf=source.replaceAll('\r\n','\n');
+ assert(source===lf||source===lf.replaceAll('\n','\r\n'),'uniform live Effects owner');
+ assert(exactSourceMatches(source,currentVocabulary),'exact current Effects vocabulary owner');
+ const previous=source.replaceAll('calculatedExchange','calculatedGamble').replaceAll('daggerExpenditure','daggerSacrifice');
+ assert(exactSourceMatches(previous,priorVocabulary),'exact pre-vocabulary Effects owner');
+ return previous;
+};
 test('Effects target group outer epoch preserves every prior binding and exact frozen production byte',()=>{
  assert.equal(effectsTargetGroupEpoch.proof.currentCommit,'549e92aac19eaf4589e2f5ff869943becea78459');
  assert.equal(proof.currentCommit,prior.currentCommit);
@@ -17,7 +31,6 @@ test('Effects target group outer epoch preserves every prior binding and exact f
  assert.equal(proof.collectedBaseCommit,prior.collectedBaseCommit);
  assert.equal(proof.effectsTargetGroupLocalSourceSliceCommit,'eba244948d6116aeb478b409095680f5c3f8cdc9');
  assert.equal(proof.effectsTargetGroupSourceTree,'ef6ff1bd7ce4fe466ea52752bee6c9fd9eb5fc65');
- const live=file=>readFileSync(file,'utf8');
  assertDevelopBackflowCurrent(path,live(path));
  assert.equal(raw(path),authenticateDevelopBackflow(path,live(path),live).replaceAll('\r\n','\n'));
  assert.deepEqual(effectsTargetGroupEpoch.proof.targets.prior.files[path],prior.current[path]);
@@ -109,9 +122,9 @@ test('published Flow Silent and Effects stack retains all predecessor bindings a
  assert.equal(proof.currentCommit,preEffectsTargetGroupEpoch.proof.currentCommit);
  for(const [file,standalone]of changed.map((file,i)=>[file,[flow,silent,effects][i]])){
   assert.deepEqual(proof.current[file],standalone.proof.current[file]);
-  const read=path=>readFileSync(path,'utf8'), live=read(file);
-  if(file===changed[0])assertDevelopBackflowCurrent(file,live);
-  assert.equal(raw(file),authenticateDevelopBackflow(file,live,read).replaceAll('\r\n','\n'));
+  const source=live(file);
+  if(file===changed[0]||file===path)assertDevelopBackflowCurrent(file,source);
+  assert.equal(raw(file),authenticateDevelopBackflow(file,source,live).replaceAll('\r\n','\n'));
  }
  for(const [name,target]of Object.entries(preEffectsTargetGroupEpoch.proof.targets))assert.deepEqual(proof.targets[name],target);
  for(const [file,binding]of Object.entries(preEffectsTargetGroupEpoch.proof.current))if(!changed.includes(file))assert.deepEqual(proof.current[file],binding);

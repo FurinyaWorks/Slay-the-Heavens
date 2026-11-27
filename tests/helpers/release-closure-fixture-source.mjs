@@ -1017,6 +1017,33 @@ const fixtures=Object.freeze({
    }
   ]
  },
+ "tests/effects-target-group-source-epoch.test.mjs": {
+  "current": {
+   "sha256": "1fbb7806d1b82e30503b293bccdd8204a3cad9a90510f240e2bff58bdfd7ee74",
+   "gitBlob": "96c959143da635827e3589b976eedcaae619e511"
+  },
+  "previous": {
+   "sha256": "582c8e56f9679233aeee5ea9c26a3270fe7178bb4d68e5b9f61f57322c1e12b8",
+   "gitBlob": "233f0cd0bf61ac50538f2fb81e3273f148ab8625"
+  },
+  "hunks": [
+   {
+    "at": 9,
+    "before": "import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-closure.mjs';\nconst path='src/lua/abyss_effects.lua',proof=sourceEpoch.proof,prior=preEffectsTargetGroupEpoch.proof;\nconst raw=p=>proof.current[p]?.source??null;\ntest('Effects target group outer epoch preserves every prior binding and exact frozen production byte',()=>{",
+    "after": "import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-closure.mjs';\nimport {exactSourceMatches} from './helpers/source-fingerprint.mjs';\nconst path='src/lua/abyss_effects.lua',proof=sourceEpoch.proof,prior=preEffectsTargetGroupEpoch.proof;\nconst raw=p=>proof.current[p]?.source??null;\n// #951 renamed two operations after the frozen Effects witness was recorded.\nconst currentVocabulary={sha256:'8e0ceac15d72a48a9c029a08916ad24232f8ebcfe8441eb1a401a2b5bc38db4f',gitBlob:'8c03e96f336842650e2035f4961b0deba749467e'};\nconst priorVocabulary={sha256:'f220d8b82875bde72e4f1442bb25743f72a53ece84d8bfe2b4ad278625f16181',gitBlob:'f669759d766698e39088b840b6ac5df7e3b020c2'};\nconst live=file=>{\n const source=readFileSync(file,'utf8');\n if(file!==path)return source;\n const lf=source.replaceAll('\\r\\n','\\n');\n assert(source===lf||source===lf.replaceAll('\\n','\\r\\n'),'uniform live Effects owner');\n assert(exactSourceMatches(source,currentVocabulary),'exact current Effects vocabulary owner');\n const previous=source.replaceAll('calculatedExchange','calculatedGamble').replaceAll('daggerExpenditure','daggerSacrifice');\n assert(exactSourceMatches(previous,priorVocabulary),'exact pre-vocabulary Effects owner');\n return previous;\n};\ntest('Effects target group outer epoch preserves every prior binding and exact frozen production byte',()=>{"
+   },
+   {
+    "at": 32,
+    "before": " assert.equal(proof.effectsTargetGroupSourceTree,'ef6ff1bd7ce4fe466ea52752bee6c9fd9eb5fc65');\n const live=file=>readFileSync(file,'utf8');\n assertDevelopBackflowCurrent(path,live(path));",
+    "after": " assert.equal(proof.effectsTargetGroupSourceTree,'ef6ff1bd7ce4fe466ea52752bee6c9fd9eb5fc65');\n assertDevelopBackflowCurrent(path,live(path));"
+   },
+   {
+    "at": 123,
+    "before": "  assert.deepEqual(proof.current[file],standalone.proof.current[file]);\n  const read=path=>readFileSync(path,'utf8'), live=read(file);\n  if(file===changed[0])assertDevelopBackflowCurrent(file,live);\n  assert.equal(raw(file),authenticateDevelopBackflow(file,live,read).replaceAll('\\r\\n','\\n'));\n }",
+    "after": "  assert.deepEqual(proof.current[file],standalone.proof.current[file]);\n  const source=live(file);\n  if(file===changed[0]||file===path)assertDevelopBackflowCurrent(file,source);\n  assert.equal(raw(file),authenticateDevelopBackflow(file,source,live).replaceAll('\\r\\n','\\n'));\n }"
+   }
+  ]
+ },
  "tests/noncombat-v25-layout.test.mjs": {
   "current": {
    "sha256": "c97ed0609e04042432caaaf06c66cc1955cce9a2d9da17417fdf0aab8ca290c9",

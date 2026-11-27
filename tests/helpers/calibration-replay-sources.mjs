@@ -193,7 +193,8 @@ export function beforeCurrentHistoricalStsSource(path,source){
   const text=source.toString('utf8'),prior=beforeCurrentHistoricalStsSource(path,text);
   return prior===text?source:Buffer.from(prior);
  }
- if(path==='tests/integration-source-epoch.test.mjs')source=beforeKnownMasterBackflowSource(path,source);
+ if(path==='tests/integration-source-epoch.test.mjs'||path==='tests/effects-target-group-source-epoch.test.mjs')
+  source=beforeKnownMasterBackflowSource(path,source);
  // New exact integration tests first continue to the entrance witness's reviewed input.
  if(['tests/integration-source-epoch.test.mjs','tests/helpers/combined-epoch/source-epoch-runtime.mjs',
   'tests/session-menu-navigation.test.mjs','tests/tiny-house-pending-ui.cases.mjs'].includes(path))source=beforeCurrentReplayFixes(path,source);
