@@ -18,6 +18,16 @@ const legacy = {
   archive: '3f79269e90a8f2507f6782135563ecf573b357d7',
   directory: 'docs/evidence/v2.1.1-2026-11-25',
 };
+export const legacyGilArchive = Object.freeze({
+  kind: 'published-project-gil',
+  release: legacy.tag,
+  releaseId: legacy.releaseId,
+  archiveCommit: legacy.archive,
+  path: `${legacy.directory}/slay-the-heavens-v2.1.1-2026-11-25.gil`,
+  sourceCommit: '06c2577ecc6c07593c6bf8b6e79e158dac5b6195',
+  bytes: 23_780_838,
+  sha256: 'afe80c0783d0d4b6046c1f44cba3ef2b71cb8bb34fbc7404d939d12e0f5ff831',
+});
 
 function versionParts(version) {
   assert(/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(version), 'Engineering SemVer required');
@@ -31,6 +41,10 @@ function compareVersions(a, b) {
     if (before[index] > after[index]) return 1;
   }
   return 0;
+}
+
+export function supportsPublishedGilSeed(version) {
+  return compareVersions(version, legacy.version) > 0;
 }
 
 async function listReleases(request) {
@@ -81,6 +95,48 @@ async function legacyBaseline(request, release) {
     source: release.html_url, releaseId: legacy.releaseId};
 }
 
+export async function resolveLegacyPublishedBaseline(request = githubRequest) {
+  const release = await request(`${repo}/releases/${legacy.releaseId}`);
+  assert.equal(release?.id, legacy.releaseId, 'Published v2.1.1 Release ID changed');
+  const baseline = await legacyBaseline(request, release);
+  assert.equal(baseline.commit, legacyGilArchive.sourceCommit, 'Archived GIL build source changed');
+  assert.equal(baseline.gilSha256, legacyGilArchive.sha256, 'Archived GIL SHA-256 changed');
+  return baseline;
+}
+
+export async function downloadLegacyGilArchive(output, request = githubRequest, fetchArchive = fetch) {
+  const { archiveCommit, path, bytes, sha256 } = legacyGilArchive;
+  const file = await request(`${repo}/contents/${path}?ref=${archiveCommit}`);
+  assert(file?.type === 'file' && file.path === path && file.size === bytes && file.encoding === 'base64'
+    && typeof file.content === 'string' && file.content.length < 256, 'Published GIL archive pointer is unavailable');
+  const pointer = Buffer.from(file.content, 'base64').toString('utf8');
+  assert(pointer === `version https://git-lfs.github.com/spec/v1\noid sha256:${sha256}\nsize ${bytes}\n`,
+    'Published GIL archive pointer differs from the pinned object');
+
+  const url = `https://media.githubusercontent.com/media/${repo.slice('/repos/'.length)}/${archiveCommit}/${path}`;
+  let download;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const response = await fetchArchive(url, { redirect: 'error', signal: AbortSignal.timeout(90_000) });
+      assert(response.ok && response.body, 'Published GIL media is unavailable');
+      const chunks = [];
+      let length = 0;
+      for await (const chunk of response.body) {
+        length += chunk.length;
+        assert(length <= bytes, 'Published GIL media exceeds the pinned size');
+        chunks.push(chunk);
+      }
+      download = Buffer.concat(chunks, length);
+      break;
+    } catch {
+      if (attempt === 1) throw Error('Published GIL media download failed after two attempts');
+    }
+  }
+  assert.equal(download.length, bytes, 'Published GIL media differs from the pinned size');
+  assert.equal(createHash('sha256').update(download).digest('hex'), sha256, 'Published GIL media differs from the pinned SHA-256');
+  writeFileSync(output, download, {flag:'wx'});
+}
+
 export async function resolvePublishedBaseline(candidateVersion, request = githubRequest) {
   versionParts(candidateVersion);
   const releases = await listReleases(request);
@@ -106,7 +162,7 @@ export async function downloadPublishedBaselineGil(published, output, request = 
   assert(digest.test(gilSha256) && Number.isSafeInteger(releaseId) && releaseId > 0, 'Resolved published GIL identity required');
   if (version === legacy.version) {
     assert.equal(releaseId, legacy.releaseId, 'Unknown historical publication');
-    const file = `${legacy.directory}/slay-the-heavens-v2.1.1-2026-11-25.gil`;
+    const file = legacyGilArchive.path;
     const git = (...args) => execFileSync('git', args, {encoding:'utf8', timeout:120_000}).trim();
     git('-c', 'credential.helper=', 'fetch', '--depth=1', '--no-tags', '--no-write-fetch-head', 'origin', legacy.archive);
     const pointer = git('show', `${legacy.archive}:${file}`);

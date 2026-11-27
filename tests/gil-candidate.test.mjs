@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
-import { verifyDownloadedArtifact, verifyReceipts } from '../scripts/gil-candidate.mjs';
-import { encoderSha256 } from '../scripts/gil-candidate-preflight.mjs';
+import { verifyDownloadedArtifact, verifyPublishedRebase, verifyReceipts } from '../scripts/gil-candidate.mjs';
+import { approvedRequest, buildOnlyRequest, encoderSha256, validationTarget } from '../scripts/gil-candidate-preflight.mjs';
+import { downloadLegacyGilArchive, legacyGilArchive, supportsPublishedGilSeed } from '../scripts/runtime-baseline/published-baseline.mjs';
 
 const sourceSha = '1'.repeat(40);
 const baseSha256 = '2'.repeat(64);
@@ -33,6 +34,89 @@ test('trusted develop owns protection, while audit receives the bound build cont
     LICENSES_RUN: 'steps.candidate.outputs.licenses_run',
   })) assert(audit.includes(`          ${name}: ${'${{'} ${expression} }}\n`), `audit requires ${name}`);
   assert.match(workflow, /upload-artifact@[a-f0-9]{40}[\s\S]+download-artifact@[a-f0-9]{40}[\s\S]+gil-candidate\.mjs readback/);
+});
+
+test('automatic build pushes are scoped to primary develop and the diagnostic branch in the known fork', () => {
+  const workflow = readFileSync(new URL('../.github/workflows/gil-build.yml', import.meta.url), 'utf8').replaceAll('\r\n', '\n');
+  const fork = '1460133275';
+  const testRef = 'refs/heads/ci/full/gil-build/v2.2.0-closure-20261127';
+  assert.deepEqual(validationTarget('1429751262', 'refs/heads/develop', sourceSha), { branch: 'develop' });
+  assert.deepEqual(validationTarget(fork, testRef, sourceSha), { branch: testRef.slice(11) });
+  assert.throws(() => validationTarget(fork, 'refs/heads/develop', sourceSha), /assigned Fork B/);
+  assert.throws(() => validationTarget('1429751262', testRef, sourceSha), /assigned Fork B/);
+  assert.throws(() => validationTarget('3', testRef, sourceSha), /assigned Fork B/);
+  assert.match(workflow, /push:\n    branches: \[develop, 'ci\/full\/gil-build\/\*\*'\]/);
+  assert.match(workflow, /PUBLISH_ARTIFACT: 'false'/);
+  assert.match(workflow, /path: source\/build\/gil-artifact\/manifest\.json\n/);
+  assert.doesNotMatch(workflow, /secrets\.|environment:/);
+  const buildSteps = workflow.slice(workflow.indexOf('      - name: Fetch and verify the published project GIL'));
+  assert.equal(buildSteps.match(/^      - (?:name|uses):/gm)?.length, 9);
+  assert.equal(buildSteps.match(/^        if: steps\.candidate\.outputs\.build == 'true'$/gm)?.length, 9);
+  const archive = readFileSync(new URL('../.github/workflows/gil-candidate.yml', import.meta.url), 'utf8');
+  const usedActions = [...workflow.matchAll(/^\s*- uses: (actions\/[a-z-]+@[0-9a-f]+)\b/gm)];
+  assert.equal(usedActions.length, 6);
+  for (const [, action] of usedActions) assert(archive.includes(`uses: ${action} `), `Build action must use the archive pin: ${action}`);
+});
+
+test('unattended build selects the pinned public source and a local metadata key', () => {
+  const target = validationTarget('1429751262', 'refs/heads/develop', sourceSha);
+  const policy = { controllerSha: sourceSha };
+  const approval = { sourceSha, sourceBranch: 'develop', baseSha256: legacyGilArchive.sha256, workKey,
+    reference: 'owner/42', baseProcessingApproved: true, publicArtifactApproved: true };
+  const build = buildOnlyRequest(sourceSha, policy, target);
+  assert.equal(build.archive, false);
+  assert.equal(build.baseSha256, legacyGilArchive.sha256);
+  assert.equal(build.configuration.releaseCandidate, false);
+  assert.equal(build.configuration.workKey, 'offline-candidate');
+  assert.throws(() => approvedRequest(JSON.stringify({ ...approval, workKey: build.configuration.workKey }), sourceSha, policy), /Approval must cover/);
+  assert.notEqual(build.id, approvedRequest(JSON.stringify(approval), sourceSha, policy).id);
+});
+
+test('the published GIL seed permits only strictly newer source versions', () => {
+  for (const version of ['2.0.0', '2.1.0', '2.1.1']) assert.equal(supportsPublishedGilSeed(version), false);
+  for (const version of ['2.1.2', '2.2.0', '3.0.0']) assert.equal(supportsPublishedGilSeed(version), true);
+  assert.throws(() => supportsPublishedGilSeed('2.2.0-preview'), /Engineering SemVer/);
+});
+
+test('the published archive download validates the exact pointer and bounds transfer retries', async t => {
+  const dir = mkdtempSync(join(tmpdir(), 'gil-published-download-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const output = join(dir, 'base.gil');
+  const { path, archiveCommit, bytes, sha256 } = legacyGilArchive;
+  const pointer = `version https://git-lfs.github.com/spec/v1\noid sha256:${sha256}\nsize ${bytes}\n`;
+  const request = (content = pointer) => async uri => {
+    assert.equal(uri, `/repos/FurinyaWorks/Slay-the-Heavens/contents/${path}?ref=${archiveCommit}`);
+    return { type: 'file', path, size: bytes, encoding: 'base64', content: Buffer.from(content).toString('base64') };
+  };
+  await assert.rejects(downloadLegacyGilArchive(output, request(pointer.replace(sha256, '0'.repeat(64))),
+    () => assert.fail('downloaded from an unverified pointer')), /pointer differs/);
+  let calls = 0;
+  await assert.rejects(downloadLegacyGilArchive(output, request(), async (url, options) => {
+    assert.equal(url, `https://media.githubusercontent.com/media/FurinyaWorks/Slay-the-Heavens/${archiveCommit}/${path}`);
+    assert.equal(options.redirect, 'error');
+    calls++;
+    throw Error('fixture network failure');
+  }), /after two attempts/);
+  assert.equal(calls, 2);
+  await assert.rejects(downloadLegacyGilArchive(output, request(), async () => new Response('truncated')),
+    /differs from the pinned size/);
+  assert.equal(existsSync(output), false);
+});
+
+test('a published seed rebuild can only change UI and signals, graph, and Lua sections', () => {
+  const raw = (id, value) => ({ id, wire: 0, raw: Buffer.from([value]) });
+  const base = Buffer.alloc(24);
+  const final = Buffer.alloc(24, 0);
+  const input = [raw(4, 1), raw(9, 2), raw(10, 3), raw(50, 4)];
+  let output = [raw(4, 1), raw(9, 5), raw(10, 6), raw(50, 7)];
+  const wire = { container: bytes => bytes === base ? input : output, fields: rows => rows };
+  assert.deepEqual(verifyPublishedRebase(base, final, wire), [9, 10, 50]);
+  output[0] = raw(4, 8);
+  assert.throws(() => verifyPublishedRebase(base, final, wire), /scene data changed in section 4/);
+  output = [raw(9, 5), raw(4, 1), raw(10, 6), raw(50, 7)];
+  assert.throws(() => verifyPublishedRebase(base, final, wire), /section layout changed/);
+  final[4] = 1;
+  assert.throws(() => verifyPublishedRebase(base, final, wire), /container structure changed/);
 });
 
 test('reject missing protected base URL before downloads', () => {
