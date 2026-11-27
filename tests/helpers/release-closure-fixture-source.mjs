@@ -20,6 +20,28 @@ export const selectionRawEntranceReplay=Object.freeze({
 // Current Host checks exercise production. Historical Host and CI replays
 // preserve the exact earlier test sources from the production backflow.
 const fixtures=Object.freeze({
+ "tests/readable-unit-typography-inverse.test.mjs": {
+  "current": {
+   "sha256": "fe863ccfc674a8a75cb72f15087dcd3d1ffa3d8d7875709a6f038596ab8453d9",
+   "gitBlob": "e5405717d71997343f7f20c1c1ff7c5ad800d0db"
+  },
+  "previous": {
+   "sha256": "f473af0f47d9f4bfe07a44c11b45d5f94a76f9e20b988fed11d7df6aa8bda39d",
+   "gitBlob": "4f748ed6d56a505267a352af0f891e8d9af401d1"
+  },
+  "hunks": [
+   {
+    "at": 2,
+    "before": "import {createHash} from 'node:crypto';\nimport {enemyUnitTemplate,battleLayout} from '../scripts/ui-layout.mjs';\nimport {preReadableUnitTypography} from './helpers/readable-unit-typography-inverse.mjs';",
+    "after": "import {createHash} from 'node:crypto';\nimport {enemyUnitTemplate,battleLayout,theme} from '../scripts/ui-layout.mjs';\nimport {preReadableUnitTypography} from './helpers/readable-unit-typography-inverse.mjs';"
+   },
+   {
+    "at": 21,
+    "before": "   restoreRetiredHitFocus(old,hero?['hit']:['intentHit','hit']);\n   if(hero)restoreRetiredHitFocus(old.children.find(n=>n.name==='statusRow'),['hit',...Array.from({length:10},(_,i)=>'hit'+(i+1))]);\n   else{\n    old.children=old.children.filter(n=>!['intentVfxBehind','intentVfxAfter'].includes(n.name));",
+    "after": "   restoreRetiredHitFocus(old,hero?['hit']:['intentHit','hit']);\n   if(hero){\n    const row=old.children.find(n=>n.name==='statusRow');\n    const {statusIcon,nativeText}=theme.layout;\n    // #887 widened the count boxes to the native line-height minimum.\n    for(const count of row.children.filter(n=>/^count\\d+$/.test(n.name))){\n     assert.deepEqual(count.size,[Math.max(statusIcon.size,nativeText.lineHeight),nativeText.lineHeight]);\n     count.size[0]=statusIcon.size;\n    }\n    restoreRetiredHitFocus(row,['hit',...Array.from({length:10},(_,i)=>'hit'+(i+1))]);\n   }else{\n    // #897 adds a pointer-only HP hit and makes the actor block the cursor.\n    assert.equal(old.blockCursor,true,'exact enemy cursor blocking');\n    delete old.blockCursor;\n    const hpHitIndex=old.children.findIndex(n=>n.name==='hpHit');\n    assert.deepEqual(old.children[hpHitIndex],{name:'hpHit',kind:'cursorArea',size:theme.layout.hpBar.size,visible:false},'exact enemy HP hit');\n    old.children.splice(hpHitIndex,1);\n    old.children=old.children.filter(n=>!['intentVfxBehind','intentVfxAfter'].includes(n.name));"
+   }
+  ]
+ },
  "scripts/verify-delivery.mjs": {
    "current": {
      "sha256": "0cc36bf1fc188d5a0cf40163fbeb9fbbd227d1d62d98b991036b83b7d2dbd818",
