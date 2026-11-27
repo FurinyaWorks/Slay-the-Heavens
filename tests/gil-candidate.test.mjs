@@ -167,26 +167,33 @@ test('reuse only a version-named Artifact for the exact hotfix from a default br
   assert.equal(await findArtifact(api({ head_branch: branch }), request, '20', now), undefined);
 });
 
-test('automatic build pushes are scoped to primary develop and the diagnostic branch in the known fork', () => {
+test('the primary repository builds release, master and test refs and publishes only a verified download', () => {
   const workflow = readFileSync(new URL('../.github/workflows/gil-build.yml', import.meta.url), 'utf8').replaceAll('\r\n', '\n');
   const fork = '1460133275';
-  const testRef = 'refs/heads/ci/full/gil-build/v2.2.0-closure-20261127';
-  assert.deepEqual(validationTarget('1429751262', 'refs/heads/develop', sourceSha), { branch: 'develop' });
-  assert.deepEqual(validationTarget(fork, testRef, sourceSha), { branch: testRef.slice(11) });
-  assert.throws(() => validationTarget(fork, 'refs/heads/develop', sourceSha), /assigned Fork B/);
-  assert.throws(() => validationTarget('1429751262', testRef, sourceSha), /assigned Fork B/);
-  assert.throws(() => validationTarget('3', testRef, sourceSha), /assigned Fork B/);
-  assert.match(workflow, /push:\n    branches: \[develop, 'ci\/full\/gil-build\/\*\*'\]/);
+  const main = '1429751262';
+  const testRef = 'refs/heads/test/gil-build/web-downloads';
+  const forkRef = 'refs/heads/ci/full/gil-build/v2.2.0-closure-20261127';
+  for (const branch of ['develop', 'master', 'release/v2.2.0', 'test/gil-build/web-downloads']) {
+    assert.deepEqual(validationTarget(main, 'refs/heads/' + branch, sourceSha), { branch });
+  }
+  assert.deepEqual(validationTarget(main, 'refs/tags/v2.2.0', sourceSha), { branch: 'v2.2.0', version: 'v2.2.0' });
+  assert.deepEqual(validationTarget(fork, forkRef, sourceSha), { branch: forkRef.slice(11) });
+  assert.throws(() => validationTarget(main, 'refs/tags/v2.2.0-rc.1', sourceSha), /enabled primary ref/);
+  assert.throws(() => validationTarget(main, forkRef, sourceSha), /enabled primary ref/);
+  assert.throws(() => validationTarget(fork, testRef, sourceSha), /enabled primary ref/);
+  assert.throws(() => validationTarget(fork, 'refs/tags/v2.2.0', sourceSha), /enabled primary ref/);
+  assert.match(workflow, /branches: \[develop, master, 'release\/\*\*', 'test\/gil-build\/\*\*', 'ci\/full\/gil-build\/\*\*'\]/);
+  assert.match(workflow, /workflow_dispatch:\n  release:\n    types: \[published\]/);
   assert.match(workflow, /PUBLISH_ARTIFACT: 'false'/);
   assert.match(workflow, /path: source\/build\/gil-artifact\/manifest\.json\n/);
   assert.doesNotMatch(workflow, /secrets\.|environment:/);
-  const buildSteps = workflow.slice(workflow.indexOf('      - name: Fetch and verify the published project GIL'));
-  assert.equal(buildSteps.match(/^      - (?:name|uses):/gm)?.length, 9);
-  assert.equal(buildSteps.match(/^        if: steps\.candidate\.outputs\.build == 'true'$/gm)?.length, 9);
-  const archive = readFileSync(new URL('../.github/workflows/gil-candidate.yml', import.meta.url), 'utf8');
-  const usedActions = [...workflow.matchAll(/^\s*- uses: (actions\/[a-z-]+@[0-9a-f]+)\b/gm)];
-  assert.equal(usedActions.length, 6);
-  for (const [, action] of usedActions) assert(archive.includes(`uses: ${action} `), `Build action must use the archive pin: ${action}`);
+  const [build, attach] = workflow.split('  attach-release:');
+  assert.match(build, /upload-artifact@[a-f0-9]{40}[\s\S]+path: source\/build\/gil-artifact\/\n[\s\S]+download-artifact@[a-f0-9]{40}[\s\S]+gil-candidate\.mjs readback/);
+  assert.doesNotMatch(build, /contents: write/);
+  assert.match(attach, /if: .*github\.event_name == 'release'.*prerelease == false/);
+  assert.match(attach, /needs: build\n    permissions:\n      contents: write/);
+  assert.match(attach, /sha256sum --check SHA256SUMS[\s\S]+gh release upload/);
+  assert.doesNotMatch(attach, /--clobber|release create/);
 });
 
 test('unattended build selects the pinned public source and a local metadata key', () => {

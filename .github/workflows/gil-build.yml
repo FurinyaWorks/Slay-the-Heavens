@@ -2,8 +2,10 @@ name: GIL build
 run-name: GIL build / ${{ github.ref_name }} / ${{ github.sha }}
 on:
   push:
-    branches: [develop, 'ci/full/gil-build/**']
+    branches: [develop, master, 'release/**', 'test/gil-build/**', 'ci/full/gil-build/**']
   workflow_dispatch:
+  release:
+    types: [published]
 permissions:
   contents: read
 concurrency:
@@ -12,8 +14,13 @@ concurrency:
 jobs:
   build:
     if: >-
-      (github.repository_id == '1429751262' && github.ref == 'refs/heads/develop') ||
+      (github.repository_id == '1429751262' &&
+        ((github.event_name == 'release' && github.event.release.prerelease == false) ||
+         github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' ||
+         startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/test/gil-build/'))) ||
       (github.repository_id == '1460133275' && startsWith(github.ref, 'refs/heads/ci/full/gil-build/'))
+    outputs:
+      artifact-name: ${{ steps.download.outputs.artifact-name }}
     runs-on: windows-2025
     timeout-minutes: 45
     env:
@@ -103,12 +110,15 @@ jobs:
         working-directory: source
         env:
           WORK_KEY: ${{ steps.candidate.outputs.work_key }}
+          RELEASE_VERSION: ${{ steps.candidate.outputs.release_version }}
           MILIASTRA_PYTHON: python
         run: |
           $PSNativeCommandUseErrorActionPreference = $false
           $env:MILIASTRA_MCP_ROOT = (Resolve-Path ../miliastra-mcp).Path
           $timer = [Diagnostics.Stopwatch]::StartNew()
-          npm run build:native -- "$env:RUNNER_TEMP/gil-base.gil" build/hosted-gil "--work-key=$env:WORK_KEY" *> "$env:RUNNER_TEMP/gil-native.log"
+          $buildArguments = @("$env:RUNNER_TEMP/gil-base.gil", 'build/hosted-gil', "--work-key=$env:WORK_KEY")
+          if ($env:RELEASE_VERSION) { $buildArguments += '--release-candidate' }
+          npm run build:native -- @buildArguments *> "$env:RUNNER_TEMP/gil-native.log"
           if ($LASTEXITCODE -ne 0) {
             node scripts/gil-candidate.mjs diagnose
             exit 1
@@ -124,13 +134,65 @@ jobs:
           BASE_SHA256: ${{ steps.candidate.outputs.base_sha256 }}
           WORK_KEY: ${{ steps.candidate.outputs.work_key }}
           REQUEST_ID: ${{ steps.candidate.outputs.request_id }}
+          RELEASE_VERSION: ${{ steps.candidate.outputs.release_version }}
         run: |
           $env:MILIASTRA_MCP_ROOT = (Resolve-Path ../miliastra-mcp).Path
           node scripts/gil-candidate.mjs deliver
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        if: steps.candidate.outputs.build == 'true'
+        if: steps.candidate.outputs.build == 'true' && (github.repository_id != '1429751262' || (github.event_name == 'push' && github.ref == 'refs/heads/develop'))
         with:
           name: gil-build-evidence-${{ github.sha }}
           path: source/build/gil-artifact/manifest.json
           if-no-files-found: error
           retention-days: 14
+
+      - name: Name the downloadable candidate
+        id: download
+        if: steps.candidate.outputs.build == 'true' && github.repository_id == '1429751262' && (github.event_name != 'push' || github.ref != 'refs/heads/develop')
+        run: |
+          "artifact-name=Slay-the-Heavens-GIL-$env:GITHUB_SHA-$env:GITHUB_RUN_ATTEMPT" >> $env:GITHUB_OUTPUT
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        id: upload
+        if: steps.download.outputs.artifact-name != ''
+        with:
+          name: ${{ steps.download.outputs.artifact-name }}
+          path: source/build/gil-artifact/
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        if: steps.upload.outputs.artifact-id != ''
+        with:
+          name: ${{ steps.download.outputs.artifact-name }}
+          path: source/build/gil-readback/
+      - name: Verify the archived download
+        if: steps.upload.outputs.artifact-id != ''
+        env:
+          ARTIFACT_URL: ${{ steps.upload.outputs.artifact-url }}
+        run: |
+          node source/scripts/gil-candidate.mjs readback
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "[Download the complete GIL]($env:ARTIFACT_URL)" >> $env:GITHUB_STEP_SUMMARY
+
+  attach-release:
+    if: github.repository_id == '1429751262' && github.event_name == 'release' && github.event.release.prerelease == false
+    needs: build
+    permissions:
+      contents: write
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ${{ needs.build.outputs.artifact-name }}
+          path: gil
+      - name: Attach the verified package to the published release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          [[ "$TAG" =~ ^v[0-9]+[.][0-9]+[.][0-9]+$ ]]
+          (cd gil && sha256sum --check SHA256SUMS)
+          package="Slay-the-Heavens-$TAG-GIL.zip"
+          (cd gil && zip -0 "../$package" candidate.gil candidate.json manifest.json SHA256SUMS)
+          gh release upload "$TAG" "$package" --repo "$GITHUB_REPOSITORY"

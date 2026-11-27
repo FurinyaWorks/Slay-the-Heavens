@@ -28,7 +28,11 @@ async function preflight() {
   cleanHead(controlRoot, controllerSha, 'Controller');
   if (!archive) {
     const sourceVersion = json(join(controlRoot, 'package.json')).version;
+    if (target.version) requireGate(target.version === `v${sourceVersion}`,
+      'Release tag must match the checked-out package version.');
     if (!supportsPublishedGilSeed(sourceVersion)) {
+      requireGate(!target.version && !ref.startsWith('refs/heads/release/') && ref !== 'refs/heads/master' &&
+        !ref.startsWith('refs/heads/test/gil-build/'), 'Source version must be newer than the published GIL seed.');
       appendFileSync(process.env.GITHUB_OUTPUT, 'build=false\n');
       appendFileSync(process.env.GITHUB_STEP_SUMMARY,
         `Skipped GIL build for \`${source}\`: source version v${sourceVersion} must be newer than seed ${legacyGilArchive.release}.\n`);
@@ -238,7 +242,7 @@ async function deliver() {
   const qualityRun = Number(process.env.QUALITY_RUN);
   const archiveApproved = process.env.PUBLISH_ARTIFACT !== 'false';
   const sourceChecks = archiveApproved ? { qualityRun, licensesRun: Number(process.env.LICENSES_RUN) } : null;
-  if (version) {
+  if (version && archiveApproved) {
     const expected = { quality: qualityRun, qualityAttempt: Number(process.env.QUALITY_ATTEMPT),
       qualityCheckoutArtifact: Number(process.env.QUALITY_CHECKOUT_ARTIFACT) };
     const current = await verifyFrozenQuality(branch, sourceSha);

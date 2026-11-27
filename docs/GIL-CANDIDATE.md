@@ -1,15 +1,21 @@
-# 完整有声 GIL 按需构建
+# 下载完整有声 GIL
 
-主仓 `develop` 更新后自动运行 **GIL build**，也可在 Actions 手动运行。它在 Windows Hosted Runner 生成完整有声 GIL 并执行独立读回，不需要上传底图、配置保护环境或等待其他 CI。Fork B 的 `ci/full/gil-build/` 分支使用相同入口做验证。验证清单标明归档未批准，冻结源码 CI 证据留空。
+- 主仓 `release/*` 或 `master` 更新后，打开 **Actions → GIL build → 本次运行 → Summary / Artifacts**，下载 `Slay-the-Heavens-GIL-*`。手动构建在同一工作流点击 **Run workflow** 并选择目标分支。候选保留 14 天。
+- 正式 GitHub Release 发布后，从对应 Tag 的源码构建，核对 Tag 和源码工程版本，再将完整 ZIP 挂到该 Release 的 **Assets**。正式 GitHub Release 由维护者发起，Release 需要允许发布后添加附件。
+- 解压得到 `candidate.gil`、`candidate.json`、`manifest.json` 和 `SHA256SUMS`。工作流使用完整精绘资源、原生页面生命周期、BGM 和结算图，做独立审计，并从 GitHub 下载、逐文件复核。核对候选 SHA-256 后，在千星编辑器手动导入同一包并完成 [平台负载、ready 和设备验收](PLATFORM_LOAD.md)。
 
-源码 `package.json` 版本必须高于已发布底包 v2.1.1。源码仍使用旧版号时，**GIL build** 在运行摘要记录跳过原因，跳过下载和构建，也不生成验证清单。正式归档使用固定底包时同样校验源码版号。
+自动构建从[已公开发布的 v2.1.1 GIL](https://github.com/FurinyaWorks/Slay-the-Heavens/releases/tag/v2.1.1) 取回底包，核对固定提交、大小与 SHA-256。源码版本须高于该底包。构建沿用固定的 Windows、Node、Python、MCP 和 Git LFS 资产清单，`offline-candidate` 是可写入回执的构建期文案标识。此路径无需本地底图、作品账号密钥或自建 Token。GitHub 运行时 Token 按作业授权，构建只读，附件作业可写 Releases。若使用自定义私有底图，先核对它适合公开分发，并在受保护环境配置 `GIL_BASE_URL`，使用下述既有正式归档路径。
+
+主仓 `develop` 推送和 Fork B 的现有验证分支继续只上传构建摘要。自动下载产物的 `sourceChecks` 为空，`archiveApproved` 表示是否经过旧流程的逐次归档批准。当前 v2.2.0 的冻结性能验收继续使用下述旧入口。
+
+## v2.2.0 冻结性能验收使用的 GIL candidate
 
 完成冻结验收后，从主仓 **Actions → GIL candidate → Run workflow** 执行经批准的构建与归档。工作流运行分支始终选受保护的 `develop`。在 `source_ref` 中填 `develop`、`release/vX.Y.Z` 或 `hotfix/vX.Y.Z`，在 `source_sha` 中填通过验收的完整小写源码 SHA。
 
 - `develop` 接受已合入且对应 Quality 和 Licenses push 均成功的提交，构建开发候选。
 - `release/vX.Y.Z` 与 `hotfix/vX.Y.Z` 接受冻结的当前分支 HEAD。先运行 `node scripts/release-ci.mjs freeze <分支> <HEAD>`，等待对应的 Hosted Quality Full 成功。用现有 **Licenses** 工作流在同一冻结分支手动运行默认审计并确认精确 HEAD、`inventory` 成功。工作流复核 Full 的实际 checkout 回执并在归档前重新读取冻结分支 HEAD。分支、源码版号、发布说明与批准记录均须对应本次工程版本。
 
-默认构建从[本项目已发布的 v2.1.1 GIL](https://github.com/FurinyaWorks/Slay-the-Heavens/releases/tag/v2.1.1) 自动取回运行时起点。工作流核对 Release 与固定的 Git LFS 归档、实际构建提交、包大小和 SHA-256。使用当前源码重建 Lua、原生 UI 和结算/BGM 图并独立审计。其余容器段保留旧包的原始字节，证据清单记录继承源与重建的段。默认构建使用 `offline-candidate` 选择构建期文案，用完整的精绘和原生音频预设编译，只上传 `gil-build-evidence-*` 的摘要清单。仓库公开，完整 GIL 归档需要分发批准。
+默认构建从[本项目已发布的 v2.1.1 GIL](https://github.com/FurinyaWorks/Slay-the-Heavens/releases/tag/v2.1.1) 自动取回运行时起点。工作流核对 Release 与固定的 Git LFS 归档、实际构建提交、包大小和 SHA-256。使用当前源码重建 Lua、原生 UI 和结算/BGM 图并独立审计。其余容器段保留旧包的原始字节，证据清单记录继承源与重建的段。默认构建使用 `offline-candidate` 选择构建期文案，用完整的精绘和原生音频预设编译，为 `develop` 的推送与 Fork B 验证保留 `gil-build-evidence-*` 摘要。
 
 **GIL candidate** 归档使用批准的作品键，把同次构建产物上传到 **Artifacts**，再从 GitHub 下载并复算 GIL、回执与清单的 SHA-256。若已有同一请求且在保留期内的成功制品，运行摘要给出原下载入口。冻结候选的 Artifact 名含工程版本和完整源码 SHA。解压后运行 `sha256sum -c SHA256SUMS` 或使用 PowerShell `Get-FileHash candidate.gil -Algorithm SHA256`。Artifact 保留 14 天。
 
