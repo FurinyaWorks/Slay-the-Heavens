@@ -534,16 +534,44 @@ const unifiedGilFixture={
  ]
 };
 
+const earlyGilFixture={
+ "current": {
+  "sha256": "7d33d06ab7bba789c1a7307c4957fbc21f2bc857737fd75acf4ef43a594c1299",
+  "gitBlob": "9092f7176327df46a25a72546b459134c2a956e3"
+ },
+ "previous": {
+  "sha256": "a031bf41ba5383976a8ce3f15b70798042f363920fb8d03a14a108cf58952ec4",
+  "gitBlob": "47cdb8b71e60a22ef0398172744fec302c7237d8"
+ },
+ "hunks": [
+  {
+   "at": 5,
+   "before": "import { join } from 'node:path';\nimport { test } from 'node:test';\nimport { verifyDownloadedArtifact, verifyPublishedRebase, verifyReceipts } from '../scripts/gil-candidate.mjs';\nimport { api, approvedRequest, buildOnlyRequest, candidateTarget, encoderSha256, findArtifact, releaseBuildRequest, releaseBuildTarget, validationTarget, verifySource } from '../scripts/gil-candidate-preflight.mjs';\nimport { fileRecord } from '../scripts/evidence-files.mjs';\nimport { hostedCandidatePath, verifiedPayloadInputs } from '../scripts/hosted-gil-receipt.mjs';",
+   "after": "import { join } from 'node:path';\nimport { test } from 'node:test';\nimport { verifyDownloadedArtifact, verifyPublishedRebase, verifyReceipts } from '../scripts/gil-candidate.mjs';\nimport * as preflight from '../scripts/gil-candidate-preflight.mjs';\nimport { api, approvedRequest, buildOnlyRequest, candidateTarget, encoderSha256, findArtifact, releaseBuildRequest, releaseBuildTarget, validationTarget, verifySource } from '../scripts/gil-candidate-preflight.mjs';\nimport { fileRecord } from '../scripts/evidence-files.mjs';\nimport { hostedCandidatePath, verifiedPayloadInputs } from '../scripts/hosted-gil-receipt.mjs';"
+  },
+  {
+   "at": 41,
+   "before": "  for (const [name, expression] of Object.entries({\n    WORK_KEY: 'steps.candidate.outputs.work_key', BASE_SHA256: 'steps.candidate.outputs.base_sha256',\n    REQUEST_ID: 'steps.candidate.outputs.request_id', RELEASE_VERSION: 'steps.candidate.outputs.release_version',\n    GIL_RELEASE_ARTIFACT: 'steps.candidate.outputs.archive', QUALITY_RUN: 'steps.candidate.outputs.quality_run',\n    QUALITY_ATTEMPT: 'steps.candidate.outputs.quality_attempt', QUALITY_CHECKOUT_ARTIFACT: 'steps.candidate.outputs.quality_checkout_artifact',\n    LICENSES_RUN: 'steps.candidate.outputs.licenses_run',\n  })) assert(audit.includes(`          ${name}: ${'${{'} ${expression} }}\\n`), `audit requires ${name}`);",
+   "after": "  for (const [name, expression] of Object.entries({\n    WORK_KEY: 'steps.candidate.outputs.work_key', BASE_SHA256: 'steps.candidate.outputs.base_sha256',\n    REQUEST_ID: 'steps.candidate.outputs.request_id', RELEASE_VERSION: 'steps.candidate.outputs.release_version',\n    GIL_RELEASE_ARTIFACT: 'steps.candidate.outputs.archive', GIL_EARLY_TEST_ARTIFACT: 'steps.candidate.outputs.early_test',\n    QUALITY_RUN: 'steps.candidate.outputs.quality_run',\n    QUALITY_ATTEMPT: 'steps.candidate.outputs.quality_attempt', QUALITY_CHECKOUT_ARTIFACT: 'steps.candidate.outputs.quality_checkout_artifact',\n    LICENSES_RUN: 'steps.candidate.outputs.licenses_run',\n  })) assert(audit.includes(`          ${name}: ${'${{'} ${expression} }}\\n`), `audit requires ${name}`);"
+  },
+  {
+   "at": 186,
+   "before": "  assert.throws(() => validationTarget('1429751262', 'refs/tags/engine-v2.2.0', sourceSha), /enabled primary ref/);\n  assert.match(workflow, /path: source\\/build\\/gil-artifact\\/manifest\\.json\\n/);\n  assert.match(workflow, /outputs\\.build == 'true' && steps\\.candidate\\.outputs\\.archive != 'true'/);\n  assert.match(workflow, /outputs\\.build == 'true' && steps\\.candidate\\.outputs\\.archive == 'true'/);\n  assert.match(workflow, /group: gil-build-.*head_branch.*head_sha/);\n});\n\ntest('unified build admits exact primary release events and never a PR, foreign run or tag', () => {\n  const release = { repoId: String(repo.id), ref: 'refs/heads/' + branch, controllerSha: sourceSha,\n    source: sourceSha, branch, event: 'workflow_dispatch' };",
+   "after": "  assert.throws(() => validationTarget('1429751262', 'refs/tags/engine-v2.2.0', sourceSha), /enabled primary ref/);\n  assert.match(workflow, /path: source\\/build\\/gil-artifact\\/manifest\\.json\\n/);\n  assert.match(workflow, /outputs\\.build == 'true' && steps\\.candidate\\.outputs\\.archive != 'true'/);\n  assert.match(workflow, /outputs\\.build == 'true' && \\(steps\\.candidate\\.outputs\\.archive == 'true' \\|\\| steps\\.candidate\\.outputs\\.early_test == 'true'\\)/);\n  assert.match(workflow, /group: gil-build-.*head_branch.*head_sha/);\n});\n\ntest('early GIL downloads require manual primary dispatch and the current protected source; use separate custody', async () => {\n  const { earlyTestTarget, verifyEarlyTestHead, artifactName } = preflight;\n  const dispatch = { repoId: String(repo.id), ref: 'refs/heads/develop', event: 'workflow_dispatch',\n    testReleaseRef: 'release/v2.2.0', testSourceSha: sourceSha };\n  assert.equal(typeof earlyTestTarget, 'function', 'manual release test target is supported');\n  assert.equal(earlyTestTarget({ ...dispatch, testReleaseRef: '', testSourceSha: '' }), undefined);\n  const target = earlyTestTarget(dispatch);\n  assert.deepEqual(target, { branch: 'release/v2.2.0', version: 'v2.2.0', earlyTest: true });\n  for (const changes of [{ event: 'push' }, { event: 'workflow_run' }, { repoId: '3' }, { ref: 'refs/heads/arbitrary' },\n    { ref: 'refs/heads/ci/gil-test-download/v220-early-download' },\n    { testReleaseRef: 'develop' }, { testReleaseRef: '' }, { testSourceSha: '' }, { testSourceSha: sourceSha.slice(1) }]) {\n    assert.throws(() => earlyTestTarget({ ...dispatch, ...changes }), /manual dispatch|frozen release|40-character/);\n  }\n  const api = ({ protected: isProtected = true, head = sourceSha } = {}) => async path => {\n    if (path === `git/ref/heads/${target.branch}`) return { ref: `refs/heads/${target.branch}`, object: { type: 'commit', sha: head } };\n    assert.equal(path, 'branches/release%2Fv2.2.0');\n    return { name: target.branch, protected: isProtected, commit: { sha: head } };\n  };\n  await verifyEarlyTestHead(api(), target.branch, sourceSha);\n  await assert.rejects(verifyEarlyTestHead(api({ protected: false }), target.branch, sourceSha), /protected/);\n  await assert.rejects(verifyEarlyTestHead(api({ head: '3'.repeat(40) }), target.branch, sourceSha), /HEAD changed/);\n  const early = buildOnlyRequest(sourceSha, policy, target);\n  assert.equal(early.configuration.releaseCandidate, true);\n  assert.equal(early.archive, false);\n  assert.match(artifactName(early), /^gil-test-v2\\.2\\.0-[a-f0-9]{40}-[a-f0-9]{64}$/);\n  assert.doesNotMatch(artifactName(early), /^gil-candidate-/);\n  const workflow = readFileSync(new URL('../.github/workflows/gil-build.yml', import.meta.url), 'utf8');\n  assert.match(workflow, /workflow_dispatch:\\n    inputs:[\\s\\S]*test_release_ref:[\\s\\S]*test_source_sha:/);\n  assert.match(workflow, /retention-days: \\$\\{\\{ steps\\.candidate\\.outputs\\.early_test == 'true' && 14 \\|\\| 90 \\}\\}/);\n  assert.doesNotMatch(workflow, /ci\\/gil-test-download/);\n});\n\ntest('unified build admits exact primary release events and never a PR, foreign run or tag', () => {\n  const release = { repoId: String(repo.id), ref: 'refs/heads/' + branch, controllerSha: sourceSha,\n    source: sourceSha, branch, event: 'workflow_dispatch' };"
+  }
+ ]
+};
+
 export function beforeReleaseClosureFixture(path,raw){
  if(!Object.hasOwn(fixtures,path))return raw;
  let source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
  if(typeof source!=='string'||Buffer.isBuffer(raw)&&!Buffer.from(source).equals(raw))return raw;
  const normalized=source.replaceAll('\r\n','\n');
  if(normalized.includes('\r')||source!==normalized&&source!==normalized.replaceAll('\n','\r\n'))return raw;
- if(path==='tests/gil-candidate.test.mjs'&&exactSourceMatches(source,unifiedGilFixture.current)){
-  const {current,previous,hunks}=unifiedGilFixture;
+ if(path==='tests/gil-candidate.test.mjs')for(const {current,previous,hunks} of [earlyGilFixture,unifiedGilFixture]){
+  if(!exactSourceMatches(source,current))continue;
   const predecessor=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,source);
-  assert(exactSourceMatches(predecessor,previous),'exact pre-unification GIL test fixture');
+  assert(exactSourceMatches(predecessor,previous),'exact GIL test fixture predecessor');
   source=source.includes('\r\n')?predecessor.replaceAll('\n','\r\n'):predecessor;
  }
  const {current,previous,hunks}=fixtures[path];

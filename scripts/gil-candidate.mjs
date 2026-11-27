@@ -4,8 +4,9 @@ import { createWriteStream, readFileSync, writeFileSync, appendFileSync, mkdirSy
 import { basename, join, relative, resolve } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { api, artifactName, buildOnlyRequest, candidateTarget, digest, encoderSha256, releaseBuildRequest, releaseBuildTarget,
-  GateError, profile, repository, requireGate, sha, toolCommit, validationTarget, verifySource } from './gil-candidate-preflight.mjs';
+import { api, artifactName, buildOnlyRequest, candidateTarget, digest, earlyTestTarget, encoderSha256, releaseBuildRequest,
+  releaseBuildTarget, GateError, profile, repository, requireGate, sha, toolCommit, validationTarget, verifyEarlyTestHead,
+  verifySource } from './gil-candidate-preflight.mjs';
 import { assertFullMatches, verifyGilArtifact } from './runtime-baseline/release-performance-artifacts.mjs';
 import { githubRequest } from './release-ci.mjs';
 import { hostedGilReceipt } from './hosted-gil-receipt.mjs';
@@ -49,14 +50,17 @@ export async function findReleaseArtifact(request, checks, nowRun, lookup = api,
 
 async function preflight() {
   const { GITHUB_SHA: controllerSha, GITHUB_REF: ref, GITHUB_REPOSITORY_ID: repoId, GITHUB_EVENT_NAME: event,
-    SOURCE_SHA: source, SOURCE_REF: branch } = process.env;
+    SOURCE_SHA: source, SOURCE_REF: branch, TEST_RELEASE_REF: testReleaseRef, TEST_SOURCE_SHA: testSourceSha } = process.env;
   const upstream = event === 'workflow_run' ? json(process.env.GITHUB_EVENT_PATH).workflow_run : undefined;
-  const release = releaseBuildTarget({ repoId, ref, controllerSha, source, branch, event, upstream });
-  const target = release ?? validationTarget(repoId, ref, source);
-  requireGate(release || (source === controllerSha && branch === target.branch), 'Validation source differs from the workflow checkout.');
+  const earlyTest = earlyTestTarget({ repoId, ref, event, testReleaseRef, testSourceSha });
+  const release = earlyTest ? undefined : releaseBuildTarget({ repoId, ref, controllerSha, source, branch, event, upstream });
+  const target = earlyTest ?? release ?? validationTarget(repoId, ref, source);
+  if (earlyTest) requireGate(source === testSourceSha && branch === target.branch, 'Early GIL checkout differs from the manual test input.');
+  else requireGate(release || (source === controllerSha && branch === target.branch), 'Validation source differs from the workflow checkout.');
   const controlRoot = fileURLToPath(new URL('..', import.meta.url));
   cleanHead(controlRoot, controllerSha, 'Controller');
-  if (!release) {
+  if (earlyTest) await verifyEarlyTestHead(api, branch, source);
+  else if (!release) {
     const sourceVersion = json(join(controlRoot, 'package.json')).version;
     if (!supportsPublishedGilSeed(sourceVersion)) {
       appendFileSync(process.env.GITHUB_OUTPUT, 'build=false\n');
@@ -89,7 +93,7 @@ async function preflight() {
     : buildOnlyRequest(source, policy, target);
   const existing = release && await findReleaseArtifact(request, checks, process.env.GITHUB_RUN_ID);
   const ciSummary = checks ? ['quality', 'licenses'].map(name => `[${name}](https://github.com/${repository}/actions/runs/${checks[name]})`)
-    : ['Build validation. Frozen source CI evidence is not attached.'];
+    : [earlyTest ? 'Device test only. Formal release gates are pending.' : 'Build validation. Frozen source CI evidence is not attached.'];
   appendFileSync(process.env.GITHUB_STEP_SUMMARY, `Source \`${target.branch}@${source}\` · ${ciSummary.join(' · ')}\n`);
   if (existing) {
     appendFileSync(process.env.GITHUB_STEP_SUMMARY,
@@ -98,7 +102,8 @@ async function preflight() {
     return;
   }
   appendFileSync(process.env.GITHUB_OUTPUT, [
-    'build=true', `archive=${Boolean(release)}`, `base_sha256=${request.baseSha256}`, `work_key=${request.configuration.workKey}`,
+    'build=true', `archive=${Boolean(release)}`, `early_test=${Boolean(earlyTest)}`,
+    `base_sha256=${request.baseSha256}`, `work_key=${request.configuration.workKey}`,
     `tool_commit=${toolCommit}`, `request_id=${request.id}`, `release_version=${target.version ?? ''}`,
     `artifact_name=${artifactName(request)}`, ...(checks ? [`quality_run=${checks.quality}`, `licenses_run=${checks.licenses}`,
       `quality_attempt=${checks.qualityAttempt}`, `quality_checkout_artifact=${checks.qualityCheckoutArtifact}`] : []),
@@ -278,9 +283,13 @@ async function deliver() {
   requireGate(audit.ok && audit.candidate.sha256Before === candidate.sha256 && audit.candidate.sha256After === candidate.sha256,
     'Final GIL failed the independent native scripts, UI, templates or graph audit.');
   const qualityRun = Number(process.env.QUALITY_RUN);
+  const earlyTest = process.env.GIL_EARLY_TEST_ARTIFACT === 'true';
   const archiveApproved = process.env.GIL_RELEASE_ARTIFACT === 'true';
   const sourceChecks = archiveApproved ? { qualityRun, licensesRun: Number(process.env.LICENSES_RUN) } : null;
-  if (version) {
+  if (earlyTest) {
+    requireGate(version && !archiveApproved && candidateTarget(branch, sourceSha).version === version, 'Invalid early test artifact custody.');
+    await verifyEarlyTestHead(api, branch, sourceSha);
+  } else if (version) {
     const expected = { quality: qualityRun, qualityAttempt: Number(process.env.QUALITY_ATTEMPT),
       qualityCheckoutArtifact: Number(process.env.QUALITY_CHECKOUT_ARTIFACT), licenses: Number(process.env.LICENSES_RUN) };
     const current = await verifySource(sourceSha, api, candidateTarget(branch, sourceSha));
@@ -296,6 +305,7 @@ async function deliver() {
     receipts: { nativeSha256: hash(fullReceipt), audioSha256: fileRecord(join(out, 'audio/candidate.json')).sha256 },
     nativeAudit: 'pass',
     archiveApproved,
+    ...(earlyTest ? { artifactSchema: 'gil-early-test-v1' } : {}),
     ...(archiveApproved ? { custody: 'gil-build-v1' } : {}),
     platformVersion: null,
     parameters: { workKey, profile, nativePageLifecycle: true, releaseCandidate: Boolean(version), liveWrite: false },

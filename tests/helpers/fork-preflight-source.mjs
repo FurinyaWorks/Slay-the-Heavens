@@ -680,6 +680,23 @@ function beforeFormalAct2ReleaseTest(path,source){
  assert(exactCheckoutSource(prior,formalAct2ReleaseTestBefore),'exact Act II performance test predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+// #1047 deliberately changes three live release tests and adds one. The
+// preceding inventory may omit the exact successor only in historical readers.
+const unifiedReleaseTestCurrent=Object.freeze({
+ [gilCandidateTest]:['7d33d06ab7bba789c1a7307c4957fbc21f2bc857737fd75acf4ef43a594c1299','9092f7176327df46a25a72546b459134c2a956e3'],
+ 'tests/release-metadata.test.mjs':['b135580afd1f333a3ff6d1456057f3f0679f36773b225550c69c123cda848a59','87cd6c5de06878932712cde01aa7b890dd8df8b2'],
+ 'tests/release-performance-artifacts.test.mjs':['ae395fc5c6635e7b555f3e7e6b34c14362bbf1af6ad56c38c47c2061e618296d','541fe7eb8b8a0446ca78c1d229fb40f0b392bd86'],
+});
+const unifiedArchiveTest='tests/release-archive.test.mjs';
+const unifiedArchiveBinding=['9b66cbebd92e9074939e6ba92179a63f15cd2474a867fe3c2c9c9feff29dab5c','cfe7c7416a1a02b4e7af76d51f514df3a978b573'];
+function beforeUnifiedReleaseInventory(paths,read){
+ const count=paths.filter(path=>path===unifiedArchiveTest).length;
+ const live=paths.includes(gilCandidateTest)&&exactCheckoutSource(read(gilCandidateTest,'utf8'),unifiedReleaseTestCurrent[gilCandidateTest]);
+ if(!count&&!live)return paths;
+ assert.equal(count,1,'complete current raw discovery inventory: '+unifiedArchiveTest);
+ assert(exactCheckoutSource(read(unifiedArchiveTest,'utf8'),unifiedArchiveBinding),'fresh added inventory source: '+unifiedArchiveTest);
+ return paths.filter(path=>path!==unifiedArchiveTest);
+}
 const gilCandidateTestBefore=[currentReleaseTests[gilCandidateTest],'471b3677151b3c77a5b9961bdde8deb83b2c5c8a'];
 const gilCandidateTestCurrent=['ebdd4dfc3b5254d7ee241064b0c60c76e460ef725a775b79b81e852ac5fc0059',
  'abe7edbe22347b8f7625f713a889a91dc05a26cc'];
@@ -806,12 +823,13 @@ function beforeMasterBackflowInventory(paths,bindings,changedTest,read){
  }
  for(const [path,binding] of Object.entries(bindings)){
   assert.equal(paths.filter(candidate=>candidate===path).length,1,'complete current raw discovery inventory: '+path);
-  assert(exactCheckoutSource(read(path,'utf8'),binding),'fresh added inventory source: '+path);
+  const source=beforeReleaseClosureFixture(path,read(path,'utf8'));
+  assert(exactCheckoutSource(source,binding),'fresh added inventory source: '+path);
  }
  return paths.filter(path=>!Object.hasOwn(bindings,path));
 }
 export function beforeReleaseAdditionalInventory(paths,kind,read=readFileSync){
- if(kind==='js')paths=beforeMasterBackflowInventory(paths,masterBackflowJsTests,gilCandidateTest,read);
+ if(kind==='js')paths=beforeMasterBackflowInventory(beforeUnifiedReleaseInventory(paths,read),masterBackflowJsTests,gilCandidateTest,read);
  paths=beforeM05BackflowInventory(paths,kind,(path,encoding)=>beforeCurrentReplayFixes(path,beforeUiEntranceWitness(path,read(path,encoding))));
  for(const [path,sha] of Object.entries(newerTests[kind])){
   const count=paths.filter(candidate=>candidate===path).length;
@@ -819,6 +837,8 @@ export function beforeReleaseAdditionalInventory(paths,kind,read=readFileSync){
   assert.equal(count,1,'single added Release test: '+path);
   const live=read(path,'utf8');
   if(kind==='lua'&&exactCurrentReleaseLuaFixture(path,live))continue;
+  if(kind==='js'&&path!==gilCandidateTest&&Object.hasOwn(unifiedReleaseTestCurrent,path)
+    &&exactCheckoutSource(live,unifiedReleaseTestCurrent[path]))continue;
   const predecessor=path===gilCandidateTest?beforeKnownMasterBackflowSource(path,live):live;
   const source=beforePublishedGilTest(path,beforeFormalAct2ReleaseTest(path,beforeDevelopBackflow(path,predecessor)));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha,'fresh added inventory source: '+path);
@@ -847,14 +867,13 @@ export function beforeShopEntryInventory(paths,kind,read=readFileSync){
 export function assertCurrentJsInventory(paths,preceding,read=readFileSync){
  // These tests remain mandatory in live Full. Only exact authenticated
  // successor paths can be omitted from the older replay inventory.
- for(const path of Object.keys(currentReleaseTests))
+ for(const path of [...Object.keys(currentReleaseTests),unifiedArchiveTest])
   assert.equal(paths.filter(candidate=>candidate===path).length,1,'complete current raw discovery inventory: '+path);
  const readCurrent=read;
  read=(path,...args)=>{
   const source=readCurrent(path,...args);
-  if(path===gilCandidateTest)
-   assert(exactCheckoutSource(source,['d5ec827fa24b3ad3ff33b304723efddc4205599dbc8e8c28141aa3d22d99c1c6','0e38620640049ad1f0e0a7a8a4c9a82b1f0a629b']),
-    'fresh current GIL test source: '+path);
+  if(Object.hasOwn(unifiedReleaseTestCurrent,path))
+   assert(exactCheckoutSource(source,unifiedReleaseTestCurrent[path]),'fresh current unified release test source: '+path);
   if(path===formalAct2ReleaseTest)
    assert(exactCheckoutSource(source,formalAct2ReleaseTestCurrent),'fresh current Release performance test source: '+path);
   return source;
