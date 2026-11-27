@@ -19,6 +19,7 @@ F=dofile('tests/lua/support/game_ui_fixture.lua')
 local Run,Nodes,C=require('abyss_run'),F.Nodes,F.Combat
 local Policy=dofile('scripts/warrior75-autoplay-policy.lua')
 local EventCards=dofile('scripts/m3-event-card-policy.lua')
+local settleShop=dofile('tests/lua/support/shop_timeline.lua')
 local Pending=require('abyss_relic_pending')
 local seed=OFFICIAL_CAMPAIGN_SEED or 2
 assert(type(seed)=='number' and seed%1==0 and seed>=0)
@@ -35,7 +36,7 @@ capture('menu')
 assert(F.click(root,'menuPanel','start'));capture('character')
 assert(h:selectCharacter('traveler'));assert(h:selectElement('ironclad'));assert(h:confirmCharacter())
 local run,map=h.run,h.map
-local coverage,done,bossWins={},{},{};local actions,rooms=0,0
+local coverage,done,bossWins,bossChests={},{},{},{};local actions,rooms=0,0
 local function checkpoint(label)
  local potions={};for slot=1,Run.potionCapacity(run)do potions[#potions+1]={slot=slot,id=run.potions[slot]or false}end
  local deck={};for _,card in ipairs(run.deck)do deck[#deck+1]={uid=card.uid,cardId=card.cardId,upgraded=card.upgraded==true}end
@@ -51,6 +52,11 @@ local function checkpoint(label)
   victories=run.victories,deck=deck,relics=run.relics,potions=potions,path=map.path,ending=run.ending}))
 end
 checkpoint('start')
+local function recordRoom()
+ assert(run.floor==rooms+1,'continuous route skipped or duplicated a floor')
+ rooms=rooms+1;coverage[run.nodeFlow.type]=true;done={}
+ checkpoint('room');print('CAMPAIGN_ROOM '..rooms..' floor='..run.floor..' type='..run.nodeFlow.type..' hp='..run.hp)
+end
 local function drain()
  for i=1,120 do
   if not h.battleUI.busy and not h.motion.deathReveal then return end
@@ -134,7 +140,17 @@ while run.phase~='defeat' and run.phase~='victory' and actions<2400 do
    local index=Policy.chooseReward(run)
    if index==0 then done.skipReward=true else click('cardReward');click('card'..index)end
   elseif r.stolenGold and not r.stolenGold.claimed then click('stolenGold')
-  else click('continue')end
+  else
+   local boss=run.nodeFlow.type=='boss'
+   click('continue')
+   if boss then
+    assert(run.nodeFlow.roomKind=='boss_treasure' and h.mode=='node' and not bossChests[run.act],
+      'boss victory did not open its unique mandatory treasure room')
+    assert(run.floor==17*run.act,'boss treasure must occupy the act end floor')
+    bossChests[run.act]=true
+    recordRoom()
+   end
+  end
  elseif h.mode=='node' and h.nodeUI:holding() then press('confirm')
  elseif run.nodeFlow and not run.nodeFlow.complete then
   local flow=run.nodeFlow
@@ -158,7 +174,10 @@ while run.phase~='defeat' and run.phase~='victory' and actions<2400 do
     assert(item,'no claimable treasure');press('treasureView/rewardItem'..item)
    end
   else
-   if flow.type=='shop' and not h.nodeUI.shopOpen then press('merchant/talk') end
+   if flow.type=='shop' and not h.nodeUI.shopOpen then
+    press('merchant/talk');settleShop(h.nodeUI)
+    assert(h.nodeUI.shopOpen and not h.nodeUI.shopBusy,'shop shelf did not finish its native opening')
+   end
    local plan=assert(Policy.suggestNodeAction(run,map,coverage,done),'no node plan')
    if plan.method=='rest'and not h.nodeUI.actions['campView/rest'].enabled then
     local card=h.nodeUI.view.node.upgradeCards[1];assert(card);plan={method='upgrade',uid=card.uid}
@@ -166,7 +185,13 @@ while run.phase~='defeat' and run.phase~='victory' and actions<2400 do
    if plan.method=='rest'then press('campView/rest')
    elseif plan.method=='upgrade'then press('campView/forge');selectUID(plan.uid)
    elseif plan.method=='removeCard'then press('shopView/removal');selectUID(plan.uid)
-   elseif plan.method=='leaveShop'then press('back')
+   elseif plan.method=='leaveShop'then
+    assert(h.nodeUI.shopOpen,'shop shelf must be open before closing')
+    press('back')
+    assert(not h.nodeUI.shopOpen and not run.nodeFlow.complete,'closing the shelf must not leave the room')
+    settleShop(h.nodeUI)
+    press('back')
+    assert(run.nodeFlow.complete,'leaving the shop room did not complete the node')
    elseif plan.method=='buyPotion'then press('shopView/potion'..plan.slot);press('confirm')
    elseif plan.method=='buyCardSlot'then press('shopView/card'..plan.slot);press('confirm')
    else error('unsupported plan '..plan.method)end
@@ -175,13 +200,13 @@ while run.phase~='defeat' and run.phase~='victory' and actions<2400 do
  else
   local node=assert(Policy.chooseNode(run,map,coverage),'no legal next room')
   action('enter:'..node.id,function()return h.mapUI:choose(node.id)end)
-  rooms=rooms+1;coverage[run.nodeFlow.type]=true;done={}
-  assert(run.floor==rooms,'continuous route skipped a floor');checkpoint('room');print('CAMPAIGN_ROOM '..rooms..' floor='..run.floor..' type='..run.nodeFlow.type..' hp='..run.hp)
+  recordRoom()
  end
 end
 print('CAMPAIGN_RESULT '..run.phase..' floor='..run.floor..' hp='..run.hp..' actions='..actions..' ending='..tostring(run.ending))
 assert(run.phase=='victory'and run.ending=='two_act_complete'and run.floor==34)
-assert(rooms==34 and bossWins[1]and bossWins[2],'both natural boss victories are required')
+assert(rooms==34 and bossWins[1] and bossWins[2] and bossChests[1] and bossChests[2],
+ 'both natural boss victories and consecutive treasure floors are required')
 checkpoint('victory');capture('victory')
 assert(h.mode=='victory'and root:GetChild('menuPanel').visible)
 assert(F.click(root,'menuPanel','start')and h.characterOpen)
