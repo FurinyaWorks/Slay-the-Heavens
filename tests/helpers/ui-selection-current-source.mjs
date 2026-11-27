@@ -4,6 +4,7 @@ import {exactSourceMatches} from './source-fingerprint.mjs';
 import {uiEntranceOwns} from './ui-entrance-source.mjs';
 import {beforeNodeNoticeSource} from './reward-current-source.mjs';
 import {checkedReleaseEntranceOwner} from './release-entrance-owner-source.mjs';
+import {selectionRawEntranceReplay} from './release-closure-fixture-source.mjs';
 
 // Replay the exact active fixture and copier predecessors without replacing prior receipts.
 const receipts=Object.freeze({
@@ -634,7 +635,7 @@ function activeReceipt(path){
  if(path===mapRouteIconFixturePath)return mapRouteIconFixture;
  if(path===selectionLayoutPath)return releaseSelectionOverlay;
  if(path===copierPath)return releaseVocabularyCopier;
- if(path===returnedReadingReplayPath)return returnedReadingReplay;
+ if(path===returnedReadingReplayPath)return selectionRawEntranceReplay;
  return combinedReceipt(path)??receipt(path);
 }
 const currentCopier=activeReceipt(copierPath).current;
@@ -653,7 +654,7 @@ export function beforeSelectionReceiptSource(path,source){
  if(path===mapRouteIconFixturePath)source=beforeReceipt(path,source,mapRouteIconFixture);
  if(path===selectionLayoutPath)source=beforeReceipt(path,source,releaseSelectionOverlay);
  if(path===selectionLayoutPath)source=beforeReceipt(path,source,selectionLayoutCurrent);
- if(path===returnedReadingReplayPath)source=beforeReceipt(path,source,returnedReadingReplay);
+ if(path===returnedReadingReplayPath)source=beforeReceipt(path,beforeReceipt(path,source,selectionRawEntranceReplay),returnedReadingReplay);
  if(path===copierPath)source=beforeReceipt(path,source,releaseVocabularyCopier);
  if(path===copierPath)source=beforeReceipt(path,source,releaseEntranceCopier);
  if(path===copierPath)source=beforeReceipt(path,source,currentBackflowCopier);

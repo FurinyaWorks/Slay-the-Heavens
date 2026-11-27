@@ -4,6 +4,19 @@ import {exactSourceMatches} from './source-fingerprint.mjs';
 import {beforeReleaseMetadata} from './release-metadata-source.mjs';
 import {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';
 
+export const selectionRawEntranceReplay=Object.freeze({
+ current:{sha256:'af6b69b1543a688f9b23a8941381fd8534c95cc5dfe7f0f096a2a8b61328d188',gitBlob:'69a44aaa47230c0fd10cac2f8fe6c0e7e6a12d55'},
+ previous:{sha256:'5cd7ad3d5a728418bb89cb8dbf0d4fea7fa199fb005b399b71772e63e0ec2851',gitBlob:'2128fceb1bff074e04d02f911264194e2415037f'},
+ hunks:[
+  {at:13,
+   before:"import {checkedSelectionEntranceRead,selectionNodeNoticePath} from './ui-selection-current-source.mjs';",
+   after:"import {checkedSelectionEntranceRead,selectionNodeNoticePath} from './ui-selection-current-source.mjs';\nimport {releaseEntranceOwns} from './release-entrance-owner-source.mjs';"},
+  {at:33,
+   before:'  if(productionReadingBackflowOwns(path)||path===selectionNodeNoticePath||beforeOfficialCharacterBackflow(path,source)!==source)return raw;',
+   after:'  // The Selection reader authenticates the entire release entrance cohort from raw checkout bytes.\n  if(releaseEntranceOwns(path)||productionReadingBackflowOwns(path)||path===selectionNodeNoticePath||beforeOfficialCharacterBackflow(path,source)!==source)return raw;'},
+ ],
+});
+
 // Current Host checks exercise production. Historical Host and CI replays
 // preserve the exact earlier test sources from the production backflow.
 const fixtures=Object.freeze({
@@ -51,6 +64,7 @@ const fixtures=Object.freeze({
    }
   ]
  },
+ 'tests/helpers/replay-reviewed-selection.mjs':selectionRawEntranceReplay,
  "tests/colorless-catalog-source.test.mjs": {
   "current": {
    "sha256": "da577b404aeca08d7ee98580da6186204589a1c429b71e7b4ef945f874555d17",

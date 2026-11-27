@@ -95,6 +95,7 @@ const ownerGroups=[
  {owners:portraitSources,label:'Selection portrait'},
 ];
 const ownerGroup=path=>ownerGroups.find(({owners})=>Object.hasOwn(owners,path));
+export const releaseEntranceOwns=path=>ownerGroup(path)!==undefined;
 
 function uniformText(raw){
  const source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;

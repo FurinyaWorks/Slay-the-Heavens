@@ -12,6 +12,7 @@ import {beforeReviewedBuildInput,chapterEvidenceCurrentRead} from './fork-prefli
 import {reviewedSelectionRead} from './reviewed-selection-current-source.mjs';
 import {uiEntranceOwns} from './ui-entrance-source.mjs';
 import {checkedSelectionEntranceRead,selectionNodeNoticePath} from './ui-selection-current-source.mjs';
+import {releaseEntranceOwns} from './release-entrance-owner-source.mjs';
 import {stsStylePriorRuntime} from './sts-style-prior-runtime.mjs';
 import {beforeDeckPagesSuiteSource,readRetiredController,retiredControllerPath} from './input-retirement-source.mjs';
 import {beforeMasterBackflowSource,readBeforeMasterBackflowSource,productionReadingBackflowOwns} from './master-backflow-source.mjs';
@@ -30,7 +31,8 @@ export function readSelectionProductionOwners(read,readOwner){
  const readEntrance=chapterEvidenceCurrentRead(checkedSelectionEntranceRead((path,encoding)=>{
   const raw=read(path,encoding);
   const source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
-  if(productionReadingBackflowOwns(path)||path===selectionNodeNoticePath||beforeOfficialCharacterBackflow(path,source)!==source)return raw;
+  // The Selection reader authenticates the entire release entrance cohort from raw checkout bytes.
+  if(releaseEntranceOwns(path)||productionReadingBackflowOwns(path)||path===selectionNodeNoticePath||beforeOfficialCharacterBackflow(path,source)!==source)return raw;
   return beforeMasterBackflowSource(path,raw);
  }));
  return (path,encoding='utf8')=>readingOwner(path)||uiEntranceOwns(path)?readEntrance(path,encoding):readOwner(path,encoding);
