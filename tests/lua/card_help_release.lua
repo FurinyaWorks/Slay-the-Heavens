@@ -101,7 +101,7 @@ end
 test('keyword hover is still read-only and closes on exit', function()
     local h,u,p,event,tap,s,name = setup()
     local before = H.F.Combat.copy(s)
-    event(name,'enter',17); h:update(0.34); hidden(p); h:update(0.02); keyword(p)
+    event(name,'enter',17); h:update(0.2); hidden(p); h:update(0.001); keyword(p)
     assert(not p:GetChild('statusInfo'):GetChild('hit').visible)
     event(name,'exit',17); hidden(p); assert(same(s,before))
 end)

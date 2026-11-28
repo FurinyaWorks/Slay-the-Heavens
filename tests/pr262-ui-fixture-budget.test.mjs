@@ -48,6 +48,27 @@ test('UI budget split wrappers and raw discovery preserve all 31 card cases and 
  }
 });
 
+// #1080 changed desktop card hover to strictly after 200ms; touch holds
+// retain the original delay. The archived PR262 test above stays byte-exact.
+const liveHover="    event(name,'enter',17); h:update(0.2); hidden(p); h:update(0.001); keyword(p)";
+const previousHover="    event(name,'enter',17); h:update(0.34); hidden(p); h:update(0.02); keyword(p)";
+const previousBody='ab8e228dbad85e463cb8df6af68ef14a6c71bcf3b21bed4fd51bb85de25ba7c3';
+function validateLiveCardHover(source){
+ const normalized=source.replaceAll('\r\n','\n');
+ assert.equal(normalized.split(liveHover).length,2,'one exact current desktop hover boundary');
+ assert.equal(sha(normalized.replace(liveHover,previousHover)),previousBody,'only the current desktop hover interval can differ from the reviewed source');
+}
+test('PR262 current card-help body changes only the approved desktop hover interval',()=>{
+ const source=readFileSync('tests/lua/card_help_release.lua','utf8');
+ validateLiveCardHover(source);
+ const weakened=source.replace("    event(name,'exit',17); hidden(p); assert(same(s,before))","    event(name,'exit',17)");
+ assert.notEqual(weakened,source);
+ assert.throws(()=>validateLiveCardHover(weakened),/only the current desktop hover interval/);
+ const retimedHold=source.replace('h:update(0.34); hidden(p); h:update(0.02); keyword(p)','h:update(0.2); hidden(p); h:update(0.001); keyword(p)');
+ assert.notEqual(retimedHold,source);
+ assert.throws(()=>validateLiveCardHover(retimedHold),/only the current desktop hover interval/);
+});
+
 for(const s of suites)for(const x of ranges(s))test(`PR262 original UI coverage at 30s: ${x.file} [${x.first}..${x.last}]`,()=>{
  const result=runLua(`tests/lua/${x.file}`,{timeout:30_000});
  assert.equal(result.status,0,result.stdout+result.stderr);

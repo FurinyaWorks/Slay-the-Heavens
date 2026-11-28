@@ -85,7 +85,9 @@ test('approved pages keep live input identities while unrelated pages retain the
  const expectedEvent=structuredClone(child(child(layout,'nodePanel'),'eventView'));
  styleEvent(expectedEvent,theme);
  applyOfficialNeowLayout({children:[{name:'nodePanel',children:[expectedEvent]}]},theme);
- const eventProjection=new Map(paths(expectedEvent,'/SlayTheAbyss/nodePanel'));
+ const eventFacePath='/SlayTheAbyss/nodePanel/eventView/previewCard';
+ const eventProjection=new Map(paths(expectedEvent,'/SlayTheAbyss/nodePanel').filter(([path])=>
+  path!==eventFacePath&&!path.startsWith(eventFacePath+'/')));
  const expectedChoice=experimentalCharacterControls(theme).find(node=>node.name==='choicePanel');
  const choiceProjection=new Map(paths(expectedChoice,'/SlayTheAbyss'));
  const choicePath=path=>path.replace(/^(\/SlayTheAbyss\/choicePanel\/)card([12])(?=\/|$)/,'$1option$2');
@@ -257,6 +259,10 @@ test('approved pages keep live input identities while unrelated pages retain the
    }
    if(cardDecorationPaths.has(path)){assert(current.has(path),path+' shared decoration remains addressable');continue;}
    assert.equal(current.get(path),node,path);
+   if(path==='/SlayTheAbyss/nodePanel/eventView'){
+    const roomOnly=room=>({...room,children:children(room).filter(child=>child.name!=='previewCard')});
+    assert.deepEqual(roomOnly(node),roomOnly(eventProjection.get(path)),path+' shared event projection');continue;
+   }
    if(eventProjection.has(path)){
     assert.deepEqual(node,eventProjection.get(path),path+' shared event projection');continue;
    }
@@ -313,13 +319,20 @@ test('approved pages keep live input identities while unrelated pages retain the
  assert.equal(result.cardHosts,cardHosts.size-retiredPickerCards.length-retiredChoiceCards.length,'composition authenticates all capacity-bounded hosts before retiring the duplicate modal');
  assert.equal(cards.length,cardHosts.size-retiredCards.length);
  const focusFacePath='/SlayTheAbyss/deckPanel/cardFocus/face';
+ const isOriginalHost=path=>path!==focusFacePath&&path!==eventFacePath;
  const choiceFacePaths=['/SlayTheAbyss/choicePanel/card1/face','/SlayTheAbyss/choicePanel/card2/face'];
  const replacedChoiceFaces=nodes.filter(([path,node])=>choiceFacePaths.includes(path)&&retiredChoiceCards.includes(node));
  assert.deepEqual(replacedChoiceFaces.map(([path])=>path).sort(),choiceFacePaths,'the shared scroller supersedes the two former static choice hosts');
- const publishedOriginalPaths=nodes.filter(([path,node])=>path!==focusFacePath&&cardHosts.has(node)&&!retiredCards.includes(node)).map(([path])=>path).sort();
+ const publishedOriginalPaths=nodes.filter(([path,node])=>isOriginalHost(path)&&cardHosts.has(node)&&!retiredCards.includes(node)).map(([path])=>path).sort();
  assert.equal(publishedOriginalPaths.length+replacedChoiceFaces.length,38,'account for all 38 reviewed original official card hosts');
- assert.deepEqual(cardPaths.filter(([path])=>path!==focusFacePath).map(([path])=>path).sort(),publishedOriginalPaths,'retain every original active card host path outside the shared scroller');
- assert.equal(cards.length,37);
+ assert.deepEqual(cardPaths.filter(([path])=>isOriginalHost(path)).map(([path])=>path).sort(),publishedOriginalPaths,'retain every original active card host path outside the shared scroller');
+ assert.equal(cards.length,38);
+ const eventFaces=cardPaths.filter(([path])=>path===eventFacePath);
+ assert.equal(eventFaces.length,1,'exactly one approved read-only event preview face');
+ const eventPreview=child(child(child(layout,'nodePanel'),'eventView'),'previewCard');
+ assert.strictEqual(eventFaces[0][1],eventPreview);
+ assert.equal(eventPreview.visible,false,'event preview starts closed');
+ assert(!all(eventPreview).some(node=>node.kind==='cursorArea'),'event preview adds no input receiver');
  const focusFaces=cardPaths.filter(([path])=>path===focusFacePath);
  assert.equal(focusFaces.length,1,'exactly one approved read-only deck focus face');
  const focus=child(child(layout,'deckPanel'),'cardFocus');
