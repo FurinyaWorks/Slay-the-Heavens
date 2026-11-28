@@ -11,13 +11,33 @@ assert.equal(createHash('sha256').update(archive).digest('hex'),
  '58ea26de5268bc427bce73ecfb1ff43930f54b987c97777f9843e74d3467fe6d','approved entrance owner transformations');
 const {owners}=JSON.parse(archive);
 const bindings=new Map(owners.map(row=>[row.path,row]));
+// Reuse byte-for-byte inverse work only after the caller has freshly read
+// the owner. Keys are exact strings, scoped to the private reviewed binding;
+// raw readers and linked-owner validation never enter this bounded cache.
+const restoredByPath=new Map(),restoreLimit=2*1024*1024;
+let retainedRestoreChars=0;
 
 export function beforeApprovedUiEntrance(path,source){
  source=beforeNativePrologueOwner(path,source);
  const row=bindings.get(path);
  if(!row)return source;
+ const cached=restoredByPath.get(path);
+ if(cached&&cached.source===source)return cached.result;
  const prior=restoreExactFixtureHunks(row,path,source);
- return prior!==source&&source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+ const result=prior!==source&&source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+ if(prior!==source){
+  const weight=source.length+result.length;
+  if(weight<=restoreLimit){
+   if(cached){retainedRestoreChars-=cached.weight;restoredByPath.delete(path);}
+   while(retainedRestoreChars+weight>restoreLimit){
+    const first=restoredByPath.keys().next().value;
+    retainedRestoreChars-=restoredByPath.get(first).weight;restoredByPath.delete(first);
+   }
+   retainedRestoreChars+=weight;
+   restoredByPath.set(path,{source,result,weight});
+  }
+ }
+ return result;
 }
 
 export function matchesApprovedUiEntranceOwner(path,source){
