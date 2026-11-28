@@ -63,13 +63,34 @@ const catalogueToolingBinding={sha256:toolingCatalogue.afterSha256,gitBlob:tooli
 assert.equal(reviewedDeckBuild.reviewed,'637898cbdb81feb3feeda2123536fd1338518d5d');
 assert.equal(reviewedDeckBuild.commit,'8d361c49834d3dd6d36cce8410df08d6441b0782');
 
+// #1065 routes Collector to its dedicated throne scene after the exact
+// session-route owner. Only the historical Closeout read projects it back.
+const groundContactRouteView=Object.freeze({
+ beforeSha256:sessionRoute[routePreviewView].sha256,
+ beforeBlob:sessionRoute[routePreviewView].gitBlob,
+ afterSha256:'817eb3428c3fc0bb081a11015212520f445f018368c2028a8c5e4216747eb178',
+ afterBlob:'94addcbe13c7dd643469e0c1bf33062ed27a8a7a',
+ hunks:[{at:614,before:[
+  '                    local chapter=Acts.forFloor(floor)',
+  '                    chapterScene(math.min(2,chapter))',
+ ].join('\n'),after:[
+  '                    local act=Acts.forFloor(floor)',
+  '                    local scene=math.min(2,act)',
+  "                    if scene==2 and run.encounterId=='act2_collector' then scene=3 end",
+  '                    chapterScene(scene)',
+ ].join('\n')}],
+});
+
 function readExactOwner(path,binding,read,project){
  if(binding===null){
   assert.throws(()=>read(path,'utf8'),{code:'ENOENT'},'retired closeout owner reappeared: '+path);
   return;
  }
  const raw=read(path,'utf8');
- const source=beforeReleaseClosureFixture(path,readReleaseEntrancePredecessor(path,raw,read));
+ const live=beforeReleaseClosureFixture(path,readReleaseEntrancePredecessor(path,raw,read));
+ const route=path===routePreviewView&&binding.sha256===groundContactRouteView.beforeSha256&&
+  binding.gitBlob===groundContactRouteView.beforeBlob;
+ const source=route?beforeExactFixture(path,groundContactRouteView,live):live;
  assert(exactSourceMatches(project?project(source):source,binding),'fresh current closeout owner: '+path);
  const lf=raw.replaceAll('\r\n','\n');
  assert(raw===lf||raw===lf.replaceAll('\n','\r\n'),'mixed closeout source line endings: '+path);
