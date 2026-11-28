@@ -325,7 +325,7 @@ const detachedInputsBeforeReplayGuard=Object.freeze({
  'tests/helpers/master-backflow-source.mjs':'73b8c380cae30d3dfca7bf91e9272e47ecbaaa5dca3a1abfce35a5c41e9d61cc',
  'tests/helpers/release-closure-fixture-source.mjs':'2fc88ea6f7a27cea24e21a234a4ff7474083f5eb3ecea4b7179fc2b8dec08c80',
  'tests/helpers/release-deck-pointer-source.mjs':'a1cfebcea1c53c017315a9762ba2d9509d395218b358a500d7ca22fe565dec38',
- 'tests/helpers/release-entrance-owner-source.mjs':'970a41e91888711768d917ab2970d069ec891aea4f098f3930b1b5d04c87a30a',
+ 'tests/helpers/release-entrance-owner-source.mjs':'a74c303053062a39fa4731644758808026c8bce5024ff186c6017a016932f97b',
  'tests/helpers/release-metadata-source.mjs':'5897d9d479841a5fa7fe1f86925fa7daedd06a8facdc7277247f2ac376610cf8',
  'tests/helpers/relic-query-source-inverse.mjs':'b727def31d0e68c56d82472d9fa076cebc731f93b44210e7446b4f026d0942f6',
  'tests/helpers/reviewed-selection-current-source.json.gz':'ae2612caad5be7b4589812d9f0580b17bf99e775e53db38c093f79ff46c4cebb',
@@ -333,7 +333,7 @@ const detachedInputsBeforeReplayGuard=Object.freeze({
  'tests/helpers/run-hud-successors.mjs':'cbf8c1cc66b68d77dd981d7515d99f2fc975760bd9030bfd4a823cdaff71f64e',
  'tests/helpers/shop-deck-purchase-source.mjs':'11505a35f812f9632044724e91f94495455934ee67223f963e1c71c6d688716b',
  'tests/helpers/ui-entrance-source.mjs':'134d5b8fa6f23226b47681a424fd7549660e61de033cec0f78cf5e48a6104935',
- 'tests/helpers/ui-selection-current-source.mjs':'a8e543686784c1abb634b7be65c0c5e71bb9da7b385914b6f0bd5664a15245cc',
+ 'tests/helpers/ui-selection-current-source.mjs':'2346febff5f5da7303491c41afae0191a797b0878d91e1fb9650589f87c983cf',
  'tests/helpers/visual-selection-source.mjs':'3066522a5ed048b3bff4bac6424c0368676955d2c458076a1093b323761119c1',
 });
 
@@ -341,16 +341,78 @@ const detachedInputsBeforeReplayGuard=Object.freeze({
 // historical copier still restores the original immutable helpers.
 export const currentDetachedInputs=Object.freeze({
  ...detachedInputsBeforeReplayGuard,
- 'tests/helpers/release-enemy-clearance-source.mjs':'a33c88a0fe5dd7c4df69ff69bd9813a9ad4c41a3be394944c3a3f81d68873f8d',
+ 'tests/helpers/release-enemy-clearance-source.mjs':'76291b4ca58c43edd879dc348858eec837e123f3cce7db4518b4a8fe1e84b085',
  'tests/helpers/chapter-battle-scene-source.mjs':'799040ad7eef63281029b16094e95292b14df23692208a00639cd4ce7d8113e2',
- 'tests/helpers/boss-map-scroll-source.mjs':'7c6b6a5f5bcdcdce99117c1ae40dcf5376c9fd5b3c4b2ad9219b6a9b1f29bbec',
- 'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'1cf1f1d3c8e13caca6c8480da3c332b9283ce2fa074525359f685109ef6f9494',
- 'tests/helpers/closeout-source-epoch.mjs':'193e27b3e02e4afca1d2d6fcf6b78e64d18c3853b11f96d631538c5623e2e35b',
+ 'tests/helpers/boss-map-scroll-source.mjs':'32086e0a0b75e11efba16ff7ac9de4151b9e6443448480fcd28859c7d01d0884',
+ 'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'93d263928f8b024e6cd7557e7279220237e19aa119629dc1939549902653c49a',
+ 'tests/helpers/release-sts-detail-source.mjs':'0e06e04e77d3dd59f62502fd4a9611f99a17647d0589b18921fea98196e00539',
+ 'tests/fixtures/release-sts-detail-source.json.gz':'8f755b932e94da02b8ed36d85b52a7c663a7fb896e1a55670d1504dbb8b07bf8',
+ 'tests/helpers/closeout-source-epoch.mjs':'5622c6d85e9c80ed51a12a5c1cdadf0f00e2dfb33c2558e33c065bcc6b847688',
  'tests/helpers/release-closure-fixture-source.mjs':'289dbb0f64df673d88909d620f3e204cd92a96d448eb62acd6347f91f4e39b23',
 });
 
+const stsDetailRuntime=Object.freeze({
+ current:{sha256:'93d263928f8b024e6cd7557e7279220237e19aa119629dc1939549902653c49a',gitBlob:'e83935e542ef13de6dfd4802edd6560bb0094d5c'},
+ previous:{sha256:'1cf1f1d3c8e13caca6c8480da3c332b9283ce2fa074525359f685109ef6f9494',gitBlob:'7a0803c2201b7d5ff25347708fc40dd5b3b17e88'},
+});
+function beforeStsDetailRuntime(path,raw){
+ if(path!=='tests/helpers/combined-epoch/source-epoch-runtime.mjs')return raw;
+ const source=raw.toString('utf8'),lf=source.replaceAll('\r\n','\n');
+ const {current,previous}=stsDetailRuntime;
+ if(!raw.equals(Buffer.from(source))||lf.includes('\r')||source!==lf&&source!==lf.replaceAll('\n','\r\n')||!exactSourceMatches(lf,current))return raw;
+ const hunks=[
+  {at:0,before:"import {beforeReleaseClosureFixture} from '../release-closure-fixture-source.mjs';",
+   after:"import {beforeReleaseClosureFixture} from '../release-closure-fixture-source.mjs';\nimport {beforeStsDetailSource,readStsDetailOwners} from '../release-sts-detail-source.mjs';"},
+  {at:163,before:'  const readRawInput=rawReader(readSource);\n  const projected=entrancePredecessor(path,source,',
+   after:'  const readRawInput=readStsDetailOwners(rawReader(readSource));\n  const projected=entrancePredecessor(path,beforeStsDetailSource(path,source),'},
+ ];
+ const prior=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,lf);
+ assert(exactSourceMatches(prior,previous),'exact pre-STS detail combined runtime');
+ return Buffer.from(source===lf?prior:prior.replaceAll('\n','\r\n'));
+}
+
+export function isStsDetailRuntimeCurrent(source){
+ if(typeof source!=='string')return false;
+ const lf=source.replaceAll('\r\n','\n');
+ return !lf.includes('\r')&&(source===lf||source===lf.replaceAll('\n','\r\n'))&&exactSourceMatches(lf,stsDetailRuntime.current);
+}
+
+const stsDetailCloseout=Object.freeze({
+ "path": "tests/helpers/closeout-source-epoch.mjs",
+ "beforeSha256": "193e27b3e02e4afca1d2d6fcf6b78e64d18c3853b11f96d631538c5623e2e35b",
+ "afterSha256": "5622c6d85e9c80ed51a12a5c1cdadf0f00e2dfb33c2558e33c065bcc6b847688",
+ "beforeBlob": "8523062f30c400de9c3e618df45174edb13d78e3",
+ "afterBlob": "805676db8c919f667e5102fb48b9497a1aaba4a8",
+ "hunks": [
+  {
+   "at": 1,
+   "before": "import { entrancePredecessor } from './ui-entrance-source.mjs';",
+   "after": "import { entrancePredecessor, underlyingEntranceReader } from './ui-entrance-source.mjs';"
+  },
+  {
+   "at": 79,
+   "before": " const projected=sourceEpoch.preCombinedSource(path,source,{target,readSource,releaseLayoutsAlreadyProjected:true});",
+   "after": " // The Combined projector runs its own entrance admission. Its #1080 owner\n // wrapper needs the raw entrance reader, not an already projected cohort.\n const projected=sourceEpoch.preCombinedSource(path,source,{target,\n  readSource:underlyingEntranceReader(readSource),releaseLayoutsAlreadyProjected:true});"
+  }
+ ]
+});
+function beforeStsDetailCloseout(path,raw){
+ if(path!==stsDetailCloseout.path)return raw;
+ const source=raw.toString('utf8'),lf=source.replaceAll('\r\n','\n');
+ if(!raw.equals(Buffer.from(source))||!isStsDetailCloseoutCurrent(source))return raw;
+ const prior=restoreExactFixtureHunks(stsDetailCloseout,path,lf);
+ assert(exactSourceMatches(prior,{sha256:stsDetailCloseout.beforeSha256,gitBlob:stsDetailCloseout.beforeBlob}),'exact pre-STS detail Closeout source');
+ return Buffer.from(source===lf?prior:prior.replaceAll('\n','\r\n'));
+}
+export function isStsDetailCloseoutCurrent(source){
+ if(typeof source!=='string')return false;
+ const lf=source.replaceAll('\r\n','\n');
+ const {afterSha256:sha256,afterBlob:gitBlob}=stsDetailCloseout;
+ return !lf.includes('\r')&&(source===lf||source===lf.replaceAll('\n','\r\n'))&&exactSourceMatches(lf,{sha256,gitBlob});
+}
+
 export function beforeDetachedReleaseBackflow(path,raw){
- raw=beforeReleaseEnemyClearance(path,raw);
+ raw=beforeStsDetailCloseout(path,beforeStsDetailRuntime(path,beforeReleaseEnemyClearance(path,raw)));
  if(path==='tests/helpers/chapter-battle-scene-source.mjs')return beforeBossMapScroll(path,raw);
  if(!Object.hasOwn(owners,path))return raw;
  let source=raw.toString('utf8'),lf=source.replaceAll('\r\n','\n');
@@ -377,4 +439,50 @@ export function beforeDetachedReleaseBackflow(path,raw){
  const prior=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,lf);
  assert(exactSourceMatches(prior,previous),'exact detached Release backflow predecessor: '+path);
  return Buffer.from(prior);
+}
+
+const sharedRuntimePath='tests/helpers/combined-epoch/source-epoch-runtime.mjs';
+const sharedRuntimeReplay=Object.freeze({
+  "current": {
+   "sha256": "96e78e422e9135f5d947f21999b7e5476d4ef3fca16e50b91c75330a011552cf",
+   "gitBlob": "f04ceba33d70db52f2c845fd66fe8a46dcf0d4ff"
+  },
+  "previous": {
+   "sha256": "e4d3f37edd23a2040290b1091540d17776fe6f7f7a129f4c31e48e71a8f9a0c0",
+   "gitBlob": "24d1f5ce20b53e3b657abf0e1a2eb568abb108a1"
+  },
+  "hunks": [
+   {
+    "at": 0,
+    "before": "import { entrancePredecessor } from '../ui-entrance-source.mjs';",
+    "after": "import {beforeReleaseClosureFixture} from '../release-closure-fixture-source.mjs';\nimport { entrancePredecessor } from '../ui-entrance-source.mjs';"
+   },
+   {
+    "at": 55,
+    "before": "const validPath=p=>p==='config/architecture.json'||/^src\\/lua\\/[A-Za-z0-9_-]+\\.lua$/.test(p);",
+    "after": "// Use the shared exact Release inverse only for the linked runtime owners\n// whose v2.2 presentation successors postdate the frozen combined epoch.\nconst releaseRuntimeOwner=path=>path==='src/lua/abyss_battle_reward_layout.lua'||path==='src/lua/abyss_map_ui.lua';\nconst validPath=p=>p==='config/architecture.json'||/^src\\/lua\\/[A-Za-z0-9_-]+\\.lua$/.test(p);"
+   },
+   {
+    "at": 143,
+    "before": "  const projected=entrancePredecessor(path,source,rawReader(readSource),{allowConfigLayout});",
+    "after": "  const readRawInput=rawReader(readSource);\n  // Track the actual raw owner before applying any inverse. An exact live\n  // successor must not be swapped for its equally projectable predecessor\n  // while a single combined read is in progress.\n  const releaseObservations=new Map();\n  const readReleaseOwner=owner=>{\n   const raw=readRawInput(owner);\n   if(!releaseRuntimeOwner(owner))return raw;\n   const uniform=typeof raw==='string'&&\n    (raw===normalize(raw)||raw===normalize(raw).replaceAll('\\n','\\r\\n'));\n   const observed=uniform?normalize(raw):raw;\n   if(releaseObservations.has(owner))\n    assert(observed===releaseObservations.get(owner),'combined linked owner identity: '+owner+' changed during Release replay');\n   else releaseObservations.set(owner,observed);\n   return beforeReleaseClosureFixture(owner,raw);\n  };\n  const projected=entrancePredecessor(path,source,readReleaseOwner,{allowConfigLayout});"
+   }
+  ]
+ });
+
+// Detached helper copies and the integrated live cohort consume the same
+// exact runtime predecessors, without importing one another's proof graph.
+export function beforeSharedReleaseRuntimeReplay(path,raw){
+ if(path!==sharedRuntimePath)return raw;
+ const buffer=Buffer.isBuffer(raw),source=buffer?raw.toString('utf8'):raw;
+ if(typeof source!=='string'||buffer&&!Buffer.from(source).equals(raw))return raw;
+ const lf=source.replaceAll('\r\n','\n');
+ if(lf.includes('\r')||(source!==lf&&source!==lf.replaceAll('\n','\r\n')))return raw;
+ const current=beforeDetachedReleaseBackflow(path,Buffer.from(lf)).toString('utf8');
+ const {current:binding,previous,hunks}=sharedRuntimeReplay;
+ if(!exactSourceMatches(current,binding))return raw;
+ const prior=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:binding.sha256,hunks},path,current);
+ assert(exactSourceMatches(prior,previous),'exact shared runtime helper predecessor');
+ const restored=source===lf?prior:prior.replaceAll('\n','\r\n');
+ return buffer?Buffer.from(restored):restored;
 }

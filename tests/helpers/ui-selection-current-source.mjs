@@ -685,10 +685,55 @@ const currentDetachedCopier=Object.freeze({
   }
  ]
 });
+// The shared Reward/Map runtime continuation adds one exact copier replay owner.
+const sharedRuntimeCopier=Object.freeze({
+ "current": {
+  "sha256": "363fec902cc0f096a3bd2b85db23dc46313ca8ac55065b592c76114af33e2709",
+  "gitBlob": "26dbeb34768ac9e436a57516c873fcb1346e1a3f"
+ },
+ "previous": {
+  "sha256": "6b6b09d18f1705e4b1639b803dcb435c557be838e6220574ed1182cca0d9c4ed",
+  "gitBlob": "96c2beb318819293663a4933658ecca15b21e60d"
+ },
+ "hunks": [
+  {
+   "at": 687,
+   "before": " \"tests/helpers/master-backflow-source.mjs\": {",
+   "after": " \"tests/helpers/combined-epoch/source-epoch-runtime.mjs\": {\n  \"current\": {\n   \"sha256\": \"96e78e422e9135f5d947f21999b7e5476d4ef3fca16e50b91c75330a011552cf\",\n   \"gitBlob\": \"f04ceba33d70db52f2c845fd66fe8a46dcf0d4ff\"\n  },\n  \"previous\": {\n   \"sha256\": \"e4d3f37edd23a2040290b1091540d17776fe6f7f7a129f4c31e48e71a8f9a0c0\",\n   \"gitBlob\": \"24d1f5ce20b53e3b657abf0e1a2eb568abb108a1\"\n  },\n  \"hunks\": [\n   {\n    \"at\": 0,\n    \"before\": \"import { entrancePredecessor } from '../ui-entrance-source.mjs';\",\n    \"after\": \"import {beforeReleaseClosureFixture} from '../release-closure-fixture-source.mjs';\\nimport { entrancePredecessor } from '../ui-entrance-source.mjs';\"\n   },\n   {\n    \"at\": 55,\n    \"before\": \"const validPath=p=>p==='config/architecture.json'||/^src\\\\/lua\\\\/[A-Za-z0-9_-]+\\\\.lua$/.test(p);\",\n    \"after\": \"// Use the shared exact Release inverse only for the linked runtime owners\\n// whose v2.2 presentation successors postdate the frozen combined epoch.\\nconst releaseRuntimeOwner=path=>path==='src/lua/abyss_battle_reward_layout.lua'||path==='src/lua/abyss_map_ui.lua';\\nconst validPath=p=>p==='config/architecture.json'||/^src\\\\/lua\\\\/[A-Za-z0-9_-]+\\\\.lua$/.test(p);\"\n   },\n   {\n    \"at\": 143,\n    \"before\": \"  const projected=entrancePredecessor(path,source,rawReader(readSource),{allowConfigLayout});\",\n    \"after\": \"  const readRawInput=rawReader(readSource);\\n  // Track the actual raw owner before applying any inverse. An exact live\\n  // successor must not be swapped for its equally projectable predecessor\\n  // while a single combined read is in progress.\\n  const releaseObservations=new Map();\\n  const readReleaseOwner=owner=>{\\n   const raw=readRawInput(owner);\\n   if(!releaseRuntimeOwner(owner))return raw;\\n   const uniform=typeof raw==='string'&&\\n    (raw===normalize(raw)||raw===normalize(raw).replaceAll('\\\\n','\\\\r\\\\n'));\\n   const observed=uniform?normalize(raw):raw;\\n   if(releaseObservations.has(owner))\\n    assert(observed===releaseObservations.get(owner),'combined linked owner identity: '+owner+' changed during Release replay');\\n   else releaseObservations.set(owner,observed);\\n   return beforeReleaseClosureFixture(owner,raw);\\n  };\\n  const projected=entrancePredecessor(path,source,readReleaseOwner,{allowConfigLayout});\"\n   }\n  ]\n },\n \"tests/helpers/master-backflow-source.mjs\": {"
+  }
+ ]
+});
+const sharedRuntimeReuseCopier=Object.freeze({
+ "current": {
+  "sha256": "9474597b89473ac023f2ce0d0cccfa83f7a2e441bf62c0b08d5762293a424836",
+  "gitBlob": "0f2a345d40c2e122b6cb08534f55777fb45a6aa9"
+ },
+ "previous": {
+  "sha256": "363fec902cc0f096a3bd2b85db23dc46313ca8ac55065b592c76114af33e2709",
+  "gitBlob": "26dbeb34768ac9e436a57516c873fcb1346e1a3f"
+ },
+ "hunks": [
+  {
+   "at": 3,
+   "before": "import {beforeDetachedReleaseBackflow,currentDetachedInputs} from './release-detached-backflow-source.mjs';",
+   "after": "import {beforeDetachedReleaseBackflow,beforeSharedReleaseRuntimeReplay,currentDetachedInputs} from './release-detached-backflow-source.mjs';"
+  },
+  {
+   "at": 687,
+   "before": " \"tests/helpers/combined-epoch/source-epoch-runtime.mjs\": {\n  \"current\": {\n   \"sha256\": \"96e78e422e9135f5d947f21999b7e5476d4ef3fca16e50b91c75330a011552cf\",\n   \"gitBlob\": \"f04ceba33d70db52f2c845fd66fe8a46dcf0d4ff\"\n  },\n  \"previous\": {\n   \"sha256\": \"e4d3f37edd23a2040290b1091540d17776fe6f7f7a129f4c31e48e71a8f9a0c0\",\n   \"gitBlob\": \"24d1f5ce20b53e3b657abf0e1a2eb568abb108a1\"\n  },\n  \"hunks\": [\n   {\n    \"at\": 0,\n    \"before\": \"import { entrancePredecessor } from '../ui-entrance-source.mjs';\",\n    \"after\": \"import {beforeReleaseClosureFixture} from '../release-closure-fixture-source.mjs';\\nimport { entrancePredecessor } from '../ui-entrance-source.mjs';\"\n   },\n   {\n    \"at\": 55,\n    \"before\": \"const validPath=p=>p==='config/architecture.json'||/^src\\\\/lua\\\\/[A-Za-z0-9_-]+\\\\.lua$/.test(p);\",\n    \"after\": \"// Use the shared exact Release inverse only for the linked runtime owners\\n// whose v2.2 presentation successors postdate the frozen combined epoch.\\nconst releaseRuntimeOwner=path=>path==='src/lua/abyss_battle_reward_layout.lua'||path==='src/lua/abyss_map_ui.lua';\\nconst validPath=p=>p==='config/architecture.json'||/^src\\\\/lua\\\\/[A-Za-z0-9_-]+\\\\.lua$/.test(p);\"\n   },\n   {\n    \"at\": 143,\n    \"before\": \"  const projected=entrancePredecessor(path,source,rawReader(readSource),{allowConfigLayout});\",\n    \"after\": \"  const readRawInput=rawReader(readSource);\\n  // Track the actual raw owner before applying any inverse. An exact live\\n  // successor must not be swapped for its equally projectable predecessor\\n  // while a single combined read is in progress.\\n  const releaseObservations=new Map();\\n  const readReleaseOwner=owner=>{\\n   const raw=readRawInput(owner);\\n   if(!releaseRuntimeOwner(owner))return raw;\\n   const uniform=typeof raw==='string'&&\\n    (raw===normalize(raw)||raw===normalize(raw).replaceAll('\\\\n','\\\\r\\\\n'));\\n   const observed=uniform?normalize(raw):raw;\\n   if(releaseObservations.has(owner))\\n    assert(observed===releaseObservations.get(owner),'combined linked owner identity: '+owner+' changed during Release replay');\\n   else releaseObservations.set(owner,observed);\\n   return beforeReleaseClosureFixture(owner,raw);\\n  };\\n  const projected=entrancePredecessor(path,source,readReleaseOwner,{allowConfigLayout});\"\n   }\n  ]\n },\n \"tests/helpers/master-backflow-source.mjs\": {",
+   "after": " \"tests/helpers/master-backflow-source.mjs\": {"
+  },
+  {
+   "at": 980,
+   "before": " raw=beforeReleaseVocabularyReplay(path,beforeDetachedReleaseBackflow(path,raw));",
+   "after": " if(path===runtime)return beforeSharedReleaseRuntimeReplay(path,raw);\n raw=beforeReleaseVocabularyReplay(path,beforeDetachedReleaseBackflow(path,raw));"
+  }
+ ]
+});
 function activeReceipt(path){
  if(path===mapRouteIconFixturePath)return rewardTitleSources[path];
  if(path===selectionLayoutPath)return releaseSelectionOverlay;
- if(path===copierPath)return currentDetachedCopier;
+ if(path===copierPath)return sharedRuntimeReuseCopier;
  if(path===returnedReadingReplayPath)return selectionRawEntranceReplay;
  return combinedReceipt(path)??receipt(path);
 }
@@ -709,6 +754,7 @@ export function beforeSelectionReceiptSource(path,source){
  if(path===selectionLayoutPath)source=beforeReceipt(path,source,releaseSelectionOverlay);
  if(path===selectionLayoutPath)source=beforeReceipt(path,source,selectionLayoutCurrent);
  if(path===returnedReadingReplayPath)source=beforeReceipt(path,beforeReceipt(path,source,selectionRawEntranceReplay),returnedReadingReplay);
+ if(path===copierPath)source=beforeReceipt(path,beforeReceipt(path,source,sharedRuntimeReuseCopier),sharedRuntimeCopier);
  if(path===copierPath)source=beforeReceipt(path,beforeReceipt(path,source,currentDetachedCopier),tinyHouseTraceCopier);
  if(path===copierPath)source=beforeReceipt(path,source,releaseDetachedBackflowCopier);
  if(path===copierPath)source=beforeReceipt(path,source,releaseVocabularyCopier);

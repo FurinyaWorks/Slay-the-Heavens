@@ -1,4 +1,5 @@
 import {beforeKnownMasterBackflowSource} from './master-backflow-source.mjs';
+import {readStsDetailOwners} from './release-sts-detail-source.mjs';
 import {assertCurrentJsInventory,assertCurrentLuaInventory,assertIntegrationSuccessorsCurrent,beforePreflightSource,exactReviewedBuildInput,beforeM05ShopCiSource,assertDevelopBackflowCurrent,authenticateDevelopBackflow,developBackflowOwns,readHistoricalPreflightInput} from './fork-preflight-source.mjs';
 import {beforeCloseoutReviewedDeckBuild,beforeCloseoutRunHudBuild} from './closeout-current-backflow-source.mjs';
 import {beforeInputRetirement} from './input-retirement-source.mjs';
@@ -94,7 +95,8 @@ function beforeRunHudDiskInput(path,source,read){
  if(!deck)source=beforeInputRetirement(path,source);
  // Deck backflow authenticates the raw owner against its fresh reread before undoing the label.
  if(developBackflowOwns(path))assertDevelopBackflowCurrent(path,deck?beforeRunHudDeckLabel(source):source);
- source=authenticateDevelopBackflow(path,source,owner=>read(owner,'utf8'));
+ // Authenticate the linked raw #1080 owners before reaching the frozen Deck view.
+ source=authenticateDevelopBackflow(path,source,readStsDetailOwners(owner=>read(owner,'utf8')));
  if(deck)return exactReviewedBuildInput(path,()=>beforeCloseoutReviewedDeckBuild(path,source));
  assert(!source.includes('\r\r\n'),'fresh Run HUD source: '+path);
  const lf=norm(source),hashBlob=s=>createHash('sha1').update(`blob ${Buffer.byteLength(s)}\0`).update(s).digest('hex');

@@ -1,7 +1,7 @@
 import {beforeMasterBackflowSource} from './master-backflow-source.mjs';
 import {exactSourceMatches} from './source-fingerprint.mjs';
 import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
-import {beforeDetachedReleaseBackflow,currentDetachedInputs} from './release-detached-backflow-source.mjs';
+import {beforeDetachedReleaseBackflow,beforeSharedReleaseRuntimeReplay,currentDetachedInputs} from './release-detached-backflow-source.mjs';
 // Copies only immutable test helper dependencies; production owners remain explicit fixtures.
 import assert from 'node:assert/strict';
 import {officialUiRepairClosure} from './official-ui-repair-closure.mjs';
@@ -685,33 +685,6 @@ const reviewedCopySources=Object.freeze({
 // Detached historical closures keep the last reviewed copier dependencies.
 // The live release readers add the separately authenticated entrance sources.
 const releaseReplayReaders=Object.freeze({
- "tests/helpers/combined-epoch/source-epoch-runtime.mjs": {
-  "current": {
-   "sha256": "96e78e422e9135f5d947f21999b7e5476d4ef3fca16e50b91c75330a011552cf",
-   "gitBlob": "f04ceba33d70db52f2c845fd66fe8a46dcf0d4ff"
-  },
-  "previous": {
-   "sha256": "e4d3f37edd23a2040290b1091540d17776fe6f7f7a129f4c31e48e71a8f9a0c0",
-   "gitBlob": "24d1f5ce20b53e3b657abf0e1a2eb568abb108a1"
-  },
-  "hunks": [
-   {
-    "at": 0,
-    "before": "import { entrancePredecessor } from '../ui-entrance-source.mjs';",
-    "after": "import {beforeReleaseClosureFixture} from '../release-closure-fixture-source.mjs';\nimport { entrancePredecessor } from '../ui-entrance-source.mjs';"
-   },
-   {
-    "at": 55,
-    "before": "const validPath=p=>p==='config/architecture.json'||/^src\\/lua\\/[A-Za-z0-9_-]+\\.lua$/.test(p);",
-    "after": "// Use the shared exact Release inverse only for the linked runtime owners\n// whose v2.2 presentation successors postdate the frozen combined epoch.\nconst releaseRuntimeOwner=path=>path==='src/lua/abyss_battle_reward_layout.lua'||path==='src/lua/abyss_map_ui.lua';\nconst validPath=p=>p==='config/architecture.json'||/^src\\/lua\\/[A-Za-z0-9_-]+\\.lua$/.test(p);"
-   },
-   {
-    "at": 143,
-    "before": "  const projected=entrancePredecessor(path,source,rawReader(readSource),{allowConfigLayout});",
-    "after": "  const readRawInput=rawReader(readSource);\n  // Track the actual raw owner before applying any inverse. An exact live\n  // successor must not be swapped for its equally projectable predecessor\n  // while a single combined read is in progress.\n  const releaseObservations=new Map();\n  const readReleaseOwner=owner=>{\n   const raw=readRawInput(owner);\n   if(!releaseRuntimeOwner(owner))return raw;\n   const uniform=typeof raw==='string'&&\n    (raw===normalize(raw)||raw===normalize(raw).replaceAll('\\n','\\r\\n'));\n   const observed=uniform?normalize(raw):raw;\n   if(releaseObservations.has(owner))\n    assert(observed===releaseObservations.get(owner),'combined linked owner identity: '+owner+' changed during Release replay');\n   else releaseObservations.set(owner,observed);\n   return beforeReleaseClosureFixture(owner,raw);\n  };\n  const projected=entrancePredecessor(path,source,readReleaseOwner,{allowConfigLayout});"
-   }
-  ]
- },
  "tests/helpers/master-backflow-source.mjs": {
   "current": {
    "sha256": "308c6ef6ac8987b9becc4ead9f3a1efaa2c3c20ea8a697bdf26f6233fa71b8ac",
@@ -1005,6 +978,7 @@ const tinyHouseReplayHelper=Object.freeze({
  ]
 });
 function beforeReleaseReplayReader(path,raw){
+ if(path===runtime)return beforeSharedReleaseRuntimeReplay(path,raw);
  raw=beforeReleaseVocabularyReplay(path,beforeDetachedReleaseBackflow(path,raw));
  if(path==='tests/helpers/current-replay-fix-sources.mjs'){
   const normalized=integrationClosureBytes(path,raw);

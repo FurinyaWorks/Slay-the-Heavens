@@ -1,10 +1,22 @@
 import assert from 'node:assert/strict';
 import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
 import {exactSourceMatches} from './source-fingerprint.mjs';
+import {beforeStsDetailSource} from './release-sts-detail-source.mjs';
 
 // Exact pre-fix Release base: 7dded1e93f169f319c4a52e38f1ba47943ac4463.
 // Only historical readers apply this inverse. Live battle checks use current files.
 const changes = {
+ "docs/legal/assets.json": {
+  "current": {
+   "sha256": "3802c173fbfc1944b3d3bb2230d6edc905380c8673f2659a1978623c75663cdc",
+   "gitBlob": "74945372b37ba6d6800a9a803683b856e08e2703"
+  },
+  "previous": {
+   "sha256": "a31ebb2c1d348da1fab24af5cbc07ad6c957867a15b3e32caf85c9fbe2e3ac46",
+   "gitBlob": "16fe8d2ffd88f40698f7161f7aad8adfe25d0855"
+  },
+  "hunks": [{"at": 277, "count": 11, "before": "    \"docs/evidence/v2.2.0-enemy-ground-contact/act1-formations.webp\": {"}]
+ },
  "data/presentation/ui_theme.json": {
   "current": {
    "sha256": "d944a6fe3732a81cc7efc3cce64c8d6320c4cf3f1716fe655522855be7164e59",
@@ -379,7 +391,47 @@ export function releaseEnemyClearanceStage(path,source) {
  if(exactSourceMatches(lf,row.previous))return 'predecessor';
 }
 
+const stsDetailLedger={
+ path:'docs/legal/assets.json',
+ current:{sha256:'20a4b5307cd582a2fd592d04e78057de39189e643d9bcdb0c70eff247ffbe686',gitBlob:'e7f2cc3ffd76953ec8de677723996be28e32bf15'},
+ previous:{sha256:'3802c173fbfc1944b3d3bb2230d6edc905380c8673f2659a1978623c75663cdc',gitBlob:'74945372b37ba6d6800a9a803683b856e08e2703'},
+};
+const stsDetailOutsideArchive=Object.freeze({
+ [stsDetailLedger.path]:stsDetailLedger,
+ ['tests/helpers/menu-red-ci-source.mjs']:{
+  path:'tests/helpers/menu-red-ci-source.mjs',
+  current:{sha256:'9a6b8c49884d22569429633f6bf26c352637f2dc7e2d3aafa27c95798249391a',gitBlob:'f54bf1ee6a6b22d6628b5839437378e5814b6598'},
+  previous:{sha256:'6cef51a2b49f821ab26d6dbd54b84907e2590b98cdf9a8fef1f3f5959950c895',gitBlob:'3484ee3d5678ef7b8f4192cb82f67d7091efe883'},
+  at:28,count:20,before:"export function menuRedPriorLua(paths,read=readFileSync){\n paths=integratedPriorInventory(paths,'menu','lua',read);",
+ },
+ ['tests/official-assets-runtime.test.mjs']:{
+  path:'tests/official-assets-runtime.test.mjs',
+  current:{sha256:'5d635eb1ba4af30ba8fed85e337ccb6e4ef407d3bcdc767f3b3a36133c9fac5a',gitBlob:'1ec091caa2cb92de96303f99accf89fbbdfcdee1'},
+  previous:{sha256:'608f5e266b4b1ab48b762f74088d1e018b7ee8aa0864546a75745356e3a082c7',gitBlob:'12d5666dc00a9a432141e3bc4ad6d8ccc54e23fb'},
+  at:69,count:19,before:" const quietRims=[...rims(stage),...templates.flatMap(rims)].filter(rim=>!handRims.includes(rim));",
+ },
+});
+function beforeStsDetailFixture(path,source){
+ const row=Object.hasOwn(stsDetailOutsideArchive,path)&&stsDetailOutsideArchive[path];
+ if(!row||!exactSourceMatches(source,row.current))return source;
+ const {current,previous,at=277,count=11,before='    "docs/evidence/v2.2.0-battle-clearance/guardian-layout-ab.webp": {'}=row;
+ const lf=source.replaceAll('\r\n','\n');
+ if(lf.includes('\r')||source!==lf&&source!==lf.replaceAll('\n','\r\n'))return source;
+ const after=lf.split('\n').slice(at,at+count).join('\n');
+ const prior=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,
+  hunks:[{at,before,after}]},path,lf);
+ assert(exactSourceMatches(prior,previous),'exact pre-STS detail fixture: '+path);
+ return source===lf?prior:prior.replaceAll('\n','\r\n');
+}
+export function beforeStsDetailInput(path,raw){
+ const buffered=Buffer.isBuffer(raw),source=buffered?raw.toString('utf8'):raw;
+ if(typeof source!=='string'||buffered&&!Buffer.from(source).equals(raw))return raw;
+ const prior=beforeStsDetailSource(path,beforeStsDetailFixture(path,source));
+ return prior===source?raw:buffered?Buffer.from(prior):prior;
+}
+
 export function beforeReleaseEnemyClearance(path,raw) {
+ raw=beforeStsDetailInput(path,raw);
  const row=Object.hasOwn(changes,path)&&changes[path];
  if(!row)return raw;
  const buffered=Buffer.isBuffer(raw),source=buffered?raw.toString('utf8'):raw;

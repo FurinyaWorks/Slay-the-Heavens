@@ -19,7 +19,8 @@ function admittedRaw(path,read=currentRaw){
  return beforeCurrentProductionSource(path,read(path),read);
 }
 const readRoomPrior=combinedCurrent.combinedReader(currentRaw,'jointUiPrior');
-const roomPriorRead=path=>path===retiredControllerPath?
+const roomPriorRead=path=>path==='src/lua/abyss_map_ui.lua'?sourceSlice(path,currentRaw(path),'jointUiPrior',currentRaw)
+ :path===retiredControllerPath?
  combinedCurrent.preCombinedSource(path,admittedRaw(path),{target:'jointUiPrior',readSource:admittedRaw}):readRoomPrior(path);
 import {roomUiSourceEpoch as room} from './helpers/room-ui-source-epoch.mjs';
 import {componentUiSourceEpoch as component} from './helpers/component-ui-source-epoch.mjs';

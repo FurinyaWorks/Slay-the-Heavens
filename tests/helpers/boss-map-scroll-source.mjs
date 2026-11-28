@@ -5,6 +5,23 @@ import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
 // Exact predecessor is Release 654d05824486680d994b860ce6e24ea30c43dcff.
 // Current bytes are authenticated in full before taking the postimage lines.
 const changes = {
+ "tests/room-ui-source-epoch.test.mjs": {
+  "current": {
+   "sha256": "feb48d79e83e2bf0f0e3dc3c992b4247bb8f5ec9e626a7a6bfad530c76c7118f",
+   "gitBlob": "64bb184b63bda96a35bb9c4fafe2986c3bd80543"
+  },
+  "previous": {
+   "sha256": "12e2d53c852dcae8444d87b3e87e0070a0e0f29f2675973b99ac99bcb0dc29d8",
+   "gitBlob": "20ab4de5860cf013f1c63f8d379707b9c7894d9d"
+  },
+  "hunks": [
+   {
+    "at": 21,
+    "count": 2,
+    "before": "const roomPriorRead=path=>path===retiredControllerPath?"
+   }
+  ]
+ },
  "scripts/build-ui.mjs": {
   "current": {
    "sha256": "70f9d021957f2e76898bc3621ac2d76821b102c7b74f99807a5ad5fe2c61db3c",
@@ -230,6 +247,72 @@ const changes = {
     "at": 894,
     "count": 3,
     "before": "        if self.chapter.terminal == 'boss_treasure' then floor = math.min(floor, self.chapter.boss) end\n        local target = floorY(self.chapter, floor) - Layout.focusY\n        if animated then return animateScrollTo(target) end"
+   }
+  ]
+ },
+ "scripts/native-ui-encoder.mjs": {
+  "current": {
+   "sha256": "fcec8f67e768c2b3cef1b59b84b00033286db1d9276d671342b9e28e4ce87105",
+   "gitBlob": "e769c1ee48ed2768c938b366880bd8ea5b33bc14"
+  },
+  "previous": {
+   "sha256": "b4ebdcb90fd3528d3ce31dce90a5b8a9f685972dca54ee9092a71a9fcc64bbb2",
+   "gitBlob": "b46332087397d110a42caf2919f534728fc6880c"
+  },
+  "hunks": [
+   {
+    "at": 6,
+    "count": 2,
+    "before": ""
+   },
+   {
+    "at": 12,
+    "count": 8,
+    "before": ""
+   },
+   {
+    "at": 64,
+    "count": 1,
+    "before": " const transformed=`import {checkScripts as $abyssNativeCheckScripts} from ${JSON.stringify(isolatedHelper.href)};\\n`+imageTypeSource;"
+   }
+  ]
+ },
+ "tests/native-candidate-audit.test.mjs": {
+  "current": {
+   "sha256": "b80381834ac7b56f74bcf7eb9738ad34393f65f03466c00992913733af6f3f5a",
+   "gitBlob": "bd6fc73a50545040b269d338326d6096f6eb5d92"
+  },
+  "previous": {
+   "sha256": "44b6f12a4953724a60e8a16de2581e82953e9828045f194826b70a2ff8a09cfd",
+   "gitBlob": "80eb64441bcdc9a26c85c6d0ed29f9eefeee97a0"
+  },
+  "hunks": [
+   {
+    "at": 4,
+    "count": 1,
+    "before": "import { withNativeImageTypes } from '../scripts/native-ui-encoder.mjs';"
+   },
+   {
+    "at": 393,
+    "count": 16,
+    "before": ""
+   }
+  ]
+ },
+ "tests/native-client-check.test.mjs": {
+  "current": {
+   "sha256": "9c49ea29a189a0129efa46b51202a7784f4912098916948e0c476de27e045ffa",
+   "gitBlob": "fcebc9aa044ab37ac9faa448f27768cfdafba455"
+  },
+  "previous": {
+   "sha256": "f98f60994e5e6d5eb7199baf27d9b6424f55e26323a8d0dcc3dc26bed16106c4",
+   "gitBlob": "e4167e8ad67e001b6a6ca6e4812b9a3f4bc80fd9"
+  },
+  "hunks": [
+   {
+    "at": 144,
+    "count": 2,
+    "before": " const oldSource=\"export function checkScripts(){return {scripts:[{name:'cached-A'}]};}\\n\";"
    }
   ]
  },

@@ -1,3 +1,6 @@
+import {beforeDetachedReleaseBackflow,beforeSharedReleaseRuntimeReplay,isStsDetailRuntimeCurrent,isStsDetailCloseoutCurrent} from './release-detached-backflow-source.mjs';
+import {beforeBossMapScroll} from './boss-map-scroll-source.mjs';
+import {beforeReleaseEnemyClearance,beforeStsDetailInput} from './release-enemy-clearance-source.mjs';
 import {beforeKnownMasterBackflowSource,beforeMasterBackflowSource,productionReadingBackflowOwns} from './master-backflow-source.mjs';
 import {beforeReleaseClosureFixture} from './release-closure-fixture-source.mjs';
 import {beforePosixDeadlineWorkflow,beforeWindowsDeadlineWorkflow} from './auto-merge-workflow.mjs';
@@ -911,7 +914,19 @@ export function assertCurrentJsInventory(paths,preceding,read=readFileSync){
  paths=beforeRefinedReleaseJsInventory(beforeShopEntryInventory(paths,'js',read),[...preceding,coopLabTest],read,true);
  assertCoopJsInventory(paths,preceding,read);
 }
+const stsDetailLuaFixtures=Object.freeze({
+ 'tests/lua/event_option_preview.lua':['0d32f9491fdad75fc31850d221df0a87857f2edfda2d63765fd5b5b6c9f9dd96','b0565d59039b99009fa1f9f4fc904f0d58957075'],
+ 'tests/lua/sts_browse_keywords.lua':['6aa39fb954ed259d28c8639a2a6115dff5b5ce8285aecee7889c29b53987c7d6','dd34d14da8912495ad29aec20c82d8c4ba81b4c7'],
+ 'tests/lua/sts_forge_keywords.lua':['ddebd1255693f021701c18ca208ee6bb456772a7e397727cfd88ff7a05bb2f70','ba5433f38c2f15725762717d248288637be7b03c'],
+});
 export function assertCurrentLuaInventory(paths,preceding,read=readFileSync){
+ // The live Full inventory must retain all new STS tests. Only the
+ // authenticated historical projection enters the frozen predecessor inventory.
+ for(const [path,identity] of Object.entries(stsDetailLuaFixtures)){
+  assert.equal(paths.filter(candidate=>candidate===path).length,1,'complete current raw discovery inventory (Lua): '+path);
+  assert(exactCheckoutSource(read(path,'utf8'),identity),'fresh STS detail Lua coverage: '+path);
+ }
+ paths=paths.filter(path=>!Object.hasOwn(stsDetailLuaFixtures,path));
  paths=beforeMasterBackflowInventory(paths,masterBackflowLuaTests,'tests/lua/battle_ui_publication.lua',read);
  paths=beforeChapterPoolFixtureInventory(paths,read,true);
  paths=beforeInputRetirementTestInventory(paths,'lua',read,{required:true,requireLive:true});
@@ -1541,6 +1556,7 @@ function beforeReleaseScriptStaticGate(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 export function beforeReviewedBuildInput(path,source,read){
+ if(bossMaskRecordedOwners.has(path))source=beforeBossMapScroll(path,source);
  if(path==='scripts/official-assets-campaign.lua'||path==='scripts/verify-delivery.mjs')
   source=beforeReleaseClosureFixture(path,source,{reviewedBuild:true});
  source=beforeForkPush(path,source);
@@ -1564,26 +1580,32 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 // Verify the live replay helpers before restoring their reviewed predecessors.
+const clearanceChapterHelper='tests/helpers/chapter-battle-scene-source.mjs';
 const responsiveReplayHelpers=Object.freeze({
  [integratedFixture]:sessionMenuIntegratedIdentity,
  [relicCloseoutInventoryFixture.path]:relicCloseoutInventoryIdentity,
  'tests/helpers/chapter-battle-scene-source.mjs':['7888616f2fbc3f59b3545eb5441069380b453b91c80a7a3d4513e59193fa5696','28b2c25290691844c986dba49fb982eb326b8ba3'],
  'tests/helpers/rebased-release-source.mjs':['b1e42ded7f05f580fb25ab0417ccd8db45832f5e9e50db83a38d6aaa2767dc20','4b22a3e61459334c6d85b247ea188976313d549e'],
 });
+const bossMaskRecordedOwners=new Set(['scripts/native-ui-encoder.mjs','tests/native-candidate-audit.test.mjs','tests/native-client-check.test.mjs']);
 function responsiveReplayCurrentRead(read){
  return (path,...args)=>{
   const raw=read(path,...args);
+  if(bossMaskRecordedOwners.has(path))assert.notEqual(beforeBossMapScroll(path,raw),raw,'fresh Boss mask replay owner: '+path);
   if(Object.hasOwn(responsiveReplayHelpers,path)){
    const source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
    const error=path===integratedFixture||path===relicCloseoutInventoryFixture.path
     ?'fresh complete integration source: ':'fresh responsive replay helper: ';
-   assert(exactCheckoutSource(source,responsiveReplayHelpers[path]),error+path);
+   const chapter=path===clearanceChapterHelper;
+   const clearancePrior=chapter?beforeReleaseEnemyClearance(path,source):source;
+   const prior=chapter?beforeBossMapScroll(path,clearancePrior):source;
+   assert((!chapter||clearancePrior!==source&&prior!==clearancePrior)&&exactCheckoutSource(prior,responsiveReplayHelpers[path]),error+path);
   }
   return raw;
  };
 }
 export function chapterEvidenceCurrentRead(read,copier){
- const currentRead=responsiveReplayCurrentRead(read);
+ const currentRead=responsiveReplayCurrentRead((path,...args)=>beforeStsDetailInput(path,read(path,...args)));
  const chapterRead=chapterSceneCurrentRead((path,encoding)=>{
   const raw=currentRead(path,encoding);
   if(path!==integratedFixture)return raw;
@@ -1601,7 +1623,8 @@ export function currentReviewedSelectionRead(read){
   try{
    const live=read(path,encoding);
    const text=Buffer.isBuffer(live)?live.toString('utf8'):live;
-   const selection=productionReadingBackflowOwns(path)||beforeSelectionReceiptSource(path,text)!==text||beforeOfficialCharacterBackflow(path,text)!==text;
+   // Check the live chapter receipt before the master reader can strip the clearance successor.
+   const selection=path===clearanceChapterHelper||productionReadingBackflowOwns(path)||beforeSelectionReceiptSource(path,text)!==text||beforeOfficialCharacterBackflow(path,text)!==text;
    source=selection?live:beforeMasterBackflowSource(path,live);
   }
   catch(cause){
@@ -1672,9 +1695,24 @@ function cursesReceiptCurrentRead(read){
  };
 }
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
+ const readRaw=read;
+ read=(path,...args)=>{
+  const raw=readRaw(path,...args);
+  if(path===replayAssetLedger||path==='config/architecture.json'||path==='tests/helpers/menu-red-ci-source.mjs'){
+   const source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
+   const identity=path===replayAssetLedger
+    ?['20a4b5307cd582a2fd592d04e78057de39189e643d9bcdb0c70eff247ffbe686','e7f2cc3ffd76953ec8de677723996be28e32bf15']
+    :path==='config/architecture.json'
+     ?['4a622b868cadc22316cb7396ed31178bbe32ca58e15cbf6596f53cca4c755bf9','7e5927ec6626673d9c06023bf1999b4ded03723d']
+     :['9a6b8c49884d22569429633f6bf26c352637f2dc7e2d3aafa27c95798249391a','f54bf1ee6a6b22d6628b5839437378e5814b6598'];
+   assert((!Buffer.isBuffer(raw)||Buffer.from(source).equals(raw))&&exactCheckoutSource(source,identity),
+    'fresh complete integration source: '+path);
+  }
+  return raw;
+ };
  const replayRead=cursesReceiptCurrentRead(responsiveReplayCurrentRead(currentAssetLedgerRead(currentReviewedSelectionRead(checkedSelectionReceiptRead(read)))));
  for(const path of Object.keys(cursesReceiptSources))replayRead(path,'utf8');
- for(const path of Object.keys(responsiveReplayHelpers))replayRead(path,'utf8');
+ for(const path of [...Object.keys(responsiveReplayHelpers),...bossMaskRecordedOwners])replayRead(path,'utf8');
  // The chapter guard consumes its exact reviewed predecessor. Current
  // consumers still read and authenticate the new fixture at every read.
  const rawRead=actorAlphaCurrentRead(chapterEvidenceCurrentRead(replayRead,selectionCopierReceipt));
@@ -1696,10 +1734,23 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  assertNativeFixturesCurrent(liveRead);
  assertNativeFlowFixturesCurrent(liveRead);
  read=(path,encoding)=>{
-  const raw=liveRead(path,encoding);
+  let raw=liveRead(path,encoding);
   // Raw production owners reach their own fresh admission guard unchanged.
   // Only CI and helper receipts need the pure historical source projections.
   if(path.startsWith('src/')||path==='config/architecture.json')return raw;
+  if(path===epochReplayRuntimePath){
+   const verified=beforeDetachedReleaseBackflow(path,Buffer.from(raw,'utf8')).toString('utf8');
+   assert(isStsDetailRuntimeCurrent(raw)&&verified!==raw,'fresh Release runtime successor: '+path);
+   const prior=beforeSharedReleaseRuntimeReplay(path,raw);
+   assert.notEqual(raw,prior,'fresh complete integration source: '+path);
+   raw=prior;
+  }
+  if(path==='tests/helpers/closeout-source-epoch.mjs'){
+   const prior=beforeDetachedReleaseBackflow(path,Buffer.from(raw,'utf8')).toString('utf8');
+   assert(isStsDetailCloseoutCurrent(raw)&&prior!==raw,'fresh complete integration source: '+path);
+   raw=beforeReleaseClosureFixture(path,prior);
+   assert.notEqual(raw,prior,'fresh complete integration source: '+path);
+  }
   const historical=beforeBattlePeriphery(path,beforeChapterBattleScene(path,raw));
   return beforeCalibrationReplay(path,beforeCurrentReplayFixes(path,beforeUiEntranceWitness(path,beforeCurrentReplayCopier(path,historical))));
  };
@@ -1824,6 +1875,14 @@ export function beforePreflightSource(path,source,view='prior',read=readFileSync
  }
  // The checked Selection receipt owns its boundary. Other linked production
  // owners retain their live bytes for the scope that authenticates them.
+ // The approved mask encoder and its tests keep exact pre-scroll views.
+ if(bossMaskRecordedOwners.has(path))source=beforeBossMapScroll(path,source);
+ source=beforeStsDetailInput(path,source);
+ if(path===epochReplayRuntimePath)source=beforeSharedReleaseRuntimeReplay(path,source);
+ if(path==='tests/helpers/closeout-source-epoch.mjs'&&typeof source==='string'){
+  const prior=beforeDetachedReleaseBackflow(path,Buffer.from(source,'utf8')).toString('utf8');
+  source=beforeReleaseClosureFixture(path,prior);
+ }
  const selection=beforeSelectionReceiptSource(path,source);
  if(selection!==source)source=selection;
  else if(typeof path==='string'&&!path.startsWith('src/')&&path!=='config/architecture.json')
