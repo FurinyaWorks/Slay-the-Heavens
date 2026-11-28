@@ -5,6 +5,23 @@ import {exactSourceMatches} from './source-fingerprint.mjs';
 // The detached copy continues to execute its frozen Develop and Map Deck
 // helpers; the normal test process uses the current Release readers.
 const owners=Object.freeze({
+ "tests/helpers/relic-query-source-inverse.mjs": {
+  "current": {
+   "sha256": "b727def31d0e68c56d82472d9fa076cebc731f93b44210e7446b4f026d0942f6",
+   "gitBlob": "c03bf2d83e1221a7a3b6d5a453d7b41f60dcd84d"
+  },
+  "previous": {
+   "sha256": "ba7525e0fd153e59f59538114ecace70c6475ab65f578dea2f4fc29fb9e71a20",
+   "gitBlob": "0afc8b837b67689fc7c077029cb47bfba5a989c9"
+  },
+  "hunks": [
+   {
+    "at": 7,
+    "before": "const live=p=>readFileSync(new URL('../../'+p,import.meta.url),'utf8');\nexport function preRelicQuerySource(path,source,{readSource=live}={}){\n readSource=readers.get(readSource)??readSource;\n const replay=currentRewardReplay(path,source,readSource);\n source=replay.source;\n readSource=replay.read;\n const entranceRead=typeof readSource==='function'?owner=>beforeCurrentDeckEntranceOwner(owner,readSource(owner)):readSource;\n const input=beforeCurrentDeckEntranceOwner(path,source);\n const projected=sourceEpoch.preCombinedSource(path,input,{target:'develop',readSource:entranceRead});",
+    "after": "import {beforeReleaseClosureFixture} from './release-closure-fixture-source.mjs';\nconst releaseLayoutOwners=new Set(['src/lua/abyss_battle_reward_layout.lua','src/lua/abyss_map_ui.lua']);\nconst beforeReleaseLayout=(path,source)=>releaseLayoutOwners.has(path)?beforeReleaseClosureFixture(path,source):source;\nconst live=p=>readFileSync(new URL('../../'+p,import.meta.url),'utf8');\nexport function preRelicQuerySource(path,source,{readSource=live}={}){\n readSource=readers.get(readSource)??readSource;\n const replay=currentRewardReplay(path,source,readSource);\n source=replay.source;\n readSource=replay.read;\n const entranceRead=typeof readSource==='function'?owner=>beforeCurrentDeckEntranceOwner(owner,beforeReleaseLayout(owner,readSource(owner))):readSource;\n const input=beforeCurrentDeckEntranceOwner(path,beforeReleaseLayout(path,source));\n const projected=sourceEpoch.preCombinedSource(path,input,{target:'develop',readSource:entranceRead});"
+   }
+  ]
+ },
  "tests/helpers/master-backflow-source.mjs": {
   "current": {
    "sha256": "73b8c380cae30d3dfca7bf91e9272e47ecbaaa5dca3a1abfce35a5c41e9d61cc",
@@ -234,6 +251,7 @@ export const currentDetachedInputs=Object.freeze({
  'tests/helpers/release-deck-pointer-source.mjs':'a1cfebcea1c53c017315a9762ba2d9509d395218b358a500d7ca22fe565dec38',
  'tests/helpers/release-entrance-owner-source.mjs':'970a41e91888711768d917ab2970d069ec891aea4f098f3930b1b5d04c87a30a',
  'tests/helpers/release-metadata-source.mjs':'5897d9d479841a5fa7fe1f86925fa7daedd06a8facdc7277247f2ac376610cf8',
+ 'tests/helpers/relic-query-source-inverse.mjs':'b727def31d0e68c56d82472d9fa076cebc731f93b44210e7446b4f026d0942f6',
  'tests/helpers/reviewed-selection-current-source.json.gz':'ae2612caad5be7b4589812d9f0580b17bf99e775e53db38c093f79ff46c4cebb',
  'tests/helpers/reviewed-selection-current-source.mjs':'c98fb7605e578f1b909d51822729218fb9cbbf630db1f7b727c86ef5f6d24a64',
  'tests/helpers/run-hud-successors.mjs':'cbf8c1cc66b68d77dd981d7515d99f2fc975760bd9030bfd4a823cdaff71f64e',
