@@ -1,0 +1,5497 @@
+{
+  "baselineCommit": "5ccff59e9df396849216fb3f790be8852974c769",
+  "candidateCommit": "d281dd075437a99eecf2fd8146ebd486c6e335b0",
+  "candidateSourceSha256": {
+    "scripts/v220-chapter-battle-scenes.mjs": "2cff6fd9892e9d0684766948230f6c53847bdf2f97d722d2e0daf02099fe6b2c",
+    "scripts/v220-battle-scene-geometry.mjs": "045cc18864a9593f5aeb45490299a70d549934149b162d296510635adbaa32cf",
+    "src/lua/abyss_game_ui_view.lua": "817eb3428c3fc0bb081a11015212520f445f018368c2028a8c5e4216747eb178",
+    "src/lua/abyss_battle_enemy_view.lua": "ee1f1db69b9718c4198cce800348f6a284802d25f1a8e0de725bd63f8ee84615",
+    "src/lua/abyss_battle_unit_view.lua": "053715d77e8b13e4526de6f013c77651bd7f442011b4a0a1f14eac78c1a8d687",
+    "src/lua/abyss_byrd_ground_trial.lua": "b0e63cd3ba2984fff11d3ec88cd6d91b4a26f5b6f83c678f165fc513de5e0991",
+    "src/lua/abyss_chapter_battle_scene.lua": "2a5897fdcf20f66a67995e35d8918a3fb3b7dbb6b31b61f7d51237097509a9bf",
+    "data/release/refined-monster-art.json": "3f1776d04d9e75fdda90c2b428a8637406bbf77254f67baf8066e22c7ee2a75c"
+  },
+  "tool": "beyond-simulator-mcp@0.5.2",
+  "scope": "Production Lua battle state and controls run under the Fengari native UI fixture. Beyond Simulator Host renders each captured production control snapshot at 1600x900. Simulator screenshots play static snapshots. No official GIL, device, or direct click evidence from the Simulator Host.",
+  "display": "16:9, identical 1280x720 logical viewport and 1.25x scale. Atlas crop and lossless WebP only; focus sheets additionally rescale for side-by-side display.",
+  "generatedLuaSha256": {
+    "before": {
+      "abyss_art_features.lua": "33b9b0fc7ae83eed3b77660cf055c01d3881f81e1c9cacb0f140270fcdd761b9",
+      "abyss_chapter_battle_scene_data.lua": "42055261cf404270ecacaeb8ed84cdd6476a7fa41141344dc138bdd5ab5972df",
+      "abyss_component_binding.lua": "ca994b74c66fee485045460ebad65e1752b256e80f8d84b20288b6a34c08e2c8",
+      "abyss_data.lua": "31b663248d49c24aaa4914b99042a8a683cc2667f869c699333ccc52723c3429",
+      "abyss_deck_browser_binding.lua": "297b9655a3e58537a7c1ca7da1591f443ea53e2bf5c2e8808f1b67aaa792adc8",
+      "abyss_map_controls.lua": "40a38fe84d96be1ee3b469ac5f708550e41d4a990da76cf5770ae86cdf288688",
+      "abyss_map_layout.lua": "677d9a0af1150fea4d22a5076fc0585bb413bbd3e3eb01a0f224b6ef3d1c5a87",
+      "abyss_menu_background_asset.lua": "3c27739f7bf21453d31f57d21469bc2579a63dd7ad0d071f9667d440c5db4b03",
+      "abyss_monster_actor_binding.lua": "e93f6e4790e6d9f3f0c472e7b60e6efb4062d8c14d39a84ba0a67565c01767de",
+      "abyss_monster_art_data.lua": "e9c3b6778fc370b57b819cdf543bbce169ffd0a22e128aac7a982bf212ad22c8",
+      "abyss_narrative.lua": "96e8cd6f77a7ca334b5d2ed2bb506d034c2fc7d34acabd7102ce35e61fd80672",
+      "abyss_original_v4_data.lua": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb",
+      "abyss_presentation.lua": "b0780ec776b6bc6c1c73ea08cd1a1b6c9a11ecfb3907a0da0cb988e37a37cce4",
+      "abyss_ready_card_assets.lua": "c9270928bf5a43b58a811e80e7d85458861031fc6ae661d3a6af8ed3e2a69db9",
+      "abyss_ready_card_binding.lua": "42db192efcc7b7777a74410ba309f9184b76a6bcd8317aeeee0c3370ee340086",
+      "abyss_theme.lua": "556899748a6f80304127aaf51e68222588663617be034466cee2002f769554d5",
+      "abyss_traveler_portrait_assets.lua": "e2fe78a3756912a97ba15c27dc8eb6c57894be748525aabfa3afa8630df8db45",
+      "abyss_ui_layout.lua": "03744cb152823ceed722a6fa0f7eab548250b06822cb96b796ca6d016532988c",
+      "abyss_ui_profile.lua": "18dca490638f500f0e97c6e1463310b4f2e88f59c1754de8faad49ac140d3e8a",
+      "abyss_ui_templates.lua": "42a408740456c8d370ac4e09b79541981e6fee74249446ca33a043b79b175b40",
+      "abyss_v25_card_assets.lua": "f375249ec77cc5e83e3cd4f3fb226eb321eff7e6bae95431d53d5b4f90751503"
+    },
+    "after": {
+      "abyss_art_features.lua": "33b9b0fc7ae83eed3b77660cf055c01d3881f81e1c9cacb0f140270fcdd761b9",
+      "abyss_chapter_battle_scene_data.lua": "b7e871e1466f2ab1de72a8d93a48a0a2f53ddc69bda74c8c7776486061562793",
+      "abyss_component_binding.lua": "ca994b74c66fee485045460ebad65e1752b256e80f8d84b20288b6a34c08e2c8",
+      "abyss_data.lua": "31b663248d49c24aaa4914b99042a8a683cc2667f869c699333ccc52723c3429",
+      "abyss_deck_browser_binding.lua": "297b9655a3e58537a7c1ca7da1591f443ea53e2bf5c2e8808f1b67aaa792adc8",
+      "abyss_map_controls.lua": "40a38fe84d96be1ee3b469ac5f708550e41d4a990da76cf5770ae86cdf288688",
+      "abyss_map_layout.lua": "677d9a0af1150fea4d22a5076fc0585bb413bbd3e3eb01a0f224b6ef3d1c5a87",
+      "abyss_menu_background_asset.lua": "3c27739f7bf21453d31f57d21469bc2579a63dd7ad0d071f9667d440c5db4b03",
+      "abyss_monster_actor_binding.lua": "e93f6e4790e6d9f3f0c472e7b60e6efb4062d8c14d39a84ba0a67565c01767de",
+      "abyss_monster_art_data.lua": "e9c3b6778fc370b57b819cdf543bbce169ffd0a22e128aac7a982bf212ad22c8",
+      "abyss_narrative.lua": "96e8cd6f77a7ca334b5d2ed2bb506d034c2fc7d34acabd7102ce35e61fd80672",
+      "abyss_original_v4_data.lua": "63e4983d6d80241f287e153087efd81e7ab287efbb15e195ef80ad90230fb2cb",
+      "abyss_presentation.lua": "b0780ec776b6bc6c1c73ea08cd1a1b6c9a11ecfb3907a0da0cb988e37a37cce4",
+      "abyss_ready_card_assets.lua": "c9270928bf5a43b58a811e80e7d85458861031fc6ae661d3a6af8ed3e2a69db9",
+      "abyss_ready_card_binding.lua": "42db192efcc7b7777a74410ba309f9184b76a6bcd8317aeeee0c3370ee340086",
+      "abyss_theme.lua": "7982f8170d18c3014b486956ebc4345f763a8681151725c1b4078ead8159e455",
+      "abyss_traveler_portrait_assets.lua": "e2fe78a3756912a97ba15c27dc8eb6c57894be748525aabfa3afa8630df8db45",
+      "abyss_ui_layout.lua": "03744cb152823ceed722a6fa0f7eab548250b06822cb96b796ca6d016532988c",
+      "abyss_ui_profile.lua": "18dca490638f500f0e97c6e1463310b4f2e88f59c1754de8faad49ac140d3e8a",
+      "abyss_ui_templates.lua": "42a408740456c8d370ac4e09b79541981e6fee74249446ca33a043b79b175b40",
+      "abyss_v25_card_assets.lua": "f375249ec77cc5e83e3cd4f3fb226eb321eff7e6bae95431d53d5b4f90751503"
+    }
+  },
+  "captureInputsSha256": {
+    "capture.lua": "08dc0b88bbf75b25b3de83b00d97d48318b2dd07dc3ae8b0d03521afdafccff6",
+    "render.mjs": "07668f32a1daa4c1ed2e944de077cd8eec10a169066cde1f49c0551ac21263c3",
+    "atlas.py": "faeef11aa07c577b7999a261666d5b403a4e167e7f0bcf2716a80a7ae5984567"
+  },
+  "coverage": {
+    "officialMonsters": 42,
+    "capturePairs": 54,
+    "classes": {
+      "grounded": 35,
+      "hovering": 5,
+      "flight": 1,
+      "perched": 1
+    }
+  },
+  "pixelEquivalentPairs": [
+    "byrd-01-flight",
+    "byrd-02-knockdown",
+    "byrd-04-relift",
+    "small-slimes",
+    "byrd-03-headbutt-ready",
+    "monster-raven_adept",
+    "monster-jaw_worm",
+    "monster-green_louse",
+    "monster-acid_slime_s",
+    "monster-acid_slime_m",
+    "monster-acid_slime_l",
+    "monster-spike_slime_s",
+    "monster-spike_slime_m",
+    "monster-spike_slime_l",
+    "monster-looter",
+    "monster-blue_guard",
+    "monster-red_guard",
+    "monster-fungi_beast",
+    "monster-sneaky_gremlin",
+    "monster-fat_gremlin",
+    "monster-shield_gremlin",
+    "monster-lagavulin",
+    "monster-sentry",
+    "monster-guardian",
+    "monster-hexaghost",
+    "monster-slime_boss",
+    "monster-spheric_guardian",
+    "monster-centurion",
+    "monster-taskmaster",
+    "monster-book_of_stabbing",
+    "monster-snake_plant",
+    "monster-byrd",
+    "monster-mugger",
+    "monster-bronze_orb",
+    "monster-champ"
+  ],
+  "pairedAtlasFiles": [
+    {
+      "file": "act1-formations.webp",
+      "sha256": "e73e51c2487562a768399d8fc1359985c47679cbb113f1175d602f07ed1eb016",
+      "scenes": [
+        "double-red-louse",
+        "mixed-louse",
+        "gremlin-gang",
+        "small-slimes"
+      ]
+    },
+    {
+      "file": "act2-summons.webp",
+      "sha256": "fde47093237aaac62eed42e6674b42ad7f9ae43fd94385ca90baeaf767c50f2d",
+      "scenes": [
+        "collector-before-summon",
+        "collector-summon",
+        "automaton-summon",
+        "leader-wizard-summon"
+      ]
+    },
+    {
+      "file": "act2-byrd.webp",
+      "sha256": "c04f7ba8f2052bcf2fe710fdd9a8c56a06d9b45d59ef6e621126576d7743ceee",
+      "scenes": [
+        "byrd-01-flight",
+        "byrd-02-knockdown",
+        "byrd-03-headbutt-ready",
+        "byrd-04-relift"
+      ]
+    },
+    {
+      "file": "priority-louse-collector.webp",
+      "sha256": "174c81dc8e282bf9620a8f3d7d90477ef8ead7dd59f8617249dcd7c94868c88a",
+      "scenes": [
+        "double-red-louse",
+        "collector-summon"
+      ]
+    },
+    {
+      "file": "official-monsters-01.webp",
+      "sha256": "b63a4b188dbfce2c6375e3905729c2e36740fdb3b1c9f5825ff8fe52993115c6",
+      "scenes": [
+        "monster-raven_adept",
+        "monster-jaw_worm",
+        "monster-red_louse",
+        "monster-green_louse",
+        "monster-acid_slime_s",
+        "monster-acid_slime_m"
+      ]
+    },
+    {
+      "file": "official-monsters-02.webp",
+      "sha256": "bb52a3734e2782980ab3c7e8c3fa91f5cebd26d49116e80766de0ce4885afabb",
+      "scenes": [
+        "monster-acid_slime_l",
+        "monster-spike_slime_s",
+        "monster-spike_slime_m",
+        "monster-spike_slime_l",
+        "monster-looter",
+        "monster-blue_guard"
+      ]
+    },
+    {
+      "file": "official-monsters-03.webp",
+      "sha256": "b116ddda440ca5b5073fd27302e550f753cc3158a213f6506ab86d1c96efd71b",
+      "scenes": [
+        "monster-red_guard",
+        "monster-fungi_beast",
+        "monster-mad_gremlin",
+        "monster-sneaky_gremlin",
+        "monster-fat_gremlin",
+        "monster-wizard_gremlin"
+      ]
+    },
+    {
+      "file": "official-monsters-04.webp",
+      "sha256": "d29f1a2632912b60bf37607b55413b1e86191697b35dd5333be516bbba3db79a",
+      "scenes": [
+        "monster-shield_gremlin",
+        "monster-gremlin_nob",
+        "monster-lagavulin",
+        "monster-sentry",
+        "monster-guardian",
+        "monster-hexaghost"
+      ]
+    },
+    {
+      "file": "official-monsters-05.webp",
+      "sha256": "7cbfd54f586fe5fce5e69a61b2971d38368e62534c5f800b163085d9bda2dbad",
+      "scenes": [
+        "monster-slime_boss",
+        "monster-spheric_guardian",
+        "monster-centurion",
+        "monster-mystic",
+        "monster-taskmaster",
+        "monster-book_of_stabbing"
+      ]
+    },
+    {
+      "file": "official-monsters-06.webp",
+      "sha256": "b48f778081574a5cf030f27afecba3a10044c119e1d07b32cc1bab7a6d0def33",
+      "scenes": [
+        "monster-snake_plant",
+        "monster-chosen",
+        "monster-shelled_parasite",
+        "monster-byrd",
+        "monster-snecko",
+        "monster-mugger"
+      ]
+    },
+    {
+      "file": "official-monsters-07.webp",
+      "sha256": "0f3e6a72a7f318695f3abe2f89435f97ba24379ad821209a314299c21a4edc9d",
+      "scenes": [
+        "monster-gremlin_leader",
+        "monster-torch_head",
+        "monster-collector",
+        "monster-automaton",
+        "monster-bronze_orb",
+        "monster-champ"
+      ]
+    }
+  ],
+  "before": [
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Production MonsterHelper formation, inject true,true at the misc Boolean boundary",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "hitHeight": 93.333333333333,
+          "hitWidth": 120,
+          "hitY": -16.666666666667,
+          "hp": 13,
+          "hpY": -74.666666666667,
+          "id": "red_louse",
+          "intentY": 84,
+          "portrait": 120,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -200,
+            "y": 10
+          },
+          "x": 186.66666666667,
+          "y": 40.666666666667
+        },
+        {
+          "contactShadow": false,
+          "hitHeight": 93.333333333333,
+          "hitWidth": 120,
+          "hitY": -16.666666666667,
+          "hp": 15,
+          "hpY": -74.666666666667,
+          "id": "red_louse",
+          "intentY": 84,
+          "portrait": 120,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": 80,
+            "y": 30
+          },
+          "x": 373.33333333333,
+          "y": 54
+        }
+      ],
+      "floor": 1,
+      "name": "double-red-louse",
+      "sha256": "39737f3f3656980149277a4ade8ca50cb04fd2669ee0b26e88de379d705b6775",
+      "snapshotSaveSha256": "abc42d4023e71fd15a6642c5366a8571424271c64b937a0ae8eb3f824b43c543",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Production MonsterHelper formation, inject true,false at the misc Boolean boundary",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "hitHeight": 93.333333333333,
+          "hitWidth": 120,
+          "hitY": -16.666666666667,
+          "hp": 13,
+          "hpY": -74.666666666667,
+          "id": "red_louse",
+          "intentY": 84,
+          "portrait": 120,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -200,
+            "y": 10
+          },
+          "x": 186.66666666667,
+          "y": 40.666666666667
+        },
+        {
+          "contactShadow": true,
+          "footY": -49.811320754717,
+          "hitHeight": 93.333333333333,
+          "hitWidth": 120,
+          "hitY": -6.4779874213837,
+          "hp": 12,
+          "hpY": -72.477987421384,
+          "id": "green_louse",
+          "intentY": 84,
+          "portrait": 120,
+          "shapes": 40,
+          "sourcePosition": {
+            "x": 80,
+            "y": 30
+          },
+          "x": 373.33333333333,
+          "y": -55.188679245283
+        }
+      ],
+      "floor": 1,
+      "name": "mixed-louse",
+      "sha256": "e6e4d8205754461defc578ec953553ef04534e764eda5961d4416f4c534696ae",
+      "snapshotSaveSha256": "8163a256bd07d0089889d08d36c6dd2672fa26a585dbe1bdf44ff77006e798fe",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Production MonsterHelper formation, deterministic weighted draws 7,6,2,0",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "hitHeight": 120,
+          "hitWidth": 86.666666666667,
+          "hitY": -3.3333333333333,
+          "hp": 21,
+          "hpY": -74.666666666667,
+          "id": "wizard_gremlin",
+          "intentY": 84,
+          "portrait": 120,
+          "shapes": 86,
+          "sourcePosition": {
+            "x": -320,
+            "y": 25
+          },
+          "x": 83.333333333333,
+          "y": 50.666666666667
+        },
+        {
+          "contactShadow": true,
+          "footY": -55.345911949686,
+          "hitHeight": 133.33333333333,
+          "hitWidth": 80,
+          "hitY": 11.320754716981,
+          "hp": 12,
+          "hpY": -74.679245283019,
+          "id": "shield_gremlin",
+          "intentY": 101.98742138365,
+          "portrait": 133.33333333333,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -160,
+            "y": -12
+          },
+          "x": 213.33333333333,
+          "y": -59.454088050314
+        },
+        {
+          "contactShadow": true,
+          "footY": -45.283018867925,
+          "hitHeight": 106.66666666667,
+          "hitWidth": 80,
+          "hitY": 8.0503144654088,
+          "hp": 10,
+          "hpY": -64.616352201258,
+          "id": "sneaky_gremlin",
+          "intentY": 85.383647798742,
+          "portrait": 106.66666666667,
+          "shapes": 89,
+          "sourcePosition": {
+            "x": 25,
+            "y": -35
+          },
+          "x": 336.66666666667,
+          "y": -74.883647798742
+        },
+        {
+          "contactShadow": true,
+          "footY": -48.805031446541,
+          "hitHeight": 129.33333333333,
+          "hitWidth": 86.666666666667,
+          "hitY": 15.861635220126,
+          "hp": 21,
+          "hpY": -68.138364779874,
+          "id": "mad_gremlin",
+          "intentY": 104.52830188679,
+          "portrait": 129.33333333333,
+          "shapes": 95,
+          "sourcePosition": {
+            "x": 205,
+            "y": 40
+          },
+          "x": 456.66666666667,
+          "y": -53.861635220126
+        }
+      ],
+      "floor": 1,
+      "name": "gremlin-gang",
+      "sha256": "7717c55fb89c50c7cc6742ae8d92145705ab653157331a3c090020e3b6d653fb",
+      "snapshotSaveSha256": "12432698b51d7eb5e622c8aebd3d2ec28d4891a9912e8ef26732c586235bef88",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Production Collector End Turn triggered Summons.torches and Combat.summonEnemies",
+      "encounterId": "act2_collector",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "footY": -60.377358490566,
+          "hitHeight": 160,
+          "hitWidth": 96.666666666667,
+          "hitY": 6.2893081761006,
+          "hp": 40,
+          "hpY": -93.044025157233,
+          "id": "torch_head",
+          "intentY": 110.2893081761,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -470,
+            "y": 0
+          },
+          "x": 6.6666666666666,
+          "y": -51.622641509434
+        },
+        {
+          "contactShadow": false,
+          "footY": -60.377358490566,
+          "hitHeight": 160,
+          "hitWidth": 96.666666666667,
+          "hitY": 6.2893081761006,
+          "hp": 38,
+          "hpY": -93.044025157233,
+          "id": "torch_head",
+          "intentY": 110.2893081761,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -285,
+            "y": 0
+          },
+          "x": 130,
+          "y": -51.622641509434
+        },
+        {
+          "contactShadow": false,
+          "hitHeight": 201,
+          "hitWidth": 154.61538461538,
+          "hitY": -20.615384615385,
+          "hp": 282,
+          "hpY": -132.44871794872,
+          "id": "collector",
+          "intentY": 124.5,
+          "portrait": 201,
+          "shapes": 115,
+          "sourcePosition": {
+            "x": 60,
+            "y": 135
+          },
+          "x": 360,
+          "y": 164.5
+        }
+      ],
+      "floor": 33,
+      "name": "collector-summon",
+      "sha256": "979ab574a93b6c850a11a93bb612990c68d2833afbe0d9e95d2facb294954768",
+      "snapshotSaveSha256": "270ac732b4daa1114c6ffff5af3daafc5e839dc1a3b23b81a33797332b8881b1",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Production Automaton End Turn triggered Summons.bronze and Combat.summonEnemies",
+      "encounterId": "act2_automaton",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "hitHeight": 106.66666666667,
+          "hitWidth": 106.66666666667,
+          "hitY": 0,
+          "hp": 58,
+          "hpY": -64.666666666667,
+          "id": "bronze_orb",
+          "intentY": 77.333333333333,
+          "portrait": 106.66666666667,
+          "shapes": 96,
+          "sourcePosition": {
+            "x": -300,
+            "y": 200
+          },
+          "x": 120,
+          "y": 160.66666666667
+        },
+        {
+          "contactShadow": true,
+          "footY": -110.69182389937,
+          "hitHeight": 266.66666666667,
+          "hitWidth": 180,
+          "hitY": 2.6415094339622,
+          "hp": 300,
+          "hpY": -150.0251572327,
+          "id": "automaton",
+          "intentY": 159.9748427673,
+          "portrait": 266.66666666667,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -50,
+            "y": 20
+          },
+          "x": 286.66666666667,
+          "y": 3.3584905660377
+        },
+        {
+          "contactShadow": false,
+          "hitHeight": 106.66666666667,
+          "hitWidth": 106.66666666667,
+          "hitY": 0,
+          "hp": 52,
+          "hpY": -64.666666666667,
+          "id": "bronze_orb",
+          "intentY": 77.333333333333,
+          "portrait": 106.66666666667,
+          "shapes": 96,
+          "sourcePosition": {
+            "x": 200,
+            "y": 130
+          },
+          "x": 453.33333333333,
+          "y": 114
+        }
+      ],
+      "floor": 33,
+      "name": "automaton-summon",
+      "sha256": "381e68853a9efecfc50093f25c0d1e5405d00a5d6cab7ecf0c081307376939f3",
+      "snapshotSaveSha256": "4a8251bbd5461aeb6da436e9a49ff4642db55753bd825e7fc073f569069153dd",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Production round, Act II encounter seed 10, lead fixture at one Flight immediately before real Strike",
+      "encounterId": "act2_byrds",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "flight": 1,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 30,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -360,
+            "y": 54.131568908691
+          },
+          "x": 80,
+          "y": 90.087712605794
+        },
+        {
+          "contactShadow": false,
+          "flight": 3,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 30,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -80,
+            "y": 30.944929122925
+          },
+          "x": 266.66666666667,
+          "y": 74.629952748617
+        },
+        {
+          "contactShadow": false,
+          "flight": 3,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 29,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": 200,
+            "y": 53.181282043457
+          },
+          "x": 453.33333333333,
+          "y": 89.454188028971
+        }
+      ],
+      "floor": 18,
+      "name": "byrd-01-flight",
+      "sha256": "e3df2a80e51d32d6b6f0e97cc393ead2b0c3b8b78e25a3f99ea70d0a8d6ebae1",
+      "snapshotSaveSha256": "a7a746f21c9478ca78e004483303c0ec0e39c0c95c69b274f09877ac793e3acb",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Real pointer Strike selected and played through production UI, Flight 1 to 0",
+      "encounterId": "act2_byrds",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "flight": 0,
+          "footY": -52.830188679245,
+          "hitHeight": 78.943396226415,
+          "hitWidth": 123.77358490566,
+          "hitY": -13.358490566038,
+          "hp": 27,
+          "hpY": -72.163522012579,
+          "id": "byrd",
+          "intentY": 50.11320754717,
+          "portrait": 160,
+          "shapes": 26,
+          "sourcePosition": {
+            "x": -360,
+            "y": 54.131568908691
+          },
+          "x": 80,
+          "y": -46.539111908727
+        },
+        {
+          "contactShadow": false,
+          "flight": 3,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 30,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -80,
+            "y": 30.944929122925
+          },
+          "x": 266.66666666667,
+          "y": 74.629952748617
+        },
+        {
+          "contactShadow": false,
+          "flight": 3,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 29,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": 200,
+            "y": 53.181282043457
+          },
+          "x": 453.33333333333,
+          "y": 89.454188028971
+        }
+      ],
+      "floor": 18,
+      "name": "byrd-02-knockdown",
+      "sha256": "f68d092c872c5267abdc7dfe17d181564d1e86a120ce89aa5a9b7aa7ed055793",
+      "snapshotSaveSha256": "29ff19738d8ccd4b6aa1b27923d05997b9751a70f6761dab69239933acb6ebca",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Real turn advance through Headbutt to Flight 3",
+      "encounterId": "act2_byrds",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "flight": 3,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 27,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -360,
+            "y": 54.131568908691
+          },
+          "x": 80,
+          "y": 90.087712605794
+        },
+        {
+          "contactShadow": false,
+          "flight": 3,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 30,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -80,
+            "y": 30.944929122925
+          },
+          "x": 266.66666666667,
+          "y": 74.629952748617
+        },
+        {
+          "contactShadow": false,
+          "flight": 3,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 29,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": 200,
+            "y": 53.181282043457
+          },
+          "x": 453.33333333333,
+          "y": 89.454188028971
+        }
+      ],
+      "floor": 18,
+      "name": "byrd-04-relift",
+      "sha256": "020cf2136130801a5bfc989060a9bed002168fb90f6035b9a3e2910bba997707",
+      "snapshotSaveSha256": "23699efe6135592e80d08ea7107d76085a44f02b973b533e16914f06a3c3a56c",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Production MonsterHelper formation, deterministic misc true",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -24.528301886792,
+          "hitHeight": 66.666666666667,
+          "hitWidth": 86.666666666667,
+          "hitY": -7.1949685534591,
+          "hp": 10,
+          "hpY": -59.861635220126,
+          "id": "spike_slime_s",
+          "intentY": 67.333333333333,
+          "portrait": 86.666666666667,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -230,
+            "y": 32
+          },
+          "x": 166.66666666667,
+          "y": -80.005031446541
+        },
+        {
+          "contactShadow": true,
+          "footY": -49.182389937107,
+          "hitHeight": 86.666666666667,
+          "hitWidth": 113.33333333333,
+          "hitY": -5.8490566037736,
+          "hp": 28,
+          "hpY": -68.51572327044,
+          "id": "acid_slime_m",
+          "intentY": 80.666666666667,
+          "portrait": 113.33333333333,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": 35,
+            "y": 8
+          },
+          "x": 343.33333333333,
+          "y": -60.950943396226
+        }
+      ],
+      "floor": 1,
+      "name": "small-slimes",
+      "sha256": "9e10bf66292066cfd11bd34708ee2abc9d82f9ad95cc6b537866d659918c5d1a",
+      "snapshotSaveSha256": "7c1576ad44bdd61bf5e5fd89dc8ebadf6880e46e7706a4707319e5f0a84477f6",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Production Run.startRoomCombat Boss entry at floor 33, before the first Torch Head summon",
+      "encounterId": "act2_collector",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "hitHeight": 201,
+          "hitWidth": 154.61538461538,
+          "hitY": -20.615384615385,
+          "hp": 282,
+          "hpY": -132.44871794872,
+          "id": "collector",
+          "intentY": 124.5,
+          "portrait": 201,
+          "shapes": 115,
+          "sourcePosition": {
+            "x": 60,
+            "y": 135
+          },
+          "x": 360,
+          "y": 164.5
+        }
+      ],
+      "floor": 33,
+      "name": "collector-before-summon",
+      "sha256": "b0d69f9a5317c54b98a3e33daf68b61acdfa21428bec3f1b97ed1a3b452bd299",
+      "snapshotSaveSha256": "3e50697e4daf7dc176db05c5d9d37d104e94e7d2ef8d1f9c7ffd0643504b9c2d",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Production Gremlin Leader Summons.rally and Combat.summonEnemies, deterministic pre-rally RNG seed 6",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "hitHeight": 120,
+          "hitWidth": 86.666666666667,
+          "hitY": -3.3333333333333,
+          "hp": 22,
+          "hpY": -74.666666666667,
+          "id": "wizard_gremlin",
+          "intentY": 84,
+          "portrait": 120,
+          "shapes": 86,
+          "sourcePosition": {
+            "x": -532,
+            "y": 0
+          },
+          "x": -58,
+          "y": 34
+        },
+        {
+          "contactShadow": true,
+          "footY": -48.805031446541,
+          "hitHeight": 129.33333333333,
+          "hitWidth": 86.666666666667,
+          "hitY": 15.861635220126,
+          "hp": 20,
+          "hpY": -68.138364779874,
+          "id": "mad_gremlin",
+          "intentY": 104.52830188679,
+          "portrait": 129.33333333333,
+          "shapes": 95,
+          "sourcePosition": {
+            "x": -366,
+            "y": -4
+          },
+          "x": 76,
+          "y": -64.128301886792
+        },
+        {
+          "contactShadow": true,
+          "footY": -45.283018867925,
+          "hitHeight": 106.66666666667,
+          "hitWidth": 80,
+          "hitY": 8.0503144654088,
+          "hp": 10,
+          "hpY": -64.616352201258,
+          "id": "sneaky_gremlin",
+          "intentY": 85.383647798742,
+          "portrait": 106.66666666667,
+          "shapes": 89,
+          "sourcePosition": {
+            "x": -170,
+            "y": 6
+          },
+          "x": 206.66666666667,
+          "y": -65.316981132075
+        },
+        {
+          "contactShadow": false,
+          "footY": -89.685534591195,
+          "hitHeight": 206.66666666667,
+          "hitWidth": 133.33333333333,
+          "hitY": 3.6477987421384,
+          "hp": 145,
+          "hpY": -119.01886792453,
+          "id": "gremlin_leader",
+          "intentY": 130.98113207547,
+          "portrait": 206.66666666667,
+          "shapes": 109,
+          "sourcePosition": {
+            "x": 35,
+            "y": 0
+          },
+          "x": 343.33333333333,
+          "y": -22.314465408805
+        }
+      ],
+      "floor": 18,
+      "name": "leader-wizard-summon",
+      "sha256": "f85a5c5cb4e6360af8d36216cc0000c60a84fb76ea4314dcf6e19f1c61118021",
+      "snapshotSaveSha256": "59482573ab6d34f45b1fefe7ecb03f6e698ebb589db84d2d612f87adcadba49f",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Real turn advance from Stunned to Headbutt",
+      "encounterId": "act2_byrds",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "flight": 0,
+          "footY": -52.830188679245,
+          "hitHeight": 78.943396226415,
+          "hitWidth": 123.77358490566,
+          "hitY": -13.358490566038,
+          "hp": 27,
+          "hpY": -72.163522012579,
+          "id": "byrd",
+          "intentY": 50.11320754717,
+          "portrait": 160,
+          "shapes": 26,
+          "sourcePosition": {
+            "x": -360,
+            "y": 54.131568908691
+          },
+          "x": 80,
+          "y": -46.539111908727
+        },
+        {
+          "contactShadow": false,
+          "flight": 3,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 30,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -80,
+            "y": 30.944929122925
+          },
+          "x": 266.66666666667,
+          "y": 74.629952748617
+        },
+        {
+          "contactShadow": false,
+          "flight": 3,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 29,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": 200,
+            "y": 53.181282043457
+          },
+          "x": 453.33333333333,
+          "y": 89.454188028971
+        }
+      ],
+      "floor": 18,
+      "name": "byrd-03-headbutt-ready",
+      "sha256": "0c780c2de3e8c85bf64b989dd72cbe686eb8a1ed8d2b59ffebd3664b17d304b4",
+      "snapshotSaveSha256": "d35a67fe405d5de7067049535bb973b060b9d8970d81fa4d25f4b24f1c73a9f6",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -69.433962264151,
+          "hitHeight": 160,
+          "hitWidth": 153.33333333333,
+          "hitY": 10.566037735849,
+          "hp": 53,
+          "hpY": -88.767295597484,
+          "id": "raven_adept",
+          "intentY": 114.56603773585,
+          "portrait": 160,
+          "shapes": 115,
+          "x": 320,
+          "y": -44.899371069182
+        }
+      ],
+      "floor": 1,
+      "name": "monster-raven_adept",
+      "sha256": "e4b5fc5e47df3737eb1b9d06c2245b15065e62b73479e275e92d173158202f47",
+      "snapshotSaveSha256": "3a4b52eff79a90a5b71c568585d76abc2ea127f2fe1cfb00b926c28731d1adca",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -71.949685534591,
+          "hitHeight": 113.33333333333,
+          "hitWidth": 173.33333333333,
+          "hitY": -31.949685534591,
+          "hp": 40,
+          "hpY": -107.94968553459,
+          "id": "jaw_worm",
+          "intentY": 110.66666666667,
+          "portrait": 173.33333333333,
+          "shapes": 114,
+          "x": 320,
+          "y": -34.216981132075
+        }
+      ],
+      "floor": 1,
+      "name": "monster-jaw_worm",
+      "sha256": "eb7efbfdad95ddcf5b759567236411a1d2beb16d7b6db2c2b4ed61bbe798f693",
+      "snapshotSaveSha256": "8d679b366a78dadec11f36c8dbcfb51534e5219ae15cac0e8780703f82a3cbee",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "hitHeight": 93.333333333333,
+          "hitWidth": 120,
+          "hitY": -16.666666666667,
+          "hp": 13,
+          "hpY": -74.666666666667,
+          "id": "red_louse",
+          "intentY": 84,
+          "portrait": 120,
+          "shapes": 41,
+          "x": 320,
+          "y": 34
+        }
+      ],
+      "floor": 1,
+      "name": "monster-red_louse",
+      "sha256": "4c38f65d8cfc8f808cfdd942d5aa9afd2248e43ac6334494272648fea11ba152",
+      "snapshotSaveSha256": "477f37de89311689f926a6d46024fad9140bd62b9f00e70567fb6514653f4f96",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -49.811320754717,
+          "hitHeight": 93.333333333333,
+          "hitWidth": 120,
+          "hitY": -6.4779874213836,
+          "hp": 16,
+          "hpY": -72.477987421384,
+          "id": "green_louse",
+          "intentY": 84,
+          "portrait": 120,
+          "shapes": 40,
+          "x": 320,
+          "y": -62.188679245283
+        }
+      ],
+      "floor": 1,
+      "name": "monster-green_louse",
+      "sha256": "2bf87e510d1dce1024def11c3e53a4e01c3e3feca2460906b98f98068f50797c",
+      "snapshotSaveSha256": "7b0197d0a8965f223d19f3cb8d2c960e0d5a55231e0591e155b0338ccf1fa98a",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -31.069182389937,
+          "hitHeight": 66.666666666667,
+          "hitWidth": 86.666666666667,
+          "hitY": -0.40251572327044,
+          "hp": 8,
+          "hpY": -53.069182389937,
+          "id": "acid_slime_s",
+          "intentY": 67.333333333333,
+          "portrait": 86.666666666667,
+          "shapes": 32,
+          "x": 320,
+          "y": -80.930817610063
+        }
+      ],
+      "floor": 1,
+      "name": "monster-acid_slime_s",
+      "sha256": "1e2b094d07f0d3795df41867fe2b57d7ee57ecfbcded4da7c35f9d16b27337b0",
+      "snapshotSaveSha256": "bd5a377d27ef7545bc411607f8fc035e75eca726862c2353cea43500a647e90e",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -49.182389937107,
+          "hitHeight": 86.666666666667,
+          "hitWidth": 113.33333333333,
+          "hitY": -5.8490566037736,
+          "hp": 28,
+          "hpY": -68.51572327044,
+          "id": "acid_slime_m",
+          "intentY": 80.666666666667,
+          "portrait": 113.33333333333,
+          "shapes": 41,
+          "x": 320,
+          "y": -62.817610062893
+        }
+      ],
+      "floor": 1,
+      "name": "monster-acid_slime_m",
+      "sha256": "38220cb8e3b4d965b2955a64aa3a4155229829d614868543dce6945b812e6567",
+      "snapshotSaveSha256": "8fcad2e8997892b2e97c3a0a7e7af1ccb4e9c34ec5b971b5c3edb144ceb95cc0",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -84.905660377358,
+          "hitHeight": 120,
+          "hitWidth": 200,
+          "hitY": -24.905660377358,
+          "hp": 65,
+          "hpY": -104.23899371069,
+          "id": "acid_slime_l",
+          "intentY": 124,
+          "portrait": 200,
+          "shapes": 41,
+          "x": 320,
+          "y": -27.094339622642
+        }
+      ],
+      "floor": 1,
+      "name": "monster-acid_slime_l",
+      "sha256": "b0b9077d5689f2fa7bf89d8395753472dbb0aa95784fbcb4ee73c1a28594bfd7",
+      "snapshotSaveSha256": "24901b5df0303a0be4c5b910aa6d1c68df8a90633e9f81db24ce66d4016d5906",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -24.528301886792,
+          "hitHeight": 66.666666666667,
+          "hitWidth": 86.666666666667,
+          "hitY": -7.1949685534591,
+          "hp": 10,
+          "hpY": -59.861635220126,
+          "id": "spike_slime_s",
+          "intentY": 67.333333333333,
+          "portrait": 86.666666666667,
+          "shapes": 41,
+          "x": 320,
+          "y": -87.471698113208
+        }
+      ],
+      "floor": 1,
+      "name": "monster-spike_slime_s",
+      "sha256": "73e5e81b90883e79684950693bcf70cbb28c142f5a55437c009db840f332bf42",
+      "snapshotSaveSha256": "9226f87cd62f1b3e3cb4a296522ef7de836aa5e257065c617ea7f767f714a142",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -40.62893081761,
+          "hitHeight": 86.666666666667,
+          "hitWidth": 113.33333333333,
+          "hitY": -13.962264150943,
+          "hp": 28,
+          "hpY": -76.62893081761,
+          "id": "spike_slime_m",
+          "intentY": 80.666666666667,
+          "portrait": 113.33333333333,
+          "shapes": 41,
+          "x": 320,
+          "y": -71.37106918239
+        }
+      ],
+      "floor": 1,
+      "name": "monster-spike_slime_m",
+      "sha256": "aa496ce5ebb6a40c61003d25f8de2fc3cd9ac38a64e7c36791d53e0851117870",
+      "snapshotSaveSha256": "739620d14512fb8cb99cebb0765354d0a6ad507952e54f0c47044a3aa6f570ce",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -41.509433962264,
+          "hitHeight": 120,
+          "hitWidth": 200,
+          "hitY": -1.5094339622642,
+          "hp": 69,
+          "hpY": -80.842767295597,
+          "id": "spike_slime_l",
+          "intentY": 124,
+          "portrait": 200,
+          "shapes": 41,
+          "x": 320,
+          "y": -70.490566037736
+        }
+      ],
+      "floor": 1,
+      "name": "monster-spike_slime_l",
+      "sha256": "fd89c6f06746897b3a05d02a326353d2a700e31442d140a6a14afb725ef004df",
+      "snapshotSaveSha256": "9307bef80a45ee49d0b4b29d8b8e07853f202bae046fc7ac4ca26c96b4e2627a",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -63.647798742138,
+          "hitHeight": 146.66666666667,
+          "hitWidth": 133.33333333333,
+          "hitY": 9.685534591195,
+          "hp": 44,
+          "hpY": -82.981132075472,
+          "id": "looter",
+          "intentY": 107.01886792453,
+          "portrait": 146.66666666667,
+          "shapes": 113,
+          "x": 320,
+          "y": -48.352201257862
+        }
+      ],
+      "floor": 1,
+      "name": "monster-looter",
+      "sha256": "e131a21f6586aa96692f0d5fa770086a34c127f10cfd018f1332b030876a0a6a",
+      "snapshotSaveSha256": "3046237bbe05236f13661106f0bbc7546c49961e9d00b24ad0a37e01b321bdae",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -67.987421383648,
+          "hitHeight": 153.33333333333,
+          "hitWidth": 113.33333333333,
+          "hitY": 8.6792452830189,
+          "hp": 46,
+          "hpY": -87.320754716981,
+          "id": "blue_guard",
+          "intentY": 109.34591194969,
+          "portrait": 153.33333333333,
+          "shapes": 115,
+          "x": 320,
+          "y": -44.012578616352
+        }
+      ],
+      "floor": 1,
+      "name": "monster-blue_guard",
+      "sha256": "358c723755406bd2893128a7d443627479c218d9355e93ed8c2edc36bfed0a58",
+      "snapshotSaveSha256": "b18e80e365d2b7875f2d7e9cbd5de7667a43acce695dc4b36fcda95046e6a0ca",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -67.987421383648,
+          "hitHeight": 153.33333333333,
+          "hitWidth": 113.33333333333,
+          "hitY": 8.6792452830189,
+          "hp": 46,
+          "hpY": -87.320754716981,
+          "id": "red_guard",
+          "intentY": 109.34591194969,
+          "portrait": 153.33333333333,
+          "shapes": 115,
+          "x": 320,
+          "y": -44.012578616352
+        }
+      ],
+      "floor": 1,
+      "name": "monster-red_guard",
+      "sha256": "c287c7e63b059162b74b3e7e1563f4cccf5ae4b043fdcc6d1bb0f7305b2ef206",
+      "snapshotSaveSha256": "b6e21fe3a8fcd854c03711f066872df4a8c6d8bfe26e52522c89fc07ecfe29bb",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -76.85534591195,
+          "hitHeight": 113.33333333333,
+          "hitWidth": 173.33333333333,
+          "hitY": -30.85534591195,
+          "hp": 27,
+          "hpY": -106.85534591195,
+          "id": "fungi_beast",
+          "intentY": 110.66666666667,
+          "portrait": 173.33333333333,
+          "shapes": 114,
+          "x": 320,
+          "y": -35.14465408805
+        }
+      ],
+      "floor": 1,
+      "name": "monster-fungi_beast",
+      "sha256": "cb799e8debe3b7f80fa98b4811e1a259302b8b7598fe604d243d83e474740de9",
+      "snapshotSaveSha256": "93575609dc0aa383fdd010601d2d201310a5eb1a069c5b7a305a2bc494e3b25a",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -48.805031446541,
+          "hitHeight": 129.33333333333,
+          "hitWidth": 86.666666666667,
+          "hitY": 15.861635220126,
+          "hp": 20,
+          "hpY": -68.138364779874,
+          "id": "mad_gremlin",
+          "intentY": 104.52830188679,
+          "portrait": 129.33333333333,
+          "shapes": 95,
+          "x": 320,
+          "y": -63.194968553459
+        }
+      ],
+      "floor": 1,
+      "name": "monster-mad_gremlin",
+      "sha256": "72f369fdda4fe63f85c53daec90473668a463261744e4df6b4e14b015df7c985",
+      "snapshotSaveSha256": "54f962e752e1c50d823dc6fad189b10ffecd59d5a78d92f1fb707a1c49b533e8",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -45.283018867925,
+          "hitHeight": 106.66666666667,
+          "hitWidth": 80,
+          "hitY": 8.0503144654088,
+          "hp": 10,
+          "hpY": -64.616352201258,
+          "id": "sneaky_gremlin",
+          "intentY": 85.383647798742,
+          "portrait": 106.66666666667,
+          "shapes": 89,
+          "x": 320,
+          "y": -66.716981132075
+        }
+      ],
+      "floor": 1,
+      "name": "monster-sneaky_gremlin",
+      "sha256": "0699e5fc703882218511fed859a7bcec66d2d338e61f028c651f98153703c1c5",
+      "snapshotSaveSha256": "bce2396291a0572a3e40e91bf89d13940c4e76415d03defbe994014bb8013db8",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -60.880503144654,
+          "hitHeight": 146.66666666667,
+          "hitWidth": 73.333333333333,
+          "hitY": 12.452830188679,
+          "hp": 13,
+          "hpY": -80.213836477987,
+          "id": "fat_gremlin",
+          "intentY": 109.78616352201,
+          "portrait": 146.66666666667,
+          "shapes": 96,
+          "x": 320,
+          "y": -51.119496855346
+        }
+      ],
+      "floor": 1,
+      "name": "monster-fat_gremlin",
+      "sha256": "7cb199a19430955ac0d3d924c4f3154bf274f85ebb5cf53703e92a2f8cf7f20b",
+      "snapshotSaveSha256": "89e80ea0bc8eacddc74b43055e448127c008b841e10301cbc8e7a6a2d097df92",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "hitHeight": 120,
+          "hitWidth": 86.666666666667,
+          "hitY": -3.3333333333333,
+          "hp": 21,
+          "hpY": -74.666666666667,
+          "id": "wizard_gremlin",
+          "intentY": 84,
+          "portrait": 120,
+          "shapes": 86,
+          "x": 296.66666666667,
+          "y": 34
+        }
+      ],
+      "floor": 1,
+      "name": "monster-wizard_gremlin",
+      "sha256": "af35c8cfe658fad8d3e2f2228b620a4b2158a8f25de5119234158436ae6c1037",
+      "snapshotSaveSha256": "08c4b196ef36b066b8d92b31b9adcd2df2310c0d3950892c2b86334c95d5db8c",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -55.345911949686,
+          "hitHeight": 133.33333333333,
+          "hitWidth": 80,
+          "hitY": 11.320754716981,
+          "hp": 15,
+          "hpY": -74.679245283019,
+          "id": "shield_gremlin",
+          "intentY": 101.98742138365,
+          "portrait": 133.33333333333,
+          "shapes": 41,
+          "x": 320,
+          "y": -56.654088050314
+        }
+      ],
+      "floor": 1,
+      "name": "monster-shield_gremlin",
+      "sha256": "ebb11ed6461453130c39588ebf5ef5038e2d29e48b6d13fa8c729e340b7b46fe",
+      "snapshotSaveSha256": "20df8a397a2822f21daeaef632ee962b81679cc48b8467a7478e9d1f399e0544",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "footY": -107.54716981132,
+          "hitHeight": 253.33333333333,
+          "hitWidth": 180,
+          "hitY": 12.452830188679,
+          "hp": 82,
+          "hpY": -133.54716981132,
+          "id": "gremlin_nob",
+          "intentY": 163.11949685535,
+          "portrait": 253.33333333333,
+          "shapes": 96,
+          "x": 320,
+          "y": -4.4528301886793
+        }
+      ],
+      "floor": 1,
+      "name": "monster-gremlin_nob",
+      "sha256": "256855dfdb590b03d545142be5bc61ebe9e1359b15391369333d4143f8702ea6",
+      "snapshotSaveSha256": "e95ca60c5fd5d16f2fb6dc714d2aae3042e85e6c3a5e6f7706da16ef6a524600",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -96.603773584906,
+          "hitHeight": 146.66666666667,
+          "hitWidth": 213.33333333333,
+          "hitY": -39.937106918239,
+          "hp": 109,
+          "hpY": -132.60377358491,
+          "id": "lagavulin",
+          "intentY": 130.66666666667,
+          "portrait": 213.33333333333,
+          "shapes": 115,
+          "x": 320,
+          "y": -10.729559748428
+        }
+      ],
+      "floor": 1,
+      "name": "monster-lagavulin",
+      "sha256": "08479d7e1be709ba85458e059ebfb8f6ed9bf7222ef1e84fb9bf21f8b83efd2f",
+      "snapshotSaveSha256": "d4d0ba8fa6f8cc7e4432520e2e37074abe53a085fe4c4c668ecc97df535d8d9a",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "hitHeight": 206.66666666667,
+          "hitWidth": 120,
+          "hitY": -3.3333333333333,
+          "hp": 38,
+          "hpY": -118,
+          "id": "sentry",
+          "intentY": 127.33333333333,
+          "portrait": 206.66666666667,
+          "shapes": 92,
+          "x": 320,
+          "y": 77.333333333333
+        }
+      ],
+      "floor": 1,
+      "name": "monster-sentry",
+      "sha256": "f6d1c6261d3776b2f7ca478351a79409c6c283c052f06f198aa0295acd83d850",
+      "snapshotSaveSha256": "a3f1ec644c5f3e945a2b4f6f7558da89530ae7ab41db4373901e6ac772650153",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -132.83018867925,
+          "hitHeight": 233.33333333333,
+          "hitWidth": 293.33333333333,
+          "hitY": -16.163522012579,
+          "hp": 240,
+          "hpY": -152.16352201258,
+          "id": "guardian",
+          "intentY": 170.66666666667,
+          "portrait": 293.33333333333,
+          "shapes": 96,
+          "x": 286.66666666667,
+          "y": -2.503144654088
+        }
+      ],
+      "floor": 1,
+      "name": "monster-guardian",
+      "sha256": "e60fd1fe5945320096ed3cf4e408e48be51501603058153df0abb773e31dcde6",
+      "snapshotSaveSha256": "2cf6ec7d75295333ab2e07d37ec05d8beaf466cdd594d8d130243ab72ee0bb91",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "hitHeight": 291,
+          "hitWidth": 291,
+          "hitY": 0,
+          "hp": 250,
+          "hpY": -156.83333333333,
+          "id": "hexaghost",
+          "intentY": 169.5,
+          "portrait": 291,
+          "shapes": 95,
+          "x": 320,
+          "y": 119.5
+        }
+      ],
+      "floor": 1,
+      "name": "monster-hexaghost",
+      "sha256": "5b23041751287bc6de648a1b8293b2bb253d8b2abc58f8a2d7a4a626020190e1",
+      "snapshotSaveSha256": "4912cc538f4508a3bead67152a927ffb033db219837a33c024b52d08e6573df5",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -95.59748427673,
+          "hitHeight": 233.33333333333,
+          "hitWidth": 266.66666666667,
+          "hitY": 1.0691823899371,
+          "hp": 140,
+          "hpY": -134.93081761006,
+          "id": "slime_boss",
+          "intentY": 157.33333333333,
+          "portrait": 266.66666666667,
+          "shapes": 40,
+          "x": 320,
+          "y": -9.8691823899371
+        }
+      ],
+      "floor": 1,
+      "name": "monster-slime_boss",
+      "sha256": "df7d599948f6792ce12bb16d3ec46eef31eee08f152eff1e7aae94142bf26e4e",
+      "snapshotSaveSha256": "8258859245e35e8e85fc88879f8f4e427b00c7de5709c8e026cbb57ffa09166e",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "hitHeight": 186.66666666667,
+          "hitWidth": 186.66666666667,
+          "hitY": 6.6666666666667,
+          "hp": 20,
+          "hpY": -104.66666666667,
+          "id": "spheric_guardian",
+          "intentY": 124,
+          "portrait": 186.66666666667,
+          "shapes": 94,
+          "x": 320,
+          "y": 67.333333333333
+        }
+      ],
+      "floor": 18,
+      "name": "monster-spheric_guardian",
+      "sha256": "3448f5fb49cb742f76f4fefb3cac3c2182c928d683fca4070907675182858709",
+      "snapshotSaveSha256": "8c8105f5b46ef3cfae31bf3d6c7de7ddd71da4bddececa1106f74ad8c0c724b4",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -107.92452830189,
+          "hitHeight": 220,
+          "hitWidth": 166.66666666667,
+          "hitY": -11.25786163522,
+          "hp": 76,
+          "hpY": -140.59119496855,
+          "id": "centurion",
+          "intentY": 134,
+          "portrait": 220,
+          "shapes": 112,
+          "x": 320,
+          "y": -4.0754716981132
+        }
+      ],
+      "floor": 18,
+      "name": "monster-centurion",
+      "sha256": "f8abe2f466066c350bb53d0719aee0e33429a0b2d2805e5a8e546e02b1e39f21",
+      "snapshotSaveSha256": "0c344dd446b9111f2938ac85c5978f7e44e7b725c8018d3f8ed683a98a98bf59",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -72.327044025157,
+          "hitHeight": 166.66666666667,
+          "hitWidth": 153.33333333333,
+          "hitY": -2.3270440251572,
+          "hp": 54,
+          "hpY": -104.99371069182,
+          "id": "mystic",
+          "intentY": 107.33333333333,
+          "portrait": 166.66666666667,
+          "shapes": 96,
+          "x": 320,
+          "y": -39.672955974843
+        }
+      ],
+      "floor": 18,
+      "name": "monster-mystic",
+      "sha256": "a326345f6874e5b25597eb140859bfba3bfc9008747b467ee0406f46f55caa68",
+      "snapshotSaveSha256": "232b5b601258967f6790001e306b2e0b683d521f445c3cb3e93de8f3057e28e7",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -82.767295597484,
+          "hitHeight": 186.66666666667,
+          "hitWidth": 133.33333333333,
+          "hitY": 5.2327044025157,
+          "hp": 56,
+          "hpY": -107.43396226415,
+          "id": "taskmaster",
+          "intentY": 122.56603773585,
+          "portrait": 186.66666666667,
+          "shapes": 115,
+          "x": 320,
+          "y": -29.232704402516
+        }
+      ],
+      "floor": 18,
+      "name": "monster-taskmaster",
+      "sha256": "76f25d1c639a246b7bdaaa338159b667cde4c1fefcf5d08550a3994af801cd53",
+      "snapshotSaveSha256": "0f6e71e0049a0873e30959077305fb1dda43b6c48c228abfdabc4de247e42793",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "hitHeight": 280,
+          "hitWidth": 213.33333333333,
+          "hitY": -6.6666666666667,
+          "hp": 160,
+          "hpY": -158,
+          "id": "book_of_stabbing",
+          "intentY": 164,
+          "portrait": 280,
+          "shapes": 36,
+          "x": 320,
+          "y": 117.33333333333
+        }
+      ],
+      "floor": 18,
+      "name": "monster-book_of_stabbing",
+      "sha256": "ec94f3bd7aeb67d150abedb7d39db584ef7c955c8248446af493f24001672f3d",
+      "snapshotSaveSha256": "058e0e2d5ddd32bfc59f165cd48759e7f51c04a574eaad2dee77899e5866e924",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -97.358490566038,
+          "hitHeight": 240,
+          "hitWidth": 233.33333333333,
+          "hitY": -6.6918238993711,
+          "hp": 75,
+          "hpY": -146.0251572327,
+          "id": "snake_plant",
+          "intentY": 144,
+          "portrait": 240,
+          "shapes": 40,
+          "x": 300,
+          "y": -9.9748427672956
+        }
+      ],
+      "floor": 18,
+      "name": "monster-snake_plant",
+      "sha256": "c85545f0d91b364e85af7107a080ac0101a98838e13a8b925910cc83e06fc920",
+      "snapshotSaveSha256": "2a5fc834dff1f5fb42ac0346d926db2967ed038cb07264b0bc93c4033556635a",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "footY": -79.245283018868,
+          "hitHeight": 186.66666666667,
+          "hitWidth": 133.33333333333,
+          "hitY": 7.4213836477987,
+          "hp": 95,
+          "hpY": -105.24528301887,
+          "id": "chosen",
+          "intentY": 124.75471698113,
+          "portrait": 186.66666666667,
+          "shapes": 84,
+          "x": 320,
+          "y": -37.421383647799
+        }
+      ],
+      "floor": 18,
+      "name": "monster-chosen",
+      "sha256": "54b9aef96ccce28fa86967d12663b5874c82ac874c4490c9b3969ee1eeeaff11",
+      "snapshotSaveSha256": "6c808e72d3345e850e8ef7235a795f13afc0e1d285ee9ccd282b2a0db3e61210",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -92.452830188679,
+          "hitHeight": 173.33333333333,
+          "hitWidth": 233.33333333333,
+          "hitY": -9.7861635220126,
+          "hp": 68,
+          "hpY": -115.78616352201,
+          "id": "shelled_parasite",
+          "intentY": 140.66666666667,
+          "portrait": 233.33333333333,
+          "shapes": 96,
+          "x": 306.66666666667,
+          "y": -17.213836477987
+        }
+      ],
+      "floor": 18,
+      "name": "monster-shelled_parasite",
+      "sha256": "338575926b93b0f16a5632581687a3505fd4c0f8cad4f91e9851001cfe3a1339",
+      "snapshotSaveSha256": "4d15795a81d0e99980a794b488ca0081106ee79fdd80f3a2463339d9f6b3442a",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "flight": 3,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 30,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "x": 320,
+          "y": 54
+        }
+      ],
+      "floor": 18,
+      "name": "monster-byrd",
+      "sha256": "d7e9beda34a1a21c16d7d53fc4402dcb197397d8dbb163f68467ad8892330740",
+      "snapshotSaveSha256": "9ca5697431ccf9e74655c0baa335ac01dd43221337ea69642960d4593174a47c",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -64.339622641509,
+          "hitHeight": 203.33333333333,
+          "hitWidth": 206.66666666667,
+          "hitY": 23.993710691824,
+          "hp": 119,
+          "hpY": -97.006289308176,
+          "id": "snecko",
+          "intentY": 149.66037735849,
+          "portrait": 206.66666666667,
+          "shapes": 113,
+          "x": 320,
+          "y": -47.660377358491
+        }
+      ],
+      "floor": 18,
+      "name": "monster-snecko",
+      "sha256": "9d41d2f43ae0a1d785b807c0a1c22112477774b8ca890e00a7ee44a92bad0121",
+      "snapshotSaveSha256": "d9543bfb5b55622bd888af30df5e5e975d74e1bc0cbc0ce542a568764c564448",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -66.415094339623,
+          "hitHeight": 146.66666666667,
+          "hitWidth": 133.33333333333,
+          "hitY": 6.9182389937107,
+          "hp": 48,
+          "hpY": -85.748427672956,
+          "id": "mugger",
+          "intentY": 104.25157232704,
+          "portrait": 146.66666666667,
+          "shapes": 115,
+          "x": 320,
+          "y": -45.584905660377
+        }
+      ],
+      "floor": 18,
+      "name": "monster-mugger",
+      "sha256": "c7ce2bfb0b02ddc969ebb7701d507a84ad8678adcece1bfe2b0960a5e55af102",
+      "snapshotSaveSha256": "deb613355cd8e0532ff06e8cb822e57cdfcbc66e6d1eb77ad80c296c93b931e0",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Production Gremlin Leader formation with deterministic weighted ally draws 0,2",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -48.805031446541,
+          "hitHeight": 129.33333333333,
+          "hitWidth": 86.666666666667,
+          "hitY": 15.861635220126,
+          "hp": 20,
+          "hpY": -68.138364779874,
+          "id": "mad_gremlin",
+          "intentY": 104.52830188679,
+          "portrait": 129.33333333333,
+          "shapes": 95,
+          "sourcePosition": {
+            "x": -366,
+            "y": -4
+          },
+          "x": 76,
+          "y": -64.128301886792
+        },
+        {
+          "contactShadow": true,
+          "footY": -45.283018867925,
+          "hitHeight": 106.66666666667,
+          "hitWidth": 80,
+          "hitY": 8.0503144654088,
+          "hp": 10,
+          "hpY": -64.616352201258,
+          "id": "sneaky_gremlin",
+          "intentY": 85.383647798742,
+          "portrait": 106.66666666667,
+          "shapes": 89,
+          "sourcePosition": {
+            "x": -170,
+            "y": 6
+          },
+          "x": 206.66666666667,
+          "y": -65.316981132075
+        },
+        {
+          "contactShadow": false,
+          "footY": -89.685534591195,
+          "hitHeight": 206.66666666667,
+          "hitWidth": 133.33333333333,
+          "hitY": 3.6477987421384,
+          "hp": 145,
+          "hpY": -119.01886792453,
+          "id": "gremlin_leader",
+          "intentY": 130.98113207547,
+          "portrait": 206.66666666667,
+          "shapes": 109,
+          "sourcePosition": {
+            "x": 35,
+            "y": 0
+          },
+          "x": 343.33333333333,
+          "y": -22.314465408805
+        }
+      ],
+      "floor": 18,
+      "name": "monster-gremlin_leader",
+      "sha256": "4f5949d60904b8e5f5a9f922d8b65602cd7080ae8aa54907ce0fb146f950d63a",
+      "snapshotSaveSha256": "27c913292521394d2b92f9d5e75a6ab768b4702a7a7fae6ac6161928cda504b7",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "footY": -60.377358490566,
+          "hitHeight": 160,
+          "hitWidth": 96.666666666667,
+          "hitY": 6.2893081761006,
+          "hp": 40,
+          "hpY": -93.044025157233,
+          "id": "torch_head",
+          "intentY": 110.2893081761,
+          "portrait": 160,
+          "shapes": 41,
+          "x": 320,
+          "y": -51.622641509434
+        }
+      ],
+      "floor": 18,
+      "name": "monster-torch_head",
+      "sha256": "f82bb83a13b359be85386ffd34e811378188683127763ffefb9dcd83d32919b4",
+      "snapshotSaveSha256": "b9c1994c5781bbce8fb74994449c751f109df21572bec803352f05f40ae08a96",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Production Collector boss encounter at floor 33, announced Spawn intent",
+      "encounterId": "act2_collector",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "hitHeight": 201,
+          "hitWidth": 154.61538461538,
+          "hitY": -20.615384615385,
+          "hp": 282,
+          "hpY": -132.44871794872,
+          "id": "collector",
+          "intentY": 124.5,
+          "portrait": 201,
+          "shapes": 115,
+          "sourcePosition": {
+            "x": 60,
+            "y": 135
+          },
+          "x": 360,
+          "y": 164.5
+        }
+      ],
+      "floor": 33,
+      "name": "monster-collector",
+      "sha256": "85fef94e9398b7d0ef005d04f4feb41da02b3e577c5728fd7d8e7cada3db8ea3",
+      "snapshotSaveSha256": "6b14fd81f4a3fbeafd9035d283aa155cd0927ffbfbe18555e2cd1d9f6df91294",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -110.69182389937,
+          "hitHeight": 266.66666666667,
+          "hitWidth": 180,
+          "hitY": 2.6415094339622,
+          "hp": 300,
+          "hpY": -150.0251572327,
+          "id": "automaton",
+          "intentY": 159.9748427673,
+          "portrait": 266.66666666667,
+          "shapes": 41,
+          "x": 286.66666666667,
+          "y": 3.3584905660377
+        }
+      ],
+      "floor": 18,
+      "name": "monster-automaton",
+      "sha256": "1b39d1fa32470babc4fb235e10d5282bc70063457c3681834110d39fd5031c07",
+      "snapshotSaveSha256": "2a9973eee4477742d3f6f9e3b9aeb6eef7f5d29768688a812240ce76be427245",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": false,
+          "hitHeight": 106.66666666667,
+          "hitWidth": 106.66666666667,
+          "hitY": 0,
+          "hp": 54,
+          "hpY": -64.666666666667,
+          "id": "bronze_orb",
+          "intentY": 77.333333333333,
+          "portrait": 106.66666666667,
+          "shapes": 96,
+          "x": 320,
+          "y": 27.333333333333
+        }
+      ],
+      "floor": 18,
+      "name": "monster-bronze_orb",
+      "sha256": "1ea3c3a7908339ff16c6dacbd8ad442406d0e879c526461eec2e61d1abcc8477",
+      "snapshotSaveSha256": "fac9dfa50cf7acfd15b827bf3af8a3640f577317dd8356023ce2930107e895af",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "contactShadow": true,
+          "footY": -123.77358490566,
+          "hitHeight": 273.33333333333,
+          "hitWidth": 266.66666666667,
+          "hitY": 2.8930817610063,
+          "hp": 420,
+          "hpY": -153.10691823899,
+          "id": "champ",
+          "intentY": 163.55974842767,
+          "portrait": 273.33333333333,
+          "shapes": 96,
+          "x": 260,
+          "y": 11.77358490566
+        }
+      ],
+      "floor": 18,
+      "name": "monster-champ",
+      "sha256": "82f324de58b0a230aecc0db69d6993ff3feec175a26415215288060b48056d73",
+      "snapshotSaveSha256": "cf4d6f4f022bf299e5de8b7f1d250740dd0ed8df2ad73cda998efa4096061e39",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    }
+  ],
+  "after": [
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 3,
+      "context": "Production Run.startRoomCombat Boss entry at floor 33, before the first Torch Head summon",
+      "encounterId": "act2_collector",
+      "enemies": [
+        {
+          "classification": "perched",
+          "contactShadow": false,
+          "hitHeight": 201,
+          "hitWidth": 154.61538461538,
+          "hitY": -20.615384615385,
+          "hp": 282,
+          "hpY": -132.44871794872,
+          "id": "collector",
+          "intentY": 124.5,
+          "portrait": 201,
+          "shapes": 115,
+          "sourcePosition": {
+            "x": 60,
+            "y": 135
+          },
+          "x": 360,
+          "y": 164.5
+        }
+      ],
+      "floor": 33,
+      "name": "collector-before-summon",
+      "sha256": "da24b8cb3ee032601220f4a6bfd2ae96aa05d37f064852907fd374d6c22086be",
+      "snapshotSaveSha256": "92de29e8b74cc1b1dce1e81778d2ab4c94d031d8d8a028dced253a9fee51bff5",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 3,
+      "context": "Production Collector End Turn triggered Summons.torches and Combat.summonEnemies",
+      "encounterId": "act2_collector",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": false,
+          "footY": -51.320754716981,
+          "hitHeight": 160,
+          "hitWidth": 96.666666666667,
+          "hitY": 15.345911949686,
+          "hp": 40,
+          "hpY": -83.987421383648,
+          "id": "torch_head",
+          "intentY": 119.34591194969,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -470,
+            "y": 0
+          },
+          "x": 6.6666666666666,
+          "y": -60.679245283019
+        },
+        {
+          "classification": "grounded",
+          "contactShadow": false,
+          "footY": -51.320754716981,
+          "hitHeight": 160,
+          "hitWidth": 96.666666666667,
+          "hitY": 15.345911949686,
+          "hp": 38,
+          "hpY": -83.987421383648,
+          "id": "torch_head",
+          "intentY": 119.34591194969,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -285,
+            "y": 0
+          },
+          "x": 130,
+          "y": -60.679245283019
+        },
+        {
+          "classification": "perched",
+          "contactShadow": false,
+          "hitHeight": 201,
+          "hitWidth": 154.61538461538,
+          "hitY": -20.615384615385,
+          "hp": 282,
+          "hpY": -132.44871794872,
+          "id": "collector",
+          "intentY": 124.5,
+          "portrait": 201,
+          "shapes": 115,
+          "sourcePosition": {
+            "x": 60,
+            "y": 135
+          },
+          "x": 360,
+          "y": 164.5
+        }
+      ],
+      "floor": 33,
+      "name": "collector-summon",
+      "sha256": "9ced4ae29fdc185abb9b628fff95da46fc25b1b446e5f1673b65aa04cec84b10",
+      "snapshotSaveSha256": "c3089c484bd992e9dc2dd62cf70b55d9bbe832afb19713f5aa64ac840cd5b2a0",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Production MonsterHelper formation, inject true,true at the misc Boolean boundary",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -56.603773584906,
+          "hitHeight": 93.333333333333,
+          "hitWidth": 120,
+          "hitY": -13.270440251572,
+          "hp": 13,
+          "hpY": -79.270440251572,
+          "id": "red_louse",
+          "intentY": 84,
+          "portrait": 120,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -200,
+            "y": 10
+          },
+          "x": 186.66666666667,
+          "y": -53.062893081761
+        },
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -56.603773584906,
+          "hitHeight": 93.333333333333,
+          "hitWidth": 120,
+          "hitY": -13.270440251572,
+          "hp": 15,
+          "hpY": -79.270440251572,
+          "id": "red_louse",
+          "intentY": 84,
+          "portrait": 120,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": 80,
+            "y": 30
+          },
+          "x": 373.33333333333,
+          "y": -48.396226415094
+        }
+      ],
+      "floor": 1,
+      "name": "double-red-louse",
+      "sha256": "d6d40454a52318ece2a278fcca1f8103b50a363ec0a70d501806c94d7b2845c5",
+      "snapshotSaveSha256": "18ab654e1a1bfddac7f1bc6b2185296707e73894f6c694206f8473726e34da99",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Production MonsterHelper formation, inject true,false at the misc Boolean boundary",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -56.603773584906,
+          "hitHeight": 93.333333333333,
+          "hitWidth": 120,
+          "hitY": -13.270440251572,
+          "hp": 13,
+          "hpY": -79.270440251572,
+          "id": "red_louse",
+          "intentY": 84,
+          "portrait": 120,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -200,
+            "y": 10
+          },
+          "x": 186.66666666667,
+          "y": -53.062893081761
+        },
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -49.811320754717,
+          "hitHeight": 93.333333333333,
+          "hitWidth": 120,
+          "hitY": -6.4779874213837,
+          "hp": 12,
+          "hpY": -72.477987421384,
+          "id": "green_louse",
+          "intentY": 84,
+          "portrait": 120,
+          "shapes": 40,
+          "sourcePosition": {
+            "x": 80,
+            "y": 30
+          },
+          "x": 373.33333333333,
+          "y": -55.188679245283
+        }
+      ],
+      "floor": 1,
+      "name": "mixed-louse",
+      "sha256": "a94c9fb42ba351aa736c7e8cbd6bbe4de734c23bf1ef7eb153e4741f03c94e14",
+      "snapshotSaveSha256": "0e50c03fb7710620099d1425fff7b3192d4fa276cc6dbaf59da5b7740a70f512",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Production MonsterHelper formation, deterministic weighted draws 7,6,2,0",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -55.471698113208,
+          "hitHeight": 120,
+          "hitWidth": 86.666666666667,
+          "hitY": 1.1949685534591,
+          "hp": 21,
+          "hpY": -78.138364779874,
+          "id": "wizard_gremlin",
+          "intentY": 85.194968553459,
+          "portrait": 120,
+          "shapes": 86,
+          "sourcePosition": {
+            "x": -320,
+            "y": 25
+          },
+          "x": 83.333333333333,
+          "y": -50.694968553459
+        },
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -55.345911949686,
+          "hitHeight": 133.33333333333,
+          "hitWidth": 80,
+          "hitY": 11.320754716981,
+          "hp": 12,
+          "hpY": -74.679245283019,
+          "id": "shield_gremlin",
+          "intentY": 101.98742138365,
+          "portrait": 133.33333333333,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -160,
+            "y": -12
+          },
+          "x": 213.33333333333,
+          "y": -59.454088050314
+        },
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -45.283018867925,
+          "hitHeight": 106.66666666667,
+          "hitWidth": 80,
+          "hitY": 8.0503144654088,
+          "hp": 10,
+          "hpY": -64.616352201258,
+          "id": "sneaky_gremlin",
+          "intentY": 85.383647798742,
+          "portrait": 106.66666666667,
+          "shapes": 89,
+          "sourcePosition": {
+            "x": 25,
+            "y": -35
+          },
+          "x": 336.66666666667,
+          "y": -74.883647798742
+        },
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -51.245283018868,
+          "hitHeight": 129.33333333333,
+          "hitWidth": 86.666666666667,
+          "hitY": 13.421383647799,
+          "hp": 21,
+          "hpY": -70.578616352201,
+          "id": "mad_gremlin",
+          "intentY": 102.08805031447,
+          "portrait": 129.33333333333,
+          "shapes": 95,
+          "sourcePosition": {
+            "x": 205,
+            "y": 40
+          },
+          "x": 456.66666666667,
+          "y": -51.421383647799
+        }
+      ],
+      "floor": 1,
+      "name": "gremlin-gang",
+      "sha256": "525b5635b25048cb4ab8030bbe2e7cdeee1526be2124b52bbd84382d2cc1964f",
+      "snapshotSaveSha256": "9ed963e005bad28610d23da3061821ae4462a30983bccfee33774bd85ceb812d",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Production Automaton End Turn triggered Summons.bronze and Combat.summonEnemies",
+      "encounterId": "act2_automaton",
+      "enemies": [
+        {
+          "classification": "hovering",
+          "contactShadow": false,
+          "hitHeight": 106.66666666667,
+          "hitWidth": 106.66666666667,
+          "hitY": 0,
+          "hp": 58,
+          "hpY": -64.666666666667,
+          "id": "bronze_orb",
+          "intentY": 77.333333333333,
+          "portrait": 106.66666666667,
+          "shapes": 96,
+          "sourcePosition": {
+            "x": -300,
+            "y": 200
+          },
+          "x": 120,
+          "y": 160.66666666667
+        },
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -115.72327044025,
+          "hitHeight": 266.66666666667,
+          "hitWidth": 180,
+          "hitY": -2.3899371069183,
+          "hp": 300,
+          "hpY": -155.05660377358,
+          "id": "automaton",
+          "intentY": 157.33333333333,
+          "portrait": 266.66666666667,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -50,
+            "y": 20
+          },
+          "x": 286.66666666667,
+          "y": 8.3899371069182
+        },
+        {
+          "classification": "hovering",
+          "contactShadow": false,
+          "hitHeight": 106.66666666667,
+          "hitWidth": 106.66666666667,
+          "hitY": 0,
+          "hp": 52,
+          "hpY": -64.666666666667,
+          "id": "bronze_orb",
+          "intentY": 77.333333333333,
+          "portrait": 106.66666666667,
+          "shapes": 96,
+          "sourcePosition": {
+            "x": 200,
+            "y": 130
+          },
+          "x": 453.33333333333,
+          "y": 114
+        }
+      ],
+      "floor": 33,
+      "name": "automaton-summon",
+      "sha256": "fdbc1990dada08e9891d49bcd038a593badb425e9ed35d24447f600a73e16779",
+      "snapshotSaveSha256": "5693e64d603f20ec39b78e85d7bc036a5093b2ef880a536477672e5becfbf984",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Production round, Act II encounter seed 10, lead fixture at one Flight immediately before real Strike",
+      "encounterId": "act2_byrds",
+      "enemies": [
+        {
+          "classification": "flight",
+          "contactShadow": false,
+          "flight": 1,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 30,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -360,
+            "y": 54.131568908691
+          },
+          "x": 80,
+          "y": 90.087712605794
+        },
+        {
+          "classification": "flight",
+          "contactShadow": false,
+          "flight": 3,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 30,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -80,
+            "y": 30.944929122925
+          },
+          "x": 266.66666666667,
+          "y": 74.629952748617
+        },
+        {
+          "classification": "flight",
+          "contactShadow": false,
+          "flight": 3,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 29,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": 200,
+            "y": 53.181282043457
+          },
+          "x": 453.33333333333,
+          "y": 89.454188028971
+        }
+      ],
+      "floor": 18,
+      "name": "byrd-01-flight",
+      "sha256": "e3df2a80e51d32d6b6f0e97cc393ead2b0c3b8b78e25a3f99ea70d0a8d6ebae1",
+      "snapshotSaveSha256": "a7a746f21c9478ca78e004483303c0ec0e39c0c95c69b274f09877ac793e3acb",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Real pointer Strike selected and played through production UI, Flight 1 to 0",
+      "encounterId": "act2_byrds",
+      "enemies": [
+        {
+          "classification": "flight",
+          "contactShadow": true,
+          "flight": 0,
+          "footY": -52.830188679245,
+          "hitHeight": 78.943396226415,
+          "hitWidth": 123.77358490566,
+          "hitY": -13.358490566038,
+          "hp": 27,
+          "hpY": -72.163522012579,
+          "id": "byrd",
+          "intentY": 50.11320754717,
+          "portrait": 160,
+          "shapes": 26,
+          "sourcePosition": {
+            "x": -360,
+            "y": 54.131568908691
+          },
+          "x": 80,
+          "y": -46.539111908727
+        },
+        {
+          "classification": "flight",
+          "contactShadow": false,
+          "flight": 3,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 30,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -80,
+            "y": 30.944929122925
+          },
+          "x": 266.66666666667,
+          "y": 74.629952748617
+        },
+        {
+          "classification": "flight",
+          "contactShadow": false,
+          "flight": 3,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 29,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": 200,
+            "y": 53.181282043457
+          },
+          "x": 453.33333333333,
+          "y": 89.454188028971
+        }
+      ],
+      "floor": 18,
+      "name": "byrd-02-knockdown",
+      "sha256": "f68d092c872c5267abdc7dfe17d181564d1e86a120ce89aa5a9b7aa7ed055793",
+      "snapshotSaveSha256": "29ff19738d8ccd4b6aa1b27923d05997b9751a70f6761dab69239933acb6ebca",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Real turn advance through Headbutt to Flight 3",
+      "encounterId": "act2_byrds",
+      "enemies": [
+        {
+          "classification": "flight",
+          "contactShadow": false,
+          "flight": 3,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 27,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -360,
+            "y": 54.131568908691
+          },
+          "x": 80,
+          "y": 90.087712605794
+        },
+        {
+          "classification": "flight",
+          "contactShadow": false,
+          "flight": 3,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 30,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -80,
+            "y": 30.944929122925
+          },
+          "x": 266.66666666667,
+          "y": 74.629952748617
+        },
+        {
+          "classification": "flight",
+          "contactShadow": false,
+          "flight": 3,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 29,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": 200,
+            "y": 53.181282043457
+          },
+          "x": 453.33333333333,
+          "y": 89.454188028971
+        }
+      ],
+      "floor": 18,
+      "name": "byrd-04-relift",
+      "sha256": "020cf2136130801a5bfc989060a9bed002168fb90f6035b9a3e2910bba997707",
+      "snapshotSaveSha256": "23699efe6135592e80d08ea7107d76085a44f02b973b533e16914f06a3c3a56c",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Production MonsterHelper formation, deterministic misc true",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -24.528301886792,
+          "hitHeight": 66.666666666667,
+          "hitWidth": 86.666666666667,
+          "hitY": -7.1949685534591,
+          "hp": 10,
+          "hpY": -59.861635220126,
+          "id": "spike_slime_s",
+          "intentY": 67.333333333333,
+          "portrait": 86.666666666667,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -230,
+            "y": 32
+          },
+          "x": 166.66666666667,
+          "y": -80.005031446541
+        },
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -49.182389937107,
+          "hitHeight": 86.666666666667,
+          "hitWidth": 113.33333333333,
+          "hitY": -5.8490566037736,
+          "hp": 28,
+          "hpY": -68.51572327044,
+          "id": "acid_slime_m",
+          "intentY": 80.666666666667,
+          "portrait": 113.33333333333,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": 35,
+            "y": 8
+          },
+          "x": 343.33333333333,
+          "y": -60.950943396226
+        }
+      ],
+      "floor": 1,
+      "name": "small-slimes",
+      "sha256": "9e10bf66292066cfd11bd34708ee2abc9d82f9ad95cc6b537866d659918c5d1a",
+      "snapshotSaveSha256": "7c1576ad44bdd61bf5e5fd89dc8ebadf6880e46e7706a4707319e5f0a84477f6",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Production Gremlin Leader Summons.rally and Combat.summonEnemies, deterministic pre-rally RNG seed 6",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -55.471698113208,
+          "hitHeight": 120,
+          "hitWidth": 86.666666666667,
+          "hitY": 1.1949685534591,
+          "hp": 22,
+          "hpY": -78.138364779874,
+          "id": "wizard_gremlin",
+          "intentY": 85.194968553459,
+          "portrait": 120,
+          "shapes": 86,
+          "sourcePosition": {
+            "x": -532,
+            "y": 0
+          },
+          "x": -58,
+          "y": -56.528301886792
+        },
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -51.245283018868,
+          "hitHeight": 129.33333333333,
+          "hitWidth": 86.666666666667,
+          "hitY": 13.421383647799,
+          "hp": 20,
+          "hpY": -70.578616352201,
+          "id": "mad_gremlin",
+          "intentY": 102.08805031447,
+          "portrait": 129.33333333333,
+          "shapes": 95,
+          "sourcePosition": {
+            "x": -366,
+            "y": -4
+          },
+          "x": 76,
+          "y": -61.688050314465
+        },
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -45.283018867925,
+          "hitHeight": 106.66666666667,
+          "hitWidth": 80,
+          "hitY": 8.0503144654088,
+          "hp": 10,
+          "hpY": -64.616352201258,
+          "id": "sneaky_gremlin",
+          "intentY": 85.383647798742,
+          "portrait": 106.66666666667,
+          "shapes": 89,
+          "sourcePosition": {
+            "x": -170,
+            "y": 6
+          },
+          "x": 206.66666666667,
+          "y": -65.316981132075
+        },
+        {
+          "classification": "grounded",
+          "contactShadow": false,
+          "footY": -83.836477987421,
+          "hitHeight": 206.66666666667,
+          "hitWidth": 133.33333333333,
+          "hitY": 9.4968553459119,
+          "hp": 145,
+          "hpY": -113.16981132075,
+          "id": "gremlin_leader",
+          "intentY": 136.83018867925,
+          "portrait": 206.66666666667,
+          "shapes": 109,
+          "sourcePosition": {
+            "x": 35,
+            "y": 0
+          },
+          "x": 343.33333333333,
+          "y": -28.163522012579
+        }
+      ],
+      "floor": 18,
+      "name": "leader-wizard-summon",
+      "sha256": "5abadd539cd179b0cfaa0c1701f4f3ef484adb212b2da4d7909ce6985da2082e",
+      "snapshotSaveSha256": "4ff484fc6f57e3eead9fd08500f376dc90102761c12a5f898acb06751ab9110f",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Real turn advance from Stunned to Headbutt",
+      "encounterId": "act2_byrds",
+      "enemies": [
+        {
+          "classification": "flight",
+          "contactShadow": true,
+          "flight": 0,
+          "footY": -52.830188679245,
+          "hitHeight": 78.943396226415,
+          "hitWidth": 123.77358490566,
+          "hitY": -13.358490566038,
+          "hp": 27,
+          "hpY": -72.163522012579,
+          "id": "byrd",
+          "intentY": 50.11320754717,
+          "portrait": 160,
+          "shapes": 26,
+          "sourcePosition": {
+            "x": -360,
+            "y": 54.131568908691
+          },
+          "x": 80,
+          "y": -46.539111908727
+        },
+        {
+          "classification": "flight",
+          "contactShadow": false,
+          "flight": 3,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 30,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": -80,
+            "y": 30.944929122925
+          },
+          "x": 266.66666666667,
+          "y": 74.629952748617
+        },
+        {
+          "classification": "flight",
+          "contactShadow": false,
+          "flight": 3,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 29,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "sourcePosition": {
+            "x": 200,
+            "y": 53.181282043457
+          },
+          "x": 453.33333333333,
+          "y": 89.454188028971
+        }
+      ],
+      "floor": 18,
+      "name": "byrd-03-headbutt-ready",
+      "sha256": "0c780c2de3e8c85bf64b989dd72cbe686eb8a1ed8d2b59ffebd3664b17d304b4",
+      "snapshotSaveSha256": "d35a67fe405d5de7067049535bb973b060b9d8970d81fa4d25f4b24f1c73a9f6",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -69.433962264151,
+          "hitHeight": 160,
+          "hitWidth": 153.33333333333,
+          "hitY": 10.566037735849,
+          "hp": 53,
+          "hpY": -88.767295597484,
+          "id": "raven_adept",
+          "intentY": 114.56603773585,
+          "portrait": 160,
+          "shapes": 115,
+          "x": 320,
+          "y": -44.899371069182
+        }
+      ],
+      "floor": 1,
+      "name": "monster-raven_adept",
+      "sha256": "e4b5fc5e47df3737eb1b9d06c2245b15065e62b73479e275e92d173158202f47",
+      "snapshotSaveSha256": "3a4b52eff79a90a5b71c568585d76abc2ea127f2fe1cfb00b926c28731d1adca",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -71.949685534591,
+          "hitHeight": 113.33333333333,
+          "hitWidth": 173.33333333333,
+          "hitY": -31.949685534591,
+          "hp": 40,
+          "hpY": -107.94968553459,
+          "id": "jaw_worm",
+          "intentY": 110.66666666667,
+          "portrait": 173.33333333333,
+          "shapes": 114,
+          "x": 320,
+          "y": -34.216981132075
+        }
+      ],
+      "floor": 1,
+      "name": "monster-jaw_worm",
+      "sha256": "eb7efbfdad95ddcf5b759567236411a1d2beb16d7b6db2c2b4ed61bbe798f693",
+      "snapshotSaveSha256": "8d679b366a78dadec11f36c8dbcfb51534e5219ae15cac0e8780703f82a3cbee",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -56.603773584906,
+          "hitHeight": 93.333333333333,
+          "hitWidth": 120,
+          "hitY": -13.270440251572,
+          "hp": 13,
+          "hpY": -79.270440251572,
+          "id": "red_louse",
+          "intentY": 84,
+          "portrait": 120,
+          "shapes": 41,
+          "x": 320,
+          "y": -55.396226415094
+        }
+      ],
+      "floor": 1,
+      "name": "monster-red_louse",
+      "sha256": "0462a425aba2eb387696d4336939dafa16c6ebde7eee2f72fc8045c2991a1439",
+      "snapshotSaveSha256": "5bc0412f82498d563f6865a9e2c0491fd6011107f3dedbb70e9564f21636e180",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -49.811320754717,
+          "hitHeight": 93.333333333333,
+          "hitWidth": 120,
+          "hitY": -6.4779874213836,
+          "hp": 16,
+          "hpY": -72.477987421384,
+          "id": "green_louse",
+          "intentY": 84,
+          "portrait": 120,
+          "shapes": 40,
+          "x": 320,
+          "y": -62.188679245283
+        }
+      ],
+      "floor": 1,
+      "name": "monster-green_louse",
+      "sha256": "2bf87e510d1dce1024def11c3e53a4e01c3e3feca2460906b98f98068f50797c",
+      "snapshotSaveSha256": "7b0197d0a8965f223d19f3cb8d2c960e0d5a55231e0591e155b0338ccf1fa98a",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -31.069182389937,
+          "hitHeight": 66.666666666667,
+          "hitWidth": 86.666666666667,
+          "hitY": -0.40251572327044,
+          "hp": 8,
+          "hpY": -53.069182389937,
+          "id": "acid_slime_s",
+          "intentY": 67.333333333333,
+          "portrait": 86.666666666667,
+          "shapes": 32,
+          "x": 320,
+          "y": -80.930817610063
+        }
+      ],
+      "floor": 1,
+      "name": "monster-acid_slime_s",
+      "sha256": "1e2b094d07f0d3795df41867fe2b57d7ee57ecfbcded4da7c35f9d16b27337b0",
+      "snapshotSaveSha256": "bd5a377d27ef7545bc411607f8fc035e75eca726862c2353cea43500a647e90e",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -49.182389937107,
+          "hitHeight": 86.666666666667,
+          "hitWidth": 113.33333333333,
+          "hitY": -5.8490566037736,
+          "hp": 28,
+          "hpY": -68.51572327044,
+          "id": "acid_slime_m",
+          "intentY": 80.666666666667,
+          "portrait": 113.33333333333,
+          "shapes": 41,
+          "x": 320,
+          "y": -62.817610062893
+        }
+      ],
+      "floor": 1,
+      "name": "monster-acid_slime_m",
+      "sha256": "38220cb8e3b4d965b2955a64aa3a4155229829d614868543dce6945b812e6567",
+      "snapshotSaveSha256": "8fcad2e8997892b2e97c3a0a7e7af1ccb4e9c34ec5b971b5c3edb144ceb95cc0",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -84.905660377358,
+          "hitHeight": 120,
+          "hitWidth": 200,
+          "hitY": -24.905660377358,
+          "hp": 65,
+          "hpY": -104.23899371069,
+          "id": "acid_slime_l",
+          "intentY": 124,
+          "portrait": 200,
+          "shapes": 41,
+          "x": 320,
+          "y": -27.094339622642
+        }
+      ],
+      "floor": 1,
+      "name": "monster-acid_slime_l",
+      "sha256": "b0b9077d5689f2fa7bf89d8395753472dbb0aa95784fbcb4ee73c1a28594bfd7",
+      "snapshotSaveSha256": "24901b5df0303a0be4c5b910aa6d1c68df8a90633e9f81db24ce66d4016d5906",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -24.528301886792,
+          "hitHeight": 66.666666666667,
+          "hitWidth": 86.666666666667,
+          "hitY": -7.1949685534591,
+          "hp": 10,
+          "hpY": -59.861635220126,
+          "id": "spike_slime_s",
+          "intentY": 67.333333333333,
+          "portrait": 86.666666666667,
+          "shapes": 41,
+          "x": 320,
+          "y": -87.471698113208
+        }
+      ],
+      "floor": 1,
+      "name": "monster-spike_slime_s",
+      "sha256": "73e5e81b90883e79684950693bcf70cbb28c142f5a55437c009db840f332bf42",
+      "snapshotSaveSha256": "9226f87cd62f1b3e3cb4a296522ef7de836aa5e257065c617ea7f767f714a142",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -40.62893081761,
+          "hitHeight": 86.666666666667,
+          "hitWidth": 113.33333333333,
+          "hitY": -13.962264150943,
+          "hp": 28,
+          "hpY": -76.62893081761,
+          "id": "spike_slime_m",
+          "intentY": 80.666666666667,
+          "portrait": 113.33333333333,
+          "shapes": 41,
+          "x": 320,
+          "y": -71.37106918239
+        }
+      ],
+      "floor": 1,
+      "name": "monster-spike_slime_m",
+      "sha256": "aa496ce5ebb6a40c61003d25f8de2fc3cd9ac38a64e7c36791d53e0851117870",
+      "snapshotSaveSha256": "739620d14512fb8cb99cebb0765354d0a6ad507952e54f0c47044a3aa6f570ce",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -41.509433962264,
+          "hitHeight": 120,
+          "hitWidth": 200,
+          "hitY": -1.5094339622642,
+          "hp": 69,
+          "hpY": -80.842767295597,
+          "id": "spike_slime_l",
+          "intentY": 124,
+          "portrait": 200,
+          "shapes": 41,
+          "x": 320,
+          "y": -70.490566037736
+        }
+      ],
+      "floor": 1,
+      "name": "monster-spike_slime_l",
+      "sha256": "fd89c6f06746897b3a05d02a326353d2a700e31442d140a6a14afb725ef004df",
+      "snapshotSaveSha256": "9307bef80a45ee49d0b4b29d8b8e07853f202bae046fc7ac4ca26c96b4e2627a",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -63.647798742138,
+          "hitHeight": 146.66666666667,
+          "hitWidth": 133.33333333333,
+          "hitY": 9.685534591195,
+          "hp": 44,
+          "hpY": -82.981132075472,
+          "id": "looter",
+          "intentY": 107.01886792453,
+          "portrait": 146.66666666667,
+          "shapes": 113,
+          "x": 320,
+          "y": -48.352201257862
+        }
+      ],
+      "floor": 1,
+      "name": "monster-looter",
+      "sha256": "e131a21f6586aa96692f0d5fa770086a34c127f10cfd018f1332b030876a0a6a",
+      "snapshotSaveSha256": "3046237bbe05236f13661106f0bbc7546c49961e9d00b24ad0a37e01b321bdae",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -67.987421383648,
+          "hitHeight": 153.33333333333,
+          "hitWidth": 113.33333333333,
+          "hitY": 8.6792452830189,
+          "hp": 46,
+          "hpY": -87.320754716981,
+          "id": "blue_guard",
+          "intentY": 109.34591194969,
+          "portrait": 153.33333333333,
+          "shapes": 115,
+          "x": 320,
+          "y": -44.012578616352
+        }
+      ],
+      "floor": 1,
+      "name": "monster-blue_guard",
+      "sha256": "358c723755406bd2893128a7d443627479c218d9355e93ed8c2edc36bfed0a58",
+      "snapshotSaveSha256": "b18e80e365d2b7875f2d7e9cbd5de7667a43acce695dc4b36fcda95046e6a0ca",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -67.987421383648,
+          "hitHeight": 153.33333333333,
+          "hitWidth": 113.33333333333,
+          "hitY": 8.6792452830189,
+          "hp": 46,
+          "hpY": -87.320754716981,
+          "id": "red_guard",
+          "intentY": 109.34591194969,
+          "portrait": 153.33333333333,
+          "shapes": 115,
+          "x": 320,
+          "y": -44.012578616352
+        }
+      ],
+      "floor": 1,
+      "name": "monster-red_guard",
+      "sha256": "c287c7e63b059162b74b3e7e1563f4cccf5ae4b043fdcc6d1bb0f7305b2ef206",
+      "snapshotSaveSha256": "b6e21fe3a8fcd854c03711f066872df4a8c6d8bfe26e52522c89fc07ecfe29bb",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -76.85534591195,
+          "hitHeight": 113.33333333333,
+          "hitWidth": 173.33333333333,
+          "hitY": -30.85534591195,
+          "hp": 27,
+          "hpY": -106.85534591195,
+          "id": "fungi_beast",
+          "intentY": 110.66666666667,
+          "portrait": 173.33333333333,
+          "shapes": 114,
+          "x": 320,
+          "y": -35.14465408805
+        }
+      ],
+      "floor": 1,
+      "name": "monster-fungi_beast",
+      "sha256": "cb799e8debe3b7f80fa98b4811e1a259302b8b7598fe604d243d83e474740de9",
+      "snapshotSaveSha256": "93575609dc0aa383fdd010601d2d201310a5eb1a069c5b7a305a2bc494e3b25a",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -51.245283018868,
+          "hitHeight": 129.33333333333,
+          "hitWidth": 86.666666666667,
+          "hitY": 13.421383647799,
+          "hp": 20,
+          "hpY": -70.578616352201,
+          "id": "mad_gremlin",
+          "intentY": 102.08805031447,
+          "portrait": 129.33333333333,
+          "shapes": 95,
+          "x": 320,
+          "y": -60.754716981132
+        }
+      ],
+      "floor": 1,
+      "name": "monster-mad_gremlin",
+      "sha256": "d804377f2c31f40aee6480ffe3887881e4e4550aac0697824f6efeed380f216d",
+      "snapshotSaveSha256": "4f577d9b96cf641a30f81098bf43feb0bce404dfa052c91eec04715cafe6b4cd",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -45.283018867925,
+          "hitHeight": 106.66666666667,
+          "hitWidth": 80,
+          "hitY": 8.0503144654088,
+          "hp": 10,
+          "hpY": -64.616352201258,
+          "id": "sneaky_gremlin",
+          "intentY": 85.383647798742,
+          "portrait": 106.66666666667,
+          "shapes": 89,
+          "x": 320,
+          "y": -66.716981132075
+        }
+      ],
+      "floor": 1,
+      "name": "monster-sneaky_gremlin",
+      "sha256": "0699e5fc703882218511fed859a7bcec66d2d338e61f028c651f98153703c1c5",
+      "snapshotSaveSha256": "bce2396291a0572a3e40e91bf89d13940c4e76415d03defbe994014bb8013db8",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -60.880503144654,
+          "hitHeight": 146.66666666667,
+          "hitWidth": 73.333333333333,
+          "hitY": 12.452830188679,
+          "hp": 13,
+          "hpY": -80.213836477987,
+          "id": "fat_gremlin",
+          "intentY": 109.78616352201,
+          "portrait": 146.66666666667,
+          "shapes": 96,
+          "x": 320,
+          "y": -51.119496855346
+        }
+      ],
+      "floor": 1,
+      "name": "monster-fat_gremlin",
+      "sha256": "7cb199a19430955ac0d3d924c4f3154bf274f85ebb5cf53703e92a2f8cf7f20b",
+      "snapshotSaveSha256": "89e80ea0bc8eacddc74b43055e448127c008b841e10301cbc8e7a6a2d097df92",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -55.471698113208,
+          "hitHeight": 120,
+          "hitWidth": 86.666666666667,
+          "hitY": 1.1949685534591,
+          "hp": 21,
+          "hpY": -78.138364779874,
+          "id": "wizard_gremlin",
+          "intentY": 85.194968553459,
+          "portrait": 120,
+          "shapes": 86,
+          "x": 296.66666666667,
+          "y": -56.528301886792
+        }
+      ],
+      "floor": 1,
+      "name": "monster-wizard_gremlin",
+      "sha256": "80952f8bcd5289d5ad1acc1bbc76fe71148eb5acdbc0de71b4fff7b1adae62ce",
+      "snapshotSaveSha256": "b49bb73044ea9669ba04086ec3b8203c80c488475e3c2ae0c6fa214448a890a6",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -55.345911949686,
+          "hitHeight": 133.33333333333,
+          "hitWidth": 80,
+          "hitY": 11.320754716981,
+          "hp": 15,
+          "hpY": -74.679245283019,
+          "id": "shield_gremlin",
+          "intentY": 101.98742138365,
+          "portrait": 133.33333333333,
+          "shapes": 41,
+          "x": 320,
+          "y": -56.654088050314
+        }
+      ],
+      "floor": 1,
+      "name": "monster-shield_gremlin",
+      "sha256": "ebb11ed6461453130c39588ebf5ef5038e2d29e48b6d13fa8c729e340b7b46fe",
+      "snapshotSaveSha256": "20df8a397a2822f21daeaef632ee962b81679cc48b8467a7478e9d1f399e0544",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": false,
+          "footY": -102.76729559748,
+          "hitHeight": 253.33333333333,
+          "hitWidth": 180,
+          "hitY": 17.232704402516,
+          "hp": 82,
+          "hpY": -128.76729559748,
+          "id": "gremlin_nob",
+          "intentY": 167.89937106918,
+          "portrait": 253.33333333333,
+          "shapes": 96,
+          "x": 320,
+          "y": -9.2327044025157
+        }
+      ],
+      "floor": 1,
+      "name": "monster-gremlin_nob",
+      "sha256": "0b74b80a086963f4b4fec938906810511e1ed36c551c9739e5fff300121c0f0e",
+      "snapshotSaveSha256": "578c87f222369f3d13e0adfad20cc212fb478145523fbcfc24eb1b99243c108a",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -96.603773584906,
+          "hitHeight": 146.66666666667,
+          "hitWidth": 213.33333333333,
+          "hitY": -39.937106918239,
+          "hp": 109,
+          "hpY": -132.60377358491,
+          "id": "lagavulin",
+          "intentY": 130.66666666667,
+          "portrait": 213.33333333333,
+          "shapes": 115,
+          "x": 320,
+          "y": -10.729559748428
+        }
+      ],
+      "floor": 1,
+      "name": "monster-lagavulin",
+      "sha256": "08479d7e1be709ba85458e059ebfb8f6ed9bf7222ef1e84fb9bf21f8b83efd2f",
+      "snapshotSaveSha256": "d4d0ba8fa6f8cc7e4432520e2e37074abe53a085fe4c4c668ecc97df535d8d9a",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "hovering",
+          "contactShadow": false,
+          "hitHeight": 206.66666666667,
+          "hitWidth": 120,
+          "hitY": -3.3333333333333,
+          "hp": 38,
+          "hpY": -118,
+          "id": "sentry",
+          "intentY": 127.33333333333,
+          "portrait": 206.66666666667,
+          "shapes": 92,
+          "x": 320,
+          "y": 77.333333333333
+        }
+      ],
+      "floor": 1,
+      "name": "monster-sentry",
+      "sha256": "f6d1c6261d3776b2f7ca478351a79409c6c283c052f06f198aa0295acd83d850",
+      "snapshotSaveSha256": "a3f1ec644c5f3e945a2b4f6f7558da89530ae7ab41db4373901e6ac772650153",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -132.83018867925,
+          "hitHeight": 233.33333333333,
+          "hitWidth": 293.33333333333,
+          "hitY": -16.163522012579,
+          "hp": 240,
+          "hpY": -152.16352201258,
+          "id": "guardian",
+          "intentY": 170.66666666667,
+          "portrait": 293.33333333333,
+          "shapes": 96,
+          "x": 286.66666666667,
+          "y": -2.503144654088
+        }
+      ],
+      "floor": 1,
+      "name": "monster-guardian",
+      "sha256": "e60fd1fe5945320096ed3cf4e408e48be51501603058153df0abb773e31dcde6",
+      "snapshotSaveSha256": "2cf6ec7d75295333ab2e07d37ec05d8beaf466cdd594d8d130243ab72ee0bb91",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "hovering",
+          "contactShadow": false,
+          "hitHeight": 291,
+          "hitWidth": 291,
+          "hitY": 0,
+          "hp": 250,
+          "hpY": -156.83333333333,
+          "id": "hexaghost",
+          "intentY": 169.5,
+          "portrait": 291,
+          "shapes": 95,
+          "x": 320,
+          "y": 119.5
+        }
+      ],
+      "floor": 1,
+      "name": "monster-hexaghost",
+      "sha256": "5b23041751287bc6de648a1b8293b2bb253d8b2abc58f8a2d7a4a626020190e1",
+      "snapshotSaveSha256": "4912cc538f4508a3bead67152a927ffb033db219837a33c024b52d08e6573df5",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 1,
+      "backgroundSlots": 229,
+      "backgroundVariant": 1,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -95.59748427673,
+          "hitHeight": 233.33333333333,
+          "hitWidth": 266.66666666667,
+          "hitY": 1.0691823899371,
+          "hp": 140,
+          "hpY": -134.93081761006,
+          "id": "slime_boss",
+          "intentY": 157.33333333333,
+          "portrait": 266.66666666667,
+          "shapes": 40,
+          "x": 320,
+          "y": -9.8691823899371
+        }
+      ],
+      "floor": 1,
+      "name": "monster-slime_boss",
+      "sha256": "df7d599948f6792ce12bb16d3ec46eef31eee08f152eff1e7aae94142bf26e4e",
+      "snapshotSaveSha256": "8258859245e35e8e85fc88879f8f4e427b00c7de5709c8e026cbb57ffa09166e",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "hovering",
+          "contactShadow": false,
+          "hitHeight": 186.66666666667,
+          "hitWidth": 186.66666666667,
+          "hitY": 6.6666666666667,
+          "hp": 20,
+          "hpY": -104.66666666667,
+          "id": "spheric_guardian",
+          "intentY": 124,
+          "portrait": 186.66666666667,
+          "shapes": 94,
+          "x": 320,
+          "y": 67.333333333333
+        }
+      ],
+      "floor": 18,
+      "name": "monster-spheric_guardian",
+      "sha256": "3448f5fb49cb742f76f4fefb3cac3c2182c928d683fca4070907675182858709",
+      "snapshotSaveSha256": "8c8105f5b46ef3cfae31bf3d6c7de7ddd71da4bddececa1106f74ad8c0c724b4",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -107.92452830189,
+          "hitHeight": 220,
+          "hitWidth": 166.66666666667,
+          "hitY": -11.25786163522,
+          "hp": 76,
+          "hpY": -140.59119496855,
+          "id": "centurion",
+          "intentY": 134,
+          "portrait": 220,
+          "shapes": 112,
+          "x": 320,
+          "y": -4.0754716981132
+        }
+      ],
+      "floor": 18,
+      "name": "monster-centurion",
+      "sha256": "f8abe2f466066c350bb53d0719aee0e33429a0b2d2805e5a8e546e02b1e39f21",
+      "snapshotSaveSha256": "0c344dd446b9111f2938ac85c5978f7e44e7b725c8018d3f8ed683a98a98bf59",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -73.899371069182,
+          "hitHeight": 166.66666666667,
+          "hitWidth": 153.33333333333,
+          "hitY": -3.8993710691824,
+          "hp": 54,
+          "hpY": -106.56603773585,
+          "id": "mystic",
+          "intentY": 107.33333333333,
+          "portrait": 166.66666666667,
+          "shapes": 96,
+          "x": 320,
+          "y": -38.100628930818
+        }
+      ],
+      "floor": 18,
+      "name": "monster-mystic",
+      "sha256": "814b9e8a7b22ef84041aedc33dd1e376afb1d75f5994987dc8242a0535d45363",
+      "snapshotSaveSha256": "e0fb9ad62cf2199c08c1b2119e302bccb66615da12d3b88ddb053d25effd8836",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -82.767295597484,
+          "hitHeight": 186.66666666667,
+          "hitWidth": 133.33333333333,
+          "hitY": 5.2327044025157,
+          "hp": 56,
+          "hpY": -107.43396226415,
+          "id": "taskmaster",
+          "intentY": 122.56603773585,
+          "portrait": 186.66666666667,
+          "shapes": 115,
+          "x": 320,
+          "y": -29.232704402516
+        }
+      ],
+      "floor": 18,
+      "name": "monster-taskmaster",
+      "sha256": "76f25d1c639a246b7bdaaa338159b667cde4c1fefcf5d08550a3994af801cd53",
+      "snapshotSaveSha256": "0f6e71e0049a0873e30959077305fb1dda43b6c48c228abfdabc4de247e42793",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "hovering",
+          "contactShadow": false,
+          "hitHeight": 280,
+          "hitWidth": 213.33333333333,
+          "hitY": -6.6666666666667,
+          "hp": 160,
+          "hpY": -158,
+          "id": "book_of_stabbing",
+          "intentY": 164,
+          "portrait": 280,
+          "shapes": 36,
+          "x": 320,
+          "y": 117.33333333333
+        }
+      ],
+      "floor": 18,
+      "name": "monster-book_of_stabbing",
+      "sha256": "ec94f3bd7aeb67d150abedb7d39db584ef7c955c8248446af493f24001672f3d",
+      "snapshotSaveSha256": "058e0e2d5ddd32bfc59f165cd48759e7f51c04a574eaad2dee77899e5866e924",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -97.358490566038,
+          "hitHeight": 240,
+          "hitWidth": 233.33333333333,
+          "hitY": -6.6918238993711,
+          "hp": 75,
+          "hpY": -146.0251572327,
+          "id": "snake_plant",
+          "intentY": 144,
+          "portrait": 240,
+          "shapes": 40,
+          "x": 300,
+          "y": -9.9748427672956
+        }
+      ],
+      "floor": 18,
+      "name": "monster-snake_plant",
+      "sha256": "c85545f0d91b364e85af7107a080ac0101a98838e13a8b925910cc83e06fc920",
+      "snapshotSaveSha256": "2a5fc834dff1f5fb42ac0346d926db2967ed038cb07264b0bc93c4033556635a",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": false,
+          "footY": -75.723270440252,
+          "hitHeight": 186.66666666667,
+          "hitWidth": 133.33333333333,
+          "hitY": 10.943396226415,
+          "hp": 95,
+          "hpY": -101.72327044025,
+          "id": "chosen",
+          "intentY": 128.27672955975,
+          "portrait": 186.66666666667,
+          "shapes": 84,
+          "x": 320,
+          "y": -40.943396226415
+        }
+      ],
+      "floor": 18,
+      "name": "monster-chosen",
+      "sha256": "0c9b95b6b4177b6df5ebcf3743c09671ff4424c26d5074c81d4156ea1c29cfe5",
+      "snapshotSaveSha256": "f06185e7c61d882e498952416d7a6fbda5ce3837a15f9c0891db48535a382a7c",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -96.85534591195,
+          "hitHeight": 173.33333333333,
+          "hitWidth": 233.33333333333,
+          "hitY": -14.188679245283,
+          "hp": 68,
+          "hpY": -120.18867924528,
+          "id": "shelled_parasite",
+          "intentY": 140.66666666667,
+          "portrait": 233.33333333333,
+          "shapes": 96,
+          "x": 306.66666666667,
+          "y": -12.811320754717
+        }
+      ],
+      "floor": 18,
+      "name": "monster-shelled_parasite",
+      "sha256": "c6dc41dda920cabb783ab7042993d299a915752e1869768492078b5bc65a5dde",
+      "snapshotSaveSha256": "fdc88263598e02028616cb618e73801551ad592019aa9768aa362f7a658602ad",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "flight",
+          "contactShadow": false,
+          "flight": 3,
+          "hitHeight": 120,
+          "hitWidth": 160,
+          "hitY": 13.333333333333,
+          "hp": 30,
+          "hpY": -91.333333333333,
+          "id": "byrd",
+          "intentY": 104,
+          "portrait": 160,
+          "shapes": 41,
+          "x": 320,
+          "y": 54
+        }
+      ],
+      "floor": 18,
+      "name": "monster-byrd",
+      "sha256": "d7e9beda34a1a21c16d7d53fc4402dcb197397d8dbb163f68467ad8892330740",
+      "snapshotSaveSha256": "9ca5697431ccf9e74655c0baa335ac01dd43221337ea69642960d4593174a47c",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -64.339622641509,
+          "hitHeight": 203.33333333333,
+          "hitWidth": 206.66666666667,
+          "hitY": 23.993710691824,
+          "hp": 119,
+          "hpY": -97.006289308176,
+          "id": "snecko",
+          "intentY": 149.66037735849,
+          "portrait": 206.66666666667,
+          "shapes": 113,
+          "x": 320,
+          "y": -47.660377358491
+        }
+      ],
+      "floor": 18,
+      "name": "monster-snecko",
+      "sha256": "bfa6a3912b2270336525efa57a67e16991dccce834e551a8afbf1b130401a85d",
+      "snapshotSaveSha256": "0ad391677003b405e6dde255e9456d69f952dbc4e29d228c80219fd680fe63f9",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -66.415094339623,
+          "hitHeight": 146.66666666667,
+          "hitWidth": 133.33333333333,
+          "hitY": 6.9182389937107,
+          "hp": 48,
+          "hpY": -85.748427672956,
+          "id": "mugger",
+          "intentY": 104.25157232704,
+          "portrait": 146.66666666667,
+          "shapes": 115,
+          "x": 320,
+          "y": -45.584905660377
+        }
+      ],
+      "floor": 18,
+      "name": "monster-mugger",
+      "sha256": "c7ce2bfb0b02ddc969ebb7701d507a84ad8678adcece1bfe2b0960a5e55af102",
+      "snapshotSaveSha256": "deb613355cd8e0532ff06e8cb822e57cdfcbc66e6d1eb77ad80c296c93b931e0",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Production Gremlin Leader formation with deterministic weighted ally draws 0,2",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -51.245283018868,
+          "hitHeight": 129.33333333333,
+          "hitWidth": 86.666666666667,
+          "hitY": 13.421383647799,
+          "hp": 20,
+          "hpY": -70.578616352201,
+          "id": "mad_gremlin",
+          "intentY": 102.08805031447,
+          "portrait": 129.33333333333,
+          "shapes": 95,
+          "sourcePosition": {
+            "x": -366,
+            "y": -4
+          },
+          "x": 76,
+          "y": -61.688050314465
+        },
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -45.283018867925,
+          "hitHeight": 106.66666666667,
+          "hitWidth": 80,
+          "hitY": 8.0503144654088,
+          "hp": 10,
+          "hpY": -64.616352201258,
+          "id": "sneaky_gremlin",
+          "intentY": 85.383647798742,
+          "portrait": 106.66666666667,
+          "shapes": 89,
+          "sourcePosition": {
+            "x": -170,
+            "y": 6
+          },
+          "x": 206.66666666667,
+          "y": -65.316981132075
+        },
+        {
+          "classification": "grounded",
+          "contactShadow": false,
+          "footY": -83.836477987421,
+          "hitHeight": 206.66666666667,
+          "hitWidth": 133.33333333333,
+          "hitY": 9.4968553459119,
+          "hp": 145,
+          "hpY": -113.16981132075,
+          "id": "gremlin_leader",
+          "intentY": 136.83018867925,
+          "portrait": 206.66666666667,
+          "shapes": 109,
+          "sourcePosition": {
+            "x": 35,
+            "y": 0
+          },
+          "x": 343.33333333333,
+          "y": -28.163522012579
+        }
+      ],
+      "floor": 18,
+      "name": "monster-gremlin_leader",
+      "sha256": "928d13b7a2d92e38db5825b181a9c3ebc7e33f928a20e77485075de472807df0",
+      "snapshotSaveSha256": "40834b2d38d4d86af97f31df0e16b2c986b4a4b8489de9e86810065eb87fa311",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": false,
+          "footY": -51.320754716981,
+          "hitHeight": 160,
+          "hitWidth": 96.666666666667,
+          "hitY": 15.345911949686,
+          "hp": 40,
+          "hpY": -83.987421383648,
+          "id": "torch_head",
+          "intentY": 119.34591194969,
+          "portrait": 160,
+          "shapes": 41,
+          "x": 320,
+          "y": -60.679245283019
+        }
+      ],
+      "floor": 18,
+      "name": "monster-torch_head",
+      "sha256": "e1951770ee5dd23e3bc8b3f75b2e4c60319e3dccacbb527ce06b18cca7989f03",
+      "snapshotSaveSha256": "0780e4820e9b18e4f3a0fdf0d21a542dffffcc4b580a0cd515b22bba443a8cf6",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 3,
+      "context": "Production Collector boss encounter at floor 33, announced Spawn intent",
+      "encounterId": "act2_collector",
+      "enemies": [
+        {
+          "classification": "perched",
+          "contactShadow": false,
+          "hitHeight": 201,
+          "hitWidth": 154.61538461538,
+          "hitY": -20.615384615385,
+          "hp": 282,
+          "hpY": -132.44871794872,
+          "id": "collector",
+          "intentY": 124.5,
+          "portrait": 201,
+          "shapes": 115,
+          "sourcePosition": {
+            "x": 60,
+            "y": 135
+          },
+          "x": 360,
+          "y": 164.5
+        }
+      ],
+      "floor": 33,
+      "name": "monster-collector",
+      "sha256": "65b3e36177dfc42f15ef43fefd1decb15030ec7257f8f158718abd6844979d89",
+      "snapshotSaveSha256": "7ca7e84d0473052319b01ccf36f40d60df1ec0fcd7dd5e9647c04289b97b21af",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -115.72327044025,
+          "hitHeight": 266.66666666667,
+          "hitWidth": 180,
+          "hitY": -2.3899371069183,
+          "hp": 300,
+          "hpY": -155.05660377358,
+          "id": "automaton",
+          "intentY": 157.33333333333,
+          "portrait": 266.66666666667,
+          "shapes": 41,
+          "x": 286.66666666667,
+          "y": 8.3899371069182
+        }
+      ],
+      "floor": 18,
+      "name": "monster-automaton",
+      "sha256": "b4a62168290d79c546f6472e7737a8fb456ecfa18ffa2273bb109b1bc3254f2c",
+      "snapshotSaveSha256": "5eebcd41cb21c41cf22abfd3d9aba93bd61789c35f61be064b179225663730ed",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "hovering",
+          "contactShadow": false,
+          "hitHeight": 106.66666666667,
+          "hitWidth": 106.66666666667,
+          "hitY": 0,
+          "hp": 54,
+          "hpY": -64.666666666667,
+          "id": "bronze_orb",
+          "intentY": 77.333333333333,
+          "portrait": 106.66666666667,
+          "shapes": 96,
+          "x": 320,
+          "y": 27.333333333333
+        }
+      ],
+      "floor": 18,
+      "name": "monster-bronze_orb",
+      "sha256": "1ea3c3a7908339ff16c6dacbd8ad442406d0e879c526461eec2e61d1abcc8477",
+      "snapshotSaveSha256": "fac9dfa50cf7acfd15b827bf3af8a3640f577317dd8356023ce2930107e895af",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    },
+    {
+      "act": 2,
+      "backgroundSlots": 249,
+      "backgroundVariant": 2,
+      "context": "Single-enemy coverage fixture from the same 42 combat definitions used in native_enemy_portraits.lua",
+      "encounterId": "visual_capture_fixture",
+      "enemies": [
+        {
+          "classification": "grounded",
+          "contactShadow": true,
+          "footY": -123.77358490566,
+          "hitHeight": 273.33333333333,
+          "hitWidth": 266.66666666667,
+          "hitY": 2.8930817610063,
+          "hp": 420,
+          "hpY": -153.10691823899,
+          "id": "champ",
+          "intentY": 163.55974842767,
+          "portrait": 273.33333333333,
+          "shapes": 96,
+          "x": 260,
+          "y": 11.77358490566
+        }
+      ],
+      "floor": 18,
+      "name": "monster-champ",
+      "sha256": "82f324de58b0a230aecc0db69d6993ff3feec175a26415215288060b48056d73",
+      "snapshotSaveSha256": "cf4d6f4f022bf299e5de8b7f1d250740dd0ed8df2ad73cda998efa4096061e39",
+      "capture": {
+        "canvasId": "pc-16-9",
+        "frame": 0,
+        "time": 0,
+        "clockMode": "manual",
+        "width": 1600,
+        "height": 900,
+        "pixelWidth": 1600,
+        "pixelHeight": 900,
+        "assetWarnings": []
+      }
+    }
+  ]
+}
