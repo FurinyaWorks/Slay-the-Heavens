@@ -142,6 +142,7 @@ const pageRevealContinuation = {
 
 function matchesSuccessor(path, source, original) {
   if (exactSourceMatches(source, original)) return true;
+  if (path === 'docs/legal/assets.json' && exactSourceMatches(source, {sha256:'a31ebb2c1d348da1fab24af5cbc07ad6c957867a15b3e32caf85c9fbe2e3ac46',gitBlob:'16fe8d2ffd88f40698f7161f7aad8adfe25d0855'})) return true;
   if (path === pageRevealContinuation.path && exactSourceMatches(source, pageRevealContinuation)) return true;
   const updated = updatedSources.get(path);
   return updated !== undefined && exactSourceMatches(source, { sha256: updated[0], gitBlob: updated[1] });

@@ -7,8 +7,8 @@ import {exactSourceMatches} from './source-fingerprint.mjs';
 const owners=Object.freeze({
  "tests/helpers/master-backflow-source.mjs": {
   "current": {
-   "sha256": "84dcbebcb6baafef715c1e20cd813f1ae1045b347519eeb05200996379dc76b5",
-   "gitBlob": "b8d96da532e84311db0399d550b08ed432fe447b"
+   "sha256": "73b8c380cae30d3dfca7bf91e9272e47ecbaaa5dca3a1abfce35a5c41e9d61cc",
+   "gitBlob": "16549e4ba75b8016dadb88ac249698604c0e9685"
   },
   "previous": {
    "sha256": "308c6ef6ac8987b9becc4ead9f3a1efaa2c3c20ea8a697bdf26f6233fa71b8ac",
@@ -22,6 +22,10 @@ const owners=Object.freeze({
    "at": 57,
    "before": "  ['tests/official-assets-legibility.test.mjs', ['ae2dbaa19e903e2e36374ffc92b0aede106bf8e4ce3afc055eedd3b70c7da844', '5a3a3b9b240f86244664b5f9a7b1fe26112c7f59']],",
    "after": "  ['tests/official-assets-legibility.test.mjs', ['0649464990d270f88312779533ac2eeb77507f970d19a8002c7a13f3e9b00bfb', 'f5e64d0859d806078369bcd2297052ea3a351fc4']],"
+  }, {
+   "at": 143,
+   "before": "  if (exactSourceMatches(source, original)) return true;",
+   "after": "  if (exactSourceMatches(source, original)) return true;\n  if (path === 'docs/legal/assets.json' && exactSourceMatches(source, {sha256:'a31ebb2c1d348da1fab24af5cbc07ad6c957867a15b3e32caf85c9fbe2e3ac46',gitBlob:'16fe8d2ffd88f40698f7161f7aad8adfe25d0855'})) return true;"
   }]
  },
  "tests/helpers/develop-release-backflow-source.mjs": {
@@ -225,7 +229,7 @@ export const currentDetachedInputs=Object.freeze({
  'tests/fixtures/selection-portrait-recovery-source.json.gz':'a24db4522db31669259bec007f6ab458419ea8b20abcd8a45dc37c29f3270e79',
  'tests/helpers/develop-release-backflow-source.mjs':'1ef1001a3f7473408dfe3f4f20933d87797612575179834ea271f2cfec7181f2',
  'tests/helpers/develop-release-vocabulary-source.mjs':'39c2ba9ecd776c5a7e3e485639c0d9a2acd1b9a8732e9621735fa99cd0466e56',
- 'tests/helpers/master-backflow-source.mjs':'84dcbebcb6baafef715c1e20cd813f1ae1045b347519eeb05200996379dc76b5',
+ 'tests/helpers/master-backflow-source.mjs':'73b8c380cae30d3dfca7bf91e9272e47ecbaaa5dca3a1abfce35a5c41e9d61cc',
  'tests/helpers/release-closure-fixture-source.mjs':'2fc88ea6f7a27cea24e21a234a4ff7474083f5eb3ecea4b7179fc2b8dec08c80',
  'tests/helpers/release-deck-pointer-source.mjs':'a1cfebcea1c53c017315a9762ba2d9509d395218b358a500d7ca22fe565dec38',
  'tests/helpers/release-entrance-owner-source.mjs':'970a41e91888711768d917ab2970d069ec891aea4f098f3930b1b5d04c87a30a',
