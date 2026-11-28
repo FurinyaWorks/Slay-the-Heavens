@@ -571,7 +571,45 @@ export function beforeCombinedDetailInventory(path,source){
  return source===lf?prior:prior.replaceAll('\n','\r\n');
 }
 
+const approvedEntranceMemoFixture=Object.freeze({
+ "path": "tests/helpers/ui-entrance-approved-sources.mjs",
+ "beforeSha256": "484c3a3e4f2aeb96fc84bbfc45a890576f6d615311a0c823bc63728bb7055d43",
+ "beforeBlob": "b3ec751c07b240729b8454f05e19962060b6d3ce",
+ "afterSha256": "2c466a0d8380eb38467923e60dba66f9f4a64b636bff70e2128a1288b55a5332",
+ "afterBlob": "6014d6aa0850e055476da8ffad559d3a606eacda",
+ "hunks": [
+  {
+   "at": 12,
+   "before": "const bindings=new Map(owners.map(row=>[row.path,row]));",
+   "after": "const bindings=new Map(owners.map(row=>[row.path,row]));\n// Reuse byte-for-byte inverse work only after the caller has freshly read\n// the owner. Keys are exact strings, scoped to the private reviewed binding;\n// raw readers and linked-owner validation never enter this bounded cache.\nconst restoredByPath=new Map(),restoreLimit=2*1024*1024;\nlet retainedRestoreChars=0;"
+  },
+  {
+   "at": 22,
+   "before": " if(!row)return source;",
+   "after": " if(!row)return source;\n const cached=restoredByPath.get(path);\n if(cached&&cached.source===source)return cached.result;"
+  },
+  {
+   "at": 25,
+   "before": " const prior=restoreExactFixtureHunks(row,path,source);\n return prior!==source&&source.includes('\\r\\n')?prior.replaceAll('\\n','\\r\\n'):prior;",
+   "after": " const prior=restoreExactFixtureHunks(row,path,source);\n const result=prior!==source&&source.includes('\\r\\n')?prior.replaceAll('\\n','\\r\\n'):prior;\n if(prior!==source){\n  const weight=source.length+result.length;\n  if(weight<=restoreLimit){\n   if(cached){retainedRestoreChars-=cached.weight;restoredByPath.delete(path);}\n   while(retainedRestoreChars+weight>restoreLimit){\n    const first=restoredByPath.keys().next().value;\n    retainedRestoreChars-=restoredByPath.get(first).weight;restoredByPath.delete(first);\n   }\n   retainedRestoreChars+=weight;\n   restoredByPath.set(path,{source,result,weight});\n  }\n }\n return result;"
+  }
+ ]
+});
+function beforeApprovedEntranceMemoFixture(path,raw){
+ const proof=approvedEntranceMemoFixture;
+ if(path!==proof.path)return raw;
+ const source=raw.toString('utf8'),lf=source.replaceAll('\r\n','\n');
+ if(!raw.equals(Buffer.from(source))||lf.includes('\r')||
+  source!==lf&&source!==lf.replaceAll('\n','\r\n')||
+  !exactSourceMatches(lf,{sha256:proof.afterSha256,gitBlob:proof.afterBlob}))return raw;
+ const prior=restoreExactFixtureHunks(proof,path,lf);
+ assert(exactSourceMatches(prior,{sha256:proof.beforeSha256,gitBlob:proof.beforeBlob}),
+  'exact pre-memoization approved entrance helper');
+ return Buffer.from(source===lf?prior:prior.replaceAll('\n','\r\n'));
+}
+
 export function beforeDetachedReleaseBackflow(path,raw){
+ raw=beforeApprovedEntranceMemoFixture(path,raw);
  if(path===combinedDetailInventory.path){
   const source=raw.toString('utf8');
   if(!raw.equals(Buffer.from(source)))return raw;
