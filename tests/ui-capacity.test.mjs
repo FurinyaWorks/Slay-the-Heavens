@@ -58,9 +58,18 @@ test('native export rejects children under leaf controls including hidden icons'
   for (const kind of ['image', 'text', 'cursorArea', 'grid']) {
     assert.throws(() => assertNativeUiCapacity({ name: 'layout', controls: [
       { name: 'bad', kind, visible: false, children: children(1) },
-    ] }), /layout\/bad: only a container or presetButton may hold child controls/);
+    ] }), /layout\/bad: only a container, presetButton or transparent rectangular image mask may hold child controls/);
   }
   assert.doesNotThrow(() => assertNativeUiCapacity({ controls: [
     { name: 'button', kind: 'presetButton', children: children(1) },
   ] }));
+});
+
+
+test('only the native transparent rectangle may serve as an image parent', () => {
+  const mask = { name: 'mask', kind: 'image', image: 100001, opacity: 0, mask: true, children: children(1) };
+  assert.doesNotThrow(() => assertNativeUiCapacity({ controls: [mask] }));
+  for (const changed of [{ image: 100002 }, { opacity: 1 }, { mask: false }, { fill: {} }, { invertMask: true }]) {
+    assert.throws(() => assertNativeUiCapacity({ controls: [{ ...mask, ...changed }] }), /may hold child controls/);
+  }
 });

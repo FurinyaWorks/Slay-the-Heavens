@@ -3,6 +3,7 @@
 import assert from 'node:assert/strict';
 import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
 import {exactSourceMatches} from './source-fingerprint.mjs';
+import {beforeBossMapScroll,bossMapScrollIdentity} from './boss-map-scroll-source.mjs';
 import {beforeProductionReadingBackflow,productionReadingBackflowOwns} from './master-backflow-source.mjs';
 
 const projections = {
@@ -861,6 +862,7 @@ export function beforeResponsiveHand(path, source) {
 }
 
 export function beforeChapterBattleScene(path, source) {
+  if(path==='scripts/build-ui.mjs')source=beforeBossMapScroll(path,source);
   source = beforeResponsiveHand(path, source);
   if (!Object.hasOwn(projections, path)) return source;
   const change = projections[path];
@@ -906,7 +908,9 @@ export function chapterBattleSceneReader(path, source, read) {
   const row = Object.hasOwn(projections, path) ? projections[path] : undefined;
   const candidate = row && {sha256: row.afterSha256, gitBlob: row.afterBlob};
   const predecessor = row && {sha256: row.beforeSha256, gitBlob: row.beforeBlob};
-  const expected = hand ? {sha256: hand.afterSha256, gitBlob: hand.afterBlob}
+  const bossMaskSource=path==='scripts/build-ui.mjs'&&beforeBossMapScroll(path,source)!==source;
+  const expected = bossMaskSource ? bossMapScrollIdentity(path)
+    : hand ? {sha256: hand.afterSha256, gitBlob: hand.afterBlob}
     : before !== handSource ? candidate : matches(handSource, predecessor) ? predecessor : undefined;
   const assertReadingScope = (owner,live) => {
     assert(readingScopeIdentity(owner,live)===readingScope,

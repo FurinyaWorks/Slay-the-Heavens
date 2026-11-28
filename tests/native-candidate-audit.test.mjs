@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { compareNativeCandidate, requireSourceSha, candidateEntrySource,nativeControlsEqual } from '../scripts/native-candidate-audit.mjs';
-import { withNativeImageTypes } from '../scripts/native-ui-encoder.mjs';
+import { withNativeImageTypes, withNativeRectMaskParents } from '../scripts/native-ui-encoder.mjs';
 import {auditPortraitTemplateBindings} from '../scripts/audit-native-candidate.mjs';
 import {selectionHalfImage,selectionHalfTemplate} from '../scripts/lumine-selection-background.mjs';
 
@@ -390,4 +390,19 @@ test('alpha encoding cannot hide wrong bytes, invalid readback or unrelated floa
       input.actual.ui.interface.scripts = [{ name: 'abyss_ui', values: { opacity: 128 / 255 } }];
     },
   ]) assert.ok(audit(change).issues.length);
+});
+
+
+test('native child guard admits only the proven invisible rectangular mask',async()=>{
+ const source=`export function clientControlRecord(c){return c;}
+ export function encode(c){
+  if(c.children?.length&&c.kind!=='container'&&c.kind!=='presetButton')throw Error('leaf parent');
+  return clientControlRecord(c);
+ }`;
+ const native=await import('data:text/javascript;base64,'+Buffer.from(withNativeRectMaskParents(source)).toString('base64'));
+ const mask={kind:'image',image:100001,mask:true,opacity:0,children:[{kind:'image'}]};
+ assert.deepEqual(native.encode(mask),mask);
+ for(const mutate of [{mask:false},{opacity:1},{image:100002},{fill:{}},{invertMask:true}])
+  assert.throws(()=>native.encode({...mask,...mutate}),/leaf parent/);
+ assert.throws(()=>withNativeRectMaskParents(source.replace('c.children?.length','c.children')),/guard changed/);
 });

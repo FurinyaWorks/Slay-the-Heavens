@@ -3,6 +3,7 @@ import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
 import {exactSourceMatches} from './source-fingerprint.mjs';
 import {beforeReleaseMetadata} from './release-metadata-source.mjs';
 import {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';
+import {beforeBossMapScroll} from './boss-map-scroll-source.mjs';
 
 export const selectionRawEntranceReplay=Object.freeze({
  "current": {
@@ -2271,6 +2272,7 @@ export function beforeReleaseClosureFixture(path,raw,{reviewedBuild=false}={}){
   raw=Buffer.isBuffer(raw)?Buffer.from(restored):restored;
  }
  if(!Object.hasOwn(fixtures,path))return beforeReleaseDeckPointer(path,raw);
+ raw=beforeBossMapScroll(path,raw);
  let source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
  if(typeof source!=='string'||Buffer.isBuffer(raw)&&!Buffer.from(source).equals(raw))return raw;
  const normalized=source.replaceAll('\r\n','\n');

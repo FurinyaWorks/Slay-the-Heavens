@@ -37,6 +37,7 @@ import {applyV25BattleScene} from './v25-battle-scene.mjs';
 import {applyV25PortraitProfile} from './v25-portrait-profile.mjs';
 import {applyV25CharacterLayout} from './v25-character-layout.mjs';
 import {applyV25MapLayout} from './v25-map-layout.mjs';
+import {isNativeRectMask} from './native-image-mask.mjs';
 import {applyV25MenuLayout} from './v25-menu-layout.mjs';
 import {applyV25ResultLayout} from './v25-result-layout.mjs';
 import {applyV25NodeLayout,applyV25RewardLayout} from './v25-node-layout.mjs';
@@ -63,8 +64,8 @@ export function assertNativeUiCapacity(layout) {
     for (const control of controls) {
       const childPath = `${path}/${control.name}`;
       checkFonts(control, childPath);
-      if (control.children?.length && control.kind !== 'container' && control.kind !== 'presetButton') {
-        throw new Error(`${childPath}: only a container or presetButton may hold child controls`);
+      if (control.children?.length && control.kind !== 'container' && control.kind !== 'presetButton' && !isNativeRectMask(control)) {
+        throw new Error(`${childPath}: only a container, presetButton or transparent rectangular image mask may hold child controls`);
       }
       visit(control.children ?? [], childPath);
     }

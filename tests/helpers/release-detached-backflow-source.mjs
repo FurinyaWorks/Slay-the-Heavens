@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
 import {exactSourceMatches} from './source-fingerprint.mjs';
+import {beforeBossMapScroll} from './boss-map-scroll-source.mjs';
 
 // The detached copy continues to execute its frozen Develop and Map Deck
 // helpers; the normal test process uses the current Release readers.
@@ -339,12 +340,15 @@ const detachedInputsBeforeReplayGuard=Object.freeze({
 // historical copier still restores the original immutable helpers.
 export const currentDetachedInputs=Object.freeze({
  ...detachedInputsBeforeReplayGuard,
+ 'tests/helpers/chapter-battle-scene-source.mjs':'e98323fd66d7fc37158c09b35f205035a05b0800b10bf2835f5ff6262d71880a',
+ 'tests/helpers/boss-map-scroll-source.mjs':'7c6b6a5f5bcdcdce99117c1ae40dcf5376c9fd5b3c4b2ad9219b6a9b1f29bbec',
  'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'1cf1f1d3c8e13caca6c8480da3c332b9283ce2fa074525359f685109ef6f9494',
  'tests/helpers/closeout-source-epoch.mjs':'193e27b3e02e4afca1d2d6fcf6b78e64d18c3853b11f96d631538c5623e2e35b',
- 'tests/helpers/release-closure-fixture-source.mjs':'2ea01b9bb24c43d791df8d6215cde5af760411070edafc7b542bdbcb4eb45819',
+ 'tests/helpers/release-closure-fixture-source.mjs':'7526ec6dc7c6a15d04b62320458e525dbd48e6863cd430063900a6faeb4dd625',
 });
 
 export function beforeDetachedReleaseBackflow(path,raw){
+ if(path==='tests/helpers/chapter-battle-scene-source.mjs')return beforeBossMapScroll(path,raw);
  if(!Object.hasOwn(owners,path))return raw;
  let source=raw.toString('utf8'),lf=source.replaceAll('\r\n','\n');
  if(path==='tests/helpers/release-map-deck-source.mjs'&&exactSourceMatches(lf,collectorMapDeckHelper.current)){

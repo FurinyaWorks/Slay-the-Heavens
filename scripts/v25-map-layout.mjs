@@ -1,7 +1,7 @@
-import { mapBossInkHost, mapLegendRows } from './map-ui-layout.mjs';
+import { mapBossInkHost, mapGeometry, mapLegendRows } from './map-ui-layout.mjs';
 
 // Independent native presentation from the authorized V25 map. Route generation,
-// graph pools, clipping, scrolling, RNG and command ownership remain untouched.
+// graph topology, ordinary pools, RNG and command ownership stay with the map.
 export const v25MapSource=Object.freeze({
  record:'app.js:42 map(host,v), sts-map-restore.css mapscroll/atlas/map-legend/ribbon',
  scriptSha256:'66fb1f1e7ca018c600b67ea4b05f9010c32198d34c5c5a7d989bcc75a1dad75e',
@@ -13,6 +13,16 @@ const must=(node,name)=>{const found=children(node).filter(c=>c.name===name);if(
 const group=(name,size,items,position=[0,0])=>({name,kind:'container',position:[...position],size:[...size],children:items});
 const image=(name,x,y,w,h,id,colour,extra={})=>({name,kind:'image',position:[x,y],size:[w,h],image:id,colour,...extra});
 const plate=(name,x,y,w,h,colour,extra={})=>image(name,x,y,w,h,100001,colour,extra);
+
+function bossLayers(theme, nodeRing) {
+ const {viewport: v,bossRoute}=mapGeometry(theme);
+ const viewport=plate('bossViewport',(v.left+v.right)/2,(v.bottom+v.top)/2,
+  v.right-v.left,v.top-v.bottom,'#FFFFFF',{opacity:0,mask:true,raycastTarget:false});
+ viewport.children=[mapBossInkHost(),{...structuredClone(nodeRing),name:'bossRing'}];
+ const overflow=group('bossRouteOverflow',[0,0],Array.from({length:bossRoute.overflow},(_,i)=>
+  plate('dash'+(i+1),0,0,0,0,theme.color.node.path,{visible:false,raycastTarget:false})));
+ return [overflow,viewport];
+}
 
 function rounded(name,w,h,r,colour){
  return group(name,[w,h],[plate('vertical',0,0,w-r*2,h,colour),plate('horizontal',0,0,w,h-r*2,colour),
@@ -166,5 +176,5 @@ export function applyV25MapLayout(layout,theme){
  }
  const background=groups[0].children;
  background.splice(background.indexOf(returnShade),1);
- panel.children.unshift(paper(theme,returnShade),mapBossInkHost());return layout;
+ panel.children.unshift(paper(theme,returnShade),...bossLayers(theme,must(at('node1'),'ring')));return layout;
 }
