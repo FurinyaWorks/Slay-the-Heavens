@@ -2,6 +2,7 @@ local mode=...
 local H=assert(loadfile('tests/lua/support/mobile_run_hud_geometry.lua'))('helpers')
 local Run=require('abyss_run')
 local Map=require('abyss_map')
+local Theme=require('abyss_theme')
 local Routes=dofile('tests/lua/support/map_routes.lua')
 local opening='/nodePanel/eventView'
 local battle='/battlePanel/'
@@ -65,9 +66,18 @@ local function openingChoices(host,picture,screen,count,mobile)
 end
 
 local function heading(picture,base,title,expected,reference)
-    local text,control=picture.at(base..title)
-    assert(control.visible~=false and control.text==expected,'wrong reward heading: '..tostring(control.text))
-    assert(not control.fontColor or control.fontColor.a==255,'visible reward paper has a faded title')
+    local path=base..title
+    local text,control,spec=picture.at(path)
+    assert(control.visible~=false and control.activeInHierarchy and control.text==expected,
+        'wrong reward heading: '..tostring(control.text))
+    local ink=control.fontColor
+    if ink then
+        assert(ink.r==230 and ink.g==230 and ink.b==230 and ink.a==255,
+            ('%s runtime ink: %d,%d,%d,%d'):format(path,ink.r,ink.g,ink.b,ink.a))
+    else
+        assert(spec.text.colour=='#E6E6E6' and (spec.text.opacity or 1)==1,
+            path..' generated ink: '..spec.text.colour)
+    end
     local paper,material=picture.at(base..'/v25RewardPaper/paperCore')
     assert(material.visible~=false,'reward banner is hidden')
     near(text.x,paper.x,'banner/title X')
@@ -150,10 +160,16 @@ elseif mode=='treasure-layout' then
         local closedPaper=root:GetChild('nodePanel'):GetChild('treasureView'):GetChild('v25RewardPaper')
         assert(not closedPaper or closedPaper.visible==false,'closed chest shows empty banner')
         H.click(picture,base..'/chest/hit',50)
-        host.nodeUI:update(2)
+        local motion=Theme.layout.nativeNode.roomMotion
+        host.nodeUI:update(motion.shakeDuration+motion.burstDuration)
         local _,title=picture.at(base..'/page')
         assert(title.text:find('宝箱奖励',1,true),'wrong chest title')
-        heading(picture,base,'/page',title.text,mobile and picture.at(relic..'slot1/hit'))
+        local limit=mobile and picture.at(relic..'slot1/hit')
+        heading(picture,base,'/page',title.text,limit)
+        host.nodeUI:update(2)
+        heading(picture,base,'/page',title.text,limit)
+        assert(host:openDeck() and host:closeDeck())
+        heading(picture,base,'/page',title.text,limit)
         local note=picture.at(base..'/bossDescription')
         assert(note.y-note.h/2>=-(mobile and 1179 or 1080),'treasure note clipped at viewport bottom')
         if mobile then
@@ -203,8 +219,9 @@ else
         else
             host:update(1)
             H.click(picture,battle..'cardReward',1)
-            host:update(1)
             local pick=battle..'rewardStage'
+            heading(picture,pick,'/title','选择一张卡牌',limit)
+            host:update(1)
             heading(picture,pick,'/title','选择一张卡牌',limit)
             for i=1,3 do
                 local card,control=picture.at(battle..'card'..i)
@@ -220,6 +237,7 @@ else
             heading(picture,list,'/title','战斗胜利',limit)
             local count=#host.run.deck
             H.click(picture,battle..'cardReward',3)
+            heading(picture,pick,'/title','选择一张卡牌',limit)
             host:update(1)
             H.click(picture,battle..'card2/hit',4)
             assert(#host.run.deck==count+1 and host.run.rewards.cardResolved,'card pick did not claim exactly once')

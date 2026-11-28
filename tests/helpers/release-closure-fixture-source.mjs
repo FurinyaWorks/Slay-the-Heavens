@@ -2094,10 +2094,154 @@ const bossMapLayoutFixture=Object.freeze({
   ]
 });
 
+// Preserve the exact pre-fix sources for historical replay only.
+export const rewardTitleSources=Object.freeze({
+ "data/presentation/ui_theme.json": {
+  "current": {
+   "sha256": "ecffd748962d2e8193599992639ab8ccc43018fd6ff2c7252c85a48ea31fdfb8",
+   "gitBlob": "20e31d0c2b6d65d97fabbe16606f1d7ddbd8ccce"
+  },
+  "previous": {
+   "sha256": "6e4d4fd4d63b54d827178c39e584833414852a6720bf9fdb9e3a7bd1d1804d81",
+   "gitBlob": "a8d43c7a4f575987695a7783cb61283ff559f16d"
+  },
+  "hunks": [
+   {
+    "at": 318,
+    "before": "    \"text\": \"#ECE6DA\",\n    \"textDim\": \"#A9A595\",",
+    "after": "    \"text\": \"#ECE6DA\",\n    \"rewardBannerTitle\": \"#E6E6E6\",\n    \"textDim\": \"#A9A595\","
+   }
+  ]
+ },
+ "scripts/v25-node-layout.mjs": {
+  "current": {
+   "sha256": "78777b4c87b4cfe2447eb41d46a80fc61559717e1be2804bc737a53b0d98bf9d",
+   "gitBlob": "8adf2b9f0e5ab9ad66cee50e5f2a94c96b5304f6"
+  },
+  "previous": {
+   "sha256": "baff270bda04e00fde1159a77a80ed04fbacc37ce5db71ba2026237ae0415a1d",
+   "gitBlob": "9a079f9d33768d416f4bdfd2df5eeb61c01dcb48"
+  },
+  "hunks": [
+   {
+    "at": 247,
+    "before": "  const title=must(panel,'page');\n  title.text.colour=theme.color.panelSunken;\n  const paper=rewardPaper(theme.layout.nativeNode.rewardList.heading);",
+    "after": "  const title=must(panel,'page');\n  styleRewardTitle(title,theme);\n  const paper=rewardPaper(theme.layout.nativeNode.rewardList.heading);"
+   },
+   {
+    "at": 308,
+    "before": "\nfunction rewardPaper(title){",
+    "after": "\nfunction styleRewardTitle(title,theme){\n // Keep the native outline's RGB and make it solid over the light parchment.\n Object.assign(title.text,{colour:theme.color.rewardBannerTitle,outline:true,outlineColour:'#333333',outlineOpacity:1});\n}\nfunction rewardPaper(title){"
+   },
+   {
+    "at": 348,
+    "before": " }\n const ink=theme.presentationProfile==='official-assets-first'?theme.color.panelSunken:null;\n must(list,'title').text.colour=ink??theme.color.text;must(list,'subtitle').text.colour='#D6D5C5';\n setRect(must(stage,'title'),relative(r.title));setRect(must(stage,'subtitle'),relative(r.subtitle));\n if(theme.presentationProfile){\n  type(must(stage,'title'),29,ink??'#EFE8D4');type(must(stage,'subtitle'),16,'#D6D5C5');\n  const skip=must(battle,'skip');setRect(skip,r.skip);for(const state of parts(skip))state.size=r.skip.slice(2);stylePreset(skip);",
+    "after": " }\n styleRewardTitle(must(list,'title'),theme);must(list,'subtitle').text.colour='#D6D5C5';\n const title=must(stage,'title');\n setRect(title,relative(r.title));setRect(must(stage,'subtitle'),relative(r.subtitle));\n styleRewardTitle(title,theme);\n if(theme.presentationProfile){\n  type(title,29,title.text.colour);type(must(stage,'subtitle'),16,'#D6D5C5');\n  const skip=must(battle,'skip');setRect(skip,r.skip);for(const state of parts(skip))state.size=r.skip.slice(2);stylePreset(skip);"
+   }
+  ]
+ },
+ "src/lua/abyss_battle_reward_layout.lua": {
+  "current": {
+   "sha256": "0be314393c154592e15cc700583231399527ec98f6831a170cbf632c28c991e8",
+   "gitBlob": "91113ac3633ecba3a02d2583b99927b09a57a52d"
+  },
+  "previous": {
+   "sha256": "8bd2151250b01b9b9a96bb022b78980ea01f9ff40a67c3b528386b46e1dabea5",
+   "gitBlob": "56a5f617b36ceb85c6c2f627396308c031544c54"
+  },
+  "hunks": [
+   {
+    "at": 153,
+    "before": " local official=Theme.presentationProfile=='official-assets-first'\n local colour=official and Theme.color.panelSunken or Theme.color.text\n local function paint(view,progress)",
+    "after": " local official=Theme.presentationProfile=='official-assets-first'\n local colour=Theme.color.rewardBannerTitle\n local function paint(view,progress)"
+   }
+  ]
+ },
+ "tests/official-assets.test.mjs": {
+  "current": {
+   "sha256": "cba2484414c8e71344234dbd7b400ffda451f5db94606d7390c04babcc0e84ef",
+   "gitBlob": "f8b23012510de602f341dc200768512c2c8fef91"
+  },
+  "previous": {
+   "sha256": "17fc945582ab9bda9c0fcba7d20396f3c02f089c18ab2b9be2913e35ddb595a6",
+   "gitBlob": "5b36083005174b20625b20f8c097faf5500cb5c5"
+  },
+  "hunks": [
+   {
+    "at": 207,
+    "before": "   if(node.text){const actual={...node.text},expected={...before.text};delete actual.colour;delete expected.colour;\n    if(/^\\/SlayTheAbyss\\/relicBar\\/slot\\d+\\/counter$/.test(path))expected.autoSize=false;",
+    "after": "   if(node.text){const actual={...node.text},expected={...before.text};delete actual.colour;delete expected.colour;\n    if(path==='/SlayTheAbyss/nodePanel/treasureView/page')\n     Object.assign(expected,{outline:true,outlineColour:'#333333',outlineOpacity:1});\n    if(/^\\/SlayTheAbyss\\/relicBar\\/slot\\d+\\/counter$/.test(path))expected.autoSize=false;"
+   }
+  ]
+ },
+ "tests/run-hud-inventory.test.mjs": {
+  "current": {
+   "sha256": "318dfd770cc621d220be1cbfa9a010fde3fcd9742a6ee4608bf668aa20d08fd3",
+   "gitBlob": "f6ed6fdac662ade5426108a286a25da3fc0bfb2c"
+  },
+  "previous": {
+   "sha256": "cc1d74a98726b07908f74381f83cf5783b406d6f1d3d84793fee9f0d097ba1ce",
+   "gitBlob": "1c7830dd934c32720fd67f2facda0368904d3d9b"
+  },
+  "hunks": [
+   {
+    "at": 33,
+    "before": "\ntest('generated reward title ink maintains readable contrast across the three parchment layouts',()=>{\n const data=JSON.parse(readFileSync(join(dir,'game-ui.json')));",
+    "after": "\ntest('generated reward banners use opaque STS1 title ink with readable native outlines',()=>{\n const data=JSON.parse(readFileSync(join(dir,'game-ui.json')));"
+   },
+   {
+    "at": 38,
+    "before": " const battle=child(stage,'battlePanel'),node=child(stage,'nodePanel');\n const luminance=hex=>[0.2126,0.7152,0.0722].reduce((sum,weight,i)=>{\n  const srgb=parseInt(hex.slice(1+i*2,3+i*2),16)/255;\n  return sum+weight*(srgb<=.04045?srgb/12.92:((srgb+.055)/1.055)**2.4);\n },0);\n for(const [parent,name,heading] of [[battle,'rewardStage','title'],[battle,'rewardList','title'],[node,'treasureView','page']]){",
+    "after": " const battle=child(stage,'battlePanel'),node=child(stage,'nodePanel');\n const rgb=hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));\n const luminance=channels=>channels.reduce((sum,value,i)=>{\n  const srgb=value/255;\n  return sum+[0.2126,0.7152,0.0722][i]*(srgb<=.04045?srgb/12.92:((srgb+.055)/1.055)**2.4);\n },0);\n const contrast=(a,b)=>(Math.max(a,b)+.05)/(Math.min(a,b)+.05);\n for(const [parent,name,heading] of [[battle,'rewardStage','title'],[battle,'rewardList','title'],[node,'treasureView','page']]){"
+   },
+   {
+    "at": 47,
+    "before": "  const paper=child(child(screen,'v25RewardPaper'),'paperCore');\n  const ink=luminance(child(screen,heading).text.colour);\n  const background=luminance(paper.colour);\n  const ratio=(Math.max(ink,background)+.05)/(Math.min(ink,background)+.05);\n  assert(ratio>=4.5,name+' title against its scroll: '+ratio.toFixed(2)+':1');\n }",
+    "after": "  const paper=child(child(screen,'v25RewardPaper'),'paperCore');\n  const text=child(screen,heading).text;\n  assert.equal(text.colour,'#E6E6E6',name+' title fill');\n  assert.equal(text.opacity??1,1,name+' title opacity');\n  assert.notEqual(text.outline,false,name+' native title outline disabled');\n  const background=rgb(paper.colour);\n  const alpha=text.outlineOpacity??.2;\n  const edge=rgb(text.outlineColour??'#333333').map((value,i)=>value*alpha+background[i]*(1-alpha));\n  for(const [surface,colour] of [['fill',rgb(text.colour)],['paper',background]]){\n   const ratio=contrast(luminance(colour),luminance(edge));\n   assert(ratio>=4.5,name+' '+surface+' against its composited outline: '+ratio.toFixed(2)+':1');\n  }\n }"
+   }
+  ]
+ },
+ "tests/helpers/closeout-source-epoch.mjs": {
+  "current": {
+   "sha256": "38bc8f4c7353c6af1d312298e01e06281b880fbbd56807c0ad55f3c57903e11d",
+   "gitBlob": "95dadcebe0e7ba4ff3df2a79922c3bc96b3872d0"
+  },
+  "previous": {
+   "sha256": "4f559399c631fbd0fd25ea7f1ceb8f3b8c6643e167f0116d9f151e12ee0a0ecb",
+   "gitBlob": "f0579aa8b2c007ed27f75bb5da31af96121d68f1"
+  },
+  "hunks": [
+   {
+    "at": 0,
+    "before": "import { entrancePredecessor } from './ui-entrance-source.mjs';",
+    "after": "import {beforeReleaseClosureFixture} from './release-closure-fixture-source.mjs';\nimport { entrancePredecessor } from './ui-entrance-source.mjs';"
+   },
+   {
+    "at": 63,
+    "before": "export function sourceSlice(path,source,target,readSource=p=>readFileSync(p,'utf8')){\n const entrance=entrancePredecessor(path,source,readSource);",
+    "after": "export function sourceSlice(path,source,target,readSource=p=>readFileSync(p,'utf8')){\n const rewardLayout='src/lua/abyss_battle_reward_layout.lua';\n const readCurrent=readSource;\n readSource=owner=>{\n  const current=readCurrent(owner);\n  return owner===rewardLayout?beforeReleaseClosureFixture(owner,current):current;\n };\n if(path===rewardLayout){\n  const previous=beforeReleaseClosureFixture(path,source);\n  if(previous!==source)assert.equal(readCurrent(path),source,'fresh reward banner layout source');\n  source=previous;\n }\n const entrance=entrancePredecessor(path,source,readSource);"
+   }
+  ]
+ }
+});
+
 export function beforeReleaseClosureFixture(path,raw,{reviewedBuild=false}={}){
  // Current integration authenticates the live delivery owner through its own archive.
  if(path==='scripts/verify-delivery.mjs'&&!reviewedBuild)return raw;
  raw=beforeReleaseMetadata(path,raw);
+ const rewardTitle=Object.hasOwn(rewardTitleSources,path)&&rewardTitleSources[path];
+ const rewardTitleSource=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
+ if(rewardTitle&&exactSourceMatches(rewardTitleSource,rewardTitle.current)){
+  const {current,previous,hunks}=rewardTitle;
+  const source=rewardTitleSource;
+  const lf=source.replaceAll('\r\n','\n');
+  if(Buffer.isBuffer(raw)&&!Buffer.from(source).equals(raw)
+    ||source!==lf&&source!==lf.replaceAll('\n','\r\n'))return raw;
+  const prior=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,source);
+  assert(exactSourceMatches(prior,previous),'exact pre-fix reward title source: '+path);
+  const restored=source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+  raw=Buffer.isBuffer(raw)?Buffer.from(restored):restored;
+ }
  if(!Object.hasOwn(fixtures,path))return beforeReleaseDeckPointer(path,raw);
  let source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
  if(typeof source!=='string'||Buffer.isBuffer(raw)&&!Buffer.from(source).equals(raw))return raw;

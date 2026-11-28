@@ -152,7 +152,7 @@ function M.banner(dependencies,mobile)
  local veil=Theme.officialAssets.backdropVeil
  local rise=mobile and 0 or Theme.space.xl
  local official=Theme.presentationProfile=='official-assets-first'
- local colour=official and Theme.color.panelSunken or Theme.color.text
+ local colour=Theme.color.rewardBannerTitle
  local function paint(view,progress)
   local ease=1-(1-progress)^3
   local y=view.y+(1-ease)*rise

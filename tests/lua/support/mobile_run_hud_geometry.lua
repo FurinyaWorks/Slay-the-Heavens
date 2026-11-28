@@ -69,7 +69,7 @@ local function geometry(root,screen)
     local function tap(x,y,touch,expected)dispatch(x,y,touch,expected,{'down','up','click'})end
     local function at(path)
         local row=assert(records[path],path)
-        return rect(row),row.control
+        return rect(row),row.control,row.spec
     end
     return {hits=query,tap=tap,at=at,dispatch=dispatch}
 end

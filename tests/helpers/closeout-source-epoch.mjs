@@ -1,3 +1,4 @@
+import {beforeReleaseClosureFixture} from './release-closure-fixture-source.mjs';
 import { entrancePredecessor } from './ui-entrance-source.mjs';
 // One exact current production closure; original slices and archives stay immutable.
 import assert from 'node:assert/strict';
@@ -61,6 +62,17 @@ const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.
 export function sourceSlice(path,source,target,readSource=p=>readFileSync(p,'utf8')){
+ const rewardLayout='src/lua/abyss_battle_reward_layout.lua';
+ const readCurrent=readSource;
+ readSource=owner=>{
+  const current=readCurrent(owner);
+  return owner===rewardLayout?beforeReleaseClosureFixture(owner,current):current;
+ };
+ if(path===rewardLayout){
+  const previous=beforeReleaseClosureFixture(path,source);
+  if(previous!==source)assert.equal(readCurrent(path),source,'fresh reward banner layout source');
+  source=previous;
+ }
  const entrance=entrancePredecessor(path,source,readSource);
  source=entrance.source??source;readSource=entrance.read;
  assert(Object.hasOwn(proof.targets,target),'known closeout source slice');

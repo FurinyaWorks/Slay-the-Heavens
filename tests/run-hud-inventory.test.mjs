@@ -32,21 +32,30 @@ test('generated map bar precedes resource values and floor groups',()=>{
  for(const [index,part]of p.children.entries())if(part.name==='resources'||/^mapGroup/.test(part.name))assert(bar<index,'map bar covers '+part.name);
 });
 
-test('generated reward title ink maintains readable contrast across the three parchment layouts',()=>{
+test('generated reward banners use opaque STS1 title ink with readable native outlines',()=>{
  const data=JSON.parse(readFileSync(join(dir,'game-ui.json')));
  const stage=data.controls.find(c=>c.name==='stage');
  const child=(node,name)=>node.children.find(part=>part.name===name);
  const battle=child(stage,'battlePanel'),node=child(stage,'nodePanel');
- const luminance=hex=>[0.2126,0.7152,0.0722].reduce((sum,weight,i)=>{
-  const srgb=parseInt(hex.slice(1+i*2,3+i*2),16)/255;
-  return sum+weight*(srgb<=.04045?srgb/12.92:((srgb+.055)/1.055)**2.4);
+ const rgb=hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
+ const luminance=channels=>channels.reduce((sum,value,i)=>{
+  const srgb=value/255;
+  return sum+[0.2126,0.7152,0.0722][i]*(srgb<=.04045?srgb/12.92:((srgb+.055)/1.055)**2.4);
  },0);
+ const contrast=(a,b)=>(Math.max(a,b)+.05)/(Math.min(a,b)+.05);
  for(const [parent,name,heading] of [[battle,'rewardStage','title'],[battle,'rewardList','title'],[node,'treasureView','page']]){
   const screen=child(parent,name);
   const paper=child(child(screen,'v25RewardPaper'),'paperCore');
-  const ink=luminance(child(screen,heading).text.colour);
-  const background=luminance(paper.colour);
-  const ratio=(Math.max(ink,background)+.05)/(Math.min(ink,background)+.05);
-  assert(ratio>=4.5,name+' title against its scroll: '+ratio.toFixed(2)+':1');
+  const text=child(screen,heading).text;
+  assert.equal(text.colour,'#E6E6E6',name+' title fill');
+  assert.equal(text.opacity??1,1,name+' title opacity');
+  assert.notEqual(text.outline,false,name+' native title outline disabled');
+  const background=rgb(paper.colour);
+  const alpha=text.outlineOpacity??.2;
+  const edge=rgb(text.outlineColour??'#333333').map((value,i)=>value*alpha+background[i]*(1-alpha));
+  for(const [surface,colour] of [['fill',rgb(text.colour)],['paper',background]]){
+   const ratio=contrast(luminance(colour),luminance(edge));
+   assert(ratio>=4.5,name+' '+surface+' against its composited outline: '+ratio.toFixed(2)+':1');
+  }
  }
 });

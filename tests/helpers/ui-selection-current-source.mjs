@@ -4,7 +4,7 @@ import {exactSourceMatches} from './source-fingerprint.mjs';
 import {uiEntranceOwns} from './ui-entrance-source.mjs';
 import {beforeNodeNoticeSource} from './reward-current-source.mjs';
 import {checkedReleaseEntranceOwner} from './release-entrance-owner-source.mjs';
-import {selectionRawEntranceReplay} from './release-closure-fixture-source.mjs';
+import {beforeReleaseClosureFixture,rewardTitleSources,selectionRawEntranceReplay} from './release-closure-fixture-source.mjs';
 
 // Replay the exact active fixture and copier predecessors without replacing prior receipts.
 const receipts=Object.freeze({
@@ -552,28 +552,6 @@ const releaseEntranceCopier=Object.freeze({
  ]
 });
 const mapRouteIconFixturePath='tests/official-assets.test.mjs';
-const mapRouteIconFixture=Object.freeze({
- "current": {
-  "sha256": "17fc945582ab9bda9c0fcba7d20396f3c02f089c18ab2b9be2913e35ddb595a6",
-  "gitBlob": "5b36083005174b20625b20f8c097faf5500cb5c5"
- },
- "previous": {
-  "sha256": "1984d8c172e465583f45d45821837733aa2befbe809e066025f0042784cb0ec5",
-  "gitBlob": "8e9b3f1d7559067512d96f7a545bf037277846f7"
- },
- "hunks": [
-  {
-   "at": 414,
-   "before": " const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme);\n const before=new Map(paths(layout).filter(([,node])=>node.kind==='image').map(([path,node])=>[path,node.image]));\n applyOfficialAssets([layout],theme);\n const battle=child(layout,'battlePanel'),turn=child(battle,'endTurn');",
-   "after": " const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme);\n const before=new Map(paths(layout).filter(([,node])=>node.kind==='image').map(([path,node])=>[path,node.image]));\n const replacements=new Map([\n  ['/SlayTheAbyss/nodePanel/eventView/art',theme.icon.eventArt.default],\n  ['/SlayTheAbyss/battlePanel/topBar/battleRoute/icon',theme.icon.map],\n  ['/SlayTheAbyss/mapPanel/mapRoute/icon',theme.icon.map],\n  ['/SlayTheAbyss/nodePanel/runRoute/icon',theme.icon.map],\n ]);\n applyOfficialAssets([layout],theme);\n const battle=child(layout,'battlePanel'),turn=child(battle,'endTurn');"
-  },
-  {
-   "at": 429,
-   "before": "  }\n for(const [path,node]of paths(layout))if(/\\/(portrait|intentIcon|intentBadge|intentExtra|hpIcon|goldIcon|blockedLock|art|art_attack|art_skill|art_power|icon)$/.test(path)&&node.kind==='image'){\n  const expected=path==='/SlayTheAbyss/nodePanel/eventView/art'?theme.icon.eventArt.default:\n   before.get(path)??(/^\\/SlayTheAbyss\\/relicBar\\/slot(?:1[3-9]|2[0-5])\\/icon$/.test(path)?before.get('/SlayTheAbyss/relicBar/slot1/icon'):undefined);\n  assert.equal(node.image,expected,path);\n }\n assert.equal(child(child(layout,'menuPanel'),'backdrop').image,nativeTheme.image.officialBackdrops.title);\n const menu=child(layout,'menuPanel'),result=child(menu,'result');",
-   "after": "  }\n for(const [path,node]of paths(layout))if(/\\/(portrait|intentIcon|intentBadge|intentExtra|hpIcon|goldIcon|blockedLock|art|art_attack|art_skill|art_power|icon)$/.test(path)&&node.kind==='image'){\n  const expected=replacements.get(path)??before.get(path)??\n   (/^\\/SlayTheAbyss\\/relicBar\\/slot(?:1[3-9]|2[0-5])\\/icon$/.test(path)?before.get('/SlayTheAbyss/relicBar/slot1/icon'):undefined);\n  assert.equal(node.image,expected,path);\n  replacements.delete(path);\n }\n assert.deepEqual([...replacements.keys()],[],'every substituted semantic icon must be present');\n assert.equal(child(child(layout,'menuPanel'),'backdrop').image,nativeTheme.image.officialBackdrops.title);\n const menu=child(layout,'menuPanel'),result=child(menu,'result');"
-  }
- ]
-});
 const cardReadingCopier=Object.freeze({
  "current": {
   "sha256": "6601d0b9ff0c1e9633efdf3fa2e8a8d498599f3ded3d0fab007e6ce918cd70e3",
@@ -708,7 +686,7 @@ const currentDetachedCopier=Object.freeze({
  ]
 });
 function activeReceipt(path){
- if(path===mapRouteIconFixturePath)return mapRouteIconFixture;
+ if(path===mapRouteIconFixturePath)return rewardTitleSources[path];
  if(path===selectionLayoutPath)return releaseSelectionOverlay;
  if(path===copierPath)return currentDetachedCopier;
  if(path===returnedReadingReplayPath)return selectionRawEntranceReplay;
@@ -727,7 +705,7 @@ function beforeReceipt(path,source,binding){
 }
 
 export function beforeSelectionReceiptSource(path,source){
- if(path===mapRouteIconFixturePath)source=beforeReceipt(path,source,mapRouteIconFixture);
+ if(path===mapRouteIconFixturePath)source=beforeReleaseClosureFixture(path,source);
  if(path===selectionLayoutPath)source=beforeReceipt(path,source,releaseSelectionOverlay);
  if(path===selectionLayoutPath)source=beforeReceipt(path,source,selectionLayoutCurrent);
  if(path===returnedReadingReplayPath)source=beforeReceipt(path,beforeReceipt(path,source,selectionRawEntranceReplay),returnedReadingReplay);

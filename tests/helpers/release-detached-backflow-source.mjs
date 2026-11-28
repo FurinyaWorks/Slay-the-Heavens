@@ -226,7 +226,7 @@ export const currentDetachedInputs=Object.freeze({
  'tests/helpers/develop-release-backflow-source.mjs':'1ef1001a3f7473408dfe3f4f20933d87797612575179834ea271f2cfec7181f2',
  'tests/helpers/develop-release-vocabulary-source.mjs':'39c2ba9ecd776c5a7e3e485639c0d9a2acd1b9a8732e9621735fa99cd0466e56',
  'tests/helpers/master-backflow-source.mjs':'84dcbebcb6baafef715c1e20cd813f1ae1045b347519eeb05200996379dc76b5',
- 'tests/helpers/release-closure-fixture-source.mjs':'2f87eb9435488abe9c2ee5e4430a3c27dfbd9b66ecca4d84c5fe7282b4ce7a05',
+ 'tests/helpers/release-closure-fixture-source.mjs':'2fc88ea6f7a27cea24e21a234a4ff7474083f5eb3ecea4b7179fc2b8dec08c80',
  'tests/helpers/release-deck-pointer-source.mjs':'a1cfebcea1c53c017315a9762ba2d9509d395218b358a500d7ca22fe565dec38',
  'tests/helpers/release-entrance-owner-source.mjs':'970a41e91888711768d917ab2970d069ec891aea4f098f3930b1b5d04c87a30a',
  'tests/helpers/release-metadata-source.mjs':'5897d9d479841a5fa7fe1f86925fa7daedd06a8facdc7277247f2ac376610cf8',
@@ -235,7 +235,7 @@ export const currentDetachedInputs=Object.freeze({
  'tests/helpers/run-hud-successors.mjs':'cbf8c1cc66b68d77dd981d7515d99f2fc975760bd9030bfd4a823cdaff71f64e',
  'tests/helpers/shop-deck-purchase-source.mjs':'11505a35f812f9632044724e91f94495455934ee67223f963e1c71c6d688716b',
  'tests/helpers/ui-entrance-source.mjs':'134d5b8fa6f23226b47681a424fd7549660e61de033cec0f78cf5e48a6104935',
- 'tests/helpers/ui-selection-current-source.mjs':'f192aa0cc9f24769da8cfa5b07771a3ea4d64898158d95812ea54db4f7ec8871',
+ 'tests/helpers/ui-selection-current-source.mjs':'a8e543686784c1abb634b7be65c0c5e71bb9da7b385914b6f0bd5664a15245cc',
  'tests/helpers/visual-selection-source.mjs':'3066522a5ed048b3bff4bac6424c0368676955d2c458076a1093b323761119c1',
 });
 

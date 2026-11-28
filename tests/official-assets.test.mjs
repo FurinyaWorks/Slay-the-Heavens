@@ -206,6 +206,8 @@ test('approved pages keep live input identities while unrelated pages retain the
    assert.deepEqual(node[key],expected,path+' '+key);
   }
    if(node.text){const actual={...node.text},expected={...before.text};delete actual.colour;delete expected.colour;
+    if(path==='/SlayTheAbyss/nodePanel/treasureView/page')
+     Object.assign(expected,{outline:true,outlineColour:'#333333',outlineOpacity:1});
     if(/^\/SlayTheAbyss\/relicBar\/slot\d+\/counter$/.test(path))expected.autoSize=false;
     if(cardText.has(node))for(const key of ['outline','outlineColour','outlineOpacity']){
      const canonical=child(child(child(layout,'battlePanel'),'card1'),cardText.get(node)).text;
