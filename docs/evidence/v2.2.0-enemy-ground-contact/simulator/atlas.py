@@ -81,10 +81,13 @@ def crop_box(name, old, new):
     actor = next(e for e in new['enemies'] if e['id'] == enemy_id)
     old_actor = next(e for e in old['enemies'] if e['id'] == enemy_id)
     center = 800 + actor['x'] * 1.25
-    left = max(0, min(1600 - 332, round(center - 166)))
-    top = max(55, min(168, round(450 - 1.25 * max(actor['y'] + actor['intentY'],
-                                                   old_actor['y'] + old_actor['intentY']) - 45)))
-    return (left, top, left + 332, 640)
+    crop_width = 360
+    left = max(0, min(1600 - crop_width, round(center - crop_width / 2)))
+    highest_intent = max(unit['y'] + unit['intentY'] for unit in (actor, old_actor))
+    lowest_health = min(unit['y'] + unit['hpY'] for unit in (actor, old_actor))
+    top = max(0, min(168, round(450 - 1.25 * highest_intent - 80)))
+    bottom = max(640, min(715, round(450 - 1.25 * lowest_health + 55)))
+    return (left, top, left + crop_width, bottom)
 
 
 def gallery(root, before, after, font, small):
@@ -102,18 +105,22 @@ def gallery(root, before, after, font, small):
     outputs = []
     for number, group in enumerate(groups, 1):
         # Preserve source pixels at 1:1. Each adjacent pair uses the same source crop window.
-        crop_width, tile_width, tile_height = 332, 678, 630
-        rows = (len(group) + 1) // 2
-        atlas = Image.new('RGB', (tile_width * 2 + 20, tile_height * rows + 16), DARK)
+        windows = [crop_box(name, before[name], after[name]) for name in group]
+        crop_width = windows[0][2] - windows[0][0]
+        tile_width = crop_width * 2 + 14
+        starts = [8]
+        for row in range(0, len(windows), 2):
+            height = max(bottom - top for _, top, _, bottom in windows[row:row+2])
+            starts.append(starts[-1] + height + 61)
+        atlas = Image.new('RGB', (tile_width * 2 + 20, starts[-1]), DARK)
         draw = ImageDraw.Draw(atlas)
-        for index, name in enumerate(group):
-            x, y = (index % 2) * tile_width + 10, (index // 2) * tile_height + 7
+        for index, (name, window) in enumerate(zip(group, windows)):
+            x, y = (index % 2) * tile_width + 10, starts[index // 2]
             actor = next(e for e in after[name]['enemies'] if e['id'] == name.removeprefix('monster-'))
             title = f"{actor['id']}   /   {actor['classification']}"
             caption(draw, title, (x, y), font)
             caption(draw, 'BASE', (x, y + 27), small, MUTED)
             caption(draw, 'HOTFIX', (x + crop_width + 5, y + 27), small, MUTED)
-            window = crop_box(name, before[name], after[name])
             for offset, side in [(0, before), (crop_width + 5, after)]:
                 source = Image.open(side[name]['path']).convert('RGB')
                 atlas.paste(source.crop(window), (x + offset, y + 49))
@@ -170,9 +177,11 @@ def main():
         'src/lua/abyss_chapter_battle_scene.lua',
         'data/release/refined-monster-art.json',
     ]
+    source_revision = subprocess.check_output(
+        ['git', '-C', str(args.repo), 'log', '-1', '--format=%H', '--', *hashed_inputs], text=True).strip()
     report = {
         'baselineCommit': BASE,
-        'candidateCommit': subprocess.check_output(['git','-C',str(args.repo),'rev-parse','HEAD'], text=True).strip(),
+        'candidateCommit': source_revision,
         'candidateSourceSha256': {path: digest(args.repo / path) for path in hashed_inputs},
         'tool': 'beyond-simulator-mcp@0.5.2',
         'scope': 'Production Lua battle state and controls run under the Fengari native UI fixture. Beyond Simulator Host renders each captured production control snapshot at 1600x900. Simulator screenshots play static snapshots. No official GIL, device, or direct click evidence from the Simulator Host.',

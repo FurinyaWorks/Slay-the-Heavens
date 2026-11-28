@@ -65,7 +65,7 @@
   "captureInputsSha256": {
     "capture.lua": "08dc0b88bbf75b25b3de83b00d97d48318b2dd07dc3ae8b0d03521afdafccff6",
     "render.mjs": "07668f32a1daa4c1ed2e944de077cd8eec10a169066cde1f49c0551ac21263c3",
-    "atlas.py": "faeef11aa07c577b7999a261666d5b403a4e167e7f0bcf2716a80a7ae5984567"
+    "atlas.py": "9a148aab9b2f07a277414da86aba3f181c308742d58151c733fa8e4f4a9acd70"
   },
   "coverage": {
     "officialMonsters": 42,
@@ -155,7 +155,7 @@
     },
     {
       "file": "official-monsters-01.webp",
-      "sha256": "b63a4b188dbfce2c6375e3905729c2e36740fdb3b1c9f5825ff8fe52993115c6",
+      "sha256": "caeab37ce6111ad96dbe2f93a88f3877ba2187e86273f63f1f45ed928a97750e",
       "scenes": [
         "monster-raven_adept",
         "monster-jaw_worm",
@@ -167,7 +167,7 @@
     },
     {
       "file": "official-monsters-02.webp",
-      "sha256": "bb52a3734e2782980ab3c7e8c3fa91f5cebd26d49116e80766de0ce4885afabb",
+      "sha256": "88a0f821d73b444afc69ad5618ad488ba654ebd95704b3d2cdd7c82d05ccdf1b",
       "scenes": [
         "monster-acid_slime_l",
         "monster-spike_slime_s",
@@ -179,7 +179,7 @@
     },
     {
       "file": "official-monsters-03.webp",
-      "sha256": "b116ddda440ca5b5073fd27302e550f753cc3158a213f6506ab86d1c96efd71b",
+      "sha256": "e0b1d12a518526f33689a9e0aeff190f32c24a9f3bbdca1f12e6d09d54b93d68",
       "scenes": [
         "monster-red_guard",
         "monster-fungi_beast",
@@ -191,7 +191,7 @@
     },
     {
       "file": "official-monsters-04.webp",
-      "sha256": "d29f1a2632912b60bf37607b55413b1e86191697b35dd5333be516bbba3db79a",
+      "sha256": "8859fcf16772f157465112bd64f9a0364127b4147ef9a7561458f3af952e4534",
       "scenes": [
         "monster-shield_gremlin",
         "monster-gremlin_nob",
@@ -203,7 +203,7 @@
     },
     {
       "file": "official-monsters-05.webp",
-      "sha256": "7cbfd54f586fe5fce5e69a61b2971d38368e62534c5f800b163085d9bda2dbad",
+      "sha256": "7ab239dda56cf82e7a475af5c4a192b97ab603f2d666f1b3acf13ce2befd7603",
       "scenes": [
         "monster-slime_boss",
         "monster-spheric_guardian",
@@ -215,7 +215,7 @@
     },
     {
       "file": "official-monsters-06.webp",
-      "sha256": "b48f778081574a5cf030f27afecba3a10044c119e1d07b32cc1bab7a6d0def33",
+      "sha256": "e073d5f1e2197de7152309d7676d38bf80b526770eaf024976734a10680fc804",
       "scenes": [
         "monster-snake_plant",
         "monster-chosen",
@@ -227,7 +227,7 @@
     },
     {
       "file": "official-monsters-07.webp",
-      "sha256": "0f3e6a72a7f318695f3abe2f89435f97ba24379ad821209a314299c21a4edc9d",
+      "sha256": "17f7f4cdc30b82e06df59623131641bc1ed9fec3a96c26f9800007937919a51f",
       "scenes": [
         "monster-gremlin_leader",
         "monster-torch_head",
