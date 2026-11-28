@@ -1,4 +1,5 @@
 import {candidateBattleScene, groundY, paintWidth, sceneHeight} from './v220-battle-scene-geometry.mjs';
+import {refinedReleaseMonsterIds} from './refined-release-monsters.mjs';
 
 const batchSize = 60;
 const backgroundCapacity = 261;
@@ -9,29 +10,56 @@ const images = node => node.kind === 'image' ? [node] : children(node).flatMap(i
 const isBasicShape = image => image.image >= 100001 && image.image <= 100006;
 const rounded = value => Math.round(value * 1000) / 1000;
 
-// Lowest body row and opaque foot ranges relative to the centre of the
-// 106px approved native-art matte. Airborne bodies keep their source altitude.
+// Visible sole row and opaque foot ranges relative to the centre of the
+// 106px refined release matte.
 const measuredStances = Object.freeze({
   acid_slime_s: [38, [[-22, 20]]], acid_slime_m: [46, [[-26, 25]]], acid_slime_l: [45, [[-26, 23]]],
   spike_slime_s: [30, [[-35, 22]]], spike_slime_m: [38, [[-23, 17]]], spike_slime_l: [22, [[-24, 24]]],
   slime_boss: [38, [[-37, 33]]],
   blue_guard: [47, [[-28, -13], [26, 43]]], taskmaster: [47, [[-24, -7], [12, 29]]],
   red_guard: [47, [[-41, -25], [25, 42]]],
-  green_louse: [44, [[-12, 5]]], raven_adept: [46, [[4, 10], [16, 22]]],
+  red_louse: [50, [[10, 17]]], green_louse: [44, [[-12, 5]]], raven_adept: [46, [[4, 10], [16, 22]]],
   looter: [46, [[-21, -15], [13, 20]]], mugger: [48, [[-26, -15], [14, 29]]],
   sneaky_gremlin: [45, [[-17, 0], [13, 30]]], shield_gremlin: [44, [[-35, -18], [34, 45]]],
-  mad_gremlin: [40, [[-16, -3], [9, 15]]], fat_gremlin: [44, [[13, 20]]],
+  wizard_gremlin: [49, [[-2, 0]]], mad_gremlin: [42, [[-16, -3], [9, 15]]], fat_gremlin: [44, [[13, 20]]],
   jaw_worm: [44, [[-17, 13]]], fungi_beast: [47, [[-2, 7]]],
   lagavulin: [48, [[-40, -6], [18, 45]]], guardian: [48, [[-40, -18], [15, 35]]],
-  centurion: [52, [[14, 30]]], mystic: [46, [[-11, 3]]],
-  snake_plant: [43, [[-25, 28]]], shelled_parasite: [42, [[-14, 34]]],
-  snecko: [33, [[-26, 12]]], automaton: [44, [[-23, -5], [2, 26]]],
+  centurion: [52, [[14, 30]]], mystic: [47, [[21, 31]]],
+  snake_plant: [43, [[-25, 28]]], shelled_parasite: [44, [[-14, -8], [6, 12]]],
+  snecko: [33, [[-26, -15], [27, 38]]], automaton: [46, [[-23, -5], [2, 26]]],
   // Champ's raised forefoot ends five matte rows above the weight-bearing sole.
   champ: [48, [[10, 30]]],
-  // These assets already paint contact under their lowest visible forms.
-  gremlin_nob: [45, []], chosen: [45, []], torch_head: [40, []], gremlin_leader: [46, []],
+  // Measure the body above the baked contact ellipse and keep that ellipse.
+  gremlin_nob: [43, []], chosen: [43, []], torch_head: [34, []], gremlin_leader: [43, []],
+});
+const sourceAltitudeStances = Object.freeze({
+  sentry: 'hovering', hexaghost: 'hovering', spheric_guardian: 'hovering',
+  book_of_stabbing: 'hovering', bronze_orb: 'hovering',
+  // Collector sits above the room's floor on its throne in the source battle.
+  collector: 'hovering',
+  // EnemyView and ByrdTrial resolve the landing pose when Flight is depleted.
+  byrd: 'flight',
 });
 const footprints = ranges => ranges.map(([left, right]) => [(left + right) / 2, right - left + 1]);
+
+function enemyGroundContact(y) {
+  const measured = Object.entries(measuredStances);
+  const classes = [
+    ...measured.map(([id]) => [id, 'grounded']),
+    ...Object.entries(sourceAltitudeStances),
+  ];
+  const unclassified = new Set(refinedReleaseMonsterIds);
+  for (const [id] of classes) {
+    if (!unclassified.delete(id)) throw Error('Unknown or duplicate release monster stance: ' + id);
+  }
+  if (unclassified.size) throw Error('Missing release monster stance: ' + [...unclassified].join(', '));
+  return {
+    y, depth: .35, healthGap: 8, artSize: 106,
+    classification: Object.fromEntries(classes),
+    feet: Object.fromEntries(measured.map(([id, [row]]) => [id, row / 106])),
+    footprints: Object.fromEntries(measured.map(([id, [, ranges]]) => [id, footprints(ranges)])),
+  };
+}
 
 export function applyChapterBattlePlacement(theme) {
   const {layout, canvas} = theme;
@@ -43,11 +71,7 @@ export function applyChapterBattlePlacement(theme) {
   theme.officialAssets.battlePortraitPosition = [theme.officialAssets.battlePortraitPosition[0], portraitOffsetY];
   layout.player.groundShadow = {y: -93, offsetY: portraitOffsetY, footprints: [[-21, 12], [28, 18]]};
   layout.player.groundedStatusLane = [-168, 42];
-  layout.enemyRow.groundContact = {
-    y: centerY - (groundY - 21), depth: .35, healthGap: 8, artSize: 106,
-    feet: Object.fromEntries(Object.entries(measuredStances).map(([id, [row]]) => [id, row / 106])),
-    footprints: Object.fromEntries(Object.entries(measuredStances).map(([id, [, ranges]]) => [id, footprints(ranges)])),
-  };
+  layout.enemyRow.groundContact = enemyGroundContact(centerY - (groundY - 21));
   layout.battleNotice.position = [0, 252];
 }
 

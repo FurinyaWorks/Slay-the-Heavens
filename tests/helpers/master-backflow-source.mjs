@@ -55,7 +55,7 @@ const updatedSources = new Map([
   ['tests/lua/intent_artifact_preview.lua', ['f924151fbc38a417985524171f8a8adb0927f133573a4f7b233ee1d52be2279c', '425180561c68ac50d4f67a13fa5fbf4a7a06e6b2']],
   ['tests/lua/support/dynamic_monster_game_ui.lua', ['abfe82b4330839610a3b495db737078ba2f4704ee951e8c1ac53cc8ee8056b94', '05e5c56c220b537f9a5fbaa68e49d0d5345dcdb8']],
   ['tests/official-assets-runtime.test.mjs', ['475d4772d0224ee4690cb5215d2536ac4961efe8a1415a40c3219dcc70fd4cde', '4ab27d84b1640b8ee6c48daaecc3c6aae1b416c8']],
-  ['tests/official-assets-legibility.test.mjs', ['ae2dbaa19e903e2e36374ffc92b0aede106bf8e4ce3afc055eedd3b70c7da844', '5a3a3b9b240f86244664b5f9a7b1fe26112c7f59']],
+  ['tests/official-assets-legibility.test.mjs', ['6a97d673835813f71ed91fb09a3b315a448640e1b6d69d4ad759978f1b1e8f8f', '9a382ef49c41922e5f26b4a48e29a1b7c1909832']],
   ['tests/official-battle-relic-icons.test.mjs', ['02ac336167bbf416ca27af8679c8983dad1420820128a5966dd8c796356a6b5e', '01dd97b42135c76c110fae8f2acc6e71b7bd8be4']],
   ['tests/official-run-chrome.test.mjs', ['87fc525fbd0690029b8c32ec37f48c26ca80241bfce13dbe11a39c3659fafb74', 'fcdd143c84f896d09c680704d1e136d9f1da5788']],
   ['tests/run-max-hp-config-inverse.test.mjs', ['a40879d35601e22bfbd5622fce1604d0a9ee7a2222d15525f66d7e82b862928f', '408137bf30fd65836eb8a0eaba40de3a3902bdd5']],
