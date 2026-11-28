@@ -5,6 +5,55 @@ import {exactSourceMatches} from './source-fingerprint.mjs';
 // The detached copy continues to execute its frozen Develop and Map Deck
 // helpers; the normal test process uses the current Release readers.
 const owners=Object.freeze({
+ "tests/helpers/combined-epoch/source-epoch-runtime.mjs": {
+  "current": {
+   "sha256": "1cf1f1d3c8e13caca6c8480da3c332b9283ce2fa074525359f685109ef6f9494",
+   "gitBlob": "7a0803c2201b7d5ff25347708fc40dd5b3b17e88"
+  },
+  "previous": {
+   "sha256": "96e78e422e9135f5d947f21999b7e5476d4ef3fca16e50b91c75330a011552cf",
+   "gitBlob": "f04ceba33d70db52f2c845fd66fe8a46dcf0d4ff"
+  },
+  "hunks": [
+   {
+    "at": 108,
+    "before": "}\n\nexport function createSourceEpochProjector(input,{root=process.cwd(),allowConfigLayout=false,reuseFrozenInput=false}={}){\n // Clone once to prevent the caller changing proof data after validation.",
+    "after": "}\n\nexport function readReleaseLayoutOwners(readRawInput){\n if(typeof readRawInput!=='function')return readRawInput;\n  // Track the actual raw owner before applying any inverse. An exact live\n  // successor must not be swapped for its equally projectable predecessor\n  // while a single combined read is in progress.\n  const releaseObservations=new Map();\n  return owner=>{\n   const raw=readRawInput(owner);\n   if(!releaseRuntimeOwner(owner))return raw;\n   const uniform=typeof raw==='string'&&\n    (raw===normalize(raw)||raw===normalize(raw).replaceAll('\\n','\\r\\n'));\n   const observed=uniform?normalize(raw):raw;\n   if(releaseObservations.has(owner))\n    assert(observed===releaseObservations.get(owner),'combined linked owner identity: '+owner+' changed during Release replay');\n   else releaseObservations.set(owner,observed);\n   return beforeReleaseClosureFixture(owner,raw);\n  };\n}\n\nexport function createSourceEpochProjector(input,{root=process.cwd(),allowConfigLayout=false,reuseFrozenInput=false}={}){\n // Clone once to prevent the caller changing proof data after validation."
+   },
+   {
+    "at": 156,
+    "before": " function requireTarget(target){assert(Object.hasOwn(proof.targets,target),'unknown source target');return proof.targets[target];}\n function rawReader(reader){return readers.get(reader)?.raw??reader;}\n function preCombinedSource(path,source,{target,readSource=readLive}={}){\n  const destination=requireTarget(target);\n  const liveInput=source;\n  const isLiveReader=liveReaders.has(rawReader(readSource));\n  const readRawInput=rawReader(readSource);\n  // Track the actual raw owner before applying any inverse. An exact live\n  // successor must not be swapped for its equally projectable predecessor\n  // while a single combined read is in progress.\n  const releaseObservations=new Map();\n  const readReleaseOwner=owner=>{\n   const raw=readRawInput(owner);\n   if(!releaseRuntimeOwner(owner))return raw;\n   const uniform=typeof raw==='string'&&\n    (raw===normalize(raw)||raw===normalize(raw).replaceAll('\\n','\\r\\n'));\n   const observed=uniform?normalize(raw):raw;\n   if(releaseObservations.has(owner))\n    assert(observed===releaseObservations.get(owner),'combined linked owner identity: '+owner+' changed during Release replay');\n   else releaseObservations.set(owner,observed);\n   return beforeReleaseClosureFixture(owner,raw);\n  };\n  const projected=entrancePredecessor(path,source,readReleaseOwner,{allowConfigLayout});\n  source=projected.source;readSource=projected.read;\n  const rawInput=source,backflow=beforeDevelopBackflow(path,source,{allowConfigLayout}),rebased=beforeRebasedCi(path,backflow);",
+    "after": " function requireTarget(target){assert(Object.hasOwn(proof.targets,target),'unknown source target');return proof.targets[target];}\n function rawReader(reader){return readers.get(reader)?.raw??reader;}\n function preCombinedSource(path,source,{target,readSource=readLive,releaseLayoutsAlreadyProjected=false}={}){\n  const destination=requireTarget(target);\n  const liveInput=source;\n  const isLiveReader=liveReaders.has(rawReader(readSource));\n  const readRawInput=rawReader(readSource);\n  const projected=entrancePredecessor(path,source,\n   releaseLayoutsAlreadyProjected?readRawInput:readReleaseLayoutOwners(readRawInput),{allowConfigLayout});\n  source=projected.source;readSource=projected.read;\n  const rawInput=source,backflow=beforeDevelopBackflow(path,source,{allowConfigLayout}),rebased=beforeRebasedCi(path,backflow);"
+   }
+  ]
+ },
+ "tests/helpers/closeout-source-epoch.mjs": {
+  "current": {
+   "sha256": "193e27b3e02e4afca1d2d6fcf6b78e64d18c3853b11f96d631538c5623e2e35b",
+   "gitBlob": "8523062f30c400de9c3e618df45174edb13d78e3"
+  },
+  "previous": {
+   "sha256": "38bc8f4c7353c6af1d312298e01e06281b880fbbd56807c0ad55f3c57903e11d",
+   "gitBlob": "95dadcebe0e7ba4ff3df2a79922c3bc96b3872d0"
+  },
+  "hunks": [
+   {
+    "at": 5,
+    "before": "import {createHash} from 'node:crypto';\nimport {gunzipSync} from 'node:zlib';\nimport {createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';\nimport {extendStsStyleEpoch} from './sts-style-source-epoch-runtime.mjs';\nimport {stsStylePatch} from './sts-style-source-proof.mjs';",
+    "after": "import {createHash} from 'node:crypto';\nimport {gunzipSync} from 'node:zlib';\nimport {createSourceEpochProjector,readReleaseLayoutOwners} from './combined-epoch/source-epoch-runtime.mjs';\nimport {extendStsStyleEpoch} from './sts-style-source-epoch-runtime.mjs';\nimport {stsStylePatch} from './sts-style-source-proof.mjs';"
+   },
+   {
+    "at": 62,
+    "before": "// per invocation; neither live reads nor authorization are cached.\nexport function sourceSlice(path,source,target,readSource=p=>readFileSync(p,'utf8')){\n const rewardLayout='src/lua/abyss_battle_reward_layout.lua';\n const readCurrent=readSource;\n readSource=owner=>{\n  const current=readCurrent(owner);\n  return owner===rewardLayout?beforeReleaseClosureFixture(owner,current):current;\n };\n if(path===rewardLayout){\n  const previous=beforeReleaseClosureFixture(path,source);\n  if(previous!==source)assert.equal(readCurrent(path),source,'fresh reward banner layout source');\n  source=previous;\n }",
+    "after": "// per invocation; neither live reads nor authorization are cached.\nexport function sourceSlice(path,source,target,readSource=p=>readFileSync(p,'utf8')){\n const releaseLayouts=new Set(['src/lua/abyss_battle_reward_layout.lua','src/lua/abyss_map_ui.lua']);\n const readCurrent=readSource;\n readSource=readReleaseLayoutOwners(readCurrent);\n if(releaseLayouts.has(path)){\n  const previous=beforeReleaseClosureFixture(path,source);\n  if(previous!==source)assert.equal(readCurrent(path),source,'fresh release layout source: '+path);\n  source=previous;\n }"
+   },
+   {
+    "at": 77,
+    "before": " // Keep configuration strict here and let the projector authenticate exact Lua continuations.\n if(path==='config/architecture.json'&&hash(source.replaceAll('\\r\\n','\\n'))!==row.sha256)return source;\n const projected=sourceEpoch.preCombinedSource(path,source,{target,readSource});\n if(projected!==source)return projected;\n if(beforeRewardTransitionSource(path,source)===source)return source;",
+    "after": " // Keep configuration strict here and let the projector authenticate exact Lua continuations.\n if(path==='config/architecture.json'&&hash(source.replaceAll('\\r\\n','\\n'))!==row.sha256)return source;\n const projected=sourceEpoch.preCombinedSource(path,source,{target,readSource,releaseLayoutsAlreadyProjected:true});\n if(projected!==source)return projected;\n if(beforeRewardTransitionSource(path,source)===source)return source;"
+   }
+  ]
+ },
  "tests/helpers/relic-query-source-inverse.mjs": {
   "current": {
    "sha256": "b727def31d0e68c56d82472d9fa076cebc731f93b44210e7446b4f026d0942f6",
@@ -264,7 +313,7 @@ const bossMapDeckHelper=Object.freeze({
 });
 
 // The current detached caller keeps the complete reviewed entrance reader and its inputs.
-export const currentDetachedInputs=Object.freeze({
+const detachedInputsBeforeReplayGuard=Object.freeze({
  'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'96e78e422e9135f5d947f21999b7e5476d4ef3fca16e50b91c75330a011552cf',
  'tests/fixtures/develop-release-vocabulary-prior.json.gz':'2b3d606fc142f2c8c5cfaaff386c70f6e1f741f24fbc1879b78399b7c477e914',
  'tests/fixtures/develop-release-vocabulary-source.json.gz':'9377ea3fc9aa22e1e1afed2df671413df0e11403e0862b955b929b06abc33dad',
@@ -284,6 +333,15 @@ export const currentDetachedInputs=Object.freeze({
  'tests/helpers/ui-entrance-source.mjs':'134d5b8fa6f23226b47681a424fd7549660e61de033cec0f78cf5e48a6104935',
  'tests/helpers/ui-selection-current-source.mjs':'a8e543686784c1abb634b7be65c0c5e71bb9da7b385914b6f0bd5664a15245cc',
  'tests/helpers/visual-selection-source.mjs':'3066522a5ed048b3bff4bac6424c0368676955d2c458076a1093b323761119c1',
+});
+
+// Current detached callers use the complete reviewed successors. The
+// historical copier still restores the original immutable helpers.
+export const currentDetachedInputs=Object.freeze({
+ ...detachedInputsBeforeReplayGuard,
+ 'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'1cf1f1d3c8e13caca6c8480da3c332b9283ce2fa074525359f685109ef6f9494',
+ 'tests/helpers/closeout-source-epoch.mjs':'193e27b3e02e4afca1d2d6fcf6b78e64d18c3853b11f96d631538c5623e2e35b',
+ 'tests/helpers/release-closure-fixture-source.mjs':'2ea01b9bb24c43d791df8d6215cde5af760411070edafc7b542bdbcb4eb45819',
 });
 
 export function beforeDetachedReleaseBackflow(path,raw){
