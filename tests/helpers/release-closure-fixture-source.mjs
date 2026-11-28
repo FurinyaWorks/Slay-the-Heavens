@@ -35,6 +35,45 @@ export const selectionRawEntranceReplay=Object.freeze({
 // Current Host checks exercise production. Historical Host and CI replays
 // preserve the exact earlier test sources from the production backflow.
 const fixtures=Object.freeze({
+ "scripts/official-run-layout.mjs": {
+  "current": {
+   "sha256": "05e16b702cb588050cd3f0703ee73398f01026d6fb19f2b5809e43cf7f8e5cfc",
+   "gitBlob": "a35bbddec08d724c8be3138a5ed0a150690aab33"
+  },
+  "previous": {
+   "sha256": "5bfcfda3e4fc9a713a236899c828f445349029066b37881b6790e688d6666979",
+   "gitBlob": "8b8ee2c90fade449085e2d9b339d05286acceefc"
+  },
+  "hunks": [
+   {
+    "at": 106,
+    "before": " roundedPresetButton(required(battle,'start'),theme,'primary');\n roundedPresetButton(required(battle,'endTurn'),theme,'turn',{name:'v25Chrome'});",
+    "after": " roundedPresetButton(required(battle,'start'),theme,'primary');"
+   }
+  ]
+ },
+ "tests/official-run-chrome.test.mjs": {
+  "current": {
+   "sha256": "e2244156e3afbf3e7e4852e2604359f843337ed1e39e3d0424a1e2d38cb6cf50",
+   "gitBlob": "2455b4769cb1b1bca872e4db858132c6e4e33644"
+  },
+  "previous": {
+   "sha256": "87fc525fbd0690029b8c32ec37f48c26ca80241bfce13dbe11a39c3659fafb74",
+   "gitBlob": "fcdd143c84f896d09c680704d1e136d9f1da5788"
+  },
+  "hunks": [
+   {
+    "at": 262,
+    "before": "  ['battlePanel/endTurn','v25Chrome','turn'],['battlePanel/skip','roundedButton','secondary'],",
+    "after": "  ['battlePanel/skip','roundedButton','secondary'],"
+   },
+   {
+    "at": 271,
+    "before": "  }",
+    "after": "  }\n }\n const endTurn=at('battlePanel/endTurn');\n assert.deepEqual(endTurn.states,{normal:'normal',hover:'hover',pressed:'pressed',disabled:'disabled'});\n const hexStates={\n  normal:['#41484A','#243942','#8F918B','#E2DFD0'],\n  hover:['#515A5D','#2D4753','#B3B5AE','#E2DFD0'],\n  pressed:['#30383C','#192D36','#6E7779','#E2DFD0'],\n  disabled:['#373E40','#222D32','#555A59','#8F9591'],\n };\n for(const [name,palette] of Object.entries(hexStates)){\n  const state=child(endTurn,name),face=child(state,'v25Chrome');\n  assert.deepEqual(['rimLeft','rimRight'].map(part=>child(face,part)?.rotation),[90,-90],name);\n  assert.deepEqual(['rim','face','rimLight'].map(part=>child(face,part).colour)\n   .concat(child(state,'label').text.colour),palette,name);"
+   }
+  ]
+ },
  "tests/integration-source-epoch.test.mjs": {
   "current": {
    "sha256": "c01c05a38b05b9a405f009da808c1af295f48bf3653d70fbeb8346ec1d8feaf2",
