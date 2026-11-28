@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - Furinya
 created_date: '2026-11-14 10:12'
-updated_date: '2026-11-14 12:36'
+updated_date: '2026-11-28 10:37'
 labels: []
 milestone: m-8
 dependencies: []
@@ -54,4 +54,6 @@ CC阻塞已复验解除：精确保留结算/暂停分支调用顺序的局部he
 不再等待PR661整包：复用其已验证改名门禁修复，固定ID1429751262、Strict/Full/精确SHA等保护不变，避免引入其余605文件。
 
 本轮提取的7文件改名门禁与PR661逐字相同，77项门禁、105项选择器以及Full/交付相邻回归通过。任务继续In Progress；将解除PR661依赖并按新HEAD重新独审授权，不沿用旧收据。
+
+2026-11-28 对账：本任务验收会话内暂停与续局；离关重进后的持久恢复由已恢复的 TASK-53 优先核验。平台退出结算、同候选设备与交付验收按原 AC 继续。
 <!-- SECTION:NOTES:END -->
