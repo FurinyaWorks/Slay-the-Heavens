@@ -3,8 +3,8 @@
 local Run=require('abyss_run')
 local Random=require('abyss_sts_random')
 local M={}
-local function row(choice,title,description)
-    return {choice=choice,title=title,description=description,enabled=true}
+local function row(choice,title,description,card)
+    return {choice=choice,title=title,description=description,enabled=true,previewCardId=card}
 end
 function M.prepare(run,event)
     assert(type(run.maxHp)=='number' and run.maxHp%1==0 and run.maxHp>=1
@@ -16,7 +16,7 @@ function M.prepare(run,event)
 end
 function M.options(_run,event)
     if event.stage=='intro' then
-        return {row('accept','接受','失去 '..event.hpLoss..' 点最大生命，获得5张「幻影」。'),
+        return {row('accept','接受','失去 '..event.hpLoss..' 点最大生命，获得5张「幻影」。','apparition'),
             row('leave','拒绝','不失去最大生命，也不获得卡牌。')}
     elseif event.stage=='result' then return {row('leave','离开','返回路线。')} end
     return {}

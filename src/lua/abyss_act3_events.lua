@@ -23,7 +23,7 @@ local function any(event)return next(event.candidates)~=nil end
 local function row(choice,title,description,card)
  return {choice=choice,title=title,description=description,enabled=card~=false,
   cardId=type(card)=='table' and card.cardId or nil,upgraded=type(card)=='table' and card.upgraded or nil,
-  upgrades=type(card)=='table' and card.upgrades or nil}
+  upgrades=type(card)=='table' and card.upgrades or nil,previewCard=type(card)=='table' and card or nil}
 end
 function M.prepare(run,event,miscRng)
  if event.id=='mind_bloom'then return MindBloom.prepare(run,event)end

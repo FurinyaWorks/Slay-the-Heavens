@@ -35,8 +35,8 @@ function M.prepare(run,event,miscRng,floor)
     event.body=event.id=='mausoleum' and '一座古墓中放着封闭的石棺。' or '一位乞丐向你请求75金币。'
 end
 
-local function row(choice,title,description,enabled,picker)
-    return {choice=choice,title=title,description=description,enabled=enabled~=false,picker=picker}
+local function row(choice,title,description,enabled,picker,card)
+    return {choice=choice,title=title,description=description,enabled=enabled~=false,picker=picker,previewCardId=card}
 end
 
 function M.options(run,event)
@@ -57,7 +57,7 @@ function M.options(run,event)
     end
     if event.id=='mausoleum' then
         if event.stage=='intro' then
-            return {row('open','打开石棺','获得随机遗物；50%概率获得诅咒「蜷缩」。'),
+            return {row('open','打开石棺','获得随机遗物；50%概率获得诅咒「蜷缩」。',true,nil,'writhe'),
                 row('leave','离开','不打开石棺。')}
         elseif event.stage=='result' then return {row('leave','离开','返回路线。')} end
         return {}

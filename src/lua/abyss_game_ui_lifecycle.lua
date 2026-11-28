@@ -48,7 +48,7 @@ local function updatePrepared(self,platform,dt)
     PageReveal.registerSource(platform,'nodePanel');self.nodeUI:update(dt)
     PageReveal.registerSource(platform,'deckPanel');self.deckUI:update(dt)
     if self.choiceUI and self.choiceUI.visible then
-        PageReveal.registerSource(platform,'choicePanel');self.choiceUI:update()
+        PageReveal.registerSource(platform,'choicePanel');self.choiceUI:update(dt)
     end
     PageReveal.registerSource(platform,'mapPanel');return self.mapUI:update(dt)
 end
@@ -59,7 +59,7 @@ local function advancePreparation(self,platform,dt)
     PageReveal.registerSource(platform,page)
     if page=='nodePanel' then self.nodeUI:prepare(dt)
     elseif page=='deckPanel' then self.deckUI:update(dt)
-    elseif page=='choicePanel' and self.choiceUI then self.choiceUI:update()
+    elseif page=='choicePanel' and self.choiceUI then self.choiceUI:update(dt)
     elseif page=='mapPanel' then self.mapUI:update(dt) end
     return true
 end
@@ -103,6 +103,7 @@ function M.update(self,platform,openingCovered,bgm)
             if platform.background then platform.background:tick() end
             if platform.portraits then platform.portraits:tick(dt,selectionCanDraw(self)) end
             self:paintArtLoading()
+            if platform.cardBrowsePreview then platform.cardBrowsePreview.cancelIfBlocked() end
             if self.exitOpen or self.settlementBusy then return true end
             if updateSuspended(self,dt) then return true end
             -- Count client update time within this run; menus/results never extend it.

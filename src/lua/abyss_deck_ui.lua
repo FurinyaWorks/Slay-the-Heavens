@@ -11,6 +11,7 @@ local Pointer = require('abyss_pointer_input')
 local RoundedButton = require('abyss_rounded_button')
 local Browser = require('abyss_deck_browser')
 local NativeArt = require('abyss_card_art_runtime')
+local gridChoice={recoverExhaust=true,discardToDraw=true,discardToHand=true}
 local pileNames = {draw="抽牌堆",discard="弃牌堆",exhaust="消耗堆"}
 local rarityOrder = {basic=1,special=2,common=3,uncommon=4,rare=5,curse=6}
 local noPlayPreview = {}
@@ -229,6 +230,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     local pileGrid = root:GetChild('pileGrid')
     local grid = browserGrid
     local cursor=platform.cursorEvents or {}
+    local browsePreview=platform.cardBrowsePreview
     local pool,browserRun
     local previousControl,nextControl,pageHint=root:GetChild('previous'),root:GetChild('next'),root:GetChild('pageHint')
     local previousHit,nextHit=previousControl:GetChild('hit'),nextControl:GetChild('hit')
@@ -323,12 +325,25 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         if self.browserShell then root:GetChild('pileChrome'):GetChild('heading').text=root:GetChild('title').text end
         details.text=self.detailPages[self.detailPage]..'\n\n点按正文翻页 · '..(self.browserShell and '左下角返回' or '右上角返回')
     end
+    local function inspection(run,definition,upgraded,text)
+        local display=presentation[definition.id] or definition
+        local title=display.name..(upgraded and '+' or '')
+        if definition.originalV4 then
+            local raw=OriginalDisplay.describe(definition,upgraded)
+            local keywords=OriginalDisplay.keywordDefinitions(definition,upgraded)
+            return title,keywords~='' and raw..'\n'..keywords or raw
+        end
+        text=text or CardDisplay.permanentText(display,definition,{upgraded=upgraded})
+        local rows=CardKeywords.runTips(run,definition,upgraded,text)
+        if not rows then return end
+        local lines={text}
+        for _,row in ipairs(rows) do lines[#lines+1]=row.name..'：'..row.body end
+        return title,table.concat(lines,'\n')
+    end
     function self.showDetails(_,definition,upgraded)
-        if not self.visible or self.choiceToken or not definition.originalV4 then return false end
-        local raw=OriginalDisplay.describe(definition,upgraded)
-        local keywords=OriginalDisplay.keywordDefinitions(definition,upgraded)
-        if keywords~=''then raw=raw..'\n'..keywords end
-        return self:showText(definition.name..(upgraded and '+' or ''),raw)
+        if not self.visible or self.choiceToken then return false end
+        local title,raw=inspection(self.run,definition,upgraded)
+        return title and self:showText(title,raw) or false
     end
     local function paginate(raw,width,height)
         -- Bound each page using the shared viewport/font, counting a CJK codepoint
@@ -356,6 +371,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     end
     function self.showText(_,title,raw)
         if not self.visible or self.choiceToken then return false end
+        if browsePreview then browsePreview.clear(self) end
         hideCardDetail()
         upgradePreview:SetVisible(false)
         for _,name in ipairs({'previous','next','pageHint'})do root:GetChild(name):SetVisible(false) end
@@ -393,12 +409,11 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         if not view:open(run,index)then self.visible,self.run,self.detailOnly,self.relicView=false,nil,nil,nil;return false end
         return true
     end
-    function self.inspect(_,run,definition,upgraded)
-        if self.visible or not definition.originalV4 then return false end
-        self.visible,self.run,self.detailOnly=true,run,true
-        self.generation=self.generation+1;root:SetVisible(true);root:SetAsLastSibling()
-        root:GetChild('close'):SetVisible(true);local close=root:GetChild('close'):GetChild('hit');close.interactable,close.raycastTarget=true,true
-        return self:showDetails(definition,upgraded)
+    function self.inspect(_,run,definition,upgraded,text)
+        if self.visible then return false end
+        local title,raw=inspection(run,definition,upgraded,text)
+        if not title then return false end
+        return self:inspectText(run,title,raw)
     end
     local function colour(value) return platform.color(value.r, value.g, value.b, value.a) end
     local function picture(control,id) return control:SetImage(platform.imageSource,id) end
@@ -428,6 +443,25 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         self:close()
         if callback then callback(token,uid) end
     end
+    local function previewChoice()
+        local battle=self.battle
+        local choice=battle and battle.pendingChoice
+        if not self.choiceToken or not choice or self.choiceToken~=choice.token
+            or not self.run or self.run.combat~=battle or self.run.phase~='combat' then return end
+        if choice.cards or gridChoice[choice.op] or choice.op=='colorless' and choice.item.effect.kind=='secret' then return choice end
+    end
+    local function capturePreview(instance,text,current)
+        local generation,catalog,battle=self.generation,self.catalog,self.battle
+        local choice=previewChoice()
+        if not self.visible or inDetail() or self.choiceToken and not choice then return end
+        return function()
+            return self.visible and not inDetail() and self.generation==generation and current()
+                and (not choice or choice==previewChoice())
+        end,function()
+            local definition=Combat.cardDefinition(battle or {catalog=catalog},instance)
+            return CardKeywords.cardTips(catalog.statuses,definition,instance.upgraded,text())
+        end,-280
+    end
     local function bindCard(control,hit,instance,bodyText,repaint)
         if not self.bindings[control] then
             -- Keep the hit handle: GetChild is invalid once native Grid retires its item.
@@ -443,16 +477,41 @@ function M.new(root, presentation, clickEvent, platform, onClose)
                     or not self.battle.pendingChoice or self.battle.pendingChoice.token~=self.choiceToken then return end
                 return pickChoice(control,b,repaint)
             end
+            if browsePreview then
+                local function capture()
+                    local binding=self.bindings[control]
+                    if not binding or binding.generation~=self.generation or not binding.instance then return end
+                    local captured,progress=binding.instance,grid.scrollProgress
+                    local upgraded=captured.upgraded
+                    return capturePreview(captured,function()return control:GetChild('face'):GetChild('label').text end,
+                        function()return self.bindings[control]==binding and binding.instance==captured
+                            and captured.upgraded==upgraded and grid.scrollProgress==progress and control.visible~=false end)
+                end
+                if cursor.CursorEnter then hit:AddCursorEventListener(cursor.CursorEnter,function()browsePreview.enter(self,hit,capture)end) end
+                if cursor.CursorExit then hit:AddCursorEventListener(cursor.CursorExit,function(event)browsePreview.exit(hit,event)end) end
+                if cursor.CursorDown and cursor.CursorUp then
+                    hit:AddCursorEventListener(cursor.CursorDown,function(event)
+                        browsePreview.down(self,hit,self.choiceToken and capture or nil,event)
+                    end)
+                    hit:AddCursorEventListener(cursor.CursorUp,function(event)browsePreview.up(hit,event)end)
+                end
+            end
             hit:AddCursorEventListener(clickEvent,function(event)
+                if browsePreview and browsePreview.consume(hit,event) then return false end
                 if Pointer.blocked(platform) or Pointer.dragged(event, Theme.layout.cardDrag.threshold) then return false end
                 return pick()
             end)
         end
-        self.bindings[control].generation,self.bindings[control].uid=self.generation,instance.uid
+        local binding=self.bindings[control]
+        if browsePreview and self.choiceToken and cursor.CursorDrag and not binding.previewDrag then
+            hit:AddCursorEventListener(cursor.CursorDrag,function(event)browsePreview.drag(hit,event)end)
+            binding.previewDrag=true
+        end
+        binding.generation,binding.uid=self.generation,instance.uid
         -- Browser instances already belong to this read-only snapshot. Details
         -- make their own copy before calculating or previewing upgrades.
-        self.bindings[control].instance=instance
-        if self.browserShell then self.bindings[control].bodyText=bodyText end
+        binding.instance=instance
+        if self.browserShell then binding.bodyText=bodyText end
     end
     local function cardBody(display,definition,instance,battle)
         if not battle then return CardDisplay.permanentText(display,definition,instance) end
@@ -561,6 +620,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         end
     end
     function self.showCardDetails(_,instance)
+        if browsePreview then browsePreview.clear(self) end
         if not self.visible or self.choiceToken or inDetail() then return false end
         local state=self.battle or {catalog=self.catalog}
         local current=Combat.copy(instance)
@@ -653,8 +713,19 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     end
     if pileGrid and platform.deckBrowser then
         local viewport=official and Theme.layout.deckView.pileViewport or Theme.layout.deckView.viewport
+        local callbacks
+        if browsePreview then
+            callbacks={exit=browsePreview.exit,enter=function(entry,available)
+                browsePreview.enter(self,entry.hit,function()
+                    if not available() then return end
+                    local instance,version=entry.instance,entry.version
+                    return capturePreview(instance,function()return entry.bodyText end,
+                        function()return available() and entry.version==version and entry.instance==instance end)
+                end)
+            end}
+        end
         pool=Browser.new(pileGrid,platform.deckBrowser,platform,clickEvent,viewport[4]/2-123,browserModel,paintBrowser,
-            function(instance)return self:showCardDetails(instance)end)
+            function(instance)return self:showCardDetails(instance)end,callbacks)
     end
     function self.syncRun(_,run)
         if browserRun==run then return end
@@ -667,6 +738,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         if pool then pool:release() end
     end
     function self.onEngineDestroy()
+        if browsePreview then browsePreview.clear(self) end
         if pool then pool:release(true) end
     end
     -- Pure presentation projection. The permanent deck and the three combat
@@ -928,6 +1000,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
         ready()
     end
     function self.update(_, dt)
+        if browsePreview then browsePreview.update(self,dt) end
         if self.focusRead and not self.focusCurrent() then return onClose() end
         if self.paged then
             if not inDetail() and self.pendingGrid then
@@ -964,6 +1037,7 @@ function M.new(root, presentation, clickEvent, platform, onClose)
     end
     function self.close(_)
         if not self.visible then return false end
+        if browsePreview then browsePreview.clear(self) end
         if self.paged then
             self.savedPage={entry=self.entry,battle=self.pileKind and self.battle,page=self.pageIndex}
             pool:cancel()

@@ -134,14 +134,16 @@ function M.new(root, data, presentation, clickEvent, platform)
             imageTypes = platform.imageTypes,
             imageFillRight = platform.imageFillRight,
             textAlignments = platform.textAlignments, mobileRunHud=platform.mobileRunHud,
-            cursorEvents = platform.cursorEvents, sound = platform.sound, pointerBlocked = platform.pointerBlocked, touchScreen = platform.touchScreen,
+            cursorEvents = platform.cursorEvents, cursorPosition=platform.cursorPosition, sound = platform.sound, pointerBlocked = platform.pointerBlocked, touchScreen = platform.touchScreen,
             enhancedRooms=true, hostRendersEvents=true, hostRendersMap=true, deferHiddenShopProducts=platform.nativePageLifecycle==true, inputCovered=inputCovered,
-            onInspectCard=function(definition,upgraded)
+            onInspectCard=function(definition,upgraded,text)
                 if not self.run or self.disabled or self.mode~='node' or self.exitOpen
                     or self.deckUI.visible or self.potionUI.visible or self.settlementRequested then return false end
-                if not self.deckUI:inspect(self.run,definition,upgraded) then return false end
+                if not self.deckUI:inspect(self.run,definition,upgraded,text) then return false end
                 self:refresh();return true
             end })
+    local cardKeywordTip=root:GetChild('cardKeywordTip')
+    platform.cardBrowsePreview=cardKeywordTip and require('abyss_card_browse_preview').new(cardKeywordTip,platform,self)
     platform.deckChanged=View.deckChanged(self,owner,platform,changed)
     self.deckUI = DeckUI.new(child("deckPanel"), presentation, clickEvent, platform, function() return self:closeDeck() end)
     do

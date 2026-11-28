@@ -26,8 +26,8 @@ function M.prepare(run,event,miscRng,floor)
     if event.id=='wheel' then Wheel.prepare(run,event) end
     if event.id=='we_meet_again' then Trade.prepare(run,event,miscRng) end
 end
-local function row(choice,title,description,enabled)
-    return {choice=choice,title=title,description=description,enabled=enabled~=false}
+local function row(choice,title,description,enabled,card,relic)
+    return {choice=choice,title=title,description=description,enabled=enabled~=false,previewCardId=card,previewRelicId=relic}
 end
 local function result(run,text)
     run.nodeFlow.event.stage='result';run.nodeFlow.event.body=text
@@ -66,12 +66,13 @@ function M.options(run,event,upgradeCards)
     if stage=='result' or stage=='disagree' then return {row('leave','离开','返回路线。')} end
     if id=='sssserpent' then
         if stage=='agree' then return {row('confirm','收下馈赠','获得175金币与诅咒「疑虑」。')} end
-        return {row('agree','接受','获得175金币与诅咒「疑虑」；需要再次确认。'),row('disagree','拒绝','拒绝这笔交易。')}
+        return {row('agree','接受','获得175金币与诅咒「疑虑」；需要再次确认。',true,'doubt'),row('disagree','拒绝','拒绝这笔交易。')}
     elseif id=='big_fish' then
-        return {row('banana','香蕉','回复'..event.healAmount..'点生命。'),row('donut','甜甜圈','最大生命增加5。'),row('box','盒子','获得随机遗物与诅咒「悔恨」。')}
+        return {row('banana','香蕉','回复'..event.healAmount..'点生命。'),row('donut','甜甜圈','最大生命增加5。'),row('box','盒子','获得随机遗物与诅咒「悔恨」。',true,'regret')}
     elseif id=='accursed_blacksmith' then
         if stage=='choose_card' then return {row('forge','锻造','必须选择一张卡牌升级。')} end
-        return {row('forge','锻造','升级一张卡牌。',#upgradeCards(run)>0),row('rummage','搜寻','获得扭曲之钳与诅咒「疼痛」。'),row('leave','离开','放弃锻造与搜寻。')}
+        return {row('forge','锻造','升级一张卡牌。',#upgradeCards(run)>0),
+            row('rummage','搜寻','获得扭曲之钳与诅咒「疼痛」。',true,'pain','warped_tongs'),row('leave','离开','放弃锻造与搜寻。')}
     elseif id=='bonfire' then
         if not stage then return {row('approach','靠近','靠近篝火中的元素。')} end
         return {row('offer','交换卡牌','移除一张可移除卡牌，遗物绑定牌除外；按稀有度获得回报。')}

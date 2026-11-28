@@ -294,7 +294,13 @@ function M.new(root, run, map, presentation, clickEvent, onChange, options)
         local position = ctx.shopSelection.selected and layout.shop.cancel or ctx.shopBackPosition()
         back:SetAnchoredPosition(position[1],position[2])
         local purchase = ctx.shopSelection.selected and layout.shop.confirm or layout.confirm
-        confirm:SetAnchoredPosition(purchase[1],purchase[2])
+        local confirmX=purchase[1]
+        if backLabel and confirmLabel and ctx.self.picker=='upgrade' and ctx.self.selected
+            and position[1]==confirmX and position[2]==purchase[2] then
+            -- Keep both Forge actions in separate corners of the comparison.
+            confirmX=Theme.canvas.base[1]/2-Theme.canvas.safe.x-purchase[3]/2
+        end
+        confirm:SetAnchoredPosition(confirmX,purchase[2])
         ctx.show(back, backLabel ~= nil) ctx.show(confirm, confirmLabel ~= nil)
         if backLabel then back:GetChild("label").text = backLabel ctx.state(back, true) end
         if confirmLabel then confirm:GetChild("label").text = confirmLabel ctx.state(confirm, confirmOk, false, true) end

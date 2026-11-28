@@ -67,32 +67,36 @@ local function bindCard(ctx, box, resolveAction)
     end
     local cursor = ctx.cursor
     if cursor and cursor.CursorDown then
-        hit:AddCursorEventListener(cursor.CursorDown, function(event)
+        ctx.listen(hit,cursor.CursorDown, function(event)
             b.observed, b.press, b.touch, b.released = true, enabled() and entry() or nil, touch(event), false
             b.x, b.y = ctx.point(event)
         end)
     end
     if cursor and cursor.CursorUp then
-        hit:AddCursorEventListener(cursor.CursorUp, function(event)
+        ctx.listen(hit,cursor.CursorUp, function(event)
             if b.touch == touch(event) then b.released = true end
         end)
     end
     if cursor and cursor.CursorEndDrag then
-        hit:AddCursorEventListener(cursor.CursorEndDrag, function(event)
+        ctx.listen(hit,cursor.CursorEndDrag, function(event)
             if not b.press or b.touch == touch(event) then b.observed, b.press = true, nil end
         end)
     end
     if cursor and cursor.CursorEnter and cursor.CursorExit then
-        hit:AddCursorEventListener(cursor.CursorEnter, function()
+        ctx.listen(hit,cursor.CursorEnter, function()
             if enabled() then pose(box, b, true) end
         end)
-        hit:AddCursorEventListener(cursor.CursorExit, function(event)
+        ctx.listen(hit,cursor.CursorExit, function(event)
             if b.touch == touch(event) then b.press = nil end
             pose(box, b, false)
         end)
     end
     hit:AddCursorEventListener(ctx.clickEvent, function(event)
         local id = touch(event)
+        if ctx.cardInspection:consume(box,event) then
+            b.press,b.x,b.y=nil,nil,nil
+            return false
+        end
         if b.press and id ~= b.touch and (id or not b.released) then return false end
         local samePress = b.press and b.press == entry()
         local x, y = ctx.point(event)
@@ -103,6 +107,10 @@ local function bindCard(ctx, box, resolveAction)
             or Pointer.blocked(ctx.options) then return false end
         return pick()
     end)
+    ctx.cardInspection:bind(box,function()
+        local action=entry()
+        if action and action.observe() then return b.inspection,action end
+    end,ctx.listen)
     return b
 end
 
@@ -243,7 +251,7 @@ function M.new(ctx)
             binding.art = nil
         end
         if changed then
-            binding.definition = ctx.fillCard(box, card.cardId, card.upgraded, {
+            binding.definition,binding.inspection = ctx.fillCard(box, card.cardId, card.upgraded, {
                 instance = card, templateKind = 'attack', templateMaterials = true, deferNativeArt = true,
             })
             binding.face, binding.display, binding.data = card, display, owner.run.data

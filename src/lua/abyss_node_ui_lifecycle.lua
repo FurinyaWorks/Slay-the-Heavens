@@ -1,6 +1,5 @@
 local CardSkin=require('abyss_card_skin')
 local Nodes = require("abyss_nodes")
-local Theme = require("abyss_theme")
 local CardDisplay = require('abyss_card_display')
 local Act2Events = require('abyss_act2_events')
 local reasons = {
@@ -65,21 +64,7 @@ function M.install(ctx)
             end
         end
         observeActiveGestures()
-        local held=self.inspectPress
-        local function updateCardInspection()
-            if held then
-                if not self.visible or held.run~=self.run or held.flow~=self.run.nodeFlow
-                    or held.card~=ctx.inspectCards[held.box] or held.action~=self.actions[held.name] then self.inspectPress=nil
-                else
-                    held.time=held.time+dt
-                    if held.time>=Theme.layout.statusInfo.delay then
-                        self.inspectPress=nil;ctx.swipe=nil;ctx.swallow={touch=held.touch}
-                        if ctx.options.onInspectCard then ctx.options.onInspectCard(held.card.definition,held.card.upgraded) end
-                    end
-                end
-            end
-        end
-        updateCardInspection()
+        ctx.cardInspection:update(dt)
 
     end
 

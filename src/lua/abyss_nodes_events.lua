@@ -47,7 +47,7 @@ return function(M)
             local r=run.data.rules.events.golden_shrine
             local curse=find(run.data.cards.cards,r.curse)
             option('pray','领受馈赠','获得 '..r.gold..' 金币')
-            option('desecrate','取走供物','获得 '..r.curseGold..' 金币，并将诅咒「'..(curse and curse.name or 'Regret')..'」加入牌组')
+            option('desecrate','取走供物','获得 '..r.curseGold..' 金币，并将诅咒「'..(curse and curse.name or 'Regret')..'」加入牌组',true,nil,r.curse)
         end,
         goop=function(run,e,option,rows,_upgrades,_deckOk)
             local r=run.data.rules.events.goop
@@ -75,8 +75,8 @@ return function(M)
         if Act2Events.ids[id] then return Act2Events.options(run,e) end
         if Act3Events.ids[id] then return Act3Events.options(run,e) end
         local rows={}
-        local function option(choice,title,description,enabled,picker)
-            rows[#rows+1]={choice=choice,title=title,description=description,enabled=enabled~=false,picker=picker}
+        local function option(choice,title,description,enabled,picker,card)
+            rows[#rows+1]={choice=choice,title=title,description=description,enabled=enabled~=false,picker=picker,previewCardId=card}
         end
         local upgrades=#upgradeCards(run)
         local deckOk=#LivingWall.purgeCards(run)>0
