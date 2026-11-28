@@ -199,6 +199,30 @@ const owners=Object.freeze({
 });
 
 // The detached map reader first restores the exact pre-ink helper.
+const collectorMapDeckHelper=Object.freeze({
+ "current": {
+  "sha256": "1942cd6f35dc83b27dd97b3b5f17f42bc9be54b110611150386199a08682dd7a",
+  "gitBlob": "5469397d9ac31f736b354092ac98b15eeeaf9edf"
+ },
+ "previous": {
+  "sha256": "708f462445b4dfbb7bbe827f783bcff7b0b35f79939f88bf1eadfbac2c03af70",
+  "gitBlob": "7c2c418130317de9a8ad39fddf94146a33078a24"
+ },
+ "hunks": [
+  {
+   "at": 145,
+   "before": "function assertProductionMapDeckOwners(path,source,read){",
+   "after": "// #1065 only chooses the Collector throne for its encounter. Keep this exact\n// successor valid as a freshly read map/deck peer without reusing cached bytes.\nconst collectorSceneView=Object.freeze({\n  sha256:'817eb3428c3fc0bb081a11015212520f445f018368c2028a8c5e4216747eb178',\n  gitBlob:'94addcbe13c7dd643469e0c1bf33062ed27a8a7a',\n});\nfunction assertProductionMapDeckOwners(path,source,read){"
+  },
+  {
+   "at": 156,
+   "before": "    assert(uniformCurrent(live,after),'map deck linked owner identity: '+name);",
+   "after": "    assert(uniformCurrent(live,after)||\n      (name==='src/lua/abyss_game_ui_view.lua'&&uniformCurrent(live,collectorSceneView)),\n      'map deck linked owner identity: '+name);"
+  }
+ ]
+}
+);
+
 const bossMapDeckHelper=Object.freeze({
   "current": {
     "sha256": "708f462445b4dfbb7bbe827f783bcff7b0b35f79939f88bf1eadfbac2c03af70",
@@ -246,6 +270,14 @@ export const currentDetachedInputs=Object.freeze({
 export function beforeDetachedReleaseBackflow(path,raw){
  if(!Object.hasOwn(owners,path))return raw;
  let source=raw.toString('utf8'),lf=source.replaceAll('\r\n','\n');
+ if(path==='tests/helpers/release-map-deck-source.mjs'&&exactSourceMatches(lf,collectorMapDeckHelper.current)){
+  assert(raw.equals(Buffer.from(source))&&(source===lf||source===lf.replaceAll('\n','\r\n')),
+   'uniform detached Collector map owner');
+  const {current,previous,hunks}=collectorMapDeckHelper;
+  const prior=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,lf);
+  assert(exactSourceMatches(prior,previous),'exact pre-Collector detached map deck helper');
+  raw=Buffer.from(prior);source=lf=prior;
+ }
  if(path==='tests/helpers/release-map-deck-source.mjs'&&exactSourceMatches(lf,bossMapDeckHelper.current)){
   assert(raw.equals(Buffer.from(source))&&(source===lf||source===lf.replaceAll('\n','\r\n')),
    'uniform detached Boss map owner');
