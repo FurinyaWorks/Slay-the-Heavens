@@ -641,6 +641,7 @@ export function validateContent(bundle) {
   const rules = bundle.rules;
   if (object(rules, 'rules.json')) {
     enumeration(rules.version, ['0.1.0'], 'rules.version');
+    if (rules.ascensionEnabled !== undefined) enumeration(rules.ascensionEnabled, [true, false], 'rules.ascensionEnabled');
     const numericSections = {
       player: { maxHp: [1], energyPerTurn: [1], drawPerTurn: [1], maxHand: [1], startingGold: [0], potionSlots: [1] },
       map: { floors: [17, 17], generatedRows: [15, 15], bossFloor: [16, 16],

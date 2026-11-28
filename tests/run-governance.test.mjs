@@ -7,7 +7,8 @@ const expected={
   "new": [
     "data",
     "seed",
-    "options"
+    "options",
+    "config"
   ],
   "transaction": [
     "run",
@@ -238,7 +239,7 @@ test('Run public method names and named parameters preserve the pre-refactor con
   'src/lua/abyss_run_settlement.lua','src/lua/abyss_run_potions.lua'];
  // Inspect today's real API directly. These explicit event additions extend
  // the old contract; #412 adds the read-only resultScore(run) query.
- // Every original method/parameter remains exact.
+ // Run.new adds an optional configuration after its three original parameters.
  for(const file of inputs)visit(luaparse.parse(readFileSync(file,'utf8'),{luaVersion:'5.3'}));
  assert.deepEqual(actual,{...expected,prepareCardCopy:['run','uid'],obtainCardCopy:['run','uid'],loseRelic:['run','id'],resultScore:['run'],potionSlotView:['run','slot']});
 });

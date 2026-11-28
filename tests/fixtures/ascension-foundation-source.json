@@ -1,0 +1,56 @@
+{
+  "config/architecture.json": {
+    "previous": {
+      "sha256": "cec427dcede62ac3efe295bfc976eb58cffb073a69bab7be12da02051de58dbe",
+      "gitBlob": "fc35277cdbd7809afbe934cfdb63b6ee0828abe5"
+    },
+    "current": {
+      "sha256": "ce82784f44efae33829dcdef94f10ee4d86a1615deadbbaaab41882e990fbf85",
+      "gitBlob": "47e11d76d6b5a3ba8ebc43e13cf18c7751ca52cd"
+    },
+    "hunks": [
+      {
+        "at": 253,
+        "before": "    \"abyss_run_hud\": \"ui\",\n    \"abyss_run_seed\": \"core\",\n    \"abyss_sentry_ai\": \"core\",\n    \"abyss_shop\": \"core\",",
+        "after": "    \"abyss_run_hud\": \"ui\",\n    \"abyss_run_seed\": \"core\",\n    \"abyss_ascension_rules\": \"core\",\n    \"abyss_sentry_ai\": \"core\",\n    \"abyss_shop\": \"core\","
+      }
+    ]
+  },
+  "src/lua/abyss_game_ui_run.lua": {
+    "previous": {
+      "sha256": "40680051a19d9327566b767fbd23e8f533bc965724367570ddbd5b6d0a2b06f7",
+      "gitBlob": "e441892c09cd64f0d056c082ce8dc40f36376c64"
+    },
+    "current": {
+      "sha256": "66c4555b7338498de4bd67fd1576bfe182915cc31f4d7f9578d1b3803a865bb4",
+      "gitBlob": "74abfd387c8e8376ab52e97c53c319fe73c4259e"
+    },
+    "hunks": [
+      {
+        "at": 10,
+        "before": "local function startBlocked(self)\n    return self.exitOpen or self.deckUI.visible or self.settlementRequested or self.settlementBusy\nend\nlocal function finishHistory(self,neowHistory)",
+        "after": "local function startBlocked(self)\n    return self.exitOpen or self.deckUI.visible or self.settlementRequested or self.settlementBusy\nend\nlocal function configuredStart(self, request)\n    if self.data.rules.ascensionEnabled~=true then\n        if request~=nil then return nil,nil,'ascension_disabled' end\n        return\n    end\n    if request==nil then return 0 end\n    if type(request)~='table' then return nil,nil,'invalid_run_config' end\n    local level=request.ascension\n    if level==nil then level=0 end\n    if not require('abyss_ascension_rules').validLevel(level) then return nil,nil,'invalid_ascension' end\n    if level>0 then return nil,nil,'ascension_locked' end\n    if request.seed==nil then return level end\n    if type(request.seed)~='string' then return nil,nil,'invalid_player_seed' end\n    local valid, canonical=pcall(RunSeed.normalize,request.seed)\n    if not valid then return nil,nil,'invalid_player_seed' end\n    return level,canonical\nend\n\nlocal function logStart(run, explicitSeed)\n    if run.ascension~=nil then\n        local codeVersion=require('abyss_narrative').codeVersion\n        print('ABYSS_RUN seed=' .. run.runSeed .. ' source=' .. run.seedSource\n            .. ' version=' .. (codeVersion or run.version)\n            .. ' character=' .. (run.character or 'ironclad') .. ' ascension=' .. run.ascension)\n        return\n    end\n    print('ABYSS_RUN seed=' .. run.runSeed .. ' source=' .. (explicitSeed and 'explicit' or 'clock'))\nend\nlocal function finishHistory(self,neowHistory)"
+      },
+      {
+        "at": 118,
+        "before": "end\n\nfunction M.beginRun(platform,data,self,newSeed,presentation,endingHistory,neowHistory,prologuePanel,owner)\n    local function publishRun(run,map,rawSeed,runPresentation,explicitSeed,seed)",
+        "after": "end\n\nlocal function openingSelection(platform,character)\n    local selection=CharacterSelect.options(character)\n    -- Native entry selects the competition profile; explicit full-source\n    -- hosts retain future chapters without changing same-run ownership.\n    if platform.campaign==true then\n        selection=selection or {}\n        selection.experimental,selection.campaign=true,true\n        selection.campaignProfile=platform.campaignProfile\n    end\n    return selection\nend\n\nlocal function openingSeed(self,newSeed,ascension,playerSeed)\n    if playerSeed~=nil then\n        return playerSeed,nil,false,{ascension=ascension,seedSource='player'}\n    end\n    local explicitSeed=self.seed~=nil\n    local seed=explicitSeed and self.seed or newSeed()\n    local config=ascension~=nil and {ascension=ascension,seedSource=explicitSeed and 'internal' or 'random'} or nil\n    return RunSeed.normalize(seed),seed,explicitSeed,config\nend\n\nfunction M.beginRun(platform,data,self,newSeed,presentation,endingHistory,neowHistory,prologuePanel,owner)\n    local function publishRun(run,map,rawSeed,runPresentation,explicitSeed,seed)"
+      },
+      {
+        "at": 151,
+        "before": "            self.settlementRequested, self.settlementBusy, self.settlementError = false, false, nil\n            if explicitSeed then self.seed = type(seed)=='number' and (seed + 1) % 65536 or RunSeed.increment(rawSeed) end\n            print(\"ABYSS_RUN seed=\" .. rawSeed\n                .. \" source=\" .. (explicitSeed and \"explicit\" or \"clock\"))\n            self.battleUI.run, self.battleUI.target = self.run, 1\n            self.mapUI.map = self.map",
+        "after": "            self.settlementRequested, self.settlementBusy, self.settlementError = false, false, nil\n            if explicitSeed then self.seed = type(seed)=='number' and (seed + 1) % 65536 or RunSeed.increment(rawSeed) end\n            logStart(run,explicitSeed)\n            self.battleUI.run, self.battleUI.target = self.run, 1\n            self.mapUI.map = self.map"
+      },
+      {
+        "at": 161,
+        "before": "            return true\n    end\n    return function(character)\n            local selection=CharacterSelect.options(character)\n            -- Native entry selects the competition profile; explicit full-source\n            -- hosts retain future chapters without changing same-run ownership.\n            if platform.campaign == true then\n                selection = selection or {}\n                selection.experimental, selection.campaign = true, true\n                selection.campaignProfile=platform.campaignProfile\n            end\n            if not require('abyss_run_admission').accepts(data,selection)then return false,'competition_character_unavailable'end\n            self.openingPrepared=1 -- Selection admitted.\n            local explicitSeed = self.seed ~= nil\n            local seed = explicitSeed and self.seed or newSeed()\n            local rawSeed=RunSeed.normalize(seed)\n            local run = Run.new(data,rawSeed,selection)\n            self.openingPrepared=2 -- Run/data constructed.\n            local runPresentation = (selection and selection.character or run.data.colorlessCards) and require(\"abyss_character_presentation\").prepare(presentation,run.data) or presentation\n            local ending=EndingHistory.begin(endingHistory,run,{seedSet=explicitSeed,\n                isDailyRun=platform.isDailyRun or false,isTrial=platform.isTrial or false})\n            run.endingUnlocked,run.endingHistory=ending.unlocked,ending",
+        "after": "            return true\n    end\n    return function(character,ascension,playerSeed)\n            local selection=openingSelection(platform,character)\n            if not require('abyss_run_admission').accepts(data,selection)then return false,'competition_character_unavailable'end\n            self.openingPrepared=1 -- Selection admitted.\n            local rawSeed,seed,explicitSeed,config=openingSeed(self,newSeed,ascension,playerSeed)\n            local run = Run.new(data,rawSeed,selection,config)\n            self.openingPrepared=2 -- Run/data constructed.\n            local runPresentation = (selection and selection.character or run.data.colorlessCards) and require(\"abyss_character_presentation\").prepare(presentation,run.data) or presentation\n            local ending=EndingHistory.begin(endingHistory,run,{seedSet=explicitSeed or playerSeed~=nil,\n                isDailyRun=platform.isDailyRun or false,isTrial=platform.isTrial or false})\n            run.endingUnlocked,run.endingHistory=ending.unlocked,ending"
+      },
+      {
+        "at": 187,
+        "before": "    return self.prologue and self.prologue:covering() or self.pageReveal and self.pageReveal:covered()\nend\nfunction M.confirmCharacter(self,beginRun)\n    return function(_)\n            if not self.characterOpen or self.starting or self.disabled or self.exitOpen or self.characterSelection.deckOpen\n                or openingBlocked(self)\n                or self.settlementRequested or self.settlementBusy then return false,'character_choice_unavailable' end\n            local info=self.characterSelection.info\n            if not info then return false,'character_required' end\n            if not self.characterSelection:canConfirm()then return false,'competition_character_unavailable'end\n            self.starting=true\n            -- Latch before the fade and seed generation; one confirmation creates one Run.\n            local function commit()\n                local ok,accepted,reason=pcall(beginRun,info.id)\n                self.starting=false\n                if not ok then error(accepted)end",
+        "after": "    return self.prologue and self.prologue:covering() or self.pageReveal and self.pageReveal:covered()\nend\nlocal function confirmationBlocked(self)\n    return not self.characterOpen or self.starting or self.disabled or self.exitOpen or self.characterSelection.deckOpen\n        or openingBlocked(self) or self.settlementRequested or self.settlementBusy\nend\nfunction M.confirmCharacter(self,beginRun)\n    return function(_,request)\n            if confirmationBlocked(self)then return false,'character_choice_unavailable'end\n            local info=self.characterSelection.info\n            if not info then return false,'character_required' end\n            if not self.characterSelection:canConfirm()then return false,'competition_character_unavailable'end\n            local ascension,playerSeed,configReason=configuredStart(self,request)\n            if configReason then return false,configReason end\n            self.starting=true\n            -- Latch before the fade and seed generation; one confirmation creates one Run.\n            local function commit()\n                local ok,accepted,reason=pcall(beginRun,info.id,ascension,playerSeed)\n                self.starting=false\n                if not ok then error(accepted)end"
+      }
+    ]
+  }
+}

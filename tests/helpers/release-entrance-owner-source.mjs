@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
 import {exactSourceMatches} from './source-fingerprint.mjs';
+import {beforeAscensionFoundationSource} from './ascension-foundation-source.mjs';
 
 // #1035's actual merge onto #1008 changed all four native button owners.
 // Live Selection reads bind that complete change before older inverses run.
@@ -104,6 +105,7 @@ function uniformText(raw){
 }
 
 export function beforeReleaseEntranceOwner(path,raw){
+ raw=beforeAscensionFoundationSource(path,raw);
  const binding=ownerGroup(path)?.owners[path];
  if(!binding)return raw;
  const text=uniformText(raw);
@@ -117,7 +119,7 @@ export function beforeReleaseEntranceOwner(path,raw){
 
 export function checkedReleaseEntranceOwner(path,raw,read){
  const group=ownerGroup(path);
- if(!group)return raw;
+ if(!group)return beforeAscensionFoundationSource(path,raw);
  for(const [owner,binding] of Object.entries(group.owners)){
   const source=uniformText(owner===path?raw:read(owner,'utf8'));
   assert(exactSourceMatches(source,binding.current),'fresh '+group.label+' owner: '+owner);

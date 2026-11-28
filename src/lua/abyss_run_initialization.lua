@@ -10,6 +10,20 @@ local RelicPool = require('abyss_relic_pool')
 
 local M = {}
 
+local function ascensionSettings(data, config, seed)
+    if data.rules.ascensionEnabled~=true then
+        assert(config==nil,'ascension_disabled')
+        return
+    end
+    if config==nil then return 0,'internal' end
+    assert(type(config)=='table','invalid_run_config')
+    assert(require('abyss_ascension_rules').validLevel(config.ascension),'invalid_ascension')
+    local source=config.seedSource
+    assert(source=='random' or source=='player' or source=='internal','invalid_seed_source')
+    assert(source~='player' or type(seed)=='string','invalid_player_seed')
+    return config.ascension, source
+end
+
 function M.install(Run, shared)
     local preparedCharacters=shared.preparedCharacters
     local preparedOriginalRoles=shared.preparedOriginalRoles
@@ -80,7 +94,8 @@ function M.install(Run, shared)
         end
     end
 
-    function Run.new(data, seed, options)
+    function Run.new(data, seed, options, config)
+        local ascension,seedSource=ascensionSettings(data,config,seed)
         local sourceData=data
         local profile,ownsData,ownsCatalog
         data,profile,ownsData=prepareProfile(data,options)
@@ -114,6 +129,7 @@ function M.install(Run, shared)
             scoreStats = require("abyss_run_score").newStats(data.rules.player.maxHp),
             gold = data.rules.player.startingGold, deck = {}, nextDeckUid = 1,
             relics = Copy.copy(data.rules.player.startingRelics), potions = {} }
+        if ascension~=nil then run.ascension,run.seedSource=ascension,seedSource end
         finishCatalog(run, ownsCatalog)
         if profile then run.character, run.characterProfile = profile.id, Copy.copy(profile) end
         if profile and profile.originalV4 then run.originalCommands={}end
