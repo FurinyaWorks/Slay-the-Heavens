@@ -1221,6 +1221,41 @@
       },
       "supersedes": [],
       "note": "仅用于追溯，当前版本使用 release-sts1-20261122。"
+    },
+    {
+      "codePath": "scripts/official-assets-layout.mjs",
+      "targetVersion": "v2.2.0",
+      "state": "sharedCardFace",
+      "backlogTask": "TASK-115.5",
+      "revision": "v25-experiment-replay-20261128",
+      "status": "REJECTED",
+      "reference": {
+        "path": "docs/design/reference-assets/v2.2.0/card-face-20261128/REJECTED-V25.md",
+        "sha256": "706524697bfb945d6fa6b4cdc4e8e7a1ce2f7bcad686bea14634c82b17c381b3"
+      },
+      "supersedes": [],
+      "source": "https://github.com/FurinyaWorks/Slay-the-Heavens/blob/6a614fc8/experiments/art-tech-lab/map-game.mjs#L10-L11",
+      "note": "Owner 撤回。回放稿于 2026-11-28 生成，使用 2026-11-11 入库的 V25 实验入口。"
+    },
+    {
+      "codePath": "scripts/official-assets-layout.mjs",
+      "targetVersion": "v2.2.0",
+      "state": "sharedCardFace",
+      "backlogTask": "TASK-115.5",
+      "revision": "release-95b003d4-20261128",
+      "status": "CURRENT_IMPLEMENTATION",
+      "reference": {
+        "path": "docs/design/reference-assets/v2.2.0/card-face-20261128/REFERENCE.md",
+        "sha256": "6191ce705c8fe2547857ba548e3bed02d08ef236bbcbb25b2e063415af918889"
+      },
+      "supersedes": [],
+      "source": "https://github.com/FurinyaWorks/Slay-the-Heavens/blob/95b003d41a229218916d20785145cd4a7e9583fe/scripts/official-assets-layout.mjs",
+      "note": "正式 v3 构建的共享卡面。事件与锻造复用此面；原生显示按正式候选取证。",
+      "codePaths": [
+        "scripts/card-keyword-tip-layout.mjs",
+        "scripts/game-ui-layout.mjs",
+        "scripts/node-ui-layout.mjs"
+      ]
     }
   ]
 }
