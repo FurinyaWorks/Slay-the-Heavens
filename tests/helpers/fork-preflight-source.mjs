@@ -122,6 +122,33 @@ export function beforeForkPush(path,source){
 }
 // Receipt readers retain the actual Q1 current-source predecessor before their existing replay layers.
 for(const row of Object.values(forkPushPacket.receiptSuccessors??{}))assert.equal(hash(row.before),row.beforeSha256);
+// Preserve the exact #1061 receipt while closeout forecasts separate the epochs.
+const linuxCloseoutForecast=Object.freeze({
+ "path": "tests/ci-complete-calibration.test.mjs",
+ "beforeSha256": "6bb186af1cfa4f682246c244ccac839f86e9e61db8c014e0841f5a91906215a2",
+ "afterSha256": "bea8d6800b26d18f3787878af8214d0c128ee4162c56995485415ed0f19ccb78",
+ "hunks": [
+  {
+   "at": 73,
+   "before": "import {discoverJs as liveDiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';",
+   "after": "import {discoverJs as liveDiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,replayPlanningMinimumMs,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';"
+  },
+  {
+   "at": 1925,
+   "before": "function assertReplayForecasts(files,lua,count,platform,forecast,budget){\n const observed=rawCurrentTimings;\n const weights=Object.fromEntries(files.map(file=>[file,Math.max(observed.js[platform][file]??observed.unknownJsMs,observed.jsPlanning.localLowerBounds[file]?.durationMs??0)]));\n const historical=partition(files,`1/${count}`,weights,observed.unknownJsMs,Array.from({length:count},(_,i)=>i===0?observed.initialMs[platform][0]:0));\n const windows=platform==='win32';\n const originalLoads=windows?windowsFullLoads(lua,historical.loads):historical.loads;\n assert(Math.max(...originalLoads)+60000<budget,platform+' original planning target and reserve');\n assert(forecast<(windows?2700000:1800000),platform+' measured replay placement and reserve fit the unchanged job deadline');\n}",
+   "after": "function assertReplayForecasts(files,lua,count,platform,forecast,budget){\n // Historical budgets are claims about the authenticated pre-release timing\n // table. The live planner above must still consume every later observation.\n const observed=JSON.parse(nativeCloseoutRead('scripts/ci-test-timings.json','utf8'));\n const windows=platform==='win32';\n const weights=Object.fromEntries(files.map(file=>[file,Math.max(observed.js[platform][file]??observed.unknownJsMs,observed.jsPlanning.localLowerBounds[file]?.durationMs??0)]));\n const initial=Array.from({length:count},(_,i)=>i===0?observed.initialMs[platform][0]:0);\n const historical=partition(files,`1/${count}`,weights,observed.unknownJsMs,initial);\n const originalLoads=windows?windowsFullLoads(lua,historical.loads):historical.loads;\n assert(Math.max(...originalLoads)+60000<budget,platform+' original planning target and reserve');\n const replayWeights=Object.fromEntries(files.map(file=>[file,Math.max(weights[file],replayPlanningMinimumMs[platform][file.slice('tests/'.length)]??0)]));\n const replayLoads=windows?windowsFullLoads(lua,rawCurrentJsShard(files,`1/${count}`,platform).loads):\n  partition(files,`1/${count}`,replayWeights,observed.unknownJsMs,initial).loads;\n assert(Math.max(...replayLoads)+60000<(windows?2700000:1800000),platform+' archived measured placement and reserve fit its unchanged benchmark');\n assert(forecast<(windows?2700000:5400000),platform+' live measured placement and reserve fit the release execution guard');\n}"
+  }
+ ]
+});
+function beforeLinuxCloseoutForecast(path,source){
+ if(path!==linuxCloseoutForecast.path||typeof source!=='string')return source;
+ const lf=normalize(source);
+ if(lf.includes('\r')||source!==lf&&source!==lf.replaceAll('\n','\r\n'))return source;
+ if(!exactCheckoutSource(lf,[linuxCloseoutForecast.afterSha256,'4a4bb3edf6524f8bdb58acbaabdaabe3d1c33ce0']))return source;
+ const prior=restoreExactFixtureHunks(linuxCloseoutForecast,path,lf);
+ assert(exactCheckoutSource(prior,[linuxCloseoutForecast.beforeSha256,'9e60d6b7633ecf704adf266acd2ac2a1bc4d8f17']),'exact pre-closeout forecast test input');
+ return source===lf?prior:prior.replaceAll('\n','\r\n');
+}
 export function beforeForkReceiptSource(path,source){
  if(path===cursesReceiptFixture.path){
   const prior=beforeCursesReceiptFixture(path,source);
@@ -1628,7 +1655,7 @@ const cursesReceiptSources=Object.freeze({
  'tests/helpers/curses-historical-custody.mjs':["a068636ba187c353f69d8ec19d432cb052ea99f455a58feb2f6973bd63e60aaa", "2ac231d4d269e8138cd1c0e6bf3fe77db576f4f0"],
 });
 function beforeCursesReceiptFixture(path,source){
- source=prePosix16ReceiptSource(path,source);
+ source=prePosix16ReceiptSource(path,beforeLinuxCloseoutForecast(path,source));
  if(path!==cursesReceiptFixture.path||!exactCheckoutSource(source,cursesReceiptSources[path]))return source;
  const prior=restoreExactFixtureHunks(cursesReceiptFixture,path,source);
  assert.equal(blob(prior),'5a8992502b7c5d1ebee37dd6d8eb26c439968695','exact Curses receipt fixture predecessor');
@@ -1639,7 +1666,7 @@ function cursesReceiptCurrentRead(read){
   const raw=read(path,...args);
   if(Object.hasOwn(cursesReceiptSources,path)){
    const source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
-   assert(exactCheckoutSource(prePosix16ReceiptSource(path,source),cursesReceiptSources[path]),'fresh current Curses receipt source: '+path);
+   assert(exactCheckoutSource(prePosix16ReceiptSource(path,beforeLinuxCloseoutForecast(path,source)),cursesReceiptSources[path]),'fresh current Curses receipt source: '+path);
   }
   return raw;
  };
