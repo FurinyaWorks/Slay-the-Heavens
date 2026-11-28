@@ -7,9 +7,34 @@ function run(source){const dir=mkdtempSync(join(tmpdir(),'golden-responsibilitie
  assert.ifError(child.error);assert.equal(child.signal,null,'timeout is not a semantic mutant kill');assert.equal(child.status,0,child.stderr);
  return {...JSON.parse(child.stdout),graph:readFileSync(output,'utf8')};
 }finally{rmSync(dir,{recursive:true,force:true});}}
-test('Golden Idol frozen source binds exact develop 1eb28847 Git bytes',()=>{
+const introMarker='local function chooseIntro';
+const prefix=(source,marker)=>{assert.equal(source.split(marker).length,2,'exact Golden Idol choice boundary');return source.slice(0,source.indexOf(marker));};
+const approvedPreviewEdits=[
+ ["local function row(choice,title,text,card)return {choice=choice,title=title,description=text,cardId=card,enabled=true}end",
+  "local function row(choice,title,text,card,relic)return {choice=choice,title=title,description=text,cardId=card,previewRelicId=relic,enabled=true}end"],
+ ["or'获得鎏金神像；随后必须选择陷阱代价。'),",
+  "or'获得鎏金神像；随后必须选择陷阱代价。',nil,'golden_idol'),"],
+];
+function withApprovedPreview(source,edits=approvedPreviewEdits){
+ for(const [from,to]of edits){
+  assert.equal(source.split(from).length,2,'exact #1080 preview edit anchor');
+  source=source.replace(from,()=>to);
+ }
+ return source;
+}
+function requireKnownGoldenPrefix(actual,historical){
+ if(actual!==historical)assert.equal(actual,withApprovedPreview(historical),'exact #1080 Golden Idol preview-only prefix');
+}
+test('Golden Idol frozen source binds exact develop 1eb28847 Git bytes and only accepts the approved preview successor',()=>{
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(before)}\0`).update(before).digest('hex'),'85baebf80e4919437a55635b9930eba9a671dd60');
- assert.equal(read(path).slice(0,read(path).indexOf('local function chooseIntro')),before.slice(0,before.indexOf('function M.choose')));
+ const historical=prefix(before,'function M.choose'),actual=prefix(read(path),introMarker);
+ requireKnownGoldenPrefix(actual,historical);
+ const approved=withApprovedPreview(historical);
+ for(const changed of [
+  approved+'-- unreviewed change\n',
+  approved.replace("nil,'golden_idol'","nil,'circlet'"),
+  ...approvedPreviewEdits.map(edit=>withApprovedPreview(historical,[edit])),
+ ])assert.throws(()=>requireKnownGoldenPrefix(changed,historical),/exact #1080 Golden Idol preview-only prefix/);
 });
 test('Golden Idol independent old/new VMs preserve complete state, reads, failures, aliases and returns',()=>{
  const a=run(before),b=run(read(path));assert.equal(a.status,0,a.error);assert.equal(b.status,0,b.error);assert(b.checkpoints>=97);

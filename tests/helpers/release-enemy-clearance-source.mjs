@@ -397,6 +397,39 @@ const stsDetailLedger={
  previous:{sha256:'3802c173fbfc1944b3d3bb2230d6edc905380c8673f2659a1978623c75663cdc',gitBlob:'74945372b37ba6d6800a9a803683b856e08e2703'},
 };
 const stsDetailOutsideArchive=Object.freeze({
+ "tests/integration-source-epoch.test.mjs":{
+ "path": "tests/integration-source-epoch.test.mjs",
+ "current": {
+  "sha256": "2d7ed781bc996d2f1e391a700df4bab041a96240782b97a84e5d753ba5bc5d60",
+  "gitBlob": "ccd2c0660f4036ce5b81b284ba47c04977147208"
+ },
+ "previous": {
+  "sha256": "c01c05a38b05b9a405f009da808c1af295f48bf3653d70fbeb8346ec1d8feaf2",
+  "gitBlob": "95629736179479ea8c9319150c6beafc95360037"
+ },
+ "hunks": [
+  {
+   "at": 0,
+   "before": "import {authorizeRebasedDevelop,beforeRebasedCi} from './helpers/rebased-release-source.mjs';",
+   "after": "import {readStsDetailOwners} from './helpers/release-sts-detail-source.mjs';\nimport {exactSourceMatches} from './helpers/source-fingerprint.mjs';\nimport {authorizeRebasedDevelop,beforeRebasedCi} from './helpers/rebased-release-source.mjs';"
+  },
+  {
+   "at": 269,
+   "before": "test('combined epoch authenticates the complete current production tree',()=>{",
+   "after": "// The approved STS detail modules belong to the current tree, but were not\n// present in the recorded combined epoch. Verify their exact live bytes first.\nconst stsDetailAdded=Object.freeze({\n 'src/lua/abyss_card_browse_preview.lua':{sha256:'e0d1d3262f93251bc47681cd25713a4532b2552d11f55cc6e3c2e8297d11c5bb',gitBlob:'54c7d8fb78276b57017e91470f3129be02ad1e29'},\n 'src/lua/abyss_card_keyword_tip.lua':{sha256:'291991d574c7056c675ee90f217d81c3b546da865b56fc71fdaed3cfd60a1a9a',gitBlob:'fae7fb2fe4338beb16ef59180d0db7784e0d2a48'},\n 'src/lua/abyss_node_ui_card_inspection.lua':{sha256:'51cc94804f4a33bdc43be23510a060e1c4acdaa222082e3ecafcc7fa268787ee',gitBlob:'1bcdf13d9ca0f434c23cd9a0a874b5a33953dfb1'},\n});\nfunction beforeStsDetailInventory(paths,read){\n for(const [path,binding] of Object.entries(stsDetailAdded)){\n  assert(paths.filter(entry=>entry===path).length===1,'complete live STS detail owner inventory: '+path);\n  const source=read(path);\n  const lf=typeof source==='string'&&source.replaceAll('\\r\\n','\\n');\n  assert(typeof lf==='string'&&(source===lf||source===lf.replaceAll('\\n','\\r\\n'))&&exactSourceMatches(lf,binding),'fresh live STS detail owner: '+path);\n }\n return paths.filter(path=>!Object.hasOwn(stsDetailAdded,path));\n}\ntest('combined epoch authenticates the complete current production tree',()=>{"
+  },
+  {
+   "at": 287,
+   "before": " const files=reviewedStsStyleInventory(live);",
+   "after": " const currentLive=path=>readFileSync(path,'utf8');\n const prior=readStsDetailOwners(currentLive);\n const inventory=beforeStsDetailInventory(live,currentLive);\n assert.deepEqual(beforeStsDetailInventory(live,path=>currentLive(path).replaceAll('\\n','\\r\\n')),inventory);\n const unknown='src/lua/unknown_sts_detail.lua';\n assert.deepEqual(beforeStsDetailInventory([...live,unknown],currentLive),[...inventory,unknown]);\n for(const path of Object.keys(stsDetailAdded)){\n  const source=currentLive(path);\n  const check=(paths,read)=>beforeStsDetailInventory(paths,read);\n  const identity={message:'fresh live STS detail owner: '+path};\n  const missing={message:'complete live STS detail owner inventory: '+path};\n  for(const invalid of [source+'\\n',source.replace('\\n','\\r\\n'),undefined])\n   assert.throws(()=>check(live,p=>p===path?invalid:currentLive(p)),identity);\n  assert.throws(()=>check(live.filter(p=>p!==path),currentLive),missing);\n  assert.throws(()=>check([...live,path],currentLive),missing);\n }\n const files=reviewedStsStyleInventory(inventory,prior);"
+  },
+  {
+   "at": 305,
+   "before": " const {current:read,entrance,readOwner}=integrationProductionReaders();",
+   "after": " const {current:read,entrance,readOwner}=integrationProductionReaders(prior);"
+  }
+ ]
+},
  [stsDetailLedger.path]:stsDetailLedger,
  "tests/defect-actor-boundary.test.mjs":{
  "path": "tests/defect-actor-boundary.test.mjs",

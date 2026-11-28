@@ -1,3 +1,5 @@
+import {readStsDetailOwners} from './helpers/release-sts-detail-source.mjs';
+import {exactSourceMatches} from './helpers/source-fingerprint.mjs';
 import {authorizeRebasedDevelop,beforeRebasedCi} from './helpers/rebased-release-source.mjs';
 import {beforeBattlePeriphery} from './helpers/battle-periphery-source.mjs';
 import {beforeChapterBattleScene} from './helpers/chapter-battle-scene-source.mjs';
@@ -265,11 +267,43 @@ test('compound intent owners replay the exact Release predecessor and reject a p
   }
  }
 });
+// The approved STS detail modules belong to the current tree, but were not
+// present in the recorded combined epoch. Verify their exact live bytes first.
+const stsDetailAdded=Object.freeze({
+ 'src/lua/abyss_card_browse_preview.lua':{sha256:'e0d1d3262f93251bc47681cd25713a4532b2552d11f55cc6e3c2e8297d11c5bb',gitBlob:'54c7d8fb78276b57017e91470f3129be02ad1e29'},
+ 'src/lua/abyss_card_keyword_tip.lua':{sha256:'291991d574c7056c675ee90f217d81c3b546da865b56fc71fdaed3cfd60a1a9a',gitBlob:'fae7fb2fe4338beb16ef59180d0db7784e0d2a48'},
+ 'src/lua/abyss_node_ui_card_inspection.lua':{sha256:'51cc94804f4a33bdc43be23510a060e1c4acdaa222082e3ecafcc7fa268787ee',gitBlob:'1bcdf13d9ca0f434c23cd9a0a874b5a33953dfb1'},
+});
+function beforeStsDetailInventory(paths,read){
+ for(const [path,binding] of Object.entries(stsDetailAdded)){
+  assert(paths.filter(entry=>entry===path).length===1,'complete live STS detail owner inventory: '+path);
+  const source=read(path);
+  const lf=typeof source==='string'&&source.replaceAll('\r\n','\n');
+  assert(typeof lf==='string'&&(source===lf||source===lf.replaceAll('\n','\r\n'))&&exactSourceMatches(lf,binding),'fresh live STS detail owner: '+path);
+ }
+ return paths.filter(path=>!Object.hasOwn(stsDetailAdded,path));
+}
 test('combined epoch authenticates the complete current production tree',()=>{
  const live=['config/architecture.json',...readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p)].sort();
- const files=reviewedStsStyleInventory(live);
+ const currentLive=path=>readFileSync(path,'utf8');
+ const prior=readStsDetailOwners(currentLive);
+ const inventory=beforeStsDetailInventory(live,currentLive);
+ assert.deepEqual(beforeStsDetailInventory(live,path=>currentLive(path).replaceAll('\n','\r\n')),inventory);
+ const unknown='src/lua/unknown_sts_detail.lua';
+ assert.deepEqual(beforeStsDetailInventory([...live,unknown],currentLive),[...inventory,unknown]);
+ for(const path of Object.keys(stsDetailAdded)){
+  const source=currentLive(path);
+  const check=(paths,read)=>beforeStsDetailInventory(paths,read);
+  const identity={message:'fresh live STS detail owner: '+path};
+  const missing={message:'complete live STS detail owner inventory: '+path};
+  for(const invalid of [source+'\n',source.replace('\n','\r\n'),undefined])
+   assert.throws(()=>check(live,p=>p===path?invalid:currentLive(p)),identity);
+  assert.throws(()=>check(live.filter(p=>p!==path),currentLive),missing);
+  assert.throws(()=>check([...live,path],currentLive),missing);
+ }
+ const files=reviewedStsStyleInventory(inventory,prior);
  const recorded=Object.keys(proof.current).filter(path=>path!==retiredControllerPath&&proof.current[path]!==null).sort();
- const {current:read,entrance,readOwner}=integrationProductionReaders();
+ const {current:read,entrance,readOwner}=integrationProductionReaders(prior);
  assert.deepEqual(entranceInventory(files,entrance),[...recorded,...stasisUpgradeAddedPaths,...actorFocusAdded,...deckPagesAdded,pointerInputPath].sort());
  assert.throws(()=>readFileSync(retiredControllerPath,'utf8'),{code:'ENOENT'});
  const retired=beforeInputRetirementReader(entrance)(retiredControllerPath);

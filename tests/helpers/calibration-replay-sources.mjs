@@ -1,3 +1,4 @@
+import {beforeStsDetailInput} from './release-enemy-clearance-source.mjs';
 import {beforeMapRoomReplayCohort} from './develop-replay-merge-source.mjs';
 import {beforeDetachedReleaseBackflow,beforeSharedReleaseRuntimeReplay} from './release-detached-backflow-source.mjs';
 import {readStsDetailOwners} from './release-sts-detail-source.mjs';
@@ -197,6 +198,7 @@ export function beforeCurrentHistoricalStsSource(path,source){
   const text=source.toString('utf8'),prior=beforeCurrentHistoricalStsSource(path,text);
   return prior===text?source:Buffer.from(prior);
  }
+ if(path==='tests/integration-source-epoch.test.mjs')source=beforeStsDetailInput(path,source);
  if(path==='tests/integration-source-epoch.test.mjs'||path==='tests/effects-target-group-source-epoch.test.mjs')
   source=beforeKnownMasterBackflowSource(path,source);
  // Current Release runtime helpers precede the older entrance and Map Room receipts.
