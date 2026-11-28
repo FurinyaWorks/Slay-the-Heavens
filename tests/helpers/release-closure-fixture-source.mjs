@@ -4,6 +4,7 @@ import {exactSourceMatches} from './source-fingerprint.mjs';
 import {beforeReleaseMetadata} from './release-metadata-source.mjs';
 import {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';
 import {beforeBossMapScroll} from './boss-map-scroll-source.mjs';
+import {beforeReleaseEnemyClearance} from './release-enemy-clearance-source.mjs';
 
 export const selectionRawEntranceReplay=Object.freeze({
  "current": {
@@ -2257,7 +2258,7 @@ const backgroundBannerFixture=Object.freeze({
 export function beforeReleaseClosureFixture(path,raw,{reviewedBuild=false}={}){
  // Current integration authenticates the live delivery owner through its own archive.
  if(path==='scripts/verify-delivery.mjs'&&!reviewedBuild)return raw;
- raw=beforeReleaseMetadata(path,raw);
+ raw=beforeReleaseEnemyClearance(path,beforeReleaseMetadata(path,raw));
  const rewardTitle=Object.hasOwn(rewardTitleSources,path)&&rewardTitleSources[path];
  const rewardTitleSource=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
  if(rewardTitle&&exactSourceMatches(rewardTitleSource,rewardTitle.current)){

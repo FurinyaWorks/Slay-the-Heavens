@@ -40,7 +40,7 @@ test('real Host ordered trajectory preserves the frozen values with disjoint han
  assertLaneTrajectory(result.stdout);
 });
 test('real trajectory rejects removal of the disjoint hand lane cap',()=>{
- const module='abyss_battle_card_view',source=readFileSync(`src/lua/${module}.lua`,'utf8');
+ const module='abyss_viewport',source=readFileSync(`src/lua/${module}.lua`,'utf8');
  const anchor='math.min(width,target.hitWidth or width)';assert.equal(source.split(anchor).length,2);
  const file=join(tmpdir(),`hand-lane-mutant-${randomUUID()}.lua`);
  writeFileSync(file,`package.preload[${luaString(module)}]=assert(load(${luaString(source.replace(anchor,'width'))},'@lane-mutant'))\ndofile('tests/lua/runtime_ui_trajectory.lua')\n`);
