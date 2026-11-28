@@ -1,12 +1,12 @@
 # v2.2.0 怪物接地实渲对照
 
-以发布分支基线 `5ccff59e9df396849216fb3f790be8852974c769` 对照本修复，逐边重新生成正式 `official-assets-battle-v3` 的布局及低多边形怪物 Lua。左右均保留正式两幕布景与原构造器阵容坐标，画布为 16:9。原始 PNG 均为 Beyond Simulator 0.5.2 软件 Host 的 1600×900 截图，纹理告警为零。两边的原始图与存档摘要、生成 Lua 摘要、每个敌人的艺术图元数、接触、血条和热区坐标见 [实渲清单](simulator-manifest.json)。
+以发布分支基线 `5ccff59e9df396849216fb3f790be8852974c769` 对照本修复，逐边重新生成正式 `official-assets-battle-v3` 的布局及低多边形怪物 Lua。左右均保留正式两幕布景与原构造器阵容坐标，画布为 16:9。原始 PNG 均为 Beyond Simulator 0.5.2 软件 Host 的 1600×900 截图，纹理告警为零。仓库图集以 WebP 质量 88 压缩。原始 PNG 摘要完全相同的对照共用一张图，标为 `BASE = HOTFIX`，复现仍保留每张原始 PNG。两边的原始图与存档摘要、生成 Lua 摘要、每个敌人的艺术图元数、接触、血条和热区坐标见 [实渲清单](simulator-manifest.json)。
 
 - [双赤甲虫和 Collector 的两列整图 A/B](priority-louse-collector.webp)
 - [第一幕双赤、混合甲虫、小魔群和小史莱姆](act1-formations.webp)
 - [第二幕 Collector、铜制人偶及小魔头领的生产召唤](act2-summons.webp)
 - [巡风隼保持飞行、实际 Strike 击落、头槌及恢复 Flight](act2-byrd.webp)
-- 42 个正式怪物等像素局部 A/B，[01](official-monsters-01.webp) · [02](official-monsters-02.webp) · [03](official-monsters-03.webp) · [04](official-monsters-04.webp) · [05](official-monsters-05.webp) · [06](official-monsters-06.webp) · [07](official-monsters-07.webp)
+- 42 个正式怪物按原始像素尺寸裁切的局部 A/B，[01](official-monsters-01.webp) · [02](official-monsters-02.webp) · [03](official-monsters-03.webp) · [04](official-monsters-04.webp) · [05](official-monsters-05.webp) · [06](official-monsters-06.webp) · [07](official-monsters-07.webp)
 
 Collector 依据原版实战保留高位。第 33 层正式 Boss 入口选择其专用场景，场景台座的座面承接现有立绘底部的暗椭圆，台柱落在第二幕地砖上。A/B 中 Collector 的位置、立绘尺寸、血条、意图和热区坐标逐项相同。由角色真实结束回合触发两只 Torch Head；召唤后仍选中同一套高位背景。原版画面可看到右侧 Boss 坐在抬高的树根，两只 Torch Head 在下方地面。[STS1 实战截图](https://wikiwiki.jp/slaythespire/%E3%82%B3%E3%83%AC%E3%82%AF%E3%82%BF%E3%83%BC)
 

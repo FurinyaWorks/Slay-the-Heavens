@@ -1,4 +1,4 @@
-"""Compose lossless sheets from Beyond Simulator PNGs and verify the source inventory."""
+"""Compose compact evidence sheets from Beyond Simulator PNGs and verify the source inventory."""
 import argparse
 import hashlib
 import json
@@ -12,6 +12,7 @@ BASE = '5ccff59e9df396849216fb3f790be8852974c769'
 DARK = '#172024'
 INK = '#F2F0EA'
 MUTED = '#A8B4BC'
+WEBP_QUALITY = 88
 FOCUS = [
     ('act1-formations', ['double-red-louse', 'mixed-louse', 'gremlin-gang', 'small-slimes']),
     ('act2-summons', ['collector-before-summon', 'collector-summon', 'automaton-summon', 'leader-wizard-summon']),
@@ -59,19 +60,21 @@ def focus(root, before, after, font, small):
     for file, names in FOCUS:
         width, height = (1056, 594) if file == 'priority-louse-collector' else (832, 468)
         tile_height = height + 35
-        atlas = Image.new('RGB', (width * 2 + 22, tile_height * len(names) + 53), DARK)
+        identical = all(before[name]['sha256'] == after[name]['sha256'] for name in names)
+        columns = [(12, before, 'v2.2.0 BASE = HOTFIX' if identical else 'v2.2.0 BASE')]
+        if not identical:
+            columns.append((width + 16, after, 'v2.2.0 HOTFIX'))
+        atlas = Image.new('RGB', (width * len(columns) + 22, tile_height * len(names) + 53), DARK)
         draw = ImageDraw.Draw(atlas)
-        caption(draw, 'v2.2.0 BASE', (12, 13), font)
-        caption(draw, 'v2.2.0 HOTFIX', (width + 16, 13), font)
-        for row, name in enumerate(names):
-            y = 44 + tile_height * row
-            caption(draw, name, (12, y), small, MUTED)
-            caption(draw, name, (width + 16, y), small, MUTED)
-            for x, side in [(12, before), (width + 16, after)]:
+        for x, side, label in columns:
+            caption(draw, label, (x, 13), font)
+            for row, name in enumerate(names):
+                y = 44 + tile_height * row
+                caption(draw, name, (x, y), small, MUTED)
                 source = Image.open(side[name]['path']).convert('RGB')
                 atlas.paste(source.resize((width, height), Image.Resampling.LANCZOS), (x, y + 25))
         path = root / (file + '.webp')
-        atlas.save(path, lossless=True)
+        atlas.save(path, quality=WEBP_QUALITY, method=6)
         outputs.append({'file': path.name, 'sha256': digest(path), 'scenes': names})
     return outputs
 
@@ -119,13 +122,16 @@ def gallery(root, before, after, font, small):
             actor = next(e for e in after[name]['enemies'] if e['id'] == name.removeprefix('monster-'))
             title = f"{actor['id']}   /   {actor['classification']}"
             caption(draw, title, (x, y), font)
-            caption(draw, 'BASE', (x, y + 27), small, MUTED)
-            caption(draw, 'HOTFIX', (x + crop_width + 5, y + 27), small, MUTED)
-            for offset, side in [(0, before), (crop_width + 5, after)]:
+            if before[name]['sha256'] == after[name]['sha256']:
+                pairs = [(crop_width // 2, before, 'BASE = HOTFIX')]
+            else:
+                pairs = [(0, before, 'BASE'), (crop_width + 5, after, 'HOTFIX')]
+            for offset, side, label in pairs:
+                caption(draw, label, (x + offset, y + 27), small, MUTED)
                 source = Image.open(side[name]['path']).convert('RGB')
                 atlas.paste(source.crop(window), (x + offset, y + 49))
         path = root / f'official-monsters-{number:02}.webp'
-        atlas.save(path, lossless=True)
+        atlas.save(path, quality=WEBP_QUALITY, method=6)
         outputs.append({'file': path.name, 'sha256': digest(path), 'scenes': group})
     return outputs, dict(classes)
 
@@ -185,7 +191,7 @@ def main():
         'candidateSourceSha256': {path: digest(args.repo / path) for path in hashed_inputs},
         'tool': 'beyond-simulator-mcp@0.5.2',
         'scope': 'Production Lua battle state and controls run under the Fengari native UI fixture. Beyond Simulator Host renders each captured production control snapshot at 1600x900. Simulator screenshots play static snapshots. No official GIL, device, or direct click evidence from the Simulator Host.',
-        'display': '16:9, identical 1280x720 logical viewport and 1.25x scale. Atlas crop and lossless WebP only; focus sheets additionally rescale for side-by-side display.',
+        'display': f'16:9, identical 1280x720 logical viewport and 1.25x scale. Published WebP sheets use quality {WEBP_QUALITY}. Gallery sheets crop at the original pixel dimensions. Focus sheets additionally rescale for side-by-side display. Images with matching original PNG hashes can share one labeled display. All original PNG hashes are retained.',
         'generatedLuaSha256': {'before': generated_hashes(args.before), 'after': generated_hashes(args.after)},
         'captureInputsSha256': {name: digest(script_dir / name) for name in ('capture.lua','render.mjs','atlas.py')},
         'coverage': {'officialMonsters': 42, 'capturePairs': 54, 'classes': classes},

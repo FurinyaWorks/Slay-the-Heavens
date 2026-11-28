@@ -13,7 +13,7 @@
   },
   "tool": "beyond-simulator-mcp@0.5.2",
   "scope": "Production Lua battle state and controls run under the Fengari native UI fixture. Beyond Simulator Host renders each captured production control snapshot at 1600x900. Simulator screenshots play static snapshots. No official GIL, device, or direct click evidence from the Simulator Host.",
-  "display": "16:9, identical 1280x720 logical viewport and 1.25x scale. Atlas crop and lossless WebP only; focus sheets additionally rescale for side-by-side display.",
+  "display": "16:9, identical 1280x720 logical viewport and 1.25x scale. Published WebP sheets use quality 88. Gallery sheets crop at the original pixel dimensions. Focus sheets additionally rescale for side-by-side display. Images with matching original PNG hashes can share one labeled display. All original PNG hashes are retained.",
   "generatedLuaSha256": {
     "before": {
       "abyss_art_features.lua": "33b9b0fc7ae83eed3b77660cf055c01d3881f81e1c9cacb0f140270fcdd761b9",
@@ -65,7 +65,7 @@
   "captureInputsSha256": {
     "capture.lua": "08dc0b88bbf75b25b3de83b00d97d48318b2dd07dc3ae8b0d03521afdafccff6",
     "render.mjs": "07668f32a1daa4c1ed2e944de077cd8eec10a169066cde1f49c0551ac21263c3",
-    "atlas.py": "9a148aab9b2f07a277414da86aba3f181c308742d58151c733fa8e4f4a9acd70"
+    "atlas.py": "dbc508cfdf5aff60849df85ae683d8ab9199fe3493cab406c2c1b23020adc36c"
   },
   "coverage": {
     "officialMonsters": 42,
@@ -117,7 +117,7 @@
   "pairedAtlasFiles": [
     {
       "file": "act1-formations.webp",
-      "sha256": "e73e51c2487562a768399d8fc1359985c47679cbb113f1175d602f07ed1eb016",
+      "sha256": "b7221e8e1331efc46c4471d1bd28b10195fcd4240fb813b8c1f991053b441d9a",
       "scenes": [
         "double-red-louse",
         "mixed-louse",
@@ -127,7 +127,7 @@
     },
     {
       "file": "act2-summons.webp",
-      "sha256": "fde47093237aaac62eed42e6674b42ad7f9ae43fd94385ca90baeaf767c50f2d",
+      "sha256": "8dc7ac92962a870d09a7ef61211327078b36f21ea7f0c99ca937564abd132c62",
       "scenes": [
         "collector-before-summon",
         "collector-summon",
@@ -137,7 +137,7 @@
     },
     {
       "file": "act2-byrd.webp",
-      "sha256": "c04f7ba8f2052bcf2fe710fdd9a8c56a06d9b45d59ef6e621126576d7743ceee",
+      "sha256": "a96644742a4b488f350a684b84552bf37a1888729811dcb6b83a8cbbd609069a",
       "scenes": [
         "byrd-01-flight",
         "byrd-02-knockdown",
@@ -147,7 +147,7 @@
     },
     {
       "file": "priority-louse-collector.webp",
-      "sha256": "174c81dc8e282bf9620a8f3d7d90477ef8ead7dd59f8617249dcd7c94868c88a",
+      "sha256": "72a1faf3748495ca600739d74be0c4cf3057092eb763582ad42950961199fff0",
       "scenes": [
         "double-red-louse",
         "collector-summon"
@@ -155,7 +155,7 @@
     },
     {
       "file": "official-monsters-01.webp",
-      "sha256": "caeab37ce6111ad96dbe2f93a88f3877ba2187e86273f63f1f45ed928a97750e",
+      "sha256": "22885b88f0671ee4f106b9302747a0b868f03ac2f9cea1ed1d2217373ac987a3",
       "scenes": [
         "monster-raven_adept",
         "monster-jaw_worm",
@@ -167,7 +167,7 @@
     },
     {
       "file": "official-monsters-02.webp",
-      "sha256": "88a0f821d73b444afc69ad5618ad488ba654ebd95704b3d2cdd7c82d05ccdf1b",
+      "sha256": "7973ac72ee17713b5684e3548019821571ba2962b2873a43fce67375849f669a",
       "scenes": [
         "monster-acid_slime_l",
         "monster-spike_slime_s",
@@ -179,7 +179,7 @@
     },
     {
       "file": "official-monsters-03.webp",
-      "sha256": "e0b1d12a518526f33689a9e0aeff190f32c24a9f3bbdca1f12e6d09d54b93d68",
+      "sha256": "ac09455570c121f14d996c92beec3d64ad1b42a74ebbfa07845a092ccba886fa",
       "scenes": [
         "monster-red_guard",
         "monster-fungi_beast",
@@ -191,7 +191,7 @@
     },
     {
       "file": "official-monsters-04.webp",
-      "sha256": "8859fcf16772f157465112bd64f9a0364127b4147ef9a7561458f3af952e4534",
+      "sha256": "f984a52091747513bc021a584ccd699b6c8899c8d86e511b03b5a0f60c1745eb",
       "scenes": [
         "monster-shield_gremlin",
         "monster-gremlin_nob",
@@ -203,7 +203,7 @@
     },
     {
       "file": "official-monsters-05.webp",
-      "sha256": "7ab239dda56cf82e7a475af5c4a192b97ab603f2d666f1b3acf13ce2befd7603",
+      "sha256": "3fd91d91b37d8aa4544953754b24ba5030940fddfa382a33454ff223401f8fec",
       "scenes": [
         "monster-slime_boss",
         "monster-spheric_guardian",
@@ -215,7 +215,7 @@
     },
     {
       "file": "official-monsters-06.webp",
-      "sha256": "e073d5f1e2197de7152309d7676d38bf80b526770eaf024976734a10680fc804",
+      "sha256": "83b7fca48467ce76768c8895e999cd953b310e350556cf3febf3935129cdc038",
       "scenes": [
         "monster-snake_plant",
         "monster-chosen",
@@ -227,7 +227,7 @@
     },
     {
       "file": "official-monsters-07.webp",
-      "sha256": "17f7f4cdc30b82e06df59623131641bc1ed9fec3a96c26f9800007937919a51f",
+      "sha256": "4237aac920b74e1ce11856fb485b84d4f803094734942b1ac1b23478367f0cf7",
       "scenes": [
         "monster-gremlin_leader",
         "monster-torch_head",
