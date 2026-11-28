@@ -541,7 +541,42 @@ function beforeMapDeckDetailReplay(path,raw){
  return Buffer.from(source===lf?prior:prior.replaceAll('\n','\r\n'));
 }
 
+const combinedDetailInventory=Object.freeze({
+ "path": "tests/integration-source-epoch.test.mjs",
+ "beforeSha256": "c01c05a38b05b9a405f009da808c1af295f48bf3653d70fbeb8346ec1d8feaf2",
+ "beforeBlob": "95629736179479ea8c9319150c6beafc95360037",
+ "afterSha256": "414ac94797e5fd35e8fa1e18dc0973c8d475d92809022e30c218a11e047131ce",
+ "afterBlob": "8f977698ebd95509371abade3aeb47138ff8b2e0",
+ "hunks": [
+  {
+   "at": 265,
+   "before": " }\n});\ntest('combined epoch authenticates the complete current production tree',()=>{\n const live=['config/architecture.json',...readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p)].sort();\n const files=reviewedStsStyleInventory(live);\n const recorded=Object.keys(proof.current).filter(path=>path!==retiredControllerPath&&proof.current[path]!==null).sort();\n const {current:read,entrance,readOwner}=integrationProductionReaders();",
+   "after": " }\n});\n// The historical combined epoch predates only these three #1080 UI additions.\nconst releaseDetailInventoryOwners=Object.freeze({\n 'src/lua/abyss_card_browse_preview.lua':['e0d1d3262f93251bc47681cd25713a4532b2552d11f55cc6e3c2e8297d11c5bb','54c7d8fb78276b57017e91470f3129be02ad1e29'],\n 'src/lua/abyss_card_keyword_tip.lua':['291991d574c7056c675ee90f217d81c3b546da865b56fc71fdaed3cfd60a1a9a','fae7fb2fe4338beb16ef59180d0db7784e0d2a48'],\n 'src/lua/abyss_node_ui_card_inspection.lua':['51cc94804f4a33bdc43be23510a060e1c4acdaa222082e3ecafcc7fa268787ee','1bcdf13d9ca0f434c23cd9a0a874b5a33953dfb1'],\n});\nfunction beforeReleaseDetailInventory(paths,read=path=>readFileSync(path,'utf8')){\n for(const [path,[sha256,blob]] of Object.entries(releaseDetailInventoryOwners)){\n  assert.equal(paths.filter(owner=>owner===path).length,1,'complete Release detail UI inventory: '+path);\n  const text=read(path),lf=typeof text==='string'&&text.replaceAll('\\r\\n','\\n');\n  assert(typeof lf==='string'&&!lf.includes('\\r')&&(text===lf||text===lf.replaceAll('\\n','\\r\\n'))\n   &&digest(lf)===sha256&&createHash('sha1').update(`blob ${Buffer.byteLength(lf)}\\0`).update(lf).digest('hex')===blob,\n   'fresh Release detail UI inventory owner: '+path);\n }\n return paths.filter(owner=>!Object.hasOwn(releaseDetailInventoryOwners,owner));\n}\ntest('combined epoch authenticates the complete current production tree',()=>{\n const live=['config/architecture.json',...readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p)].sort();\n const preDetail=beforeReleaseDetailInventory(live);\n const files=reviewedStsStyleInventory(preDetail);\n const recorded=Object.keys(proof.current).filter(path=>path!==retiredControllerPath&&proof.current[path]!==null).sort();\n const {current:read,entrance,readOwner}=integrationProductionReaders();"
+  },
+  {
+   "at": 322,
+   "before": "   assert.throws(()=>beforeCurrentProductionSource(path,latest,changed),/fresh .*source|(?:combined|map deck) linked owner identity/,path);\n  }\n }\n});",
+   "after": "   assert.throws(()=>beforeCurrentProductionSource(path,latest,changed),/fresh .*source|(?:combined|map deck) linked owner identity/,path);\n  }\n }\n});\ntest('Release detail inventory rejects missing, duplicate, and tampered current additions',()=>{\n const names=Object.keys(releaseDetailInventoryOwners);\n const foreign='src/lua/unknown_owner.lua';\n const live=[...names,foreign];\n const read=path=>readFileSync(path,'utf8');\n assert.deepEqual(beforeReleaseDetailInventory(live),[foreign],'unregistered owners remain visible to the original full inventory');\n for(const path of names){\n  assert.throws(()=>beforeReleaseDetailInventory(live.filter(owner=>owner!==path)),/complete Release detail UI inventory/);\n  assert.throws(()=>beforeReleaseDetailInventory([...live,path]),/complete Release detail UI inventory/);\n  const source=read(path).replaceAll('\\r\\n','\\n');\n  assert.deepEqual(beforeReleaseDetailInventory(live,owner=>owner===path?source.replaceAll('\\n','\\r\\n'):read(owner)),[foreign]);\n  for(const drift of [source+'\\n',source.replace('\\n','\\r\\n'),null])assert.throws(()=>beforeReleaseDetailInventory(live,owner=>owner===path?drift:read(owner)),{message:'fresh Release detail UI inventory owner: '+path});\n }\n});"
+  }
+ ]
+});
+export function beforeCombinedDetailInventory(path,source){
+ if(path!==combinedDetailInventory.path||typeof source!=='string')return source;
+ const lf=source.replaceAll('\r\n','\n');
+ if(lf.includes('\r')||source!==lf&&source!==lf.replaceAll('\n','\r\n')||
+  !exactSourceMatches(lf,{sha256:combinedDetailInventory.afterSha256,gitBlob:combinedDetailInventory.afterBlob}))return source;
+ const prior=restoreExactFixtureHunks(combinedDetailInventory,path,lf);
+ assert(exactSourceMatches(prior,{sha256:combinedDetailInventory.beforeSha256,gitBlob:combinedDetailInventory.beforeBlob}),
+  'exact pre-detail combined inventory test');
+ return source===lf?prior:prior.replaceAll('\n','\r\n');
+}
+
 export function beforeDetachedReleaseBackflow(path,raw){
+ if(path===combinedDetailInventory.path){
+  const source=raw.toString('utf8');
+  if(!raw.equals(Buffer.from(source)))return raw;
+  return Buffer.from(beforeCombinedDetailInventory(path,source));
+ }
  raw=beforeColorlessFacade(path,beforeMapDeckDetailReplay(path,raw));
  raw=beforePowerShopFacade(path,beforeRecordingReplay(path,raw));
  raw=beforeStsDetailCloseout(path,beforeStsDetailRuntime(path,beforeReleaseEnemyClearance(path,raw)));

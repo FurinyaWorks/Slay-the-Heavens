@@ -1,5 +1,5 @@
 import {beforeMapRoomReplayCohort} from './develop-replay-merge-source.mjs';
-import {beforeDetachedReleaseBackflow,beforeSharedReleaseRuntimeReplay} from './release-detached-backflow-source.mjs';
+import {beforeCombinedDetailInventory,beforeDetachedReleaseBackflow,beforeSharedReleaseRuntimeReplay} from './release-detached-backflow-source.mjs';
 import {readStsDetailOwners} from './release-sts-detail-source.mjs';
 import {beforeMapNodeVisualsLineEndings} from './input-retirement-sts-binding.mjs';
 import {readCloseoutLuaVocabularyReceipt} from './closeout-lua-vocabulary-source.mjs';
@@ -197,6 +197,7 @@ export function beforeCurrentHistoricalStsSource(path,source){
   const text=source.toString('utf8'),prior=beforeCurrentHistoricalStsSource(path,text);
   return prior===text?source:Buffer.from(prior);
  }
+ source=beforeCombinedDetailInventory(path,source);
  if(path==='tests/integration-source-epoch.test.mjs'||path==='tests/effects-target-group-source-epoch.test.mjs')
   source=beforeKnownMasterBackflowSource(path,source);
  // Current Release runtime helpers precede the older entrance and Map Room receipts.
