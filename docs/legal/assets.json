@@ -275,6 +275,16 @@
       "category": "project-geometry",
       "evidence": "Project-drawn Act II coordinate schematic from 46ca4a02d658b1ee1435441cb0f1eb19479e52c6, integrated in #978. The vector markup contains geometric primitives and labels. The neighboring REFERENCE.md records the Mega Crit ss23 citation and coordinate measurements. The cited media retain their original rights."
     },
+    "docs/evidence/v2.2.0-sts-details/simulator-pc.webp": {
+      "sha256": "2da769352a8787301cc4b5815634e5ba291892eea41a6e3a654b456c0962a866",
+      "category": "platform-evidence",
+      "evidence": "Montage of actual Beyond Simulator 0.5.2 SDK PNG frames from the official v3 source-generated layouts at Release base 95b003d4 and production candidate 01863013. Underlying project and platform artwork rights remain with their respective owners. STS1 imagery is linked only. See docs/evidence/v2.2.0-sts-details/SIMULATOR.md."
+    },
+    "docs/evidence/v2.2.0-sts-details/simulator-touch.webp": {
+      "sha256": "69f07d9572f193055f54c63c49ac32060dbc72bef625556c527c98817ada08dd",
+      "category": "platform-evidence",
+      "evidence": "Montage of actual Beyond Simulator 0.5.2 SDK PNG frames from the official v3 source-generated layouts at Release base 95b003d4 and production candidate 01863013. Underlying project and platform artwork rights remain with their respective owners. STS1 imagery is linked only. See docs/evidence/v2.2.0-sts-details/SIMULATOR.md."
+    },
     "docs/evidence/v2.2.0-battle-clearance/guardian-layout-ab.webp": {
       "sha256": "aefff3e8b80e1a9e1352cd335a615c47459d997b21ba3a44cf9c7752e58082c7",
       "category": "platform-evidence",
