@@ -34,6 +34,8 @@ local function setup(r,beforeRender)
  function ctx.ink()end;function ctx.tint()end
  function ctx.picture(c,id)c:SetImage('static',id)end
  ctx.inspectCards,ctx.skinFaces,ctx.artFaces={},{},{};ctx.clickEvent='click'
+ ctx.controlKey=function(box)return box end
+ ctx.cardInspection=require('abyss_node_ui_card_inspection').new(ctx,nil)
  function ctx.state(c,enabled)for _,name in ipairs({'normal','disabled','hover','pressed','selected'})do c:GetChild(name):SetVisible(name==(enabled and'normal'or'disabled'))end end
  function ctx.action(key,enabled,fn,reason,_,observe)self.actions[key]={enabled=enabled,handler=fn,reason=reason,observe=observe}end
  require('abyss_node_ui_faces').install(ctx);UI.install(ctx)

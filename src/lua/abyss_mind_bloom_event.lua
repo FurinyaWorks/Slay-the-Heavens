@@ -3,8 +3,8 @@ local Run=require('abyss_run')
 local Random=require('abyss_sts_random')
 local M={}
 local function rich(run)return run.floor%50<=40 end
-local function row(choice,title,description)
- return {choice=choice,title=title,description=description,enabled=true}
+local function row(choice,title,description,previewCardId)
+ return {choice=choice,title=title,description=description,enabled=true,previewCardId=previewCardId}
 end
 function M.prepare(run,event)
  assert(run.act==3 and event.id=='mind_bloom','Mind Bloom requires the third act')
@@ -16,8 +16,8 @@ function M.options(run,event)
  if event.stage~='intro'then return {}end
  local rows={row('fight','挑战首领','挑战随机一名第一幕首领，获得50金币和一件稀有遗物，另有普通事件战后奖励。'),
   row('awake','全部升级','每张可升级卡牌升级一次，获得绽放印记；此后无法回复生命。')}
- rows[3]=rich(run)and row('rich','获得财富','获得999金币，并尝试获得两张平庸诅咒。')
-  or row('healthy','恢复健康','回复至最大生命，并尝试获得一张疑惧诅咒。')
+ rows[3]=rich(run)and row('rich','获得财富','获得999金币，并尝试获得两张平庸诅咒。','normality')
+  or row('healthy','恢复健康','回复至最大生命，并尝试获得一张疑惧诅咒。','doubt')
  return rows
 end
 local function fight(run,event)

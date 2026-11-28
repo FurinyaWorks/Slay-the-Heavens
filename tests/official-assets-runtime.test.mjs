@@ -67,7 +67,25 @@ function runOfficial(t,body,marker,overrides={},official=true,buildOptions={}){
  assert.equal(handRims.length,10);
  for(const rim of handRims)assert.deepEqual(rim.children.map(c=>c.name),['softEdge','pulseEdge','pulseEdge2','pulseEdge3','pulseEdge4']);
  const rims=node=>node.name==='nativePlayableRim'?[node]:(node.children??node.controls??[]).flatMap(rims);
- const quietRims=[...rims(stage),...templates.flatMap(rims)].filter(rim=>!handRims.includes(rim));
+ const node=stage.children.find(c=>c.name==='nodePanel');
+ const event=node.children.find(c=>c.name==='eventView');
+ const previews=event.children.filter(c=>c.name==='previewCard');
+ assert.equal(previews.length,1,'events share one card preview surface');
+ const [preview]=previews;
+ const shopCard=node.children.find(c=>c.name==='shopView').children.find(c=>c.name==='card1');
+ const expectedPreview=structuredClone(shopCard);
+ Object.assign(expectedPreview,{name:'previewCard',position:[0,0],visible:false});
+ expectedPreview.children=expectedPreview.children.filter(c=>c.name!=='hit');
+ assert.deepEqual(preview,expectedPreview,'event preview retains the released room card material and geometry');
+ const hasHit=control=>control.name==='hit'||control.kind==='cursorArea'||control.kind==='presetButton'
+  ||(control.children??[]).some(hasHit);
+ assert.equal(hasHit(preview),false,'event preview is passive');
+ const eventRims=rims(preview);
+ assert.equal(eventRims.length,1);
+ const [eventRim]=eventRims;
+ assert.equal(eventRim.visible,false);
+ assert.deepEqual(eventRim.children,[]);
+ const quietRims=[...rims(stage),...templates.flatMap(rims)].filter(rim=>rim!==eventRim&&!handRims.includes(rim));
  assert.equal(quietRims.length,29);
  for(const rim of quietRims){assert.equal(rim.visible,false);assert.deepEqual(rim.children,[]);}
  const expected=structuredClone(face);

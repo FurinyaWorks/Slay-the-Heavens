@@ -1,0 +1,110 @@
+{
+  "apparition": [
+    {
+      "name": "before",
+      "bounds": [
+        383,
+        196,
+        728,
+        620
+      ],
+      "basePixelsSha256": "fa5940f1c43f29db8d0725a2f72091ab96c8efbb36068edbe66b50447eedfa44",
+      "candidatePixelsSha256": "fa5940f1c43f29db8d0725a2f72091ab96c8efbb36068edbe66b50447eedfa44",
+      "differenceBounds": null,
+      "pixelsChanged": 0
+    },
+    {
+      "name": "after",
+      "bounds": [
+        861,
+        196,
+        1203,
+        620
+      ],
+      "basePixelsSha256": "4f2130379018da67d0d131c87ac41177c1da85d0ef4d7f7dab62ba5abfa61a98",
+      "candidatePixelsSha256": "4f2130379018da67d0d131c87ac41177c1da85d0ef4d7f7dab62ba5abfa61a98",
+      "differenceBounds": null,
+      "pixelsChanged": 0
+    },
+    {
+      "name": "cancel",
+      "bounds": [
+        62,
+        766,
+        315,
+        857
+      ],
+      "basePixelsSha256": "5f99fb00efcbf17a1c2961f345c3f3c6f867cf55c94b9422a6bea2c543db3505",
+      "candidatePixelsSha256": "5f99fb00efcbf17a1c2961f345c3f3c6f867cf55c94b9422a6bea2c543db3505",
+      "differenceBounds": null,
+      "pixelsChanged": 0
+    },
+    {
+      "name": "confirm",
+      "bounds": [
+        1275,
+        763,
+        1553,
+        859
+      ],
+      "basePixelsSha256": "5df86bf34117a8e735c3ac871e7b4e699594c76868d1216448e2fda9a4a2c5c7",
+      "candidatePixelsSha256": "5df86bf34117a8e735c3ac871e7b4e699594c76868d1216448e2fda9a4a2c5c7",
+      "differenceBounds": null,
+      "pixelsChanged": 0
+    }
+  ],
+  "strike": [
+    {
+      "name": "before",
+      "bounds": [
+        383,
+        196,
+        728,
+        620
+      ],
+      "basePixelsSha256": "657567f094f41adb84cf8a21952caf4032b77223bec923840440c0ec4b47630c",
+      "candidatePixelsSha256": "657567f094f41adb84cf8a21952caf4032b77223bec923840440c0ec4b47630c",
+      "differenceBounds": null,
+      "pixelsChanged": 0
+    },
+    {
+      "name": "after",
+      "bounds": [
+        861,
+        196,
+        1203,
+        620
+      ],
+      "basePixelsSha256": "df5f9fe52cb17d621540f907dee953c3c8edfb367f69717bca9e8f114cf0c5a5",
+      "candidatePixelsSha256": "df5f9fe52cb17d621540f907dee953c3c8edfb367f69717bca9e8f114cf0c5a5",
+      "differenceBounds": null,
+      "pixelsChanged": 0
+    },
+    {
+      "name": "cancel",
+      "bounds": [
+        62,
+        766,
+        315,
+        857
+      ],
+      "basePixelsSha256": "5f99fb00efcbf17a1c2961f345c3f3c6f867cf55c94b9422a6bea2c543db3505",
+      "candidatePixelsSha256": "5f99fb00efcbf17a1c2961f345c3f3c6f867cf55c94b9422a6bea2c543db3505",
+      "differenceBounds": null,
+      "pixelsChanged": 0
+    },
+    {
+      "name": "confirm",
+      "bounds": [
+        1275,
+        763,
+        1553,
+        859
+      ],
+      "basePixelsSha256": "5df86bf34117a8e735c3ac871e7b4e699594c76868d1216448e2fda9a4a2c5c7",
+      "candidatePixelsSha256": "5df86bf34117a8e735c3ac871e7b4e699594c76868d1216448e2fda9a4a2c5c7",
+      "differenceBounds": null,
+      "pixelsChanged": 0
+    }
+  ]
+}

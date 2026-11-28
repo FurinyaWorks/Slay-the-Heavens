@@ -38,7 +38,7 @@ function M.install(ctx)
     ctx.cursor = ctx.options.cursorEvents or (Enum and Enum.CursorEventType)
     ctx.bindShopEntry(ctx.cursor)
 
-    ctx.dispatch = {}
+    ctx.dispatch = setmetatable({}, {__mode='k'})
 
     function ctx.listen(hit, event, fn)
         local byEvent = ctx.dispatch[hit] or {}
@@ -109,7 +109,15 @@ function M.install(ctx)
         local input
         hit:AddCursorEventListener(ctx.clickEvent, function(event)
             ctx.shopSelection.foregroundClick(event)
-            if ctx.rewardDetail:consume(name,event)then return false,'inspected' end
+            if ctx.rewardDetail:consume(name,event)then
+                local touch=event and event.touchId
+                if input and input.released and (touch==nil or input.released.touch==touch) then input.released=nil end
+                return false,'inspected'
+            end
+            if ctx.cardInspection:consume(box,event) then
+                if input then input.released=nil end
+                return false,'inspected'
+            end
             if Pointer.blocked(ctx.options)then return false end
             if ctx.swallow and (event == nil or event.touchId == nil or event.touchId == ctx.swallow.touch) then
                 ctx.swallow = nil
@@ -240,12 +248,24 @@ function M.install(ctx)
                     if ctx.cursor and ctx.cursor.CursorExit then ctx.listen(hit,ctx.cursor.CursorExit,function()ctx.shopSelection:exit(name)end) end
                 end
                 local function bindRewardInspection()
-                    if name:match('^treasureView/rewardItem%d+$') and ctx.cursor then
-                        if ctx.cursor.CursorEnter then ctx.listen(hit,ctx.cursor.CursorEnter,function()ctx.rewardDetail:enter(name)end)end
-                        if ctx.cursor.CursorExit then ctx.listen(hit,ctx.cursor.CursorExit,function()ctx.rewardDetail:exit(name)end)end
-                        if ctx.cursor.CursorDown then ctx.listen(hit,ctx.cursor.CursorDown,function(event)ctx.rewardDetail:down(name,event)end)end
+                    local eventOption=name:match('^eventView/option%d+$')
+                    if ctx.cursor and (eventOption or name:match('^treasureView/rewardItem%d+$')) then
+                        if ctx.cursor.CursorEnter then ctx.listen(hit,ctx.cursor.CursorEnter,function(event)
+                            local _,y=ctx.point(event);ctx.rewardDetail:enter(name,y)
+                        end)end
+                        if ctx.cursor.CursorExit then ctx.listen(hit,ctx.cursor.CursorExit,function(event)ctx.rewardDetail:exit(name,event)end)end
+                        if ctx.cursor.CursorDown then ctx.listen(hit,ctx.cursor.CursorDown,function(event)
+                            local press=ctx.buttonPress
+                            if eventOption and press and (press.box~=box or press.touch~=(event and event.touchId)) then return end
+                            local _,y=ctx.point(event);ctx.rewardDetail:down(name,event,y)
+                        end)end
                         if ctx.cursor.CursorUp then ctx.listen(hit,ctx.cursor.CursorUp,function(event)ctx.rewardDetail:up(event)end)end
-                        if ctx.cursor.CursorEndDrag then ctx.listen(hit,ctx.cursor.CursorEndDrag,function()ctx.rewardDetail:exit(name)end)end
+                        if ctx.cursor.CursorEndDrag then ctx.listen(hit,ctx.cursor.CursorEndDrag,function(event)ctx.rewardDetail:exit(name,event)end)end
+                        if eventOption and ctx.cursor.CursorDrag then
+                            ctx.listen(hit,ctx.cursor.CursorDrag,function(event)
+                                if Pointer.dragged(event,Theme.layout.cardDrag.threshold) then ctx.rewardDetail:exit(name,event) end
+                            end)
+                        end
                     end
                 end
                 bindRewardInspection()
@@ -255,34 +275,11 @@ function M.install(ctx)
 
         end
         bindRoomGestures()
-        local function bindCardInspection()
-            if ctx.options.onInspectCard and ctx.cursor and ctx.cursor.CursorDown and ctx.cursor.CursorUp
-                and (name:match('^shopView/card%d+$') or name:match('^pickerView/card%d+$')
-                or name=='pickerView/before' or name=='pickerView/after') then
-                ctx.listen(hit,ctx.cursor.CursorDown,function(event)
-                    ctx.self.inspectPress=nil
-                    if not ctx.self.visible or not ctx.inspectCards[box] or not box.visible then return end
-                    local parent=box
-                    while parent do if not parent.visible then return end;parent=parent.parent end
-                    local x,y=ctx.point(event)
-                    ctx.self.inspectPress={box=box,name=name,card=ctx.inspectCards[box],run=ctx.self.run,flow=ctx.self.run.nodeFlow,
-                        action=ctx.self.actions[name],touch=event and event.touchId,time=0,x=x,y=y}
-                end)
-                local function cancelInspect(event)
-                    if ctx.self.inspectPress and ctx.self.inspectPress.touch==(event and event.touchId) then ctx.self.inspectPress=nil end
-                end
-                ctx.listen(hit,ctx.cursor.CursorUp,cancelInspect)
-                if ctx.cursor.CursorExit then ctx.listen(hit,ctx.cursor.CursorExit,cancelInspect) end
-                if ctx.cursor.CursorEndDrag then ctx.listen(hit,ctx.cursor.CursorEndDrag,cancelInspect) end
-                if ctx.cursor.CursorDrag then ctx.listen(hit,ctx.cursor.CursorDrag,function(event)
-                        local held=ctx.self.inspectPress;local x,y=ctx.point(event)
-                        if held and (not x or not held.x or (x-held.x)^2+(y-held.y)^2>=Theme.layout.cardDrag.threshold^2) then
-                            ctx.self.inspectPress=nil
-                        end
-                    end) end
-            end
+        if name:match('^shopView/card%d+$') or name:match('^pickerView/card%d+$')
+            or name=='pickerView/before' or name=='pickerView/after' then
+            local id=ctx.controlKey(box)
+            ctx.cardInspection:bind(box,function()return ctx.inspectCards[id],ctx.self.actions[name] end,ctx.listen)
         end
-        bindCardInspection()
 
     end
     ctx.shopSelection:bindOutside(ctx.child('shopDismiss'),ctx.clickEvent,ctx.cursor,ctx.options)

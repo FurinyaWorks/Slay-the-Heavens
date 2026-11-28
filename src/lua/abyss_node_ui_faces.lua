@@ -57,9 +57,16 @@ function M.install(ctx)
             ..({rare='稀有',uncommon='罕见'})[definition.rarity]..'｜'
             ..CardDisplay.permanentText(display,definition,option)
         end
+        local cardName = option.cardId and ctx.cardName(option.cardId,option.upgraded,option.upgrades)
+        local showName = cardName and not option.title:find(cardName,1,true) and not option.description:find(cardName,1,true)
         return option.description..(option.potionId and '\n'..ctx.potionText(option.potionId)or'')
-        ..(option.cardId and '\n「'..ctx.cardName(option.cardId,option.upgraded,option.upgrades)..'」'or'')
+        ..(showName and '\n「'..cardName..'」' or '')
         ..(not option.enabled and '（当前条件不足）'or'')
+    end
+
+    function ctx.clearPreviewCard(box)
+        ctx.skinFaces[box],ctx.artFaces[box],ctx.inspectCards[ctx.controlKey(box)]=nil,nil,nil
+        CardDisplay.clearNativeArt(box)
     end
 
     function ctx.relicText(id,heldRun)
@@ -75,7 +82,7 @@ function M.install(ctx)
     local shopInspection = setmetatable({}, {__mode='k'})
     local shopArt = setmetatable({}, {__mode='k'})
     function ctx.reuseShopFace(box)
-        ctx.inspectCards[box] = shopInspection[box]
+        ctx.inspectCards[ctx.controlKey(box)] = shopInspection[ctx.controlKey(box)]
         ctx.artFaces[box] = true
         -- Quote reuse skips copy/frame/price work, but an explicit render must
         -- reconcile native ownership after clear, rejection or metadata changes.
@@ -101,16 +108,17 @@ function M.install(ctx)
         ctx.skinFaces[box]=true
         local instance=look.instance or {cardId=id,upgraded=upgraded==true}
         definition=Combat.cardDefinition({catalog={cards={[id]=definition}}},instance)
-        ctx.inspectCards[box]=definition.originalV4 and {definition=definition,upgraded=instance.upgraded} or nil
-        if look.shop then shopInspection[box] = ctx.inspectCards[box] end
-        if look.inspectOnly then box:GetChild('hit'):SetVisible(definition.originalV4~=nil) end
+        local text=CardDisplay.permanentText(display,definition,instance)
+        local inspection={definition=definition,upgraded=instance.upgraded,text=text}
+        if not look.deferNativeArt then ctx.inspectCards[ctx.controlKey(box)]=inspection end
+        if look.shop then shopInspection[ctx.controlKey(box)]=inspection end
+        if look.inspectOnly then box:GetChild('hit'):SetVisible(true) end
         local kind = Theme.icon.cardArt[definition.type] and definition.type or "status"
         local function writeCardCopy()
             CardDisplay.writeTitle(box:GetChild("name"),title,instance.upgraded,
             definition.repeatable and (instance.upgrades or 1) or nil,box:GetChild("type"),
             typeNames[definition.type] or "", fitText)
             ctx.ink(box:GetChild("name"), Theme.cardSkin.text.title)
-            local text=CardDisplay.permanentText(display,definition,instance)
             CardDisplay.writeBody(box:GetChild("description"),type(text)=='string' and text or '',box,fitText)
             ctx.ink(box:GetChild("description"), Theme.cardSkin.text.body or C.text)
         end
@@ -149,7 +157,7 @@ function M.install(ctx)
         ctx.show(box:GetChild("stampPlate"), look.stamp ~= nil)
         ctx.show(box:GetChild("stamp"), look.stamp ~= nil)
         box:GetChild("stamp").text = look.stamp or ""
-        return definition
+        return definition,inspection
     end
 end
 return M

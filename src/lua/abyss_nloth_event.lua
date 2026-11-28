@@ -10,7 +10,7 @@ local function owns(run,sourceId)
  return false
 end
 local function row(choice,title,description,relic)
- return {choice=choice,title=title,description=description,enabled=true,relicId=relic}
+ return {choice=choice,title=title,description=description,enabled=true,relicId=relic,previewRelicId=relic and 'nloths_gift'}
 end
 function M.prepare(run,event,rng)
  local relics={};for i,id in ipairs(run.relics)do relics[i]=id end

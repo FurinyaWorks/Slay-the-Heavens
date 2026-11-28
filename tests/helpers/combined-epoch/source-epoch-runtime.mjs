@@ -1,4 +1,5 @@
 import {beforeReleaseClosureFixture} from '../release-closure-fixture-source.mjs';
+import {beforeStsDetailSource,readStsDetailOwners} from '../release-sts-detail-source.mjs';
 import { entrancePredecessor } from '../ui-entrance-source.mjs';
 import {beforeDevelopBackflow,configSourceTokens,isSessionRelicSuccessor,assertCurrentSessionRelicOwner,bindDevelopBackflow} from '../develop-release-backflow-source.mjs';
 import {beforeInputRetirementReader,retiredControllerPath} from '../input-retirement-source.mjs';
@@ -160,8 +161,8 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
   const destination=requireTarget(target);
   const liveInput=source;
   const isLiveReader=liveReaders.has(rawReader(readSource));
-  const readRawInput=rawReader(readSource);
-  const projected=entrancePredecessor(path,source,
+  const readRawInput=readStsDetailOwners(rawReader(readSource));
+  const projected=entrancePredecessor(path,beforeStsDetailSource(path,source),
    releaseLayoutsAlreadyProjected?readRawInput:readReleaseLayoutOwners(readRawInput),{allowConfigLayout});
   source=projected.source;readSource=projected.read;
   const rawInput=source,backflow=beforeDevelopBackflow(path,source,{allowConfigLayout}),rebased=beforeRebasedCi(path,backflow);

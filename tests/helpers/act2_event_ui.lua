@@ -71,11 +71,12 @@ function H.boolean(r,wanted)
  end
  error('bounded seeded boolean input missing')
 end
-function H.setup(run,map)
+function H.setup(run,map,options)
  local host=H.control({name='host',children={assert(find(Layout,'nodePanel'))}})
  local root=host:GetChild('nodePanel');local changes={}
- local ui=H.UI.new(root,run,map,Presentation,'click',function(ok,why)changes[#changes+1]={ok,why}end,
-  {cursorEvents=events,imageSource='static',color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end})
+ local settings={cursorEvents=events,imageSource='static',color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end}
+ for key,value in pairs(options or {})do settings[key]=value end
+ local ui=H.UI.new(root,run,map,Presentation,'click',function(ok,why)changes[#changes+1]={ok,why}end,settings)
  ui:setVisible(true)
  local function get(path)
   local node=root;for part in path:gmatch('[^/]+')do node=assert(node:GetChild(part),path)end;return node

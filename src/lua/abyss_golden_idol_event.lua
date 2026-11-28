@@ -3,7 +3,7 @@ local Run=require('abyss_run')
 local R=require('abyss_sts_random')
 local M={}
 local function owned(run,id)for _,held in ipairs(run.relics)do if held==id then return true end end;return false end
-local function row(choice,title,text,card)return {choice=choice,title=title,description=text,cardId=card,enabled=true}end
+local function row(choice,title,text,card,relic)return {choice=choice,title=title,description=text,cardId=card,previewRelicId=relic,enabled=true}end
 function M.prepare(run,event)
  assert((run.act or 1)==1,'Golden Idol event requires act1')
  assert(type(run.maxHp)=='number' and run.maxHp%1==0 and run.maxHp>=1 and run.maxHp<=2147483647,'invalid Golden Idol health')
@@ -14,7 +14,7 @@ end
 function M.options(run,event)
  if event.stage=='result'then return {row('leave','离开','返回路线。')}end
  if event.stage=='intro'then return {
-  row('take','拿取鎏金神像',owned(run,'golden_idol')and'已持有时获得圆环；随后必须选择陷阱代价。'or'获得鎏金神像；随后必须选择陷阱代价。'),
+  row('take','拿取鎏金神像',owned(run,'golden_idol')and'已持有时获得圆环；随后必须选择陷阱代价。'or'获得鎏金神像；随后必须选择陷阱代价。',nil,'golden_idol'),
   row('leave','离开','不拿取遗物。')}end
  if event.stage~='trap'then return {}end
  return {row('injury','承受旧伤','获得诅咒牌「旧伤」。','injury'),

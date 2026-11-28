@@ -4,7 +4,9 @@ local Run=require('abyss_run')
 local Random=require('abyss_sts_random')
 local Hooks=require('abyss_relic_hooks')
 local M={}
-local function row(choice,title,text,enabled)return {choice=choice,title=title,description=text,enabled=enabled~=false}end
+local function row(choice,title,text,enabled,card,relic)
+    return {choice=choice,title=title,description=text,enabled=enabled~=false,previewCardId=card,previewRelicId=relic}
+end
 local function owns(run,id,source)
     for _,held in ipairs(run.relics)do if held==source or Hooks.localId(held)==id then return true end end
     return false
@@ -20,9 +22,9 @@ end
 function M.options(_run,event)
     if event.stage=='result'then return {row('leave','离开','返回路线。')}end
     if event.stage~='intro'then return {}end
-    return {row('offer_idol','交换黄金神像','以黄金神像换取赤晶神像。',event.hasIdol),
+    return {row('offer_idol','交换黄金神像','以黄金神像换取赤晶神像。',event.hasIdol,nil,'bloody_idol'),
         row('accept_trial','接受试炼','获得5点最大生命，然后受到 '..event.hpLoss..' 点普通伤害。'),
-        row('smash','破坏机关','获得诅咒「腐朽」。')}
+        row('smash','破坏机关','获得诅咒「腐朽」。',true,'decay')}
 end
 local function gainChalice(run,event)
     if not event.hasIdol or not owns(run,'golden_idol','Golden Idol')then return false,'event_condition_unmet'end

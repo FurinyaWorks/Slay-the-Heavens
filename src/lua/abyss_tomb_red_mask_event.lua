@@ -4,7 +4,7 @@ local Run=require('abyss_run')
 local Relics=require('abyss_relic_hooks')
 local M={}
 local function integer(n)return type(n)=='number'and n%1==0 and n>=0 and n<=2147483647 end
-local function row(choice,title,text,enabled)return {choice=choice,title=title,description=text,enabled=enabled~=false}end
+local function row(choice,title,text,enabled,relic)return {choice=choice,title=title,description=text,enabled=enabled~=false,previewRelicId=relic}end
 function M.prepare(run,event)
  assert(run.act==3 and event.id=='tomb_red_mask','Tomb requires the third act')
  assert(integer(run.gold),'invalid Tomb gold')
@@ -18,7 +18,7 @@ function M.options(run,event)
   row('wear','戴上红面具','保留红面具，获得222金币。'..(Relics.owns(run,'ectoplasm')and'当前遗物阻止获得金币。'or'')),
   row('leave','离开','不领取金币，继续前进。')}end
  return {row('wear','戴上红面具','需要红面具（未持有）。',false),
-  row('pay','献出全部金币','失去当前全部'..string.format('%.0f',run.gold)..'金币，获得红面具；0金币也可以。'),
+  row('pay','献出全部金币','失去当前全部'..string.format('%.0f',run.gold)..'金币，获得红面具；0金币也可以。',true,'red_mask'),
   row('leave','离开','保留金币，继续前进。')}
 end
 function M.choose(run,flow,choice,uid)

@@ -105,6 +105,8 @@ function M.install(ctx)
         return box
     end
 
+    ctx.controlKey = buttonKey
+
     function ctx.buttonLook(box)
         local look = buttonLooks[buttonKey(box)]
         if look and look.box == box then return look end
@@ -169,6 +171,7 @@ function M.install(ctx)
     end
 
     ctx.inspectCards={}
+    ctx.cardInspection=require('abyss_node_ui_card_inspection').new(ctx,ctx.root:GetChild('cardKeywordTip'))
 
 
     ctx.roomMotion = RoomMotion.new(ctx.self,ctx.child,ctx.options)
@@ -180,7 +183,7 @@ function M.install(ctx)
     function ctx.resetButtons()
         ctx.rewardDetail:reset()
         ctx.buttonHover, ctx.buttonPress, ctx.swipe = nil, nil, nil
-        ctx.self.inspectPress=nil
+        ctx.cardInspection:reset()
         for _, input in pairs(ctx.buttonInputs) do input.active, input.released = {}, nil end
         for _, look in pairs(buttonLooks) do ctx.paintButton(look.box) end
     end
