@@ -20,6 +20,23 @@ local upgradeable,upgradeCards=Common.upgradeable,Common.upgradeCards
 local healingPreview=Common.healingPreview
 local pending,complete=Common.pending,Common.complete
 
+-- These fixed offers preview the original card/relic before a choice commits.
+local act1Previews={
+    sssserpent={choice='agree',cardId='doubt'},
+    big_fish={choice='box',cardId='regret'},
+    accursed_blacksmith={choice='rummage',cardId='pain',relicId='warped_tongs'},
+}
+
+local function act1Options(run,event)
+    local rows=Act1Events.options(run,event,upgradeCards)
+    local preview=act1Previews[event.id]
+    if not preview then return rows end
+    for _,row in ipairs(rows) do
+        if row.choice==preview.choice then row.previewCardId,row.previewRelicId=preview.cardId,preview.relicId end
+    end
+    return rows
+end
+
 return function(M)
     local legacyOptions={
         living_wall=function(run,_e,option,rows,upgrades,_deckOk)
@@ -71,7 +88,7 @@ return function(M)
         local id,e=flow.event.id,flow.event
         if id=='neow'then return Neow.options(run,e)end
         if id=='match_game'then return Match.options(run,e)end
-        if Act1Events.ids[id] then return Act1Events.options(run,e,upgradeCards) end
+        if Act1Events.ids[id] then return act1Options(run,e) end
         if Act2Events.ids[id] then return Act2Events.options(run,e) end
         if Act3Events.ids[id] then return Act3Events.options(run,e) end
         local rows={}

@@ -233,9 +233,9 @@ local function prepare(pool,job)
     job.next=i+1
 end
 
-function M.new(container,factory,platform,click,startY,model,paint,pick,preview)
+function M.new(container,factory,platform,click,startY,model,paint,pick)
     local pool={container=container,factory=factory,pointerBlocked=platform.pointerBlocked,
-        cursor=platform.cursorEvents or {},click=click,startY=startY,model=model,paint=paint,pick=pick,preview=preview,entries={},retired={},revision=0,changing=0}
+        cursor=platform.cursorEvents or {},click=click,startY=startY,model=model,paint=paint,pick=pick,entries={},retired={},revision=0,changing=0}
     function pool:cancel()
         self.revision=self.revision+1
         local revision=self.revision

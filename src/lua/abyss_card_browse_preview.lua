@@ -2,8 +2,14 @@
 local Theme=require('abyss_theme')
 local Pointer=require('abyss_pointer_input')
 local Tip=require('abyss_card_keyword_tip')
-local hoverDelay=require('abyss_card_keywords').hoverDelay
+local Keywords=require('abyss_card_keywords')
+local hoverDelay=Keywords.hoverDelay
+local Combat=require('abyss_combat')
+local CardDisplay=require('abyss_card_display')
+local OriginalDisplay=require('abyss_original_v4_display')
 local M={}
+local function noop() end
+M.disabled={clear=noop,update=noop,bindGrid=noop,bindChoice=noop,consume=noop}
 
 function M.new(panel,platform,host)
     local state={}
@@ -81,6 +87,105 @@ function M.new(panel,platform,host)
         s.shown=true
     end
     return state
+end
+
+local gridChoice={recoverExhaust=true,discardToDraw=true,discardToHand=true}
+
+local function previewChoice(deck)
+    local battle,run=deck.battle,deck.run
+    local choice=battle and battle.pendingChoice
+    if not deck.choiceToken or not choice or deck.choiceToken~=choice.token
+        or not run or run.combat~=battle or run.phase~='combat' then return end
+    if choice.cards or gridChoice[choice.op] or choice.op=='colorless' and choice.item.effect.kind=='secret' then return choice end
+end
+
+function M.deck(deck,platform,inDetail,scroll)
+    local state=platform.cardBrowsePreview
+    if not state then return M.disabled end
+    local cursor=platform.cursorEvents or {}
+    local function capture(instance,text,current)
+        local generation,catalog,battle=deck.generation,deck.catalog,deck.battle
+        local choice=previewChoice(deck)
+        if not deck.visible or inDetail() or deck.choiceToken and not choice then return end
+        return function()
+            return deck.visible and not inDetail() and deck.generation==generation and current()
+                and (not choice or choice==previewChoice(deck))
+        end,function()
+            local definition=Combat.cardDefinition(battle or {catalog=catalog},instance)
+            return Keywords.cardTips(catalog.statuses,definition,instance.upgraded,text())
+        end,-280
+    end
+    local controls={clear=state.clear,update=state.update,consume=state.consume}
+    function controls.bindGrid(control,hit)
+        local function read()
+            local binding=deck.bindings[control]
+            if not binding or binding.generation~=deck.generation or not binding.instance then return end
+            local instance,progress=binding.instance,scroll()
+            local id,upgraded=instance.cardId,instance.upgraded
+            local function current()
+                return deck.bindings[control]==binding and binding.instance==instance and instance.cardId==id
+                    and instance.upgraded==upgraded and scroll()==progress and control.visible~=false
+            end
+            return capture(instance,function()return control:GetChild('face'):GetChild('label').text end,current)
+        end
+        if cursor.CursorEnter then hit:AddCursorEventListener(cursor.CursorEnter,function()state.enter(deck,hit,read)end) end
+        if cursor.CursorExit then hit:AddCursorEventListener(cursor.CursorExit,function(event)state.exit(hit,event)end) end
+        if cursor.CursorDown and cursor.CursorUp then
+            hit:AddCursorEventListener(cursor.CursorDown,function(event)
+                state.down(deck,hit,deck.choiceToken and read or nil,event)
+            end)
+            hit:AddCursorEventListener(cursor.CursorUp,function(event)state.up(hit,event)end)
+        end
+    end
+    function controls.bindChoice(binding,hit)
+        if deck.choiceToken and cursor.CursorDrag and not binding.previewDrag then
+            hit:AddCursorEventListener(cursor.CursorDrag,function(event)state.drag(hit,event)end)
+            binding.previewDrag=true
+        end
+    end
+    controls.browser={exit=state.exit,enter=function(entry,available)
+        state.enter(deck,entry.hit,function()
+            if not available() then return end
+            local instance,version=entry.instance,entry.version
+            return capture(instance,function()return entry.bodyText end,
+                function()return available() and entry.version==version and entry.instance==instance end)
+        end)
+    end}
+    return controls
+end
+
+function M.describeInspection(display,run,definition,upgraded,text)
+    local title=display.name..(upgraded and '+' or '')
+    if definition.originalV4 then
+        local raw=OriginalDisplay.describe(definition,upgraded)
+        local keywords=OriginalDisplay.keywordDefinitions(definition,upgraded)
+        return title,keywords~='' and raw..'\n'..keywords or raw
+    end
+    text=text or CardDisplay.permanentText(display,definition,{upgraded=upgraded})
+    local rows=Keywords.runTips(run,definition,upgraded,text)
+    if not rows then return end
+    local lines={text}
+    for _,row in ipairs(rows) do lines[#lines+1]=row.name..'：'..row.body end
+    return title,table.concat(lines,'\n')
+end
+
+function M.paginate(raw,width,height)
+    -- Bound each page using the shared viewport/font, counting a CJK codepoint
+    -- as a full em. Do not truncate rules; every wrapped line stays reachable.
+    local columns=math.max(1,math.floor(width/Theme.font.reading)-2)
+    local rows=math.max(1,math.floor(height/Theme.layout.nativeText.lineHeight)-3)
+    local lines,line,n={},'',0
+    for ch in raw:gmatch('[%z\1-\127\194-\244][\128-\191]*') do
+        if ch=='\n' then lines[#lines+1]=line;line,n='',0
+        else line=line..ch;n=n+1;if n>=columns then lines[#lines+1]=line;line,n='',0 end end
+    end
+    if line~='' then lines[#lines+1]=line end
+    local pages={}
+    for i=1,#lines,rows do
+        local page={};for j=i,math.min(i+rows-1,#lines) do page[#page+1]=lines[j] end
+        pages[#pages+1]=table.concat(page,'\n')
+    end
+    return pages
 end
 
 return M

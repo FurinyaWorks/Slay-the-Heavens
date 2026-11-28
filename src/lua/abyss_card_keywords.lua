@@ -21,6 +21,12 @@ local function effectKeywords(effects,ids)
         if effect["then"] then effectKeywords(effect["then"],ids) end
     end
 end
+local function traitTips(matches,text,definition,ids)
+    for _,trait in ipairs(traits)do
+        if definition[trait[1]] or ids[trait[1]] then addTip(matches,text,trait[2],trait[3],trait[4]) end
+    end
+end
+
 function M.cardTips(statuses,definition,upgraded,text)
     text=text:gsub('<[^>]+>','')
     local matches,rows,seen={},{},{}
@@ -31,9 +37,7 @@ function M.cardTips(statuses,definition,upgraded,text)
     local ids={}
     for _,id in ipairs(commonKeywords)do ids[id]=true end
     effectKeywords(definition.effects or {},ids)
-    for _,trait in ipairs(traits)do
-        if definition[trait[1]] or ids[trait[1]] then addTip(matches,text,trait[2],trait[3],trait[4]) end
-    end
+    traitTips(matches,text,definition,ids)
     if definition.cost==-2 then
         local alias=text:find('无法打出',1,true) and '无法打出' or '不可打出'
         addTip(matches,text,'不能打出','这张牌不能主动打出。',alias)

@@ -4,6 +4,7 @@ local Theme=require("abyss_theme")
 local layout=Theme.layout.combatChoice
 local PAGE_SIZE=layout.columns*layout.rows
 local CardDisplay=require("abyss_card_display")
+local BrowsePreview=require('abyss_card_browse_preview')
 local Keywords=require("abyss_card_keywords")
 local CardSkin=require("abyss_card_skin")
 local M={}
@@ -80,7 +81,7 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
     local view={root=root,visible=false,generation=0,selected={},page=1}
     local cursor=platform.cursorEvents or {}
     local pointerObserved=false
-    local preview=platform.cardBrowsePreview
+    local preview=platform.cardBrowsePreview or BrowsePreview.disabled
     local grid=root:GetChild("cards")
     local list
     local function child(name) return assert(root:GetChild(name),"missing choice control "..name) end
@@ -235,7 +236,7 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
     end
     function view:close()
         local visible=self.visible
-        if preview then preview.clear(self) end
+        preview.clear(self)
         self.generation=self.generation+1
         self.visible,self.enabled,self.run,self.context=false,false,nil,nil
         self.cards,self.selected,self.page,self.error={}, {},1,nil
@@ -253,7 +254,7 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
         end
         local old=self.context
         self.enabled=true
-        if preview then preview.clear(self) end
+        preview.clear(self)
         if not old or self.run~=run or old.pending~=choice or not fresh(true) then
             self.generation=self.generation+1
             self.run,self.cards,self.selected,self.page,self.error=run,cards,{},1,nil
@@ -270,14 +271,14 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
     end
     function view:update(dt)
         if list and self.visible and root.active~=false then list:update() end
-        if preview then preview.update(self,dt) end
+        preview.update(self,dt)
     end
     function view.presentationReady(_)
         if not list then return true end
         return list:ready(layout.rows)
     end
     function view:resize()
-        if preview then preview.clear(self) end
+        preview.clear(self)
         self.generation=self.generation+1
         return self.visible
     end
@@ -338,13 +339,13 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
             if not c or (c.kind~='scry' and c.kind~='pile') or not valid() then return end
             local binding=current and current()
             local instance=binding and binding.instance or view.cards[(view.page-1)*PAGE_SIZE+cardSlot]
-            local generation,progress,upgraded=view.generation,binding and list:progress(),instance.upgraded
+            local generation,progress,upgraded,id=view.generation,binding and list:progress(),instance.upgraded,instance.cardId
             local function sameCard()
                 local kind,choice=pending(c.run)
                 return enabled() and view.context==c and view.generation==generation and kind==c.kind
                     and choice==c.pending and choice.token==c.token and c.battle.turn==c.turn
                     and c.run.combatGeneration==c.combatGeneration and c.run.combat==c.battle
-                    and instance.upgraded==upgraded
+                    and instance.upgraded==upgraded and instance.cardId==id
                     and (not binding or binding==current() and list:progress()==progress)
             end
             local function rows()
@@ -354,7 +355,7 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
             end
             return sameCard,rows,layout.confirm[2]+layout.confirm[4]/2
         end
-        local canPreview=preview and (current or cardSlot)
+        local canPreview=platform.cardBrowsePreview and (current or cardSlot)
         if canPreview and cursor.CursorEnter then
             hit:AddCursorEventListener(cursor.CursorEnter,function()preview.enter(view,hit,capture)end)
         end
@@ -389,9 +390,14 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
         elseif canPreview and cursor.CursorExit then
             hit:AddCursorEventListener(cursor.CursorExit,function(event)preview.exit(hit,event)end)
         end
+        local function previewConsumed(event)
+            if not preview.consume(hit,event) then return false end
+            held,released=nil,nil
+            return true
+        end
+        local function clickBlocked(event) return previewConsumed(event) or Pointer.blocked(platform) end
         hit:AddCursorEventListener(clickEvent,function(event)
-            if canPreview and preview.consume(hit,event) then held,released=nil,nil;return false end
-            if Pointer.blocked(platform)then return false end
+            if clickBlocked(event)then return false end
             if current and Pointer.dragged(event,Theme.layout.cardDrag.threshold)then
                 local owner=held or released
                 if owner and owner.touch==touch(event)then held,released=nil,nil end
