@@ -325,7 +325,7 @@ const detachedInputsBeforeReplayGuard=Object.freeze({
  'tests/helpers/master-backflow-source.mjs':'73b8c380cae30d3dfca7bf91e9272e47ecbaaa5dca3a1abfce35a5c41e9d61cc',
  'tests/helpers/release-closure-fixture-source.mjs':'2fc88ea6f7a27cea24e21a234a4ff7474083f5eb3ecea4b7179fc2b8dec08c80',
  'tests/helpers/release-deck-pointer-source.mjs':'a1cfebcea1c53c017315a9762ba2d9509d395218b358a500d7ca22fe565dec38',
- 'tests/helpers/release-entrance-owner-source.mjs':'970a41e91888711768d917ab2970d069ec891aea4f098f3930b1b5d04c87a30a',
+ 'tests/helpers/release-entrance-owner-source.mjs':'a74c303053062a39fa4731644758808026c8bce5024ff186c6017a016932f97b',
  'tests/helpers/release-metadata-source.mjs':'5897d9d479841a5fa7fe1f86925fa7daedd06a8facdc7277247f2ac376610cf8',
  'tests/helpers/relic-query-source-inverse.mjs':'b727def31d0e68c56d82472d9fa076cebc731f93b44210e7446b4f026d0942f6',
  'tests/helpers/reviewed-selection-current-source.json.gz':'ae2612caad5be7b4589812d9f0580b17bf99e775e53db38c093f79ff46c4cebb',
@@ -341,16 +341,78 @@ const detachedInputsBeforeReplayGuard=Object.freeze({
 // historical copier still restores the original immutable helpers.
 export const currentDetachedInputs=Object.freeze({
  ...detachedInputsBeforeReplayGuard,
- 'tests/helpers/release-enemy-clearance-source.mjs':'1ff51ed0916328f8e4a2f0c2fc54b6e9c53d3746fe388c97f57cd8f057ca1907',
+ 'tests/helpers/release-enemy-clearance-source.mjs':'76291b4ca58c43edd879dc348858eec837e123f3cce7db4518b4a8fe1e84b085',
  'tests/helpers/chapter-battle-scene-source.mjs':'799040ad7eef63281029b16094e95292b14df23692208a00639cd4ce7d8113e2',
- 'tests/helpers/boss-map-scroll-source.mjs':'a69b788f0d73a47d2366aab76f9d2f93aca1fce4fe112bea681ff3715602df0e',
- 'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'1cf1f1d3c8e13caca6c8480da3c332b9283ce2fa074525359f685109ef6f9494',
- 'tests/helpers/closeout-source-epoch.mjs':'193e27b3e02e4afca1d2d6fcf6b78e64d18c3853b11f96d631538c5623e2e35b',
+ 'tests/helpers/boss-map-scroll-source.mjs':'32086e0a0b75e11efba16ff7ac9de4151b9e6443448480fcd28859c7d01d0884',
+ 'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'93d263928f8b024e6cd7557e7279220237e19aa119629dc1939549902653c49a',
+ 'tests/helpers/release-sts-detail-source.mjs':'0e06e04e77d3dd59f62502fd4a9611f99a17647d0589b18921fea98196e00539',
+ 'tests/fixtures/release-sts-detail-source.json.gz':'8f755b932e94da02b8ed36d85b52a7c663a7fb896e1a55670d1504dbb8b07bf8',
+ 'tests/helpers/closeout-source-epoch.mjs':'5622c6d85e9c80ed51a12a5c1cdadf0f00e2dfb33c2558e33c065bcc6b847688',
  'tests/helpers/release-closure-fixture-source.mjs':'289dbb0f64df673d88909d620f3e204cd92a96d448eb62acd6347f91f4e39b23',
 });
 
+const stsDetailRuntime=Object.freeze({
+ current:{sha256:'93d263928f8b024e6cd7557e7279220237e19aa119629dc1939549902653c49a',gitBlob:'e83935e542ef13de6dfd4802edd6560bb0094d5c'},
+ previous:{sha256:'1cf1f1d3c8e13caca6c8480da3c332b9283ce2fa074525359f685109ef6f9494',gitBlob:'7a0803c2201b7d5ff25347708fc40dd5b3b17e88'},
+});
+function beforeStsDetailRuntime(path,raw){
+ if(path!=='tests/helpers/combined-epoch/source-epoch-runtime.mjs')return raw;
+ const source=raw.toString('utf8'),lf=source.replaceAll('\r\n','\n');
+ const {current,previous}=stsDetailRuntime;
+ if(!raw.equals(Buffer.from(source))||lf.includes('\r')||source!==lf&&source!==lf.replaceAll('\n','\r\n')||!exactSourceMatches(lf,current))return raw;
+ const hunks=[
+  {at:0,before:"import {beforeReleaseClosureFixture} from '../release-closure-fixture-source.mjs';",
+   after:"import {beforeReleaseClosureFixture} from '../release-closure-fixture-source.mjs';\nimport {beforeStsDetailSource,readStsDetailOwners} from '../release-sts-detail-source.mjs';"},
+  {at:163,before:'  const readRawInput=rawReader(readSource);\n  const projected=entrancePredecessor(path,source,',
+   after:'  const readRawInput=readStsDetailOwners(rawReader(readSource));\n  const projected=entrancePredecessor(path,beforeStsDetailSource(path,source),'},
+ ];
+ const prior=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,lf);
+ assert(exactSourceMatches(prior,previous),'exact pre-STS detail combined runtime');
+ return Buffer.from(source===lf?prior:prior.replaceAll('\n','\r\n'));
+}
+
+export function isStsDetailRuntimeCurrent(source){
+ if(typeof source!=='string')return false;
+ const lf=source.replaceAll('\r\n','\n');
+ return !lf.includes('\r')&&(source===lf||source===lf.replaceAll('\n','\r\n'))&&exactSourceMatches(lf,stsDetailRuntime.current);
+}
+
+const stsDetailCloseout=Object.freeze({
+ "path": "tests/helpers/closeout-source-epoch.mjs",
+ "beforeSha256": "193e27b3e02e4afca1d2d6fcf6b78e64d18c3853b11f96d631538c5623e2e35b",
+ "afterSha256": "5622c6d85e9c80ed51a12a5c1cdadf0f00e2dfb33c2558e33c065bcc6b847688",
+ "beforeBlob": "8523062f30c400de9c3e618df45174edb13d78e3",
+ "afterBlob": "805676db8c919f667e5102fb48b9497a1aaba4a8",
+ "hunks": [
+  {
+   "at": 1,
+   "before": "import { entrancePredecessor } from './ui-entrance-source.mjs';",
+   "after": "import { entrancePredecessor, underlyingEntranceReader } from './ui-entrance-source.mjs';"
+  },
+  {
+   "at": 79,
+   "before": " const projected=sourceEpoch.preCombinedSource(path,source,{target,readSource,releaseLayoutsAlreadyProjected:true});",
+   "after": " // The Combined projector runs its own entrance admission. Its #1080 owner\n // wrapper needs the raw entrance reader, not an already projected cohort.\n const projected=sourceEpoch.preCombinedSource(path,source,{target,\n  readSource:underlyingEntranceReader(readSource),releaseLayoutsAlreadyProjected:true});"
+  }
+ ]
+});
+function beforeStsDetailCloseout(path,raw){
+ if(path!==stsDetailCloseout.path)return raw;
+ const source=raw.toString('utf8'),lf=source.replaceAll('\r\n','\n');
+ if(!raw.equals(Buffer.from(source))||!isStsDetailCloseoutCurrent(source))return raw;
+ const prior=restoreExactFixtureHunks(stsDetailCloseout,path,lf);
+ assert(exactSourceMatches(prior,{sha256:stsDetailCloseout.beforeSha256,gitBlob:stsDetailCloseout.beforeBlob}),'exact pre-STS detail Closeout source');
+ return Buffer.from(source===lf?prior:prior.replaceAll('\n','\r\n'));
+}
+export function isStsDetailCloseoutCurrent(source){
+ if(typeof source!=='string')return false;
+ const lf=source.replaceAll('\r\n','\n');
+ const {afterSha256:sha256,afterBlob:gitBlob}=stsDetailCloseout;
+ return !lf.includes('\r')&&(source===lf||source===lf.replaceAll('\n','\r\n'))&&exactSourceMatches(lf,{sha256,gitBlob});
+}
+
 export function beforeDetachedReleaseBackflow(path,raw){
- raw=beforeReleaseEnemyClearance(path,raw);
+ raw=beforeStsDetailCloseout(path,beforeStsDetailRuntime(path,beforeReleaseEnemyClearance(path,raw)));
  if(path==='tests/helpers/chapter-battle-scene-source.mjs')return beforeBossMapScroll(path,raw);
  if(!Object.hasOwn(owners,path))return raw;
  let source=raw.toString('utf8'),lf=source.replaceAll('\r\n','\n');

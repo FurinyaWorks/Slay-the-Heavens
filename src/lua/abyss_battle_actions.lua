@@ -1,6 +1,7 @@
 -- Read state, issue Run commands. No damage/energy/outcome rules live in this view.
 local Combat = require("abyss_combat")
 local Actors = require("abyss_actor")
+local CardKeywords = require("abyss_card_keywords")
 local Run = require("abyss_run")
 local Theme = require("abyss_theme")
 local Events = require("abyss_events")
@@ -203,7 +204,8 @@ function M.install(owner, ownership, host, dependencies)
     end
     local function fireHelp(help, dt)
         help.t = help.t + dt
-        if help.t + 0.000001 >= L.statusInfo.delay then
+        local hoverCard = not help.held and (help.spec.kind=='card' or help.spec.kind=='rewardCard')
+        if hoverCard and help.t>CardKeywords.hoverDelay or not hoverCard and help.t+0.000001>=L.statusInfo.delay then
             help.fired = true
             if help.held and help.card then
                 owner.gesture,owner.carry,owner.selected=nil,nil,nil

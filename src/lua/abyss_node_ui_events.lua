@@ -4,6 +4,7 @@ local Act1Events = require('abyss_act1_events')
 local Act2Events = require('abyss_act2_events')
 local Act3Events = require('abyss_act3_events')
 local Art = require('abyss_lowcost_art')
+local Viewport = require('abyss_viewport')
 local number = require("abyss_numbers").integer
 local C = Theme.color
 local kinds = { camp = "营地", shop = "商店", event = "未知事件", treasure = "宝箱",ending_proceed='真结局' }
@@ -285,20 +286,120 @@ local function descriptionInk(enabled)
     return reference and (enabled and reference.textInk or reference.disabledInk) or enabled and C.textDim or C.textMuted
 end
 
-local function inlineOption(row)
+local function eventCopyInk(text,id)
     local reference = layout.event.reference
-    local text = inlineCopy(row)
-    if not row.enabled then return text end
     local function paint(pattern, colour)
         local hex = string.format('#%02X%02X%02X', colour.r, colour.g, colour.b)
-        text = text:gsub(pattern, function(value) return '<color=' .. hex .. '>' .. value .. '</color>' end)
+        text = text:gsub(pattern, function(value,tail)
+            return '<color=' .. hex .. '>' .. value .. '</color>' .. (tail or '')
+        end)
     end
+    if id=='nest' then
+        local reward,cost=reference and reference.rewardInk or C.positive,reference and reference.costInk or C.dangerText
+        paint('获得%s*[%d%.]+%s*金币。', reward)
+        paint('(获得)(「)', reward)
+        paint('受到%s*[%d%.]+%s*点普通伤害。', cost)
+        return text
+    end
+    if not reference then return text end
     paint('支付%s*[%d%.]+%s*金币', reference.costInk)
     paint('失去%s*[%d%.]+%s*点生命', reference.costInk)
     paint('回复%s*[%d%.]+%s*点生命', reference.rewardInk)
     paint('获得%s*[%d%.]+%s*金币', reference.rewardInk)
     paint('从牌组移除一张卡牌', reference.rewardInk)
     return text
+end
+
+local function inlineOption(row,id)
+    local text = inlineCopy(row)
+    return row.enabled and eventCopyInk(text,id) or text
+end
+
+local function clamp(value,min,max)
+    return math.max(min,math.min(value,max))
+end
+
+local function anchored(box, axis)
+    return box['anchoredPosition'..axis] or box[axis:lower()] or 0
+end
+
+local function previewPosition(ctx,box)
+    local width,height=ctx.self.canvasWidth or Theme.canvas.base[1],ctx.self.canvasHeight or Theme.canvas.base[2]
+    local scale=Viewport.scale(width,height)
+    return width/scale/2,height/scale/2,anchored(box.parent,'Y'),width,height
+end
+
+local function showEventCard(ctx,box,preview,instance)
+    local halfWidth,halfHeight,roomY=previewPosition(ctx,box)
+    local width,height=table.unpack(Theme.layout.card.size)
+    -- LargeDialogOptionButton places the card on the right and raises it off
+    -- the bottom. Clamp to the right edge of this project's wider option stack.
+    local x=math.min(anchored(box,'X')+(box.sizeDeltaX or layout.event.options.size[1])/1.75,halfWidth-width/2-14)
+    local y=clamp(anchored(box,'Y')+roomY,-halfHeight+height/2+5,halfHeight-height/2-5)
+    preview:SetAnchoredPosition(x,y-roomY)
+    ctx.fillCard(preview,instance.cardId,instance.upgraded,{instance=instance})
+    preview:SetVisible(true)
+end
+
+local function relicPosition(ctx,box,preview,cursorY,followCursor)
+    local halfWidth,halfHeight,roomY,width,height=previewPosition(ctx,box)
+    if followCursor and ctx.options.cursorPosition then
+        local x,y=ctx.options.cursorPosition()
+        local _,currentY=Viewport.toStage(x,y,width,height)
+        cursorY=currentY or cursorY
+    end
+    local tipWidth=Theme.layout.statusInfo.cardHoverWidth
+    local tipHeight=preview.sizeDeltaY or 180
+    -- The source tooltip's left edge is 470px at 1920px. Its top follows the
+    -- cursor; raise the stack when its bottom would pass below the viewport.
+    local x=-halfWidth+470*2/3+tipWidth/2
+    local y=clamp((cursorY or anchored(box,'Y')+roomY)-tipHeight/2,-halfHeight+tipHeight/2+5,halfHeight-tipHeight/2-5)
+    return x,y-roomY
+end
+
+local function relicPreview(ctx,box,preview,id)
+    local previousX,previousY
+    local function placeRelic(event,followCursor)
+        local x,y=relicPosition(ctx,box,preview,event,followCursor)
+        if x==previousX and y==previousY then return end
+        preview:SetAnchoredPosition(x,y);previousX,previousY=x,y
+    end
+    return {
+        show=function(event)
+            preview:GetChild('name').text=ctx.relicName(id)
+            preview:GetChild('description').text=ctx.relicText(id)
+            placeRelic(event);preview:SetVisible(true)
+        end,
+        followCursor=function() placeRelic(nil,true) end,
+        hide=function()preview:SetVisible(false);previousX,previousY=nil,nil end}
+end
+
+local function cardPreview(ctx,box,option)
+    local cardId=option.previewCardId or option.cardId
+    if not cardId or not ctx.card(cardId) then return end
+    local preview=box.parent:GetChild('previewCard')
+    if not preview then return end
+    local instance=option.previewCard or (option.cardId and option or {cardId=cardId})
+    return {show=function()showEventCard(ctx,box,preview,instance)end,
+        hide=function()preview:SetVisible(false);ctx.clearPreviewCard(preview)end}
+end
+
+local function bindEventPreview(ctx,key,box,option)
+    local card=cardPreview(ctx,box,option)
+    local control=option.previewRelicId and box.parent:GetChild('previewRelic')
+    local relic=control and relicPreview(ctx,box,control,option.previewRelicId)
+    if not card and not relic then return end
+    ctx.rewardDetail:setEvent(key,{
+        visible=function()return box.parent.visible and box.visible end,
+        show=function(y)
+            if card then card.show() end
+            if relic then relic.show(y) end
+        end,
+        hide=function()
+            if card then card.hide() end
+            if relic then relic.hide() end
+        end,
+        followCursor=relic and relic.followCursor})
 end
 
 -- The separators below belong specifically to abyss_neow.description's
@@ -334,6 +435,12 @@ local function neowOffer(info, choice)
     return index and info.rewards[index] or nil
 end
 
+local function writeEventDescription(ctx,box,row,id,compact)
+    local control=box:GetChild('description')
+    control.text=not compact and row.enabled and id=='nest' and eventCopyInk(row.description,id) or row.description
+    ctx.ink(control,descriptionInk(row.enabled))
+end
+
 local function writeOption(ctx, box, row, id)
     local line = box:GetChild('stsNeowText')
     if line then
@@ -347,10 +454,9 @@ local function writeOption(ctx, box, row, id)
         end
     end
     local compact = layout.event.reference and id ~= 'neow'
-    box:GetChild('title').text = compact and inlineOption(row) or row.title
-    box:GetChild('description').text = row.description
+    box:GetChild('title').text = compact and inlineOption(row,id) or row.title
     ctx.ink(box:GetChild('title'), compact and descriptionInk(row.enabled) or row.enabled and C.goldBright or C.textMuted)
-    ctx.ink(box:GetChild('description'), descriptionInk(row.enabled))
+    writeEventDescription(ctx,box,row,id,compact)
 end
 
 -- Every owner of the reused event controls restores the same layout and ink.
@@ -419,7 +525,8 @@ function M.install(ctx)
                         for _,option in ipairs(info.options) do
                             local selected=option
                             rows[#rows+1]={title='［'..(selected.rewardCard and ctx.cardName(selected.cardId,selected.upgraded)or selected.title)..'］',
-                                description=optionDescription(ctx,selected),neowOffer=neowOffer(info,selected.choice),enabled=selected.enabled,handler=function()
+                                description=optionDescription(ctx,selected),option=selected,
+                                neowOffer=neowOffer(info,selected.choice),enabled=selected.enabled,handler=function()
                                     -- Repeated-search events retain the same command after
                                     -- rendering new odds. An old callback is still stale.
                                     if ctx.self.view~=view or ctx.self.renderRun~=ctx.self.run or ctx.self.renderMap~=ctx.self.map then return false,'stale_action' end
@@ -515,7 +622,9 @@ function M.install(ctx)
             if row then
                 ctx.state(box, row.enabled)
                 writeOption(ctx, box, row, id)
-                ctx.action("eventView/option" .. i, row.enabled, row.handler, row.description)
+                local key="eventView/option" .. i
+                ctx.action(key, row.enabled, row.handler, row.description)
+                if row.option then bindEventPreview(ctx,key,box,row.option) end
             end
         end
         return eventNotice(id, copy, result)

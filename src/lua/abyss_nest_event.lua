@@ -12,7 +12,7 @@ function M.options(_,event)
  if event.stage=='intro'then return {row('continue','继续','走近查看。')}end
  if event.stage=='choice'then
   return {row('gold','拿走金币','获得99金币。'),
-   row('dagger','加入仪式','受到6点普通伤害，获得「仪式匕首」。','ritual_dagger')}
+   row('dagger','加入仪式','获得「仪式匕首」。受到6点普通伤害。','ritual_dagger')}
  end
  if event.stage=='result'then return {row('leave','离开','返回路线。')}end
  return {}

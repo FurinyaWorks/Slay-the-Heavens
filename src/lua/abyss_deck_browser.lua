@@ -31,6 +31,10 @@ local function bind(pool,entry)
         if not available() then return false end
         return pool.pick(entry.instance)
     end
+    local preview=pool.preview
+    if preview and cursor.CursorEnter then
+        hit:AddCursorEventListener(cursor.CursorEnter,function()preview.enter(entry,available)end)
+    end
     if cursor.CursorDown and cursor.CursorUp then
         hit:AddCursorEventListener(cursor.CursorDown,function(event)
             entry.observed=true
@@ -48,12 +52,15 @@ local function bind(pool,entry)
             end
         end)
         local function cancel(event)
+            if preview then preview.exit(hit,event) end
             local touch=event and event.touchId
             if entry.held and (not event or entry.held.touch==touch) then entry.held=nil end
             if entry.released and (not event or entry.released.touch==touch) then entry.released=nil end
         end
         if cursor.CursorExit then hit:AddCursorEventListener(cursor.CursorExit,cancel) end
         if cursor.CursorEndDrag then hit:AddCursorEventListener(cursor.CursorEndDrag,cancel) end
+    elseif preview and cursor.CursorExit then
+        hit:AddCursorEventListener(cursor.CursorExit,function(event)preview.exit(hit,event)end)
     end
     hit:AddCursorEventListener(pool.click,function(event)
         if entry.observed or cursor.CursorDown and cursor.CursorUp and event and event.touchId~=nil then

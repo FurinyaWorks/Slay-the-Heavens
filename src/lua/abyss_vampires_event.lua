@@ -5,7 +5,7 @@ local Random=require('abyss_sts_random')
 local Hooks=require('abyss_relic_hooks')
 local M={}
 local strikes={Strike_R=true,Strike_G=true,Strike_B=true,Strike_P=true}
-local function row(choice,title,text)return {choice=choice,title=title,description=text,enabled=true}end
+local function row(choice,title,text,card)return {choice=choice,title=title,description=text,enabled=true,previewCardId=card}end
 local function vial(run)
     for i,id in ipairs(run.relics)do if id=='Blood Vial'or Hooks.localId(id)=='blood_vial'then return i end end
 end
@@ -22,8 +22,8 @@ end
 function M.options(run,event)
     if event.stage=='result'then return {row('leave','离开','返回路线。')}end
     if event.stage~='intro'then return {}end
-    local rows={row('accept','接受','失去 '..event.maxHpLoss..' 点最大生命，移除所有初始打击，获得5张迅袭。')}
-    if event.hasVial then rows[#rows+1]=row('give_vial','交出回春瓶','失去回春瓶，移除所有初始打击，获得5张迅袭；不损失最大生命。')end
+    local rows={row('accept','接受','失去 '..event.maxHpLoss..' 点最大生命，移除所有初始打击，获得5张迅袭。','bite')}
+    if event.hasVial then rows[#rows+1]=row('give_vial','交出回春瓶','失去回春瓶，移除所有初始打击，获得5张迅袭；不损失最大生命。','bite')end
     rows[#rows+1]=row('leave','拒绝','婉拒夜巡团的邀请。')
     if unresolved(run)then
         for _,option in ipairs(rows)do if option.choice~='leave'then option.enabled=false;option.description='当前原创职业的初始打击源标签映射尚未确认。'end end

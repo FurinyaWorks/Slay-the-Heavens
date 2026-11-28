@@ -1,4 +1,6 @@
 import {beforeMapRoomReplayCohort} from './develop-replay-merge-source.mjs';
+import {beforeSharedReleaseRuntimeReplay} from './release-detached-backflow-source.mjs';
+import {readStsDetailOwners} from './release-sts-detail-source.mjs';
 import {beforeMapNodeVisualsLineEndings} from './input-retirement-sts-binding.mjs';
 import {readCloseoutLuaVocabularyReceipt} from './closeout-lua-vocabulary-source.mjs';
 import {beforeCloseoutHistoryTooling,beforeCloseoutJoustCiFixture,readCloseoutCurrentBackflowReceipt} from './closeout-current-backflow-source.mjs';
@@ -197,6 +199,8 @@ export function beforeCurrentHistoricalStsSource(path,source){
  }
  if(path==='tests/integration-source-epoch.test.mjs'||path==='tests/effects-target-group-source-epoch.test.mjs')
   source=beforeKnownMasterBackflowSource(path,source);
+ // Current Release runtime helpers precede the older entrance and Map Room receipts.
+ if(path==='tests/helpers/combined-epoch/source-epoch-runtime.mjs')source=beforeSharedReleaseRuntimeReplay(path,source);
  // New exact integration tests first continue to the entrance witness's reviewed input.
  if(['tests/integration-source-epoch.test.mjs','tests/helpers/combined-epoch/source-epoch-runtime.mjs',
   'tests/session-menu-navigation.test.mjs','tests/tiny-house-pending-ui.cases.mjs'].includes(path))source=beforeCurrentReplayFixes(path,source);
@@ -251,8 +255,26 @@ export function beforeCurrentReplayCopier(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 
+// Match's live #1080 Lua test uses the real inspection adapter. Preserve
+// earlier receipts' exact fixture bytes without changing today's live test.
+function beforeMatchInspectionReceipt(path,source){
+ if(path!=='tests/lua/match_event_ui.lua'||!matches(source,{
+  sha256:'b7325016afe3b49d1ce43a8c1e9ba8923ab172247b964a6cebaf020247625c4e',
+  gitBlob:'99cefe643462eb5dd65d1e1e8344f04e24634227',
+ }))return source;
+ const normalized=lf(source);
+ if(normalized.includes('\r')||source!==normalized&&source!==normalized.replaceAll('\n','\r\n'))return source;
+ const addition=" ctx.controlKey=function(box)return box end\n ctx.cardInspection=require('abyss_node_ui_card_inspection').new(ctx,nil)\n";
+ assert.equal(normalized.split(addition).length,2,'exact Match inspection fixture addition');
+ const prior=normalized.replace(addition,'');
+ assert(matches(prior,{
+  sha256:'7f2a04dec7dd6cbd6bdd12a0cb576aaf42ae654624fede034c12deb5aa416621',
+  gitBlob:'465f585bc0a07a658fea80d05c5206e14c4615dc',
+ }),'exact pre-inspection Match fixture');
+ return source===normalized?prior:prior.replaceAll('\n','\r\n');
+}
 function matchesCurrentReceipt(path,source,expected){
- source=beforeCurrentReplayFixes(path,beforeUiEntranceWitness(path,source));
+ source=beforeCurrentReplayFixes(path,beforeUiEntranceWitness(path,beforeMatchInspectionReceipt(path,source)));
  if(matches(source,expected))return true;
  const ui=beforeDevelopUiBackflows(path,source);
  const actions=beforeActionButtons(path,ui);
@@ -367,14 +389,17 @@ function readOfficialCalibrationReceipt(path,digest,readCurrent){
  if(!Object.hasOwn(row.predecessors,digest))return;
  const prior=row.predecessors[digest];
  if(row.currentPath!==path)assert.throws(()=>readCurrent(path,'utf8'),{code:'ENOENT'},'retired official receipt input reappeared: '+path);
- const live=readCurrent(row.currentPath,'utf8');
+ // The Release detail cohort must be authenticated before older official
+ // receipts can reconstruct predecessors. Keep all other receipt readers raw.
+ const readDetailOwner=readStsDetailOwners(owner=>readCurrent(owner,'utf8'));
+ const live=readDetailOwner(row.currentPath);
  // The reviewed #1064 inverse authenticates both map successors without
  // changing the bytes used by live Full or other receipt readers.
  const mapOwner=['src/lua/abyss_map_ui.lua','scripts/map-ui-layout.mjs','scripts/v25-map-layout.mjs'].includes(row.currentPath);
  const current=row.currentPath==='scripts/deck-ui-layout.mjs'?beforeRunHudDeckLabel(live):
   row.currentPath==='src/lua/abyss_viewport.lua'?beforeCardReadingScope(row.currentPath,live):
   mapOwner?beforeReleaseClosureFixture(row.currentPath,live):live;
- const source=matches(current,row.current)?current:readReleaseEntrancePredecessor(row.currentPath,current,readCurrent);
+ const source=matches(current,row.current)?current:readReleaseEntrancePredecessor(row.currentPath,current,readDetailOwner);
  assert(matches(source,row.current),'current official receipt input changed: '+row.currentPath);
  const normalized=lf(source);
  assert(source===normalized||source===normalized.replaceAll('\n','\r\n'),'mixed official receipt line endings: '+row.currentPath);
@@ -660,7 +685,39 @@ function readContinuingVocabularyReceipt(path,digest,readCurrent){
   return prior;
  });
 }
+// #1077 added a transparent rectangular mask coverage test. The live
+// capacity suite still runs it; only the older named component receipt gets
+// the exact bytes from before the approved mask change.
+const capacityMaskFixture=Object.freeze({
+ path:'tests/ui-capacity.test.mjs',
+ after:{sha256:'2967335aab3b2abb2181c3b0f3c9769addd6f95b1ed0b5c1fa9fd8736b588352',gitBlob:'e4f6a990d15899386ae68da5b5df93606cd50800'},
+ before:{sha256:'3acff12b89565763c1d1bedaf280d5edb959b63d31c9ae6c4fbcba276de12233',gitBlob:'64423a83bddc5a888639958b03b86caf9867e05a'},
+ hunks:[
+ {
+  "at": 60,
+  "before": "    ] }), /layout\\/bad: only a container or presetButton may hold child controls/);",
+  "after": "    ] }), /layout\\/bad: only a container, presetButton or transparent rectangular image mask may hold child controls/);"
+ },
+ {
+  "at": 65,
+  "before": "});",
+  "after": "});\n\n\ntest('only the native transparent rectangle may serve as an image parent', () => {\n  const mask = { name: 'mask', kind: 'image', image: 100001, opacity: 0, mask: true, children: children(1) };\n  assert.doesNotThrow(() => assertNativeUiCapacity({ controls: [mask] }));\n  for (const changed of [{ image: 100002 }, { opacity: 1 }, { mask: false }, { fill: {} }, { invertMask: true }]) {\n    assert.throws(() => assertNativeUiCapacity({ controls: [{ ...mask, ...changed }] }), /may hold child controls/);\n  }\n});"
+ }
+],
+});
+function readCapacityMaskReceipt(path,digest,readCurrent){
+ const {path:input,after,before,hunks}=capacityMaskFixture;
+ if(path!==input||digest!==before.sha256)return;
+ const source=readCurrent(path,'utf8'),normalized=lf(source);
+ assert(matches(source,after)&&!normalized.includes('\r')&&
+  (source===normalized||source===normalized.replaceAll('\n','\r\n')),'current mask capacity receipt input changed: '+path);
+ const prior=restoreExactFixtureHunks({path,beforeSha256:before.sha256,afterSha256:after.sha256,hunks},path,normalized);
+ assert(matches(prior,before),'exact pre-mask capacity fixture: '+path);
+ return prior;
+}
 export function readCalibrationReceiptInput(path,digest,read,readCurrent=readFileSync){
+ const capacity=readCapacityMaskReceipt(path,digest,readCurrent);
+ if(capacity!==undefined)return capacity;
  const phaseFour=readContinuingVocabularyReceipt(path,digest,readCurrent);
  if(phaseFour!==undefined)return phaseFour;
  const liveLua=readLiveLuaCalibrationFixture(path,digest,readCurrent);

@@ -1,3 +1,4 @@
+import { cardKeywordTip } from './card-keyword-tip-layout.mjs';
 import { nativeControls, nativeTheme } from './native-ui-theme.mjs';
 import { compactPopupSurface } from './compact-popup-surface.mjs';
 import { cardFaceChildren } from './card-face.mjs';
@@ -183,6 +184,14 @@ export function nodeLayout(theme = nativeTheme) {
       return row;
     })];
 
+  const previewCard = hidden(card('previewCard', [0, 0], false));
+  const previewWidth = theme.layout.statusInfo.cardHoverWidth, previewHeight = 180;
+  eventControls.push(previewCard, hidden({name:'previewRelic',kind:'container',position:[0,0],size:[previewWidth,previewHeight],children:[
+    ...compactPopupSurface(theme,[previewWidth,previewHeight],{face:'panel',readOnly:true}),
+    readable(text('name',[0,previewHeight/2-26,previewWidth-32,36],'',font.body,color.goldBright)),
+    readable(text('description',[0,-18,previewWidth-32,124],'',20,color.text)),
+  ]}));
+
   const chest = layout.treasure;
   const reward = framed('reward', chest.reward, null, { children: [
     { ...plate('disc', frame([-chest.reward[2] / 2 + space.l + chest.rewardDisc / 2, 0], [chest.rewardDisc, chest.rewardDisc]),
@@ -225,7 +234,7 @@ export function nodeLayout(theme = nativeTheme) {
   controls.splice(controls.findIndex(control => control.name === 'shopDismiss') + 1, 0, group('shopView', shopControls));
   controls.push(group('campView', campControls), augmentMatchEventPicker(group('pickerView', pickerControls),theme),
     group('eventView', eventControls), group('treasureView', treasureControls), merchantControl(theme),
-    framed('back', layout.back, '返回'), framed('confirm', layout.confirm, '确认', { primary: true, fontSize: font.heading }),
+    cardKeywordTip(theme), framed('back', layout.back, '返回'), framed('confirm', layout.confirm, '确认', { primary: true, fontSize: font.heading }),
     hidden(group('roomEffect',[
       plate('shade',[0,0,...theme.canvas.base],color.backdropVeil),
       {...picture('glow',[0,30,320,320],image.glow,color.goldBright)},

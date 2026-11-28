@@ -9,8 +9,8 @@ local Hooks=require('abyss_relic_hooks')
 local M={}
 local protected={Necronomicurse=true,CurseOfTheBell=true,AscendersBane=true,
     necronomicurse=true,curse_of_the_bell=true,ascenders_bane=true}
-local function row(choice,title,text,enabled,picker)
-    return {choice=choice,title=title,description=text,enabled=enabled~=false,picker=picker}
+local function row(choice,title,text,enabled,picker,card,relic)
+    return {choice=choice,title=title,description=text,enabled=enabled~=false,picker=picker,previewCardId=card,previewRelicId=relic}
 end
 local function definition(run,id)
     for _,card in ipairs(run.data.cards.cards)do if card.id==id then return card end end
@@ -33,9 +33,9 @@ function M.prepare(run,event)
     event.stage,event.body='intro','一位炼金术士提出三种元素调校方案。'
 end
 function M.options(_run,event)
-    if event.stage=='intro'then return {row('jax','研习增幅术','获得1张「元素增幅」。'),
+    if event.stage=='intro'then return {row('jax','研习增幅术','获得1张「元素增幅」。',true,nil,'jax'),
         row('test_subject','调校卡牌','必须选择2张可清除卡牌，将它们转化。',event.canTransform),
-        row('claim_core','领取增幅晶核','获得增幅晶核；已拥有时获得头环。')}end
+        row('claim_core','领取增幅晶核','获得增幅晶核；已拥有时获得头环。',true,nil,nil,'augmentation_core')}end
     if event.stage=='choose_card'then return {row('transform','转化两张卡牌','按选择顺序转化两张卡牌，不能跳过或少选。',true,'augmenter_transform')}end
     if event.stage=='result'then return {row('leave','离开','返回路线。')}end
     return {}

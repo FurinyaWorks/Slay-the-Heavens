@@ -81,13 +81,17 @@ const groundContactRouteView=Object.freeze({
  ].join('\n')}],
 });
 
+function projectedCloseoutOwner(path,raw,read){
+ return beforeReleaseClosureFixture(path,readReleaseEntrancePredecessor(path,raw,read));
+}
+
 function readExactOwner(path,binding,read,project){
  if(binding===null){
   assert.throws(()=>read(path,'utf8'),{code:'ENOENT'},'retired closeout owner reappeared: '+path);
   return;
  }
  const raw=read(path,'utf8');
- const live=beforeReleaseClosureFixture(path,readReleaseEntrancePredecessor(path,raw,read));
+ const live=projectedCloseoutOwner(path,raw,read);
  const route=path===routePreviewView&&binding.sha256===groundContactRouteView.beforeSha256&&
   binding.gitBlob===groundContactRouteView.beforeBlob;
  const source=route?beforeExactFixture(path,groundContactRouteView,live):live;
@@ -218,7 +222,9 @@ export function readCloseoutCurrentBackflowReceipt(path,digest,read){
  const successor=continuation.owners;
  const [markerPath,markerBinding]=Object.entries(successor)[0];
  const marker=read(markerPath,'utf8');
- const guardian=exactSourceMatches(marker,markerBinding);
+ // Choose the historical owner cohort using the same exact view that will
+ // authenticate its members, then retain the actual raw reread checks below.
+ const guardian=exactSourceMatches(projectedCloseoutOwner(markerPath,marker,read),markerBinding);
  const navigation=guardian?read(sessionNavigation,'utf8'):null;
  const session=exactSourceMatches(navigation,sessionRoute[sessionNavigation]);
  const detail=session?read(battleDetailView,'utf8'):null;

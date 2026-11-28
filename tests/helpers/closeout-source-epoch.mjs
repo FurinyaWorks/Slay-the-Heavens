@@ -1,5 +1,5 @@
 import {beforeReleaseClosureFixture} from './release-closure-fixture-source.mjs';
-import { entrancePredecessor } from './ui-entrance-source.mjs';
+import { entrancePredecessor, underlyingEntranceReader } from './ui-entrance-source.mjs';
 // One exact current production closure; original slices and archives stay immutable.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -77,7 +77,10 @@ export function sourceSlice(path,source,target,readSource=p=>readFileSync(p,'utf
  if(!row||typeof source!=='string')return source;
  // Keep configuration strict here and let the projector authenticate exact Lua continuations.
  if(path==='config/architecture.json'&&hash(source.replaceAll('\r\n','\n'))!==row.sha256)return source;
- const projected=sourceEpoch.preCombinedSource(path,source,{target,readSource,releaseLayoutsAlreadyProjected:true});
+ // The Combined projector runs its own entrance admission. Its #1080 owner
+ // wrapper needs the raw entrance reader, not an already projected cohort.
+ const projected=sourceEpoch.preCombinedSource(path,source,{target,
+  readSource:underlyingEntranceReader(readSource),releaseLayoutsAlreadyProjected:true});
  if(projected!==source)return projected;
  if(beforeRewardTransitionSource(path,source)===source)return source;
  const intermediate=beforePc13RewardCover(path,source);

@@ -4,15 +4,18 @@ local Theme=require("abyss_theme")
 local layout=Theme.layout.combatChoice
 local PAGE_SIZE=layout.columns*layout.rows
 local CardDisplay=require("abyss_card_display")
+local BrowsePreview=require('abyss_card_browse_preview')
+local Keywords=require("abyss_card_keywords")
 local CardSkin=require("abyss_card_skin")
 local M={}
 local Pointer = require('abyss_pointer_input')
 local types={attack="攻击",skill="技能",power="能力",status="状态",curse="诅咒"}
 local states={"normal","hover","pressed","disabled"}
+local kinds={"potion","discard","scry","hand","pile"}
 local fields={potion='pendingPotionChoice',discard="pendingDiscard",scry="pendingScry",hand="pendingHandChoice",pile='pendingPileChoice'}
 local function pending(run)
     if not run or run.phase~="combat" or not run.combat or run.combat.phase~="player" then return end
-    for _,kind in ipairs({"potion","discard","scry","hand","pile"}) do
+    for _,kind in ipairs(kinds) do
         local choice=run.combat[fields[kind]]
         if choice then return kind,choice end
     end
@@ -78,6 +81,7 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
     local view={root=root,visible=false,generation=0,selected={},page=1}
     local cursor=platform.cursorEvents or {}
     local pointerObserved=false
+    local preview=platform.cardBrowsePreview or BrowsePreview.disabled
     local grid=root:GetChild("cards")
     local list
     local function child(name) return assert(root:GetChild(name),"missing choice control "..name) end
@@ -232,6 +236,7 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
     end
     function view:close()
         local visible=self.visible
+        preview.clear(self)
         self.generation=self.generation+1
         self.visible,self.enabled,self.run,self.context=false,false,nil,nil
         self.cards,self.selected,self.page,self.error={}, {},1,nil
@@ -249,6 +254,7 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
         end
         local old=self.context
         self.enabled=true
+        preview.clear(self)
         if not old or self.run~=run or old.pending~=choice or not fresh(true) then
             self.generation=self.generation+1
             self.run,self.cards,self.selected,self.page,self.error=run,cards,{},1,nil
@@ -263,15 +269,16 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
         self.visible=true;root:SetVisible(true);root:SetAsLastSibling();render()
         return true
     end
-    function view:update()
-        if not list or not self.visible or root.active==false then return end
-        list:update()
+    function view:update(dt)
+        if list and self.visible and root.active~=false then list:update() end
+        preview.update(self,dt)
     end
     function view.presentationReady(_)
         if not list then return true end
         return list:ready(layout.rows)
     end
     function view:resize()
+        preview.clear(self)
         self.generation=self.generation+1
         return self.visible
     end
@@ -314,7 +321,7 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
         self:refresh(c.run,true)
         return true,reason
     end
-    local function bind(hit,action,current)
+    local function bind(hit,action,current,cardSlot)
         local function enabled()
             local binding=current and current()
             return hit.alive~=false and view.visible and not view.confirming and hit.raycastTarget~=false
@@ -327,6 +334,31 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
             return token.generation==view.generation and token.context==view.context
                 and (not current or token.binding==current() and token.progress==list:progress())
         end
+        local function capture()
+            local c=view.context
+            if not c or (c.kind~='scry' and c.kind~='pile') or not valid() then return end
+            local binding=current and current()
+            local instance=binding and binding.instance or view.cards[(view.page-1)*PAGE_SIZE+cardSlot]
+            local generation,progress,upgraded,id=view.generation,binding and list:progress(),instance.upgraded,instance.cardId
+            local function sameCard()
+                local kind,choice=pending(c.run)
+                return enabled() and view.context==c and view.generation==generation and kind==c.kind
+                    and choice==c.pending and choice.token==c.token and c.battle.turn==c.turn
+                    and c.run.combatGeneration==c.combatGeneration and c.run.combat==c.battle
+                    and instance.upgraded==upgraded and instance.cardId==id
+                    and (not binding or binding==current() and list:progress()==progress)
+            end
+            local function rows()
+                local definition=Combat.cardDefinition(c.battle,instance)
+                local text=hit.parent:GetChild('face'):GetChild('label').text
+                return Keywords.cardTips(c.battle.catalog.statuses,definition,instance.upgraded,text)
+            end
+            return sameCard,rows,layout.confirm[2]+layout.confirm[4]/2
+        end
+        local canPreview=platform.cardBrowsePreview and (current or cardSlot)
+        if canPreview and cursor.CursorEnter then
+            hit:AddCursorEventListener(cursor.CursorEnter,function()preview.enter(view,hit,capture)end)
+        end
         local function touch(event) return event and event.touchId end
         if cursor.CursorDown and cursor.CursorUp then
             hit:AddCursorEventListener(cursor.CursorDown,function(event)
@@ -334,22 +366,38 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
                 if held and not valid(held) then held=nil end
                 if held and held.touch~=touch(event) then return false end
                 held,released=nil,nil
+                if canPreview then preview.down(view,hit,capture,event) end
                 if valid() then held={generation=view.generation,context=view.context,touch=touch(event),
                     binding=current and current(),progress=current and list:progress()} end
             end)
+            if canPreview and cursor.CursorDrag then
+                hit:AddCursorEventListener(cursor.CursorDrag,function(event)
+                    if preview.drag(hit,event) then held,released=nil,nil end
+                end)
+            end
             hit:AddCursorEventListener(cursor.CursorUp,function(event)
+                if canPreview then preview.up(hit,event) end
                 if not held or held.touch~=touch(event) then return false end
                 released=valid(held) and held or nil;held=nil
             end)
             for _,event in pairs({cursor.CursorExit,cursor.CursorEndDrag}) do
                 if event then hit:AddCursorEventListener(event,function(pointer)
+                    if canPreview then preview.exit(hit,pointer) end
                     local owner=held or released
                     if not pointer or owner and owner.touch==touch(pointer) then held,released=nil,nil end
                 end) end
             end
+        elseif canPreview and cursor.CursorExit then
+            hit:AddCursorEventListener(cursor.CursorExit,function(event)preview.exit(hit,event)end)
         end
+        local function previewConsumed(event)
+            if not preview.consume(hit,event) then return false end
+            held,released=nil,nil
+            return true
+        end
+        local function clickBlocked(event) return previewConsumed(event) or Pointer.blocked(platform) end
         hit:AddCursorEventListener(clickEvent,function(event)
-            if Pointer.blocked(platform)then return false end
+            if clickBlocked(event)then return false end
             if current and Pointer.dragged(event,Theme.layout.cardDrag.threshold)then
                 local owner=held or released
                 if owner and owner.touch==touch(event)then held,released=nil,nil end
@@ -364,7 +412,7 @@ function M.new(root,presentation,clickEvent,platform,onConfirm)
         end)
     end
     local function bindSlot(prefix,slot)
-        bind(child(prefix..slot):GetChild('hit'),function()return view:select(slot)end)
+        bind(child(prefix..slot):GetChild('hit'),function()return view:select(slot)end,nil,prefix=='card' and slot or nil)
     end
     if grid then
         list=require('abyss_choice_grid').new(grid,layout.columns,function(hit,current)

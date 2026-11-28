@@ -1,0 +1,2774 @@
+{
+  "profile": {
+    "name": "official-assets-battle-v3",
+    "officialAssets": true,
+    "refinedReleaseMonsterArt": true,
+    "nativePageLifecycle": true,
+    "experimentalCharacters": false
+  },
+  "source": {
+    "base": {
+      "commit": "95b003d41a229218916d20785145cd4a7e9583fe",
+      "tree": "7a678ccff02720d6e62da6eceaee6667f37adb92",
+      "generatedLayoutSha256": "19f7700dd6075bd941f95130d3c67a8bc8997d0ad1c67754df0aab8d20149ffd",
+      "generatedThemeSha256": "0baa8339a66b4125f0b431ba4023ec3760ce0d26a0b2dabb0a3c04d19c51b741",
+      "boundSourcesManifestSha256": "1441d950ed9116cb91b46752a258910a756328743d7163ae1c2c1e21cfe0dc54",
+      "simulatorSaveSha256": "5b8bcd1650d5f1568553d1571e20b9403686fe814acbc3e3897f3b413635b4bc"
+    },
+    "candidate": {
+      "commit": "01863013d8647e991187b945b7f509b075637f33",
+      "tree": "022b52a9b26cfa82289afcee1787507531d9b949",
+      "generatedLayoutSha256": "84faa32449092d97e599eef693ccfb487a9a84651e175e2702a1031e10ca8564",
+      "generatedThemeSha256": "0baa8339a66b4125f0b431ba4023ec3760ce0d26a0b2dabb0a3c04d19c51b741",
+      "boundSourcesManifestSha256": "a049c449def5ef62764effd8b53961b162ef6cb58b35db0bf88abc6f1922f13f",
+      "simulatorSaveSha256": "dd6a6d4720fb54b551d4f5e5a4ea802f331fad58a0f52ecef97fcaf37af501a6"
+    }
+  },
+  "simulator": {
+    "name": "beyond-simulator-mcp@0.5.2",
+    "workerSha256": "de72d4f80b230cfac330ab0ac6fa9d05e51bb8f51d352f08dd1ee6bcba0fe09d",
+    "rendererSha256": "5a64b946fac68d29052e387de11cfb64b90bd5c8a559a74b0fe5d90241be1bca"
+  },
+  "unchangedOfficialForgeControls": {
+    "stage/nodePanel/pickerView/before": "4403b21f39df66fce14b6872fbae0f93e37def0c85d81ea0ba3fca0ccbb3a7e9",
+    "stage/nodePanel/pickerView/after": "69d2d515b76b4758de34e60187305aabe4fcbba45434ceb930902b71867835e5",
+    "stage/nodePanel/back": "227542ebaefb31ae76b9e52c06d124e61c01a257f403e6cea47ead8558eba838",
+    "stage/nodePanel/confirm": "0dfd3132660f51a74eb0fecd1c14e4dc7a5bb9a420f6e9c252ec1b167df33bb4"
+  },
+  "officialForgePixels": {
+    "apparition": [
+      {
+        "name": "before",
+        "bounds": [
+          383,
+          196,
+          728,
+          620
+        ],
+        "basePixelsSha256": "fa5940f1c43f29db8d0725a2f72091ab96c8efbb36068edbe66b50447eedfa44",
+        "candidatePixelsSha256": "fa5940f1c43f29db8d0725a2f72091ab96c8efbb36068edbe66b50447eedfa44",
+        "differenceBounds": null,
+        "pixelsChanged": 0
+      },
+      {
+        "name": "after",
+        "bounds": [
+          861,
+          196,
+          1203,
+          620
+        ],
+        "basePixelsSha256": "4f2130379018da67d0d131c87ac41177c1da85d0ef4d7f7dab62ba5abfa61a98",
+        "candidatePixelsSha256": "4f2130379018da67d0d131c87ac41177c1da85d0ef4d7f7dab62ba5abfa61a98",
+        "differenceBounds": null,
+        "pixelsChanged": 0
+      },
+      {
+        "name": "cancel",
+        "bounds": [
+          62,
+          766,
+          315,
+          857
+        ],
+        "basePixelsSha256": "5f99fb00efcbf17a1c2961f345c3f3c6f867cf55c94b9422a6bea2c543db3505",
+        "candidatePixelsSha256": "5f99fb00efcbf17a1c2961f345c3f3c6f867cf55c94b9422a6bea2c543db3505",
+        "differenceBounds": null,
+        "pixelsChanged": 0
+      },
+      {
+        "name": "confirm",
+        "bounds": [
+          1275,
+          763,
+          1553,
+          859
+        ],
+        "basePixelsSha256": "5df86bf34117a8e735c3ac871e7b4e699594c76868d1216448e2fda9a4a2c5c7",
+        "candidatePixelsSha256": "5df86bf34117a8e735c3ac871e7b4e699594c76868d1216448e2fda9a4a2c5c7",
+        "differenceBounds": null,
+        "pixelsChanged": 0
+      }
+    ],
+    "strike": [
+      {
+        "name": "before",
+        "bounds": [
+          383,
+          196,
+          728,
+          620
+        ],
+        "basePixelsSha256": "657567f094f41adb84cf8a21952caf4032b77223bec923840440c0ec4b47630c",
+        "candidatePixelsSha256": "657567f094f41adb84cf8a21952caf4032b77223bec923840440c0ec4b47630c",
+        "differenceBounds": null,
+        "pixelsChanged": 0
+      },
+      {
+        "name": "after",
+        "bounds": [
+          861,
+          196,
+          1203,
+          620
+        ],
+        "basePixelsSha256": "df5f9fe52cb17d621540f907dee953c3c8edfb367f69717bca9e8f114cf0c5a5",
+        "candidatePixelsSha256": "df5f9fe52cb17d621540f907dee953c3c8edfb367f69717bca9e8f114cf0c5a5",
+        "differenceBounds": null,
+        "pixelsChanged": 0
+      },
+      {
+        "name": "cancel",
+        "bounds": [
+          62,
+          766,
+          315,
+          857
+        ],
+        "basePixelsSha256": "5f99fb00efcbf17a1c2961f345c3f3c6f867cf55c94b9422a6bea2c543db3505",
+        "candidatePixelsSha256": "5f99fb00efcbf17a1c2961f345c3f3c6f867cf55c94b9422a6bea2c543db3505",
+        "differenceBounds": null,
+        "pixelsChanged": 0
+      },
+      {
+        "name": "confirm",
+        "bounds": [
+          1275,
+          763,
+          1553,
+          859
+        ],
+        "basePixelsSha256": "5df86bf34117a8e735c3ac871e7b4e699594c76868d1216448e2fda9a4a2c5c7",
+        "candidatePixelsSha256": "5df86bf34117a8e735c3ac871e7b4e699594c76868d1216448e2fda9a4a2c5c7",
+        "differenceBounds": null,
+        "pixelsChanged": 0
+      }
+    ]
+  },
+  "negativeTooltipInk": {
+    "source": "c2003c425df4b8d3d2b50cac9fe2be4ec25fe9fb",
+    "assertion": {
+      "label": "Right-edge Shop tooltip renders all description lines",
+      "passed": false
+    },
+    "actualTextLayout": {
+      "frame": "shop-edge-hover",
+      "path": "cardKeywordTip/copy",
+      "fontSize": 18,
+      "availableHeight": 47,
+      "requiredHeight": 51.699999999999996,
+      "expectedLines": 2,
+      "visibleLines": 1,
+      "lines": [
+        "力量",
+        "每层使攻击伤害 +1"
+      ]
+    },
+    "screenshot": {
+      "name": "shop-edge-hover",
+      "width": 1600,
+      "height": 900,
+      "sha256": "013f04bd2d8eda62ed4e8bca087f390b3abbe0ec902afd0c4d819b3a90b68b4a",
+      "assetWarnings": [],
+      "sceneNodes": 1724
+    }
+  },
+  "replays": {
+    "baseline": {
+      "canvasId": "pc-16-9",
+      "status": "baseline-recorded",
+      "checks": [
+        {
+          "label": "Nest option shows the card name once",
+          "passed": false
+        },
+        {
+          "label": "Nest reward and health cost use the authored semantic colors",
+          "passed": false
+        },
+        {
+          "label": "Nest card appears in the same input frame at the far edge",
+          "passed": false
+        },
+        {
+          "label": "Nest desktop card preview fits in viewport",
+          "passed": false
+        },
+        {
+          "label": "Idle frames preserve native control count",
+          "passed": true
+        },
+        {
+          "label": "Idle frames do not repaint controls",
+          "passed": true
+        },
+        {
+          "label": "Switch to plain Nest alternative closes card",
+          "passed": true
+        },
+        {
+          "label": "24 rapid event preview switches do not accumulate controls",
+          "passed": true
+        },
+        {
+          "label": "Idle frames preserve native control count",
+          "passed": true
+        },
+        {
+          "label": "Idle frames do not repaint controls",
+          "passed": true
+        },
+        {
+          "label": "Golden Idol real relic description opens immediately",
+          "passed": false
+        },
+        {
+          "label": "Golden Idol curse face preview",
+          "passed": false
+        },
+        {
+          "label": "Golden Idol plain cost option remains closed",
+          "passed": true
+        },
+        {
+          "label": "Golden Idol plain cost option remains closed",
+          "passed": true
+        },
+        {
+          "label": "N'loth option 1 displays the gift relic",
+          "passed": false
+        },
+        {
+          "label": "N'loth option 2 displays the gift relic",
+          "passed": false
+        },
+        {
+          "label": "Disabled option has disabled ink and no inline reward/cost color",
+          "passed": true
+        },
+        {
+          "label": "Disabled Cleric option remains inert and shows no preview",
+          "passed": true
+        },
+        {
+          "label": "Upgrade comparison uses the official shared card chrome",
+          "passed": true
+        },
+        {
+          "label": "Before tooltip opens only after 0.2 seconds",
+          "passed": false
+        },
+        {
+          "label": "Before tooltip contains Ethereal, Exhaust and Intangible",
+          "passed": false
+        },
+        {
+          "label": "Before tooltip fits without covering footer",
+          "passed": false
+        },
+        {
+          "label": "Switch drops old keywords while new timer runs",
+          "passed": true
+        },
+        {
+          "label": "Upgraded tooltip has Exhaust and Intangible only",
+          "passed": false
+        },
+        {
+          "label": "After tooltip fits without covering footer",
+          "passed": false
+        },
+        {
+          "label": "Idle frames preserve native control count",
+          "passed": true
+        },
+        {
+          "label": "Idle frames do not repaint controls",
+          "passed": true
+        },
+        {
+          "label": "Leaving a forge face dismisses its tooltip",
+          "passed": true
+        },
+        {
+          "label": "24 rapid Forge tooltip switches do not accumulate controls",
+          "passed": true
+        },
+        {
+          "label": "Cancel has its own hit target while a tooltip is open",
+          "passed": true
+        },
+        {
+          "label": "Cancel returns to the card selection and drops the tooltip",
+          "passed": true
+        },
+        {
+          "label": "Confirm has its own hit target while a tooltip is open",
+          "passed": true
+        },
+        {
+          "label": "Confirm still commits the displayed upgrade",
+          "passed": true
+        },
+        {
+          "label": "Plain card uses the official shared card chrome",
+          "passed": true
+        },
+        {
+          "label": "Card without keywords has no tooltip",
+          "passed": true
+        },
+        {
+          "label": "Idle frames preserve native control count",
+          "passed": true
+        },
+        {
+          "label": "Idle frames do not repaint controls",
+          "passed": true
+        }
+      ],
+      "timings": [
+        {
+          "scenario": "nest-hover",
+          "frames": 120,
+          "controlsBefore": 24947,
+          "controlsAfter": 24947,
+          "changedNodes": 0,
+          "p50Ms": 0.6532449999995151,
+          "p95Ms": 0.8121620000001712
+        },
+        {
+          "scenario": "nest-idle",
+          "frames": 120,
+          "controlsBefore": 24947,
+          "controlsAfter": 24947,
+          "changedNodes": 0,
+          "p50Ms": 1.2188589999996111,
+          "p95Ms": 1.5487020000000484
+        },
+        {
+          "scenario": "forge-hover",
+          "frames": 120,
+          "controlsBefore": 25262,
+          "controlsAfter": 25262,
+          "changedNodes": 0,
+          "p50Ms": 0.6596640000007028,
+          "p95Ms": 1.0193510000008246
+        },
+        {
+          "scenario": "forge-idle",
+          "frames": 120,
+          "controlsBefore": 25262,
+          "controlsAfter": 25262,
+          "changedNodes": 0,
+          "p50Ms": 0.6899499999999534,
+          "p95Ms": 1.044028000000253
+        }
+      ],
+      "screenshots": [
+        {
+          "name": "nest-idle",
+          "width": 1600,
+          "height": 900,
+          "sha256": "8cfcf6dffc6120d19b10d5762c39a11d0dc098e5fa0ac9f3bfd190cf5be7b8d3",
+          "assetWarnings": [],
+          "sceneNodes": 233
+        },
+        {
+          "name": "nest-hover",
+          "width": 1600,
+          "height": 900,
+          "sha256": "39b18274a7b97b426c395151cf0bbfa5d165a4125a9a80a7144d7a9818787643",
+          "assetWarnings": [],
+          "sceneNodes": 233
+        },
+        {
+          "name": "nest-switch",
+          "width": 1600,
+          "height": 900,
+          "sha256": "fd33d0f537058fe3d068e878daf6419a7542032aedefe218b7f80a82ffaf1038",
+          "assetWarnings": [],
+          "sceneNodes": 233
+        },
+        {
+          "name": "golden-idol-relic",
+          "width": 1600,
+          "height": 900,
+          "sha256": "17a2ee6300d7856f1e6e062693e157163af695166a0d06c954b17aded0a2d919",
+          "assetWarnings": [],
+          "sceneNodes": 233
+        },
+        {
+          "name": "golden-idol-option-1",
+          "width": 1600,
+          "height": 900,
+          "sha256": "6659dd63e48b24b4de30458f9258721c9541af44235aa727ca129d1f4b592c0f",
+          "assetWarnings": [],
+          "sceneNodes": 252
+        },
+        {
+          "name": "golden-idol-option-2",
+          "width": 1600,
+          "height": 900,
+          "sha256": "2c3acfb35aba75949abe49bc08e7d1b8cc9e6708de2983a448dde912d574ad9c",
+          "assetWarnings": [],
+          "sceneNodes": 252
+        },
+        {
+          "name": "golden-idol-option-3",
+          "width": 1600,
+          "height": 900,
+          "sha256": "0d00b331f51cd3e774d4520649638bfc9a897a0332c180c7dfb5dcdfc32bebd6",
+          "assetWarnings": [],
+          "sceneNodes": 252
+        },
+        {
+          "name": "nloth-option-1",
+          "width": 1600,
+          "height": 900,
+          "sha256": "ac3e4dfbffb5525d4401c9ed5b67ae0991a4ec824821d5823f3864f2955eb969",
+          "assetWarnings": [],
+          "sceneNodes": 256
+        },
+        {
+          "name": "nloth-option-2",
+          "width": 1600,
+          "height": 900,
+          "sha256": "305892cb582ee251030dda1666442715f95292ce8c1d71dc45cab7485ecf0a0d",
+          "assetWarnings": [],
+          "sceneNodes": 256
+        },
+        {
+          "name": "cleric-disabled",
+          "width": 1600,
+          "height": 900,
+          "sha256": "0e0d41840b8210d9657897c0929df5ef15ff0a74ae6fb972b2c452e2ee7f683e",
+          "assetWarnings": [],
+          "sceneNodes": 250
+        },
+        {
+          "name": "forge-pair",
+          "width": 1600,
+          "height": 900,
+          "sha256": "6ca67d72108789d2c870097dcd2f7d40ef3089ece3313ca65e7838fb0e4dc194",
+          "assetWarnings": [],
+          "sceneNodes": 522
+        },
+        {
+          "name": "forge-before-under-threshold",
+          "width": 1600,
+          "height": 900,
+          "sha256": "6ca67d72108789d2c870097dcd2f7d40ef3089ece3313ca65e7838fb0e4dc194",
+          "assetWarnings": [],
+          "sceneNodes": 522
+        },
+        {
+          "name": "forge-before-hover",
+          "width": 1600,
+          "height": 900,
+          "sha256": "6ca67d72108789d2c870097dcd2f7d40ef3089ece3313ca65e7838fb0e4dc194",
+          "assetWarnings": [],
+          "sceneNodes": 522
+        },
+        {
+          "name": "forge-after-hover",
+          "width": 1600,
+          "height": 900,
+          "sha256": "6ca67d72108789d2c870097dcd2f7d40ef3089ece3313ca65e7838fb0e4dc194",
+          "assetWarnings": [],
+          "sceneNodes": 522
+        },
+        {
+          "name": "forge-left",
+          "width": 1600,
+          "height": 900,
+          "sha256": "6ca67d72108789d2c870097dcd2f7d40ef3089ece3313ca65e7838fb0e4dc194",
+          "assetWarnings": [],
+          "sceneNodes": 522
+        },
+        {
+          "name": "forge-back",
+          "width": 1600,
+          "height": 900,
+          "sha256": "3b5a689492f264961a90f1ccb7919813121c7d6613747d692f59222cdfe92f33",
+          "assetWarnings": [],
+          "sceneNodes": 321
+        },
+        {
+          "name": "forge-strike-idle",
+          "width": 1600,
+          "height": 900,
+          "sha256": "2e0617e3e4ae9dc73b0b7270887d446d7803b3c1d6c51db01ced029860ff2c9e",
+          "assetWarnings": [],
+          "sceneNodes": 480
+        },
+        {
+          "name": "forge-no-keywords",
+          "width": 1600,
+          "height": 900,
+          "sha256": "2e0617e3e4ae9dc73b0b7270887d446d7803b3c1d6c51db01ced029860ff2c9e",
+          "assetWarnings": [],
+          "sceneNodes": 480
+        }
+      ],
+      "eventCopy": [
+        {
+          "text": "18",
+          "color": 4292266917
+        },
+        {
+          "text": "[加入仪式] 受到6点普通伤害，获得「仪式匕首」。 「仪式匕首」",
+          "color": 4293783263
+        },
+        {
+          "text": "[拿走金币] <color=#9DD740>获得99金币</color>。",
+          "color": 4293783263
+        }
+      ],
+      "disabledCopy": [
+        {
+          "text": "1",
+          "color": 4292266917
+        },
+        {
+          "text": "[离开] 什么也不会发生。",
+          "color": 4293783263
+        },
+        {
+          "text": "[净化] 金币不足（需要 50，现有 35）",
+          "color": 4286021230
+        },
+        {
+          "text": "[治疗] <color=#D77C7E>支付 35 金币</color>，<color=#9DD740>回复 20 点生命</color>（生命 41 → 61）",
+          "color": 4293783263
+        }
+      ],
+      "controlsBeforeDestroy": 25262,
+      "controlsAfterDestroy": 0,
+      "inputSteps": 139,
+      "chosenControls": [
+        {
+          "action": "down",
+          "x": 1081.25,
+          "y": 133.75,
+          "path": "root/stage/nodePanel/eventView/option1/hit"
+        },
+        {
+          "action": "down",
+          "x": 1081.25,
+          "y": 202.5,
+          "path": "root/stage/nodePanel/eventView/option1/hit"
+        },
+        {
+          "action": "down",
+          "x": 1081.25,
+          "y": 202.5,
+          "path": "root/stage/nodePanel/eventView/option2/hit"
+        },
+        {
+          "action": "down",
+          "x": 975,
+          "y": 412.5,
+          "path": "root/stage/nodePanel/campView/forge/hit"
+        },
+        {
+          "action": "down",
+          "x": 792.5,
+          "y": 483.125,
+          "path": "root/stage/nodePanel/pickerView/forgeFit/AbyssForgeCard/hit"
+        },
+        {
+          "action": "down",
+          "x": 187.5,
+          "y": 87.5,
+          "path": "root/stage/nodePanel/back/hit"
+        },
+        {
+          "action": "down",
+          "x": 975,
+          "y": 412.5,
+          "path": "root/stage/nodePanel/campView/forge/hit"
+        },
+        {
+          "action": "down",
+          "x": 792.5,
+          "y": 483.125,
+          "path": "root/stage/nodePanel/pickerView/forgeFit/AbyssForgeCard/hit"
+        },
+        {
+          "action": "down",
+          "x": 1412.5,
+          "y": 87.5,
+          "path": "root/stage/nodePanel/confirm/hit"
+        },
+        {
+          "action": "down",
+          "x": 975,
+          "y": 412.5,
+          "path": "root/stage/nodePanel/campView/forge/hit"
+        },
+        {
+          "action": "down",
+          "x": 792.5,
+          "y": 483.125,
+          "path": "root/stage/nodePanel/pickerView/forgeFit/AbyssForgeCard/hit"
+        }
+      ],
+      "luaIssueCount": 0,
+      "eventSeeds": []
+    },
+    "candidate": [
+      {
+        "canvasId": "pc-16-9",
+        "status": "passed",
+        "checks": [
+          {
+            "label": "Nest option shows the card name once",
+            "passed": true
+          },
+          {
+            "label": "Nest reward and health cost use the authored semantic colors",
+            "passed": true
+          },
+          {
+            "label": "Nest card appears in the same input frame at the far edge",
+            "passed": true
+          },
+          {
+            "label": "Nest desktop card preview fits in viewport",
+            "passed": true
+          },
+          {
+            "label": "Nest desktop card renders every line of copy",
+            "passed": true
+          },
+          {
+            "label": "Idle frames preserve native control count",
+            "passed": true
+          },
+          {
+            "label": "Idle frames do not repaint controls",
+            "passed": true
+          },
+          {
+            "label": "Switch to plain Nest alternative closes card",
+            "passed": true
+          },
+          {
+            "label": "24 rapid event preview switches do not accumulate controls",
+            "passed": true
+          },
+          {
+            "label": "Idle frames preserve native control count",
+            "passed": true
+          },
+          {
+            "label": "Idle frames do not repaint controls",
+            "passed": true
+          },
+          {
+            "label": "Golden Idol real relic description opens immediately",
+            "passed": true
+          },
+          {
+            "label": "Golden Idol curse face preview",
+            "passed": true
+          },
+          {
+            "label": "Golden Idol plain cost option remains closed",
+            "passed": true
+          },
+          {
+            "label": "Golden Idol plain cost option remains closed",
+            "passed": true
+          },
+          {
+            "label": "N'loth option 1 displays the gift relic",
+            "passed": true
+          },
+          {
+            "label": "N'loth option 2 displays the gift relic",
+            "passed": true
+          },
+          {
+            "label": "Disabled option has disabled ink and no inline reward/cost color",
+            "passed": true
+          },
+          {
+            "label": "Disabled Cleric option remains inert and shows no preview",
+            "passed": true
+          },
+          {
+            "label": "Upgrade comparison uses the official shared card chrome",
+            "passed": true
+          },
+          {
+            "label": "Before tooltip opens only after 0.2 seconds",
+            "passed": true
+          },
+          {
+            "label": "Before tooltip contains Ethereal, Exhaust and Intangible",
+            "passed": true
+          },
+          {
+            "label": "Before tooltip fits without covering footer",
+            "passed": true
+          },
+          {
+            "label": "Before tooltip renders all description lines",
+            "passed": true
+          },
+          {
+            "label": "Switch drops old keywords while new timer runs",
+            "passed": true
+          },
+          {
+            "label": "Upgraded tooltip has Exhaust and Intangible only",
+            "passed": true
+          },
+          {
+            "label": "After tooltip fits without covering footer",
+            "passed": true
+          },
+          {
+            "label": "After tooltip renders all description lines",
+            "passed": true
+          },
+          {
+            "label": "Idle frames preserve native control count",
+            "passed": true
+          },
+          {
+            "label": "Idle frames do not repaint controls",
+            "passed": true
+          },
+          {
+            "label": "Leaving a forge face dismisses its tooltip",
+            "passed": true
+          },
+          {
+            "label": "24 rapid Forge tooltip switches do not accumulate controls",
+            "passed": true
+          },
+          {
+            "label": "Cancel has its own hit target while a tooltip is open",
+            "passed": true
+          },
+          {
+            "label": "Cancel returns to the card selection and drops the tooltip",
+            "passed": true
+          },
+          {
+            "label": "Confirm has its own hit target while a tooltip is open",
+            "passed": true
+          },
+          {
+            "label": "Confirm still commits the displayed upgrade",
+            "passed": true
+          },
+          {
+            "label": "Plain card uses the official shared card chrome",
+            "passed": true
+          },
+          {
+            "label": "Card without keywords has no tooltip",
+            "passed": true
+          },
+          {
+            "label": "Idle frames preserve native control count",
+            "passed": true
+          },
+          {
+            "label": "Idle frames do not repaint controls",
+            "passed": true
+          },
+          {
+            "label": "Shop keyword panel follows the real 75% canvas threshold",
+            "passed": true
+          },
+          {
+            "label": "Right-edge Shop tooltip remains within the real viewport",
+            "passed": true
+          },
+          {
+            "label": "Right-edge Shop tooltip renders all description lines",
+            "passed": true
+          }
+        ],
+        "timings": [
+          {
+            "scenario": "nest-hover",
+            "frames": 120,
+            "controlsBefore": 25274,
+            "controlsAfter": 25274,
+            "changedNodes": 0,
+            "p50Ms": 0.8123109999996814,
+            "p95Ms": 6.2348519999995915
+          },
+          {
+            "scenario": "nest-idle",
+            "frames": 120,
+            "controlsBefore": 25274,
+            "controlsAfter": 25274,
+            "changedNodes": 0,
+            "p50Ms": 1.0670570000002044,
+            "p95Ms": 6.142992999999478
+          },
+          {
+            "scenario": "forge-hover",
+            "frames": 120,
+            "controlsBefore": 25589,
+            "controlsAfter": 25589,
+            "changedNodes": 0,
+            "p50Ms": 0.7047800000000279,
+            "p95Ms": 1.2346189999989292
+          },
+          {
+            "scenario": "forge-idle",
+            "frames": 120,
+            "controlsBefore": 25589,
+            "controlsAfter": 25589,
+            "changedNodes": 0,
+            "p50Ms": 0.7225560000006226,
+            "p95Ms": 1.3599859999994806
+          }
+        ],
+        "screenshots": [
+          {
+            "name": "nest-idle",
+            "width": 1600,
+            "height": 900,
+            "sha256": "0ac71777a03c5a50fd998126f5059845031057c08806ed0abfabef9f7aaae981",
+            "assetWarnings": [],
+            "sceneNodes": 233
+          },
+          {
+            "name": "nest-hover",
+            "width": 1600,
+            "height": 900,
+            "sha256": "f28353a9f0b937a1d0d34b2dbfdc92c99ea4ec66fbfe433fa383138cec0c6770",
+            "assetWarnings": [],
+            "sceneNodes": 399
+          },
+          {
+            "name": "nest-switch",
+            "width": 1600,
+            "height": 900,
+            "sha256": "2273252c3576561a62282283badff34f8fb17e8a6825ace1dbd45979eb14d75b",
+            "assetWarnings": [],
+            "sceneNodes": 233
+          },
+          {
+            "name": "golden-idol-relic",
+            "width": 1600,
+            "height": 900,
+            "sha256": "4e0a320939acf3b01ea891335162afea662121c6482370a937470a4bfc23bcc0",
+            "assetWarnings": [],
+            "sceneNodes": 238
+          },
+          {
+            "name": "golden-idol-option-1",
+            "width": 1600,
+            "height": 900,
+            "sha256": "a7ee5876681cb74ad86e244feb227a761e14c22d7115e28627093cf9ea30ad55",
+            "assetWarnings": [],
+            "sceneNodes": 433
+          },
+          {
+            "name": "golden-idol-option-2",
+            "width": 1600,
+            "height": 900,
+            "sha256": "7eec62241a5c21066cfbea5b234cfa929bc2f538da239f5baf33ad032275e97f",
+            "assetWarnings": [],
+            "sceneNodes": 252
+          },
+          {
+            "name": "golden-idol-option-3",
+            "width": 1600,
+            "height": 900,
+            "sha256": "2eaddaf873d4b90c416e37e35d6b7bcaf5583e8d01104dd62bfa3353e22209f5",
+            "assetWarnings": [],
+            "sceneNodes": 252
+          },
+          {
+            "name": "nloth-option-1",
+            "width": 1600,
+            "height": 900,
+            "sha256": "527387560d6cf1a4adb1bef9d057c301ffd183e53e11cd5f6abc3c2441d1b9cd",
+            "assetWarnings": [],
+            "sceneNodes": 261
+          },
+          {
+            "name": "nloth-option-2",
+            "width": 1600,
+            "height": 900,
+            "sha256": "af89fe43d2f3d082684c736b5ec8a322ff732f4d868c8471e02a1ea3c7bece62",
+            "assetWarnings": [],
+            "sceneNodes": 261
+          },
+          {
+            "name": "cleric-disabled",
+            "width": 1600,
+            "height": 900,
+            "sha256": "0e0d41840b8210d9657897c0929df5ef15ff0a74ae6fb972b2c452e2ee7f683e",
+            "assetWarnings": [],
+            "sceneNodes": 250
+          },
+          {
+            "name": "forge-pair",
+            "width": 1600,
+            "height": 900,
+            "sha256": "6ca67d72108789d2c870097dcd2f7d40ef3089ece3313ca65e7838fb0e4dc194",
+            "assetWarnings": [],
+            "sceneNodes": 522
+          },
+          {
+            "name": "forge-before-under-threshold",
+            "width": 1600,
+            "height": 900,
+            "sha256": "6ca67d72108789d2c870097dcd2f7d40ef3089ece3313ca65e7838fb0e4dc194",
+            "assetWarnings": [],
+            "sceneNodes": 522
+          },
+          {
+            "name": "forge-before-hover",
+            "width": 1600,
+            "height": 900,
+            "sha256": "51c5ec5a558c89d0e1507d2bcfcfe42c15c98fe00efb853a7ab678a6d88c4dbf",
+            "assetWarnings": [],
+            "sceneNodes": 526
+          },
+          {
+            "name": "forge-after-hover",
+            "width": 1600,
+            "height": 900,
+            "sha256": "8395442998dd4587b6ebb56ae01cf380d428cd96479fd3bc6a5c5ea8e0427469",
+            "assetWarnings": [],
+            "sceneNodes": 526
+          },
+          {
+            "name": "forge-left",
+            "width": 1600,
+            "height": 900,
+            "sha256": "6ca67d72108789d2c870097dcd2f7d40ef3089ece3313ca65e7838fb0e4dc194",
+            "assetWarnings": [],
+            "sceneNodes": 522
+          },
+          {
+            "name": "forge-back",
+            "width": 1600,
+            "height": 900,
+            "sha256": "3b5a689492f264961a90f1ccb7919813121c7d6613747d692f59222cdfe92f33",
+            "assetWarnings": [],
+            "sceneNodes": 321
+          },
+          {
+            "name": "forge-strike-idle",
+            "width": 1600,
+            "height": 900,
+            "sha256": "2e0617e3e4ae9dc73b0b7270887d446d7803b3c1d6c51db01ced029860ff2c9e",
+            "assetWarnings": [],
+            "sceneNodes": 480
+          },
+          {
+            "name": "forge-no-keywords",
+            "width": 1600,
+            "height": 900,
+            "sha256": "2e0617e3e4ae9dc73b0b7270887d446d7803b3c1d6c51db01ced029860ff2c9e",
+            "assetWarnings": [],
+            "sceneNodes": 480
+          },
+          {
+            "name": "shop-edge-hover",
+            "width": 1600,
+            "height": 900,
+            "sha256": "2d27ff6d5fca1d8f132ecda5435f8714ec858a2d8b665b401ee318dd9ef45c81",
+            "assetWarnings": [],
+            "sceneNodes": 1724
+          }
+        ],
+        "geometry": [
+          {
+            "name": "nest-pc",
+            "area": {
+              "x": 1488.75,
+              "y": 137.5,
+              "left": 1395,
+              "right": 1582.5,
+              "bottom": 6.25,
+              "top": 268.75
+            },
+            "viewport": {
+              "width": 1600,
+              "height": 900
+            },
+            "buttons": []
+          },
+          {
+            "name": "forge-before",
+            "area": {
+              "x": 852.5,
+              "y": 473.95833333333326,
+              "left": 697.5,
+              "right": 1007.5,
+              "bottom": 312.08333333333326,
+              "top": 635.8333333333333
+            },
+            "viewport": {
+              "width": 1600,
+              "height": 900
+            },
+            "buttons": [
+              {
+                "x": 187.5,
+                "y": 87.5,
+                "left": 75,
+                "right": 300,
+                "bottom": 55,
+                "top": 120
+              },
+              {
+                "x": 1412.5,
+                "y": 87.5,
+                "left": 1287.5,
+                "right": 1537.5,
+                "bottom": 52.5,
+                "top": 122.5
+              }
+            ]
+          },
+          {
+            "name": "forge-after",
+            "area": {
+              "x": 1327.5,
+              "y": 517.7083333333333,
+              "left": 1172.5,
+              "right": 1482.5,
+              "bottom": 399.58333333333326,
+              "top": 635.8333333333333
+            },
+            "viewport": {
+              "width": 1600,
+              "height": 900
+            },
+            "buttons": [
+              {
+                "x": 187.5,
+                "y": 87.5,
+                "left": 75,
+                "right": 300,
+                "bottom": 55,
+                "top": 120
+              },
+              {
+                "x": 1412.5,
+                "y": 87.5,
+                "left": 1287.5,
+                "right": 1537.5,
+                "bottom": 52.5,
+                "top": 122.5
+              }
+            ]
+          },
+          {
+            "name": "shop-edge",
+            "area": {
+              "x": 1013.75,
+              "y": 716.1772405252458,
+              "left": 858.75,
+              "right": 1168.75,
+              "bottom": 671.1772405252458,
+              "top": 761.1772405252458
+            },
+            "viewport": {
+              "width": 1600,
+              "height": 900
+            },
+            "buttons": []
+          }
+        ],
+        "textVisibility": [
+          {
+            "frame": "nest-hover",
+            "path": "eventView/previewCard/description",
+            "fontSize": 14,
+            "availableHeight": 76,
+            "requiredHeight": 74.7,
+            "expectedLines": 4,
+            "visibleLines": 4,
+            "lines": [
+              "造成15点伤害；击",
+              "杀非召唤敌人永久",
+              "增加3点伤害。消",
+              "耗。"
+            ]
+          },
+          {
+            "frame": "forge-before-hover",
+            "path": "cardKeywordTip/copy",
+            "fontSize": 18,
+            "availableHeight": 243,
+            "requiredHeight": 224.49999999999997,
+            "expectedLines": 10,
+            "visibleLines": 10,
+            "lines": [
+              "无实体",
+              "每次受到的伤害或生命损失",
+              "最多为1。每回合结束减少1",
+              "层。",
+              "消耗",
+              "被消耗的卡牌将移出本场战",
+              "斗，不进入弃牌堆。",
+              "虚无",
+              "回合结束时若仍在手中，将",
+              "被消耗。"
+            ]
+          },
+          {
+            "frame": "forge-after-hover",
+            "path": "cardKeywordTip/copy",
+            "fontSize": 18,
+            "availableHeight": 173,
+            "requiredHeight": 159.7,
+            "expectedLines": 7,
+            "visibleLines": 7,
+            "lines": [
+              "无实体",
+              "每次受到的伤害或生命损失",
+              "最多为1。每回合结束减少1",
+              "层。",
+              "消耗",
+              "被消耗的卡牌将移出本场战",
+              "斗，不进入弃牌堆。"
+            ]
+          },
+          {
+            "frame": "shop-edge-hover",
+            "path": "cardKeywordTip/copy",
+            "fontSize": 18,
+            "availableHeight": 56,
+            "requiredHeight": 51.699999999999996,
+            "expectedLines": 2,
+            "visibleLines": 2,
+            "lines": [
+              "力量",
+              "每层使攻击伤害 +1"
+            ]
+          }
+        ],
+        "eventCopy": [
+          {
+            "text": "18",
+            "color": 4292266917
+          },
+          {
+            "text": "[加入仪式] <color=#9DD740>获得</color>「仪式匕首」。<color=#D77C7E>受到6点普通伤害。</color>",
+            "color": 4293783263
+          },
+          {
+            "text": "[拿走金币] <color=#9DD740>获得99金币。</color>",
+            "color": 4293783263
+          }
+        ],
+        "disabledCopy": [
+          {
+            "text": "1",
+            "color": 4292266917
+          },
+          {
+            "text": "[离开] 什么也不会发生。",
+            "color": 4293783263
+          },
+          {
+            "text": "[净化] 金币不足（需要 50，现有 35）",
+            "color": 4286021230
+          },
+          {
+            "text": "[治疗] <color=#D77C7E>支付 35 金币</color>，<color=#9DD740>回复 20 点生命</color>（生命 41 → 61）",
+            "color": 4293783263
+          }
+        ],
+        "controlsBeforeDestroy": 25589,
+        "controlsAfterDestroy": 0,
+        "shopEdge": {
+          "cardCenter": 1303.75,
+          "width": 1600,
+          "expectedLeft": true,
+          "expandsLeft": true
+        },
+        "inputSteps": 144,
+        "chosenControls": [
+          {
+            "action": "down",
+            "x": 1081.25,
+            "y": 133.75,
+            "path": "root/stage/nodePanel/eventView/option1/hit"
+          },
+          {
+            "action": "down",
+            "x": 1081.25,
+            "y": 202.5,
+            "path": "root/stage/nodePanel/eventView/option1/hit"
+          },
+          {
+            "action": "down",
+            "x": 1081.25,
+            "y": 202.5,
+            "path": "root/stage/nodePanel/eventView/option2/hit"
+          },
+          {
+            "action": "down",
+            "x": 975,
+            "y": 412.5,
+            "path": "root/stage/nodePanel/campView/forge/hit"
+          },
+          {
+            "action": "down",
+            "x": 792.5,
+            "y": 483.125,
+            "path": "root/stage/nodePanel/pickerView/forgeFit/AbyssForgeCard/hit"
+          },
+          {
+            "action": "down",
+            "x": 187.5,
+            "y": 87.5,
+            "path": "root/stage/nodePanel/back/hit"
+          },
+          {
+            "action": "down",
+            "x": 975,
+            "y": 412.5,
+            "path": "root/stage/nodePanel/campView/forge/hit"
+          },
+          {
+            "action": "down",
+            "x": 792.5,
+            "y": 483.125,
+            "path": "root/stage/nodePanel/pickerView/forgeFit/AbyssForgeCard/hit"
+          },
+          {
+            "action": "down",
+            "x": 1412.5,
+            "y": 87.5,
+            "path": "root/stage/nodePanel/confirm/hit"
+          },
+          {
+            "action": "down",
+            "x": 975,
+            "y": 412.5,
+            "path": "root/stage/nodePanel/campView/forge/hit"
+          },
+          {
+            "action": "down",
+            "x": 792.5,
+            "y": 483.125,
+            "path": "root/stage/nodePanel/pickerView/forgeFit/AbyssForgeCard/hit"
+          },
+          {
+            "action": "down",
+            "x": 1043.75,
+            "y": 257.5,
+            "path": "root/stage/nodePanel/merchant/talk/hit"
+          }
+        ],
+        "luaIssueCount": 0,
+        "eventSeeds": [
+          "EDGE_SHOP run seed=42 slot=5 card=rupture"
+        ]
+      },
+      {
+        "canvasId": "pc-21-9",
+        "status": "passed",
+        "checks": [
+          {
+            "label": "Nest option shows the card name once",
+            "passed": true
+          },
+          {
+            "label": "Nest reward and health cost use the authored semantic colors",
+            "passed": true
+          },
+          {
+            "label": "Nest card appears in the same input frame at the far edge",
+            "passed": true
+          },
+          {
+            "label": "Nest desktop card preview fits in viewport",
+            "passed": true
+          },
+          {
+            "label": "Nest desktop card renders every line of copy",
+            "passed": true
+          },
+          {
+            "label": "Idle frames preserve native control count",
+            "passed": true
+          },
+          {
+            "label": "Idle frames do not repaint controls",
+            "passed": true
+          },
+          {
+            "label": "Switch to plain Nest alternative closes card",
+            "passed": true
+          },
+          {
+            "label": "24 rapid event preview switches do not accumulate controls",
+            "passed": true
+          },
+          {
+            "label": "Idle frames preserve native control count",
+            "passed": true
+          },
+          {
+            "label": "Idle frames do not repaint controls",
+            "passed": true
+          },
+          {
+            "label": "Golden Idol real relic description opens immediately",
+            "passed": true
+          },
+          {
+            "label": "Golden Idol curse face preview",
+            "passed": true
+          },
+          {
+            "label": "Golden Idol plain cost option remains closed",
+            "passed": true
+          },
+          {
+            "label": "Golden Idol plain cost option remains closed",
+            "passed": true
+          },
+          {
+            "label": "N'loth option 1 displays the gift relic",
+            "passed": true
+          },
+          {
+            "label": "N'loth option 2 displays the gift relic",
+            "passed": true
+          },
+          {
+            "label": "Disabled option has disabled ink and no inline reward/cost color",
+            "passed": true
+          },
+          {
+            "label": "Disabled Cleric option remains inert and shows no preview",
+            "passed": true
+          },
+          {
+            "label": "Upgrade comparison uses the official shared card chrome",
+            "passed": true
+          },
+          {
+            "label": "Before tooltip opens only after 0.2 seconds",
+            "passed": true
+          },
+          {
+            "label": "Before tooltip contains Ethereal, Exhaust and Intangible",
+            "passed": true
+          },
+          {
+            "label": "Before tooltip fits without covering footer",
+            "passed": true
+          },
+          {
+            "label": "Before tooltip renders all description lines",
+            "passed": true
+          },
+          {
+            "label": "Switch drops old keywords while new timer runs",
+            "passed": true
+          },
+          {
+            "label": "Upgraded tooltip has Exhaust and Intangible only",
+            "passed": true
+          },
+          {
+            "label": "After tooltip fits without covering footer",
+            "passed": true
+          },
+          {
+            "label": "After tooltip renders all description lines",
+            "passed": true
+          },
+          {
+            "label": "Idle frames preserve native control count",
+            "passed": true
+          },
+          {
+            "label": "Idle frames do not repaint controls",
+            "passed": true
+          },
+          {
+            "label": "Leaving a forge face dismisses its tooltip",
+            "passed": true
+          },
+          {
+            "label": "24 rapid Forge tooltip switches do not accumulate controls",
+            "passed": true
+          },
+          {
+            "label": "Cancel has its own hit target while a tooltip is open",
+            "passed": true
+          },
+          {
+            "label": "Cancel returns to the card selection and drops the tooltip",
+            "passed": true
+          },
+          {
+            "label": "Confirm has its own hit target while a tooltip is open",
+            "passed": true
+          },
+          {
+            "label": "Confirm still commits the displayed upgrade",
+            "passed": true
+          },
+          {
+            "label": "Plain card uses the official shared card chrome",
+            "passed": true
+          },
+          {
+            "label": "Card without keywords has no tooltip",
+            "passed": true
+          },
+          {
+            "label": "Idle frames preserve native control count",
+            "passed": true
+          },
+          {
+            "label": "Idle frames do not repaint controls",
+            "passed": true
+          },
+          {
+            "label": "Shop keyword panel follows the real 75% canvas threshold",
+            "passed": true
+          },
+          {
+            "label": "Right-edge Shop tooltip remains within the real viewport",
+            "passed": true
+          },
+          {
+            "label": "Right-edge Shop tooltip renders all description lines",
+            "passed": true
+          }
+        ],
+        "timings": [
+          {
+            "scenario": "nest-hover",
+            "frames": 120,
+            "controlsBefore": 25274,
+            "controlsAfter": 25274,
+            "changedNodes": 0,
+            "p50Ms": 0.9347340000003896,
+            "p95Ms": 9.692925999999716
+          },
+          {
+            "scenario": "nest-idle",
+            "frames": 120,
+            "controlsBefore": 25274,
+            "controlsAfter": 25274,
+            "changedNodes": 0,
+            "p50Ms": 1.2714510000005248,
+            "p95Ms": 4.97383500000069
+          },
+          {
+            "scenario": "forge-hover",
+            "frames": 120,
+            "controlsBefore": 25589,
+            "controlsAfter": 25589,
+            "changedNodes": 0,
+            "p50Ms": 0.6909789999990608,
+            "p95Ms": 0.9177469999995083
+          },
+          {
+            "scenario": "forge-idle",
+            "frames": 120,
+            "controlsBefore": 25589,
+            "controlsAfter": 25589,
+            "changedNodes": 0,
+            "p50Ms": 1.1480499999997846,
+            "p95Ms": 1.6640200000001641
+          }
+        ],
+        "screenshots": [
+          {
+            "name": "nest-idle",
+            "width": 2100,
+            "height": 900,
+            "sha256": "b520530220b43275119e3284cb4ebb48d97d0a29a185bdec798d50e140f2481f",
+            "assetWarnings": [],
+            "sceneNodes": 233
+          },
+          {
+            "name": "nest-hover",
+            "width": 2100,
+            "height": 900,
+            "sha256": "59e866d2fad48e408f465a8fa9efe75e28bf274962de7e974d76b5b171cd61e2",
+            "assetWarnings": [],
+            "sceneNodes": 399
+          },
+          {
+            "name": "nest-switch",
+            "width": 2100,
+            "height": 900,
+            "sha256": "972ec02f939baa559461248b5d293afef46c1aed9615b24039677ea6bf2a7920",
+            "assetWarnings": [],
+            "sceneNodes": 233
+          },
+          {
+            "name": "golden-idol-relic",
+            "width": 2100,
+            "height": 900,
+            "sha256": "16b920e7e6e49ddf824766c7b38012ec12920bccbe0d8bf1bd62ec80cd7e582c",
+            "assetWarnings": [],
+            "sceneNodes": 238
+          },
+          {
+            "name": "golden-idol-option-1",
+            "width": 2100,
+            "height": 900,
+            "sha256": "e63e57bd7443f1cd16a2fa3f3021b4663f0428111a773f2633669b714911c5f2",
+            "assetWarnings": [],
+            "sceneNodes": 433
+          },
+          {
+            "name": "golden-idol-option-2",
+            "width": 2100,
+            "height": 900,
+            "sha256": "d251b2c19138793da8d6831aec601f93bc3a99d205410afa18a203ac63211957",
+            "assetWarnings": [],
+            "sceneNodes": 252
+          },
+          {
+            "name": "golden-idol-option-3",
+            "width": 2100,
+            "height": 900,
+            "sha256": "2ea8ae5b164b8026f1415eb0c2b7aeb01a946df0dce75b47965177a8ffea5648",
+            "assetWarnings": [],
+            "sceneNodes": 252
+          },
+          {
+            "name": "nloth-option-1",
+            "width": 2100,
+            "height": 900,
+            "sha256": "f6e261572f3d22aec5783e2904e64e573b93b027ae5c0681e7ef522a27416e0d",
+            "assetWarnings": [],
+            "sceneNodes": 261
+          },
+          {
+            "name": "nloth-option-2",
+            "width": 2100,
+            "height": 900,
+            "sha256": "c8520ed2abdf91ef52b9a7391207c3253471563d7938f2dd33ad7679187653f9",
+            "assetWarnings": [],
+            "sceneNodes": 261
+          },
+          {
+            "name": "cleric-disabled",
+            "width": 2100,
+            "height": 900,
+            "sha256": "f319c7de1c43412c9e641907067989a2c4518ade9b9496d4e40745dec02c0734",
+            "assetWarnings": [],
+            "sceneNodes": 250
+          },
+          {
+            "name": "forge-pair",
+            "width": 2100,
+            "height": 900,
+            "sha256": "6a492a60f645a6ad50679b13c887d4d8cae36545a3f31d81be3b5b9dca5cee54",
+            "assetWarnings": [],
+            "sceneNodes": 522
+          },
+          {
+            "name": "forge-before-under-threshold",
+            "width": 2100,
+            "height": 900,
+            "sha256": "6a492a60f645a6ad50679b13c887d4d8cae36545a3f31d81be3b5b9dca5cee54",
+            "assetWarnings": [],
+            "sceneNodes": 522
+          },
+          {
+            "name": "forge-before-hover",
+            "width": 2100,
+            "height": 900,
+            "sha256": "1d112ba99b0940998e05de5593180723f771a694f07451c8ac8c496f721ae514",
+            "assetWarnings": [],
+            "sceneNodes": 526
+          },
+          {
+            "name": "forge-after-hover",
+            "width": 2100,
+            "height": 900,
+            "sha256": "ef1e9c0f453c449a4faa0f93a45f0990e4d392a4f31dde5acdbf40ffbf22dbc5",
+            "assetWarnings": [],
+            "sceneNodes": 526
+          },
+          {
+            "name": "forge-left",
+            "width": 2100,
+            "height": 900,
+            "sha256": "6a492a60f645a6ad50679b13c887d4d8cae36545a3f31d81be3b5b9dca5cee54",
+            "assetWarnings": [],
+            "sceneNodes": 522
+          },
+          {
+            "name": "forge-back",
+            "width": 2100,
+            "height": 900,
+            "sha256": "2cb19c726eb02803bd687b28c4f353bf2202d6f6b31ad0497a143a90238ee4a3",
+            "assetWarnings": [],
+            "sceneNodes": 321
+          },
+          {
+            "name": "forge-strike-idle",
+            "width": 2100,
+            "height": 900,
+            "sha256": "02b180d55307700ce249e11ef2330ba72ceabf5b70232bad2e305397658a9d4e",
+            "assetWarnings": [],
+            "sceneNodes": 480
+          },
+          {
+            "name": "forge-no-keywords",
+            "width": 2100,
+            "height": 900,
+            "sha256": "02b180d55307700ce249e11ef2330ba72ceabf5b70232bad2e305397658a9d4e",
+            "assetWarnings": [],
+            "sceneNodes": 480
+          },
+          {
+            "name": "shop-edge-hover",
+            "width": 2100,
+            "height": 900,
+            "sha256": "1d56469239e8cee6a349f2f7fdf55f3e864941ef9c8d6e3f9dd3fe3059fc45ee",
+            "assetWarnings": [],
+            "sceneNodes": 1724
+          }
+        ],
+        "geometry": [
+          {
+            "name": "nest-pc",
+            "area": {
+              "x": 1831.25,
+              "y": 137.5,
+              "left": 1737.5,
+              "right": 1925,
+              "bottom": 6.25,
+              "top": 268.75
+            },
+            "viewport": {
+              "width": 2100,
+              "height": 900
+            },
+            "buttons": []
+          },
+          {
+            "name": "forge-before",
+            "area": {
+              "x": 1102.5,
+              "y": 473.95833333333326,
+              "left": 947.5,
+              "right": 1257.5,
+              "bottom": 312.08333333333326,
+              "top": 635.8333333333333
+            },
+            "viewport": {
+              "width": 2100,
+              "height": 900
+            },
+            "buttons": [
+              {
+                "x": 437.5,
+                "y": 87.5,
+                "left": 325,
+                "right": 550,
+                "bottom": 55,
+                "top": 120
+              },
+              {
+                "x": 1662.5,
+                "y": 87.5,
+                "left": 1537.5,
+                "right": 1787.5,
+                "bottom": 52.5,
+                "top": 122.5
+              }
+            ]
+          },
+          {
+            "name": "forge-after",
+            "area": {
+              "x": 1577.5,
+              "y": 517.7083333333333,
+              "left": 1422.5,
+              "right": 1732.5,
+              "bottom": 399.58333333333326,
+              "top": 635.8333333333333
+            },
+            "viewport": {
+              "width": 2100,
+              "height": 900
+            },
+            "buttons": [
+              {
+                "x": 437.5,
+                "y": 87.5,
+                "left": 325,
+                "right": 550,
+                "bottom": 55,
+                "top": 120
+              },
+              {
+                "x": 1662.5,
+                "y": 87.5,
+                "left": 1537.5,
+                "right": 1787.5,
+                "bottom": 52.5,
+                "top": 122.5
+              }
+            ]
+          },
+          {
+            "name": "shop-edge",
+            "area": {
+              "x": 1843.75,
+              "y": 716.1772405252458,
+              "left": 1688.75,
+              "right": 1998.75,
+              "bottom": 671.1772405252458,
+              "top": 761.1772405252458
+            },
+            "viewport": {
+              "width": 2100,
+              "height": 900
+            },
+            "buttons": []
+          }
+        ],
+        "textVisibility": [
+          {
+            "frame": "nest-hover",
+            "path": "eventView/previewCard/description",
+            "fontSize": 14,
+            "availableHeight": 76,
+            "requiredHeight": 74.7,
+            "expectedLines": 4,
+            "visibleLines": 4,
+            "lines": [
+              "造成15点伤害；击",
+              "杀非召唤敌人永久",
+              "增加3点伤害。消",
+              "耗。"
+            ]
+          },
+          {
+            "frame": "forge-before-hover",
+            "path": "cardKeywordTip/copy",
+            "fontSize": 18,
+            "availableHeight": 243,
+            "requiredHeight": 224.49999999999997,
+            "expectedLines": 10,
+            "visibleLines": 10,
+            "lines": [
+              "无实体",
+              "每次受到的伤害或生命损失",
+              "最多为1。每回合结束减少1",
+              "层。",
+              "消耗",
+              "被消耗的卡牌将移出本场战",
+              "斗，不进入弃牌堆。",
+              "虚无",
+              "回合结束时若仍在手中，将",
+              "被消耗。"
+            ]
+          },
+          {
+            "frame": "forge-after-hover",
+            "path": "cardKeywordTip/copy",
+            "fontSize": 18,
+            "availableHeight": 173,
+            "requiredHeight": 159.7,
+            "expectedLines": 7,
+            "visibleLines": 7,
+            "lines": [
+              "无实体",
+              "每次受到的伤害或生命损失",
+              "最多为1。每回合结束减少1",
+              "层。",
+              "消耗",
+              "被消耗的卡牌将移出本场战",
+              "斗，不进入弃牌堆。"
+            ]
+          },
+          {
+            "frame": "shop-edge-hover",
+            "path": "cardKeywordTip/copy",
+            "fontSize": 18,
+            "availableHeight": 56,
+            "requiredHeight": 51.699999999999996,
+            "expectedLines": 2,
+            "visibleLines": 2,
+            "lines": [
+              "力量",
+              "每层使攻击伤害 +1"
+            ]
+          }
+        ],
+        "eventCopy": [
+          {
+            "text": "18",
+            "color": 4292266917
+          },
+          {
+            "text": "[加入仪式] <color=#9DD740>获得</color>「仪式匕首」。<color=#D77C7E>受到6点普通伤害。</color>",
+            "color": 4293783263
+          },
+          {
+            "text": "[拿走金币] <color=#9DD740>获得99金币。</color>",
+            "color": 4293783263
+          }
+        ],
+        "disabledCopy": [
+          {
+            "text": "1",
+            "color": 4292266917
+          },
+          {
+            "text": "[离开] 什么也不会发生。",
+            "color": 4293783263
+          },
+          {
+            "text": "[净化] 金币不足（需要 50，现有 35）",
+            "color": 4286021230
+          },
+          {
+            "text": "[治疗] <color=#D77C7E>支付 35 金币</color>，<color=#9DD740>回复 20 点生命</color>（生命 41 → 61）",
+            "color": 4293783263
+          }
+        ],
+        "controlsBeforeDestroy": 25589,
+        "controlsAfterDestroy": 0,
+        "shopEdge": {
+          "cardCenter": 1553.75,
+          "width": 2100,
+          "expectedLeft": false,
+          "expandsLeft": false
+        },
+        "inputSteps": 144,
+        "chosenControls": [
+          {
+            "action": "down",
+            "x": 1331.25,
+            "y": 133.75,
+            "path": "root/stage/nodePanel/eventView/option1/hit"
+          },
+          {
+            "action": "down",
+            "x": 1331.25,
+            "y": 202.5,
+            "path": "root/stage/nodePanel/eventView/option1/hit"
+          },
+          {
+            "action": "down",
+            "x": 1331.25,
+            "y": 202.5,
+            "path": "root/stage/nodePanel/eventView/option2/hit"
+          },
+          {
+            "action": "down",
+            "x": 1225,
+            "y": 412.5,
+            "path": "root/stage/nodePanel/campView/forge/hit"
+          },
+          {
+            "action": "down",
+            "x": 1042.5,
+            "y": 483.125,
+            "path": "root/stage/nodePanel/pickerView/forgeFit/AbyssForgeCard/hit"
+          },
+          {
+            "action": "down",
+            "x": 437.5,
+            "y": 87.5,
+            "path": "root/stage/nodePanel/back/hit"
+          },
+          {
+            "action": "down",
+            "x": 1225,
+            "y": 412.5,
+            "path": "root/stage/nodePanel/campView/forge/hit"
+          },
+          {
+            "action": "down",
+            "x": 1042.5,
+            "y": 483.125,
+            "path": "root/stage/nodePanel/pickerView/forgeFit/AbyssForgeCard/hit"
+          },
+          {
+            "action": "down",
+            "x": 1662.5,
+            "y": 87.5,
+            "path": "root/stage/nodePanel/confirm/hit"
+          },
+          {
+            "action": "down",
+            "x": 1225,
+            "y": 412.5,
+            "path": "root/stage/nodePanel/campView/forge/hit"
+          },
+          {
+            "action": "down",
+            "x": 1042.5,
+            "y": 483.125,
+            "path": "root/stage/nodePanel/pickerView/forgeFit/AbyssForgeCard/hit"
+          },
+          {
+            "action": "down",
+            "x": 1293.75,
+            "y": 257.5,
+            "path": "root/stage/nodePanel/merchant/talk/hit"
+          }
+        ],
+        "luaIssueCount": 0,
+        "eventSeeds": [
+          "EDGE_SHOP run seed=42 slot=5 card=rupture"
+        ]
+      },
+      {
+        "canvasId": "mobile-19.5-9",
+        "status": "passed",
+        "checks": [
+          {
+            "label": "Nest option shows the card name once",
+            "passed": true
+          },
+          {
+            "label": "Nest reward and health cost use the authored semantic colors",
+            "passed": true
+          },
+          {
+            "label": "Nest cancelled touch opens no card",
+            "passed": true
+          },
+          {
+            "label": "Nest mobile hold stays closed before 0.35 seconds",
+            "passed": true
+          },
+          {
+            "label": "Nest mobile long press opens real card copy",
+            "passed": true
+          },
+          {
+            "label": "Nest mobile card preview fits in viewport",
+            "passed": true
+          },
+          {
+            "label": "Nest mobile card renders every line of copy",
+            "passed": true
+          },
+          {
+            "label": "Nest release retains preview",
+            "passed": true
+          },
+          {
+            "label": "Nest preview closes after leaving the target",
+            "passed": true
+          },
+          {
+            "label": "Nest can reopen after dismissal",
+            "passed": true
+          },
+          {
+            "label": "Next intentional tap commits once and removes preview",
+            "passed": true
+          },
+          {
+            "label": "Idle frames preserve native control count",
+            "passed": true
+          },
+          {
+            "label": "Idle frames do not repaint controls",
+            "passed": true
+          },
+          {
+            "label": "Upgrade comparison uses the official shared card chrome",
+            "passed": true
+          },
+          {
+            "label": "Forge cancelled touch opens no keyword overlay",
+            "passed": true
+          },
+          {
+            "label": "Forge before long press waits through 0.349 seconds",
+            "passed": true
+          },
+          {
+            "label": "Forge before mobile modal shows effective keywords",
+            "passed": true
+          },
+          {
+            "label": "Forge before mobile renders every detail line",
+            "passed": true
+          },
+          {
+            "label": "Forge before release retains the modal",
+            "passed": true
+          },
+          {
+            "label": "Existing return closes Forge before modal",
+            "passed": true
+          },
+          {
+            "label": "Forge after long press waits through 0.349 seconds",
+            "passed": true
+          },
+          {
+            "label": "Forge after mobile modal shows effective keywords",
+            "passed": true
+          },
+          {
+            "label": "Forge after mobile renders every detail line",
+            "passed": true
+          },
+          {
+            "label": "Forge after release retains the modal",
+            "passed": true
+          },
+          {
+            "label": "Existing return closes Forge after modal",
+            "passed": true
+          },
+          {
+            "label": "Idle frames preserve native control count",
+            "passed": true
+          },
+          {
+            "label": "Idle frames do not repaint controls",
+            "passed": true
+          }
+        ],
+        "timings": [
+          {
+            "scenario": "nest-idle",
+            "frames": 120,
+            "controlsBefore": 25274,
+            "controlsAfter": 25274,
+            "changedNodes": 0,
+            "p50Ms": 1.1437499999992724,
+            "p95Ms": 5.4023010000000795
+          },
+          {
+            "scenario": "forge-idle",
+            "frames": 120,
+            "controlsBefore": 25589,
+            "controlsAfter": 25589,
+            "changedNodes": 0,
+            "p50Ms": 1.3085199999986799,
+            "p95Ms": 1.8450599999996484
+          }
+        ],
+        "screenshots": [
+          {
+            "name": "nest-idle",
+            "width": 1560,
+            "height": 720,
+            "sha256": "96e76da7dc883e29171b1845d9f7463f870c2a4fb20e41b990a59f59924b20a0",
+            "assetWarnings": [],
+            "sceneNodes": 233
+          },
+          {
+            "name": "nest-cancelled",
+            "width": 1560,
+            "height": 720,
+            "sha256": "50fca4ed1fbf72602c314f1b541c15862d2ada8cc2c40b2b307486a7f5004f88",
+            "assetWarnings": [],
+            "sceneNodes": 233
+          },
+          {
+            "name": "nest-long-press",
+            "width": 1560,
+            "height": 720,
+            "sha256": "1b6d0ad0f85dc5243e7ad74c2c1a4b4da28e89e7831b3d0233e53fd0264c8b55",
+            "assetWarnings": [],
+            "sceneNodes": 399
+          },
+          {
+            "name": "nest-released",
+            "width": 1560,
+            "height": 720,
+            "sha256": "f7705a5a1725060fefebbd8f5ce7ccd404715a19a80f0075f047a5bbc0b88e80",
+            "assetWarnings": [],
+            "sceneNodes": 399
+          },
+          {
+            "name": "nest-left",
+            "width": 1560,
+            "height": 720,
+            "sha256": "96e76da7dc883e29171b1845d9f7463f870c2a4fb20e41b990a59f59924b20a0",
+            "assetWarnings": [],
+            "sceneNodes": 233
+          },
+          {
+            "name": "forge-pair",
+            "width": 1560,
+            "height": 720,
+            "sha256": "b7210de7e1204e63fd570de6ecb3eafac5c3d998da1a75c14efce04da4d97736",
+            "assetWarnings": [],
+            "sceneNodes": 522
+          },
+          {
+            "name": "forge-cancelled",
+            "width": 1560,
+            "height": 720,
+            "sha256": "b7210de7e1204e63fd570de6ecb3eafac5c3d998da1a75c14efce04da4d97736",
+            "assetWarnings": [],
+            "sceneNodes": 522
+          },
+          {
+            "name": "forge-before-long-press",
+            "width": 1560,
+            "height": 720,
+            "sha256": "bdc2ca46d11641c1ec925d3b87d96ac91fca6a537310b89d36e7b5d6d1c313cc",
+            "assetWarnings": [],
+            "sceneNodes": 530
+          },
+          {
+            "name": "forge-before-released",
+            "width": 1560,
+            "height": 720,
+            "sha256": "bdc2ca46d11641c1ec925d3b87d96ac91fca6a537310b89d36e7b5d6d1c313cc",
+            "assetWarnings": [],
+            "sceneNodes": 530
+          },
+          {
+            "name": "forge-before-return",
+            "width": 1560,
+            "height": 720,
+            "sha256": "b7210de7e1204e63fd570de6ecb3eafac5c3d998da1a75c14efce04da4d97736",
+            "assetWarnings": [],
+            "sceneNodes": 522
+          },
+          {
+            "name": "forge-after-long-press",
+            "width": 1560,
+            "height": 720,
+            "sha256": "0db1b44d4c44d3f2ed7f20f8db23753e86497965ed52c5492f0d4b96419c8e12",
+            "assetWarnings": [],
+            "sceneNodes": 530
+          },
+          {
+            "name": "forge-after-released",
+            "width": 1560,
+            "height": 720,
+            "sha256": "0db1b44d4c44d3f2ed7f20f8db23753e86497965ed52c5492f0d4b96419c8e12",
+            "assetWarnings": [],
+            "sceneNodes": 530
+          },
+          {
+            "name": "forge-after-return",
+            "width": 1560,
+            "height": 720,
+            "sha256": "b7210de7e1204e63fd570de6ecb3eafac5c3d998da1a75c14efce04da4d97736",
+            "assetWarnings": [],
+            "sceneNodes": 522
+          }
+        ],
+        "geometry": [
+          {
+            "name": "nest-mobile",
+            "area": {
+              "x": 1405,
+              "y": 110,
+              "left": 1330,
+              "right": 1480,
+              "bottom": 5,
+              "top": 215
+            },
+            "viewport": {
+              "width": 1560,
+              "height": 720
+            },
+            "buttons": []
+          }
+        ],
+        "textVisibility": [
+          {
+            "frame": "nest-long-press",
+            "path": "eventView/previewCard/description",
+            "fontSize": 14,
+            "availableHeight": 76,
+            "requiredHeight": 74.7,
+            "expectedLines": 4,
+            "visibleLines": 4,
+            "lines": [
+              "造成15点伤害；击",
+              "杀非召唤敌人永久",
+              "增加3点伤害。消",
+              "耗。"
+            ]
+          },
+          {
+            "frame": "forge-before-long-press",
+            "path": "deckPanel/details",
+            "fontSize": 28,
+            "availableHeight": 560,
+            "requiredHeight": 212.60000000000002,
+            "expectedLines": 6,
+            "visibleLines": 6,
+            "lines": [
+              "获得1层无实体。消耗。虚无。",
+              "无实体：每次受到的伤害或生命损失最多为1。每回合结束减少1层。",
+              "消耗：被消耗的卡牌将移出本场战斗，不进入弃牌堆。",
+              "虚无：回合结束时若仍在手中，将被消耗。",
+              "",
+              "点按正文翻页 · 右上角返回"
+            ]
+          },
+          {
+            "frame": "forge-after-long-press",
+            "path": "deckPanel/details",
+            "fontSize": 28,
+            "availableHeight": 560,
+            "requiredHeight": 179,
+            "expectedLines": 5,
+            "visibleLines": 5,
+            "lines": [
+              "获得1层无实体。消耗。",
+              "无实体：每次受到的伤害或生命损失最多为1。每回合结束减少1层。",
+              "消耗：被消耗的卡牌将移出本场战斗，不进入弃牌堆。",
+              "",
+              "点按正文翻页 · 右上角返回"
+            ]
+          }
+        ],
+        "eventCopy": [
+          {
+            "text": "18",
+            "color": 4292266917
+          },
+          {
+            "text": "[加入仪式] <color=#9DD740>获得</color>「仪式匕首」。<color=#D77C7E>受到6点普通伤害。</color>",
+            "color": 4293783263
+          },
+          {
+            "text": "[拿走金币] <color=#9DD740>获得99金币。</color>",
+            "color": 4293783263
+          }
+        ],
+        "controlsBeforeDestroy": 25589,
+        "controlsAfterDestroy": 0,
+        "inputSteps": 39,
+        "chosenControls": [
+          {
+            "action": "down",
+            "x": 1005,
+            "y": 41,
+            "path": "root/stage/nodePanel/eventView/option1/hit"
+          },
+          {
+            "action": "down",
+            "x": 1347,
+            "y": 41,
+            "path": "root/stage/nodePanel/eventView/option2/hit"
+          },
+          {
+            "action": "cancel",
+            "x": 1347,
+            "y": 41,
+            "path": "root/stage/nodePanel/eventView/option2/hit"
+          },
+          {
+            "action": "down",
+            "x": 1005,
+            "y": 41,
+            "path": "root/stage/nodePanel/eventView/option2/hit"
+          },
+          {
+            "action": "down",
+            "x": 1005,
+            "y": 41,
+            "path": "root/stage/nodePanel/eventView/option2/hit"
+          },
+          {
+            "action": "down",
+            "x": 1005,
+            "y": 96,
+            "path": "root/stage/nodePanel/eventView/option1/hit"
+          },
+          {
+            "action": "down",
+            "x": 920,
+            "y": 264,
+            "path": "root/stage/nodePanel/campView/forge/hit"
+          },
+          {
+            "action": "down",
+            "x": 774,
+            "y": 320.5,
+            "path": "root/stage/nodePanel/pickerView/forgeFit/AbyssForgeCard/hit"
+          },
+          {
+            "action": "down",
+            "x": 590,
+            "y": 324,
+            "path": "root/stage/nodePanel/pickerView/before/hit"
+          },
+          {
+            "action": "cancel",
+            "x": 590,
+            "y": 324,
+            "path": "root/stage/nodePanel/pickerView/before/hit"
+          },
+          {
+            "action": "down",
+            "x": 590,
+            "y": 324,
+            "path": "root/stage/nodePanel/pickerView/before/hit"
+          },
+          {
+            "action": "down",
+            "x": 1232,
+            "y": 676,
+            "path": "root/stage/deckPanel/close/hit"
+          },
+          {
+            "action": "down",
+            "x": 970,
+            "y": 324,
+            "path": "root/stage/nodePanel/pickerView/after/hit"
+          },
+          {
+            "action": "down",
+            "x": 1232,
+            "y": 676,
+            "path": "root/stage/deckPanel/close/hit"
+          }
+        ],
+        "luaIssueCount": 0,
+        "eventSeeds": []
+      },
+      {
+        "canvasId": "mobile-4-3",
+        "status": "passed",
+        "checks": [
+          {
+            "label": "Nest option shows the card name once",
+            "passed": true
+          },
+          {
+            "label": "Nest reward and health cost use the authored semantic colors",
+            "passed": true
+          },
+          {
+            "label": "Nest cancelled touch opens no card",
+            "passed": true
+          },
+          {
+            "label": "Nest mobile hold stays closed before 0.35 seconds",
+            "passed": true
+          },
+          {
+            "label": "Nest mobile long press opens real card copy",
+            "passed": true
+          },
+          {
+            "label": "Nest mobile card preview fits in viewport",
+            "passed": true
+          },
+          {
+            "label": "Nest mobile card renders every line of copy",
+            "passed": true
+          },
+          {
+            "label": "Nest release retains preview",
+            "passed": true
+          },
+          {
+            "label": "Nest preview closes after leaving the target",
+            "passed": true
+          },
+          {
+            "label": "Nest can reopen after dismissal",
+            "passed": true
+          },
+          {
+            "label": "Next intentional tap commits once and removes preview",
+            "passed": true
+          },
+          {
+            "label": "Idle frames preserve native control count",
+            "passed": true
+          },
+          {
+            "label": "Idle frames do not repaint controls",
+            "passed": true
+          },
+          {
+            "label": "Upgrade comparison uses the official shared card chrome",
+            "passed": true
+          },
+          {
+            "label": "Forge cancelled touch opens no keyword overlay",
+            "passed": true
+          },
+          {
+            "label": "Forge before long press waits through 0.349 seconds",
+            "passed": true
+          },
+          {
+            "label": "Forge before mobile modal shows effective keywords",
+            "passed": true
+          },
+          {
+            "label": "Forge before mobile renders every detail line",
+            "passed": true
+          },
+          {
+            "label": "Forge before release retains the modal",
+            "passed": true
+          },
+          {
+            "label": "Existing return closes Forge before modal",
+            "passed": true
+          },
+          {
+            "label": "Forge after long press waits through 0.349 seconds",
+            "passed": true
+          },
+          {
+            "label": "Forge after mobile modal shows effective keywords",
+            "passed": true
+          },
+          {
+            "label": "Forge after mobile renders every detail line",
+            "passed": true
+          },
+          {
+            "label": "Forge after release retains the modal",
+            "passed": true
+          },
+          {
+            "label": "Existing return closes Forge after modal",
+            "passed": true
+          },
+          {
+            "label": "Idle frames preserve native control count",
+            "passed": true
+          },
+          {
+            "label": "Idle frames do not repaint controls",
+            "passed": true
+          }
+        ],
+        "timings": [
+          {
+            "scenario": "nest-idle",
+            "frames": 120,
+            "controlsBefore": 25274,
+            "controlsAfter": 25274,
+            "changedNodes": 0,
+            "p50Ms": 0.8570980000004056,
+            "p95Ms": 2.357222999999067
+          },
+          {
+            "scenario": "forge-idle",
+            "frames": 120,
+            "controlsBefore": 25589,
+            "controlsAfter": 25589,
+            "changedNodes": 0,
+            "p50Ms": 0.7732400000004418,
+            "p95Ms": 2.759793000001082
+          }
+        ],
+        "screenshots": [
+          {
+            "name": "nest-idle",
+            "width": 1280,
+            "height": 960,
+            "sha256": "db6d80347775a2ef0c8c11085d0492babe8f723742283f40d00a4f8d099013ab",
+            "assetWarnings": [],
+            "sceneNodes": 233
+          },
+          {
+            "name": "nest-cancelled",
+            "width": 1280,
+            "height": 960,
+            "sha256": "9da838118118f3b984b14b6756f158ef6ad9e7bd02c2ee9d455535d1023928e2",
+            "assetWarnings": [],
+            "sceneNodes": 233
+          },
+          {
+            "name": "nest-long-press",
+            "width": 1280,
+            "height": 960,
+            "sha256": "8fe99def9b9db8b43f3b526943169bafbfa9ecb4f6a82ec6e671d263bd68c655",
+            "assetWarnings": [],
+            "sceneNodes": 399
+          },
+          {
+            "name": "nest-released",
+            "width": 1280,
+            "height": 960,
+            "sha256": "ccb1bfdb450e1606b98c3dc8ff8a9ae7ad1dfa5e440928d9ca92c219adfd355a",
+            "assetWarnings": [],
+            "sceneNodes": 399
+          },
+          {
+            "name": "nest-left",
+            "width": 1280,
+            "height": 960,
+            "sha256": "db6d80347775a2ef0c8c11085d0492babe8f723742283f40d00a4f8d099013ab",
+            "assetWarnings": [],
+            "sceneNodes": 233
+          },
+          {
+            "name": "forge-pair",
+            "width": 1280,
+            "height": 960,
+            "sha256": "28163a5497754f956774c9c028eb0fc4a83931ec753ad17850d34b139fb65a67",
+            "assetWarnings": [],
+            "sceneNodes": 522
+          },
+          {
+            "name": "forge-cancelled",
+            "width": 1280,
+            "height": 960,
+            "sha256": "28163a5497754f956774c9c028eb0fc4a83931ec753ad17850d34b139fb65a67",
+            "assetWarnings": [],
+            "sceneNodes": 522
+          },
+          {
+            "name": "forge-before-long-press",
+            "width": 1280,
+            "height": 960,
+            "sha256": "7b3d0e77570152f657e6ad3254c54c6c910592b67e21410efaf3e58b86e8aea5",
+            "assetWarnings": [],
+            "sceneNodes": 530
+          },
+          {
+            "name": "forge-before-released",
+            "width": 1280,
+            "height": 960,
+            "sha256": "7b3d0e77570152f657e6ad3254c54c6c910592b67e21410efaf3e58b86e8aea5",
+            "assetWarnings": [],
+            "sceneNodes": 530
+          },
+          {
+            "name": "forge-before-return",
+            "width": 1280,
+            "height": 960,
+            "sha256": "28163a5497754f956774c9c028eb0fc4a83931ec753ad17850d34b139fb65a67",
+            "assetWarnings": [],
+            "sceneNodes": 522
+          },
+          {
+            "name": "forge-after-long-press",
+            "width": 1280,
+            "height": 960,
+            "sha256": "7b729943ffcd559e1485e8d56374de66d44f1c0c893ea9ce91129811688d2dbd",
+            "assetWarnings": [],
+            "sceneNodes": 530
+          },
+          {
+            "name": "forge-after-released",
+            "width": 1280,
+            "height": 960,
+            "sha256": "7b729943ffcd559e1485e8d56374de66d44f1c0c893ea9ce91129811688d2dbd",
+            "assetWarnings": [],
+            "sceneNodes": 530
+          },
+          {
+            "name": "forge-after-return",
+            "width": 1280,
+            "height": 960,
+            "sha256": "28163a5497754f956774c9c028eb0fc4a83931ec753ad17850d34b139fb65a67",
+            "assetWarnings": [],
+            "sceneNodes": 522
+          }
+        ],
+        "geometry": [
+          {
+            "name": "nest-mobile",
+            "area": {
+              "x": 1191,
+              "y": 161,
+              "left": 1116,
+              "right": 1266,
+              "bottom": 56,
+              "top": 266
+            },
+            "viewport": {
+              "width": 1280,
+              "height": 960
+            },
+            "buttons": []
+          }
+        ],
+        "textVisibility": [
+          {
+            "frame": "nest-long-press",
+            "path": "eventView/previewCard/description",
+            "fontSize": 14,
+            "availableHeight": 76,
+            "requiredHeight": 74.7,
+            "expectedLines": 4,
+            "visibleLines": 4,
+            "lines": [
+              "造成15点伤害；击",
+              "杀非召唤敌人永久",
+              "增加3点伤害。消",
+              "耗。"
+            ]
+          },
+          {
+            "frame": "forge-before-long-press",
+            "path": "deckPanel/details",
+            "fontSize": 28,
+            "availableHeight": 560,
+            "requiredHeight": 212.60000000000002,
+            "expectedLines": 6,
+            "visibleLines": 6,
+            "lines": [
+              "获得1层无实体。消耗。虚无。",
+              "无实体：每次受到的伤害或生命损失最多为1。每回合结束减少1层。",
+              "消耗：被消耗的卡牌将移出本场战斗，不进入弃牌堆。",
+              "虚无：回合结束时若仍在手中，将被消耗。",
+              "",
+              "点按正文翻页 · 右上角返回"
+            ]
+          },
+          {
+            "frame": "forge-after-long-press",
+            "path": "deckPanel/details",
+            "fontSize": 28,
+            "availableHeight": 560,
+            "requiredHeight": 179,
+            "expectedLines": 5,
+            "visibleLines": 5,
+            "lines": [
+              "获得1层无实体。消耗。",
+              "无实体：每次受到的伤害或生命损失最多为1。每回合结束减少1层。",
+              "消耗：被消耗的卡牌将移出本场战斗，不进入弃牌堆。",
+              "",
+              "点按正文翻页 · 右上角返回"
+            ]
+          }
+        ],
+        "eventCopy": [
+          {
+            "text": "18",
+            "color": 4292266917
+          },
+          {
+            "text": "[加入仪式] <color=#9DD740>获得</color>「仪式匕首」。<color=#D77C7E>受到6点普通伤害。</color>",
+            "color": 4293783263
+          },
+          {
+            "text": "[拿走金币] <color=#9DD740>获得99金币。</color>",
+            "color": 4293783263
+          }
+        ],
+        "controlsBeforeDestroy": 25589,
+        "controlsAfterDestroy": 0,
+        "inputSteps": 39,
+        "chosenControls": [
+          {
+            "action": "down",
+            "x": 865,
+            "y": 161,
+            "path": "root/stage/nodePanel/eventView/option1/hit"
+          },
+          {
+            "action": "down",
+            "x": 1207,
+            "y": 161,
+            "path": "root/stage/nodePanel/eventView/option2/hit"
+          },
+          {
+            "action": "cancel",
+            "x": 1207,
+            "y": 161,
+            "path": "root/stage/nodePanel/eventView/option2/hit"
+          },
+          {
+            "action": "down",
+            "x": 865,
+            "y": 161,
+            "path": "root/stage/nodePanel/eventView/option2/hit"
+          },
+          {
+            "action": "down",
+            "x": 865,
+            "y": 161,
+            "path": "root/stage/nodePanel/eventView/option2/hit"
+          },
+          {
+            "action": "down",
+            "x": 865,
+            "y": 216,
+            "path": "root/stage/nodePanel/eventView/option1/hit"
+          },
+          {
+            "action": "down",
+            "x": 780,
+            "y": 384,
+            "path": "root/stage/nodePanel/campView/forge/hit"
+          },
+          {
+            "action": "down",
+            "x": 634,
+            "y": 440.5,
+            "path": "root/stage/nodePanel/pickerView/forgeFit/AbyssForgeCard/hit"
+          },
+          {
+            "action": "down",
+            "x": 450,
+            "y": 444,
+            "path": "root/stage/nodePanel/pickerView/before/hit"
+          },
+          {
+            "action": "cancel",
+            "x": 450,
+            "y": 444,
+            "path": "root/stage/nodePanel/pickerView/before/hit"
+          },
+          {
+            "action": "down",
+            "x": 450,
+            "y": 444,
+            "path": "root/stage/nodePanel/pickerView/before/hit"
+          },
+          {
+            "action": "down",
+            "x": 1092,
+            "y": 796,
+            "path": "root/stage/deckPanel/close/hit"
+          },
+          {
+            "action": "down",
+            "x": 830,
+            "y": 444,
+            "path": "root/stage/nodePanel/pickerView/after/hit"
+          },
+          {
+            "action": "down",
+            "x": 1092,
+            "y": 796,
+            "path": "root/stage/deckPanel/close/hit"
+          }
+        ],
+        "luaIssueCount": 0,
+        "eventSeeds": []
+      }
+    ]
+  },
+  "deliverySha256": {
+    "simulator-pc.webp": "2da769352a8787301cc4b5815634e5ba291892eea41a6e3a654b456c0962a866",
+    "simulator-touch.webp": "69f07d9572f193055f54c63c49ac32060dbc72bef625556c527c98817ada08dd",
+    "export-source.mjs": "a760ed47f522a6bf4bf064c9db98987990893e3aacef6cbe6cec057432c530ba",
+    "replay-official.mjs": "afa67580f2be9f6565a9ca64bbf2ec97d3a629cd3227b328a0376b457046eec3",
+    "compare-forge.py": "4b82608b9e4174062485500d62697e8ad47737d63c29b1ec96c5e7ac445849da",
+    "montage.py": "e9e7cff80dcacb101460476d972beadde0028c4fabe5f8aecf0174e83aedde76",
+    "forge-pixel-comparison.json": "48243f1a7b5a6a0f002f39f3f569640964fdaeefb5d1e48b134d11a05a79f2ab"
+  }
+}

@@ -8,6 +8,7 @@ import { exitControls } from './exit-ui-layout.mjs';
 import { potionDiscardControls } from './potion-discard-layout.mjs';
 import { vistaControl, prologueControl } from './cinematic-ui-layout.mjs';
 import { experimentalCharacterControls } from './character-ui-layout.mjs';
+import { cardKeywordTip } from './card-keyword-tip-layout.mjs';
 import {attachVictoryEasterEgg} from './victory-easter-egg-layout.mjs';
 import {attachOfficialBackdrops} from './official-backdrop-layout.mjs';
 
@@ -138,6 +139,7 @@ export function gameLayout(theme = nativeTheme, options = {}) {
       ...relicViewControls(theme),
       ...potionDiscardControls(theme),
       ...experimentalCharacterControls(theme),
+      cardKeywordTip(theme),
       prologueControl(theme),
       ...exitControls(theme),
       { name: 'pageReveal', kind: 'container', size: [...theme.canvas.base], visible: false, children: [

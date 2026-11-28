@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
 import {exactSourceMatches} from './source-fingerprint.mjs';
+import {beforeStsDetailSource} from './release-sts-detail-source.mjs';
 
 // #1035's actual merge onto #1008 changed all four native button owners.
 // Live Selection reads bind that complete change before older inverses run.
@@ -107,7 +108,7 @@ function uniformText(raw){
 export function beforeReleaseEntranceOwner(path,raw){
  const binding=ownerGroup(path)?.owners[path];
  if(!binding)return raw;
- const text=uniformText(raw);
+ const text=beforeStsDetailSource(path,uniformText(raw));
  if(!exactSourceMatches(text,binding.current))return raw;
  const prior=restoreExactFixtureHunks({path,beforeSha256:binding.previous.sha256,
   afterSha256:binding.current.sha256,hunks:binding.hunks},path,text);
@@ -123,7 +124,7 @@ export function checkedReleaseEntranceOwner(path,raw,read){
   let sample;
   try{sample=owner===path?raw:read(owner,'utf8');}
   catch(error){assert.fail('combined linked owner missing: '+owner+': '+String(error?.message??error));}
-  assert(exactSourceMatches(uniformText(sample),binding.current),
+  assert(exactSourceMatches(beforeStsDetailSource(owner,uniformText(sample)),binding.current),
    'combined linked owner identity: '+owner+' (fresh '+group.label+' owner: '+owner+')');
  }
  return beforeReleaseEntranceOwner(path,raw);

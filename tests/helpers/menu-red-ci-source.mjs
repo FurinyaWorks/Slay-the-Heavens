@@ -26,7 +26,25 @@ export function menuRedPriorRead(read=readFileSync){return(path,encoding)=>{
  const raw=read(path,encoding),text=typeof raw==='string'?raw:raw.toString('utf8'),prior=preMenuRedCiSource(path,text);
  return typeof raw==='string'?prior:prior===text?raw:Buffer.from(prior);
 };}
+// #1080 adds three live Lua contracts. Only this frozen Menu inventory
+// projects them out, and only after authenticating the complete cohort.
+const stsDetailLuaAdditions=Object.freeze({
+ 'tests/lua/event_option_preview.lua':{sha256:'0d32f9491fdad75fc31850d221df0a87857f2edfda2d63765fd5b5b6c9f9dd96',gitBlob:'b0565d59039b99009fa1f9f4fc904f0d58957075'},
+ 'tests/lua/sts_browse_keywords.lua':{sha256:'6aa39fb954ed259d28c8639a2a6115dff5b5ce8285aecee7889c29b53987c7d6',gitBlob:'dd34d14da8912495ad29aec20c82d8c4ba81b4c7'},
+ 'tests/lua/sts_forge_keywords.lua':{sha256:'ddebd1255693f021701c18ca208ee6bb456772a7e397727cfd88ff7a05bb2f70',gitBlob:'ba5433f38c2f15725762717d248288637be7b03c'},
+});
 export function menuRedPriorLua(paths,read=readFileSync){
+ const additions=Object.keys(stsDetailLuaAdditions);
+ if(additions.some(path=>paths.includes(path))){
+  for(const path of additions){
+   assert.equal(paths.filter(p=>p===path).length,1,'complete STS detail Lua inventory: '+path);
+   const source=read(path,'utf8'),lf=norm(source),binding=stsDetailLuaAdditions[path];
+   assert(!lf.includes('\r')&&(source===lf||source===lf.replaceAll('\n','\r\n')),'uniform STS detail Lua source: '+path);
+   assert.equal(hash(lf),binding.sha256,'exact STS detail Lua source: '+path);
+   assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(lf)}\0`).update(lf).digest('hex'),binding.gitBlob,'exact STS detail Lua blob: '+path);
+  }
+  paths=paths.filter(path=>!Object.hasOwn(stsDetailLuaAdditions,path));
+ }
  paths=integratedPriorInventory(paths,'menu','lua',read);
  assert.deepEqual([...paths].sort(),menuRedCiProof.afterLua,'complete current menu Lua discovery');
  for(const [path,row]of Object.entries(menuRedCiProof.addedLua)){

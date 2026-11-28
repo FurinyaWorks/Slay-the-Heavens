@@ -254,7 +254,8 @@ function M.fit(text,maximum,width,height,lineScale,advance)
     local pieces=atoms(text:gsub('<[^>]+>',''))
     for _,atom in ipairs(pieces) do if type(atom)=='table' then atom.width=units(atom.text) end end
     for font=maximum,Theme.font.minimum,-1 do
-        if lines(pieces,width/(advance or 1),font)*font*(lineScale or 1.3)<=height then return font,true end
+        local measured=lines(pieces,width/(advance or 1),font)*font*(lineScale or 1.3)
+        if measured<=height then return font,true,measured end
     end
     return Theme.font.minimum,false
 end

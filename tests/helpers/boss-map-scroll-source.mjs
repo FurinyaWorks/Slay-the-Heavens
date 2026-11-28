@@ -5,6 +5,23 @@ import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
 // Exact predecessor is Release 654d05824486680d994b860ce6e24ea30c43dcff.
 // Current bytes are authenticated in full before taking the postimage lines.
 const changes = {
+ "tests/room-ui-source-epoch.test.mjs": {
+  "current": {
+   "sha256": "feb48d79e83e2bf0f0e3dc3c992b4247bb8f5ec9e626a7a6bfad530c76c7118f",
+   "gitBlob": "64bb184b63bda96a35bb9c4fafe2986c3bd80543"
+  },
+  "previous": {
+   "sha256": "12e2d53c852dcae8444d87b3e87e0070a0e0f29f2675973b99ac99bcb0dc29d8",
+   "gitBlob": "20ab4de5860cf013f1c63f8d379707b9c7894d9d"
+  },
+  "hunks": [
+   {
+    "at": 21,
+    "count": 2,
+    "before": "const roomPriorRead=path=>path===retiredControllerPath?"
+   }
+  ]
+ },
  "scripts/build-ui.mjs": {
   "current": {
    "sha256": "70f9d021957f2e76898bc3621ac2d76821b102c7b74f99807a5ad5fe2c61db3c",
