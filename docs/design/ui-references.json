@@ -1254,7 +1254,8 @@
       "codePaths": [
         "scripts/card-keyword-tip-layout.mjs",
         "scripts/game-ui-layout.mjs",
-        "scripts/node-ui-layout.mjs"
+        "scripts/node-ui-layout.mjs",
+        "src/lua/abyss_node_ui_events.lua"
       ]
     }
   ]

@@ -110,6 +110,19 @@ end
 assert(shown and equal(host.run,state),'the deterministic shop must expose a keyword without changing a quote')
 print('PASS native shop whole-card hover and exit with unchanged offers')
 
+-- The native renderer reserves an inset around rich inline text. A long
+-- enough textbox needs to hold both the title and the short Strength body.
+local strength
+for _,status in ipairs(host.run.data.statuses.statuses) do
+    if status.id=='strength' then strength=status;break end
+end
+assert(strength)
+require('abyss_card_keyword_tip').paint(tip,shop:GetChild('card5'),panel,{{name=strength.name,body=strength.description}})
+local copy=tip:GetChild('copy')
+local requiredHeight=math.ceil(2*copy.fontSize*1.2+copy.fontSize/4+4)
+assert(copy.sizeDeltaY>=requiredHeight,'single-keyword copy clips the final native line')
+print('PASS keyword tooltip reserves full native title and body line height')
+
 local H=dofile('tests/lua/support/battle_gesture_fixture.lua')
 local battle,emitBattle
 host,battle,panel,emitBattle=H.setup({'true_grit','true_grit'})

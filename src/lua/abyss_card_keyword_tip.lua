@@ -30,8 +30,11 @@ function M.paint(panel,box,root,rows,floor)
     local width,line = P.width,Theme.layout.nativeText.lineHeight
     local textWidth = width-2*P.padding
     local room = top-floor-2*P.padding
-    local font,fits,measured = CardDisplay.fit(text,P.font,textWidth,room,1.3)
-    local height = fits and math.max(line,math.ceil(measured)) or room
+    -- Native text boxes reserve horizontal space and a font-relative inset
+    -- beyond the measured lines. Keep the final body line inside that inset.
+    local textInset = math.ceil(P.font/4+4)
+    local font,fits,measured = CardDisplay.fit(text,P.font,textWidth-4,room-textInset,1.3)
+    local height = fits and math.max(line,math.ceil(measured)+textInset) or room
     local total = height+2*P.padding
     local offset = (150+12)*sourceScale
     local desiredLeft = x>canvasW/4 and x-offset-width or x+offset
