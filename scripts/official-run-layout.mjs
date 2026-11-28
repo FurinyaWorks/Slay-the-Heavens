@@ -105,7 +105,6 @@ function roundBattleActions(battle,theme){
  roundedPresetButton(required(popup,'discard'),theme,'danger');
  roundedPresetButton(required(battle,'skip'),theme,'secondary');
  roundedPresetButton(required(battle,'start'),theme,'primary');
- roundedPresetButton(required(battle,'endTurn'),theme,'turn',{name:'v25Chrome'});
 }
 
 export function composeOfficialRun(tree,theme){
