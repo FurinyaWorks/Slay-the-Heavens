@@ -10,6 +10,7 @@ import {beforeLoadingRecoverySource} from './loading-recovery-source.mjs';
 import {beforeHotfixMapDeckHelperSource} from './hotfix-map-deck-helper-source.mjs';
 import {beforeReleaseClosureFixture} from './release-closure-fixture-source.mjs';
 import {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';
+import {beforeStsDetailSource} from './release-sts-detail-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const normalize=source=>source.replaceAll('\r\n','\n');
@@ -189,16 +190,45 @@ export function beforeMapDeckSource(path,source,read){
  const deckPath='src/lua/abyss_deck_ui.lua';
  const rawRead=read;
  const mapPath='src/lua/abyss_map_ui.lua';
- const beforeOwner=(owner,raw)=>owner===deckPath?beforeReleaseDeckPointer(owner,raw):
+ const beforeOwner=(owner,raw)=>owner===deckPath?beforeReleaseDeckPointer(owner,beforeStsDetailSource(owner,raw)):
   owner===mapPath?beforeReleaseClosureFixture(owner,raw):raw;
+ // Remember exact linked deck samples before either inverse. The reviewed
+ // successor and its immediate predecessor must never be interchangeable reads.
+ let deckObserved;
  const liveSource=source;
  source=beforeOwner(path,source);
+ const productionPrimary=Object.hasOwn(productionMapDeckSources,path)&&
+  uniformCurrent(source,productionMapDeckSources[path].after);
+ const sampleOwner=(owner,...args)=>{
+  const raw=rawRead(owner,...args);
+  if(owner!==deckPath)return raw;
+  const lf=typeof raw==='string'?normalize(raw):raw;
+  const observation=typeof lf==='string'&&!lf.includes('\r')&&
+   (raw===lf||raw===lf.replaceAll('\n','\r\n'))?lf:raw;
+  if(deckObserved!==undefined)assert.equal(observation,deckObserved,'map deck linked owner identity: '+owner);
+  else deckObserved=observation;
+  // The unchanged card skin, view and map also occur in earlier complete
+  // inputs. A raw #1080 architecture distinguishes this live cohort.
+  if(productionPrimary&&beforeStsDetailSource(owner,raw)===raw&&
+   uniformCurrent(beforeReleaseDeckPointer(owner,raw),productionMapDeckSources[owner].after)){
+   const configPath='config/architecture.json';
+   const config=rawRead(configPath,'utf8');
+   assert(beforeStsDetailSource(configPath,config)===config,'map deck linked owner identity: '+owner);
+  }
+  return raw;
+ };
+ if(path===deckPath&&source!==liveSource){
+  const live=sampleOwner(path,'utf8');
+  assert(typeof live==='string'&&normalize(live)===normalize(liveSource)&&
+   (live===normalize(live)||live===normalize(live).replaceAll('\n','\r\n')),
+   'map deck linked owner identity: '+path);
+ }
  if(path===mapPath&&source!==liveSource){
   const live=rawRead(path,'utf8');
   assert(typeof live==='string'&&live.replaceAll('\r\n','\n')===liveSource.replaceAll('\r\n','\n')
    &&beforeOwner(path,live)!==live,'map deck linked owner identity: '+path);
  }
- read=(owner,...args)=>beforeOwner(owner,rawRead(owner,...args));
+ read=(owner,...args)=>beforeOwner(owner,sampleOwner(owner,...args));
   if(assertProductionMapDeckOwners(path,source,read)&&path==='src/lua/abyss_map_ui.lua'){
     const prior=files[path].before.source;
     return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;

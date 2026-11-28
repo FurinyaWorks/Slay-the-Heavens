@@ -10,10 +10,17 @@ import narrativeCopy from '../data/presentation/narrative.zh-CN.json' with { typ
 test('composed native tree has exactly one menu, battle, map and node panel', () => {
   const layout = gameLayout();
   assert.equal(layout.script, 'abyss_ui');
-  assert.deepEqual(layout.controls.map(control => control.name).sort(), ['battlePanel', 'characterPanel', 'choicePanel', 'combatRewards', 'deckEntry', 'deckPanel', 'exitEntry', 'exitPanel', 'mapPanel', 'menuPanel', 'nodePanel', 'officialBattleBackdrop', 'pageReveal', 'potionEntry', 'potionPanel', 'prologuePanel', 'relicBar', 'relicEntry', 'relicPanel', 'runMenu', 'victoryEasterEgg']);
+  assert.deepEqual(layout.controls.map(control => control.name).sort(), ['battlePanel', 'cardKeywordTip', 'characterPanel', 'choicePanel', 'combatRewards', 'deckEntry', 'deckPanel', 'exitEntry', 'exitPanel', 'mapPanel', 'menuPanel', 'nodePanel', 'officialBattleBackdrop', 'pageReveal', 'potionEntry', 'potionPanel', 'prologuePanel', 'relicBar', 'relicEntry', 'relicPanel', 'runMenu', 'victoryEasterEgg']);
   for (const control of layout.controls.filter(control => !['menuPanel', 'exitEntry'].includes(control.name))) {
     assert.equal(control.visible, false, `${control.name} must not bleed through during startup`);
   }
+  const keywordTip = layout.controls.find(control => control.name === 'cardKeywordTip');
+  assert.equal(keywordTip.kind, 'container');
+  assert.deepEqual(keywordTip.children.map(control => [control.name, control.kind, control.raycastTarget]),
+    [['border', 'image', false], ['plate', 'image', false], ['copy', 'text', false]],
+    'one display-only keyword tip must not block native card input');
+  assert.equal(keywordTip.children.find(control => control.name === 'copy').text.content, '',
+    'keyword copy starts empty until the runtime supplies a card');
   const backdrop = layout.controls.find(control => control.name === 'officialBattleBackdrop');
   assert.equal(backdrop.kind, 'container');
   assert.deepEqual(backdrop.size, nativeTheme.canvas.base);

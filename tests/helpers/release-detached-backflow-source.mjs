@@ -342,7 +342,7 @@ const detachedInputsBeforeReplayGuard=Object.freeze({
 export const currentDetachedInputs=Object.freeze({
  ...detachedInputsBeforeReplayGuard,
  'tests/helpers/power-shop-source-inverse.mjs':'bcf4358902fff59dfb345420541b6c4ac1a71e99fda18adb500c9f7496f19424',
- 'tests/helpers/release-enemy-clearance-source.mjs':'5e999c566923fbd9f8afee67286236a463511394a254a7cc459ce0f06139ad86',
+ 'tests/helpers/release-enemy-clearance-source.mjs':'86e9557adf8f8e556ae1b577f575ff7b3a614cdce4a9c90019ff29e584344752',
  'tests/helpers/chapter-battle-scene-source.mjs':'799040ad7eef63281029b16094e95292b14df23692208a00639cd4ce7d8113e2',
  'tests/helpers/boss-map-scroll-source.mjs':'32086e0a0b75e11efba16ff7ac9de4151b9e6443448480fcd28859c7d01d0884',
  'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'93d263928f8b024e6cd7557e7279220237e19aa119629dc1939549902653c49a',
@@ -442,8 +442,8 @@ const recordingReplay=Object.freeze({
  "path": "tests/helpers/release-ui-restore-source.mjs",
  "beforeSha256": "9f56948b5d5f76f31c1780a27f6e1993d637a95de3ac2bafd19dacad2cbb0618",
  "beforeBlob": "f4ed5ab66931fc3eb1ef758820a5e740716eee57",
- "afterSha256": "a41f4211d03bffa49ec962f1395e62532027e6c2d789eeac1861e99a78579737",
- "afterBlob": "fbdaf29c6e099b4a51ae93a0465e5c71ffabf2fb",
+ "afterSha256": "1567578ede7a5fca035e02f5fe25f4b375abf272b58afcac5ee92ce64c759fcf",
+ "afterBlob": "153fda488337abd41b54374c6fbe13d3fc706e6d",
  "hunks": [
   {
    "at": 8,
@@ -452,13 +452,8 @@ const recordingReplay=Object.freeze({
   },
   {
    "at": 119,
-   "before": " if(path==='src/lua/abyss_deck_ui.lua'&&beforeReleaseDeckPointer(path,source)!==source)\n  authenticateUiEntrance(owner=>read(owner,'utf8'));\n const input=recordingRuntimeInput(path,source);\n if(input!==source){",
-   "after": " const deckPath='src/lua/abyss_deck_ui.lua';\n const deck=path===deckPath?beforeStsDetailSource(path,source):source;\n const releasedDeck=path===deckPath&&beforeReleaseDeckPointer(path,deck)!==deck;\n const rawRead=read,observed=new Map();\n let entranceAuthenticated=false;\n // Keep raw reads stable across both cohort admission and legacy projection.\n const uniform=raw=>{\n  if(typeof raw!=='string')return false;\n  const lf=raw.replaceAll('\\r\\n','\\n');\n  return !lf.includes('\\r')&&(raw===lf||raw===lf.replaceAll('\\n','\\r\\n'));\n };\n const rawOwner=(owner,encoding)=>{\n  const raw=rawRead(owner,encoding);\n  if(typeof raw!=='string'||(!owner.startsWith('src/')&&owner!=='config/architecture.json'))return raw;\n  const stable=uniform(raw)?raw.replaceAll('\\r\\n','\\n'):raw;\n  if(observed.has(owner))assert.equal(stable,observed.get(owner),'recording UI linked owner changed: '+owner);\n  else observed.set(owner,stable);\n  return raw;\n };\n const authenticate=()=>{\n  if(entranceAuthenticated)return;\n  authenticateUiEntrance(owner=>{\n   const raw=rawOwner(owner,'utf8');\n   assert(uniform(raw),'recording UI linked owner identity: '+owner);\n   return raw;\n  });\n  entranceAuthenticated=true;\n };\n // Peel #1080 only for this deck owner, and only after checking the live\n // entrance cohort against unprojected reads.\n if(releasedDeck)authenticate();\n read=(owner,encoding)=>{\n  const raw=rawOwner(owner,encoding);\n  if(owner!==deckPath)return raw;\n  const prior=beforeStsDetailSource(owner,raw);\n  if(releasedDeck)assert(uniform(raw)&&\n   raw.replaceAll('\\r\\n','\\n')===source.replaceAll('\\r\\n','\\n'),'recording UI linked owner changed: '+owner);\n  if(prior!==raw)authenticate();\n  return prior;\n };\n if(releasedDeck)read(path,'utf8');\n const input=recordingRuntimeInput(path,deck);\n if(input!==deck){"
-  },
-  {
-   "at": 163,
-   "before": "  assert(typeof live==='string'&&live.replaceAll('\\r\\n','\\n')===source.replaceAll('\\r\\n','\\n'),",
-   "after": "  assert(typeof live==='string'&&live.replaceAll('\\r\\n','\\n')===deck.replaceAll('\\r\\n','\\n'),"
+   "before": " if(path==='src/lua/abyss_deck_ui.lua'&&beforeReleaseDeckPointer(path,source)!==source)\n  authenticateUiEntrance(owner=>read(owner,'utf8'));",
+   "after": " const deckPath='src/lua/abyss_deck_ui.lua';\n const deck=path===deckPath?beforeStsDetailSource(path,source):source;\n const releasedDeck=path===deckPath&&beforeReleaseDeckPointer(path,deck)!==deck;\n const rawRead=read,observed=new Map();\n let entranceAuthenticated=false;\n // Keep raw reads stable across both cohort admission and legacy projection.\n const uniform=raw=>{\n  if(typeof raw!=='string')return false;\n  const lf=raw.replaceAll('\\r\\n','\\n');\n  return !lf.includes('\\r')&&(raw===lf||raw===lf.replaceAll('\\n','\\r\\n'));\n };\n const rawOwner=(owner,encoding)=>{\n  const raw=rawRead(owner,encoding);\n  if(typeof raw!=='string'||(!owner.startsWith('src/')&&owner!=='config/architecture.json'))return raw;\n  const stable=uniform(raw)?raw.replaceAll('\\r\\n','\\n'):raw;\n  if(observed.has(owner))assert.equal(stable,observed.get(owner),'recording UI linked owner changed: '+owner);\n  else observed.set(owner,stable);\n  return raw;\n };\n const authenticate=()=>{\n  if(entranceAuthenticated)return;\n  authenticateUiEntrance(owner=>{\n   const raw=rawOwner(owner,'utf8');\n   assert(uniform(raw),'recording UI linked owner identity: '+owner);\n   return raw;\n  });\n  entranceAuthenticated=true;\n };\n // Peel #1080 only for this deck owner, and only after checking the live\n // entrance cohort against unprojected reads.\n if(releasedDeck)authenticate();\n read=(owner,encoding)=>{\n  const raw=rawOwner(owner,encoding);\n  if(owner!==deckPath)return raw;\n  if(releasedDeck)assert(uniform(raw)&&\n   raw.replaceAll('\\r\\n','\\n')===source.replaceAll('\\r\\n','\\n'),'recording UI linked owner changed: '+owner);\n  if(beforeStsDetailSource(owner,raw)!==raw)authenticate();\n  // Map-deck owns this conversion; retain raw custody until its linked check.\n  return raw;\n };\n if(releasedDeck)read(path,'utf8');"
   }
  ]
 });
@@ -474,7 +469,54 @@ function beforeRecordingReplay(path,raw){
  return Buffer.from(source===lf?prior:prior.replaceAll('\n','\r\n'));
 }
 
+const mapDeckDetailReplay=Object.freeze({
+ "path": "tests/helpers/release-map-deck-source.mjs",
+ "beforeSha256": "1942cd6f35dc83b27dd97b3b5f17f42bc9be54b110611150386199a08682dd7a",
+ "beforeBlob": "5469397d9ac31f736b354092ac98b15eeeaf9edf",
+ "afterSha256": "5380e5c41fe2aa8fe7f5c882ef168bd85bb2415216c906a6443455c5ee0d6e40",
+ "afterBlob": "f3bbd0e8bb9ffa165e050c0b0d7463c8dc69cf99",
+ "hunks": [
+  {
+   "at": 11,
+   "before": "import {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';",
+   "after": "import {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';\nimport {beforeStsDetailSource} from './release-sts-detail-source.mjs';"
+  },
+  {
+   "at": 192,
+   "before": " const beforeOwner=(owner,raw)=>owner===deckPath?beforeReleaseDeckPointer(owner,raw):",
+   "after": " const beforeOwner=(owner,raw)=>owner===deckPath?beforeReleaseDeckPointer(owner,beforeStsDetailSource(owner,raw)):"
+  },
+  {
+   "at": 193,
+   "before": "  owner===mapPath?beforeReleaseClosureFixture(owner,raw):raw;",
+   "after": "  owner===mapPath?beforeReleaseClosureFixture(owner,raw):raw;\n // Remember exact linked deck samples before either inverse. The reviewed\n // successor and its immediate predecessor must never be interchangeable reads.\n let deckObserved;"
+  },
+  {
+   "at": 198,
+   "before": " source=beforeOwner(path,source);",
+   "after": " source=beforeOwner(path,source);\n const productionPrimary=Object.hasOwn(productionMapDeckSources,path)&&\n  uniformCurrent(source,productionMapDeckSources[path].after);\n const sampleOwner=(owner,...args)=>{\n  const raw=rawRead(owner,...args);\n  if(owner!==deckPath)return raw;\n  const lf=typeof raw==='string'?normalize(raw):raw;\n  const observation=typeof lf==='string'&&!lf.includes('\\r')&&\n   (raw===lf||raw===lf.replaceAll('\\n','\\r\\n'))?lf:raw;\n  if(deckObserved!==undefined)assert.equal(observation,deckObserved,'map deck linked owner identity: '+owner);\n  else deckObserved=observation;\n  // The unchanged card skin, view and map also occur in earlier complete\n  // inputs. A raw #1080 architecture distinguishes this live cohort.\n  if(productionPrimary&&beforeStsDetailSource(owner,raw)===raw&&\n   uniformCurrent(beforeReleaseDeckPointer(owner,raw),productionMapDeckSources[owner].after)){\n   const configPath='config/architecture.json';\n   const config=rawRead(configPath,'utf8');\n   assert(beforeStsDetailSource(configPath,config)===config,'map deck linked owner identity: '+owner);\n  }\n  return raw;\n };\n if(path===deckPath&&source!==liveSource){\n  const live=sampleOwner(path,'utf8');\n  assert(typeof live==='string'&&normalize(live)===normalize(liveSource)&&\n   (live===normalize(live)||live===normalize(live).replaceAll('\\n','\\r\\n')),\n   'map deck linked owner identity: '+path);\n }"
+  },
+  {
+   "at": 230,
+   "before": " read=(owner,...args)=>beforeOwner(owner,rawRead(owner,...args));",
+   "after": " read=(owner,...args)=>beforeOwner(owner,sampleOwner(owner,...args));"
+  }
+ ]
+});
+function beforeMapDeckDetailReplay(path,raw){
+ if(path!==mapDeckDetailReplay.path)return raw;
+ const source=raw.toString('utf8'),lf=source.replaceAll('\r\n','\n');
+ if(!raw.equals(Buffer.from(source))||lf.includes('\r')||
+  source!==lf&&source!==lf.replaceAll('\n','\r\n')||
+  !exactSourceMatches(lf,{sha256:mapDeckDetailReplay.afterSha256,gitBlob:mapDeckDetailReplay.afterBlob}))return raw;
+ const prior=restoreExactFixtureHunks(mapDeckDetailReplay,path,lf);
+ assert(exactSourceMatches(prior,{sha256:mapDeckDetailReplay.beforeSha256,gitBlob:mapDeckDetailReplay.beforeBlob}),
+  'exact pre-STS map deck replay helper');
+ return Buffer.from(source===lf?prior:prior.replaceAll('\n','\r\n'));
+}
+
 export function beforeDetachedReleaseBackflow(path,raw){
+ raw=beforeMapDeckDetailReplay(path,raw);
  raw=beforePowerShopFacade(path,beforeRecordingReplay(path,raw));
  raw=beforeStsDetailCloseout(path,beforeStsDetailRuntime(path,beforeReleaseEnemyClearance(path,raw)));
  if(path==='tests/helpers/chapter-battle-scene-source.mjs')return beforeBossMapScroll(path,raw);

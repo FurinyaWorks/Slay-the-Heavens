@@ -451,6 +451,29 @@ const stsDetailOutsideArchive=Object.freeze({
 });
 // Keep published current expectations separate from earlier immutable receipts.
 const eventPreviewFixtures=Object.freeze({
+ "tests/game-ui.test.mjs": {
+  "current": {
+   "sha256": "d933d7eeb771b4d734e26442d6b9753d294dbce91ba598bd6c14b057730e35fd",
+   "gitBlob": "6bc3277ff827023bafbf12c25ea8afd93e2c7b6a"
+  },
+  "previous": {
+   "sha256": "24e4ac5ceaa35a28372b53ab1e7baf4f0442383b96b0218f7457f94f37e49fec",
+   "gitBlob": "69aa3d7748b13116293ae97a31347cca31b6d643"
+  },
+  "path": "tests/game-ui.test.mjs",
+  "hunks": [
+   {
+    "at": 11,
+    "before": "  assert.equal(layout.script, 'abyss_ui');\n  assert.deepEqual(layout.controls.map(control => control.name).sort(), ['battlePanel', 'characterPanel', 'choicePanel', 'combatRewards', 'deckEntry', 'deckPanel', 'exitEntry', 'exitPanel', 'mapPanel', 'menuPanel', 'nodePanel', 'officialBattleBackdrop', 'pageReveal', 'potionEntry', 'potionPanel', 'prologuePanel', 'relicBar', 'relicEntry', 'relicPanel', 'runMenu', 'victoryEasterEgg']);\n  for (const control of layout.controls.filter(control => !['menuPanel', 'exitEntry'].includes(control.name))) {",
+    "after": "  assert.equal(layout.script, 'abyss_ui');\n  assert.deepEqual(layout.controls.map(control => control.name).sort(), ['battlePanel', 'cardKeywordTip', 'characterPanel', 'choicePanel', 'combatRewards', 'deckEntry', 'deckPanel', 'exitEntry', 'exitPanel', 'mapPanel', 'menuPanel', 'nodePanel', 'officialBattleBackdrop', 'pageReveal', 'potionEntry', 'potionPanel', 'prologuePanel', 'relicBar', 'relicEntry', 'relicPanel', 'runMenu', 'victoryEasterEgg']);\n  for (const control of layout.controls.filter(control => !['menuPanel', 'exitEntry'].includes(control.name))) {"
+   },
+   {
+    "at": 15,
+    "before": "  }\n  const backdrop = layout.controls.find(control => control.name === 'officialBattleBackdrop');",
+    "after": "  }\n  const keywordTip = layout.controls.find(control => control.name === 'cardKeywordTip');\n  assert.equal(keywordTip.kind, 'container');\n  assert.deepEqual(keywordTip.children.map(control => [control.name, control.kind, control.raycastTarget]),\n    [['border', 'image', false], ['plate', 'image', false], ['copy', 'text', false]],\n    'one display-only keyword tip must not block native card input');\n  assert.equal(keywordTip.children.find(control => control.name === 'copy').text.content, '',\n    'keyword copy starts empty until the runtime supplies a card');\n  const backdrop = layout.controls.find(control => control.name === 'officialBattleBackdrop');"
+   }
+  ]
+ },
  "tests/lightweight-card-layout.test.mjs": {
   "current": {
    "sha256": "a2e679cc1012e49a5bf2eacc61b12961a0caae5d63e7d4ef5d14c9ac3142245c",

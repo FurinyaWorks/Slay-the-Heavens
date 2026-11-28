@@ -151,17 +151,17 @@ export function beforeAuthenticatedRecordingStage(path,source,read){
  read=(owner,encoding)=>{
   const raw=rawOwner(owner,encoding);
   if(owner!==deckPath)return raw;
-  const prior=beforeStsDetailSource(owner,raw);
   if(releasedDeck)assert(uniform(raw)&&
    raw.replaceAll('\r\n','\n')===source.replaceAll('\r\n','\n'),'recording UI linked owner changed: '+owner);
-  if(prior!==raw)authenticate();
-  return prior;
+  if(beforeStsDetailSource(owner,raw)!==raw)authenticate();
+  // Map-deck owns this conversion; retain raw custody until its linked check.
+  return raw;
  };
  if(releasedDeck)read(path,'utf8');
- const input=recordingRuntimeInput(path,deck);
- if(input!==deck){
+ const input=recordingRuntimeInput(path,source);
+ if(input!==source){
   const live=read(path,'utf8');
-  assert(typeof live==='string'&&live.replaceAll('\r\n','\n')===deck.replaceAll('\r\n','\n'),
+  assert(typeof live==='string'&&live.replaceAll('\r\n','\n')===source.replaceAll('\r\n','\n'),
    'recording UI linked owner changed: '+path);
  }
  const readInput=owner=>recordingRuntimeInput(owner,read(owner,'utf8'));
