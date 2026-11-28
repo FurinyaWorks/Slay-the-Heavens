@@ -265,9 +265,26 @@ test('compound intent owners replay the exact Release predecessor and reject a p
   }
  }
 });
+// The historical combined epoch predates only these three #1080 UI additions.
+const releaseDetailInventoryOwners=Object.freeze({
+ 'src/lua/abyss_card_browse_preview.lua':['e0d1d3262f93251bc47681cd25713a4532b2552d11f55cc6e3c2e8297d11c5bb','54c7d8fb78276b57017e91470f3129be02ad1e29'],
+ 'src/lua/abyss_card_keyword_tip.lua':['291991d574c7056c675ee90f217d81c3b546da865b56fc71fdaed3cfd60a1a9a','fae7fb2fe4338beb16ef59180d0db7784e0d2a48'],
+ 'src/lua/abyss_node_ui_card_inspection.lua':['51cc94804f4a33bdc43be23510a060e1c4acdaa222082e3ecafcc7fa268787ee','1bcdf13d9ca0f434c23cd9a0a874b5a33953dfb1'],
+});
+function beforeReleaseDetailInventory(paths,read=path=>readFileSync(path,'utf8')){
+ for(const [path,[sha256,blob]] of Object.entries(releaseDetailInventoryOwners)){
+  assert.equal(paths.filter(owner=>owner===path).length,1,'complete Release detail UI inventory: '+path);
+  const text=read(path),lf=typeof text==='string'&&text.replaceAll('\r\n','\n');
+  assert(typeof lf==='string'&&!lf.includes('\r')&&(text===lf||text===lf.replaceAll('\n','\r\n'))
+   &&digest(lf)===sha256&&createHash('sha1').update(`blob ${Buffer.byteLength(lf)}\0`).update(lf).digest('hex')===blob,
+   'fresh Release detail UI inventory owner: '+path);
+ }
+ return paths.filter(owner=>!Object.hasOwn(releaseDetailInventoryOwners,owner));
+}
 test('combined epoch authenticates the complete current production tree',()=>{
  const live=['config/architecture.json',...readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p)].sort();
- const files=reviewedStsStyleInventory(live);
+ const preDetail=beforeReleaseDetailInventory(live);
+ const files=reviewedStsStyleInventory(preDetail);
  const recorded=Object.keys(proof.current).filter(path=>path!==retiredControllerPath&&proof.current[path]!==null).sort();
  const {current:read,entrance,readOwner}=integrationProductionReaders();
  assert.deepEqual(entranceInventory(files,entrance),[...recorded,...stasisUpgradeAddedPaths,...actorFocusAdded,...deckPagesAdded,pointerInputPath].sort());
@@ -305,6 +322,20 @@ test('combined epoch authenticates the complete current production tree',()=>{
     :owner=>owner===path?invalid:readCurrent(owner);
    assert.throws(()=>beforeCurrentProductionSource(path,latest,changed),/fresh .*source|(?:combined|map deck) linked owner identity/,path);
   }
+ }
+});
+test('Release detail inventory rejects missing, duplicate, and tampered current additions',()=>{
+ const names=Object.keys(releaseDetailInventoryOwners);
+ const foreign='src/lua/unknown_owner.lua';
+ const live=[...names,foreign];
+ const read=path=>readFileSync(path,'utf8');
+ assert.deepEqual(beforeReleaseDetailInventory(live),[foreign],'unregistered owners remain visible to the original full inventory');
+ for(const path of names){
+  assert.throws(()=>beforeReleaseDetailInventory(live.filter(owner=>owner!==path)),/complete Release detail UI inventory/);
+  assert.throws(()=>beforeReleaseDetailInventory([...live,path]),/complete Release detail UI inventory/);
+  const source=read(path).replaceAll('\r\n','\n');
+  assert.deepEqual(beforeReleaseDetailInventory(live,owner=>owner===path?source.replaceAll('\n','\r\n'):read(owner)),[foreign]);
+  for(const drift of [source+'\n',source.replace('\n','\r\n'),null])assert.throws(()=>beforeReleaseDetailInventory(live,owner=>owner===path?drift:read(owner)),{message:'fresh Release detail UI inventory owner: '+path});
  }
 });
 test('entrance replay freshly checks the complete changed cohort and preserves foreign inputs',()=>{

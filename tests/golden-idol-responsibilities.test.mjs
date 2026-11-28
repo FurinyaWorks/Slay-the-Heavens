@@ -1,6 +1,8 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {readFileSync,mkdtempSync,rmSync}from'node:fs';import {join}from'node:path';import {tmpdir}from'node:os';
 import {spawnSync}from'node:child_process';import {createHash}from'node:crypto';import luaparse from 'luaparse';
+import {beforeStsDetailSource} from './helpers/release-sts-detail-source.mjs';
+import {exactSourceMatches} from './helpers/source-fingerprint.mjs';
 const path='src/lua/abyss_golden_idol_event.lua';const read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');const before=read('tests/fixtures/golden-idol-before.lua');
 function run(source){const dir=mkdtempSync(join(tmpdir(),'golden-responsibilities-'));try{
  const output=join(dir,'graphs.jsonl');const child=spawnSync(process.execPath,['tests/helpers/golden-idol-vm.mjs'],{input:JSON.stringify({source,fixture:'tests/helpers/golden-idol-cases.lua',output}),encoding:'utf8',timeout:20000,maxBuffer:8*1024**2});
@@ -9,7 +11,20 @@ function run(source){const dir=mkdtempSync(join(tmpdir(),'golden-responsibilitie
 }finally{rmSync(dir,{recursive:true,force:true});}}
 test('Golden Idol frozen source binds exact develop 1eb28847 Git bytes',()=>{
  assert.equal(createHash('sha1').update(`blob ${Buffer.byteLength(before)}\0`).update(before).digest('hex'),'85baebf80e4919437a55635b9930eba9a671dd60');
- assert.equal(read(path).slice(0,read(path).indexOf('local function chooseIntro')),before.slice(0,before.indexOf('function M.choose')));
+ // #1080 deliberately adds a passive relic preview to the options prefix.
+ // Peel only its exact reviewed bytes; the semantic cases below still use live Lua.
+ const raw=readFileSync(path,'utf8');
+ const lf=raw.replaceAll('\r\n','\n');
+ assert(!lf.includes('\r')&&(raw===lf||raw===lf.replaceAll('\n','\r\n')),'uniform Golden Idol live source');
+ const projected=beforeStsDetailSource(path,raw);
+ assert.notEqual(projected,raw,'exact reviewed live Golden Idol preview source');
+ const prior=projected.replaceAll('\r\n','\n');
+ assert(exactSourceMatches(prior,{
+  sha256:'96a6c25fde12de016eb631e11325349d45c10794c9259f243fa42fc0e8129e0f',
+  gitBlob:'522f5c8c721643b52e38857a49ce38385fc4678e',
+ }),'exact pre-preview Golden Idol source');
+ assert(prior.includes('local function chooseIntro')&&before.includes('function M.choose'),'Golden Idol prefix boundaries');
+ assert.equal(prior.slice(0,prior.indexOf('local function chooseIntro')),before.slice(0,before.indexOf('function M.choose')));
 });
 test('Golden Idol independent old/new VMs preserve complete state, reads, failures, aliases and returns',()=>{
  const a=run(before),b=run(read(path));assert.equal(a.status,0,a.error);assert.equal(b.status,0,b.error);assert(b.checkpoints>=97);

@@ -1,4 +1,4 @@
-import {beforeDetachedReleaseBackflow,beforeSharedReleaseRuntimeReplay,isStsDetailRuntimeCurrent,isStsDetailCloseoutCurrent} from './release-detached-backflow-source.mjs';
+import {beforeCombinedDetailInventory,beforeDetachedReleaseBackflow,beforeSharedReleaseRuntimeReplay,isStsDetailRuntimeCurrent,isStsDetailCloseoutCurrent} from './release-detached-backflow-source.mjs';
 import {beforeBossMapScroll} from './boss-map-scroll-source.mjs';
 import {beforeReleaseEnemyClearance,beforeStsDetailInput} from './release-enemy-clearance-source.mjs';
 import {beforeKnownMasterBackflowSource,beforeMasterBackflowSource,productionReadingBackflowOwns} from './master-backflow-source.mjs';
@@ -1373,6 +1373,7 @@ function beforeCalibrationReplayOwner(path,source){
  return calibrationReplayPredecessor.project(path,source);
 }
 function beforeIntegrationReplayTests(path,source){
+ source=beforeCombinedDetailInventory(path,source);
  if(path!=='tests/integration-source-epoch.test.mjs'||typeof source!=='string'||source.includes('\r\r\n'))return source;
  const current=normalize(source);
  if(hash(current)!=='54554c11d6514f5bf8b164fb30fe9b5538e39f550e9a22587514461ad9442587'||
