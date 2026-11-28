@@ -47,13 +47,24 @@ local function expect(outerBolt)
         assert(chip:GetChild("icon").visible and chip:GetChild("icon").imageId==Theme.icon.status.artifact and chip:GetChild("count").text=="1")
     end
 end
-expect(true)
-local before=C.copy(ui.run.combat)
-for _=1,4 do
-    click("enemy1");assert(inspectDetails(ui,stage):find("放入你的弃牌堆",1,true))
+local function expectBoltDetail(actor)
+    click(actor)
+    local text=inspectDetails(ui,stage)
+    assert(text:find("这名敌人将要对你施加一种负面效果。",1,true),text)
+    assert(text:find("人工制品 1",1,true),text)
 end
+local function expectDazed(expected)
+    local s,n=ui.run.combat,0
+    for _,pile in ipairs({s.hand,s.draw,s.discard,s.exhaust}) do
+        for _,card in ipairs(pile) do if card.cardId=="dazed" then n=n+1 end end
+    end
+    assert(n==expected,"expected "..expected.." Dazed, got "..n)
+end
+expect(true);expectDazed(0)
+local before=C.copy(ui.run.combat)
+for _=1,4 do expectBoltDetail("enemy1") end
 same(ui.run.combat,before)
-click("endTurn");expect(false);assert(ui.run.combat.player.hp==71)
-click("enemy2");assert(inspectDetails(ui,stage):find("放入你的弃牌堆",1,true))
-click("endTurn");expect(true);assert(ui.run.combat.player.hp==53)
-print("SENTRIES_GENERATED_UI_PASS compact/detail/icons/Artifact/readonly/two real rounds")
+click("endTurn");expect(false);assert(ui.run.combat.player.hp==71);expectDazed(4)
+expectBoltDetail("enemy2")
+click("endTurn");expect(true);assert(ui.run.combat.player.hp==53);expectDazed(6)
+print("SENTRIES_GENERATED_UI_PASS compact/detail/icons/Artifact/readonly/two real rounds/Dazed 4 then 6")
