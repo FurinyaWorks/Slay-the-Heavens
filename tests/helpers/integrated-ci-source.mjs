@@ -131,7 +131,7 @@ const integratedEvidenceSuccessors=Object.freeze({
  'tests/sts-card-reference-runtime.test.mjs':jsInventorySuccessors['tests/sts-card-reference-runtime.test.mjs'],
  'tests/sts-page-reveal.test.mjs':jsInventorySuccessors['tests/sts-page-reveal.test.mjs'],
  'tests/v25-card-skin-integration.test.mjs':{
-  sha256:'f94b0534b4bd8468bf1a6bc76936b7d0264d8ce0e96d635f13a9d213034d04bb',gitBlob:'f8f3e90f9924902353cbe8c159b26f6123994745',
+  sha256:'c2406175c4de2016e35de7fa87bef7f91316fba7b2d0747af8a6f95ee9e64407',gitBlob:'dc140e606011c4e4b0948544373f113deb7b6d8b',
  },
 });
 export function assertIntegratedLuaFixturesCurrent(read){

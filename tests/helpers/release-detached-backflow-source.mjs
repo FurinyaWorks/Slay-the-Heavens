@@ -341,7 +341,8 @@ const detachedInputsBeforeReplayGuard=Object.freeze({
 // historical copier still restores the original immutable helpers.
 export const currentDetachedInputs=Object.freeze({
  ...detachedInputsBeforeReplayGuard,
- 'tests/helpers/release-enemy-clearance-source.mjs':'76291b4ca58c43edd879dc348858eec837e123f3cce7db4518b4a8fe1e84b085',
+ 'tests/helpers/power-shop-source-inverse.mjs':'bcf4358902fff59dfb345420541b6c4ac1a71e99fda18adb500c9f7496f19424',
+ 'tests/helpers/release-enemy-clearance-source.mjs':'f3503329d4e82558be04eae7459069883bb407a3bd66176bcc66b553efe9c097',
  'tests/helpers/chapter-battle-scene-source.mjs':'799040ad7eef63281029b16094e95292b14df23692208a00639cd4ce7d8113e2',
  'tests/helpers/boss-map-scroll-source.mjs':'32086e0a0b75e11efba16ff7ac9de4151b9e6443448480fcd28859c7d01d0884',
  'tests/helpers/combined-epoch/source-epoch-runtime.mjs':'93d263928f8b024e6cd7557e7279220237e19aa119629dc1939549902653c49a',
@@ -411,7 +412,34 @@ export function isStsDetailCloseoutCurrent(source){
  return !lf.includes('\r')&&(source===lf||source===lf.replaceAll('\n','\r\n'))&&exactSourceMatches(lf,{sha256,gitBlob});
 }
 
+const powerShopFacade = Object.freeze({
+ "path": "tests/helpers/power-shop-source-inverse.mjs",
+ "beforeSha256": "c6035aeea5b3f563160a582753b7357a9c4e0c2326c5302221788e6c0180678d",
+ "beforeBlob": "91f9507ba5c965c81b7075720a5631306c7bd2c2",
+ "afterSha256": "bcf4358902fff59dfb345420541b6c4ac1a71e99fda18adb500c9f7496f19424",
+ "afterBlob": "807e7affad44fafe48127ac3e5308eaa05701d19",
+ "hunks": [
+  {
+   "at": 4,
+   "before": "import {readFileSync} from 'node:fs';\nconst live=p=>readFileSync(new URL('../../'+p,import.meta.url),'utf8');\nexport function prePowerShopSource(path,source,{readSource=live}={}){\n const projected=sourceEpoch.preCombinedSource(path,source,{target:'powerShop',readSource});\n return original(path,projected,{readSource:(typeof readSource==='function'?sourceEpoch.combinedReader(readSource,'powerShop'):readSource)});\n}",
+   "after": "import {readFileSync} from 'node:fs';\nimport {beforeStsDetailSource} from './release-sts-detail-source.mjs';\nimport {configSourceTokens,sourceConfigLayoutMatches} from './source-fingerprint.mjs';\nimport {createHash} from 'node:crypto';\nconst live=p=>readFileSync(new URL('../../'+p,import.meta.url),'utf8');\nconst configPath='config/architecture.json';\nfunction normalizePrimaryConfig(path,source){\n // The original Power Shop contract admits config whitespace in a primary\n // input only. Anchor that token stream to the exact #1080 successor first.\n if(path!==configPath||typeof source!=='string'||beforeStsDetailSource(path,source)!==source)return source;\n const lf=source.replaceAll('\\r\\n','\\n');\n if(lf.includes('\\r')||source!==lf&&source!==lf.replaceAll('\\n','\\r\\n'))return source;\n const raw=live(configPath);\n if(beforeStsDetailSource(configPath,raw)===raw)return source;\n const tokens=createHash('sha256').update(configSourceTokens(raw)).digest('hex');\n return sourceConfigLayoutMatches(source,tokens)?raw:source;\n}\nexport function prePowerShopSource(path,source,{readSource=live}={}){\n const projected=sourceEpoch.preCombinedSource(path,normalizePrimaryConfig(path,source),{target:'powerShop',readSource});\n return original(path,projected,{readSource:(typeof readSource==='function'?sourceEpoch.combinedReader(readSource,'powerShop'):readSource)});\n}"
+  }
+ ]
+});
+function beforePowerShopFacade(path,raw){
+ if(path!==powerShopFacade.path)return raw;
+ const source=raw.toString('utf8'),lf=source.replaceAll('\r\n','\n');
+ if(!raw.equals(Buffer.from(source))||lf.includes('\r')||
+  source!==lf&&source!==lf.replaceAll('\n','\r\n')||
+  !exactSourceMatches(lf,{sha256:powerShopFacade.afterSha256,gitBlob:powerShopFacade.afterBlob}))return raw;
+ const prior=restoreExactFixtureHunks(powerShopFacade,path,lf);
+ assert(exactSourceMatches(prior,{sha256:powerShopFacade.beforeSha256,gitBlob:powerShopFacade.beforeBlob}),
+  'exact pre-STS Power Shop facade');
+ return Buffer.from(source===lf?prior:prior.replaceAll('\n','\r\n'));
+}
+
 export function beforeDetachedReleaseBackflow(path,raw){
+ raw=beforePowerShopFacade(path,raw);
  raw=beforeStsDetailCloseout(path,beforeStsDetailRuntime(path,beforeReleaseEnemyClearance(path,raw)));
  if(path==='tests/helpers/chapter-battle-scene-source.mjs')return beforeBossMapScroll(path,raw);
  if(!Object.hasOwn(owners,path))return raw;

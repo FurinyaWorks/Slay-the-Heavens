@@ -278,10 +278,15 @@ check('WRAPPER_RELEASE_RETRY',function()
 end)
 assert(failures==0,tostring(failures)..' V25 card-skin integration cases failed')
 `;
+ // This ownership replay builds a fresh Host for every case. Hosted Windows
+ // has crossed the default deadline after seven cases passed; keep a bounded
+ // per-test allowance without changing the non-Windows budget or Lua workload.
+ const timeout=process.platform==='win32'?45000:30000;
  const result=spawnSync(process.execPath,[require.resolve('fengari-node-cli/src/lua-cli.js'),'-e',source],{
-  cwd:process.cwd(),encoding:'utf8',maxBuffer:2*1024*1024,timeout:30000,
+  cwd:process.cwd(),encoding:'utf8',maxBuffer:2*1024*1024,timeout,
   env:{...process.env,LUA_PATH:`${directory.replaceAll('\\','/')}/?.lua;./src/lua/?.lua`,LUA_PATH_5_3:`${directory.replaceAll('\\','/')}/?.lua;./src/lua/?.lua`,LUA_INIT:'',LUA_INIT_5_3:''},
  });
- assert.equal(result.status,0,result.stdout+result.stderr+String(result.error??''));
+ assert.ifError(result.error&&new Error(`V25 card-skin replay failed (child deadline ${timeout} ms): ${result.error.message}\n${result.stdout??''}${result.stderr??''}`,{cause:result.error}));
+ assert.equal(result.status,0,result.stdout+result.stderr);
  for(const name of ['FINAL_CONTENT_GEOMETRY','TEN_CARDS_COST_RESTORE','PILE_REOPEN','SORT_DESTROY_RELEASE','FAILURE_FALLBACK','REWARD_MAP_RELEASE','DEAD_TEMPLATE_CACHED_FACE','WRAPPER_RELEASE_RETRY'])assert.match(result.stdout,new RegExp(`V25_SKIN_${name}_PASS`));
 });

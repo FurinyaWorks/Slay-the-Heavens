@@ -6,7 +6,7 @@ import{attachReadyCardHosts,readyArtTemplates,bindReadyCardPresentation}from'../
 test('every actual card face and recyclable deck template gets only an empty bounded-runtime holder',()=>{
  const game=gameLayout(),deck=deckCardTemplate();
  const hosts=attachReadyCardHosts(game);
- assert.equal(expectedReadyCardGameHosts.length,38+12+10+1);
+ assert.equal(expectedReadyCardGameHosts.length,38+12+10+1+1);
  assert.equal(expectedReadyCardChoiceHosts.length,10);
  assert.deepEqual([...hosts].sort(),expectedReadyCardGameHosts.map(path=>path.replace('/stage/','/')).sort());
  assertReadyCardGameHosts(game,{staged:false});
@@ -19,6 +19,14 @@ test('every actual card face and recyclable deck template gets only an empty bou
  holder.name='missingHolder';
  assert.throws(()=>assertReadyCardGameHosts(game,{staged:false}));
  holder.name='artSamples';
+ const event=game.controls.find(node=>node.name==='nodePanel').children.find(node=>node.name==='eventView');
+ const preview=event.children.find(node=>node.name==='previewCard');
+ const eventHolder=preview.children.find(node=>node.name==='artSamples');
+ assert(eventHolder,'the passive event preview requires its own dormant holder');
+ assert(!preview.children.some(node=>node.name==='hit'),'event preview cannot acquire card input');
+ eventHolder.name='missingHolder';
+ assert.throws(()=>assertReadyCardGameHosts(game,{staged:false}));
+ eventHolder.name='artSamples';
  function verify(n){if(n.name==='artSamples'){assert.deepEqual(n.children,[]);assert.equal(n.visible,false);}for(const c of n.children??n.controls??[])verify(c);}
  verify(game);verify(deck);assertNativeUiCapacity(game);assertNativeUiCapacity(deck);
  assert.throws(()=>attachReadyCardHosts(game),/combine/);
