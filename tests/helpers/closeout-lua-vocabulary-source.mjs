@@ -5,6 +5,7 @@ import {gunzipSync} from 'node:zlib';
 import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
 import {exactSourceMatches} from './source-fingerprint.mjs';
 import {beforeReleaseClosureFixture} from './release-closure-fixture-source.mjs';
+import {beforeDetachedReleaseBackflow} from './release-detached-backflow-source.mjs';
 
 function readPacket(name,digest,base,head){
  const bytes=readFileSync(new URL(`../fixtures/${name}.json.gz`,import.meta.url));
@@ -74,8 +75,11 @@ export function readCloseoutLuaVocabularyReceipt(path,digest,readCurrent){
  const sourcePath=row.sourcePath??path;
  if(sourcePath!==path)assert.throws(()=>readCurrent(path,'utf8'),{code:'ENOENT'},'renamed closeout Lua receipt input reappeared: '+path);
  const current={sha256:row.afterSha256,gitBlob:row.afterBlob};
- const source=beforeGroundContactPortraitFixture(sourcePath,
-  beforeReleaseClosureFixture(sourcePath,readCurrent(sourcePath,'utf8')),current);
+ let live=beforeReleaseClosureFixture(sourcePath,readCurrent(sourcePath,'utf8'));
+ // Relic fixture history and the copier share the same authenticated inverse.
+ if(sourcePath==='tests/helpers/relic-query-source-inverse.mjs'&&typeof live==='string')
+  live=beforeDetachedReleaseBackflow(sourcePath,Buffer.from(live)).toString('utf8');
+ const source=beforeGroundContactPortraitFixture(sourcePath,live,current);
  const continuation=row.continuation;
  const continued=continuation&&exactSourceMatches(source,continuation);
  assert(continued||exactSourceMatches(source,current),'current closeout Lua receipt input changed: '+path);

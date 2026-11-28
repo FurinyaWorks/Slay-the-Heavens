@@ -143,12 +143,20 @@ function uniformCurrent(source,binding){
   return source===lf||source===lf.replaceAll('\n','\r\n');
 }
 
+// #1065 only chooses the Collector throne for its encounter. Keep this exact
+// successor valid as a freshly read map/deck peer without reusing cached bytes.
+const collectorSceneView=Object.freeze({
+  sha256:'817eb3428c3fc0bb081a11015212520f445f018368c2028a8c5e4216747eb178',
+  gitBlob:'94addcbe13c7dd643469e0c1bf33062ed27a8a7a',
+});
 function assertProductionMapDeckOwners(path,source,read){
   if(!Object.hasOwn(productionMapDeckSources,path)||!uniformCurrent(source,productionMapDeckSources[path].after))return;
   for(const [name,{after}] of Object.entries(productionMapDeckSources)){
     let live;
     try{live=read(name,'utf8');}catch{assert.fail('map deck linked owner missing: '+name);}
-    assert(uniformCurrent(live,after),'map deck linked owner identity: '+name);
+    assert(uniformCurrent(live,after)||
+      (name==='src/lua/abyss_game_ui_view.lua'&&uniformCurrent(live,collectorSceneView)),
+      'map deck linked owner identity: '+name);
   }
   return true;
 }
