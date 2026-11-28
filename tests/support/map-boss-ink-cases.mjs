@@ -10,6 +10,7 @@ import { buildUiTheme } from '../../scripts/build-ui-theme.mjs';
 import { loadMapTheme, mapBossInk, mapGeometry, mapLayout } from '../../scripts/map-ui-layout.mjs';
 import { applyV25MapLayout } from '../../scripts/v25-map-layout.mjs';
 import { beforeBossMapScroll } from '../helpers/boss-map-scroll-source.mjs';
+import { beforeReleaseEnemyClearance } from '../helpers/release-enemy-clearance-source.mjs';
 
 const require = createRequire(import.meta.url);
 const children = node => node.children ?? node.controls ?? [];
@@ -84,16 +85,28 @@ test('real map runtime paints all six identities on the same V25 controls and pr
 });
 
 test('Boss scroll replay only restores exact known live owners in uniform LF or CRLF', () => {
+  const chapter = 'tests/helpers/chapter-battle-scene-source.mjs';
   const paths = ['scripts/build-ui.mjs', 'scripts/map-ui-layout.mjs', 'scripts/v25-map-layout.mjs',
-    'src/lua/abyss_map_ui.lua', 'tests/helpers/chapter-battle-scene-source.mjs'];
+    'src/lua/abyss_map_ui.lua', chapter];
+  // #1079 owns the current chapter helper, while the #1077 Boss receipt owns
+  // its exact predecessor. Require both steps, only for that helper.
+  const restore = (path, raw) => {
+    if (path !== chapter) return beforeBossMapScroll(path, raw);
+    const beforeClearance = beforeReleaseEnemyClearance(path, raw);
+    if (beforeClearance === raw) return raw;
+    const beforeScroll = beforeBossMapScroll(path, beforeClearance);
+    return beforeScroll === beforeClearance ? raw : beforeScroll;
+  };
   for (const path of paths) {
     const live = readFileSync(path, 'utf8').replaceAll('\r\n', '\n');
-    const prior = beforeBossMapScroll(path, live);
+    const prior = restore(path, live);
     assert.notEqual(prior, live, path);
-    assert.deepEqual(beforeBossMapScroll(path, Buffer.from(live)), Buffer.from(prior));
-    assert.equal(beforeBossMapScroll(path, live.replaceAll('\n', '\r\n')), prior.replaceAll('\n', '\r\n'));
-    for (const mutated of [prior, live+'\n', live.replace('\n', '\r\n'), Buffer.concat([Buffer.from(live), Buffer.of(255)])])
-      assert.equal(beforeBossMapScroll(path, mutated), mutated, 'unknown raw source must not project: '+path);
+    assert.deepEqual(restore(path, Buffer.from(live)), Buffer.from(prior));
+    assert.equal(restore(path, live.replaceAll('\n', '\r\n')), prior.replaceAll('\n', '\r\n'));
+    const malformed = [prior, live+'\n', live.replace('\n', '\r\n'), Buffer.concat([Buffer.from(live), Buffer.of(255)])];
+    if (path === chapter) malformed.push(beforeReleaseEnemyClearance(path, live));
+    for (const mutated of malformed)
+      assert.equal(restore(path, mutated), mutated, 'unknown raw source must not project: '+path);
   }
 });
 

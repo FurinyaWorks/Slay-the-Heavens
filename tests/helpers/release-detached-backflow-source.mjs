@@ -438,8 +438,44 @@ function beforePowerShopFacade(path,raw){
  return Buffer.from(source===lf?prior:prior.replaceAll('\n','\r\n'));
 }
 
+const recordingReplay=Object.freeze({
+ "path": "tests/helpers/release-ui-restore-source.mjs",
+ "beforeSha256": "9f56948b5d5f76f31c1780a27f6e1993d637a95de3ac2bafd19dacad2cbb0618",
+ "beforeBlob": "f4ed5ab66931fc3eb1ef758820a5e740716eee57",
+ "afterSha256": "a41f4211d03bffa49ec962f1395e62532027e6c2d789eeac1861e99a78579737",
+ "afterBlob": "fbdaf29c6e099b4a51ae93a0465e5c71ffabf2fb",
+ "hunks": [
+  {
+   "at": 8,
+   "before": "import {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';",
+   "after": "import {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';\nimport {beforeStsDetailSource} from './release-sts-detail-source.mjs';"
+  },
+  {
+   "at": 119,
+   "before": " if(path==='src/lua/abyss_deck_ui.lua'&&beforeReleaseDeckPointer(path,source)!==source)\n  authenticateUiEntrance(owner=>read(owner,'utf8'));\n const input=recordingRuntimeInput(path,source);\n if(input!==source){",
+   "after": " const deckPath='src/lua/abyss_deck_ui.lua';\n const deck=path===deckPath?beforeStsDetailSource(path,source):source;\n const releasedDeck=path===deckPath&&beforeReleaseDeckPointer(path,deck)!==deck;\n const rawRead=read,observed=new Map();\n let entranceAuthenticated=false;\n // Keep raw reads stable across both cohort admission and legacy projection.\n const uniform=raw=>{\n  if(typeof raw!=='string')return false;\n  const lf=raw.replaceAll('\\r\\n','\\n');\n  return !lf.includes('\\r')&&(raw===lf||raw===lf.replaceAll('\\n','\\r\\n'));\n };\n const rawOwner=(owner,encoding)=>{\n  const raw=rawRead(owner,encoding);\n  if(typeof raw!=='string'||(!owner.startsWith('src/')&&owner!=='config/architecture.json'))return raw;\n  const stable=uniform(raw)?raw.replaceAll('\\r\\n','\\n'):raw;\n  if(observed.has(owner))assert.equal(stable,observed.get(owner),'recording UI linked owner changed: '+owner);\n  else observed.set(owner,stable);\n  return raw;\n };\n const authenticate=()=>{\n  if(entranceAuthenticated)return;\n  authenticateUiEntrance(owner=>{\n   const raw=rawOwner(owner,'utf8');\n   assert(uniform(raw),'recording UI linked owner identity: '+owner);\n   return raw;\n  });\n  entranceAuthenticated=true;\n };\n // Peel #1080 only for this deck owner, and only after checking the live\n // entrance cohort against unprojected reads.\n if(releasedDeck)authenticate();\n read=(owner,encoding)=>{\n  const raw=rawOwner(owner,encoding);\n  if(owner!==deckPath)return raw;\n  const prior=beforeStsDetailSource(owner,raw);\n  if(releasedDeck)assert(uniform(raw)&&\n   raw.replaceAll('\\r\\n','\\n')===source.replaceAll('\\r\\n','\\n'),'recording UI linked owner changed: '+owner);\n  if(prior!==raw)authenticate();\n  return prior;\n };\n if(releasedDeck)read(path,'utf8');\n const input=recordingRuntimeInput(path,deck);\n if(input!==deck){"
+  },
+  {
+   "at": 163,
+   "before": "  assert(typeof live==='string'&&live.replaceAll('\\r\\n','\\n')===source.replaceAll('\\r\\n','\\n'),",
+   "after": "  assert(typeof live==='string'&&live.replaceAll('\\r\\n','\\n')===deck.replaceAll('\\r\\n','\\n'),"
+  }
+ ]
+});
+function beforeRecordingReplay(path,raw){
+ if(path!==recordingReplay.path)return raw;
+ const source=raw.toString('utf8'),lf=source.replaceAll('\r\n','\n');
+ if(!raw.equals(Buffer.from(source))||lf.includes('\r')||
+  source!==lf&&source!==lf.replaceAll('\n','\r\n')||
+  !exactSourceMatches(lf,{sha256:recordingReplay.afterSha256,gitBlob:recordingReplay.afterBlob}))return raw;
+ const prior=restoreExactFixtureHunks(recordingReplay,path,lf);
+ assert(exactSourceMatches(prior,{sha256:recordingReplay.beforeSha256,gitBlob:recordingReplay.beforeBlob}),
+  'exact pre-recording replay helper');
+ return Buffer.from(source===lf?prior:prior.replaceAll('\n','\r\n'));
+}
+
 export function beforeDetachedReleaseBackflow(path,raw){
- raw=beforePowerShopFacade(path,raw);
+ raw=beforePowerShopFacade(path,beforeRecordingReplay(path,raw));
  raw=beforeStsDetailCloseout(path,beforeStsDetailRuntime(path,beforeReleaseEnemyClearance(path,raw)));
  if(path==='tests/helpers/chapter-battle-scene-source.mjs')return beforeBossMapScroll(path,raw);
  if(!Object.hasOwn(owners,path))return raw;
