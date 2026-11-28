@@ -122,6 +122,33 @@ export function beforeForkPush(path,source){
 }
 // Receipt readers retain the actual Q1 current-source predecessor before their existing replay layers.
 for(const row of Object.values(forkPushPacket.receiptSuccessors??{}))assert.equal(hash(row.before),row.beforeSha256);
+// Preserve the exact #1061 receipt while closeout forecasts separate the epochs.
+const linuxCloseoutForecast=Object.freeze({
+ "path": "tests/ci-complete-calibration.test.mjs",
+ "beforeSha256": "6bb186af1cfa4f682246c244ccac839f86e9e61db8c014e0841f5a91906215a2",
+ "afterSha256": "bea8d6800b26d18f3787878af8214d0c128ee4162c56995485415ed0f19ccb78",
+ "hunks": [
+  {
+   "at": 73,
+   "before": "import {discoverJs as liveDiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';",
+   "after": "import {discoverJs as liveDiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,replayPlanningMinimumMs,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';"
+  },
+  {
+   "at": 1925,
+   "before": "function assertReplayForecasts(files,lua,count,platform,forecast,budget){\n const observed=rawCurrentTimings;\n const weights=Object.fromEntries(files.map(file=>[file,Math.max(observed.js[platform][file]??observed.unknownJsMs,observed.jsPlanning.localLowerBounds[file]?.durationMs??0)]));\n const historical=partition(files,`1/${count}`,weights,observed.unknownJsMs,Array.from({length:count},(_,i)=>i===0?observed.initialMs[platform][0]:0));\n const windows=platform==='win32';\n const originalLoads=windows?windowsFullLoads(lua,historical.loads):historical.loads;\n assert(Math.max(...originalLoads)+60000<budget,platform+' original planning target and reserve');\n assert(forecast<(windows?2700000:1800000),platform+' measured replay placement and reserve fit the unchanged job deadline');\n}",
+   "after": "function assertReplayForecasts(files,lua,count,platform,forecast,budget){\n // Historical budgets are claims about the authenticated pre-release timing\n // table. The live planner above must still consume every later observation.\n const observed=JSON.parse(nativeCloseoutRead('scripts/ci-test-timings.json','utf8'));\n const windows=platform==='win32';\n const weights=Object.fromEntries(files.map(file=>[file,Math.max(observed.js[platform][file]??observed.unknownJsMs,observed.jsPlanning.localLowerBounds[file]?.durationMs??0)]));\n const initial=Array.from({length:count},(_,i)=>i===0?observed.initialMs[platform][0]:0);\n const historical=partition(files,`1/${count}`,weights,observed.unknownJsMs,initial);\n const originalLoads=windows?windowsFullLoads(lua,historical.loads):historical.loads;\n assert(Math.max(...originalLoads)+60000<budget,platform+' original planning target and reserve');\n const replayWeights=Object.fromEntries(files.map(file=>[file,Math.max(weights[file],replayPlanningMinimumMs[platform][file.slice('tests/'.length)]??0)]));\n const replayLoads=windows?windowsFullLoads(lua,rawCurrentJsShard(files,`1/${count}`,platform).loads):\n  partition(files,`1/${count}`,replayWeights,observed.unknownJsMs,initial).loads;\n assert(Math.max(...replayLoads)+60000<(windows?2700000:1800000),platform+' archived measured placement and reserve fit its unchanged benchmark');\n assert(forecast<(windows?2700000:5400000),platform+' live measured placement and reserve fit the release execution guard');\n}"
+  }
+ ]
+});
+function beforeLinuxCloseoutForecast(path,source){
+ if(path!==linuxCloseoutForecast.path||typeof source!=='string')return source;
+ const lf=normalize(source);
+ if(lf.includes('\r')||source!==lf&&source!==lf.replaceAll('\n','\r\n'))return source;
+ if(!exactCheckoutSource(lf,[linuxCloseoutForecast.afterSha256,'4a4bb3edf6524f8bdb58acbaabdaabe3d1c33ce0']))return source;
+ const prior=restoreExactFixtureHunks(linuxCloseoutForecast,path,lf);
+ assert(exactCheckoutSource(prior,[linuxCloseoutForecast.beforeSha256,'9e60d6b7633ecf704adf266acd2ac2a1bc4d8f17']),'exact pre-closeout forecast test input');
+ return source===lf?prior:prior.replaceAll('\n','\r\n');
+}
 export function beforeForkReceiptSource(path,source){
  if(path===cursesReceiptFixture.path){
   const prior=beforeCursesReceiptFixture(path,source);
@@ -364,6 +391,7 @@ function beforeReleaseUiBuildSource(path,source,read=readFileSync){
  return source.includes('\r\n')?before.source.replaceAll('\n','\r\n'):before.source;
 }
 function releaseHistoricalInput(path,source){
+ if(path===battleSceneCopyClosure.path)source=beforeCalibrationReplayOwner(path,source);
  source=beforeCurrentReplayCopier(path,beforeActorAlphaBuildInput(path,source));
  return beforeRebasedCopier(path,source)!==source?historicalReleaseCopier(source):beforeRebasedRelease(path,source);
 }
@@ -680,6 +708,23 @@ function beforeFormalAct2ReleaseTest(path,source){
  assert(exactCheckoutSource(prior,formalAct2ReleaseTestBefore),'exact Act II performance test predecessor');
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
+// #1047 deliberately changes three live release tests and adds one. The
+// preceding inventory may omit the exact successor only in historical readers.
+const unifiedReleaseTestCurrent=Object.freeze({
+ [gilCandidateTest]:['a031bf41ba5383976a8ce3f15b70798042f363920fb8d03a14a108cf58952ec4','47cdb8b71e60a22ef0398172744fec302c7237d8'],
+ 'tests/release-metadata.test.mjs':['b135580afd1f333a3ff6d1456057f3f0679f36773b225550c69c123cda848a59','87cd6c5de06878932712cde01aa7b890dd8df8b2'],
+ 'tests/release-performance-artifacts.test.mjs':['ae395fc5c6635e7b555f3e7e6b34c14362bbf1af6ad56c38c47c2061e618296d','541fe7eb8b8a0446ca78c1d229fb40f0b392bd86'],
+});
+const unifiedArchiveTest='tests/release-archive.test.mjs';
+const unifiedArchiveBinding=['9b66cbebd92e9074939e6ba92179a63f15cd2474a867fe3c2c9c9feff29dab5c','cfe7c7416a1a02b4e7af76d51f514df3a978b573'];
+function beforeUnifiedReleaseInventory(paths,read){
+ const count=paths.filter(path=>path===unifiedArchiveTest).length;
+ const live=paths.includes(gilCandidateTest)&&exactCheckoutSource(read(gilCandidateTest,'utf8'),unifiedReleaseTestCurrent[gilCandidateTest]);
+ if(!count&&!live)return paths;
+ assert.equal(count,1,'complete current raw discovery inventory: '+unifiedArchiveTest);
+ assert(exactCheckoutSource(read(unifiedArchiveTest,'utf8'),unifiedArchiveBinding),'fresh added inventory source: '+unifiedArchiveTest);
+ return paths.filter(path=>path!==unifiedArchiveTest);
+}
 const gilCandidateTestBefore=[currentReleaseTests[gilCandidateTest],'471b3677151b3c77a5b9961bdde8deb83b2c5c8a'];
 const gilCandidateTestCurrent=['ebdd4dfc3b5254d7ee241064b0c60c76e460ef725a775b79b81e852ac5fc0059',
  'abe7edbe22347b8f7625f713a889a91dc05a26cc'];
@@ -806,12 +851,13 @@ function beforeMasterBackflowInventory(paths,bindings,changedTest,read){
  }
  for(const [path,binding] of Object.entries(bindings)){
   assert.equal(paths.filter(candidate=>candidate===path).length,1,'complete current raw discovery inventory: '+path);
-  assert(exactCheckoutSource(read(path,'utf8'),binding),'fresh added inventory source: '+path);
+  const source=beforeReleaseClosureFixture(path,read(path,'utf8'));
+  assert(exactCheckoutSource(source,binding),'fresh added inventory source: '+path);
  }
  return paths.filter(path=>!Object.hasOwn(bindings,path));
 }
 export function beforeReleaseAdditionalInventory(paths,kind,read=readFileSync){
- if(kind==='js')paths=beforeMasterBackflowInventory(paths,masterBackflowJsTests,gilCandidateTest,read);
+ if(kind==='js')paths=beforeMasterBackflowInventory(beforeUnifiedReleaseInventory(paths,read),masterBackflowJsTests,gilCandidateTest,read);
  paths=beforeM05BackflowInventory(paths,kind,(path,encoding)=>beforeCurrentReplayFixes(path,beforeUiEntranceWitness(path,read(path,encoding))));
  for(const [path,sha] of Object.entries(newerTests[kind])){
   const count=paths.filter(candidate=>candidate===path).length;
@@ -819,6 +865,8 @@ export function beforeReleaseAdditionalInventory(paths,kind,read=readFileSync){
   assert.equal(count,1,'single added Release test: '+path);
   const live=read(path,'utf8');
   if(kind==='lua'&&exactCurrentReleaseLuaFixture(path,live))continue;
+  if(kind==='js'&&path!==gilCandidateTest&&Object.hasOwn(unifiedReleaseTestCurrent,path)
+    &&exactCheckoutSource(live,unifiedReleaseTestCurrent[path]))continue;
   const predecessor=path===gilCandidateTest?beforeKnownMasterBackflowSource(path,live):live;
   const source=beforePublishedGilTest(path,beforeFormalAct2ReleaseTest(path,beforeDevelopBackflow(path,predecessor)));
   assert(typeof source==='string'&&!source.includes('\r\r\n')&&hash(normalize(source))===sha,'fresh added inventory source: '+path);
@@ -847,14 +895,13 @@ export function beforeShopEntryInventory(paths,kind,read=readFileSync){
 export function assertCurrentJsInventory(paths,preceding,read=readFileSync){
  // These tests remain mandatory in live Full. Only exact authenticated
  // successor paths can be omitted from the older replay inventory.
- for(const path of Object.keys(currentReleaseTests))
+ for(const path of [...Object.keys(currentReleaseTests),unifiedArchiveTest])
   assert.equal(paths.filter(candidate=>candidate===path).length,1,'complete current raw discovery inventory: '+path);
  const readCurrent=read;
  read=(path,...args)=>{
   const source=readCurrent(path,...args);
-  if(path===gilCandidateTest)
-   assert(exactCheckoutSource(source,['d5ec827fa24b3ad3ff33b304723efddc4205599dbc8e8c28141aa3d22d99c1c6','0e38620640049ad1f0e0a7a8a4c9a82b1f0a629b']),
-    'fresh current GIL test source: '+path);
+  if(Object.hasOwn(unifiedReleaseTestCurrent,path))
+   assert(exactCheckoutSource(source,unifiedReleaseTestCurrent[path]),'fresh current unified release test source: '+path);
   if(path===formalAct2ReleaseTest)
    assert(exactCheckoutSource(source,formalAct2ReleaseTestCurrent),'fresh current Release performance test source: '+path);
   return source;
@@ -1282,6 +1329,9 @@ function beforeReviewedStsFeedbackFixture(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 function beforeCalibrationReplayOwner(path,source){
+ if(path==='tests/lore-v2.test.mjs'||path==='tests/act1-choice-responsibilities.test.mjs'
+  ||path==='tests/silent-final-source-epoch.test.mjs'||path==='tests/encounter-formation-source-epoch.test.mjs')
+  source=beforeReleaseClosureFixture(path,source);
  source=beforeReviewedStsFeedbackFixture(path,beforeReviewedStsStyleFixture(path,source));
  source=beforeReviewedOfficialAssetReplay(path,beforeSelectionReceiptSource(path,source));
  source=beforeBattleSceneCopyClosure(path,source);
@@ -1491,6 +1541,8 @@ function beforeReleaseScriptStaticGate(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 export function beforeReviewedBuildInput(path,source,read){
+ if(path==='scripts/official-assets-campaign.lua'||path==='scripts/verify-delivery.mjs')
+  source=beforeReleaseClosureFixture(path,source,{reviewedBuild:true});
  source=beforeForkPush(path,source);
  const reviewed=(owner,raw)=>{
   if(owner.startsWith('src/')||owner==='config/architecture.json')return raw;
@@ -1603,7 +1655,7 @@ const cursesReceiptSources=Object.freeze({
  'tests/helpers/curses-historical-custody.mjs':["a068636ba187c353f69d8ec19d432cb052ea99f455a58feb2f6973bd63e60aaa", "2ac231d4d269e8138cd1c0e6bf3fe77db576f4f0"],
 });
 function beforeCursesReceiptFixture(path,source){
- source=prePosix16ReceiptSource(path,source);
+ source=prePosix16ReceiptSource(path,beforeLinuxCloseoutForecast(path,source));
  if(path!==cursesReceiptFixture.path||!exactCheckoutSource(source,cursesReceiptSources[path]))return source;
  const prior=restoreExactFixtureHunks(cursesReceiptFixture,path,source);
  assert.equal(blob(prior),'5a8992502b7c5d1ebee37dd6d8eb26c439968695','exact Curses receipt fixture predecessor');
@@ -1614,7 +1666,7 @@ function cursesReceiptCurrentRead(read){
   const raw=read(path,...args);
   if(Object.hasOwn(cursesReceiptSources,path)){
    const source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
-   assert(exactCheckoutSource(prePosix16ReceiptSource(path,source),cursesReceiptSources[path]),'fresh current Curses receipt source: '+path);
+   assert(exactCheckoutSource(prePosix16ReceiptSource(path,beforeLinuxCloseoutForecast(path,source)),cursesReceiptSources[path]),'fresh current Curses receipt source: '+path);
   }
   return raw;
  };
@@ -1708,6 +1760,8 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
 // The live planner reads its measured Linux map directly. Historical CI views
 // restore each exact predecessor in reverse observation order.
 const v220HostedTimingEpochs = [
+ ['202934a32fd967511e16eb962f2da7799044e27211fdb09c3c7ea3704f09d35a','1a35c207f0a951a1907e78f31a7e203682a92368',
+  '71c31f96f9578bf8812a802597cd48db5fbbd0aea05999b15ded2f738b41163b','c38fc2ce439ca855b0ea05b795b8e6463b17b001'],
  ['71c31f96f9578bf8812a802597cd48db5fbbd0aea05999b15ded2f738b41163b','c38fc2ce439ca855b0ea05b795b8e6463b17b001',
   '6756697bac41f5e9081c49a95618f909628aba4ce31e300ae7e0006d16a5eeef','e7e9d43b598b8d91f70fe6b00843874b7702e1cb'],
  ['6756697bac41f5e9081c49a95618f909628aba4ce31e300ae7e0006d16a5eeef','e7e9d43b598b8d91f70fe6b00843874b7702e1cb',
@@ -1782,9 +1836,10 @@ export function beforePreflightSource(path,source,view='prior',read=readFileSync
   const liveRead=read;
   read=(owner,encoding)=>{
    const raw=liveRead(owner,encoding);
-   if(owner===integratedFixture)assert(exactCheckoutSource(raw,sessionMenuIntegratedIdentity),
-    'fresh complete integration source: '+owner);
-   return beforeRelicCloseoutIntegratedFixture(owner,raw);
+   if(owner!==integratedFixture)return raw;
+   const input=beforeReleaseClosureFixture(owner,raw);
+   assert(exactCheckoutSource(input,sessionMenuIntegratedIdentity),'fresh complete integration source: '+owner);
+   return beforeRelicCloseoutIntegratedFixture(owner,input);
   };
  }
  source=beforeV220HostedTiming(path,source);

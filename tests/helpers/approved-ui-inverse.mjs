@@ -5,6 +5,9 @@ import {preRelicViewUiSource} from './relic-view-ui-inverse.mjs';
 import {preAcceptedPr323Source} from './pr323-accepted-source-inverse.mjs';
 import {preBattleRefactorLayer} from './battle-refactor-projection.mjs';
 import {preIntegratedNodeUiSource} from './approved-node-ui-refactor.mjs';
+import {beforeReleaseClosureFixture} from './release-closure-fixture-source.mjs';
+import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
+import {exactSourceMatches} from './source-fingerprint.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
@@ -29,10 +32,50 @@ function preBoundedPotionFailuresSource(path,source){
  assert.equal(hash(original),'47565faaad06cbf34edf208a30d922ab4975b19a5025dc751c379ff6ed2d83a9','complete accepted potion failure source recovered before the frozen UI guard');
  return original;
 }
+// #391 adds native monster control selectors after the exact #313 fixture.
+// Compose its successor solely for this earlier approved-UI witness.
+const nemesisControlFixture=Object.freeze({
+ "path": "tests/lua/nemesis_ui.lua",
+ "beforeSha256": "736a67ba3158850ad67d716b7ec62fe8ac6629d0b24ff673b1b7e975ddd340d9",
+ "beforeBlob": "b615f3f06cc8fad9a78c7aa88360bea1c1df08b0",
+ "afterSha256": "4c3655ba6d08705d742e307aa56d6d2fadfb67c5379df2462e0a04792ebee4d7",
+ "afterBlob": "02fc4d2e206fe7447fc8e8a186494603faa25b66",
+ "hunks": [
+  {
+   "at": 0,
+   "before": "local testStart=dofile('tests/lua/support/game_ui_fixture.lua').start",
+   "after": "local monsterControl=dofile('tests/lua/support/monster_control_fixture.lua')\nlocal testStart=dofile('tests/lua/support/game_ui_fixture.lua').start"
+  },
+  {
+   "at": 13,
+   "before": "assert(N.Run.startRoomCombat(r,'elite'));N.force(r.combat,'burn');host:refresh()\nlocal panel=root:GetChild('battlePanel');local box=panel:GetChild('enemy1');local _,tap=H.controls(panel)\neq(box:GetChild('name').text,'天罚');eq(box:GetChild('hp').text,'185/185')",
+   "after": "assert(N.Run.startRoomCombat(r,'elite'));N.force(r.combat,'burn');host:refresh()\nlocal panel=root:GetChild('battlePanel');local box=monsterControl(panel,'enemy1');local _,tap=H.controls(panel)\neq(box:GetChild('name').text,'天罚');eq(box:GetChild('hp').text,'185/185')"
+  },
+  {
+   "at": 20,
+   "before": "assert(N.Run.endTurn(r));N.force(r.combat,'fire');host:refresh()\neq(box:GetChild('intent').text,'6×3')\nbox:GetChild('statusRow'):GetChild('hit').click({touchId=92})\nlocal info=panel:GetChild('statusInfo');assert(info.visible)",
+   "after": "assert(N.Run.endTurn(r));N.force(r.combat,'fire');host:refresh()\neq(box:GetChild('intent').text,'6x3')\ndofile('tests/lua/support/monster_power_control_fixture.lua')(box,'nemesis_intangible'):GetChild('hit').click({touchId=92})\nlocal info=panel:GetChild('statusInfo');assert(info.visible)"
+  }
+ ]
+});
+function preNemesisControlFixture(path,source){
+ if(path!==nemesisControlFixture.path||typeof source!=='string')return source;
+ const lf=source.replaceAll('\r\n','\n');
+ if(source!==lf&&source!==lf.replaceAll('\n','\r\n'))return source;
+ const current=beforeReleaseClosureFixture(path,source);
+ if(!exactSourceMatches(current,{sha256:nemesisControlFixture.afterSha256,gitBlob:nemesisControlFixture.afterBlob}))return current;
+ assert.equal(approvedUi.files[path].afterSha256,nemesisControlFixture.beforeSha256,'exact approved Nemesis control predecessor binding');
+ const prior=restoreExactFixtureHunks(nemesisControlFixture,path,current);
+ assert(exactSourceMatches(prior,{sha256:nemesisControlFixture.beforeSha256,gitBlob:nemesisControlFixture.beforeBlob}),
+  'exact approved Nemesis control predecessor');
+ return source===lf?prior:prior.replaceAll('\n','\r\n');
+}
 // One additional test-only layer, never a replacement for PR302's frozen 26
 // sources or the original 79543/79757/81392 write proofs and runner budgets.
 export function preApprovedUiOuterSource(path,source){
- source=preBattleLifeSource(path,source);
+ source=preNemesisControlFixture(path,preBattleLifeSource(path,source));
+ if(path==='tests/lua/spike_slime_l_ui.lua'||path==='tests/lua/slimed_ui.lua')
+  source=beforeReleaseClosureFixture(path,source);
  return approvedUi.files[path]?preEventProductionSource(path,preRelicViewUiSource(path,preHeroVisualSource(path,source))):source;
 }
 export function preApprovedUiSource(path,source){

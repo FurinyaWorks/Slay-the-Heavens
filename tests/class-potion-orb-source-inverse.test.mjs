@@ -9,9 +9,10 @@ import {createHash} from 'node:crypto';
 import {preClassPotionOrbSource as prior,classPotionOrbReader,classPotionOrbSourceProof as proof} from './helpers/class-potion-orb-source-inverse.mjs';
 import {preM7FinalSource} from './helpers/m7-core-final-source-inverse.mjs';
 import {standaloneArchitectureSource} from './helpers/class-potion-watcher-source-inverse.mjs';
+import {beforeReleaseVocabulary} from './helpers/develop-release-vocabulary-source.mjs';
 const read=p=>readFileSync(p,'utf8').replaceAll('\r\n','\n');
 const before=JSON.parse(gunzipSync(readFileSync('tests/fixtures/class-potion-orb-before.json.gz')));
-const owners=Object.keys(proof),live=Object.fromEntries(owners.map(p=>[p,read(p)]));
+const owners=Object.keys(proof),live=Object.fromEntries(owners.map(p=>[p,beforeReleaseVocabulary(p,read(p))]));
 // Explicit historical standalone view; actual combined sources are verified separately.
 live['config/architecture.json']=standaloneArchitectureSource.potion;
 const otherBefore=JSON.parse(gunzipSync(readFileSync('tests/fixtures/watcher-actor-before.json.gz')));

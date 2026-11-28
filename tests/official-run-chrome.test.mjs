@@ -260,7 +260,7 @@ test('the official action palette reaches combat, reward choices, room loot and 
  const at=path=>path.split('/').reduce(child,layout);
  const action=theme.officialAssets.actionButton;
  for(const [path,material,role] of [
-  ['battlePanel/endTurn','v25Chrome','turn'],['battlePanel/skip','roundedButton','secondary'],
+  ['battlePanel/skip','roundedButton','secondary'],
   ['battlePanel/continue','v25Flag','primary'],['choicePanel/confirm/hit','roundedButton','primary'],
   ['exitPanel/confirm/hit','roundedButton','danger'],['menuPanel/settle/v25Face','roundedButton','primary'],
  ]){
@@ -270,6 +270,20 @@ test('the official action palette reaches combat, reward choices, room loot and 
    const palette=name==='disabled'?action.disabled:action[role][name];
    assert.deepEqual(['rim','cloth'].map(layer=>child(child(face,layer),'vertical').colour),palette,path+' '+name);
   }
+ }
+ const endTurn=at('battlePanel/endTurn');
+ assert.deepEqual(endTurn.states,{normal:'normal',hover:'hover',pressed:'pressed',disabled:'disabled'});
+ const hexStates={
+  normal:['#41484A','#243942','#8F918B','#E2DFD0'],
+  hover:['#515A5D','#2D4753','#B3B5AE','#E2DFD0'],
+  pressed:['#30383C','#192D36','#6E7779','#E2DFD0'],
+  disabled:['#373E40','#222D32','#555A59','#8F9591'],
+ };
+ for(const [name,palette] of Object.entries(hexStates)){
+  const state=child(endTurn,name),face=child(state,'v25Chrome');
+  assert.deepEqual(['rimLeft','rimRight'].map(part=>child(face,part)?.rotation),[90,-90],name);
+  assert.deepEqual(['rim','face','rimLight'].map(part=>child(face,part).colour)
+   .concat(child(state,'label').text.colour),palette,name);
  }
  const treasure=at('nodePanel/treasureView');
  for(const path of ['nodePanel/eventView/option1','nodePanel/pickerView/matchRetry','nodePanel/confirm']){

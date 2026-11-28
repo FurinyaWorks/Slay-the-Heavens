@@ -90,11 +90,12 @@ function guidanceBefore(path,source){
 function beforeRunHudDiskInput(path,source,read){
  source=beforeRunHudMapIcon(path,source);
  if(path!=='scripts/deck-ui-layout.mjs'&&path!=='tests/node-ui-layout.test.mjs')return source;
- if(path==='scripts/deck-ui-layout.mjs')source=beforeRunHudDeckLabel(source);
- else source=beforeInputRetirement(path,source);
- if(developBackflowOwns(path))assertDevelopBackflowCurrent(path,source);
+ const deck=path==='scripts/deck-ui-layout.mjs';
+ if(!deck)source=beforeInputRetirement(path,source);
+ // Deck backflow authenticates the raw owner against its fresh reread before undoing the label.
+ if(developBackflowOwns(path))assertDevelopBackflowCurrent(path,deck?beforeRunHudDeckLabel(source):source);
  source=authenticateDevelopBackflow(path,source,owner=>read(owner,'utf8'));
- if(path==='scripts/deck-ui-layout.mjs')return exactReviewedBuildInput(path,()=>beforeCloseoutReviewedDeckBuild(path,source));
+ if(deck)return exactReviewedBuildInput(path,()=>beforeCloseoutReviewedDeckBuild(path,source));
  assert(!source.includes('\r\r\n'),'fresh Run HUD source: '+path);
  const lf=norm(source),hashBlob=s=>createHash('sha1').update(`blob ${Buffer.byteLength(s)}\0`).update(s).digest('hex');
  assert.equal(hash(lf),'60b7f711eb3b3939bace1e69a6293d30ac563769039d30937cb982e202693c31','fresh Run HUD source: '+path);

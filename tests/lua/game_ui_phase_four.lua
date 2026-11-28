@@ -177,6 +177,7 @@ test('an old physical confirmation expires after page changes and exit cancel',f
   assert(tap(root,'choicePanel/confirm',7));drain(ui);eq(s.pendingPileChoice,nil)
  end
 end)
+local readPowerTips=dofile('tests/lua/support/power_tip_fixture.lua')
 local powerCases={
  {'ironclad','evolve','evolve',1,'状态牌'},
  {'ironclad','fire_breathing','fire_breathing',6,'诅咒'},
@@ -216,14 +217,22 @@ for _,spec in ipairs(powerCases)do
   assert(type(expected)=='number'and expected>0,'missing explicit status icon '..id)
   eq(icon.visible,true);eq(icon.imageId,expected);eq(amount.text,tostring(value))
   local unchanged=freeze(s)
-  clickControl(powerHit,owner..' power '..id);local info=control(root,'battlePanel/statusInfo')
+  local panel=control(root,'battlePanel');local info=panel:GetChild('statusInfo')
+  clickControl(powerHit,owner..' power '..id)
+  if enemy then
+   local copy=readPowerTips(panel)
+   assert(copy:find(entry.name,1,true) and copy:find(phrase,1,true),id..': '..copy)
+   assert(copy:find(tostring(value),1,true),'missing compact amount '..id);unchanged()
+   click(root,'battlePanel/statusDismiss');eq(info.visible,false);unchanged()
+   assert(ui.battleUI:openHelp({index=1,statusId=id}))
+  end
   eq(info.visible,true);assert(info:GetChild('name1').text:find(entry.name,1,true))
   local text=info:GetChild('text1').text;local tag=info:GetChild('tag1').text;local note=info:GetChild('note1').text
   assert(text:find('[\128-\255]')and text:find(phrase,1,true),id..': '..text)
   assert(tag==''or tag:find('[\128-\255]'),'numeric-only fallback duration '..id..': '..tag)
   if not marker then assert((text..tag..note):find(tostring(value),1,true),'missing actual amount '..id)end
   eq(info:GetChild('icon1').imageId,expected);unchanged()
-  click(root,'battlePanel/statusInfo/hit');eq(info.visible,false);unchanged()
+  click(root,'battlePanel/statusDismiss');eq(info.visible,false);unchanged()
  end)
 end
 print('GAME_UI_PHASE_FOUR_PASS '..count)

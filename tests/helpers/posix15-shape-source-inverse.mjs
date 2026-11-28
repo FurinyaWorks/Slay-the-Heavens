@@ -284,13 +284,27 @@ const posix16Sources={
  }
 };
 
+const cursesFormationFixture=Object.freeze({
+ "path": "tests/ci-complete-calibration.test.mjs",
+ "beforeSha256": "c69803746dcd6cd97ca674236e675fd2dd191d4a84fa5790e01e358f69c987e5",
+ "afterSha256": "6bb186af1cfa4f682246c244ccac839f86e9e61db8c014e0841f5a91906215a2",
+ "hunks": [
+  {
+   "at": 1503,
+   "before": "   assert.equal(jointCiMatches(file,source,target),false);assert.equal(jointCiSourceAt(file,source,target),source);",
+   "after": "   if(file==='tests/encounter-formation-source-epoch.test.mjs'&&target==='formationReceipt'){\n    // The exact Formation continuation has its own receipt; the sealed Curses source does not.\n    assert.equal(jointCiMatches(file,source,target),true);\n    assert.equal(hash(jointCiSourceAt(file,source,target)),'cc49af6185255c8b877e1fdc0d79028d1f676534fd65a0d1fd28f43536af29c0');\n    assert.equal(jointCiMatches(file,row.current,target),false);\n    assert.equal(jointCiSourceAt(file,row.current,target),row.current);\n   }else{\n    assert.equal(jointCiMatches(file,source,target),false);assert.equal(jointCiSourceAt(file,source,target),source);\n   }"
+  }
+ ]
+});
+
 export function prePosix16ReceiptSource(path,source){
- if(!Object.hasOwn(posix16Sources,path))return source;
+ if(!Object.hasOwn(posix16Sources,path)||typeof source!=='string')return source;
  const {after,before,hunks}=posix16Sources[path];
- if(!exactSourceMatches(source,after))return source;
  const lf=source.replaceAll('\r\n','\n');
- if(source!==lf&&source!==lf.replaceAll('\n','\r\n'))return source;
- const prior=restoreExactFixtureHunks({path,hunks,beforeSha256:before.sha256,afterSha256:after.sha256},path,lf);
+ if(lf.includes('\r')||source!==lf&&source!==lf.replaceAll('\n','\r\n'))return source;
+ const current=restoreExactFixtureHunks(cursesFormationFixture,path,lf);
+ if(!exactSourceMatches(current,after))return source;
+ const prior=restoreExactFixtureHunks({path,hunks,beforeSha256:before.sha256,afterSha256:after.sha256},path,current);
  assert(exactSourceMatches(prior,before),'exact fifteen-way Full receipt predecessor: '+path);
  return source===lf?prior:prior.replaceAll('\n','\r\n');
 }

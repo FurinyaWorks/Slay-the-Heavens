@@ -1,3 +1,4 @@
+import {beforeReleaseClosureFixture} from '../release-closure-fixture-source.mjs';
 import { entrancePredecessor } from '../ui-entrance-source.mjs';
 import {beforeDevelopBackflow,configSourceTokens,isSessionRelicSuccessor,assertCurrentSessionRelicOwner,bindDevelopBackflow} from '../develop-release-backflow-source.mjs';
 import {beforeInputRetirementReader,retiredControllerPath} from '../input-retirement-source.mjs';
@@ -52,6 +53,9 @@ function configLayoutMatcher(current){
  return configSourceTokens(source)===currentTokens;
  });
 }
+// Use the shared exact Release inverse only for the linked runtime owners
+// whose v2.2 presentation successors postdate the frozen combined epoch.
+const releaseRuntimeOwner=path=>path==='src/lua/abyss_battle_reward_layout.lua'||path==='src/lua/abyss_map_ui.lua';
 const validPath=p=>p==='config/architecture.json'||/^src\/lua\/[A-Za-z0-9_-]+\.lua$/.test(p);
 function freeze(value){if(value&&typeof value==='object'&&!Object.isFrozen(value)){for(const v of Object.values(value))freeze(v);Object.freeze(value);}return value;}
 // Immutable proof records are shared by complete historical targets. Their
@@ -104,6 +108,25 @@ export function createComposedSourceEpochProjector(proof){
  return createSourceEpochProjector(freeze(proof),{allowConfigLayout:true,reuseFrozenInput:true});
 }
 
+export function readReleaseLayoutOwners(readRawInput){
+ if(typeof readRawInput!=='function')return readRawInput;
+  // Track the actual raw owner before applying any inverse. An exact live
+  // successor must not be swapped for its equally projectable predecessor
+  // while a single combined read is in progress.
+  const releaseObservations=new Map();
+  return owner=>{
+   const raw=readRawInput(owner);
+   if(!releaseRuntimeOwner(owner))return raw;
+   const uniform=typeof raw==='string'&&
+    (raw===normalize(raw)||raw===normalize(raw).replaceAll('\n','\r\n'));
+   const observed=uniform?normalize(raw):raw;
+   if(releaseObservations.has(owner))
+    assert(observed===releaseObservations.get(owner),'combined linked owner identity: '+owner+' changed during Release replay');
+   else releaseObservations.set(owner,observed);
+   return beforeReleaseClosureFixture(owner,raw);
+  };
+}
+
 export function createSourceEpochProjector(input,{root=process.cwd(),allowConfigLayout=false,reuseFrozenInput=false}={}){
  // Clone once to prevent the caller changing proof data after validation.
  assert.equal(typeof reuseFrozenInput,'boolean','source proof reuse policy');
@@ -133,11 +156,13 @@ export function createSourceEpochProjector(input,{root=process.cwd(),allowConfig
  const liveReaders=new WeakSet([readLive]);
  function requireTarget(target){assert(Object.hasOwn(proof.targets,target),'unknown source target');return proof.targets[target];}
  function rawReader(reader){return readers.get(reader)?.raw??reader;}
- function preCombinedSource(path,source,{target,readSource=readLive}={}){
+ function preCombinedSource(path,source,{target,readSource=readLive,releaseLayoutsAlreadyProjected=false}={}){
   const destination=requireTarget(target);
   const liveInput=source;
   const isLiveReader=liveReaders.has(rawReader(readSource));
-  const projected=entrancePredecessor(path,source,rawReader(readSource),{allowConfigLayout});
+  const readRawInput=rawReader(readSource);
+  const projected=entrancePredecessor(path,source,
+   releaseLayoutsAlreadyProjected?readRawInput:readReleaseLayoutOwners(readRawInput),{allowConfigLayout});
   source=projected.source;readSource=projected.read;
   const rawInput=source,backflow=beforeDevelopBackflow(path,source,{allowConfigLayout}),rebased=beforeRebasedCi(path,backflow);
   const reconciled=beforeSlimeSplitSource(path,rebased),mapPrior=beforeCardFeedbackOwner(path,beforeSts1MapSource(path,reconciled)),guidePrior=beforeReleaseGuideSource(path,mapPrior);

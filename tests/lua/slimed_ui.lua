@@ -9,7 +9,7 @@ local s=host.run.combat;s.enemies[1].intentIndex=1
 s=C.copy(s);host.run.combat=s;host:refresh()
 assert(monsterControl(panel,'enemy1'):GetChild('intent').text=='8')
 tap('enemy1',1);local detail=inspectDetails(ui,panel)
-assert(detail:find('8',1,true) and detail:find('将 1 张「黏滞」放入你的弃牌堆',1,true))
+assert(detail:find('这名敌人将要对你施加负面效果并攻击造成 8 点伤害。',1,true))
 dofile('tests/lua/support/intent_face_assertion.lua')(monsterControl(panel,'enemy1'),require('abyss_battle_intent_view').intentView(s,1))
 tap('endTurn',2);drain();assert(s.player.hp==72)
 local slot,uid;for i,c in ipairs(s.hand)do if c.cardId=='slimed' then slot=i;uid=c.uid end end;assert(slot,'real enemy must generate drawn Slimed')

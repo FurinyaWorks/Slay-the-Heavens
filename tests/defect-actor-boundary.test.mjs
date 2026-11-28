@@ -3,16 +3,16 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
-import {baseline,defectVm} from './helpers/defect-actor-vm.mjs';
+import {actorFocusPreStyleReader,baseline,defectVm} from './helpers/defect-actor-vm.mjs';
 import {analyzeSources} from '../scripts/check-architecture.mjs';
 import {discoverSources,dependencyCycles} from '../scripts/lua-quality-metrics.mjs';
 import {generatedRuntimeModules} from '../scripts/build-native-candidate.mjs';
 import {currentDefectActorReader} from './helpers/m7-core-final-source-inverse.mjs';
 import {sourceEpoch,ciRepairSourceEpoch} from './helpers/closeout-source-epoch.mjs';
-import {beforeCurrentProductionSource} from './helpers/character-preparation-source.mjs';
 import {entranceInventory} from './helpers/ui-entrance-source.mjs';
+import {reviewedRenamedStsStyleRead,reviewedStsStyleInventory} from './helpers/reviewed-selection-current-source.mjs';
 import {actorFocusAdded,assertActorFocusInventory,deckPagesAdded,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';
-import {beforeCombatEvents,beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
+import {beforeCombatEvents,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 const require=createRequire(import.meta.url),luaparse=require('luaparse');
 const utility='src/lua/abyss_defect_utility_cards.lua',queued='src/lua/abyss_combat_queued_play.lua';
 const fixture='tests/lua/defect_utility_build.lua',protocol='tests/lua/support/m9_combat_protocol_baseline.lua';
@@ -24,14 +24,15 @@ const actorRead=currentDefectActorReader(read);
 function capabilityPreStyle(raw=discoverSources()){
  const config='config/architecture.json',live={...raw,[config]:read(config)},proof=sourceEpoch.proof;
  const readLive=path=>Object.hasOwn(live,path)?live[path]:read(path);
+ const liveInventory=reviewedStsStyleInventory(Object.keys(live),readLive);
+ const readRenamed=reviewedRenamedStsStyleRead(readLive);
  const expected=[...Object.keys(proof.current),...actorFocusAdded,...stasisUpgradeAddedPaths,...deckPagesAdded];
  assert(expected.includes(retiredControllerPath),'preStyle inventory includes the historical controller');
- assert.deepEqual(entranceInventory(Object.keys(live).sort(),readLive),[...expected.filter(path=>path!==retiredControllerPath),pointerInputPath].sort(),'complete live source inventory before preStyle');
+ assert.deepEqual(entranceInventory(liveInventory,readRenamed),[...expected.filter(path=>path!==retiredControllerPath),pointerInputPath].sort(),'complete live source inventory before preStyle');
  assertActorFocusInventory(Object.keys(raw),readLive);
- const historicalRead=beforeInputRetirementReader(readLive);
+ const readPreStyle=actorFocusPreStyleReader(readLive);
  for(const [path,binding]of Object.entries(proof.current)){
-  const source=path===retiredControllerPath?historicalRead(path):live[path];
-  assert.equal(beforeCurrentProductionSource(path,source,readLive).replaceAll('\r\n','\n'),binding.source,'live preStyle input identity: '+path);
+  assert.equal(readPreStyle(path,binding.source),binding.source,'live preStyle input identity: '+path);
  }
  const admitted=sourceEpoch.preCombinedSource(config,live[config],{target:'stsStylePrior',readSource:readLive});
  assert.equal(admitted,ciRepairSourceEpoch.proof.current[config].source,'fresh complete current owners authorize the cb view');
@@ -112,7 +113,7 @@ test('production changes remain the two narrow capability edits and one policy r
  assert.throws(()=>capabilityPreStyle(foreign),{message:'combined linked owner identity: src/lua/abyss_page_reveal.lua during entrance validation'},'historical policy cannot conceal current owner drift');
  const updated='src/lua/abyss_character_presentation.lua';
  const reverted={...discoverSources(),[updated]:sourceEpoch.proof.current[updated].source};
- assert.throws(()=>capabilityPreStyle(reverted),{message:'fresh current production owner: '+updated},'frozen predecessor bytes cannot pass as current input');
+ assert.throws(()=>capabilityPreStyle(reverted),{message:'fresh master backflow source: '+updated},'frozen predecessor bytes cannot pass as current input');
 });
 
 function reachable(report,root){

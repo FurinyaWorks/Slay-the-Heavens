@@ -2,6 +2,8 @@ import {developReleaseBackflowRead} from './helpers/develop-release-backflow-pre
 import {actorFocusAdded,assertActorFocusInventory,deckPagesAdded,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';
 import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
 import {entranceInventory} from './helpers/ui-entrance-source.mjs';
+import {actorFocusPreStyleReader} from './helpers/defect-actor-vm.mjs';
+import {reviewedRenamedStsStyleRead,reviewedStsStyleInventory} from './helpers/reviewed-selection-current-source.mjs';
 import {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 import {beforeAuthenticatedReleaseGuideSource,releaseGuideSourcePaths} from './helpers/release-guide-backflow-source.mjs';
 import test from 'node:test';
@@ -18,7 +20,8 @@ import {gunzipSync,gzipSync} from 'node:zlib';
 import {assertOriginalSessionMenuWitness,assertNavigationRetirementPredecessor,extendNeowRetirementEpoch,assertNeowStaticPredecessor,extendNeowStaticEpoch} from './helpers/session-menu-source-epoch.mjs';
 const readLive = path => readFileSync(path,'utf8');
 const neowFeedbackPath='src/lua/abyss_node_ui_feedback.lua';
-const readCurrentMenuPrior=liveEpoch.combinedReader(readLive,'v2RunMenuPrior');
+const readCurrentMenuPrior=liveEpoch.combinedReader(reviewedRenamedStsStyleRead(readLive),'v2RunMenuPrior');
+const readPreStyle=actorFocusPreStyleReader(readLive);
 function readHistoricalMenu(path){
  if(path===neowFeedbackPath)return beforeCharacterPreparationSource(path,readLive(path),readLive);
  if(path===retiredControllerPath){
@@ -139,13 +142,18 @@ test('real V25 menu controls support controller round trips without overlapping 
 });
 
 test('menu source continuation retains the complete release corpus and rejects new owner drift',()=>{
- const read=p=>readHistoricalMenu(p).replaceAll('\r\n','\n');
+ const read=p=>{
+  const prior=readHistoricalMenu(p).replaceAll('\r\n','\n');
+  const expected=sourceEpoch.proof.current[p]?.source;
+  return expected&&prior!==expected?readPreStyle(p,expected):prior;
+ };
  const luaPaths=readdirSync('src/lua').filter(p=>p.endsWith('.lua')).map(p=>'src/lua/'+p).sort();
  assertActorFocusInventory(luaPaths,readLive);
  const paths=Object.keys(sourceEpoch.proof.current).sort();
  assert.equal(paths.length,352);
  const later=['src/lua/abyss_power_membership.lua',...stasisUpgradeAddedPaths,...actorFocusAdded,...deckPagesAdded,pointerInputPath];
- assert.deepEqual(entranceInventory(['config/architecture.json',...luaPaths].sort(),readLive),[...paths.filter(path=>path!==retiredControllerPath),...later].sort());
+ const reviewed=reviewedStsStyleInventory(['config/architecture.json',...luaPaths],readLive);
+ assert.deepEqual(entranceInventory(reviewed,readLive),[...paths.filter(path=>path!==retiredControllerPath),...later].sort());
  assert.throws(()=>readLive(retiredControllerPath),{code:'ENOENT'});
  const readCurrentInput=beforeInputRetirementReader(readLive);
  assert.ok(readCurrentInput(retiredControllerPath));
@@ -157,7 +165,7 @@ test('menu source continuation retains the complete release corpus and rejects n
  assert.equal(readLive(power).replaceAll('\r\n','\n'),liveEpoch.proof.current[power].source);
  const added=paths.filter(p=>!Object.hasOwn(releaseSourceEpoch.proof.current,p));
  assert.deepEqual(added,['src/lua/abyss_game_ui_navigation.lua','src/lua/abyss_game_ui_navigation_view.lua']);
- for(const p of paths)assert.equal(beforeCharacterPreparationSource(p,read(p)),sourceEpoch.proof.current[p].source,p);
+ for(const p of paths)assert.equal(read(p),sourceEpoch.proof.current[p].source,p);
  for(const p of added){
   assert.equal(sourceEpoch.proof.targets.sessionMenuPrior.files[p],null);
   assert.equal(JSON.parse(read('config/architecture.json')).layers[p.split('/').at(-1).slice(0,-4)],'ui');
@@ -174,7 +182,8 @@ test('v2 run menu continuation preserves the prior owner and rejects changed sib
  const changed=['src/lua/abyss_game_ui_input.lua','src/lua/abyss_game_ui_navigation.lua','src/lua/abyss_game_ui_navigation_view.lua'];
  for(const path of changed) {
   const raw=readLive(path);
-  assert.equal(beforeCharacterPreparationSource(path,raw,readLive).replaceAll('\r\n','\n'),liveEpoch.proof.current[path].source);
+  const current=liveEpoch.proof.current[path].source;
+  assert.equal(readPreStyle(path,current),current,path);
   assert.equal(liveEpoch.preCombinedSource(path,raw,{target:'v2RunMenuPrior',readSource:readLive}),sourceEpoch.proof.current[path].source);
   for(const missing of changed)assert.throws(()=>liveEpoch.preCombinedSource(path,raw,
    {target:'v2RunMenuPrior',readSource:p=>p===missing?null:readLive(p)}),/linked owner identity/);

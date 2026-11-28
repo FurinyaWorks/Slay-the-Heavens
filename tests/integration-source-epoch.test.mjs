@@ -23,8 +23,8 @@ import {beforeReleaseUiCloseoutSource,ownsReleaseUiCloseoutSource,releaseUiClose
 import {readHistoricalReleaseCheckpoint} from './helpers/release-historical-source-checkpoints.mjs';
 import {beforeCurrentSelectionProductionSource,readReviewedSelectionSource,readSelectionProductionOwners} from './helpers/replay-reviewed-selection.mjs';
 import {reviewedSelectionRead,reviewedStsStyleInventory} from './helpers/reviewed-selection-current-source.mjs';
-import {beforeShopPurchaseOwner,shopPurchaseOwner} from './helpers/shop-deck-purchase-source.mjs';
-import {readBeforeMasterBackflowSource} from './helpers/master-backflow-source.mjs';
+import {shopPurchaseOwner} from './helpers/shop-deck-purchase-source.mjs';
+import {productionReadingBackflowOwns,readBeforeMasterBackflowSource} from './helpers/master-backflow-source.mjs';
 const sandbox=process.cwd();
 const {sourceEpoch}=await import('./helpers/combined-epoch/source-epoch.mjs');
 const proof=sourceEpoch.proof,raw=p=>proof.current[p]?.source??null;
@@ -32,7 +32,7 @@ const digest=source=>createHash('sha256').update(source).digest('hex');
 const shopDeckPaths=['src/lua/abyss_deck_ui.lua','src/lua/abyss_merchant.lua','src/lua/abyss_game_ui_input.lua','src/lua/abyss_node_ui_feedback.lua','src/lua/abyss_potion_discard_ui.lua'];
 function readShopDeckFixture(path){
  if(path!==shopPurchaseOwner)return Object.hasOwn(proof.current,path)?readReviewedSelectionSource(path):readFileSync(path,'utf8');
- const read=(owner,encoding='utf8')=>beforeShopPurchaseOwner(owner,readFileSync(owner,encoding));
+ const read=(owner,encoding='utf8')=>readFileSync(owner,encoding);
  const reviewed=reviewedSelectionRead(read);
  const source=beforeCurrentSelectionProductionSource(path,readSelectionProductionOwners(read,reviewed),reviewed);
  assert.equal(digest(source.replaceAll('\r\n','\n')),proof.current[path].sha256,'exact historical purchase owner');
@@ -53,11 +53,11 @@ function replayRebasedInput(path,read){
 
 function integrationProductionReaders(read=readFileSync){
  const readOwner=reviewedSelectionRead(read);
- const readSelection=readSelectionProductionOwners(read,readOwner);
- const current=path=>beforeShopPurchaseOwner(path,readSelection(path));
+ const current=readSelectionProductionOwners(read,readOwner);
  // The earlier entrance receipt checks its original linked owners after the
  // audited chapter and periphery projections have authenticated their inputs.
- const entrance=path=>beforeBattlePeriphery(path,beforeChapterBattleScene(path,current(path)));
+ const entrance=path=>productionReadingBackflowOwns(path)||['src/lua/abyss_battle_card_layout.lua','src/lua/abyss_viewport.lua'].includes(path)
+  ?readOwner(path):beforeBattlePeriphery(path,beforeChapterBattleScene(path,current(path)));
  return {current,entrance,readOwner};
 }
 
@@ -318,7 +318,7 @@ test('entrance replay freshly checks the complete changed cohort and preserves f
  const incomplete=live.filter(path=>!addedEntranceModules.includes(path));
  assert.throws(()=>entranceInventory(incomplete,read),/complete entrance module inventory/);
  assert.throws(()=>entranceInventory([...live,addedEntranceModules[0]],read),/complete entrance module inventory/);
- assert.throws(()=>assertActorFocusInventory(incomplete.filter(path=>path!==config),read),/complete entrance module inventory/);
+ assert.throws(()=>assertActorFocusInventory(incomplete.filter(path=>path!==config)),/complete entrance module inventory/);
  const project=input=>entrancePredecessor(config,source,input).source;
  assert.equal(project(read),prior);
  for(const changedPath of changed){
@@ -356,7 +356,8 @@ test('combined replay rejects a menu owner from before the controls guide remova
 });
 test('current PC13 facade rejects every exact immediate predecessor before older views or reads',()=>{
  const disk=path=>readFileSync(path,'utf8');
- const live=readSelectionProductionOwners(disk,reviewedSelectionRead(disk));
+ const reviewed=reviewedSelectionRead(disk);
+ const live=readSelectionProductionOwners(disk,reviewed);
  const read=beforeInputRetirementReader(readBeforeMasterBackflowSource(disk));
  const readMapPrior=owner=>beforeSts1MapSource(owner,beforeRebasedCi(owner,read(owner)));
  const readPc13Prior=owner=>pc13RewardCoverSourcePaths.includes(owner)
@@ -382,7 +383,7 @@ test('current PC13 facade rejects every exact immediate predecessor before older
    /combined linked owner identity/,path);
  }
  const unrelated='src/lua/abyss_battle_ui.lua';
- assert.equal(beforeCurrentProductionSource(unrelated,live(unrelated),live).replaceAll('\r\n','\n'),raw(unrelated));
+ assert.equal(beforeCurrentSelectionProductionSource(unrelated,live,reviewed).replaceAll('\r\n','\n'),raw(unrelated));
 });
 const cases=[
  ['m7-core-final','preM7FinalSource','develop','abyss_original_v4'],

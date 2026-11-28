@@ -172,11 +172,28 @@ test('proposal workflow is manually dispatched, pinned, manifest-driven and cann
   assert.match(workflow, /skip-github-release: true/); assert.doesNotMatch(workflow, /\n\s+release-type:/);
   assert.match(workflow, /target-branch: develop/); assert.doesNotMatch(workflow, /master/);
   assert.match(workflow, /permissions:\n  contents: read/);
-  const metadataJob = workflow.split('  metadata:\n')[1];
-  assert.match(metadataJob, /inputs\.operation != 'propose'/);
+  const jobs = workflow.split('\njobs:\n')[1];
+  assert.ok(jobs, 'workflow must declare jobs');
+  const job = name => {
+    const sections = Array.from(jobs.matchAll(/^  ([\w-]+):\n([\s\S]*?)(?=^  [\w-]+:\n|(?![\s\S]))/gm));
+    const matches = sections.filter(([, id]) => id === name);
+    assert.equal(matches.length, 1, `expected exactly one ${name} job`);
+    return matches[0][2];
+  };
+  const proposeJob = job('propose');
+  const metadataJob = job('metadata');
+  const archiveJob = job('archive');
+  assert.match(proposeJob, /^    if: github\.ref == 'refs\/heads\/develop' && inputs\.operation == 'propose'$/m);
+  assert.match(proposeJob, /skip-github-release: true/);
+  assert.doesNotMatch(proposeJob, /gh release|git push|scripts\/release-archive\.mjs/);
+  assert.match(metadataJob, /^    if: github\.repository_id == '1429751262' && github\.ref == 'refs\/heads\/develop' && \(inputs\.operation == 'prepare' \|\| inputs\.operation == 'verify'\)$/m);
   assert.match(metadataJob, /scripts\/release-metadata\.mjs prepare/);
   assert.match(metadataJob, /scripts\/release-metadata\.mjs verify/);
-  assert.doesNotMatch(metadataJob, /contents: write|gh release|git push/);
+  assert.doesNotMatch(metadataJob, /contents: write|gh release|git push|scripts\/release-archive\.mjs/);
+  assert.match(archiveJob, /^    if: github\.repository_id == '1429751262' && github\.ref == 'refs\/heads\/develop' && inputs\.operation == 'archive'$/m);
+  assert.match(archiveJob, /    permissions:\n      actions: read\n      contents: write\n/);
+  assert.match(archiveJob, /scripts\/release-archive\.mjs "\$RELEASE_ID"/);
+  assert.doesNotMatch(archiveJob, /gh release|git push|release-please-action/);
   assert.deepEqual(releaseBuildArgs(['out', '--release-candidate', '--work-key=contest-2026']),
     { paths: ['out'], options: { releaseCandidate: true, workKey: 'contest-2026' } });
   assert.throws(() => releaseBuildArgs(['--publish']), /Unknown/);

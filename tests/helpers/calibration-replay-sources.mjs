@@ -19,6 +19,9 @@ import {beforeSelectionReceiptSource,selectionCopierReceipt} from './ui-selectio
 import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
 import {beforeRunHudDeckLabel} from './run-hud-successors.mjs';
 import {beforeCardReadingScope} from './chapter-battle-scene-source.mjs';
+import {beforeKnownMasterBackflowSource} from './master-backflow-source.mjs';
+import {readReleaseEntrancePredecessor} from './release-entrance-owner-source.mjs';
+import {beforeReleaseClosureFixture} from './release-closure-fixture-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const blob=source=>hash(`blob ${Buffer.byteLength(source)}\0${source}`,'sha1');
@@ -192,6 +195,8 @@ export function beforeCurrentHistoricalStsSource(path,source){
   const text=source.toString('utf8'),prior=beforeCurrentHistoricalStsSource(path,text);
   return prior===text?source:Buffer.from(prior);
  }
+ if(path==='tests/integration-source-epoch.test.mjs'||path==='tests/effects-target-group-source-epoch.test.mjs')
+  source=beforeKnownMasterBackflowSource(path,source);
  // New exact integration tests first continue to the entrance witness's reviewed input.
  if(['tests/integration-source-epoch.test.mjs','tests/helpers/combined-epoch/source-epoch-runtime.mjs',
   'tests/session-menu-navigation.test.mjs','tests/tiny-house-pending-ui.cases.mjs'].includes(path))source=beforeCurrentReplayFixes(path,source);
@@ -305,7 +310,7 @@ function readComponentSourceReceipt(path,digest,readCurrent){
  if(!Object.hasOwn(componentCurrentSources,path))return;
  const receipt=componentUiCiSourceProof.files[path];
  if(receipt.afterSha256!==digest)return;
- const source=readCurrent(path,'utf8');
+ const source=beforeReleaseClosureFixture(path,readCurrent(path,'utf8'));
  assert(matches(source,componentCurrentSources[path]),'current component receipt input changed: '+path);
  const normalized=lf(source);
  assert(source===normalized||source===normalized.replaceAll('\n','\r\n'),'mixed component receipt line endings: '+path);
@@ -321,6 +326,39 @@ function readGoldenIdolCopierReceipt(readCurrent){
  return packet.receipts[copierPath].before[goldenIdolCopierDigest].source;
 }
 
+const relicCatalogTest='tests/sts1-relic-pool-catalog.test.mjs';
+const relicCatalogTestPrior={
+ sha256:'d592cf17514bfd0557cf6dac7083e8b833d93c6d72e395b94ab347a6c7aa742f',gitBlob:'d5b5606e24d87cab5227927e2428e8768d7563ff',
+};
+function readRelicCatalogTestReceipt(readCurrent){
+ const current=readCurrent(relicCatalogTest,'utf8');
+ assert(matches(current,{
+  sha256:'8a9760ce1d02808a18ee417a3dfe8b7ac5ca19ee1b295636e617a4572e2e3406',gitBlob:'355e6655d31944c9160acede88bc1b514b3b6fd8',
+ }),'current relic catalog test receipt input changed');
+ const normalized=lf(current);
+ assert(current===normalized||current===normalized.replaceAll('\n','\r\n'),'mixed relic catalog test line endings');
+ const prior=normalized
+  .replace("import {historicalTest} from './helpers/historical-baseline-inputs.mjs';","import {closeoutRead} from './helpers/closeout-ci-source.mjs';")
+  .replace("historicalTest('historical project effects","test('historical project effects")
+  .replace("  const path = 'data/relics.json';\n  const data = JSON.parse(preAcceptedPr323Source(path,read(path))).relics;",
+   "  const data = JSON.parse(preAcceptedPr323Source('data/relics.json',closeoutRead('pr620')('data/relics.json','utf8'))).relics;");
+ assert(matches(prior,relicCatalogTestPrior),'exact historical relic catalog test predecessor');
+ return prior;
+}
+
+const colorlessReceiptPath='tests/helpers/colorless-catalog-source-inverse.mjs';
+function beforeColorlessReceipt(source,expected){
+ if(!matches(source,{
+  sha256:'ca654dba3b490f2d5f857933931992d1b72b346df246165499631cca7f6f717d',gitBlob:'94c5af24ef7e9e76b53116e97fc55d25d353f482',
+ }))return source;
+ const normalized=lf(source);
+ assert(source===normalized||source===normalized.replaceAll('\n','\r\n'),'mixed Colorless receipt line endings');
+ const prior=normalized.replace('as original,colorlessCatalogSourceProof }','as original }')
+  .replace(" if(!Object.hasOwn(colorlessCatalogSourceProof.files[path]??{},'beforeSource'))return source;\n",'');
+ assert(matches(prior,expected),'exact Colorless receipt predecessor');
+ return prior;
+}
+
 // A frozen receipt may read a registered old blob only after checking the
 // corresponding current file. Raw Full discovery and inputs use their normal readers.
 function readOfficialCalibrationReceipt(path,digest,readCurrent){
@@ -330,8 +368,13 @@ function readOfficialCalibrationReceipt(path,digest,readCurrent){
  const prior=row.predecessors[digest];
  if(row.currentPath!==path)assert.throws(()=>readCurrent(path,'utf8'),{code:'ENOENT'},'retired official receipt input reappeared: '+path);
  const live=readCurrent(row.currentPath,'utf8');
- const source=row.currentPath==='scripts/deck-ui-layout.mjs'?beforeRunHudDeckLabel(live):
-  row.currentPath==='src/lua/abyss_viewport.lua'?beforeCardReadingScope(row.currentPath,live):live;
+ // The reviewed #1064 inverse authenticates both map successors without
+ // changing the bytes used by live Full or other receipt readers.
+ const mapOwner=['src/lua/abyss_map_ui.lua','scripts/map-ui-layout.mjs','scripts/v25-map-layout.mjs'].includes(row.currentPath);
+ const current=row.currentPath==='scripts/deck-ui-layout.mjs'?beforeRunHudDeckLabel(live):
+  row.currentPath==='src/lua/abyss_viewport.lua'?beforeCardReadingScope(row.currentPath,live):
+  mapOwner?beforeReleaseClosureFixture(row.currentPath,live):live;
+ const source=matches(current,row.current)?current:readReleaseEntrancePredecessor(row.currentPath,current,readCurrent);
  assert(matches(source,row.current),'current official receipt input changed: '+row.currentPath);
  const normalized=lf(source);
  assert(source===normalized||source===normalized.replaceAll('\n','\r\n'),'mixed official receipt line endings: '+row.currentPath);
@@ -341,12 +384,324 @@ function readOfficialCalibrationReceipt(path,digest,readCurrent){
  assert(matches(predecessor,prior),'exact official receipt predecessor: '+path);
  return predecessor;
 }
+// Current fixtures use the visible UI and real dependencies. Historical
+// inventory reads authenticate the exact current fixture before replay.
+const liveLuaCalibrationFixtures=Object.freeze({
+ "tests/lua/shield_gremlin_ui.lua": {
+  "before": {
+   "sha256": "b70df889a1535f0184c1a016297c6033b4e6490af092f9a089dad5b869cf4abf",
+   "gitBlob": "81aa604399d540b2107ea2f24963b75333b232b7"
+  },
+  "after": {
+   "sha256": "4cd16b58b71fab5624ad3dba1e60f2dc2c63462470fdb82dddb525867abb45f8",
+   "gitBlob": "da6478e6f71141ffc234663675f540cd00a0c0f0"
+  },
+  "hunks": [
+   {
+    "at": 11,
+    "before": "assert(detail:find('随机队友',1,true),'Protect detail must name random teammate')\nassert(detail:find('没有队友时给自己',1,true),'Protect detail must name solo fallback')\nassert(detail:find('获得 7 点格挡',1,true),'Protect detail stays fixed7')",
+    "after": "assert(detail:find('守势',1,true) and detail:find('这名敌人将要在这个回合进行格挡。',1,true),'Protect shows the native DEFEND hint')\nfor _,hidden in ipairs({'随机队友','没有队友时给自己','获得 7 点格挡'}) do\n    assert(not detail:find(hidden,1,true),'the intent tip must not disclose Protect internals: '..hidden)\nend"
+   }
+  ]
+ },
+ "tests/lua/potion_event_ui.lua": {
+  "before": {
+   "sha256": "d6247d8b44c6e94e3c0c44d02c0369a138cfdf9410a213edac20bbbb0a0222bb",
+   "gitBlob": "5e40faa4900080dc2a12d12fdb626ea9683dee51"
+  },
+  "after": {
+   "sha256": "bf2453e82e539c8c68248d39860bd441d012be30b99e9b3f310081dbbe7287df",
+   "gitBlob": "008a25ca920519d1bcd17339922dc1884819f56e"
+  },
+  "hunks": [
+   {
+    "at": 44,
+    "before": " eq(get('eventView/option4').visible,false);eq(get('confirm').visible,true)",
+    "after": " eq(get('eventView/option4').visible,false)\n assert(ui.mapUI.visible and ui.mapUI.navigationEnabled and not ui.nodeUI.root.visible,'claim restores a navigable map and hides the old event panel')\n assert(not get('confirm').visible,'hidden event does not expose stale confirm')"
+   }
+  ]
+ },
+ "tests/lua/ready_art_binding.lua": {
+  "before": {
+   "sha256": "197ffdae88d9f0e39d42de02539eca8363e1d04acdf65f21065f13adebcb2487",
+   "gitBlob": "b712fe9d6e776236932731c66484fbb7d884bf09"
+  },
+  "after": {
+   "sha256": "e6573d6638e60a307b76ee5e5ee04f13c79e5a86f7990e3bf9c86445bf28b37c",
+   "gitBlob": "d26c3c13b211425f5c0a12aadab2340750f8db3b"
+  },
+  "hunks": [
+   {
+    "at": 0,
+    "before": "package.path='src/lua/?.lua;'..package.path\npackage.preload.abyss_theme=function()return {} end",
+    "after": "package.path='src/lua/?.lua;'..package.path"
+   }
+  ]
+ },
+ "tests/lua/spore_cloud_ui.lua": {
+  "before": {
+   "sha256": "4e1c75cf707b557e55245cfc02485efe67355a1f9284e240ff50da4efcc5a994",
+   "gitBlob": "9743b213ef8a70365347d544e23e8464612688e1"
+  },
+  "after": {
+   "sha256": "18c200489ee54d97d4d90f438331560e3dc647bc54c7b45fbdbb8aa6d598ddb9",
+   "gitBlob": "ced636e566c1297ae389061b33b4bbd5c3c5f9ec"
+  },
+  "hunks": [
+   {
+    "at": 13,
+    "before": "    assert(info.visible,'status details open')\n    if index then assert(ui.info.index==index and ui.info.id==s.enemies[index].id,'status details retain true actor ID') end",
+    "after": "    assert(info.visible,'status details open')\n    if index then\n        assert(ui.info.index==index and ui.info.id==s.enemies[index].id,'status details retain true actor ID')\n        return dofile('tests/lua/support/status_detail_fixture.lua')(ui,panel)\n    end"
+   }
+  ]
+ },
+ "tests/lua/sentries_ui.lua": {
+  "before": {
+   "sha256": "ecb0ebeade9baea10b2a137c160fc115aec37b456e4ccfe06eccbadb77e94f28",
+   "gitBlob": "108cf93083cc16d4e323268ebe1e6ecb2e742b7b"
+  },
+  "after": {
+   "sha256": "80f1e80430f293085a4d49ded796e9bb1221e42ff8383dc11f4d1b068df6a3ce",
+   "gitBlob": "5e9a751044bf1091f400f82ac59f9d7b670ed71b"
+  },
+  "hunks": [
+   {
+    "at": 49,
+    "before": "expect(true)",
+    "after": "expect(true)\nlocal function dazedCount(battle)\n    local total=0\n    for _,pile in ipairs({battle.hand,battle.draw,battle.discard,battle.exhaust})do\n        for _,card in ipairs(pile)do if card.cardId=='dazed' then total=total+1 end end\n    end\n    return total\nend"
+   },
+   {
+    "at": 59,
+    "before": "    click(\"enemy1\");assert(inspectDetails(ui,stage):find(\"放入你的弃牌堆\",1,true))",
+    "after": "    click(\"enemy1\");assert(inspectDetails(ui,stage):find(\"这名敌人将要对你施加一种负面效果。\",1,true))"
+   },
+   {
+    "at": 62,
+    "before": "click(\"endTurn\");expect(false);assert(ui.run.combat.player.hp==71)\nclick(\"enemy2\");assert(inspectDetails(ui,stage):find(\"放入你的弃牌堆\",1,true))\nclick(\"endTurn\");expect(true);assert(ui.run.combat.player.hp==53)",
+    "after": "click(\"endTurn\");expect(false);assert(ui.run.combat.player.hp==71 and dazedCount(ui.run.combat)==4)\nclick(\"enemy2\");assert(inspectDetails(ui,stage):find(\"这名敌人将要对你施加一种负面效果。\",1,true))\nclick(\"endTurn\");expect(true);assert(ui.run.combat.player.hp==53 and dazedCount(ui.run.combat)==6)"
+   }
+  ]
+ },
+ "tests/lua/curl_up_ui.lua": {
+  "before": {
+   "sha256": "8d797ba35324a2efb6cb397f19bb70b9ad239dfb93f4561a6c91f8db3ff6b57e",
+   "gitBlob": "0dd733e19e753d8cd1f07ac603ebe8dfc4c457d4"
+  },
+  "after": {
+   "sha256": "b0fc365dece7673b12cc7f568e52f4556930ed652f59d1331676c501b555e0ef",
+   "gitBlob": "7352fd454d50346daa684dd52431c550d3ac28fc"
+  },
+  "hunks": [
+   {
+    "at": 6,
+    "before": "local function details(box)\n    local hit=box:GetChild('hit')\n    for _,kind in ipairs({'down','up','click'})do if hit.listeners and hit.listeners[kind]then hit.listeners[kind]({touchId=61})end end\n    local info,lines=panel:GetChild('statusInfo'),{}\n    assert(info.visible,'status details open')\n    for i=1,H.F.Theme.layout.statusInfo.rows do\n        local name=info:GetChild('name'..i)\n        if name.visible then lines[#lines+1]=name.text end\n    end\n    info:GetChild('hit').click();assert(not info.visible,'status details close')\n    return table.concat(lines,' | ')",
+    "after": "local inspect=dofile('tests/lua/support/status_detail_fixture.lua')\nlocal function details(key)\n    tap(key,61)\n    return inspect(ui,panel)"
+   },
+   {
+    "at": 11,
+    "before": "assert(details(first):find(definition.name..' '..string.format('%.0f',amount),1,true),'first Curl amount visible')\nassert(details(second):find(definition.name..' '..string.format('%.0f',other),1,true),'independent second Curl amount visible')",
+    "after": "assert(details(\"enemy1\"):find(definition.name..' '..string.format('%.0f',amount),1,true),'first Curl amount visible')\nassert(details(\"enemy2\"):find(definition.name..' '..string.format('%.0f',other),1,true),'independent second Curl amount visible')"
+   },
+   {
+    "at": 16,
+    "before": "info:GetChild('hit').click();assert(not info.visible,'close details before the next deliberate card input')",
+    "after": "inspect(ui,panel);assert(not info.visible,'close details before the next deliberate card input')"
+   },
+   {
+    "at": 19,
+    "before": "assert(not details(first):find(definition.name,1,true),'spent passive hidden')\nassert(details(second):find(definition.name..' '..string.format('%.0f',other),1,true),'other passive retained')",
+    "after": "assert(not details(\"enemy1\"):find(definition.name,1,true),'spent passive hidden')\nassert(details(\"enemy2\"):find(definition.name..' '..string.format('%.0f',other),1,true),'other passive retained')"
+   }
+  ]
+ },
+ "tests/lua/wizard_gremlin_ui.lua": {
+  "before": {
+   "sha256": "af0786c79d131af2c6f7a1558dfdfc4298413308fb507b263ffd2e97c249d6bd",
+   "gitBlob": "5bec51ffcdc89958459b3866f3e18eadcf163daf"
+  },
+  "after": {
+   "sha256": "b438898333566630d69cf6ac2060b368979f7acecaebadb982eb8a87aecbdd9d",
+   "gitBlob": "e29e5b8007ff38ee53b5f904a699584c769aad0d"
+  },
+  "hunks": [
+   {
+    "at": 57,
+    "before": "local box = F.actorControl(stage,'enemy1')",
+    "after": "local box = F.actorControl(stage,'enemy1')\nlocal inspect=dofile('tests/lua/support/status_detail_fixture.lua')"
+   },
+   {
+    "at": 65,
+    "before": "    assert(stage.children.statusInfo.visible and stage.children.statusInfo.children.text1.text:find(attack and \"25 点伤害\" or \"蓄能\",1,true), \"detail turn \" .. turn)\n    stage.children.statusInfo.children.hit.click()\n    assert(not stage.children.statusInfo.visible)",
+    "after": "    local copy=inspect(ui,stage)\n    assert(copy:find(attack and \"25 点伤害\" or \"这名敌人的意图不明（但不是攻击）。\",1,true), \"detail turn \" .. turn .. \": \" .. copy)"
+   }
+  ]
+ }
+});
+function readLiveLuaCalibrationFixture(path,digest,readCurrent){
+ if(!Object.hasOwn(liveLuaCalibrationFixtures,path))return;
+ const {before,after,hunks}=liveLuaCalibrationFixtures[path];
+ if(digest!==before.sha256)return;
+ const source=readCurrent(path,'utf8');
+ assert(matches(source,after),'current monster reader fixture changed: '+path);
+ const normalized=lf(source);
+ assert(source===normalized||source===normalized.replaceAll('\n','\r\n'),'mixed monster reader fixture line endings: '+path);
+ const prior=restoreExactFixtureHunks({path,beforeSha256:digest,afterSha256:after.sha256,hunks},path,source);
+ assert(matches(prior,before),'exact historical monster reader fixture: '+path);
+ return prior;
+}
+// Preserve the exact historical vocabulary chain while the raw fixture
+// runs its modern-plus-frozen card text checks on the candidate.
+const phaseFourPresentationFixture={
+ "path": "tests/lua/phase_four_presentation.lua",
+ "current": {
+  "sha256": "097c6dcaeb5b17fc6f7298f3dcf3fc0c75bbb03a6c4d71ff05d8129ce8400db4",
+  "gitBlob": "9984e4dd9dbc37ce4c8bb1fbc973d475feede20f"
+ },
+ "previous": {
+  "sha256": "89ebab4cab91df82e3c962bb74758f9eb68b1855da0bd7fe30cba73fec15be24",
+  "gitBlob": "42820e77eeb5146c11ef2c12674b3af4c5dc9c87"
+ },
+ "hunks": [
+  {
+   "at": 193,
+   "before": " local hash,n=0.0,0\n for id in manifest:gmatch('%S+')do\n  local c=assert(all[id]);n=n+1",
+   "after": " -- These exact legacy rows were read from the unmodified #634 generator.\n -- Keep modern spelling and keyword contracts independently checked; project\n -- only the reviewed fields into the original immutable aggregate witness.\n local phase634Copy={\n  after_image={\n   upgradeText={\"每打出一张牌，获得 1 点固定格挡。先天：开局优先抽到。\",\"每打出一张牌，获得 1 点固定格挡。先天。\"},\n  },\n  backstab={\n   text={\"对目标造成 11 点伤害。先天：开局优先抽到。消耗。\",\"对目标造成 11 点伤害。先天。消耗。\"},\n   upgradeText={\"对目标造成 15 点伤害。先天：开局优先抽到。消耗。\",\"对目标造成 15 点伤害。先天。消耗。\"},\n   combatText={\"对目标造成 {effects.0.value} 点伤害。先天：开局优先抽到。消耗。\",\"对目标造成 {effects.0.value} 点伤害。先天。消耗。\"},\n   upgradeCombatText={\"对目标造成 {effects.0.value} 点伤害。先天：开局优先抽到。消耗。\",\"对目标造成 {effects.0.value} 点伤害。先天。消耗。\"},\n  },\n  boot_sequence={\n   text={\"获得 10 点格挡。先天：开局优先抽到。消耗。\",\"获得 10 点格挡。先天。消耗。\"},\n   upgradeText={\"获得 13 点格挡。先天：开局优先抽到。消耗。\",\"获得 13 点格挡。先天。消耗。\"},\n   combatText={\"获得 {effects.0.value} 点格挡。先天：开局优先抽到。消耗。\",\"获得 {effects.0.value} 点格挡。先天。消耗。\"},\n   upgradeCombatText={\"获得 {effects.0.value} 点格挡。先天：开局优先抽到。消耗。\",\"获得 {effects.0.value} 点格挡。先天。消耗。\"},\n  },\n  brutality={\n   upgradeText={\"从下回合起，每回合正常抽牌后额外抽 1 张牌，再失去等量生命。先天：开局优先抽到。\",\"从下回合起，每回合正常抽牌后额外抽 1 张牌，再失去等量生命。先天。\"},\n  },\n  devotion={\n   text={\"获得 2 层供奉：从下回合起，每回合抽牌后获得等量真言；没有真言且供奉达到 10 层时，直接进入神格。\",\"获得 2 层供奉。下回合起抽牌后获等量真言，无真言且供奉达10层时直接进入神格。\"},\n   upgradeText={\"获得 3 层供奉：从下回合起，每回合抽牌后获得等量真言；没有真言且供奉达到 10 层时，直接进入神格。\",\"获得 3 层供奉。下回合起抽牌后获等量真言，无真言且供奉达10层时直接进入神格。\"},\n  },\n  eviscerate={\n   text={\"对目标造成 7 点伤害，重复 3 次。本回合每次主动弃牌，本牌费用降低 1，最低 0；新回合恢复基础费用。\",\"对目标造成 7 点伤害，重复 3 次。本回合每主动弃 1 张牌，本牌少费 1（最低 0）。\"},\n   upgradeText={\"对目标造成 9 点伤害，重复 3 次。本回合每次主动弃牌，本牌费用降低 1，最低 0；新回合恢复基础费用。\",\"对目标造成 9 点伤害，重复 3 次。本回合每主动弃 1 张牌，本牌少费 1（最低 0）。\"},\n   combatText={\"对目标造成 {effects.0.value} 点伤害，重复 3 次。本回合每次主动弃牌，本牌费用降低 1，最低 0；新回合恢复基础费用。\",\"对目标造成 {effects.0.value} 点伤害，重复 3 次。本回合每主动弃 1 张牌，本牌少费 1（最低 0）。\"},\n   upgradeCombatText={\"对目标造成 {effects.0.value} 点伤害，重复 3 次。本回合每次主动弃牌，本牌费用降低 1，最低 0；新回合恢复基础费用。\",\"对目标造成 {effects.0.value} 点伤害，重复 3 次。本回合每主动弃 1 张牌，本牌少费 1（最低 0）。\"},\n  },\n  infinite_blades={\n   upgradeText={\"从下回合起，每回合开始生成 1 张飞刃；满手时放入弃牌堆。先天：开局优先抽到。\",\"从下回合起，每回合开始生成 1 张飞刃；满手时放入弃牌堆。先天。\"},\n  },\n  perfected_strike={\n   text={\"对目标造成 6 点伤害。手牌、抽牌堆和弃牌堆中每有一张带打击标签的牌，基础伤害增加 2。\",\"对目标造成 6 点伤害。手牌、抽牌堆和弃牌堆中每有一张『剑势』系列牌，基础伤害增加2点。\"},\n   upgradeText={\"对目标造成 6 点伤害。手牌、抽牌堆和弃牌堆中每有一张带打击标签的牌，基础伤害增加 3。\",\"对目标造成 6 点伤害。手牌、抽牌堆和弃牌堆中每有一张『剑势』系列牌，基础伤害增加3点。\"},\n   combatText={\"对目标造成 {effects.0.value} 点伤害。手牌、抽牌堆和弃牌堆中每有一张带打击标签的牌，基础伤害增加 2。\",\"对目标造成 {effects.0.value} 点伤害。手牌、抽牌堆和弃牌堆中每有一张『剑势』系列牌，基础伤害增加2点。\"},\n   upgradeCombatText={\"对目标造成 {effects.0.value} 点伤害。手牌、抽牌堆和弃牌堆中每有一张带打击标签的牌，基础伤害增加 3。\",\"对目标造成 {effects.0.value} 点伤害。手牌、抽牌堆和弃牌堆中每有一张『剑势』系列牌，基础伤害增加3点。\"},\n  },\n  storm={\n   upgradeText={\"每打出一张能力牌，生成 1 个闪电球。先天：开局优先抽到。\",\"每打出一张能力牌，生成 1 个闪电球。先天。\"},\n  },\n  void={\n   text={\"不能打出。抽到时失去 1 点能量。虚无：回合结束时仍在手中则消耗。\",\"不能打出。抽到时失去 1 点能量。虚无。\"},\n   upgradeText={\"不能打出。抽到时失去 1 点能量。虚无：回合结束时仍在手中则消耗。\",\"不能打出。抽到时失去 1 点能量。虚无。\"},\n  },\n }\n assert(all.calculated_exchange and not all.calculated_gamble,'exact contemporary Calculated Exchange identity')\n local hash,n=0.0,0\n for id in manifest:gmatch('%S+')do\n  local c=assert(all[id]);n=n+1\n  if phase634Copy[id] then\n   c=C.copy(c)\n   for key,values in pairs(phase634Copy[id])do\n    assert(c[key]==values[2],id..'.'..key..' drifted before historical projection')\n    c[key]=values[1]\n   end\n  end\n  if id=='calculated_exchange' then id='calculated_gamble' end"
+  }
+ ]
+};
+const cultistVocabularyFixture={
+ "path": "tests/lua/cultist_ui.lua",
+ "current": {
+  "sha256": "aea1b6d3b2111ed048f7e8b8131876c523b33587e5531a1b1682c19f5f59163a",
+  "gitBlob": "2bca889e0efd44a393cc80d7add5a600fc756829"
+ },
+ "previous": {
+  "sha256": "34d83845902ed26515304ba2c1f410f9eda44ca1954aac0e3de0b6674e5f33f4",
+  "gitBlob": "77f7730cf2446dfd204a0c8353c4e756fdebd4fe"
+ },
+ "hunks": [
+  {
+   "at": 55,
+   "before": "-- Read a unit's statuses the way a player does: open its detail panel, then close it.\nlocal function details(stage, box)\n    box:GetChild('hit').click()\n    local info, lines = stage.children.statusInfo, {}\n    assert(info.visible)\n    for i = 1, Theme.layout.statusInfo.rows do\n        if info.children[\"name\" .. i].visible then lines[#lines + 1] = info.children[\"name\" .. i].text end\n    end\n    info.children.hit.click()\n    assert(not info.visible)\n    return table.concat(lines, \" | \")\nend\nlocal count = 0\nlocal function test(name,fn) fn(); count=count+1; print(\"ok Raven Adept UI \"..count..\" - \"..name) end\n\ntest(\"Raven Adept displays Ritual opener, persistent status and next modified attack\", function()\n    local ui, stage, click = setup()\n    local box = F.actorControl(stage,'enemy1')\n    assert(box.children.intent.text == \"\")\n    assert(box.children.intentIcon.imageId == Theme.icon.intent.buff)\n    click(\"enemy1\")\n    assert(stage.children.statusInfo.visible and stage.children.statusInfo.children.text1.text:find(\"自身获得 3 层仪式\",1,true))\n    stage.children.statusInfo.children.hit.click()\n    assert(not stage.children.statusInfo.visible)\n    click(\"endTurn\")\n    local text = details(stage, box)\n    assert(text:find(\"仪式 3\",1,true))\n    assert(not text:find(\"力量\",1,true))\n    assert(box.children.intent.text == \"6\")\n    click(\"endTurn\")\n    text = details(stage, box)",
+   "after": "-- Read a unit's statuses the way a player does: open its detail panel, then close it.\nlocal readPowers=dofile('tests/lua/support/power_tip_fixture.lua')\nlocal inspect=dofile('tests/lua/support/status_detail_fixture.lua')\nlocal function details(ui,stage, box)\n    box:GetChild('hit').click()\n    local _, rows=readPowers(stage)\n    local titles={}\n    for _,row in ipairs(rows)do\n        local title=assert(row:match('^<color=#[%x]+>(.-)</color>'),'compact section title')\n        titles[#titles+1]=title\n    end\n    inspect(ui,stage)\n    return table.concat(titles,' | ')\nend\nlocal count = 0\nlocal function test(name,fn) fn(); count=count+1; print(\"ok Raven Adept UI \"..count..\" - \"..name) end\n\ntest(\"Raven Adept displays Ritual opener, persistent status and next modified attack\", function()\n    local ui, stage, click = setup()\n    local box = F.actorControl(stage,'enemy1')\n    assert(box.children.intent.text == \"\")\n    assert(box.children.intentIcon.imageId == Theme.icon.intent.buff)\n    click(\"enemy1\")\n    assert(inspect(ui,stage):find(\"这名敌人将要进行强化。\",1,true))\n    assert(not ui.run.combat.enemies[1].statuses.ritual,'forecast does not apply Ritual')\n    click(\"endTurn\")\n    assert(ui.run.combat.enemies[1].statuses.ritual==3,'turn actually grants three Ritual')\n    local text = details(ui,stage, box)\n    assert(text:find(\"仪式 3\",1,true))\n    assert(not text:find(\"力量\",1,true))\n    assert(box.children.intent.text == \"6\")\n    click(\"endTurn\")\n    text = details(ui,stage, box)"
+  }
+ ]
+};
+const uiVocabularyContinuations=Object.freeze({
+ "tests/lua/explicit_target_preview.lua": {
+  "path": "tests/lua/explicit_target_preview.lua",
+  "current": {
+   "sha256": "bbb20677d587476199ae74d8a34e5515b5364ab3893b03c4ab7e345fb5d31937",
+   "gitBlob": "ad9713f888171df6018a28271d1115c03e6cebd8"
+  },
+  "previous": {
+   "sha256": "b8194448d5a37d3ca2c4b78c9877cbcf96f2ff188bd06451647fcf3a435bd9d1",
+   "gitBlob": "83799e0fffd86144e02f6d120079e95c5104c3ce"
+  },
+  "hunks": [
+   {
+    "at": 34,
+    "before": "    event('enemy2','down',9);assert(value(panel)==6)\n    event('enemy1','down',10);assert(value(panel)==9)",
+    "after": "    event('enemy2','down',9);assert(value(panel)==6)\n    event('enemy1','down',10);assert(value(panel)==6 and ui.cardAim.touch==9,'foreign Down must not steal a still-held surface')\n    event('enemy1','endDrag',8);assert(value(panel)==6 and ui.cardAim.touch==9,'releasing old surface must not clear the new preview')\n    event('enemy1','down',10);assert(value(panel)==9 and ui.cardAim.touch==10)"
+   }
+  ]
+ },
+ "tests/lua/character_presentation.lua": {
+  "path": "tests/lua/character_presentation.lua",
+  "current": {
+   "sha256": "9ef22713c82aa40d9ca3881412bae26514ab053f96e83ca55039df327c02ad3e",
+   "gitBlob": "4328a766afec949767b91df6a58a526168d9dae6"
+  },
+  "previous": {
+   "sha256": "c260d50705a84e13da0018fb4b31aff4fc860077d488cf0ffecb457ba531f745",
+   "gitBlob": "6f4ad0af1415124352e905a2d16556291d0a1f98"
+  },
+  "hunks": [
+   {
+    "at": 184,
+    "before": " assert(w.devotion.text:find('2 层供奉',1,true) and w.devotion.upgradeText:find('3 层供奉',1,true))\n assert(w.devotion.text:find('每回合抽牌后',1,true) and not w.prostrate.text:find('首次',1,true))",
+    "after": " assert(w.devotion.text:find('2 层供奉',1,true) and w.devotion.upgradeText:find('3 层供奉',1,true))\n for _,copy in ipairs({w.devotion.text,w.devotion.upgradeText}) do\n  assert(copy:find('下回合起抽牌后获等量真言',1,true),'Devotion starts next turn after the draw')\n end\n assert(not w.prostrate.text:find('首次',1,true))"
+   }
+  ]
+ },
+ "tests/lua/card_preview.lua": {
+  "path": "tests/lua/card_preview.lua",
+  "current": {
+   "sha256": "cd50949a5b106336a3f7592f2c3145795f8109ede27d938ff5fa66b037fbe17b",
+   "gitBlob": "f61f47463ade235b0e92f1f51b2510329ad92362"
+  },
+  "previous": {
+   "sha256": "2cd5642a609984748399bafe18b70d91e08d5b7b92075ba23dba63701152967b",
+   "gitBlob": "45362aeba079fd916710ed009d7c7ca23c2d4cd2"
+  },
+  "hunks": [
+   {
+    "at": 419,
+    "before": "        local compact, tips = readPowers(panel)\n        assert(#tips == 1 and compact:find(row.name, 1, true) and compact:find(row.text, 1, true), id)",
+    "after": "        local compact, tips = readPowers(panel)\n        assert(#tips == 1 and compact:find(row.name, 1, true), id)\n        local effect = id == \"strength\" and \"普通攻击每段伤害 +5\" or row.text\n        assert(compact:find(effect, 1, true), id..\": \"..compact)"
+   }
+  ]
+ }
+});
+function readContinuingVocabularyReceipt(path,digest,readCurrent){
+ const item=path===phaseFourPresentationFixture.path?phaseFourPresentationFixture:
+  path===cultistVocabularyFixture.path?cultistVocabularyFixture:
+  Object.hasOwn(uiVocabularyContinuations,path)?uiVocabularyContinuations[path]:null;
+ if(!item)return;
+ const {path:fixture,current,previous,hunks}=item;
+ return readCloseoutLuaVocabularyReceipt(path,digest,(name,encoding)=>{
+  const source=readCurrent(name,encoding);
+  if(name!==fixture)return source;
+  assert(matches(source,current),'current Lua vocabulary continuation changed: '+fixture);
+  const normalized=lf(source);
+  assert(source===normalized||source===normalized.replaceAll('\n','\r\n'),'mixed Lua vocabulary continuation line endings');
+  const prior=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,normalized);
+  assert(matches(prior,previous),'exact pre-projection vocabulary fixture');
+  return prior;
+ });
+}
 export function readCalibrationReceiptInput(path,digest,read,readCurrent=readFileSync){
+ const phaseFour=readContinuingVocabularyReceipt(path,digest,readCurrent);
+ if(phaseFour!==undefined)return phaseFour;
+ const liveLua=readLiveLuaCalibrationFixture(path,digest,readCurrent);
+ if(liveLua!==undefined)return liveLua;
+ // #391's Slimed UI fixture is an intermediate receipt, not the oldest Lua
+ // inverse. Check the live fixture before restoring only the one #1060 hunk.
+ if(path==='tests/lua/slimed_ui.lua'&&digest==='74c651bbeadec8224e4d7bbab98f947d5e9a9494f3d681b96e8648a07703f20b'){
+  const source=readCurrent(path,'utf8');
+  assert(matches(source,{
+   sha256:'62c3e6a414d6d31e4316630326fc76a5dd779145133cf2a5875fb4e203a3f2ec',gitBlob:'00dde572f5db8b7335087379e2caf4323e333db0',
+  }),'current Slimed receipt input changed: '+path);
+  const normalized=lf(source);
+  assert(source===normalized||source===normalized.replaceAll('\n','\r\n'),'mixed Slimed receipt line endings');
+  const prior=normalized.replace("assert(detail:find('这名敌人将要对你施加负面效果并攻击造成 8 点伤害。',1,true))",
+   "assert(detail:find('8',1,true) and detail:find('将 1 张「黏滞」放入你的弃牌堆',1,true))");
+  assert(matches(prior,{sha256:digest,gitBlob:'e201717bc5401441b9c71e31830b5b14ae9630bd'}),'exact #391 Slimed receipt');
+  return prior;
+ }
+ // Restore the #391 large Spike Slime fixture for this receipt only.
+ if(path==='tests/lua/spike_slime_l_ui.lua'&&digest==='a6201ab0fe3b26d01c160d5d43fbf195daf2e71b23486a8cd43fbeb374ac9e6c'){
+  const source=readCurrent(path,'utf8');
+  assert(matches(source,{
+   sha256:'98972176b8ae21b28ee48bfe7f7a15fb2b720f152ceb9bf4847b1a59083f5c05',gitBlob:'a6de1469b516a29fd444c1e5a200565d0626d42e',
+  }),'current Spike Slimed receipt input changed: '+path);
+  const normalized=lf(source);
+  assert(source===normalized||source===normalized.replaceAll('\n','\r\n'),'mixed Spike Slimed receipt line endings');
+  const prior=normalized.replace("assert(detail:find('这名敌人将要对你施加负面效果并攻击造成 16 点伤害。',1,true))",
+   "assert(detail:find('16',1,true) and detail:find('将 2 张「黏滞」放入你的弃牌堆',1,true))")
+   .replace("assert(frail:find('这名敌人将要对你施加一种负面效果。',1,true)",
+    "assert(frail:find('使你获得 2 回合脆弱',1,true)")
+   .replace('intent16/strategy/read-only/two-generated-cards/real-exhaust/debuff-preview',
+    'intent16/detail2/read-only/two-generated-cards/real-exhaust/frail2');
+  assert(matches(prior,{sha256:digest,gitBlob:'72cb15dea11aee357476e26219028202bb11fc90'}),'exact #391 Spike Slimed receipt');
+  return prior;
+ }
  const official=readOfficialCalibrationReceipt(path,digest,readCurrent);
  if(official!==undefined)return official;
  if(path===relicEquipReceipt.path&&digest===relicEquipReceipt.prior.sha256)return readRelicEquipReceipt(readCurrent);
  if(path===launchComponentPath&&digest===launchComponentPrior.sha256)return readLaunchComponentReceipt(readCurrent);
  if(path===copierPath&&digest===goldenIdolCopierDigest)return readGoldenIdolCopierReceipt(readCurrent);
+ if(path===relicCatalogTest&&digest===relicCatalogTestPrior.sha256)return readRelicCatalogTestReceipt(readCurrent);
  const component=readComponentSourceReceipt(path,digest,readCurrent);
  if(component!==undefined)return component;
  const vocabulary=readCloseoutLuaVocabularyReceipt(path,digest,readCurrent);
@@ -386,6 +741,7 @@ export function readCalibrationReceiptInput(path,digest,read,readCurrent=readFil
  else{
   const raw=beforeCurrentHistoricalStsSource(path,readCurrent(path,'utf8'));
   let current=raw;
+  if(path===colorlessReceiptPath)current=beforeColorlessReceipt(raw,row.current);
   if(path==='tests/helpers/combined-epoch/source-epoch-runtime.mjs'||path==='tests/helpers/copy-integration-source-closure.mjs'||
      path==='tests/helpers/round3-catalog-source-inverse.mjs'){
    current=beforeMapRoomReplayCohort(path,raw);

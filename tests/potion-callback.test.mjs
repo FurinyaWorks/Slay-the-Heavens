@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import {createHash} from 'node:crypto';
 import luaparse from 'luaparse';
 import {discoverSources,dependencyCycles} from '../scripts/lua-quality-metrics.mjs';
 import {analyzeSources} from '../scripts/check-architecture.mjs';
@@ -9,6 +10,70 @@ import {runPotion} from './helpers/potion-callback-vm.mjs';
 const read=path=>readFileSync(path,'utf8').replaceAll('\r\n','\n');
 const fixture='tests/lua/potion_callback_contract.lua';
 const leaf='src/lua/abyss_relic_potion_hooks.lua';
+const sha256=text=>createHash('sha256').update(text).digest('hex');
+// #951 changed identifiers and catalog names; #940 changed one Equilibrium period.
+// Neither change belongs to the potion callback. Normalize only the exact reviewed
+// key/value leaves in the serialized comparison, never either running Lua VM.
+const releaseVocabulary=new Map([
+ ['calculated_gamble','calculated_exchange'],['Calculated Gamble','Calculated Exchange'],
+ ['calculatedGamble','calculatedExchange'],['Blue Slaver','Blue Guard'],
+ ['Cultist','Raven Adept'],['Red Slaver','Red Guard'],['噬咬','迅袭'],['激素','元素增幅'],
+ ['daggerSacrifice','daggerExpenditure'],['gamblingActivated','tacticalBadgeActivated'],
+ ['获得13点格挡。本回合保留所有非虚无手牌。','获得13点格挡。本回合保留所有非虚无手牌'],
+]);
+const releaseVocabularyLocations='d14cdd9ba00c4ef762d5d7e0ad106fe85807c6cf415d698ffe419b3b31cd1fc8';
+function projectVocabulary(prior,current,location,changed){
+ if(prior===current)return current;
+ if(prior&&current&&typeof prior==='object'&&typeof current==='object'){
+  assert.equal(Array.isArray(current),Array.isArray(prior),'graph type: '+location);
+  if(Array.isArray(current)){
+   assert.equal(current.length,prior.length,'graph array length: '+location);
+   for(let i=0;i<current.length;i++)current[i]=projectVocabulary(prior[i],current[i],location+'/'+i,changed);
+  }else{
+   const keys=Object.keys(current);
+   assert.deepEqual(keys,Object.keys(prior),'graph fields: '+location);
+   for(const key of keys)current[key]=projectVocabulary(prior[key],current[key],location+'/'+key,changed);
+  }
+  return current;
+ }
+ assert(typeof prior==='string'&&releaseVocabulary.has(prior)&&releaseVocabulary.get(prior)===current,
+  'unapproved potion graph difference: '+location);
+ changed.push(location);
+ return prior;
+}
+function assertVocabularyLocations(changed){
+ assert.equal(changed.length,358,'exact Release potion graph vocabulary leaf count');
+ assert.equal(sha256(changed.join('\n')),releaseVocabularyLocations,'exact Release potion graph vocabulary locations');
+}
+function projectPotionReplay(before,after){
+ const load=result=>readFileSync(result.traceFile,'utf8').trimEnd().split('\n');
+ const prior=load(before),current=load(after),changed=[],graphs=[];
+ assert.equal(prior.length,before.graphs.length);
+ assert.equal(current.length,after.graphs.length);
+ assert.equal(current.length,prior.length);
+ let bytes=0;
+ for(let i=0;i<current.length;i++){
+  const previous=JSON.parse(prior[i]),next=JSON.parse(current[i]);
+  assert.equal(next.label,previous.label,'checkpoint label: '+i);
+  for(const [row,receipt] of [[previous,before.graphs[i]],[next,after.graphs[i]]]){
+   assert.deepEqual({label:row.label,sha256:sha256(JSON.stringify(row.graph))},receipt);
+  }
+  const serialized=JSON.stringify(projectVocabulary(previous.graph,next.graph,String(i),changed));
+  bytes+=Buffer.byteLength(serialized);graphs.push({label:next.label,sha256:sha256(serialized)});
+ }
+ assertVocabularyLocations(changed);
+ return {graphs,bytes};
+}
+test('historical potion vocabulary projection rejects numeric drift and misplaced approved renames',()=>{
+ assert.throws(()=>projectVocabulary({hp:41},{hp:40},'0',[]),/unapproved potion graph difference: 0\/hp/);
+ assert.throws(()=>projectVocabulary({hp:41},{hp:41,extra:true},'0',[]),/graph fields: 0/);
+ assert.throws(()=>projectVocabulary([['table',1]],[['table',2]],'0',[]),/unapproved potion graph difference: 0\/0\/1/);
+ const changed=[];
+ projectVocabulary({name:'Cultist'},{name:'Raven Adept'},'unapproved-checkpoint',changed);
+ assert.throws(()=>assertVocabularyLocations(changed),/exact Release potion graph vocabulary leaf count/);
+ const misplaced=Array.from({length:358},(_,i)=>changed[0]+'/'+i);
+ assert.throws(()=>assertVocabularyLocations(misplaced),/exact Release potion graph vocabulary locations/);
+});
 test('potion callback and Candidate cannot transitively import Session responsibilities, including deferred imports',()=>{
  const sources=Object.fromEntries(Object.entries(discoverSources()).map(([path,source])=>[path.slice(8,-4),source]));
  const policy=JSON.parse(read('config/architecture.json'));
@@ -41,9 +106,10 @@ test('potion callbacks preserve complete frozen/current graph streams, errors, R
  assert.equal(before.status,0,before.error);assert.equal(after.status,0,after.error);
  assert(before.graphs.length>0&&after.graphs.length>0);
  assert.deepEqual(after.logs,before.logs);assert.deepEqual(after.generated,before.generated);
- assert.deepEqual(after.graphs,before.graphs);assert.equal(after.bytes,before.bytes);
+ const replay=projectPotionReplay(before,after);
+ assert.deepEqual(replay.graphs,before.graphs);assert.equal(replay.bytes,before.bytes);
  mkdirSync('build/potion-callback',{recursive:true});
- writeFileSync('build/potion-callback/equivalence.json',JSON.stringify({fixture,baseline:'2ad07111e3d5b5cb52b4229860b3b780941e29a9',handwrittenBefore:before.handwritten,handwrittenAfter:after.handwritten,generated:after.generated,checkpoints:after.graphs,bytesPerSide:after.bytes,definitions:after.definitionCount,beforeStream:before.traceFile,afterStream:after.traceFile,stableFullFieldGraphStream:true,diagnosticLocationMappings:[]},null,2)+'\n');
+ writeFileSync('build/potion-callback/equivalence.json',JSON.stringify({fixture,baseline:'2ad07111e3d5b5cb52b4229860b3b780941e29a9',handwrittenBefore:before.handwritten,handwrittenAfter:after.handwritten,generated:after.generated,checkpoints:replay.graphs,rawCurrentCheckpoints:after.graphs,bytesPerSide:replay.bytes,rawCurrentBytes:after.bytes,definitions:after.definitionCount,beforeStream:before.traceFile,afterStream:after.traceFile,stableFullFieldGraphStream:true,approvedReleaseVocabularyLocations:releaseVocabularyLocations,diagnosticLocationMappings:[]},null,2)+'\n');
 });
 for(const root of ['abyss_relic_potion_hooks','abyss_run_potion_candidate','abyss_relic_hooks'])test(`${root}: cold loading and the fixed callback slot preserve both replacement directions`,{concurrency:false},()=>{
  const prelude=`

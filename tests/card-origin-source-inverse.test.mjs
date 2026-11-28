@@ -15,7 +15,10 @@ test('card-origin projection recovers complete prior bytes and does not hide par
   for(const changed of [source+'-- unrelated\n',source.replace('abyss_card_origin','abyss_card_origin_typo')])
    assert.equal(preCardOriginSource(path,changed),changed,'foreign bytes must remain exposed');
  }
- assert.equal(preCardOriginSource('unregistered.lua','source'),'source');
+ const nodes='src/lua/abyss_nodes.lua',lf=readFileSync(nodes,'utf8').replaceAll('\r\n','\n');
+ const mixed=lf.replace('\n','\r\n');
+ assert.equal(preCardOriginSource(nodes,mixed),mixed,'mixed line endings must not claim the exact reviewed bytes');
+ assert.equal(preCardOriginSource('unregistered.lua',lf),lf,'only the registered Nodes owner may consume this view');
  assert.equal(preCardOriginSource('src/lua/abyss_nodes.lua',null),null);
 });
 test('architecture projection rejects removed registration, wrong owner, duplicate keys and order changes',()=>{

@@ -4,6 +4,7 @@ import {historicalTest} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
 import {preRelicRound3CompositionSource} from './helpers/relic-round3-composition.mjs';
 import {readFileSync,mkdtempSync,mkdirSync,writeFileSync,existsSync,rmSync,symlinkSync,renameSync} from 'node:fs';
+import {reviewedRenamedStsStyleRead} from './helpers/reviewed-selection-current-source.mjs';
 import {tmpdir} from 'node:os';
 import {join,dirname} from 'node:path';
 import {createHash} from 'node:crypto';
@@ -136,7 +137,8 @@ test('current catalog hosts retain authenticated intermediate epochs and freshly
  assert.throws(()=>readLive(retiredControllerPath),{code:'ENOENT'});
  const retiredSource=beforeInputRetirementReader(readLive)(retiredControllerPath);
  const paths=[...Object.keys(sourceEpoch.proof.current),...addedOwners].filter(path=>path!==retiredControllerPath);
- const current=Object.fromEntries(paths.map(path=>[path,readLive(path)]));
+ const replayInput=reviewedRenamedStsStyleRead(readLive);
+ const current=Object.fromEntries(paths.map(path=>[path,replayInput(path)]));
  const linkedOwners=[...new Set([...sourceEpoch.proof.owners,...addedOwners])];
  for(const [path,binding]of Object.entries(expected)){
   assert.equal(hash(binding.beforeSource),binding.beforeSha256);

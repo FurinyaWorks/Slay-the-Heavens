@@ -246,7 +246,7 @@ export function styleTreasure(panel,theme,{skinButtons=true}={}){
  }
  if(theme.presentationProfile==='official-assets-first'){
   const title=must(panel,'page');
-  title.text.colour=theme.color.panelSunken;
+  styleRewardTitle(title,theme);
   const paper=rewardPaper(theme.layout.nativeNode.rewardList.heading);
   paper.visible=false;
   panel.children.splice(panel.children.indexOf(title),0,paper);
@@ -307,6 +307,10 @@ function nodeCardChrome(face,theme){
  for(const child of parts(face))nodeCardChrome(child,theme);
 }
 
+function styleRewardTitle(title,theme){
+ // Keep the native outline's RGB and make it solid over the light parchment.
+ Object.assign(title.text,{colour:theme.color.rewardBannerTitle,outline:true,outlineColour:'#333333',outlineOpacity:1});
+}
 function rewardPaper(title){
  const paper=group('v25RewardPaper',[polygon('banner',[[365,170],[409,164],[425,153],[563,151],[859,153],[877,165],[915,171],[893,205],[855,202],[849,211],[431,211],[420,202],[387,205]],'#A79E80'),
   // A continuous native centre closes antialias seams between the silhouette's
@@ -343,11 +347,12 @@ function styleRewards(battle,theme){
   }
   proceedFlag(must(battle,'continue'),theme);
  }
- const ink=theme.presentationProfile==='official-assets-first'?theme.color.panelSunken:null;
- must(list,'title').text.colour=ink??theme.color.text;must(list,'subtitle').text.colour='#D6D5C5';
- setRect(must(stage,'title'),relative(r.title));setRect(must(stage,'subtitle'),relative(r.subtitle));
+ styleRewardTitle(must(list,'title'),theme);must(list,'subtitle').text.colour='#D6D5C5';
+ const title=must(stage,'title');
+ setRect(title,relative(r.title));setRect(must(stage,'subtitle'),relative(r.subtitle));
+ styleRewardTitle(title,theme);
  if(theme.presentationProfile){
-  type(must(stage,'title'),29,ink??'#EFE8D4');type(must(stage,'subtitle'),16,'#D6D5C5');
+  type(title,29,title.text.colour);type(must(stage,'subtitle'),16,'#D6D5C5');
   const skip=must(battle,'skip');setRect(skip,r.skip);for(const state of parts(skip))state.size=r.skip.slice(2);stylePreset(skip);
  }
 }

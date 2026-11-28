@@ -1,0 +1,35 @@
+Targeted v2.2.0 enemy ground-contact checks
+Repository: /workspace/Slay-the-Heavens
+Baseline: 5ccff59e9df396849216fb3f790be8852974c769
+
+node --test tests/official-assets-legibility.test.mjs
+Result: exit 0, tests 13, pass 13, fail 0. Includes chapter artwork bounded pool and historical official card host archived replay (10 pass, 0 fail).
+
+node --test tests/refined-release-monsters.test.mjs tests/refined-monster-tiers.test.mjs tests/refined-release-ui.test.mjs
+Result: exit 0, tests 24, pass 24, fail 0.
+
+Directed baseline (node --input-type=module): loaded officialAssetsTheme and applyChapterBattlePlacement from release checkout and asserted assert.equal(theme.layout.enemyRow.groundContact.feet.red_louse,50/106).
+Result: exit 1, actual undefined vs expected 0.4716981132075472.
+
+Directed after (node --input-type=module): loaded current production generator and official theme. Asserted sorted classification keys equal refinedReleaseMonsterIds; feet and footprints keys equal grounded classification keys; red_louse=50/106 and wizard_gremlin=49/106; exactly chosen, gremlin_leader, gremlin_nob and torch_head had empty footprints. Resolved generator static imports to file URL and imported temporary in-memory source mutations as data URLs, in each case invoking applyChapterBattlePlacement:
+1. Removed red_louse measured row: threw Missing release monster stance: red_louse.
+2. Replaced explicit sentry classification with duplicate red_louse: threw Unknown or duplicate release monster stance: red_louse.
+3. Replaced explicit sentry classification with foreign_monster: threw Unknown or duplicate release monster stance: foreign_monster.
+Result: exit 0, printed 42 exact catalogue entries, geometry joins, baked shadows and missing/duplicate/unknown classifier mutations verified.
+
+Detached exact helper copy (node --input-type=module): invoked copyIntegrationSourceClosure in a separate mkdtemp for currentProduction=false and currentProduction=true, cleaning each disposable directory afterwards.
+Result: exit 0, both exact closure copies passed.
+
+Collector follow-up on the final battle backdrop
+
+node --test tests/official-assets-legibility.test.mjs
+Result: exit 0, 13 passed, 0 failed. Both ordinary scene row sets and the 250-slot layout remain unchanged. The Collector scene replaces 18 same-family rows.
+
+node --test tests/native-enemy-portraits.test.mjs
+Result: exit 0, 2 passed, 0 failed. Official profile selects the Collector scene at the real Boss entrance, keeps it during summons and death without repeat scene writes, and restores the normal Act II scene for the Automaton.
+
+node scripts/test-lua.mjs tests/lua/chapter_battle_scene.lua
+Result: PASS.
+
+Collection of affected integration-source epoch tests
+Result: exit 0, 5 passed, 0 failed. Exact detached and current helper reads, combined production tree and current entrance replay retain their historical witnesses.

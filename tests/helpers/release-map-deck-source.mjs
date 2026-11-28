@@ -8,6 +8,8 @@ import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {beforeLoadingRecoverySource} from './loading-recovery-source.mjs';
 import {beforeHotfixMapDeckHelperSource} from './hotfix-map-deck-helper-source.mjs';
+import {beforeReleaseClosureFixture} from './release-closure-fixture-source.mjs';
+import {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';
 
 const hash=(bytes,algorithm='sha256')=>createHash(algorithm).update(bytes).digest('hex');
 const normalize=source=>source.replaceAll('\r\n','\n');
@@ -141,13 +143,22 @@ function uniformCurrent(source,binding){
   return source===lf||source===lf.replaceAll('\n','\r\n');
 }
 
+// #1065 only chooses the Collector throne for its encounter. Keep this exact
+// successor valid as a freshly read map/deck peer without reusing cached bytes.
+const collectorSceneView=Object.freeze({
+  sha256:'817eb3428c3fc0bb081a11015212520f445f018368c2028a8c5e4216747eb178',
+  gitBlob:'94addcbe13c7dd643469e0c1bf33062ed27a8a7a',
+});
 function assertProductionMapDeckOwners(path,source,read){
   if(!Object.hasOwn(productionMapDeckSources,path)||!uniformCurrent(source,productionMapDeckSources[path].after))return;
   for(const [name,{after}] of Object.entries(productionMapDeckSources)){
     let live;
     try{live=read(name,'utf8');}catch{assert.fail('map deck linked owner missing: '+name);}
-    assert(uniformCurrent(live,after),'map deck linked owner identity: '+name);
+    assert(uniformCurrent(live,after)||
+      (name==='src/lua/abyss_game_ui_view.lua'&&uniformCurrent(live,collectorSceneView)),
+      'map deck linked owner identity: '+name);
   }
+  return true;
 }
 
 function beforeProductionForethought(path,source,read){
@@ -175,7 +186,23 @@ export function beforeMapRoomSource(path,source){
 }
 
 export function beforeMapDeckSource(path,source,read){
-  assertProductionMapDeckOwners(path,source,read);
+ const deckPath='src/lua/abyss_deck_ui.lua';
+ const rawRead=read;
+ const mapPath='src/lua/abyss_map_ui.lua';
+ const beforeOwner=(owner,raw)=>owner===deckPath?beforeReleaseDeckPointer(owner,raw):
+  owner===mapPath?beforeReleaseClosureFixture(owner,raw):raw;
+ const liveSource=source;
+ source=beforeOwner(path,source);
+ if(path===mapPath&&source!==liveSource){
+  const live=rawRead(path,'utf8');
+  assert(typeof live==='string'&&live.replaceAll('\r\n','\n')===liveSource.replaceAll('\r\n','\n')
+   &&beforeOwner(path,live)!==live,'map deck linked owner identity: '+path);
+ }
+ read=(owner,...args)=>beforeOwner(owner,rawRead(owner,...args));
+  if(assertProductionMapDeckOwners(path,source,read)&&path==='src/lua/abyss_map_ui.lua'){
+    const prior=files[path].before.source;
+    return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
+  }
   const forethoughtPrior=beforeProductionForethought(path,source,read);
   if(forethoughtPrior!==source)return forethoughtPrior;
   const readBackflow=read;

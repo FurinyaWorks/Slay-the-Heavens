@@ -72,6 +72,39 @@ function M.routePoint(x1,y1,x2,y2,t,seed)
     local sway=math.sin(2*math.pi*t)*math.sin(math.pi*t)*(seed%3-1)
     return x1+(x2-x1)*t+bend*4*t*(1-t)+sway,y1+(y2-y1)*t
 end
+-- All artwork shares a bottom docking region. The approved projected
+-- badge contour is 68.20 px deep at the centre and 63.82 px at either
+-- 16 px port (1.46 × the fitting canvas). Between those points the
+-- conservative envelope is the lower of the circular edge and the
+-- bottom tip's diagonal. Extra incoming edges share the same span.
+function M.bossRoutePort(rank,count,width)
+    local dx = count <= 1 and 0 or ((rank-1)/(count-1)*2-1)*16
+    local ax=math.abs(dx)
+    local depth=math.max(math.sqrt((63.51)^2-ax*ax),68.20-ax*.27375)
+    return dx,depth+math.max(2.5,width/2+.5)
+end
+function M.bossRoutePoint(x1,y1,x2,y2,t)
+    local u,dx,dy=1-t,x2-x1,y2-y1
+    local w1,w2,w3=u*u*u,3*u*u*t,3*u*t*t
+    local w4=t*t*t
+    return w1*x1+w2*(x1+dx*.26)+(w3+w4)*x2,
+        w1*y1+w2*(y1+dy*.18)+w3*(y2-dy*.63)+w4*y2
+end
+-- Clip the actual dash chords rather than linearising the curved path
+-- across a scroll boundary. The viewport remains the existing map viewport.
+function M.clipBossDash(x1,y1,x2,y2,left,bottom,right,top)
+    local first,last=0,1
+    local function clip(v,d,lo,hi)
+        if math.abs(d)<1e-9 then return v>=lo and v<=hi end
+        local a,b=(lo-v)/d,(hi-v)/d
+        if a>b then a,b=b,a end
+        first,last=math.max(first,a),math.min(last,b)
+        return last>first
+    end
+    local dx,dy=x2-x1,y2-y1
+    if not clip(x1,dx,left,right) or not clip(y1,dy,bottom,top) then return end
+    return x1+first*dx,y1+first*dy,x1+last*dx,y1+last*dy
+end
 function M.roomInk(node, state, currentFloor)
     local palette = Theme.color.mapCanvas
     if node.type == 'boss' and state == 'locked' then return palette.kind.boss end
@@ -312,6 +345,41 @@ function M.new(root, map, onChoose, clickEvent, options)
     assert(colour ~= nil and imageSource ~= nil, "map UI needs client Color and imageSource")
     local embedded = options.embedded == true
     local stage,backdrop,panel=mapControls(root,embedded)
+    local bossHost = panel:GetChild("bossInkHost")
+    local function fittedBoss(bossName)
+        return bossHost and MapLayout.bossInk and MapLayout.bossInk.variants[bossName]
+    end
+    local function bossInkInBounds(x,y)
+        local r,v = MapLayout.bossInk.size / 2,Layout.viewport
+        return x-r >= v.left and x+r <= v.right and y-r >= v.bottom and y+r <= v.top
+    end
+    local inkSlots, inkColours, paintedBossInk
+    local function paintBossInk(art, fx)
+        if art ~= paintedBossInk then
+            if not inkSlots then
+                inkSlots, inkColours = {}, {}
+                for i = 1, MapLayout.bossInk.cap do
+                    inkSlots[i] = child(bossHost, string.format("ink%02d", i - 1))
+                end
+                for i, c in ipairs(MapLayout.bossInk.palette) do inkColours[i] = colour(c[1],c[2],c[3],255) end
+            end
+            for i, image in ipairs(inkSlots) do
+                local shape = art[i]
+                if shape then
+                    image:SetImage(imageSource,shape[1])
+                    image.imageColor = inkColours[shape[2]]
+                    image:SetAnchoredPosition(shape[3],shape[4])
+                    image:SetSizeDelta(shape[5],shape[6])
+                    image:SetLocalRotation(shape[7],shape[8],shape[9])
+                end
+                image:SetVisible(shape ~= nil)
+            end
+            paintedBossInk = art
+        end
+        bossHost:SetAnchoredPosition(fx.x,fx.y)
+        bossHost:SetVisible(true)
+    end
+
     -- The title host binds real owners only after Start succeeds.
     local initialChapter = map ~= nil and assert(chapterFor(map), "invalid map chapter context") or nil
     local view = map and mapView(map)
@@ -363,6 +431,7 @@ function M.new(root, map, onChoose, clickEvent, options)
     end
     local visual = Theme.layout.map.presentation
     -- STS MapEdge/MapRoomNode contract: taken ink, reachable bright, unreachable recessive.
+    local bossRouteInk = colour(35,50,55,214)
     local pathColours = {
         taken = pathColour(Theme.color.node.pathTaken, visual.takenOpacity),
         next = pathColour(Theme.color.node.reachable, visual.nextOpacity),
@@ -418,12 +487,53 @@ function M.new(root, map, onChoose, clickEvent, options)
         end
     end
 
-    local function line(control, source, target, taken, reachable, far, currentNodeId)
+    local function paintBossRoute(control,firstDash,source,x1,y1,x2,y2,port,width,ink,currentNodeId)
+        local View=Layout.viewport
+        local dx,drop=M.bossRoutePort(port.rank,port.count,width)
+        local sourceInset,sourceOffset=routeInset(source,currentNodeId)
+        local rise=roomState(source,currentNodeId)=='locked' and 12 or math.max(12,sourceInset)
+        x2,y2,y1=x2+dx,y2-drop,y1+sourceOffset+rise
+        if y2<=y1 then control:SetVisible(false);return end
+        local count=clamp(math.ceil(math.sqrt((x2-x1)^2+(y2-y1)^2)/17),3,8)
+        local margin=width/2
+        local any=false
+        -- Existing route container and eight authored image slots only.
+        -- In local stage coordinates the same geometry scales with mobile/PC.
+        local cx,cy=clamp((x1+x2)/2,View.left,View.right),clamp((y1+y2)/2,View.bottom+margin,View.top-margin)
+        control:SetAnchoredPosition(cx,cy)
+        control:SetSizeDelta(1,width)
+        control.localRotationZ=0
+        for i=1,8 do
+            local dash=i==1 and firstDash or child(control,'routeInk'..i)
+            local ax,ay,bx,by
+            if i<=count then
+                local sx,sy=M.bossRoutePoint(x1,y1,x2,y2,(i-1)/(count-.30))
+                local ex,ey=M.bossRoutePoint(x1,y1,x2,y2,(i-.30)/(count-.30))
+                ax,ay,bx,by=M.clipBossDash(sx,sy,ex,ey,View.left+margin,View.bottom+margin,View.right-margin,View.top-margin)
+            end
+            dash:SetVisible(ax~=nil)
+            if ax then
+                any=true
+                dash:SetAnchoredPosition((ax+bx)/2-cx,(ay+by)/2-cy)
+                dash:SetSizeDelta(math.sqrt((bx-ax)^2+(by-ay)^2),width)
+                dash.localRotationZ=math.atan(by-ay,bx-ax)*180/math.pi
+                dash.imageColor=ink
+            end
+        end
+        control:SetVisible(any)
+    end
+
+    local function line(control, source, target, taken, reachable, far, currentNodeId,bossPort)
         local x1, y1 = position(source)
         local x2, y2 = position(target)
         local padding = math.abs(Theme.layout.map.emeraldIconY)
         if y2 + padding < Layout.viewport.bottom or y1 - padding > Layout.viewport.top then control:SetVisible(false) return end
         local firstDash = control:GetChild('routeInk1')
+        if firstDash and bossPort and bossInkInBounds(x2,y2) then
+            local width=M.pathWidth(taken,reachable)
+            local ink=taken and pathColours.taken or reachable and pathColours.next or bossRouteInk
+            return paintBossRoute(control,firstDash,source,x1,y1,x2,y2,bossPort,width,ink,currentNodeId)
+        end
         local fullLength
         fullLength, x1, y1, x2, y2 = trimRoute(source,target,currentNodeId,firstDash,x1,y1,x2,y2)
         if not fullLength then control:SetVisible(false) return end
@@ -451,6 +561,7 @@ function M.new(root, map, onChoose, clickEvent, options)
     end
     local function hideInvalidChapter()
         cancelDrag()
+        if bossHost then bossHost:SetVisible(false) end
         self.navigationEnabled, self.slots, self.breathing = false, {}, {}
         at("title").text, at("notice").text = "", "地图章节信息无效 · 请重新启程"
         at("notice"):SetVisible(true)
@@ -483,18 +594,40 @@ function M.new(root, map, onChoose, clickEvent, options)
         end
         at('notice'):SetVisible(at('notice').text~='')
     end
-    local function paintMapEdges(current, nodes, taken)
+    local function paintMapEdges(current, nodes, taken, bossName)
+        local ports={}
+        if fittedBoss(bossName) then
+            local docks={}
+            for _,source in ipairs(current.nodes) do
+                for _,targetId in ipairs(source.nextIds) do
+                    local target=nodes[targetId]
+                    if target and target.type=='boss' and target.roomKind~='boss_treasure' then
+                        local from=docks[targetId] or {}
+                        docks[targetId]=from
+                        from[#from+1]=source
+                    end
+                end
+            end
+            for targetId,from in pairs(docks) do
+                table.sort(from,function(a,b)
+                    if a.lane==b.lane then return tostring(a.id)<tostring(b.id) end
+                    return a.lane<b.lane
+                end)
+                for i,source in ipairs(from) do ports[source.id..':'..targetId]={rank=i,count=#from} end
+            end
+        end
         local edge = 0
         for _, node in ipairs(current.nodes) do for _, id in ipairs(node.nextIds) do
             local target = assert(nodes[id], "map UI dangling route")
             if target.roomKind ~= 'boss_treasure' then
                 edge = edge + 1
                 assert(edge <= Layout.maxEdges, "map UI edge capacity exceeded")
-                line(at("edge" .. edge), node, target, taken[node.id .. ":" .. id], node.id == current.currentNodeId and target.available, M.isFar(target.floor, current.floor), current.currentNodeId)
+                line(at("edge" .. edge), node, target, taken[node.id .. ":" .. id], node.id == current.currentNodeId and target.available, M.isFar(target.floor, current.floor), current.currentNodeId,ports[node.id..":"..id])
             end
         end end
         for i = edge + 1, Layout.maxEdges do at("edge" .. i):SetVisible(false) end
     end
+    local bossInkVisible
     local function paintVisibleRoom(i, node, fx, floor, bossName)
         local box, state, size = fx.box, fx.state, fx.size
         box:SetAnchoredPosition(fx.x, fx.y)
@@ -512,7 +645,15 @@ function M.new(root, map, onChoose, clickEvent, options)
             tint(child(ring, 'brush'), ink)
         end
         local iconId = fx.boss and Theme.icon.mapBoss[bossName] or Theme.icon.node[node.type]
-        icon:SetImage(imageSource, iconId)
+        local fit = fx.boss and fittedBoss(bossName)
+        local showFit = fit and bossInkInBounds(fx.x,fx.y)
+        icon:SetVisible(not showFit)
+        if showFit then
+            paintBossInk(fit, fx)
+            bossInkVisible = true
+        else
+            icon:SetImage(imageSource, iconId)
+        end
         -- color: NOT_TAKEN for locked rooms, AVAILABLE ink for taken/current/available.
         fx.colour = colour
         -- TASK-4.13: on the dark canvas, taken rooms share the gold path ink and
@@ -576,11 +717,13 @@ function M.new(root, map, onChoose, clickEvent, options)
         for i = 1, #current.path - 1 do taken[current.path[i] .. ":" .. current.path[i + 1]] = true end
         self.slots, self.breathing = {}, {}
         paintMapHeader(current, chapter)
-        paintMapEdges(current, nodes, taken)
+        local bossName = options.bossName and options.bossName(self.map)
+        paintMapEdges(current, nodes, taken, bossName)
         assert(#current.nodes <= Layout.maxNodes, "map UI node capacity exceeded")
         self.activeFx = {}
-        local bossName = options.bossName and options.bossName(self.map)
+        bossInkVisible = false
         for i = 1, Layout.maxNodes do paintMapRoom(i, current, bossName) end
+        if bossHost and not bossInkVisible then bossHost:SetVisible(false) end
         self:update(0)
     end
     function self.resize(_, width, height)

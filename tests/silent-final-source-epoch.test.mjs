@@ -12,6 +12,7 @@ import {sourceSlice} from './helpers/closeout-source-epoch.mjs';
 import {sourceEpoch as currentEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 import {pointerInputPath,readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 import {createHash} from 'node:crypto';
+import {releaseArchitectureReadTrace} from './helpers/current-production-source-reads.mjs';
 // These original49-owner contracts authenticate the pre-component Silent epoch;
 // the public current68-owner facade is independently checked in Formation/Run.
 const readFileSync=(file,...args)=>preComponentUiCiSource(file,sourceSlice(file,diskReadFileSync(file,...args).replaceAll('\r\n','\n'),'componentUiPrior'));
@@ -119,9 +120,15 @@ test('live LF and CRLF raw owner reads authenticate the complete current closure
   for(let repeat=0;repeat<2;repeat++){
    seen.length=0;
    assert.equal(currentEpoch.preCombinedSource(config,input,{target:'actor',readSource:live}),expected);
-   assert.equal(seen.length,480);
-   assert.equal(createHash('sha256').update(JSON.stringify(seen)).digest('hex'),
-    'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd');
+   const digest=reads=>createHash('sha256').update(JSON.stringify(reads)).digest('hex');
+   assert.equal(seen.length,releaseArchitectureReadTrace.count);
+   assert.equal(digest(seen),releaseArchitectureReadTrace.sha256);
+   // Release owner rereads are interleaved with the original 480 observations.
+   const added=[[3,5],[9,11],[16,17],[18,23],[30,32],[90,91],[115,116],
+    [155,157],[221,224],[317,318],[367,370],[413,414],[479,480]];
+   const original=seen.filter((_,index)=>!added.some(([start,end])=>index>=start&&index<end));
+   assert.equal(original.length,480);
+   assert.equal(digest(original),'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd');
    for(const owner of proof.owners)assert(seen.includes(owner),'retained Silent owner: '+owner);
   }
   for(const owner of proof.owners){

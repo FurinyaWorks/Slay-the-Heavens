@@ -17,7 +17,14 @@ test('all original Living Wall base cases and every independent source transform
  -- data. Missing both the supplied context and its source owner still refuses.
  run.transformContext=nil;run.data.cards.sourcePools=nil;refuse(run,'change',1,'event_content_unavailable')`;
   assert.equal(base.split(migrated).length,2,'the reviewed context-owner migration must occur exactly once');
-  const historical=base.replace(migrated," run.transformContext=nil;refuse(run,'change',1,'event_content_unavailable')");
+  // #951 renamed the battle fixture's enemy. Undo that one line only for
+  // the historical hash; the Lua cases still execute the production name.
+  const originalBattle=" local battle=C.new(data,{deck=run.deck,enemies={'cultist'},seed=1})";
+  const currentBattle=originalBattle.replace("'cultist'","'raven_adept'");
+  assert.equal(base.split(currentBattle).length,2,'the reviewed encounter migration must occur exactly once');
+  const historical=base
+    .replace(migrated," run.transformContext=nil;refuse(run,'change',1,'event_content_unavailable')")
+    .replace(currentBattle,originalBattle);
   assert.equal(createHash('sha256').update(historical).digest('hex'),
     '33a25b6b5f0e79f9e771fd9ad085dc07eab4815fdfd15162c1a2886a4f34b788');
   const pools=JSON.parse(readFileSync('data/reference/sts1-card-pools/pools.json','utf8'));

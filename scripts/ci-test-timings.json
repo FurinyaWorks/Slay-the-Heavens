@@ -1498,7 +1498,10 @@
       "tests/release-metadata.test.mjs": 14,
       "tests/relic-equip-complexity.test.mjs": 696,
       "tests/v25-private-card-assets.test.mjs": 216,
-      "tests/silent-final-apply-complexity.test.mjs": 2911
+      "tests/silent-final-apply-complexity.test.mjs": 2911,
+      "tests/colorless-catalog-source.test.mjs": 3920248,
+      "tests/defect-integration-source.test.mjs": 1437202,
+      "tests/power-shop-boundaries.test.mjs": 3077448
     }
   },
   "lua": {
@@ -8370,6 +8373,84 @@
                 725,
                 727
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "measured-posix-first-observations",
+      "policy": "Planning only. Register three previously unmeasured Linux files with complete successful Hosted timing records, rounded up. Containing jobs timed out; observed files do not certify either shard. No change to coverage, workers, Windows, reserves or deadlines.",
+      "sourceTarget": {
+        "commit": "4ddfe43666f9bd53e9fa69b0e394b7664c7b7b90",
+        "tree": "a4bc8854e2b762e1afa31f8f0df1f0c4a7e56dc9"
+      },
+      "decodedLogEncoding": "SHA-256 of complete GitHub job log text re-encoded as UTF-8",
+      "previousMapSha256": {
+        "win32": "125afe81d6e51afd192d6c49a2fbfb5abb148c5f5d53696ea08b03dc28f65f7c",
+        "linux": "19eafb5b7ed3f19ca20a3ae9b5db518b995fa851159f74ce5e5d14902e729b08"
+      },
+      "resultingMapSha256": {
+        "win32": "125afe81d6e51afd192d6c49a2fbfb5abb148c5f5d53696ea08b03dc28f65f7c",
+        "linux": "34a429ac7f9298861e16a25e730bdf9b0f2fcfbabddb9d2c53979ac795b0e0c3"
+      },
+      "weightsMs": {
+        "tests/colorless-catalog-source.test.mjs": 3920248,
+        "tests/defect-integration-source.test.mjs": 1437202,
+        "tests/power-shop-boundaries.test.mjs": 3077448
+      },
+      "sources": [
+        {
+          "runId": 46060730060,
+          "runAttempt": 1,
+          "jobId": 140714675371,
+          "jobName": "engineering-posix (5/16)",
+          "url": "https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/46060730060/job/140714675371",
+          "checkoutSha": "4ddfe43666f9bd53e9fa69b0e394b7664c7b7b90",
+          "tree": "a4bc8854e2b762e1afa31f8f0df1f0c4a7e56dc9",
+          "runnerImage": "20261122.23.1",
+          "runnerVersion": "2.338.2",
+          "nodeVersion": "v24.18.0",
+          "pythonVersion": "3.13.18",
+          "pillowVersion": "12.3.0",
+          "conclusion": "cancelled",
+          "decodedLogSha256": "7df87f35594c7b135adf7fdd8f96aa65476d0d8ab7543255e9d29bbd1f69d752",
+          "observations": [
+            {
+              "file": "tests/colorless-catalog-source.test.mjs",
+              "durationMs": 3920247.726038,
+              "success": true,
+              "line": 434
+            }
+          ]
+        },
+        {
+          "runId": 46060730060,
+          "runAttempt": 1,
+          "jobId": 140714675394,
+          "jobName": "engineering-posix (11/16)",
+          "url": "https://github.com/FurinyaWorks/Slay-the-Heavens/actions/runs/46060730060/job/140714675394",
+          "checkoutSha": "4ddfe43666f9bd53e9fa69b0e394b7664c7b7b90",
+          "tree": "a4bc8854e2b762e1afa31f8f0df1f0c4a7e56dc9",
+          "runnerImage": "20261122.23.1",
+          "runnerVersion": "2.338.2",
+          "nodeVersion": "v24.18.0",
+          "pythonVersion": "3.13.18",
+          "pillowVersion": "12.3.0",
+          "conclusion": "cancelled",
+          "decodedLogSha256": "a6b51cab3fe85340c77ae9bcda2fcc4093e4c4418091ba7642540bd858f52407",
+          "observations": [
+            {
+              "file": "tests/defect-integration-source.test.mjs",
+              "durationMs": 1437201.986344,
+              "success": true,
+              "line": 573
+            },
+            {
+              "file": "tests/power-shop-boundaries.test.mjs",
+              "durationMs": 3077447.981119,
+              "success": true,
+              "line": 620
             }
           ]
         }

@@ -458,19 +458,31 @@ test('official targeting keeps arrows and live HP without detached combat simula
 local Damage=require('abyss_battle_damage_view')
 Damage.preview=function()error('official card aim simulated the whole battle')end
 Damage.potionPreview=function()error('official potion aim simulated the whole battle')end
-local h,u,p,event,_,drain=H.setup({'strike','defend'},{'raven_adept'})
+local h,u,p,event,tap,drain=H.setup({'strike','defend'},{'raven_adept'})
 h.run.potions={'fire_potion'};h:refresh()
 local enemy=assert(require('abyss_monster_surfaces').get(p):find(h.run.combat.enemies[1].id))
 local hp=h.run.combat.enemies[1].hp
 event('potion1','down',7);event('potion1','drag',7,enemy.x,enemy.y)
-assert(u.potionAim and u.potionAim.moving)
-assert(p:GetChild('dragLayer'):GetChild('aim1').visible)
+event('potion1','up',7,enemy.x,enemy.y);event('potion1','click',7,enemy.x,enemy.y)
+assert(not u.potionAim and not u.potionMenu,'dragged bottle cannot arm or open the menu')
+assert(h.run.potions[1]=='fire_potion' and h.run.combat.enemies[1].hp==hp)
+tap('potion1',8);assert(u.potionMenu and not u.potionAim)
+local use=p:GetChild('potionHelp'):GetChild('potionPopup'):GetChild('use')
+use.listeners.down({touchId=9});use.listeners.up({touchId=9});assert(use.click({touchId=9}))
+assert(u.potionAim and not u.potionAim.moving and not u.potionMenu)
+assert(not p:GetChild('dragLayer').visible,'click-only potion aim must not render the drag arrow')
 assert(not enemy:GetChild('damagePreview').visible)
 assert(h.run.combat.enemies[1].hp==hp)
-event('dragLayer','up',7,enemy.x,enemy.y);drain()
+tap('enemy1',10);drain()
 assert(h.run.combat.enemies[1].hp==hp-20 and h.run.potions[1]==nil)
-event('card1','down',8);event('card1','drag',8,enemy.x,enemy.y)
+event('enemy1','click',10)
+assert(h.run.combat.enemies[1].hp==hp-20,'late target click cannot apply potion damage twice')
+local strike
+for index,card in ipairs(h.run.combat.hand)do if card.cardId=='strike'then strike='card'..index;break end end
+assert(strike,'missing actual attack in the hand')
+event(strike,'down',11);event(strike,'drag',11,enemy.x,enemy.y)
 assert(u.gesture and u.gesture.moving)
+assert(p:GetChild('dragLayer'):GetChild('aim1').visible,'card targeting must retain the arrow')
 assert(not enemy:GetChild('damagePreview').visible)
 assert(h.run.combat.enemies[1].hp==hp-20)
 -- Group targeting is a reticle rule, independent of simulated future HP.
@@ -905,7 +917,7 @@ unchanged(win.run,before,'late battle pointer acted after return to map')
 `, 'OFFICIAL_RUNTIME_FLOW_PASS');
 });
 
-test('official three-bottle HUD renders metadata while popup, drag and use validate fresh core state',t=>{
+test('official three-bottle HUD renders metadata while click-only use validates fresh core state',t=>{
  runOfficial(t,`
 local Run=require('abyss_run');local Candidate=require('abyss_run_potion_candidate')
 local deck={};for i=1,10 do deck[i]='strike'end
@@ -950,12 +962,21 @@ count=#calls
 assert(popup:GetChild('use').click());drain()
 for i=count+1,#calls do assert(calls[i]==3,'selected potion Use staged another inventory slot')end
 assert(not h.run.potions[3] and battle.player.block==12)
--- In-place pending choice after Down is rejected by the actual drag validator.
-event('potion1','down',8);battle.pendingChoice={}
-count=#calls;event('potion1','drag',8,enemy.x,enemy.y)
-assert(#calls>count and not u.potionAim,'potion drag trusted stale metadata')
-assert(h.run.potions[1]=='fire_potion')
-battle.pendingChoice=nil;event('potion1','up',8)
+-- A dragged bottle must remain inert and cannot become a late popup click.
+event('potion1','down',8);count=#calls
+event('potion1','drag',8,enemy.x,enemy.y)
+event('potion1','up',8,enemy.x,enemy.y);event('potion1','click',8,enemy.x,enemy.y)
+assert(#calls==count and not u.potionAim and not u.potionMenu,'dragged bottle entered click-only use')
+-- Fresh action checks still apply when an in-place choice appears after Down.
+tap('potion1',9);assert(u.potionMenu and not u.potionAim)
+local use=popup:GetChild('use')
+use.listeners.down({touchId=10});battle.pendingChoice={}
+count=#calls;use.listeners.up({touchId=10})
+assert(use.click({touchId=10})==false and #calls>count and not u.potionAim,'Use trusted stale potion metadata')
+assert(u.potionMenu and h.run.potions[1]=='fire_potion','stale Use closed the popup or consumed the bottle')
+battle.pendingChoice=nil
+local dismiss=popup:GetChild('dismiss')
+dismiss.listeners.down({touchId=11});dismiss.listeners.up({touchId=11});assert(dismiss.click({touchId=11}))
 Candidate.prepare=prepare
 -- Unknown stored IDs remain occupied physical slots, never fabricated vacancies.
 h.run.potions[3]='not_a_potion';u:render()
@@ -1151,7 +1172,7 @@ local button=panel:GetChild('pileReturn')
 local hit,art=button:GetChild('hit'),button:GetChild('art')
 local chrome=art:GetChild('roundedButton')
 local theme=require('abyss_theme')
-local palette=theme.officialAssets.roundedButtonPalettes.cancel
+local palette=assert(theme.officialAssets.pileReturnPalette,'missing approved pile return colors')
 local function state(expected)
  for i,role in ipairs({'rim','cloth'})do
   for _,part in ipairs(chrome:GetChild(role):GetChildren())do
@@ -1291,7 +1312,7 @@ local function instance(uid,id,upgraded)return {uid=uid,cardId=id,upgraded=upgra
 local function tool(mode)return panel:GetChild('deckSort'):GetChild(mode):GetChild('hit').click()end
 `;
 
-test('official permanent browser handles 0/1/5/6/17 cards, deferred index origins, detail return and recycled late callbacks',t=>{
+test('official permanent browser handles 0/1/5/6/17 cards, deferred index origins, warm detail return and retired callbacks',t=>{
  runOfficial(t,officialDeckBrowserSetup+`
 for _,origin in ipairs({0,1})do
  -- The native index origin belongs to a grid instance. Keep the same grid
@@ -1308,6 +1329,13 @@ for _,origin in ipairs({0,1})do
  deck:update();assert(grid.itemCount==(amount>0 and (warmed and amount or 1) or 0),'deferred calibration lost ownership')
  if amount==0 then assert(not deck.pending and not deck.calibrating and not deck.pendingGrid,'empty browser retained readiness work')end
  grid:flush();deck:update();grid:flush()
+ if amount==17 then
+  -- The legacy fixture flushes at most 12 cells; this viewport also
+  -- intersects a third row and still needs indices 12 through 14.
+  assert(deck.pendingGrid,'partial third row was accepted as ready')
+  for i=12,14 do grid:recycle(i,origin+i)end
+ end
+ assert(not deck.pendingGrid,'complete visible grid remained pending')
  if amount>0 then warmed=true end
  assert(grid.itemCount==amount and grid.scrollProgress==0)
  assert(panel:GetChild('pileChrome'):GetChild('empty').visible==(amount==0))
@@ -1317,7 +1345,7 @@ for _,origin in ipairs({0,1})do
   local first=grid.items[0];local uid=deck.bindings[first].uid
   assert(uid==201 and not first:GetChild('uid').visible)
   calibration(first,origin);assert(not deck.pending and deck.bindings[first].uid==uid)
-  local late=grid.refreshCallback;local hit=first:GetChild('hit')
+  local current=grid.refreshCallback;local hit=first:GetChild('hit')
   grid.scrollProgress=.45
   assert(hit.listeners.drag==nil and hit.listeners.endDrag==nil)
   assert(not hit.click({dragging=true}) and not deck.cardDetail and grid.scrollProgress==.45)
@@ -1325,13 +1353,24 @@ for _,origin in ipairs({0,1})do
   assert(not panel:GetChild('deckSort').visible and not tool('cost'),'detail cannot sort the hidden list')
   assert(panel:GetChild('cardFocus').visible and panel:GetChild('pileReturn').visible)
   assert(not hit.click(),'hidden list receiver replaced the active detail')
-  assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update();grid:flush()
+  current(first,origin+amount);assert(first.visible and deck.bindings[first].uid==uid,
+   'hidden list refresh mutated the active card')
+  assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update()
   assert(not deck.cardDetail and grid.visible and grid.scrollProgress==.45)
-  local fresh=grid.items[0];local freshUid=deck.bindings[fresh].uid
-  late(fresh,origin+amount-1)
-  assert(deck.bindings[fresh].uid==freshUid,'late list callback rebound the returned detail list')
-  assert(first.alive==false and not deck.bindings[first] and not hit.click(),'retired detail receiver remained live')
+  assert(grid.refreshCallback==current and grid.items[0]==first and first.alive~=false and deck.bindings[first].uid==uid,
+   'warm detail return replaced the live list receiver')
+  assert(hit.click() and deck.cardDetail.instance.uid==uid,'warm receiver did not reopen the same card')
+  assert(panel:GetChild('pileReturn'):GetChild('hit').click());deck:update()
   if amount==17 then
+   assert(deck:setSort('original'));grid:flush()
+   for i=12,14 do grid:recycle(i,origin+i)end
+   assert(not deck.pendingGrid)
+   local fresh=grid.items[0]
+   assert(grid.refreshCallback~=current and fresh~=first and deck.bindings[fresh].uid==uid,
+    'new list generation did not install its own receiver')
+   current(fresh,origin+16)
+   assert(deck.bindings[fresh].uid==uid,'obsolete refresh rebound a current cell')
+   assert(first.alive==false and not deck.bindings[first] and not hit.click(),'retired refresh receiver remained live')
    grid.deferRefresh,grid.destroyOnRefresh=false,false
    local reused=grid:recycle(0,origin+16)
    assert(reused==fresh and deck.bindings[reused].uid==217,'native reuse lost the current permanent UID')
@@ -1343,9 +1382,9 @@ for _,origin in ipairs({0,1})do
    grid.destroyOnRecycle=false
   end
  end
- local late=grid.refreshCallback;local old=grid.items[0]
+ local late=grid.refreshCallback;local old=grid.items[0];local oldHit=old and old:GetChild('hit')
  assert(panel:GetChild('pileReturn'):GetChild('hit').click())
- if old then late(old,origin)end
+ if old then late(old,origin);assert(not oldHit.click() and not deck.cardDetail,'closed list accepted a stale click')end
  assert(not deck.visible and not grid.visible and grid.itemCount==0 and not panel:GetChild('pileChrome').visible)
  unchanged(host.run,before,'permanent browsing changed Run or RNG')
 end end
@@ -1469,7 +1508,8 @@ for _,amount in ipairs({1,3,5,6,13})do
  assert(grid.visible and visible()==math.min(10,amount) and not panel:GetChild('grid').visible)
  assert(panel:GetChild('pileChrome').visible and not panel:GetChild('header').visible)
  assert(not panel:GetChild('title').visible and not panel:GetChild('browseTitle').visible)
- assert(panel:GetChild('pileChrome'):GetChild('discardBadge').visible)
+ local chrome=panel:GetChild('pileChrome');local heading=chrome:GetChild('heading')
+ assert(heading.visible and heading.text=='弃牌堆' and not chrome:GetChild('discardBadge'))
  assert(panel:GetChild('browserDescription').text=='当抽牌堆被抽空时，这里的牌将会被洗牌并重新放入抽牌堆。')
  assert(not panel:GetChild('rarityTip').visible)
  assert(panel:GetChild('pileReturn').visible and not panel:GetChild('close').visible)
@@ -1485,7 +1525,7 @@ for _,amount in ipairs({1,3,5,6,13})do
  local definition=C.cardDefinition(host.run.combat,instance)
  local preview=C.cardPreview(host.run.combat,instance)
  local expected=require('abyss_card_display').combatText(F.Presentation[instance.cardId],definition,instance,preview,host.run.combat)
- assert(label.text==expected and label.text:find('提升2点伤害。',1,true)
+ assert(label.text==expected and label.text:find('基础伤害增加2点。',1,true)
   and select(2,fit(label.text,{label.sizeDeltaX,label.sizeDeltaY})),
   'component-bound pile face clipped its long body')
  local shared=sharedFace(face)

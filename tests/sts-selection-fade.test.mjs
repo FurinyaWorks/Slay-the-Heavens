@@ -93,7 +93,12 @@ test('historical source replay rejects foreign bytes and a changed linked fade o
  const path='src/lua/abyss_page_reveal.lua',source=readFileSync(path,'utf8');
  const lf=source.replaceAll('\r\n','\n'),crlf=text=>text.replaceAll('\n','\r\n');
  const prior=beforeV220SelectionFadeSource(path,lf);
- const read=owner=>beforeV220SelectionFadeSource(owner,readFileSync(owner,'utf8'));
+ // The entrance and fade validators read current owners at different stages.
+ // Only the legacy bootstrap remains outside their current entrance cohort.
+ const read=owner=>{
+  const raw=readFileSync(owner,'utf8');
+  return owner==='src/lua/abyss_ui.lua'?beforeV220SelectionFadeSource(owner,raw):raw;
+ };
  assert.equal(beforeStsSelectionFade(path,prior),files[path].before);
  assert.equal(beforeStsSelectionFade(path,beforeV220SelectionFadeSource(path,crlf(lf))),crlf(files[path].before));
  assert.equal(beforeAuthenticatedStsSelectionFade(path,prior,read),files[path].before);
@@ -210,7 +215,7 @@ test('Release UI closeout projection rejects drift and stale owner rereads',asyn
  const path='src/lua/abyss_page_reveal.lua';
  // The inverse authenticates the exact #839 owner. #864 changed the live
  // owner, while the historical predecessor and its rejection rules stayed fixed.
- const source=readFileSync(new URL('./fixtures/page-reveal-pr839.lua',import.meta.url),'utf8');
+ const source=readFileSync(new URL('./fixtures/page-reveal-pr839.lua',import.meta.url),'utf8').replaceAll('\r\n','\n');
  const read=file=>{assert.equal(file,path);return source;};
  const previous=beforeReleaseUiCloseoutSource(path,source,read);
  assert.notEqual(previous,source);

@@ -1,6 +1,7 @@
 import {beforeMasterBackflowSource} from './master-backflow-source.mjs';
 import {exactSourceMatches} from './source-fingerprint.mjs';
 import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
+import {beforeDetachedReleaseBackflow,currentDetachedInputs} from './release-detached-backflow-source.mjs';
 // Copies only immutable test helper dependencies; production owners remain explicit fixtures.
 import assert from 'node:assert/strict';
 import {officialUiRepairClosure} from './official-ui-repair-closure.mjs';
@@ -684,6 +685,33 @@ const reviewedCopySources=Object.freeze({
 // Detached historical closures keep the last reviewed copier dependencies.
 // The live release readers add the separately authenticated entrance sources.
 const releaseReplayReaders=Object.freeze({
+ "tests/helpers/combined-epoch/source-epoch-runtime.mjs": {
+  "current": {
+   "sha256": "96e78e422e9135f5d947f21999b7e5476d4ef3fca16e50b91c75330a011552cf",
+   "gitBlob": "f04ceba33d70db52f2c845fd66fe8a46dcf0d4ff"
+  },
+  "previous": {
+   "sha256": "e4d3f37edd23a2040290b1091540d17776fe6f7f7a129f4c31e48e71a8f9a0c0",
+   "gitBlob": "24d1f5ce20b53e3b657abf0e1a2eb568abb108a1"
+  },
+  "hunks": [
+   {
+    "at": 0,
+    "before": "import { entrancePredecessor } from '../ui-entrance-source.mjs';",
+    "after": "import {beforeReleaseClosureFixture} from '../release-closure-fixture-source.mjs';\nimport { entrancePredecessor } from '../ui-entrance-source.mjs';"
+   },
+   {
+    "at": 55,
+    "before": "const validPath=p=>p==='config/architecture.json'||/^src\\/lua\\/[A-Za-z0-9_-]+\\.lua$/.test(p);",
+    "after": "// Use the shared exact Release inverse only for the linked runtime owners\n// whose v2.2 presentation successors postdate the frozen combined epoch.\nconst releaseRuntimeOwner=path=>path==='src/lua/abyss_battle_reward_layout.lua'||path==='src/lua/abyss_map_ui.lua';\nconst validPath=p=>p==='config/architecture.json'||/^src\\/lua\\/[A-Za-z0-9_-]+\\.lua$/.test(p);"
+   },
+   {
+    "at": 143,
+    "before": "  const projected=entrancePredecessor(path,source,rawReader(readSource),{allowConfigLayout});",
+    "after": "  const readRawInput=rawReader(readSource);\n  // Track the actual raw owner before applying any inverse. An exact live\n  // successor must not be swapped for its equally projectable predecessor\n  // while a single combined read is in progress.\n  const releaseObservations=new Map();\n  const readReleaseOwner=owner=>{\n   const raw=readRawInput(owner);\n   if(!releaseRuntimeOwner(owner))return raw;\n   const uniform=typeof raw==='string'&&\n    (raw===normalize(raw)||raw===normalize(raw).replaceAll('\\n','\\r\\n'));\n   const observed=uniform?normalize(raw):raw;\n   if(releaseObservations.has(owner))\n    assert(observed===releaseObservations.get(owner),'combined linked owner identity: '+owner+' changed during Release replay');\n   else releaseObservations.set(owner,observed);\n   return beforeReleaseClosureFixture(owner,raw);\n  };\n  const projected=entrancePredecessor(path,source,readReleaseOwner,{allowConfigLayout});"
+   }
+  ]
+ },
  "tests/helpers/master-backflow-source.mjs": {
   "current": {
    "sha256": "308c6ef6ac8987b9becc4ead9f3a1efaa2c3c20ea8a697bdf26f6233fa71b8ac",
@@ -918,7 +946,77 @@ const releaseReplayReaders=Object.freeze({
   ]
  }
 });
+
+const releaseVocabularyReplay=Object.freeze({
+ "current": {
+  "sha256": "39c2ba9ecd776c5a7e3e485639c0d9a2acd1b9a8732e9621735fa99cd0466e56",
+  "gitBlob": "ef85a7a0559170947d4810cb777287404ae424db"
+ },
+ "previous": {
+  "sha256": "a70cfaf283d1c758fffa9a2035bec86e122afa871e4104c11e80ae7660c82727",
+  "gitBlob": "0ca4f24023d2fe9ed5af4fdeaf0b25a0b73ebbaf"
+ },
+ "hunks": [
+  {
+   "at": 8,
+   "before": " '2b3d606fc142f2c8c5cfaaff386c70f6e1f741f24fbc1879b78399b7c477e914','exact Release vocabulary continuation');",
+   "after": " '9377ea3fc9aa22e1e1afed2df671413df0e11403e0862b955b929b06abc33dad','exact Release vocabulary continuation');"
+  }
+ ]
+});
+const vocabularyReplayArchive='tests/fixtures/develop-release-vocabulary-source.json.gz';
+function beforeReleaseVocabularyReplay(path,raw){
+ if(path===vocabularyReplayArchive){
+  if(hash(raw)!=='9377ea3fc9aa22e1e1afed2df671413df0e11403e0862b955b929b06abc33dad')return raw;
+  const before=readFileSync(new URL('../fixtures/develop-release-vocabulary-prior.json.gz',import.meta.url));
+  assert.equal(hash(before),'2b3d606fc142f2c8c5cfaaff386c70f6e1f741f24fbc1879b78399b7c477e914','exact prior vocabulary replay archive');
+  return before;
+ }
+ if(path!=='tests/helpers/develop-release-vocabulary-source.mjs')return raw;
+ const text=integrationClosureBytes(path,raw).toString('utf8');
+ if(!exactSourceMatches(text,releaseVocabularyReplay.current))return raw;
+ assert(raw.equals(Buffer.from(text))||raw.equals(Buffer.from(text.replaceAll('\n','\r\n'))),'uniform vocabulary replay owner');
+ const prior=restoreExactFixtureHunks({path,beforeSha256:releaseVocabularyReplay.previous.sha256,
+  afterSha256:releaseVocabularyReplay.current.sha256,hunks:releaseVocabularyReplay.hunks},path,text);
+ assert(exactSourceMatches(prior,releaseVocabularyReplay.previous),'exact vocabulary replay owner predecessor');
+ return Buffer.from(prior);
+}
+// Keep the historical copier payload at the original helper identity.
+const tinyHouseReplayHelper=Object.freeze({
+ "current": {
+  "sha256": "2e8050508d63ccfeccec116268d56ec6d8dee9b01b82103135310c0f22d70470",
+  "gitBlob": "e427ffcab3ec496e7b691314116307eea68d104f"
+ },
+ "previous": {
+  "sha256": "b09df63dd432eaa4796047bd4ba8f64a3d224963eeab15e1bc90f7732c8afae2",
+  "gitBlob": "bb8df89c3ca48e98c48c31ae961d53fd76231fcc"
+ },
+ "hunks": [
+  {
+   "at": 2722,
+   "before": "\n// Retain at most one verified byte-for-byte projection per declared path.",
+   "after": "\n// The authoritative Tiny House trace and the capacity test share one fixture.\nconst tinyHouseBackflowFixture=Object.freeze({\n \"path\": \"tests/tiny-house-pending-ui.cases.mjs\",\n \"beforeSha256\": \"ad5a77d379252e337e8421c8e8d2f784272371032f209145be51e0f2b71abab1\",\n \"afterSha256\": \"24cbb7b9395d5c5e5666586ffb8a6cb476e62309af242c1077aa44eea3f0fd52\",\n \"hunks\": [\n  {\n   \"at\": 32,\n   \"before\": \" const {sourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');\\n const {currentProductionRereads}=await import('./helpers/current-production-source-reads.mjs');\\n const {beforeTinyHouseUiSource}=await import('./helpers/tiny-house-ui-source.mjs');\",\n   \"after\": \" const {sourceEpoch}=await import('./helpers/closeout-source-epoch.mjs');\\n const {currentProductionRereads,releaseArchitectureReadTrace}=await import('./helpers/current-production-source-reads.mjs');\\n const {beforeTinyHouseUiSource}=await import('./helpers/tiny-house-ui-source.mjs');\"\n  },\n  {\n   \"at\": 50,\n   \"before\": \" const expected=[...reads];\\n assert.equal(expected.length,480,'complete fresh raw closure size');\\n assert.equal(createHash('sha256').update(JSON.stringify(expected)).digest('hex'),\\n  'ad1c81a8f757224fa6520ca74d2a9b682f24925d2689141bc4b2eb1066d6a7fd','exact current admission order');\\n let position=-1;\",\n   \"after\": \" const expected=[...reads];\\n assert.equal(expected.length,releaseArchitectureReadTrace.count,'complete fresh raw closure size');\\n assert.equal(createHash('sha256').update(JSON.stringify(expected)).digest('hex'),\\n  releaseArchitectureReadTrace.sha256,'exact current admission order');\\n let position=-1;\"\n  },\n  {\n   \"at\": 59,\n   \"before\": \" eventReread=expected.lastIndexOf(event)+1;\\n assert.equal(eventReread,480,'the event owner must be checked again after the initial scan');\\n assert.notEqual(expected.indexOf(event)+1,eventReread,'the injected failure belongs to a fresh repeat read');\",\n   \"after\": \" eventReread=expected.lastIndexOf(event)+1;\\n assert.equal(eventReread,expected.length,'the event owner must be checked again after the initial scan');\\n assert.notEqual(expected.indexOf(event)+1,eventReread,'the injected failure belongs to a fresh repeat read');\"\n  },\n  {\n   \"at\": 104,\n   \"before\": \" const {beforeUiEntranceWitness}=await import('./helpers/ui-entrance-source.mjs');\\n const project=(path,source)=>beforeReleaseCapacitySource(path,beforeRebasedRelease(path,beforeDeckPagesSuiteSource(path,beforeUiEntranceWitness(path,source))));\\n const paths=['scripts/build-native-candidate.mjs','scripts/build-ui.mjs','scripts/monster-art.mjs',\",\n   \"after\": \" const {beforeUiEntranceWitness}=await import('./helpers/ui-entrance-source.mjs');\\n const {beforeKnownMasterBackflowSource}=await import('./helpers/master-backflow-source.mjs');\\n const {beforeChapterBattleScene}=await import('./helpers/chapter-battle-scene-source.mjs');\\n const {beforeBattlePeriphery}=await import('./helpers/battle-periphery-source.mjs');\\n const project=(path,source)=>{\\n  const chapter=beforeBattlePeriphery(path,beforeChapterBattleScene(path,source));\\n  const backflow=beforeKnownMasterBackflowSource(path,chapter);\\n  const historical=beforeRebasedRelease(path,beforeDeckPagesSuiteSource(path,beforeUiEntranceWitness(path,backflow)));\\n  const prior=beforeReleaseCapacitySource(path,historical);\\n  return prior===historical?source:prior;\\n };\\n const paths=['scripts/build-native-candidate.mjs','scripts/build-ui.mjs','scripts/monster-art.mjs',\"\n  }\n ]\n});\n// Preserve the exact older planning receipt while the live portrait trace advances.\nconst gameUiPortraitTrace={\n \"path\": \"tests/game-ui-extraction-source-inverse.test.mjs\",\n \"beforeSha256\": \"baff968d896e057cb66763e7ffdf3c08ff4ea37b2174b0e6bbbb73eede88e031\",\n \"afterSha256\": \"1f34a6ccb4daed6a6da58aa8b2aa9384d11d1ebeb5c0c3ce713ad82c03aaf97e\",\n \"hunks\": [\n  {\n   \"at\": 36,\n   \"before\": \"// The authenticated portrait continuation reads these linked owners after the frozen base scan.\\nconst portraitRereads=['battle_info_content','battle_render_hud','battle_card_glow','battle_render_hud','battle_render_hud']\\n .map(name=>'src/lua/abyss_'+name+'.lua');\",\n   \"after\": \"// The authenticated portrait continuation rereads glow once after the base scan.\\n// Info content and the battle HUD belong to that scan and still reject raw drift.\\nconst portraitRereads=['src/lua/abyss_battle_card_glow.lua'];\\nconst portraitLinkedOwners=new Set([...portraitRereads,\\n 'src/lua/abyss_battle_info_content.lua','src/lua/abyss_battle_render_hud.lua']);\"\n  },\n  {\n   \"at\": 47,\n   \"before\": \" assert.equal(target.files[path].source,preNoncombatDemandEpoch.proof.current[path].source);\",\n   \"after\": \" assert.equal(target.files[path].source,preNoncombatDemandEpoch.proof.current[path].source);\\n const expectedReads=[...sourceEpoch.proof.owners,...portraitRereads];\"\n  },\n  {\n   \"at\": 52,\n   \"before\": \"  assert.deepEqual(reads,[...sourceEpoch.proof.owners,...portraitRereads]);\",\n   \"after\": \"  assert.deepEqual(reads,expectedReads);\"\n  },\n  {\n   \"at\": 60,\n   \"before\": \" for(const [index,owner] of portraitRereads.entries()){\\n  const occurrence=[...sourceEpoch.proof.owners,...portraitRereads.slice(0,index+1)].filter(path=>path===owner).length;\",\n   \"after\": \" for(const [index,owner] of expectedReads.entries()){\\n  if(!portraitLinkedOwners.has(owner))continue;\\n  const occurrence=expectedReads.slice(0,index+1).filter(path=>path===owner).length;\"\n  }\n ]\n};\nfunction beforeGameUiPortraitTrace(path,source){\n if(path!==gameUiPortraitTrace.path||typeof source!=='string')return source;\n const current=source.replaceAll('\\r\\n','\\n');\n if(source!==current&&source!==current.replaceAll('\\n','\\r\\n'))return source;\n if(!exactSourceMatches(source,{sha256:gameUiPortraitTrace.afterSha256,gitBlob:'5ce98641788d97fed5a2662888053cb8ddb4d096'}))return source;\n const prior=restoreExactFixtureHunks(gameUiPortraitTrace,path,current);\n if(!exactSourceMatches(prior,{sha256:gameUiPortraitTrace.beforeSha256,gitBlob:'6c10f026571af5f05197141bfa9426df54649a68'}))throw Error('Invalid portrait trace predecessor: '+path);\n return source===current?prior:prior.replaceAll('\\n','\\r\\n');\n}\n\n// Retain at most one verified byte-for-byte projection per declared path."
+  },
+  {
+   "at": 2791,
+   "before": "export function beforeCurrentReplayFixes(path, source){\n source=beforeCombinedCharacterBackflow(path,source);\n source=beforeOfficialCharacterBackflow(path,beforeApprovedUiEntrance(path,source));\n const binding=bindings.get(path);",
+   "after": "export function beforeCurrentReplayFixes(path, source){\n source=beforeGameUiPortraitTrace(path,source);\n source=beforeCombinedCharacterBackflow(path,source);\n source=beforeOfficialCharacterBackflow(path,beforeApprovedUiEntrance(path,source));\n const tinyHousePrior=restoreExactFixtureHunks(tinyHouseBackflowFixture,path,source);\n if(tinyHousePrior!==source)source=source.includes('\\r\\n')?tinyHousePrior.replaceAll('\\n','\\r\\n'):tinyHousePrior;\n const binding=bindings.get(path);"
+  }
+ ]
+});
 function beforeReleaseReplayReader(path,raw){
+ raw=beforeReleaseVocabularyReplay(path,beforeDetachedReleaseBackflow(path,raw));
+ if(path==='tests/helpers/current-replay-fix-sources.mjs'){
+  const normalized=integrationClosureBytes(path,raw);
+  const source=normalized.toString('utf8');
+  const {current,previous,hunks}=tinyHouseReplayHelper;
+  if(exactSourceMatches(source,current)){
+   assert(raw.equals(normalized)||raw.equals(Buffer.from(source.replaceAll('\n','\r\n'))),'uniform Tiny House replay helper');
+   const prior=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,source);
+   assert(exactSourceMatches(prior,previous),'exact Tiny House replay helper predecessor');
+   raw=Buffer.from(prior);
+  }
+ }
  if(!Object.hasOwn(releaseReplayReaders,path))return raw;
  const {current,previous,hunks}=releaseReplayReaders[path];
  const text=integrationClosureBytes(path,raw).toString('utf8');
@@ -949,14 +1047,19 @@ export function copyIntegrationSourceClosure(directory,{sourceRoot=process.cwd()
  const sourceDirectory=realpathSync.native(sourceRoot);
  assert.notEqual(destination,sourceDirectory,'isolated helper copy destination');
  const liveSource=sourceDirectory===realpathSync.native(new URL('../../',import.meta.url));
- for(const [path,previousSha]of Object.entries(entranceFiles)){
-  const exactCurrent=currentProduction&&currentEntranceHelpers.has(path);
+ for(const [path,previousSha]of Object.entries(currentProduction?{...entranceFiles,...currentDetachedInputs}:entranceFiles)){
+  const exactRelease=currentProduction&&Object.hasOwn(currentDetachedInputs,path);
+  const exactCurrent=currentProduction&&!exactRelease&&currentEntranceHelpers.has(path);
   const sha=exactCurrent?reviewedCopySources[path].current.sha256:previousSha;
   assert((path.startsWith('tests/helpers/')||path.startsWith('tests/fixtures/'))&&!path.split('/').includes('..'),'fixed helper path');
   const source=join(sourceDirectory,path),bytes=readFileSync(source);
-  const raw=liveSource?beforeReleaseReplayReader(path,bytes):bytes;
+  const raw=liveSource&&!exactRelease?beforeReleaseReplayReader(path,bytes):bytes;
   let prior=raw;
-  if(exactCurrent){
+  if(exactRelease){
+   const current=integrationClosureBytes(path,raw);
+   assert(raw.equals(current)||raw.equals(Buffer.from(current.toString('utf8').replaceAll('\n','\r\n'))),
+    'uniform current detached owner: '+path);
+  }else if(exactCurrent){
    const current=integrationClosureBytes(path,raw);
    const source=current.toString('utf8');
    assert(raw.equals(current)||raw.equals(Buffer.from(source.replaceAll('\n','\r\n'))),'uniform current copy owner: '+path);

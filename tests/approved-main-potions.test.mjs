@@ -5,6 +5,7 @@ import {runLua} from '../scripts/test-lua.mjs';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {beforePotionPointerSource,potionPointerSourcePaths} from './helpers/potion-pointer-source.mjs';
+import {releaseUiRestoreArchive} from './helpers/release-ui-restore-source.mjs';
 const stage=()=>battleLayout().controls.find(x=>x.name==='stage');
 const potion=(s,i)=>i<4?s.children.find(c=>c.name==='potion'+i):s.children.find(c=>c.name==='potionHelp').children.find(c=>c.name==='potion'+i);
 test('Readable potion row preserves all five physical circular potion slots with official bottles and no old text row',()=>{
@@ -60,21 +61,31 @@ test('A completed neutral potion panel touch releases its pointer without dismis
 });
 
 test('Recovered potion pointer sources restore only the three exact predecessors with fresh authorization',()=>{
+ // Evaluate the pointer inverse at its own revision. Each existing later
+ // overlay archives the exact owner which the pointer recovery wrote.
  const priorWitnesses=[
-  ['src/lua/abyss_battle_card_gestures.lua','de9e504ed35a936825925169fd031f9144645c95f3d15fbbbb8d73a92d009153'],
-  ['src/lua/abyss_battle_ui.lua','c703bb46e116735b9c3805bacc814cee8ade3ea07bb39f79c75151b6fa728481'],
-  ['src/lua/abyss_battle_potion_popup.lua','705397ad7afc3246e7c533932cef7cd63436535676087b0e4fdd51dd1e7c24cd'],
+  ['src/lua/abyss_battle_card_gestures.lua','de9e504ed35a936825925169fd031f9144645c95f3d15fbbbb8d73a92d009153',
+   './helpers/release-ui-restore-source.json.gz','e38609afe1efa63715e2f54619fde19501b20b59ebb9a9aaf5944e82b22e339b','ff6af63d9bf93056dd772347d10dc749e7fa8d34'],
+  ['src/lua/abyss_battle_ui.lua','c703bb46e116735b9c3805bacc814cee8ade3ea07bb39f79c75151b6fa728481',
+   './helpers/release-card-right-click-source.json.gz','a157bfd25b91346bc4b9c7beae6de19baec13e824ee808d59e827b5052d78a1a','ae15cf5f597728f0fe876f7136230955c3ec6179'],
+  ['src/lua/abyss_battle_potion_popup.lua','705397ad7afc3246e7c533932cef7cd63436535676087b0e4fdd51dd1e7c24cd',
+   './fixtures/release-ui-closeout-source.json.gz','1798bb413901e57c51a19f359721a4621212c7a48d51a7d4b48bdc4be05eddba','b895de06186f866ac1a85fc4f4e948631074ca6b'],
  ];
  assert.deepEqual(potionPointerSourcePaths,priorWitnesses.map(([path])=>path));
+ const sources=new Map(priorWitnesses.map(([path,,archive,digest,base])=>{
+  const {files}=releaseUiRestoreArchive(readFileSync(new URL(archive,import.meta.url)),digest,base);
+  return [path,files[path].before.source];
+ }));
+ const read=owner=>sources.get(owner);
  for(const [path,sha256] of priorWitnesses){
-  const source=readFileSync(path,'utf8');
-  const prior=beforePotionPointerSource(path,source,()=>source);
+  const source=read(path);
+  const prior=beforePotionPointerSource(path,source,read);
   assert.equal(createHash('sha256').update(prior).digest('hex'),sha256);
-  const crlf=source.replaceAll('\r\n','\n').replaceAll('\n','\r\n');
-  assert.equal(beforePotionPointerSource(path,crlf,()=>crlf),prior);
+  const crlf=text=>text.replaceAll('\r\n','\n').replaceAll('\n','\r\n');
+  assert.equal(beforePotionPointerSource(path,crlf(source),owner=>crlf(read(owner))),prior);
   for(const replacement of [prior,source+'\n',null]){
-   assert.throws(()=>beforePotionPointerSource(path,source,()=>replacement),/combined linked owner identity/);
+   assert.throws(()=>beforePotionPointerSource(path,source,owner=>owner===path?replacement:read(owner)),/combined linked owner identity/);
   }
-  assert.equal(beforePotionPointerSource(path,source,()=>source),prior);
+  assert.equal(beforePotionPointerSource(path,source,read),prior);
  }
 });

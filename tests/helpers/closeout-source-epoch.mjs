@@ -1,10 +1,11 @@
+import {beforeReleaseClosureFixture} from './release-closure-fixture-source.mjs';
 import { entrancePredecessor } from './ui-entrance-source.mjs';
 // One exact current production closure; original slices and archives stay immutable.
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {gunzipSync} from 'node:zlib';
-import {createSourceEpochProjector} from './combined-epoch/source-epoch-runtime.mjs';
+import {createSourceEpochProjector,readReleaseLayoutOwners} from './combined-epoch/source-epoch-runtime.mjs';
 import {extendStsStyleEpoch} from './sts-style-source-epoch-runtime.mjs';
 import {stsStylePatch} from './sts-style-source-proof.mjs';
 import {extendFeedbackSourceEpoch} from './sts-feedback-source-runtime.mjs';
@@ -61,6 +62,14 @@ const proof=sourceEpoch.proof;
 // Snapshot consumers must first authenticate every live current owner. This is
 // per invocation; neither live reads nor authorization are cached.
 export function sourceSlice(path,source,target,readSource=p=>readFileSync(p,'utf8')){
+ const releaseLayouts=new Set(['src/lua/abyss_battle_reward_layout.lua','src/lua/abyss_map_ui.lua']);
+ const readCurrent=readSource;
+ readSource=readReleaseLayoutOwners(readCurrent);
+ if(releaseLayouts.has(path)){
+  const previous=beforeReleaseClosureFixture(path,source);
+  if(previous!==source)assert.equal(readCurrent(path),source,'fresh release layout source: '+path);
+  source=previous;
+ }
  const entrance=entrancePredecessor(path,source,readSource);
  source=entrance.source??source;readSource=entrance.read;
  assert(Object.hasOwn(proof.targets,target),'known closeout source slice');
@@ -68,7 +77,7 @@ export function sourceSlice(path,source,target,readSource=p=>readFileSync(p,'utf
  if(!row||typeof source!=='string')return source;
  // Keep configuration strict here and let the projector authenticate exact Lua continuations.
  if(path==='config/architecture.json'&&hash(source.replaceAll('\r\n','\n'))!==row.sha256)return source;
- const projected=sourceEpoch.preCombinedSource(path,source,{target,readSource});
+ const projected=sourceEpoch.preCombinedSource(path,source,{target,readSource,releaseLayoutsAlreadyProjected:true});
  if(projected!==source)return projected;
  if(beforeRewardTransitionSource(path,source)===source)return source;
  const intermediate=beforePc13RewardCover(path,source);

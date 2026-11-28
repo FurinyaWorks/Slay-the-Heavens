@@ -1,6 +1,6 @@
-import {beforeCharacterPreparationSource,beforeCurrentProductionSource} from './helpers/character-preparation-source.mjs';
+import {beforeCharacterPreparationSource} from './helpers/character-preparation-source.mjs';
 import {pointerInputPath,readRetiredController,retiredControllerPath} from './helpers/input-retirement-source.mjs';
-import {sourceSlice} from './helpers/closeout-source-epoch.mjs';
+import {closeoutRead} from './helpers/closeout-ci-source.mjs';
 import {beforePc13ThenV2UiHudSource} from './helpers/pc13-reward-cover-source.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -14,15 +14,15 @@ import {copyIntegrationSourceClosure} from './helpers/copy-integration-source-cl
 
 const currentRaw=file=>nativeReadFileSync(file,'utf8');
 function goldenReader(read){
- const admitted=file=>{
+ const replay=closeoutRead('pr614',read);
+ return file=>{
   if(file===retiredControllerPath){
    const {source,restored}=readRetiredController(read);
    assert(restored,'current Controller must be retired');
-   return beforeCharacterPreparationSource(file,source,read);
+   return beforePc13ThenV2UiHudSource(file,beforeCharacterPreparationSource(file,source,read),read);
   }
-  return beforeCurrentProductionSource(file,read(file),read);
+  return beforePc13ThenV2UiHudSource(file,replay(file,'utf8'),read);
  };
- return file=>beforePc13ThenV2UiHudSource(file,sourceSlice(file,admitted(file),'pr614',admitted),read);
 }
 const liveGolden=goldenReader(currentRaw);
 const readFileSync=(file,encoding)=>{

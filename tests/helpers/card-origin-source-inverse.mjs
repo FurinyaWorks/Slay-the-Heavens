@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {architectureSourceFormat} from './architecture-source-format.mjs';
+import {beforeKnownMasterBackflowSource} from './master-backflow-source.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const read=path=>readFileSync(new URL('../../'+path,import.meta.url),'utf8').replaceAll('\r\n','\n');
 export function preCardOriginSource(path,source){
@@ -19,10 +20,19 @@ export function preCardOriginSource(path,source){
   }catch{return source;}
   current=preCompendiumSource(path,read(path));
   if(hash(current)!=='8c6e10716cb4ba38d49f9164d6349e8eb2a80ca13b6c364f69181a056b7bfdbf')return source;
-  assert.equal(hash(read('src/lua/abyss_card_origin_view.lua')),'10ffbb328bf0660568f0e79bf439c93a61a44f739c5f1078ffc82a89ee96a285','reviewed card origin view');
+  let view=read('src/lua/abyss_card_origin_view.lua');
+  // #921 removed the obsolete strike keyword renderer from the live view.
+  if(hash(view)==='c2596aebf65b1c4d254dfcee00724eec9955afc6718e6b7317d8249933ceb51f'){
+   view=view.replace('\nreturn M\n',"\nfunction M.keywords(definition)\n return definition.strikeTag and '打击类：带有打击标签，计入剑势如虹等效果。' or ''\nend\nreturn M\n");
+  }
+  assert.equal(hash(view),'10ffbb328bf0660568f0e79bf439c93a61a44f739c5f1078ffc82a89ee96a285','reviewed card origin view');
   previous=current.replace('    "abyss_card_origin": "core",\n    "abyss_card_origin_view": "ui",\n','');
   assert.equal(hash(previous),'640bb51f60c831ad2162de7907b5b7e6a241dfa6f50b15b8527234eb2da47b64','complete pre-card-origin architecture');
  }else if(path==='src/lua/abyss_nodes.lua'){
+  // The accepted backflow already binds the exact live Nodes owner and its
+  // predecessor. Compose that view before applying the older card-origin inverse.
+  if(normalized.includes('\r')||source!==normalized&&source!==normalized.replaceAll('\n','\r\n'))return source;
+  current=beforeKnownMasterBackflowSource(path,normalized);
   if(hash(current)!=='f685e7a59b57f66721e3c2f8143b99aa37efd05be77371bbda61fd6e4a4a4d9f')return source;
   previous=current.replace("    local before=require('abyss_card_origin').state(instance)\n",'')
    .replace("    require('abyss_card_origin').record(run,instance,before,'permanent_upgrade',{kind='camp'})\n",'');

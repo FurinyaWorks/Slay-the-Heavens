@@ -275,6 +275,71 @@
       "category": "project-geometry",
       "evidence": "Project-drawn Act II coordinate schematic from 46ca4a02d658b1ee1435441cb0f1eb19479e52c6, integrated in #978. The vector markup contains geometric primitives and labels. The neighboring REFERENCE.md records the Mega Crit ss23 citation and coordinate measurements. The cited media retain their original rights."
     },
+    "docs/evidence/v2.2.0-enemy-ground-contact/act1-formations.webp": {
+      "sha256": "b7221e8e1331efc46c4471d1bd28b10195fcd4240fb813b8c1f991053b441d9a",
+      "category": "platform-evidence",
+      "evidence": "Beyond Simulator 0.5.2 Host render of matched project battle controls with existing native geometry and platform textures. The underlying game and platform artwork rights remain with their respective owners. STS1 reference screenshots are linked only. See docs/evidence/v2.2.0-enemy-ground-contact/SIMULATOR.md and simulator-manifest.json."
+    },
+    "docs/evidence/v2.2.0-enemy-ground-contact/act1-native-contact-sheet.png": {
+      "sha256": "83e1c0421d5f8c5736a75a8d38dffd074fd985444e090f46737672c8446b233f",
+      "category": "project-geometry",
+      "evidence": "Project measurement raster composed from the v2.2.0 native monster primitive registry data/release/refined-monster-art.json. Underlying monster and platform artwork rights remain with their respective owners. STS1 reference screenshots are linked only. See docs/evidence/v2.2.0-enemy-ground-contact/act1.md."
+    },
+    "docs/evidence/v2.2.0-enemy-ground-contact/act2-byrd.webp": {
+      "sha256": "a96644742a4b488f350a684b84552bf37a1888729811dcb6b83a8cbbd609069a",
+      "category": "platform-evidence",
+      "evidence": "Beyond Simulator 0.5.2 Host render of matched project battle controls with existing native geometry and platform textures. The underlying game and platform artwork rights remain with their respective owners. STS1 reference screenshots are linked only. See docs/evidence/v2.2.0-enemy-ground-contact/SIMULATOR.md and simulator-manifest.json."
+    },
+    "docs/evidence/v2.2.0-enemy-ground-contact/act2-native-contact-sheet.png": {
+      "sha256": "0a2d390cc6dded0180e064bd2bae90158dd43bb4ac652f4451308f9ead72053b",
+      "category": "project-geometry",
+      "evidence": "Project measurement raster composed from the v2.2.0 native monster primitive registry data/release/refined-monster-art.json. Underlying monster and platform artwork rights remain with their respective owners. STS1 reference screenshots are linked only. See docs/evidence/v2.2.0-enemy-ground-contact/act2.md."
+    },
+    "docs/evidence/v2.2.0-enemy-ground-contact/act2-summons.webp": {
+      "sha256": "8dc7ac92962a870d09a7ef61211327078b36f21ea7f0c99ca937564abd132c62",
+      "category": "platform-evidence",
+      "evidence": "Beyond Simulator 0.5.2 Host render of matched project battle controls with existing native geometry and platform textures. The underlying game and platform artwork rights remain with their respective owners. STS1 reference screenshots are linked only. See docs/evidence/v2.2.0-enemy-ground-contact/SIMULATOR.md and simulator-manifest.json."
+    },
+    "docs/evidence/v2.2.0-enemy-ground-contact/official-monsters-01.webp": {
+      "sha256": "22885b88f0671ee4f106b9302747a0b868f03ac2f9cea1ed1d2217373ac987a3",
+      "category": "platform-evidence",
+      "evidence": "Beyond Simulator 0.5.2 Host render of matched project battle controls with existing native geometry and platform textures. The underlying game and platform artwork rights remain with their respective owners. STS1 reference screenshots are linked only. See docs/evidence/v2.2.0-enemy-ground-contact/SIMULATOR.md and simulator-manifest.json."
+    },
+    "docs/evidence/v2.2.0-enemy-ground-contact/official-monsters-02.webp": {
+      "sha256": "7973ac72ee17713b5684e3548019821571ba2962b2873a43fce67375849f669a",
+      "category": "platform-evidence",
+      "evidence": "Beyond Simulator 0.5.2 Host render of matched project battle controls with existing native geometry and platform textures. The underlying game and platform artwork rights remain with their respective owners. STS1 reference screenshots are linked only. See docs/evidence/v2.2.0-enemy-ground-contact/SIMULATOR.md and simulator-manifest.json."
+    },
+    "docs/evidence/v2.2.0-enemy-ground-contact/official-monsters-03.webp": {
+      "sha256": "ac09455570c121f14d996c92beec3d64ad1b42a74ebbfa07845a092ccba886fa",
+      "category": "platform-evidence",
+      "evidence": "Beyond Simulator 0.5.2 Host render of matched project battle controls with existing native geometry and platform textures. The underlying game and platform artwork rights remain with their respective owners. STS1 reference screenshots are linked only. See docs/evidence/v2.2.0-enemy-ground-contact/SIMULATOR.md and simulator-manifest.json."
+    },
+    "docs/evidence/v2.2.0-enemy-ground-contact/official-monsters-04.webp": {
+      "sha256": "f984a52091747513bc021a584ccd699b6c8899c8d86e511b03b5a0f60c1745eb",
+      "category": "platform-evidence",
+      "evidence": "Beyond Simulator 0.5.2 Host render of matched project battle controls with existing native geometry and platform textures. The underlying game and platform artwork rights remain with their respective owners. STS1 reference screenshots are linked only. See docs/evidence/v2.2.0-enemy-ground-contact/SIMULATOR.md and simulator-manifest.json."
+    },
+    "docs/evidence/v2.2.0-enemy-ground-contact/official-monsters-05.webp": {
+      "sha256": "3fd91d91b37d8aa4544953754b24ba5030940fddfa382a33454ff223401f8fec",
+      "category": "platform-evidence",
+      "evidence": "Beyond Simulator 0.5.2 Host render of matched project battle controls with existing native geometry and platform textures. The underlying game and platform artwork rights remain with their respective owners. STS1 reference screenshots are linked only. See docs/evidence/v2.2.0-enemy-ground-contact/SIMULATOR.md and simulator-manifest.json."
+    },
+    "docs/evidence/v2.2.0-enemy-ground-contact/official-monsters-06.webp": {
+      "sha256": "83b7fca48467ce76768c8895e999cd953b310e350556cf3febf3935129cdc038",
+      "category": "platform-evidence",
+      "evidence": "Beyond Simulator 0.5.2 Host render of matched project battle controls with existing native geometry and platform textures. The underlying game and platform artwork rights remain with their respective owners. STS1 reference screenshots are linked only. See docs/evidence/v2.2.0-enemy-ground-contact/SIMULATOR.md and simulator-manifest.json."
+    },
+    "docs/evidence/v2.2.0-enemy-ground-contact/official-monsters-07.webp": {
+      "sha256": "4237aac920b74e1ce11856fb485b84d4f803094734942b1ac1b23478367f0cf7",
+      "category": "platform-evidence",
+      "evidence": "Beyond Simulator 0.5.2 Host render of matched project battle controls with existing native geometry and platform textures. The underlying game and platform artwork rights remain with their respective owners. STS1 reference screenshots are linked only. See docs/evidence/v2.2.0-enemy-ground-contact/SIMULATOR.md and simulator-manifest.json."
+    },
+    "docs/evidence/v2.2.0-enemy-ground-contact/priority-louse-collector.webp": {
+      "sha256": "72a1faf3748495ca600739d74be0c4cf3057092eb763582ad42950961199fff0",
+      "category": "platform-evidence",
+      "evidence": "Beyond Simulator 0.5.2 Host render of matched project battle controls with existing native geometry and platform textures. The underlying game and platform artwork rights remain with their respective owners. STS1 reference screenshots are linked only. See docs/evidence/v2.2.0-enemy-ground-contact/SIMULATOR.md and simulator-manifest.json."
+    },
     "docs/evidence/v2.2.0-viewport/mobile-16-9.png": {
       "sha256": "e71c5a7e0ca2935e835bb824ecbbd679a868a3abd6781446e6958ed88859b858",
       "category": "platform-evidence",

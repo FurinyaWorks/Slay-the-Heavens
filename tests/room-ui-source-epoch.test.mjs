@@ -1,6 +1,9 @@
 import {sourceEpoch as combinedCurrent,sourceSlice,ciRepairSourceEpoch} from './helpers/closeout-source-epoch.mjs';
+import {closeoutRead} from './helpers/closeout-ci-source.mjs';
 import test from 'node:test';
 import {entranceInventory} from './helpers/ui-entrance-source.mjs';
+import {reviewedRenamedStsStyleRead,reviewedStsStyleInventory} from './helpers/reviewed-selection-current-source.mjs';
+import {actorFocusPreStyleReader} from './helpers/defect-actor-vm.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync as nativeReadFileSync} from 'node:fs';
 import {jointUiSourceAt} from './helpers/joint-ui-source-epoch.mjs';
@@ -27,10 +30,19 @@ import {preJoustEpoch as joint,joustIntegratedEpoch as current} from './helpers/
 import {joustSourceProof} from './helpers/joust-source-epoch.mjs';
 import {readdirSync} from 'node:fs';
 function joustReader(read){
- const admitted=path=>admittedRaw(path,read);
+ const replay=closeoutRead('pr612',reviewedRenamedStsStyleRead(read));
+ const preStyle=actorFocusPreStyleReader(read);
  return path=>{
-  try{return sourceSlice(path,admitted(path),'pr612',admitted).replaceAll('\r\n','\n');}
-  catch(error){if(error.code==='ENOENT')return null;throw error;}
+  try{
+   const source=path===retiredControllerPath?sourceSlice(path,readRetiredController(read).source,'pr612',read):replay(path,'utf8');
+   const normalized=source.replaceAll('\r\n','\n');
+   const expected=current.proof.current[path]?.source;
+   if(expected&&normalized!==expected){
+    const prior=preStyle(path,expected);
+    if(prior===expected)return prior;
+   }
+   return normalized;
+  }catch(error){if(error.code==='ENOENT')return null;throw error;}
  };
 }
 const currentLive=joustReader(currentRaw);
@@ -66,16 +78,19 @@ function retainedPaths(historical){
  assertActorFocusInventory(liveLua,currentRaw);
  const activeAdditions=[...actorFocusAdded,...stasisUpgradeAddedPaths,...deckPagesAdded,pointerInputPath];
  const historicalPaths=Object.keys(combinedCurrent.proof.current);
- assert.deepEqual(entranceInventory(['config/architecture.json',...liveLua],currentRaw).sort(),
+ const reviewed=reviewedStsStyleInventory(['config/architecture.json',...liveLua],currentRaw);
+ assert.deepEqual(entranceInventory(reviewed,currentRaw).sort(),
   [...historicalPaths.filter(p=>p!==retiredControllerPath),...activeAdditions].sort(),'complete live production inventory');
  assert.throws(()=>currentRaw(retiredControllerPath),{code:'ENOENT'});
  assert.equal(admittedRaw(retiredControllerPath),combinedCurrent.proof.current[retiredControllerPath].source);
  const styleAdded=historicalPaths.filter(p=>!Object.hasOwn(ciRepairSourceEpoch.proof.current,p)).sort();
  assert.deepEqual(styleAdded,['game_ui_navigation','game_ui_navigation_view','lowcost_art','merchant_pages','page_reveal','power_membership'].map(name=>'src/lua/abyss_'+name+'.lua'),'exact registered post-closeout source additions');
  combinedCurrent.preCombinedSource('config/architecture.json',currentRaw('config/architecture.json'),{target:'stsStylePrior',readSource:currentRaw});
+ const preStyle=actorFocusPreStyleReader(currentRaw);
  for(const p of styleAdded){
   assert.equal(combinedCurrent.proof.targets.stsStylePrior.files[p],null,'complete original absence must remain explicit');
-  assert.equal(admittedRaw(p).replaceAll('\r\n','\n'),combinedCurrent.proof.current[p].source,'new module retains complete current source');
+  const expected=combinedCurrent.proof.current[p].source;
+  assert.equal(preStyle(p,expected),expected,'new module retains complete current source: '+p);
   assert(combinedCurrent.proof.owners.includes(p),'new module is an authenticated current owner');
  }
  const actual=historicalPaths.filter(p=>!styleAdded.includes(p));

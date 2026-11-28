@@ -5,6 +5,7 @@ import {gunzipSync} from 'node:zlib';
 import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
 import {exactSourceMatches} from './source-fingerprint.mjs';
 import {beforeReleaseClosureFixture} from './release-closure-fixture-source.mjs';
+import {beforeDetachedReleaseBackflow} from './release-detached-backflow-source.mjs';
 
 function readPacket(name,digest,base,head){
  const bytes=readFileSync(new URL(`../fixtures/${name}.json.gz`,import.meta.url));
@@ -25,6 +26,31 @@ const backflow=readPacket('closeout-lua-backflow-source',
 const floorSources=readPacket('closeout-planning-floor-source',
  '64f1e0473854162933cf02650519ad07ce99306905344722baf5eea2b6f5da93',
  '1eb288472d7b33b7450eec97a624ca2ffa526f39','863c0983b4d8cad1c7a77391f860ba038e3cb6d4');
+
+const portraitFixture='tests/lua/native_enemy_portraits.lua';
+const portraitContinuation=Object.freeze({
+ sha256:'28a5bd3b76a9e24e2c7259b3f5c2f33d9604906f0e775dd2cc3e6605e2e1e780',
+ gitBlob:'d6431413b8cda3b13556fcd4aedacc0698ae5160',
+});
+const portraitPredecessor=Object.freeze({
+ sha256:'0e24faa10719752a90f3f7e9ff04e69a986c05678722fa2107da5a68b4fab085',
+ gitBlob:'8e2754ef7c5af543cdc49066441b0c340d6a6396',
+});
+
+// #1065 expands the live portrait fixture. Historical timing receipts only
+// may read its exact #1064 predecessor; the current Lua suite runs live bytes.
+function beforeGroundContactPortraitFixture(path,source,binding){
+ if(path!==portraitFixture||binding.sha256!==portraitPredecessor.sha256||
+    binding.gitBlob!==portraitPredecessor.gitBlob||!exactSourceMatches(source,portraitContinuation))return source;
+ const lf=source.replaceAll('\r\n','\n');
+ const crlf=source!==lf;
+ assert(!crlf||source===lf.replaceAll('\n','\r\n'),'mixed closeout Lua receipt line endings: '+path);
+ const archived=readFileSync(new URL('../fixtures/release-v220-native-enemy-portraits-prior.lua.txt',import.meta.url),'utf8');
+ const prior=archived.replaceAll('\r\n','\n');
+ assert(archived===prior||archived===prior.replaceAll('\n','\r\n'),'mixed archived portrait fixture line endings');
+ assert(exactSourceMatches(prior,portraitPredecessor),'exact pre-ground-contact portrait fixture');
+ return crlf?prior.replaceAll('\n','\r\n'):prior;
+}
 
 function receiptFor(files,path,digest){
  if(!Object.hasOwn(files,path))return;
@@ -48,10 +74,14 @@ export function readCloseoutLuaVocabularyReceipt(path,digest,readCurrent){
  if(!row)return;
  const sourcePath=row.sourcePath??path;
  if(sourcePath!==path)assert.throws(()=>readCurrent(path,'utf8'),{code:'ENOENT'},'renamed closeout Lua receipt input reappeared: '+path);
- const source=beforeReleaseClosureFixture(sourcePath,readCurrent(sourcePath,'utf8'));
+ const current={sha256:row.afterSha256,gitBlob:row.afterBlob};
+ let live=beforeReleaseClosureFixture(sourcePath,readCurrent(sourcePath,'utf8'));
+ // Relic fixture history and the copier share the same authenticated inverse.
+ if(sourcePath==='tests/helpers/relic-query-source-inverse.mjs'&&typeof live==='string')
+  live=beforeDetachedReleaseBackflow(sourcePath,Buffer.from(live)).toString('utf8');
+ const source=beforeGroundContactPortraitFixture(sourcePath,live,current);
  const continuation=row.continuation;
  const continued=continuation&&exactSourceMatches(source,continuation);
- const current={sha256:row.afterSha256,gitBlob:row.afterBlob};
  assert(continued||exactSourceMatches(source,current),'current closeout Lua receipt input changed: '+path);
  const lf=source.replaceAll('\r\n','\n');
  assert(source===lf||source===lf.replaceAll('\n','\r\n'),'mixed closeout Lua receipt line endings: '+path);

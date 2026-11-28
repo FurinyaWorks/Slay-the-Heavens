@@ -2,6 +2,7 @@ import test from 'node:test';
 import {historicalTest} from './helpers/historical-baseline-inputs.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {reviewedRenamedStsStyleRead} from './helpers/reviewed-selection-current-source.mjs';
 import {createHash} from 'node:crypto';
 import {cachePureSourceProjection,deepFreezeSourceProof} from './helpers/pure-source-projection-cache.mjs';
 import {relicRound3Composition} from './helpers/relic-round3-composition.mjs';
@@ -15,6 +16,9 @@ import {sourceEpoch} from './helpers/combined-epoch/source-epoch.mjs';
 import {actorFocusAdded,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';
 import {beforeInputRetirementReader,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
 import {addedEntranceModules} from './helpers/ui-entrance-source.mjs';
+import {beforeCurrentReplayFixes} from './helpers/current-replay-fix-sources.mjs';
+import {beforeKnownMasterBackflowSource} from './helpers/master-backflow-source.mjs';
+import {beforeChapterBattleScene} from './helpers/chapter-battle-scene-source.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const targets=deepFreezeSourceProof({one:{files:{a:{},b:{}}},two:{files:{a:{}}}});
 
@@ -93,7 +97,8 @@ test('warm current UI projections preserve their frozen intermediate epoch and r
  const retired=beforeInputRetirementReader(live)(retiredControllerPath);
  const added=['scripts/deck-ui-layout.mjs',...stasisUpgradeAddedPaths,...actorFocusAdded,pointerInputPath,...addedEntranceModules];
  const paths=[...Object.keys(sourceEpoch.proof.current),...added].filter(p=>p!==retiredControllerPath);
- const current=Object.fromEntries(paths.map(p=>[p,live(p)]));
+ const replayInput=reviewedRenamedStsStyleRead(live);
+ const current=Object.fromEntries(paths.map(p=>[p,replayInput(p)]));
  const owners=[...new Set([...sourceEpoch.proof.owners,...added])];
  for(const path of ['config/architecture.json','src/lua/abyss_game_ui.lua']){
   const expected=gameUiExtractionProof.files[path];
@@ -135,8 +140,18 @@ test('warm current UI projections preserve their frozen intermediate epoch and r
  }
 });
 
+const replayCurrentEntranceSource=(path,source)=>
+ beforeCurrentReplayFixes(path,beforeChapterBattleScene(path,beforeKnownMasterBackflowSource(path,source)));
+function assertCurrentEntranceReads(reads){
+ assert.equal(reads.length,32);
+ assert.equal(hash(JSON.stringify(reads)),'2d497af031c556a9bb98696393e95f63dce03b9d43d5229926bd3a0af159d2ba');
+ // Preserve all 20 original observations, with the linked portrait and Prologue rereads interleaved.
+ const additionalReads=new Set([3,4,9,10,16,18,19,20,21,22,30,31]);
+ const originalReads=reads.filter((_,index)=>!additionalReads.has(index));
+ assert.equal(hash(JSON.stringify(originalReads)),'8752e6ec0e000516387d48cf7a098cf5ffeba61d3db3b17d6d8af78c0396b35c');
+}
+
 test('exact production length rejection preserves full byte checks and fresh owner admission',async()=>{
- const {beforeCurrentReplayFixes}=await import('./helpers/current-replay-fix-sources.mjs');
  const {authenticateUiEntrance}=await import('./helpers/ui-entrance-source.mjs');
  const originals=[
   ['src/lua/abyss_node_ui_faces.lua','d56aed5198b7111008f25c86f1f03eee36bab8549ebd9b92dd7f99f9e4cf6f58'],
@@ -146,19 +161,19 @@ test('exact production length rejection preserves full byte checks and fresh own
  ];
  for(const [path,expected]of originals){
   const source=readFileSync(path,'utf8').replaceAll('\r\n','\n');
-  const prior=beforeCurrentReplayFixes(path,source);assert.notEqual(prior,source);assert.equal(hash(prior),expected);
+  const prior=replayCurrentEntranceSource(path,source);assert.notEqual(prior,source);assert.equal(hash(prior),expected);
   const crlf=source.replaceAll('\n','\r\n');
-  assert.equal(beforeCurrentReplayFixes(path,crlf),prior.replaceAll('\n','\r\n'));
+  assert.equal(replayCurrentEntranceSource(path,crlf),prior.replaceAll('\n','\r\n'));
   const sameLength=source.slice(0,-1)+'!';assert.equal(sameLength.length,source.length);
   for(const unknown of [source.slice(1),source+'\n',sameLength,source.replaceAll('\n','\r\r\n')])
-   assert.equal(beforeCurrentReplayFixes(path,unknown),unknown,'unknown complete bytes cannot project');
+   assert.equal(replayCurrentEntranceSource(path,unknown),unknown,'unknown complete bytes cannot project');
   const bytes=Buffer.from(source);assert.equal(beforeCurrentReplayFixes(path,bytes),bytes,'Buffer inputs remain outside this string-only inverse');
-  assert.equal(beforeCurrentReplayFixes('foreign/'+path,source),source,'path remains part of the exact identity');
-  assert.equal(beforeCurrentReplayFixes(path,source),prior,'unknown inputs do not alter the exact projection');
+  assert.equal(replayCurrentEntranceSource('foreign/'+path,source),source,'path remains part of the exact identity');
+  assert.equal(replayCurrentEntranceSource(path,source),prior,'unknown inputs do not alter the exact projection');
  }
  let reads=[],bad=null;
  const read=path=>{reads.push(path);const source=readFileSync(path,'utf8');return path===bad?source.replaceAll('\r\n','\n').slice(0,-1)+'!':source;};
- authenticateUiEntrance(read);const first=[...reads];assert.equal(first.length,20);
+ authenticateUiEntrance(read);const first=[...reads];assertCurrentEntranceReads(first);
  reads=[];authenticateUiEntrance(read);assert.deepEqual(reads,first,'warm calls retain every linked read');
  for(const [path]of originals){
   bad=path;reads=[];assert.throws(()=>authenticateUiEntrance(read),error=>{assert.match(error.message,/linked owner identity/);assert(error.message.includes(path));return true;});
@@ -168,10 +183,9 @@ test('exact production length rejection preserves full byte checks and fresh own
 });
 
 test('current view successor requires fresh raw owner bytes before historical projection',async()=>{
- const {beforeCurrentReplayFixes}=await import('./helpers/current-replay-fix-sources.mjs');
  const {authenticateUiEntrance,beforeUiEntrance}=await import('./helpers/ui-entrance-source.mjs');
  const path='src/lua/abyss_game_ui_view.lua',source=readFileSync(path,'utf8').replaceAll('\r\n','\n');
- const prior=beforeCurrentReplayFixes(path,source);
+ const prior=replayCurrentEntranceSource(path,source);
  assert.notEqual(prior,source);assert.equal(hash(prior),'84d9fb22584a5978d5c04170f3b3b145c26ff71865acf53b36b2496f01489ed1');
  const oldEd=prior.replace("            menu:SetVisible(inMenu and not self.characterOpen and not self.easterEggOpen)\n            -- A deck open still commits one battle render below (input retirement,\n            -- art ownership and suspension), after the host's visibility writes.\n            self.battleUI:setActive(self.mode == \"battle\" and not deckOpen and not potionOpen and not blocked,\n                suspendBattle(run,deckOpen,potionOpen),self.mode=='battle' and deckOpen)\n            child(\"battlePanel\"):SetVisible(self.mode == \"battle\")","            menu:SetVisible(inMenu and not self.characterOpen and not self.easterEggOpen)\n            -- Commit activation and suspension before later native page callbacks.\n            -- The final render still observes commands committed by those callbacks.\n            self.battleUI:setActive(self.mode == \"battle\" and not deckOpen and not potionOpen and not blocked,\n                suspendBattle(run,deckOpen,potionOpen))\n            child(\"battlePanel\"):SetVisible(self.mode == \"battle\")");
  assert.equal(hash(oldEd),'7ceaafb63819eba11bfe133d838fcb3970f3525ae89e8af572813a8d536cf72a','complete preceding eager-only view');
@@ -180,14 +194,14 @@ test('current view successor requires fresh raw owner bytes before historical pr
  const sameLength=source.slice(0,-1)+'!';assert.equal(sameLength.length,source.length);
  let bad,reads=[];
  const read=p=>{reads.push(p);return p===path&&bad!==undefined?bad:readFileSync(p,'utf8');};
- authenticateUiEntrance(read);const first=[...reads];assert.equal(first.length,20);
+ authenticateUiEntrance(read);const first=[...reads];assertCurrentEntranceReads(first);
  reads=[];authenticateUiEntrance(read);assert.deepEqual(reads,first);
  for(bad of [prior,oldEd,sameLength,null,Buffer.from(source)]){
   reads=[];assert.throws(()=>authenticateUiEntrance(read),error=>{assert.match(error.message,/linked owner identity/);assert(error.message.includes(path));return true;});
   assert(reads.includes(path));bad=undefined;reads=[];authenticateUiEntrance(read);assert.deepEqual(reads,first,'every recovery authenticates all current owners');
  }
  const crlf=source.replaceAll('\n','\r\n');
- assert.equal(beforeCurrentReplayFixes(path,crlf),prior.replaceAll('\n','\r\n'));
+ assert.equal(replayCurrentEntranceSource(path,crlf),prior.replaceAll('\n','\r\n'));
  authenticateUiEntrance(p=>p===path?crlf:readFileSync(p,'utf8'));
- for(const drift of [source+'\n',source.replaceAll('\n','\r\r\n')])assert.equal(beforeCurrentReplayFixes(path,drift),drift);
+ for(const drift of [source+'\n',source.replaceAll('\n','\r\r\n')])assert.equal(replayCurrentEntranceSource(path,drift),drift);
 });

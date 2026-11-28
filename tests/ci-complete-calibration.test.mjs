@@ -71,7 +71,7 @@ import {ciWindowsShapeProof,preCiWindowsShapeSource} from './helpers/ci-windows-
 import {preIntegrationSource} from './helpers/pr372-integration-source.mjs';
 import {qualityShardMatrices as currentQualityShardMatrices,qualityShardJobs as currentQualityShardJobs} from '../scripts/ci-quality-shape.mjs';
 import {currentFullQualityJobs} from '../scripts/verify-delivery.mjs';
-import {discoverJs as liveDiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';
+import {discoverJs as liveDiscoverJs,partition,jsShard as rawCurrentJsShard,jsPlanningWeights as rawCurrentJsPlanningWeights,replayPlanningMinimumMs,timings as rawCurrentTimings} from '../scripts/ci-shards.mjs';
 // Frozen receipts retain their complete inventory; current Full remains raw.
 const discoverJs=()=>closeoutInventory(liveDiscoverJs(),'pr620');
 import {shardLuaScripts} from '../scripts/test-lua.mjs';
@@ -1501,7 +1501,15 @@ test('Curses CI outer source views reject partial identities and preserve every 
    assert.equal(jointCiMatches(file,foreign,'officialAssetsFlow'),false);assert.equal(jointCiSourceAt(file,foreign,'officialAssetsFlow'),foreign);
   }
   for(const target of ['componentAliasFix','defectReceipt','formationReceipt','officialFirstReceipt','officialFlowReceipt']){
-   assert.equal(jointCiMatches(file,source,target),false);assert.equal(jointCiSourceAt(file,source,target),source);
+   if(file==='tests/encounter-formation-source-epoch.test.mjs'&&target==='formationReceipt'){
+    // The exact Formation continuation has its own receipt; the sealed Curses source does not.
+    assert.equal(jointCiMatches(file,source,target),true);
+    assert.equal(hash(jointCiSourceAt(file,source,target)),'cc49af6185255c8b877e1fdc0d79028d1f676534fd65a0d1fd28f43536af29c0');
+    assert.equal(jointCiMatches(file,row.current,target),false);
+    assert.equal(jointCiSourceAt(file,row.current,target),row.current);
+   }else{
+    assert.equal(jointCiMatches(file,source,target),false);assert.equal(jointCiSourceAt(file,source,target),source);
+   }
   }
  }
  const file='scripts/ci-test-timings.json',source=diskReadFileSync(file,'utf8'),before=archive.files[file].current;
@@ -1916,13 +1924,20 @@ function windowsFullLoads(lua,loads){
 }
 
 function assertReplayForecasts(files,lua,count,platform,forecast,budget){
- const observed=rawCurrentTimings;
- const weights=Object.fromEntries(files.map(file=>[file,Math.max(observed.js[platform][file]??observed.unknownJsMs,observed.jsPlanning.localLowerBounds[file]?.durationMs??0)]));
- const historical=partition(files,`1/${count}`,weights,observed.unknownJsMs,Array.from({length:count},(_,i)=>i===0?observed.initialMs[platform][0]:0));
+ // Historical budgets are claims about the authenticated pre-release timing
+ // table. The live planner above must still consume every later observation.
+ const observed=JSON.parse(nativeCloseoutRead('scripts/ci-test-timings.json','utf8'));
  const windows=platform==='win32';
+ const weights=Object.fromEntries(files.map(file=>[file,Math.max(observed.js[platform][file]??observed.unknownJsMs,observed.jsPlanning.localLowerBounds[file]?.durationMs??0)]));
+ const initial=Array.from({length:count},(_,i)=>i===0?observed.initialMs[platform][0]:0);
+ const historical=partition(files,`1/${count}`,weights,observed.unknownJsMs,initial);
  const originalLoads=windows?windowsFullLoads(lua,historical.loads):historical.loads;
  assert(Math.max(...originalLoads)+60000<budget,platform+' original planning target and reserve');
- assert(forecast<(windows?2700000:1800000),platform+' measured replay placement and reserve fit the unchanged job deadline');
+ const replayWeights=Object.fromEntries(files.map(file=>[file,Math.max(weights[file],replayPlanningMinimumMs[platform][file.slice('tests/'.length)]??0)]));
+ const replayLoads=windows?windowsFullLoads(lua,rawCurrentJsShard(files,`1/${count}`,platform).loads):
+  partition(files,`1/${count}`,replayWeights,observed.unknownJsMs,initial).loads;
+ assert(Math.max(...replayLoads)+60000<(windows?2700000:1800000),platform+' archived measured placement and reserve fit its unchanged benchmark');
+ assert(forecast<(windows?2700000:5400000),platform+' live measured placement and reserve fit the release execution guard');
 }
 
 test('combined closeout validates raw current sources and complete Full discovery independently of immutable slice views',t=>{

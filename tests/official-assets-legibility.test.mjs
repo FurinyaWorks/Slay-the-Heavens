@@ -215,23 +215,41 @@ test('chapter artwork publishes a single bounded pool for the official stage',()
  assert.deepEqual(child(battle,'hero').position,[-324,-35]);
  assert.deepEqual(child(battle,'notice').position,theme.layout.battleNotice.position);
  assert.deepEqual(theme.layout.player.groundedStatusLane,[-168,42]);
- assert.equal(theme.layout.enemyRow.groundContact.feet.blue_guard,47/106);
- assert.equal(theme.layout.enemyRow.groundContact.feet.sentry,undefined);
- assert.equal(theme.layout.enemyRow.groundContact.feet.champ,48/106);
- assert.equal(Object.keys(theme.layout.enemyRow.groundContact.feet).length,33);
- assert(Object.values(theme.layout.enemyRow.groundContact.footprints).every(footprints=>footprints.length<=2));
+ const contact=theme.layout.enemyRow.groundContact;
+ assert.equal(contact.feet.blue_guard,47/106);
+ assert.equal(contact.feet.red_louse,50/106);
+ assert.equal(contact.feet.wizard_gremlin,49/106);
+ assert.equal(contact.feet.sentry,undefined);
+ assert.equal(contact.feet.champ,48/106);
+ assert.equal(Object.keys(contact.feet).length,35);
+ assert.equal(Object.keys(contact.classification).length,42);
+ assert.equal(contact.classification.collector,'perched','Collector uses a physical support at the source altitude');
+ assert.equal(Object.values(contact.classification).filter(stance=>stance==='hovering').length,5);
+ assert(Object.values(contact.footprints).every(footprints=>footprints.length<=2));
  assert(!child(battle,'v25BattleScene')&&!child(battle,'lowpolyScene'));
  assert.equal(children(battle)[0],scene,'scene paints behind battle interaction');
  assert.equal(children(scene).length,5);
  assert(children(scene).every(batch=>children(batch).length<=60));
  assert.equal(all(scene).length,256);
- assert.deepEqual(plan.rows.map(rows=>rows.filter(Boolean).length),[229,249]);
+ assert.deepEqual(plan.rows.slice(0,2).map(rows=>rows.filter(Boolean).length),[229,249]);
  const slots=all(scene).filter(node=>node.kind==='image');
  assert.equal(slots.length,250);
  assert.equal(slots.filter(node=>node.visible===false).length,21);
+ assert.equal(plan.rows.length,3);
+ assert(plan.rows.every(rows=>rows.length===slots.length));
  for(const rows of plan.rows)for(const [i,row]of rows.entries()){
   if(row)assert.equal(row[0]>100006,slots[i].image>100006,'one renderer family per native slot');
  }
+ const changed=plan.rows[2].filter((row,i)=>JSON.stringify(row)!==JSON.stringify(plan.rows[1][i]));
+ const support=changed.filter(Boolean);
+ assert(support.length>0&&support.every(row=>row[0]<=100006),'throne reuses native shape slots');
+ const wideSupportBetween=(bottom,top)=>support.some(row=>{
+  const x=scene.position[0]+row[1],y=scene.position[1]+row[2];
+  return Math.abs(x-360)<65&&y>=bottom&&y<=top&&row[3]>=130;
+ });
+ assert(wideSupportBetween(66,90),'seat aligns with the visible body around stage x=360 and y=85');
+ assert(wideSupportBetween(-130,-100),
+  'throne footing reaches the existing Act II gallery floor');
 });
 test('measured type frames share one native pool and preserve original illustration identities',()=>{
  const layout=gameLayout(),theme=officialAssetsTheme(nativeTheme);applyOfficialAssets([layout],theme);

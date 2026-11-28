@@ -3,6 +3,7 @@ local C,A,I,Run=require('abyss_combat'),require('abyss_card_actions'),require('a
 local data=require('abyss_data')
 local base=C.new(require('abyss_watcher_flow_cards').withCards(require('abyss_watcher_cards').withFoundationCards(data)),{deck={},enemies={'jaw_worm','jaw_worm'},seed=37,shuffleSeed='41',cardRandomSeed='43',orbSlots=3})
 local group=ABYSS_INVENTORY_GROUP or 'all'
+local vocabulary=assert(ABYSS_INVENTORY_IDS)
 local cases=0
 local function eq(a,b,label)assert(a==b,'[INVENTORY_RESPONSIBILITY] '..(label or 'value')..': '..tostring(a)..' ~= '..tostring(b))end
 local function observe(label,value)
@@ -26,7 +27,7 @@ local function apply(s,effects,target,run,defer)
 end
 if group=='opening'or group=='all'then
 test('opening positions retain effects aliases and exact owner order',function()
-    local ids={'ring_of_the_snake','cracked_core','pure_water','lantern','vajra','anchor','mutagenic_strength','blood_vial','akabeko','data_disk','thread_and_needle','girya','du_vu_doll','pantograph','bag_of_marbles','pen_nib','red_skull','red_mask','fossilized_helix','mark_of_pain',ABYSS_INVENTORY_MASK_ID}
+    local ids={'ring_of_the_snake','cracked_core','pure_water','lantern','vajra','anchor',vocabulary.opening,'blood_vial','akabeko','data_disk','thread_and_needle','girya','du_vu_doll','pantograph','bag_of_marbles','pen_nib','red_skull','red_mask','fossilized_helix','mark_of_pain',vocabulary.mask}
     local defs={};for _,id in ipairs(ids)do defs[#defs+1]={id=id,trigger='combat_start',effects={{op='energy',value=1}}}end
     local counters={a={b=true}};local context={tier='boss'}
     local result=table.pack(I.opening(defs,ids,counters,context));local opening=result[1]
@@ -47,9 +48,9 @@ test('opening unknowns and boss conditional preserve refusal and load calls',fun
 end)
 test('energy definitions preserve duplicate first owner and arithmetic refusal',function()
     local defs={{id='sozu',trigger='turn_start',effects={{op='energy',value=1}}},{id='sozu',trigger='turn_start',effects={{op='energy',value=10}}},
-      {id='slavers_collar',trigger='turn_start',encounterTiers={'elite','boss'},effects={{op='energy',value=1}}},{id='other',trigger='turn_start',effects={}}}
+      {id=vocabulary.energy,trigger='turn_start',encounterTiers={'elite','boss'},effects={{op='energy',value=1}}},{id='other',trigger='turn_start',effects={}}}
     eq(I.energyBonus(defs,{'sozu'},'normal'),1,'first definition wins')
-    for _,owned in ipairs({{}, {'sozu','slavers_collar'}, {'missing'}, {'other'}})do
+    for _,owned in ipairs({{}, {'sozu',vocabulary.energy}, {'missing'}, {'other'}})do
       for _,tier in ipairs({'normal','elite','boss'})do observe('energy',{owned=owned,tier=tier,result=table.pack(pcall(I.energyBonus,defs,owned,tier))})end
     end
     for _,value in ipairs({-1,0.5,'1',2147483648,math.huge,0/0})do
@@ -163,7 +164,8 @@ test('earlier action may rewrite later validated dispatch to an ignored unknown'
     eq(called,true);eq(ok,true);eq(s.energy,10,'post-validation unknown remains no-op')
 end)
 test('Run rollback restores complete graph aliases after finalization failure',function()
-    local run=Run.new(data,42);run.potions={'fire_potion'};assert(Run.startCombat(run,'cultist_solo'))
+    -- Both Inventory VMs share the live Run module and encounter catalog.
+    local run=Run.new(data,42);run.potions={'fire_potion'};assert(Run.startCombat(run,'raven_adept_solo'))
     run.combat.enemies[1].hp=1;local anchor=run.combat;local before=Run.finishCombat
     Run.finishCombat=function(candidate)before(candidate);return false end
     local result=table.pack(pcall(Run.usePotion,run,1,1));Run.finishCombat=before
