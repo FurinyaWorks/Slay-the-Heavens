@@ -49,10 +49,9 @@ local function draggedScale(previous,sourceAim,dt)
     return previous and previous.scale and lerpSnap(previous.scale,D.scale,step,7.5,0.003) or D.scale
 end
 
-local function handTarget(count, index, hot, point)
-    local restAngle=-(index-(count-1)/2)*L.hand.arcDegrees
-    -- The hit rectangle still covers the idle anchor when the card is raised.
-    return {x=point[1],y=point[2],scale=hot and Theme.motion.hoverScale or 1,
+local function handTarget(point)
+    local hot,restAngle=point.hot,point.restAngle
+    return {x=point[1],y=point[2],scale=hot and Theme.motion.hoverScale or 1,hot=hot,
         angle=hot and 0 or restAngle,restAngle=restAngle,
         baseY=point.baseY,hitWidth=point.hitWidth}
 end
@@ -61,19 +60,8 @@ end
 -- or hand entry is retained by this weak-key table.
 local handGeometry=setmetatable({},{__mode='k'})
 local function handValues(pose, target)
-    local w,h=L.card.size[1],L.card.size[2]
-    local r=target.restAngle*math.pi/180
-    local c,s=math.abs(math.cos(r)),math.abs(math.sin(r))
-    local restH,restW=(h*c+w*s)/2,(w*c+h*s)/2
-    local hotH=h*Theme.motion.hoverScale/2
-    local hotY=Viewport.handFocus(target.baseY)
-    local low=math.min(target.baseY-restH,hotY-hotH)
-    local high=math.max(target.baseY+restH,hotY+hotH)
-    local dy,a=(low+high)/2-pose.y,pose.angle*math.pi/180
-    local width=math.max(restW*2,w*Theme.motion.hoverScale)
-    return {pose.x,pose.y,pose.scale,pose.angle,
-        math.sin(a)*dy/pose.scale,math.cos(a)*dy/pose.scale,
-        math.min(width,target.hitWidth or width)/pose.scale,(high-low)/pose.scale}
+    local x,y,width,height=Viewport.handHit(pose.y,pose.angle,pose.scale,target)
+    return {pose.x,pose.y,pose.scale,pose.angle,x,y,width,height}
 end
 
 local function sameHandValues(first,second)
@@ -240,7 +228,7 @@ local function refreshHandCard(view,controls,entry,battle,instance,slot,hot,sele
     if entry.hot~=hot then
         entry.hot=hot
         local point=controls.placeCard(entry.box,#battle.hand,slot-1,hot,true)
-        entry.target=handTarget(#battle.hand,slot-1,hot,point)
+        entry.target=handTarget(point)
         entry.box:GetChild('glow'):SetVisible(hot)
         local definition=Combat.cardDefinition(battle,instance)
         if not CardSkin.paintFocus(entry.box,definition,hot,controls.tint) then
@@ -318,7 +306,7 @@ function M.new(view, controls)
         -- placeCard and drag write the same native geometry outside this cache.
         handGeometry[box]=nil
         local point=placeCard(box,count,index,hot)
-        local target=handTarget(count,index,hot,point)
+        local target=handTarget(point)
         local entry=handPoses[instance.uid]
         if not entry then
             entry={current={x=target.x,y=target.y,scale=target.scale,angle=target.angle}}

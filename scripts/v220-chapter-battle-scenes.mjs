@@ -42,7 +42,7 @@ const sourceAltitudeStances = Object.freeze({
 });
 const footprints = ranges => ranges.map(([left, right]) => [(left + right) / 2, right - left + 1]);
 
-function enemyGroundContact(y) {
+function enemyGroundContact(y, healthGap) {
   const measured = Object.entries(measuredStances);
   const classes = [
     ...measured.map(([id]) => [id, 'grounded']),
@@ -54,7 +54,7 @@ function enemyGroundContact(y) {
   }
   if (unclassified.size) throw Error('Missing release monster stance: ' + [...unclassified].join(', '));
   return {
-    y, depth: .35, healthGap: 8, artSize: 106,
+    y, depth: .35, healthGap, artSize: 106,
     classification: Object.fromEntries(classes),
     feet: Object.fromEntries(measured.map(([id, [row]]) => [id, row / 106])),
     footprints: Object.fromEntries(measured.map(([id, [, ranges]]) => [id, footprints(ranges)])),
@@ -63,6 +63,7 @@ function enemyGroundContact(y) {
 
 export function applyChapterBattlePlacement(theme) {
   const {layout, canvas} = theme;
+  const {hand, enemyHealthGap, enemyPowerFloorY} = theme.officialAssets.refinedBattlePlacement;
   const centerY = canvas.base[1] / 2;
   // The 210px production Traveler matte puts the visible soles 93px below
   // the figure centre. Move only the art and contact, keeping the HUD anchor.
@@ -71,7 +72,11 @@ export function applyChapterBattlePlacement(theme) {
   theme.officialAssets.battlePortraitPosition = [theme.officialAssets.battlePortraitPosition[0], portraitOffsetY];
   layout.player.groundShadow = {y: -93, offsetY: portraitOffsetY, footprints: [[-21, 12], [28, 18]]};
   layout.player.groundedStatusLane = [-168, 42];
-  layout.enemyRow.groundContact = enemyGroundContact(centerY - (groundY - 21));
+  // The reference five-card centre projects to -313.33 at 720p. The native
+  // cost badge protrudes above the card, so the settled fan sits 6.67px lower.
+  Object.assign(layout.hand, hand);
+  layout.enemyRow.nativePowerFloorY = enemyPowerFloorY;
+  layout.enemyRow.groundContact = enemyGroundContact(centerY - (groundY - 21), enemyHealthGap);
   layout.battleNotice.position = [0, 252];
 }
 

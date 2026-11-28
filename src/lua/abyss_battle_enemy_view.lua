@@ -34,7 +34,8 @@ M.floorY=Theme.presentationProfile=='official-assets-first' and L.enemyRow.nativ
 local function powerSize(scale,mobile)
  return 48*scale*(mobile and 1.17 or 1),-(mobile and 22 or 18)*scale
 end
-local function powerGap(healthHeight)
+local function powerGap(healthHeight,grounded)
+ if grounded then return healthHeight/2+Theme.space.border+Theme.space.xs end
  return math.max(healthHeight,Theme.font.small)/2+Theme.space.s
 end
 local function powerDepth(icon,countY)
@@ -46,6 +47,7 @@ function M.powerLayout(g,mobile)
  local icon,countY=powerSize(scale,mobile)
  local pitch=(mobile and 55 or 48)*scale
  local firstX=g.healthX-g.hitWidth/2+10*scale
+ local gap=powerGap(g.healthHeight,g.groundY~=nil)
  local columns,rowPitch=math.huge,0
  local rows=L.statusIcon.rows
  if Theme.presentationProfile=='official-assets-first' then
@@ -59,13 +61,13 @@ function M.powerLayout(g,mobile)
   -- The top-aligned 40px native box has transparent leading below the text.
   -- Its 1.2em line fits inside the icon after compact lower-right placement.
   rowPitch=icon+L.statusIcon.gap
-  local firstBottom=g.y+g.healthY-powerGap(g.healthHeight)-powerDepth(icon,countY)
+  local firstBottom=g.y+g.healthY-gap-powerDepth(icon,countY)
   local available=firstBottom-L.enemyRow.nativePowerFloorY
   rows=math.max(1,math.min(rows,1+math.floor(available/rowPitch)))
  else countY=countY-L.nativeText.lineHeight/2 end
  return {icon=icon,countX=22*scale,countY=countY,pitch=pitch,columns=columns,rows=rows,
   hitHeight=48*scale,firstX=firstX,rowPitch=rowPitch,
-  firstY=g.healthY-powerGap(g.healthHeight)-icon/2}
+  firstY=g.healthY-gap-icon/2}
 end
 local function statusCountWidth(actor)
  local width=L.nativeText.lineHeight

@@ -114,7 +114,7 @@ local function checkGround(actor,box)
         near(box.y+art.y-art:GetChild('monsterSamples').localScaleY*row,depthY,id..' measured sole world Y')
         near(g.y+assert(g.groundY,id..' explicit contact'),depthY,id..' shadow contact plane')
         near(g.hitY-g.hitHeight/2,hitBottom,id..' contact-relative target bottom')
-        near(g.y+g.healthY,hitBottom-20,id..' contact-relative health Y')
+        near(g.y+g.healthY,hitBottom-14,id..' contact-relative health Y')
         for index=1,expectedPads do
             local shadow=box:GetChild(index==1 and 'plate' or 'border')
             near(box.y+shadow.y,depthY-1,id..' rendered shadow world Y')
