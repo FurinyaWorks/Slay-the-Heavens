@@ -30,6 +30,26 @@ function removeMenuEdgePlates(controls) {
  menu.children.splice(scene+1,2);
 }
 
+// Keep the archived full-tree oracle while checking the two approved #1066
+// title inks before their test-only inverse. All other values remain live.
+const rewardTitles=[['rewardList','#ECE6DA'],['rewardStage','#F5D79A']];
+const currentTitleInk={colour:'#E6E6E6',outline:true,outlineColour:'#333333',outlineOpacity:1};
+function rewardTitle(controls,host) {
+ const one=(nodes,name)=>{const hits=nodes.filter(node=>node.name===name);assert.equal(hits.length,1,name);return hits[0];};
+ return one(one(one(controls,'battlePanel').children,host).children,'title');
+}
+function beforeRewardBannerInk(controls) {
+ const prior=structuredClone(controls);
+ for(const [host,colour] of rewardTitles) {
+  const node=rewardTitle(prior,host);assert.equal(node.kind,'text',host);
+  for(const [key,value] of Object.entries(currentTitleInk))
+   assert.equal(node.text[key],value,host+'/'+key);
+  node.text.colour=colour;
+  for(const key of ['outline','outlineColour','outlineOpacity'])delete node.text[key];
+ }
+ return prior;
+}
+
 test('real UI build registers one shared hidden background host and one native image template without moving controls',t=>{
  const dir=mkdtempSync(join(tmpdir(),'abyss-background-build-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));
  buildUI(dir,undefined,{artFeatures:{menuBackground:true,monsters:true}});
@@ -77,18 +97,28 @@ test('real UI build registers one shared hidden background host and one native i
  details.children.push({name:'infoMotion',kind:'container',size:[1280,720],
   children:Array.from({length:8},(_,i)=>({name:'info'+(i+1),kind:'container',size:[1280,720],visible:false,children:structuredClone(info)}))});
  for(const name of ['confirm','cancel'])character.children.find(n=>n.name===name).visible=false;
- // #1007 is the only change between the original authored oracle and the
- // current control tree. Pin both independent full-tree identities so using
- // the production transform does not let regressions change both sides.
- assert.equal(digest(approved),'1ceab50aded5e448e38de47cba984f74c9bedc8eaa1213ce943968165d082983');
- anchorBattlePeriphery({children:approved},1280,false);
- assert.equal(digest(approved),'c127761d9ef7021f65f8f91528c60ae87e918b1419cbc01fb351c659468a0d13');
- const assertControls=controls=>assert.ok(isDeepStrictEqual(controls,approved),'approved controls/input and entrance groups remain exact apart from explicit empty artwork hosts');
+ // Pin the original full-tree identities before and after #1007; reverse
+ // only the authenticated #1066 title ink on a copy.
+ const prior=beforeRewardBannerInk(approved);
+ assert.equal(digest(prior),'1ceab50aded5e448e38de47cba984f74c9bedc8eaa1213ce943968165d082983');
+ anchorBattlePeriphery({children:prior},1280,false);
+ assert.equal(digest(prior),'c127761d9ef7021f65f8f91528c60ae87e918b1419cbc01fb351c659468a0d13');
+ const assertControls=controls=>assert.ok(isDeepStrictEqual(beforeRewardBannerInk(controls),prior),'approved controls/input and entrance groups remain exact apart from explicit empty artwork hosts');
  removeMenuEdgePlates(original);
  strip(original);
  assertControls(original);
  // Every negative starts from the same actual generated tree, never a hand-built mock.
  const changed=(mutate)=>{const c=structuredClone(stage.children.slice(1));mutate(c);return c;};
+ for(const [host] of rewardTitles) {
+  for(const key of Object.keys(currentTitleInk)) {
+   const drift=changed(c=>{delete rewardTitle(c,host).text[key];});
+   removeMenuEdgePlates(drift);strip(drift);
+   assert.throws(()=>assertControls(drift),assert.AssertionError,host+'/'+key);
+  }
+  const drift=changed(c=>{rewardTitle(c,host).position[0]++;});
+  removeMenuEdgePlates(drift);strip(drift);
+  assert.throws(()=>assertControls(drift),assert.AssertionError,host+' position must stay exact');
+ }
  const menuOf=c=>c.find(n=>n.name==='menuPanel');
  const edgeOf=c=>menuOf(c).children.find(n=>n.name==='sceneEdgeLeft');
  for(const mutate of [

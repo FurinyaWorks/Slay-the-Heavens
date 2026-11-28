@@ -2225,6 +2225,34 @@ export const rewardTitleSources=Object.freeze({
  }
 });
 
+const backgroundBannerFixture=Object.freeze({
+ "current": {
+  "sha256": "a51d09e84a86428663b134bd0f20281d26a6cb1404d143e40a1b4aed3257f976",
+  "gitBlob": "299813c16da5e9b94816321544db50d820208d30"
+ },
+ "previous": {
+  "sha256": "f6d2b6fd7f7edfdabc1c0ef26fb7a9d74b9f47d7aca1cee9e32fd068754cb47b",
+  "gitBlob": "10389b49bea6610b53e57ac4d48ab29ebd0254f0"
+ },
+ "hunks": [
+  {
+   "at": 28,
+   "before": " assert.equal(menu.children[scene+3]?.name,'lowpolyVeil','edges must remain below veil and content');\n menu.children.splice(scene+1,2);\n}\n",
+   "after": " assert.equal(menu.children[scene+3]?.name,'lowpolyVeil','edges must remain below veil and content');\n menu.children.splice(scene+1,2);\n}\n\n// Keep the archived full-tree oracle while checking the two approved #1066\n// title inks before their test-only inverse. All other values remain live.\nconst rewardTitles=[['rewardList','#ECE6DA'],['rewardStage','#F5D79A']];\nconst currentTitleInk={colour:'#E6E6E6',outline:true,outlineColour:'#333333',outlineOpacity:1};\nfunction rewardTitle(controls,host) {\n const one=(nodes,name)=>{const hits=nodes.filter(node=>node.name===name);assert.equal(hits.length,1,name);return hits[0];};\n return one(one(one(controls,'battlePanel').children,host).children,'title');\n}\nfunction beforeRewardBannerInk(controls) {\n const prior=structuredClone(controls);\n for(const [host,colour] of rewardTitles) {\n  const node=rewardTitle(prior,host);assert.equal(node.kind,'text',host);\n  for(const [key,value] of Object.entries(currentTitleInk))\n   assert.equal(node.text[key],value,host+'/'+key);\n  node.text.colour=colour;\n  for(const key of ['outline','outlineColour','outlineOpacity'])delete node.text[key];\n }\n return prior;\n}\n"
+  },
+  {
+   "at": 97,
+   "before": "  children:Array.from({length:8},(_,i)=>({name:'info'+(i+1),kind:'container',size:[1280,720],visible:false,children:structuredClone(info)}))});\n for(const name of ['confirm','cancel'])character.children.find(n=>n.name===name).visible=false;\n // #1007 is the only change between the original authored oracle and the\n // current control tree. Pin both independent full-tree identities so using\n // the production transform does not let regressions change both sides.\n assert.equal(digest(approved),'1ceab50aded5e448e38de47cba984f74c9bedc8eaa1213ce943968165d082983');\n anchorBattlePeriphery({children:approved},1280,false);\n assert.equal(digest(approved),'c127761d9ef7021f65f8f91528c60ae87e918b1419cbc01fb351c659468a0d13');\n const assertControls=controls=>assert.ok(isDeepStrictEqual(controls,approved),'approved controls/input and entrance groups remain exact apart from explicit empty artwork hosts');\n removeMenuEdgePlates(original);\n strip(original);",
+   "after": "  children:Array.from({length:8},(_,i)=>({name:'info'+(i+1),kind:'container',size:[1280,720],visible:false,children:structuredClone(info)}))});\n for(const name of ['confirm','cancel'])character.children.find(n=>n.name===name).visible=false;\n // Pin the original full-tree identities before and after #1007; reverse\n // only the authenticated #1066 title ink on a copy.\n const prior=beforeRewardBannerInk(approved);\n assert.equal(digest(prior),'1ceab50aded5e448e38de47cba984f74c9bedc8eaa1213ce943968165d082983');\n anchorBattlePeriphery({children:prior},1280,false);\n assert.equal(digest(prior),'c127761d9ef7021f65f8f91528c60ae87e918b1419cbc01fb351c659468a0d13');\n const assertControls=controls=>assert.ok(isDeepStrictEqual(beforeRewardBannerInk(controls),prior),'approved controls/input and entrance groups remain exact apart from explicit empty artwork hosts');\n removeMenuEdgePlates(original);\n strip(original);"
+  },
+  {
+   "at": 109,
+   "before": " // Every negative starts from the same actual generated tree, never a hand-built mock.\n const changed=(mutate)=>{const c=structuredClone(stage.children.slice(1));mutate(c);return c;};\n const menuOf=c=>c.find(n=>n.name==='menuPanel');\n const edgeOf=c=>menuOf(c).children.find(n=>n.name==='sceneEdgeLeft');",
+   "after": " // Every negative starts from the same actual generated tree, never a hand-built mock.\n const changed=(mutate)=>{const c=structuredClone(stage.children.slice(1));mutate(c);return c;};\n for(const [host] of rewardTitles) {\n  for(const key of Object.keys(currentTitleInk)) {\n   const drift=changed(c=>{delete rewardTitle(c,host).text[key];});\n   removeMenuEdgePlates(drift);strip(drift);\n   assert.throws(()=>assertControls(drift),assert.AssertionError,host+'/'+key);\n  }\n  const drift=changed(c=>{rewardTitle(c,host).position[0]++;});\n  removeMenuEdgePlates(drift);strip(drift);\n  assert.throws(()=>assertControls(drift),assert.AssertionError,host+' position must stay exact');\n }\n const menuOf=c=>c.find(n=>n.name==='menuPanel');\n const edgeOf=c=>menuOf(c).children.find(n=>n.name==='sceneEdgeLeft');"
+  }
+ ]
+});
+
 export function beforeReleaseClosureFixture(path,raw,{reviewedBuild=false}={}){
  // Current integration authenticates the live delivery owner through its own archive.
  if(path==='scripts/verify-delivery.mjs'&&!reviewedBuild)return raw;
@@ -2247,6 +2275,12 @@ export function beforeReleaseClosureFixture(path,raw,{reviewedBuild=false}={}){
  if(typeof source!=='string'||Buffer.isBuffer(raw)&&!Buffer.from(source).equals(raw))return raw;
  const normalized=source.replaceAll('\r\n','\n');
  if(normalized.includes('\r')||source!==normalized&&source!==normalized.replaceAll('\n','\r\n'))return raw;
+ if(path==='tests/official-background-build.test.mjs'&&exactSourceMatches(source,backgroundBannerFixture.current)){
+  const {current,previous,hunks}=backgroundBannerFixture;
+  const predecessor=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,source);
+  assert(exactSourceMatches(predecessor,previous),'exact pre-banner historical background fixture');
+  source=source===normalized?predecessor:predecessor.replaceAll('\n','\r\n');
+ }
  if(path==='tests/v25-map-layout.test.mjs'&&exactSourceMatches(source,bossMapLayoutFixture.current)){
   const {current,previous,hunks}=bossMapLayoutFixture;
   const predecessor=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,source);
