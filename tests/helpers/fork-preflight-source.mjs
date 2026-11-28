@@ -1733,6 +1733,8 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
 // The live planner reads its measured Linux map directly. Historical CI views
 // restore each exact predecessor in reverse observation order.
 const v220HostedTimingEpochs = [
+ ['202934a32fd967511e16eb962f2da7799044e27211fdb09c3c7ea3704f09d35a','1a35c207f0a951a1907e78f31a7e203682a92368',
+  '71c31f96f9578bf8812a802597cd48db5fbbd0aea05999b15ded2f738b41163b','c38fc2ce439ca855b0ea05b795b8e6463b17b001'],
  ['71c31f96f9578bf8812a802597cd48db5fbbd0aea05999b15ded2f738b41163b','c38fc2ce439ca855b0ea05b795b8e6463b17b001',
   '6756697bac41f5e9081c49a95618f909628aba4ce31e300ae7e0006d16a5eeef','e7e9d43b598b8d91f70fe6b00843874b7702e1cb'],
  ['6756697bac41f5e9081c49a95618f909628aba4ce31e300ae7e0006d16a5eeef','e7e9d43b598b8d91f70fe6b00843874b7702e1cb',

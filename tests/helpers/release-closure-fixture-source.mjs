@@ -1913,6 +1913,22 @@ const approvedSpikeUiAdapter=Object.freeze({
  ]
 });
 
+// The live Roster bridge test now separates a probe from strict projection.
+const rosterLegacyBridgeFixture=Object.freeze({
+ "path": "tests/competition-roster-config-composition.test.mjs",
+ "current": {
+  "sha256": "0c3dc8fadc9c72960c3c6d110c038340a57713112cc41ff5e1cef4ed4d1375e7",
+  "gitBlob": "91644c4d45cae54a633ac3b203f842f0fd8fa575"
+ },
+ "hunks": [
+  {
+   "at": 236,
+   "before": "nativeTest('current Roster legacy bridge rejects incompatible owners rather than claiming either ancient witness',async()=>{\n const current=await import('./helpers/competition-roster-config-composition.mjs');\n const raw=readFileSync(path,'utf8').replaceAll('\\r\\n','\\n');\n assert.throws(()=>current.preRosterConfigSource(path,raw),/delivery linked source identity: src\\/lua\\/abyss_monster_intent_particle_view\\.lua/,'an unsupported old bridge cannot borrow a much older delivery owner');\n});",
+   "after": "nativeTest('current Roster legacy bridge does not claim either ancient witness',async()=>{\n const current=await import('./helpers/competition-roster-config-composition.mjs');\n const raw=readFileSync(path,'utf8').replaceAll('\\r\\n','\\n');\n // Current Release belongs to the fresh-owner admission test above, not the\n // old config bridge. A permissive probe must leave the unknown input whole;\n // a requested projection to either old target must reject it.\n for(const input of [raw,raw.replaceAll('\\n','\\r\\n')])for(const target of ['current','roster']){\n  assert.equal(current.preRosterConfigSource(path,input,target),input,'unsupported input must not borrow '+target);\n  assert.throws(()=>current.projectRosterConfigSource(path,input,target),/unreviewed integrated roster config source/);\n }\n});"
+  }
+ ]
+});
+
 export function beforeReleaseClosureFixture(path,raw,{reviewedBuild=false}={}){
  // Current integration authenticates the live delivery owner through its own archive.
  if(path==='scripts/verify-delivery.mjs'&&!reviewedBuild)return raw;
@@ -1922,6 +1938,13 @@ export function beforeReleaseClosureFixture(path,raw,{reviewedBuild=false}={}){
  if(typeof source!=='string'||Buffer.isBuffer(raw)&&!Buffer.from(source).equals(raw))return raw;
  const normalized=source.replaceAll('\r\n','\n');
  if(normalized.includes('\r')||source!==normalized&&source!==normalized.replaceAll('\n','\r\n'))return raw;
+ if(path===rosterLegacyBridgeFixture.path&&exactSourceMatches(source,rosterLegacyBridgeFixture.current)){
+  const {current,hunks}=rosterLegacyBridgeFixture;
+  const previous=fixtures[path].current;
+  const predecessor=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,source);
+  assert(exactSourceMatches(predecessor,previous),'exact prior Roster bridge fixture');
+  source=source===normalized?predecessor:predecessor.replaceAll('\n','\r\n');
+ }
  if(path===selectionFadeWindowsFixture.path&&exactSourceMatches(source,selectionFadeWindowsFixture.current)){
   const {current,hunks}=selectionFadeWindowsFixture;
   const previous=fixtures[path].current;

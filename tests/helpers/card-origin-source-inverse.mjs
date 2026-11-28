@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {architectureSourceFormat} from './architecture-source-format.mjs';
+import {beforeKnownMasterBackflowSource} from './master-backflow-source.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
 const read=path=>readFileSync(new URL('../../'+path,import.meta.url),'utf8').replaceAll('\r\n','\n');
 export function preCardOriginSource(path,source){
@@ -28,6 +29,10 @@ export function preCardOriginSource(path,source){
   previous=current.replace('    "abyss_card_origin": "core",\n    "abyss_card_origin_view": "ui",\n','');
   assert.equal(hash(previous),'640bb51f60c831ad2162de7907b5b7e6a241dfa6f50b15b8527234eb2da47b64','complete pre-card-origin architecture');
  }else if(path==='src/lua/abyss_nodes.lua'){
+  // The accepted backflow already binds the exact live Nodes owner and its
+  // predecessor. Compose that view before applying the older card-origin inverse.
+  if(normalized.includes('\r')||source!==normalized&&source!==normalized.replaceAll('\n','\r\n'))return source;
+  current=beforeKnownMasterBackflowSource(path,normalized);
   if(hash(current)!=='f685e7a59b57f66721e3c2f8143b99aa37efd05be77371bbda61fd6e4a4a4d9f')return source;
   previous=current.replace("    local before=require('abyss_card_origin').state(instance)\n",'')
    .replace("    require('abyss_card_origin').record(run,instance,before,'permanent_upgrade',{kind='camp'})\n",'');

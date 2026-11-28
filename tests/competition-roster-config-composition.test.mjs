@@ -234,8 +234,14 @@ nativeTest('current Roster registration admission validates every raw owner fres
  }
 });
 
-nativeTest('current Roster legacy bridge rejects incompatible owners rather than claiming either ancient witness',async()=>{
+nativeTest('current Roster legacy bridge does not claim either ancient witness',async()=>{
  const current=await import('./helpers/competition-roster-config-composition.mjs');
  const raw=readFileSync(path,'utf8').replaceAll('\r\n','\n');
- assert.throws(()=>current.preRosterConfigSource(path,raw),/delivery linked source identity: src\/lua\/abyss_monster_intent_particle_view\.lua/,'an unsupported old bridge cannot borrow a much older delivery owner');
+ // Current Release belongs to the fresh-owner admission test above, not the
+ // old config bridge. A permissive probe must leave the unknown input whole;
+ // a requested projection to either old target must reject it.
+ for(const input of [raw,raw.replaceAll('\n','\r\n')])for(const target of ['current','roster']){
+  assert.equal(current.preRosterConfigSource(path,input,target),input,'unsupported input must not borrow '+target);
+  assert.throws(()=>current.projectRosterConfigSource(path,input,target),/unreviewed integrated roster config source/);
+ }
 });
