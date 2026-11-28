@@ -11,7 +11,8 @@ local function bind()
   child=function(name)return panel:GetChild(name)end,show=noop,ink=noop,tint=noop,picture=noop,platform={},
   placeCard=function(control,count,index)
    control:SetAnchoredPosition(index*100,-200);control:SetLocalScale(1,1,1);control.localRotationZ=0
-   return {index*100,-200,baseY=-200}
+   local _,_,restAngle=F.Viewport.handSlot(count,index)
+   return {index*100,-200,baseY=-200,restAngle=restAngle}
   end,
  })
  local function render()return cardView.renderCards(F.Data,F.Presentation,host.run.combat,true,true,false,false)end

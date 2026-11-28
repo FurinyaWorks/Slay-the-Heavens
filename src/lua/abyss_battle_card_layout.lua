@@ -7,37 +7,26 @@ local L = Theme.layout
 -- Explicit ports preserve the approved implementation without a shared constructor closure.
 function M.install(owner, _ownership, host, _dependencies)
     local R = L.rewardPick
-    local function placeHandHit(box, w, h, restAngle, point, scale)
-        local r = restAngle * math.pi / 180
-        local c,s = math.abs(math.cos(r)),math.abs(math.sin(r))
-        local restH,restW = (h*c+w*s)/2,(w*c+h*s)/2
-        local hotH = h * Theme.motion.hoverScale / 2
-        local hotY = Viewport.handFocus(point.baseY)
-        local low = math.min(point.baseY-restH,hotY-hotH)
-        local high = math.max(point.baseY+restH,hotY+hotH)
-        local dy,a = (low+high)/2-point[2],box.localRotationZ*math.pi/180
+    local function placeHandHit(box, point, scale)
+        local angle=box.localRotationZ
+        local x,y,width,height=Viewport.handHit(point[2],angle,scale,point)
         local hit = box:GetChild('hit')
-        -- Inverse the card transform: one world-space hit rectangle covers both poses.
-        hit:SetAnchoredPosition(math.sin(a)*dy/scale,math.cos(a)*dy/scale)
-        local width=math.max(restW*2,w*Theme.motion.hoverScale)
-        -- Adjacent hand centres own disjoint horizontal lanes. Keeping a full
-        -- hover-width receiver here lets a later sibling steal the initial press.
-        hit:SetSizeDelta(math.min(width,point.hitWidth or width)/scale,(high-low)/scale)
+        hit:SetAnchoredPosition(x,y)
+        hit:SetSizeDelta(width,height)
         hit:SetLocalScale(1,1,1)
-        hit.localRotationZ = -box.localRotationZ
+        hit.localRotationZ = -angle
     end
     local function placeCard(box, count, index, selected, measureOnly)
-        local w, h = L.card.size[1], L.card.size[2]
         local x, baseY, angle, spacing = Viewport.handSlot(count, index, owner.handWidthExtra)
         local y = selected and Viewport.handFocus(baseY) or baseY
         local laneWidth=count>1 and spacing or nil
-        local point={x, y, baseY=baseY,hitWidth=laneWidth}
+        local point={x,y,baseY=baseY,restAngle=angle,hitWidth=laneWidth,hot=selected}
         if measureOnly then return point end
         box:SetAnchoredPosition(x, y)
         local scale = selected and Theme.motion.hoverScale or 1
         box:SetLocalScale(scale, scale, 1)
         box.localRotationZ = selected and 0 or angle
-        placeHandHit(box,w,h,angle,point,scale)
+        placeHandHit(box,point,scale)
         box:GetChild("glow"):SetVisible(selected)
         box:SetAsLastSibling()
         return point

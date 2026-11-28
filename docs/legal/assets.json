@@ -275,6 +275,16 @@
       "category": "project-geometry",
       "evidence": "Project-drawn Act II coordinate schematic from 46ca4a02d658b1ee1435441cb0f1eb19479e52c6, integrated in #978. The vector markup contains geometric primitives and labels. The neighboring REFERENCE.md records the Mega Crit ss23 citation and coordinate measurements. The cited media retain their original rights."
     },
+    "docs/evidence/v2.2.0-battle-clearance/guardian-layout-ab.webp": {
+      "sha256": "aefff3e8b80e1a9e1352cd335a615c47459d997b21ba3a44cf9c7752e58082c7",
+      "category": "platform-evidence",
+      "evidence": "Beyond Simulator 0.5.2 Host renders of actual project GameUI control snapshots from the official v3 profile. Underlying project and platform artwork rights remain with their respective owners. STS1 images are linked only. See docs/evidence/v2.2.0-battle-clearance/README.md."
+    },
+    "docs/evidence/v2.2.0-battle-clearance/hand-layout-ab.webp": {
+      "sha256": "382267903436b49d66e51d457ca5db06fde3aad19fa311d5f9ada08cae8677bc",
+      "category": "platform-evidence",
+      "evidence": "Beyond Simulator 0.5.2 Host renders of actual project GameUI control snapshots from the official v3 profile. Underlying project and platform artwork rights remain with their respective owners. STS1 images are linked only. See docs/evidence/v2.2.0-battle-clearance/README.md."
+    },
     "docs/evidence/v2.2.0-enemy-ground-contact/act1-formations.webp": {
       "sha256": "b7221e8e1331efc46c4471d1bd28b10195fcd4240fb813b8c1f991053b441d9a",
       "category": "platform-evidence",

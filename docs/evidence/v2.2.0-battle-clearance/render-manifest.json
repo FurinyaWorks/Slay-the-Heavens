@@ -1,0 +1,806 @@
+{
+  "motionVersion": "same current capture harness per side",
+  "geometrySpace": "center-origin XY in 1280×720 logical stage with +Y up; top-aligned amount line budgets 1.2×font",
+  "rendering": "production GameUI Lua on Fengari + native fixture API; nested native control snapshots rendered as static scenes in Beyond Simulator 0.5.2",
+  "sampledStressGeometry": "selects the first of five live canonical Lots of Slimes actors; combination suite covers all actors",
+  "baseline": {
+    "commit": "7dded1e93f169f319c4a52e38f1ba47943ac4463",
+    "tree": "0fef9939869a682d13f6e68521a771aa1a442ca8",
+    "frames": {
+      "pc-offense": {
+        "viewport": [
+          1600,
+          900
+        ],
+        "contactY": -135.3333,
+        "hpCenterY": -155.3333,
+        "intentCenterY": 168.1635,
+        "targetRectCenteredXYWH": [
+          286.6667,
+          -18.6667,
+          293.3333,
+          233.3333
+        ],
+        "handFaceTopY": -177.7258,
+        "handReceiverTopY": -80.7629,
+        "powersFirstActor": {
+          "mode_shift": {
+            "amount": "30",
+            "icon": {
+              "boundsCenteredXYWH": [
+                165.3333,
+                -189.3333,
+                32,
+                32
+              ],
+              "verticalClearance": -27.6076,
+              "overlapsHand": true
+            },
+            "countLine": {
+              "boundsCenteredXYWH": [
+                160,
+                -193.3333,
+                40,
+                24.0
+              ],
+              "verticalClearance": -27.6076,
+              "overlapsHand": true
+            },
+            "hit": {
+              "boundsCenteredXYWH": [
+                165.3333,
+                -189.3333,
+                46.6667,
+                32
+              ],
+              "verticalClearance": -124.5705,
+              "overlapsHand": true
+            }
+          }
+        },
+        "nameAndCostBoxesWithinViewport": true,
+        "outerTypeBoxCrossesViewport": false,
+        "pngSha256": "77b2ea1a03fd989ae76f69eda50506b9a39d2abeba27422d313d991a06bb0531",
+        "snapshotSaveSha256": "69ff9711e2ba9f92c7481f211eeb9976244a7de99f9afe51cae0302022a87c7c",
+        "assetWarnings": []
+      },
+      "pc-offense-hover": {
+        "viewport": [
+          1600,
+          900
+        ],
+        "contactY": -135.3333,
+        "hpCenterY": -155.3333,
+        "intentCenterY": 168.1635,
+        "targetRectCenteredXYWH": [
+          286.6667,
+          -18.6667,
+          293.3333,
+          233.3333
+        ],
+        "handFaceTopY": -83.7285,
+        "handReceiverTopY": -80.7629,
+        "powersFirstActor": {
+          "mode_shift": {
+            "amount": "30",
+            "icon": {
+              "boundsCenteredXYWH": [
+                165.3333,
+                -189.3333,
+                32,
+                32
+              ],
+              "verticalClearance": -121.6049,
+              "overlapsHand": true
+            },
+            "countLine": {
+              "boundsCenteredXYWH": [
+                160,
+                -193.3333,
+                40,
+                24.0
+              ],
+              "verticalClearance": -121.6049,
+              "overlapsHand": true
+            },
+            "hit": {
+              "boundsCenteredXYWH": [
+                165.3333,
+                -189.3333,
+                46.6667,
+                32
+              ],
+              "verticalClearance": -124.5705,
+              "overlapsHand": true
+            }
+          }
+        },
+        "nameAndCostBoxesWithinViewport": true,
+        "outerTypeBoxCrossesViewport": false,
+        "pngSha256": "5489a9a3608e42668d3a617da36352b4d37383f6f305b080d26fef936c582638",
+        "snapshotSaveSha256": "4998a11c7495e1d9d4fb2cee89783228d0cbb86cbdd5033b2eda9771d016f961",
+        "assetWarnings": []
+      },
+      "pc-defense": {
+        "viewport": [
+          1600,
+          900
+        ],
+        "contactY": -135.3333,
+        "hpCenterY": -155.3333,
+        "intentCenterY": 168.1635,
+        "targetRectCenteredXYWH": [
+          286.6667,
+          -52,
+          293.3333,
+          166.6667
+        ],
+        "handFaceTopY": -177.7258,
+        "handReceiverTopY": -80.7629,
+        "powersFirstActor": {
+          "sharp_hide": {
+            "amount": "3",
+            "icon": {
+              "boundsCenteredXYWH": [
+                165.3333,
+                -189.3333,
+                32,
+                32
+              ],
+              "verticalClearance": -27.6076,
+              "overlapsHand": true
+            },
+            "countLine": {
+              "boundsCenteredXYWH": [
+                160,
+                -193.3333,
+                40,
+                24.0
+              ],
+              "verticalClearance": -27.6076,
+              "overlapsHand": true
+            },
+            "hit": {
+              "boundsCenteredXYWH": [
+                165.3333,
+                -189.3333,
+                46.6667,
+                32
+              ],
+              "verticalClearance": -124.5705,
+              "overlapsHand": true
+            }
+          }
+        },
+        "nameAndCostBoxesWithinViewport": true,
+        "outerTypeBoxCrossesViewport": false,
+        "pngSha256": "8e7e496f0ab87dee37344a66b82a3f8a306560aafb25c9fa46cf5ce0f88bd054",
+        "snapshotSaveSha256": "d56392c9823af6afde9e2f613ae0677a9ae206b4f4b4e0d574d72c1848896bcd",
+        "assetWarnings": []
+      },
+      "mobile-offense": {
+        "viewport": [
+          1560,
+          720
+        ],
+        "contactY": -135.3333,
+        "hpCenterY": -155.3333,
+        "intentCenterY": 168.1635,
+        "targetRectCenteredXYWH": [
+          286.6667,
+          -18.6667,
+          293.3333,
+          233.3333
+        ],
+        "handFaceTopY": -177.7258,
+        "handReceiverTopY": -80.7629,
+        "powersFirstActor": {
+          "mode_shift": {
+            "amount": "30",
+            "icon": {
+              "boundsCenteredXYWH": [
+                165.3333,
+                -192.0533,
+                37.44,
+                37.44
+              ],
+              "verticalClearance": -33.0476,
+              "overlapsHand": true
+            },
+            "countLine": {
+              "boundsCenteredXYWH": [
+                160,
+                -198.72,
+                40,
+                24.0
+              ],
+              "verticalClearance": -32.9942,
+              "overlapsHand": true
+            },
+            "hit": {
+              "boundsCenteredXYWH": [
+                165.3333,
+                -192.0533,
+                49.3867,
+                32
+              ],
+              "verticalClearance": -127.2905,
+              "overlapsHand": true
+            }
+          }
+        },
+        "nameAndCostBoxesWithinViewport": true,
+        "outerTypeBoxCrossesViewport": false,
+        "pngSha256": "40da8adfb84db2c0d75cb77ac99226b43d9c93dc2069e05e0e44deef944707ad",
+        "snapshotSaveSha256": "d5f6de5702d0c2edaa755aac0a86943be422b38905711c8eff6493bf5a8712c1",
+        "assetWarnings": []
+      },
+      "mobile-defense": {
+        "viewport": [
+          1560,
+          720
+        ],
+        "contactY": -135.3333,
+        "hpCenterY": -155.3333,
+        "intentCenterY": 168.1635,
+        "targetRectCenteredXYWH": [
+          286.6667,
+          -52,
+          293.3333,
+          166.6667
+        ],
+        "handFaceTopY": -177.7258,
+        "handReceiverTopY": -80.7629,
+        "powersFirstActor": {
+          "sharp_hide": {
+            "amount": "3",
+            "icon": {
+              "boundsCenteredXYWH": [
+                165.3333,
+                -192.0533,
+                37.44,
+                37.44
+              ],
+              "verticalClearance": -33.0476,
+              "overlapsHand": true
+            },
+            "countLine": {
+              "boundsCenteredXYWH": [
+                160,
+                -198.72,
+                40,
+                24.0
+              ],
+              "verticalClearance": -32.9942,
+              "overlapsHand": true
+            },
+            "hit": {
+              "boundsCenteredXYWH": [
+                165.3333,
+                -192.0533,
+                49.3867,
+                32
+              ],
+              "verticalClearance": -127.2905,
+              "overlapsHand": true
+            }
+          }
+        },
+        "nameAndCostBoxesWithinViewport": true,
+        "outerTypeBoxCrossesViewport": false,
+        "pngSha256": "bd0337744057a76a6a87cd9642e8e2f3693b3c1e3c10a51a3f4c212fc4d8f13b",
+        "snapshotSaveSha256": "401733f36cb1b8dd07f16165d0dbd05493f7dd4319d12fbf9cca9f84f8bf5049",
+        "assetWarnings": []
+      },
+      "mobile-lots-of-slimes-ten": {
+        "viewport": [
+          1560,
+          720
+        ],
+        "contactY": -105.0,
+        "hpCenterY": -141.0,
+        "intentCenterY": -13.1384,
+        "targetRectCenteredXYWH": [
+          0,
+          -87.6667,
+          86.6667,
+          66.6667
+        ],
+        "handFaceTopY": -164.7715,
+        "handReceiverTopY": -74.2858,
+        "powersFirstActor": {
+          "weak": {
+            "amount": "2",
+            "icon": {
+              "boundsCenteredXYWH": [
+                -21.3867,
+                -177.72,
+                37.44,
+                37.44
+              ],
+              "verticalClearance": -31.6685,
+              "overlapsHand": true
+            },
+            "countLine": {
+              "boundsCenteredXYWH": [
+                -26.72,
+                -184.3867,
+                40,
+                24.0
+              ],
+              "verticalClearance": -31.6151,
+              "overlapsHand": true
+            },
+            "hit": {
+              "boundsCenteredXYWH": [
+                -21.3867,
+                -177.72,
+                49.3867,
+                32
+              ],
+              "verticalClearance": -119.4342,
+              "overlapsHand": true
+            }
+          },
+          "@more": {
+            "amount": "+2",
+            "icon": {
+              "boundsCenteredXYWH": [
+                28,
+                -177.72,
+                37.44,
+                37.44
+              ],
+              "verticalClearance": -31.6685,
+              "overlapsHand": true
+            },
+            "countLine": {
+              "boundsCenteredXYWH": [
+                22.6667,
+                -184.3867,
+                40,
+                24.0
+              ],
+              "verticalClearance": -31.6151,
+              "overlapsHand": true
+            },
+            "hit": {
+              "boundsCenteredXYWH": [
+                28,
+                -177.72,
+                49.3867,
+                32
+              ],
+              "verticalClearance": -119.4342,
+              "overlapsHand": true
+            }
+          }
+        },
+        "nameAndCostBoxesWithinViewport": true,
+        "outerTypeBoxCrossesViewport": false,
+        "pngSha256": "f308fa5dffa5a4a12a1ff9340bc5a264bc29496e0ffd83ffe8d8bb3f24450e2b",
+        "snapshotSaveSha256": "cfbf0c592425df70c2ac003211e7870919c5eb335a4e998f1379a49051119829",
+        "assetWarnings": []
+      }
+    },
+    "productionDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "generatedThemeSha256": "c90cf2f87a3186a68e9c702798496b6bb1c4407811e20181ccb17ddcd679148a",
+    "build": {
+      "officialAssets": true,
+      "nativePageLifecycle": true,
+      "refinedReleaseMonsterArt": true,
+      "experimentalCharacters": false
+    },
+    "scenesSha256": "b26f879585bb26020e302a42ed9d517c38c40050f1a74ab46ac03dcf9afcdca0",
+    "productionFileSha256": {
+      "data/presentation/ui_theme.json": "ecffd748962d2e8193599992639ab8ccc43018fd6ff2c7252c85a48ea31fdfb8",
+      "scripts/v220-chapter-battle-scenes.mjs": "2cff6fd9892e9d0684766948230f6c53847bdf2f97d722d2e0daf02099fe6b2c",
+      "src/lua/abyss_battle_card_layout.lua": "6a33acc4b5113463f16cc992c439044bf1b1ebd0d8f75b8ee0601cd160cfbafa",
+      "src/lua/abyss_battle_card_view.lua": "a754a1c70a92ee789fa8c8266ee0ede46f22427b271ab464b85b8ce17d59e158",
+      "src/lua/abyss_battle_enemy_view.lua": "ee1f1db69b9718c4198cce800348f6a284802d25f1a8e0de725bd63f8ee84615",
+      "src/lua/abyss_viewport.lua": "d9741c3f60f9fc72d8c87a386947a4a77373f22312ed8fe1da9b30c58b28c939"
+    }
+  },
+  "candidate": {
+    "commit": "c28b0221422fe38fe26bd115007bdc24551e0d7e",
+    "tree": "c57f75646f5bf9745c1e42063629e35492d4acef",
+    "frames": {
+      "pc-offense": {
+        "viewport": [
+          1600,
+          900
+        ],
+        "contactY": -135.3333,
+        "hpCenterY": -149.3333,
+        "intentCenterY": 168.1635,
+        "targetRectCenteredXYWH": [
+          286.6667,
+          -18.6667,
+          293.3333,
+          233.3333
+        ],
+        "handFaceTopY": -215.0,
+        "handReceiverTopY": -215.0,
+        "powersFirstActor": {
+          "mode_shift": {
+            "amount": "30",
+            "icon": {
+              "boundsCenteredXYWH": [
+                165.3333,
+                -178,
+                32,
+                32
+              ],
+              "verticalClearance": 21.0,
+              "overlapsHand": false
+            },
+            "countLine": {
+              "boundsCenteredXYWH": [
+                160,
+                -182.0,
+                40,
+                24.0
+              ],
+              "verticalClearance": 21.0,
+              "overlapsHand": false
+            },
+            "hit": {
+              "boundsCenteredXYWH": [
+                165.3333,
+                -178,
+                46.6667,
+                32
+              ],
+              "verticalClearance": 21.0,
+              "overlapsHand": false
+            }
+          }
+        },
+        "nameAndCostBoxesWithinViewport": true,
+        "outerTypeBoxCrossesViewport": true,
+        "pngSha256": "b5ea665ee5b682c085095c131068768c2a5be9aa6d3a7f11d3c348efee4c8eee",
+        "snapshotSaveSha256": "c971230923cccb567af353fe3fa85e875c9a67a5c1a568d9d390fef086749734",
+        "assetWarnings": []
+      },
+      "pc-offense-hover": {
+        "viewport": [
+          1600,
+          900
+        ],
+        "contactY": -135.3333,
+        "hpCenterY": -149.3333,
+        "intentCenterY": 168.1635,
+        "targetRectCenteredXYWH": [
+          286.6667,
+          -18.6667,
+          293.3333,
+          233.3333
+        ],
+        "handFaceTopY": -83.8,
+        "handReceiverTopY": -83.8,
+        "powersFirstActor": {
+          "mode_shift": {
+            "amount": "30",
+            "icon": {
+              "boundsCenteredXYWH": [
+                165.3333,
+                -178,
+                32,
+                32
+              ],
+              "verticalClearance": -110.2,
+              "overlapsHand": true
+            },
+            "countLine": {
+              "boundsCenteredXYWH": [
+                160,
+                -182.0,
+                40,
+                24.0
+              ],
+              "verticalClearance": -110.2,
+              "overlapsHand": true
+            },
+            "hit": {
+              "boundsCenteredXYWH": [
+                165.3333,
+                -178,
+                46.6667,
+                32
+              ],
+              "verticalClearance": -110.2,
+              "overlapsHand": true
+            }
+          }
+        },
+        "nameAndCostBoxesWithinViewport": true,
+        "outerTypeBoxCrossesViewport": true,
+        "pngSha256": "95270ab0f97d157b21d673c59c5ae3c0b5450a82e90360765e42a7c374fe21c0",
+        "snapshotSaveSha256": "3a1fd8e3a735f38a4a403bd168a7f9f0b79fa91874a9c541cc459542384d604d",
+        "assetWarnings": []
+      },
+      "pc-defense": {
+        "viewport": [
+          1600,
+          900
+        ],
+        "contactY": -135.3333,
+        "hpCenterY": -149.3333,
+        "intentCenterY": 168.1635,
+        "targetRectCenteredXYWH": [
+          286.6667,
+          -52,
+          293.3333,
+          166.6667
+        ],
+        "handFaceTopY": -215.0,
+        "handReceiverTopY": -215.0,
+        "powersFirstActor": {
+          "sharp_hide": {
+            "amount": "3",
+            "icon": {
+              "boundsCenteredXYWH": [
+                165.3333,
+                -178,
+                32,
+                32
+              ],
+              "verticalClearance": 21.0,
+              "overlapsHand": false
+            },
+            "countLine": {
+              "boundsCenteredXYWH": [
+                160,
+                -182.0,
+                40,
+                24.0
+              ],
+              "verticalClearance": 21.0,
+              "overlapsHand": false
+            },
+            "hit": {
+              "boundsCenteredXYWH": [
+                165.3333,
+                -178,
+                46.6667,
+                32
+              ],
+              "verticalClearance": 21.0,
+              "overlapsHand": false
+            }
+          }
+        },
+        "nameAndCostBoxesWithinViewport": true,
+        "outerTypeBoxCrossesViewport": true,
+        "pngSha256": "35192a7d16460ad82cb9c55709fd550f8b863487db28ae4af4e581e67ba32c22",
+        "snapshotSaveSha256": "b11bc312d0aacad98feaf303b36c4df6f8f1b8b66da77ced8d451f0a548979e0",
+        "assetWarnings": []
+      },
+      "mobile-offense": {
+        "viewport": [
+          1560,
+          720
+        ],
+        "contactY": -135.3333,
+        "hpCenterY": -149.3333,
+        "intentCenterY": 168.1635,
+        "targetRectCenteredXYWH": [
+          286.6667,
+          -18.6667,
+          293.3333,
+          233.3333
+        ],
+        "handFaceTopY": -215.0,
+        "handReceiverTopY": -215.0,
+        "powersFirstActor": {
+          "mode_shift": {
+            "amount": "30",
+            "icon": {
+              "boundsCenteredXYWH": [
+                165.3333,
+                -180.72,
+                37.44,
+                37.44
+              ],
+              "verticalClearance": 15.56,
+              "overlapsHand": false
+            },
+            "countLine": {
+              "boundsCenteredXYWH": [
+                160,
+                -187.3867,
+                40,
+                24.0
+              ],
+              "verticalClearance": 15.6133,
+              "overlapsHand": false
+            },
+            "hit": {
+              "boundsCenteredXYWH": [
+                165.3333,
+                -180.72,
+                49.3867,
+                32
+              ],
+              "verticalClearance": 18.28,
+              "overlapsHand": false
+            }
+          }
+        },
+        "nameAndCostBoxesWithinViewport": true,
+        "outerTypeBoxCrossesViewport": true,
+        "pngSha256": "33316c3f5197ab2e0b17524da20b09b01542fb15727882baab39f916f79151ee",
+        "snapshotSaveSha256": "c77118dd0056926f821f0a6e49b4160de40aa582cc37683e6cb1d410d6d9aa91",
+        "assetWarnings": []
+      },
+      "mobile-defense": {
+        "viewport": [
+          1560,
+          720
+        ],
+        "contactY": -135.3333,
+        "hpCenterY": -149.3333,
+        "intentCenterY": 168.1635,
+        "targetRectCenteredXYWH": [
+          286.6667,
+          -52,
+          293.3333,
+          166.6667
+        ],
+        "handFaceTopY": -215.0,
+        "handReceiverTopY": -215.0,
+        "powersFirstActor": {
+          "sharp_hide": {
+            "amount": "3",
+            "icon": {
+              "boundsCenteredXYWH": [
+                165.3333,
+                -180.72,
+                37.44,
+                37.44
+              ],
+              "verticalClearance": 15.56,
+              "overlapsHand": false
+            },
+            "countLine": {
+              "boundsCenteredXYWH": [
+                160,
+                -187.3867,
+                40,
+                24.0
+              ],
+              "verticalClearance": 15.6133,
+              "overlapsHand": false
+            },
+            "hit": {
+              "boundsCenteredXYWH": [
+                165.3333,
+                -180.72,
+                49.3867,
+                32
+              ],
+              "verticalClearance": 18.28,
+              "overlapsHand": false
+            }
+          }
+        },
+        "nameAndCostBoxesWithinViewport": true,
+        "outerTypeBoxCrossesViewport": true,
+        "pngSha256": "08c61da66aae5c44cea525039e2acf9da74e1c6a0291aec37a5690bf764e0bfc",
+        "snapshotSaveSha256": "c6f9ada5d8c5617cc35dd565a18685d9dbfffad58e0c7e08681128717f56e6ea",
+        "assetWarnings": []
+      },
+      "mobile-lots-of-slimes-ten": {
+        "viewport": [
+          1560,
+          720
+        ],
+        "contactY": -105.0,
+        "hpCenterY": -135.0,
+        "intentCenterY": -13.1384,
+        "targetRectCenteredXYWH": [
+          0,
+          -87.6667,
+          86.6667,
+          66.6667
+        ],
+        "handFaceTopY": -216.7715,
+        "handReceiverTopY": -216.7715,
+        "powersFirstActor": {
+          "weak": {
+            "amount": "2",
+            "icon": {
+              "boundsCenteredXYWH": [
+                -21.3867,
+                -166.3867,
+                37.44,
+                37.44
+              ],
+              "verticalClearance": 31.6649,
+              "overlapsHand": false
+            },
+            "countLine": {
+              "boundsCenteredXYWH": [
+                -26.72,
+                -173.0533,
+                40,
+                24.0
+              ],
+              "verticalClearance": 31.7182,
+              "overlapsHand": false
+            },
+            "hit": {
+              "boundsCenteredXYWH": [
+                -21.3867,
+                -166.3867,
+                49.3867,
+                32
+              ],
+              "verticalClearance": 34.3849,
+              "overlapsHand": false
+            }
+          },
+          "@more": {
+            "amount": "+2",
+            "icon": {
+              "boundsCenteredXYWH": [
+                28,
+                -166.3867,
+                37.44,
+                37.44
+              ],
+              "verticalClearance": 31.6649,
+              "overlapsHand": false
+            },
+            "countLine": {
+              "boundsCenteredXYWH": [
+                22.6667,
+                -173.0533,
+                40,
+                24.0
+              ],
+              "verticalClearance": 31.7182,
+              "overlapsHand": false
+            },
+            "hit": {
+              "boundsCenteredXYWH": [
+                28,
+                -166.3867,
+                49.3867,
+                32
+              ],
+              "verticalClearance": 34.3849,
+              "overlapsHand": false
+            }
+          }
+        },
+        "nameAndCostBoxesWithinViewport": true,
+        "outerTypeBoxCrossesViewport": true,
+        "pngSha256": "8776917938a50b93fe5cfd9f0591074e7954f4652fc9594033d3c087e1f54de4",
+        "snapshotSaveSha256": "646cd1671b6a51dc60c155e578e4c15cf91cd3bf1de0c7f0cfdee2171fd184cb",
+        "assetWarnings": []
+      }
+    },
+    "productionDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "generatedThemeSha256": "1a3efea9043e68d3986148e95b917dc2f2e86f7c404cdfb2009834faffc9203c",
+    "build": {
+      "officialAssets": true,
+      "nativePageLifecycle": true,
+      "refinedReleaseMonsterArt": true,
+      "experimentalCharacters": false
+    },
+    "scenesSha256": "91b7b27382286183869722267e0c3f2c1027233649f7ff48e884558ec6a1bd20",
+    "productionFileSha256": {
+      "data/presentation/ui_theme.json": "d944a6fe3732a81cc7efc3cce64c8d6320c4cf3f1716fe655522855be7164e59",
+      "scripts/v220-chapter-battle-scenes.mjs": "926e26a5f5be388cbd55f4fbded8ba06908eb1059a2f5d8c65dd51f0079b3b54",
+      "src/lua/abyss_battle_card_layout.lua": "20cf208e192edb0d6a89574017d4996b03a95629a5e3f37007c731a06e128ea6",
+      "src/lua/abyss_battle_card_view.lua": "e65094455dca79b11c582052c9f7945a53da1ccfe2acf6fc9d6c2a5d32783920",
+      "src/lua/abyss_battle_enemy_view.lua": "16187ba39684623de28a74be14e9d335dafd7132b66065ef590351f33744ded3",
+      "src/lua/abyss_viewport.lua": "c89cf5dbe63337f3a26d6f90777175854862cdc930b665cbee9b6faba0e30081"
+    }
+  },
+  "comparisonImagesSha256": {
+    "guardian-layout-ab.webp": "aefff3e8b80e1a9e1352cd335a615c47459d997b21ba3a44cf9c7752e58082c7",
+    "hand-layout-ab.webp": "382267903436b49d66e51d457ca5db06fde3aad19fa311d5f9ada08cae8677bc"
+  }
+}
