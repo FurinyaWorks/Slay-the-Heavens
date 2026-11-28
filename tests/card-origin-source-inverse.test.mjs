@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {preCardOriginSource} from './helpers/card-origin-source-inverse.mjs';
+import {normalizeCardOriginReleaseArchitecture,preCardOriginSource} from './helpers/card-origin-source-inverse.mjs';
 const hash=s=>createHash('sha256').update(s).digest('hex');
 test('card-origin projection recovers complete prior bytes and does not hide partial or unrelated edits',()=>{
  for(const [path,expected]of [
@@ -37,6 +37,30 @@ test('architecture projection rejects removed registration, wrong owner, duplica
  }
  const reordered=structuredClone(policy);reordered.deferredImports.reverse();
  const variant=JSON.stringify(reordered);assert.equal(preCardOriginSource(path,variant),variant);
- for(const variant of [JSON.stringify(policy),JSON.stringify(policy,null,'\t'),source+'\n\t '])
+ // A duplicate with the same value parses to the same policy, as does a
+ // reordered object. Neither is a layout-only change to the reviewed source.
+ const duplicate=source.replace('"abyss_card_origin": "core",','"abyss_card_origin": "core", "abyss_card_origin": "core",');
+ assert.notEqual(duplicate,source);
+ assert.deepEqual(JSON.parse(duplicate),policy);
+ assert.equal(preCardOriginSource(path,duplicate),duplicate);
+ const reorderedLayers={...policy,layers:Object.fromEntries(Object.entries(policy.layers).reverse())};
+ const reorderedLayout=JSON.stringify(reorderedLayers);
+ assert.equal(preCardOriginSource(path,reorderedLayout),reorderedLayout);
+ for(const variant of [JSON.stringify(policy),JSON.stringify(policy,null,'\t'),source+'\n\t ',
+  JSON.stringify(policy,null,'\t').replaceAll('\n','\r\n')])
   assert.equal(hash(preCardOriginSource(path,variant)),'640bb51f60c831ad2162de7907b5b7e6a241dfa6f50b15b8527234eb2da47b64');
+});
+
+test('card-origin layout admission freshly authenticates the exact raw Release owner',()=>{
+ const path='config/architecture.json',raw=readFileSync(path,'utf8').replaceAll('\r\n','\n');
+ const compact=JSON.stringify(JSON.parse(raw));
+ let supplied,reads=0;
+ const read=p=>{assert.equal(p,path);reads++;return supplied;};
+ const admit=()=>normalizeCardOriginReleaseArchitecture(path,compact,read);
+ supplied=raw;assert.equal(admit(),raw);
+ supplied=raw.replaceAll('\n','\r\n');assert.equal(admit(),supplied);
+ supplied=raw.replace('\n','\r\n');assert.equal(admit(),compact,'mixed raw owner cannot lend canonical bytes');
+ supplied=raw+'\n';assert.equal(admit(),compact,'layout-equivalent drift in raw owner remains unauthenticated');
+ supplied=undefined;assert.equal(admit(),compact);
+ supplied=raw;assert.equal(admit(),raw,'admission rereads restored raw owner');assert.equal(reads,6);
 });

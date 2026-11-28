@@ -6,10 +6,34 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {architectureSourceFormat} from './architecture-source-format.mjs';
 import {beforeKnownMasterBackflowSource} from './master-backflow-source.mjs';
+import {exactSourceMatches} from './source-fingerprint.mjs';
 const hash=source=>createHash('sha256').update(source).digest('hex');
-const read=path=>readFileSync(new URL('../../'+path,import.meta.url),'utf8').replaceAll('\r\n','\n');
+const readRaw=path=>readFileSync(new URL('../../'+path,import.meta.url),'utf8');
+const read=path=>readRaw(path).replaceAll('\r\n','\n');
+const architecturePath='config/architecture.json';
+const releaseArchitecture={
+ sha256:'4a622b868cadc22316cb7396ed31178bbe32ca58e15cbf6596f53cca4c755bf9',
+ gitBlob:'7e5927ec6626673d9c06023bf1999b4ded03723d',
+};
+const uniformLayout=source=>{
+ const lf=source.replaceAll('\r\n','\n');
+ return !lf.includes('\r')&&(source===lf||source===lf.replaceAll('\n','\r\n'));
+};
+export function normalizeCardOriginReleaseArchitecture(path,source,readSource=readRaw){
+ // Token-only layout is accepted for the primary input, never for a detached
+ // linked owner. Hand canonical bytes to the existing exact release bridge.
+ if(path!==architecturePath||typeof source!=='string'||!uniformLayout(source)||exactSourceMatches(source,releaseArchitecture))return source;
+ try{
+  const input=architectureSourceFormat(path,source);
+  if(!input.tokensEqual)return source;
+  const live=readSource(path);
+  if(typeof live!=='string'||!uniformLayout(live)||!exactSourceMatches(live,releaseArchitecture))return source;
+  const canonical=architectureSourceFormat(path,live);
+  return canonical.tokensEqual&&input.formatted===canonical.formatted?live:source;
+ }catch{return source;}
+}
 export function preCardOriginSource(path,source){
- source=preCompendiumSource(path,source);
+ source=preCompendiumSource(path,normalizeCardOriginReleaseArchitecture(path,source));
  if(typeof source!=='string')return source;
  const normalized=source.replaceAll('\r\n','\n');
  let current=normalized,previous;

@@ -25,10 +25,14 @@ const groups=face=>[
 test('only the opt-in transform removes decoration, preserving every text/input/icon and semantic parent',()=>{
  const layout=gameLayout(),templates=[deckCardTemplate()],source=structuredClone(layout),before=count(layout);
  const prior=paths(layout),templateBefore=count(templates[0]);
+ const previewCard=child(child(child(layout,'nodePanel'),'eventView'),'previewCard'),previewBefore=count(previewCard);
  const result=compactBoundedCardFaces(layout,templates);
- // #940 adds one standalone face for inspecting a card in the deck browser.
- assert.equal(result.cardHosts,62);assert.equal(before-count(layout),2989);
- assert.equal(templateBefore-count(templates[0]),49);assert.equal(result.removedControls,3038);
+ // #940 added deck detail; #1080 adds exactly one passive event preview face.
+ assert.equal(previewCard.visible,false);assert.equal(child(previewCard,'hit'),undefined);
+ assert.equal(previewBefore-count(previewCard),49);
+ for(const group of groups(previewCard))assert.deepEqual(group.children.map(node=>node.name),['flat']);
+ assert.equal(result.cardHosts,63);assert.equal(before-count(layout),3038);
+ assert.equal(templateBefore-count(templates[0]),49);assert.equal(result.removedControls,3087);
  const focusFace=child(child(child(layout,'deckPanel'),'cardFocus'),'face');
  for(const group of groups(focusFace))assert.deepEqual(group.children.map(node=>node.name),['flat']);
  const after=paths(layout);

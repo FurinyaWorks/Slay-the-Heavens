@@ -1711,7 +1711,12 @@ function cursesReceiptCurrentRead(read){
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  const readRaw=read;
  read=(path,...args)=>{
-  const raw=readRaw(path,...args);
+  const input=readRaw(path,...args);
+  let raw=input;
+  if(path===officialAssetsFixture||path===officialLegibilityFixture){
+   raw=beforeStsDetailInput(path,input);
+   assert.notStrictEqual(raw,input,'fresh event preview fixture: '+path);
+  }
   if(path===replayAssetLedger||path==='config/architecture.json'||path==='tests/helpers/menu-red-ci-source.mjs'){
    const source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
    const identity=path===replayAssetLedger

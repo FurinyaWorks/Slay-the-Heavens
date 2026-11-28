@@ -449,8 +449,104 @@ const stsDetailOutsideArchive=Object.freeze({
   at:69,count:19,before:" const quietRims=[...rims(stage),...templates.flatMap(rims)].filter(rim=>!handRims.includes(rim));",
  },
 });
+// Keep published current expectations separate from earlier immutable receipts.
+const eventPreviewFixtures=Object.freeze({
+ "tests/game-ui.test.mjs": {
+  "current": {
+   "sha256": "d933d7eeb771b4d734e26442d6b9753d294dbce91ba598bd6c14b057730e35fd",
+   "gitBlob": "6bc3277ff827023bafbf12c25ea8afd93e2c7b6a"
+  },
+  "previous": {
+   "sha256": "24e4ac5ceaa35a28372b53ab1e7baf4f0442383b96b0218f7457f94f37e49fec",
+   "gitBlob": "69aa3d7748b13116293ae97a31347cca31b6d643"
+  },
+  "path": "tests/game-ui.test.mjs",
+  "hunks": [
+   {
+    "at": 11,
+    "before": "  assert.equal(layout.script, 'abyss_ui');\n  assert.deepEqual(layout.controls.map(control => control.name).sort(), ['battlePanel', 'characterPanel', 'choicePanel', 'combatRewards', 'deckEntry', 'deckPanel', 'exitEntry', 'exitPanel', 'mapPanel', 'menuPanel', 'nodePanel', 'officialBattleBackdrop', 'pageReveal', 'potionEntry', 'potionPanel', 'prologuePanel', 'relicBar', 'relicEntry', 'relicPanel', 'runMenu', 'victoryEasterEgg']);\n  for (const control of layout.controls.filter(control => !['menuPanel', 'exitEntry'].includes(control.name))) {",
+    "after": "  assert.equal(layout.script, 'abyss_ui');\n  assert.deepEqual(layout.controls.map(control => control.name).sort(), ['battlePanel', 'cardKeywordTip', 'characterPanel', 'choicePanel', 'combatRewards', 'deckEntry', 'deckPanel', 'exitEntry', 'exitPanel', 'mapPanel', 'menuPanel', 'nodePanel', 'officialBattleBackdrop', 'pageReveal', 'potionEntry', 'potionPanel', 'prologuePanel', 'relicBar', 'relicEntry', 'relicPanel', 'runMenu', 'victoryEasterEgg']);\n  for (const control of layout.controls.filter(control => !['menuPanel', 'exitEntry'].includes(control.name))) {"
+   },
+   {
+    "at": 15,
+    "before": "  }\n  const backdrop = layout.controls.find(control => control.name === 'officialBattleBackdrop');",
+    "after": "  }\n  const keywordTip = layout.controls.find(control => control.name === 'cardKeywordTip');\n  assert.equal(keywordTip.kind, 'container');\n  assert.deepEqual(keywordTip.children.map(control => [control.name, control.kind, control.raycastTarget]),\n    [['border', 'image', false], ['plate', 'image', false], ['copy', 'text', false]],\n    'one display-only keyword tip must not block native card input');\n  assert.equal(keywordTip.children.find(control => control.name === 'copy').text.content, '',\n    'keyword copy starts empty until the runtime supplies a card');\n  const backdrop = layout.controls.find(control => control.name === 'officialBattleBackdrop');"
+   }
+  ]
+ },
+ "tests/lightweight-card-layout.test.mjs": {
+  "current": {
+   "sha256": "a2e679cc1012e49a5bf2eacc61b12961a0caae5d63e7d4ef5d14c9ac3142245c",
+   "gitBlob": "8d6135c0bb45500c4ee211ca6c3980a2588186ef"
+  },
+  "previous": {
+   "sha256": "5e26803f7eb8e01823fae5d032d771576133b45a948563a974654ae28a9f8c67",
+   "gitBlob": "31844e9128b39ab1fafaa29e74b1b4bd2ca592b1"
+  },
+  "path": "tests/lightweight-card-layout.test.mjs",
+  "hunks": [
+   {
+    "at": 26,
+    "before": " const prior=paths(layout),templateBefore=count(templates[0]);\n const result=compactBoundedCardFaces(layout,templates);\n // #940 adds one standalone face for inspecting a card in the deck browser.\n assert.equal(result.cardHosts,62);assert.equal(before-count(layout),2989);\n assert.equal(templateBefore-count(templates[0]),49);assert.equal(result.removedControls,3038);\n const focusFace=child(child(child(layout,'deckPanel'),'cardFocus'),'face');",
+    "after": " const prior=paths(layout),templateBefore=count(templates[0]);\n const previewCard=child(child(child(layout,'nodePanel'),'eventView'),'previewCard'),previewBefore=count(previewCard);\n const result=compactBoundedCardFaces(layout,templates);\n // #940 added deck detail; #1080 adds exactly one passive event preview face.\n assert.equal(previewCard.visible,false);assert.equal(child(previewCard,'hit'),undefined);\n assert.equal(previewBefore-count(previewCard),49);\n for(const group of groups(previewCard))assert.deepEqual(group.children.map(node=>node.name),['flat']);\n assert.equal(result.cardHosts,63);assert.equal(before-count(layout),3038);\n assert.equal(templateBefore-count(templates[0]),49);assert.equal(result.removedControls,3087);\n const focusFace=child(child(child(layout,'deckPanel'),'cardFocus'),'face');"
+   }
+  ]
+ },
+ "tests/official-assets.test.mjs": {
+  "current": {
+   "sha256": "e8332538064a52fbbb4ec7a5e4fb0229102033bbcb53ea1535bd7c46dfe80a58",
+   "gitBlob": "28f7f7aba9d5aa5f553889658517187275ca865d"
+  },
+  "previous": {
+   "sha256": "cba2484414c8e71344234dbd7b400ffda451f5db94606d7390c04babcc0e84ef",
+   "gitBlob": "f8b23012510de602f341dc200768512c2c8fef91"
+  },
+  "path": "tests/official-assets.test.mjs",
+  "hunks": [
+   {
+    "at": 86,
+    "before": " applyOfficialNeowLayout({children:[{name:'nodePanel',children:[expectedEvent]}]},theme);\n const eventProjection=new Map(paths(expectedEvent,'/SlayTheAbyss/nodePanel'));\n const expectedChoice=experimentalCharacterControls(theme).find(node=>node.name==='choicePanel');",
+    "after": " applyOfficialNeowLayout({children:[{name:'nodePanel',children:[expectedEvent]}]},theme);\n const eventFacePath='/SlayTheAbyss/nodePanel/eventView/previewCard';\n const eventProjection=new Map(paths(expectedEvent,'/SlayTheAbyss/nodePanel').filter(([path])=>\n  path!==eventFacePath&&!path.startsWith(eventFacePath+'/')));\n const expectedChoice=experimentalCharacterControls(theme).find(node=>node.name==='choicePanel');"
+   },
+   {
+    "at": 260,
+    "before": "   assert.equal(current.get(path),node,path);\n   if(eventProjection.has(path)){",
+    "after": "   assert.equal(current.get(path),node,path);\n   if(path==='/SlayTheAbyss/nodePanel/eventView'){\n    const roomOnly=room=>({...room,children:children(room).filter(child=>child.name!=='previewCard')});\n    assert.deepEqual(roomOnly(node),roomOnly(eventProjection.get(path)),path+' shared event projection');continue;\n   }\n   if(eventProjection.has(path)){"
+   },
+   {
+    "at": 320,
+    "before": " const focusFacePath='/SlayTheAbyss/deckPanel/cardFocus/face';\n const choiceFacePaths=['/SlayTheAbyss/choicePanel/card1/face','/SlayTheAbyss/choicePanel/card2/face'];",
+    "after": " const focusFacePath='/SlayTheAbyss/deckPanel/cardFocus/face';\n const isOriginalHost=path=>path!==focusFacePath&&path!==eventFacePath;\n const choiceFacePaths=['/SlayTheAbyss/choicePanel/card1/face','/SlayTheAbyss/choicePanel/card2/face'];"
+   },
+   {
+    "at": 324,
+    "before": " assert.deepEqual(replacedChoiceFaces.map(([path])=>path).sort(),choiceFacePaths,'the shared scroller supersedes the two former static choice hosts');\n const publishedOriginalPaths=nodes.filter(([path,node])=>path!==focusFacePath&&cardHosts.has(node)&&!retiredCards.includes(node)).map(([path])=>path).sort();\n assert.equal(publishedOriginalPaths.length+replacedChoiceFaces.length,38,'account for all 38 reviewed original official card hosts');\n assert.deepEqual(cardPaths.filter(([path])=>path!==focusFacePath).map(([path])=>path).sort(),publishedOriginalPaths,'retain every original active card host path outside the shared scroller');\n assert.equal(cards.length,37);\n const focusFaces=cardPaths.filter(([path])=>path===focusFacePath);",
+    "after": " assert.deepEqual(replacedChoiceFaces.map(([path])=>path).sort(),choiceFacePaths,'the shared scroller supersedes the two former static choice hosts');\n const publishedOriginalPaths=nodes.filter(([path,node])=>isOriginalHost(path)&&cardHosts.has(node)&&!retiredCards.includes(node)).map(([path])=>path).sort();\n assert.equal(publishedOriginalPaths.length+replacedChoiceFaces.length,38,'account for all 38 reviewed original official card hosts');\n assert.deepEqual(cardPaths.filter(([path])=>isOriginalHost(path)).map(([path])=>path).sort(),publishedOriginalPaths,'retain every original active card host path outside the shared scroller');\n assert.equal(cards.length,38);\n const eventFaces=cardPaths.filter(([path])=>path===eventFacePath);\n assert.equal(eventFaces.length,1,'exactly one approved read-only event preview face');\n const eventPreview=child(child(child(layout,'nodePanel'),'eventView'),'previewCard');\n assert.strictEqual(eventFaces[0][1],eventPreview);\n assert.equal(eventPreview.visible,false,'event preview starts closed');\n assert(!all(eventPreview).some(node=>node.kind==='cursorArea'),'event preview adds no input receiver');\n const focusFaces=cardPaths.filter(([path])=>path===focusFacePath);"
+   }
+  ]
+ },
+ "tests/official-assets-legibility.test.mjs": {
+  "current": {
+   "sha256": "b42bcbc831e40a952b34c68a79a48d164e9f26ff75fc6f686fbe6366d2394895",
+   "gitBlob": "18e454f1619313bd82d2ebe9c328e68e69ce3cf2"
+  },
+  "previous": {
+   "sha256": "0649464990d270f88312779533ac2eeb77507f970d19a8002c7a13f3e9b00bfb",
+   "gitBlob": "f5e64d0859d806078369bcd2297052ea3a351fc4"
+  },
+  "path": "tests/official-assets-legibility.test.mjs",
+  "hunks": [
+   {
+    "at": 132,
+    "before": "const focusFacePath='/SlayTheAbyss/deckPanel/cardFocus/face';\nconst retiredChoiceFaces=new Set(['/SlayTheAbyss/choicePanel/card1/face','/SlayTheAbyss/choicePanel/card2/face']);\nfunction assertCardHostPaths(layout,cards){\n const original=cards.map(([path])=>path).filter(path=>path!==focusFacePath).sort();\n assert.equal(original.length+retiredChoiceFaces.size,38,'account for every original official card host');",
+    "after": "const focusFacePath='/SlayTheAbyss/deckPanel/cardFocus/face';\nconst eventFacePath='/SlayTheAbyss/nodePanel/eventView/previewCard';\nconst retiredChoiceFaces=new Set(['/SlayTheAbyss/choicePanel/card1/face','/SlayTheAbyss/choicePanel/card2/face']);\nfunction assertCardHostPaths(layout,cards){\n const original=cards.map(([path])=>path).filter(path=>path!==focusFacePath&&path!==eventFacePath).sort();\n const event=cards.filter(([path])=>path===eventFacePath);\n assert.equal(event.length,1,'the approved event preview has exactly one face');\n assert.strictEqual(event[0][1],child(child(child(layout,'nodePanel'),'eventView'),'previewCard'));\n assert.equal(event[0][1].visible,false,'event preview starts closed');\n assert(!all(event[0][1]).some(node=>node.kind==='cursorArea'),'event preview adds no input receiver');\n assert.equal(original.length+retiredChoiceFaces.size,38,'account for every original official card host');"
+   }
+  ]
+ }
+});
 function beforeStsDetailFixture(path,source){
- const row=Object.hasOwn(stsDetailOutsideArchive,path)&&stsDetailOutsideArchive[path];
+ const row=Object.hasOwn(eventPreviewFixtures,path)?eventPreviewFixtures[path]:
+  Object.hasOwn(stsDetailOutsideArchive,path)&&stsDetailOutsideArchive[path];
  if(!row||!exactSourceMatches(source,row.current))return source;
  const {current,previous,at=277,count=11,before='    "docs/evidence/v2.2.0-battle-clearance/guardian-layout-ab.webp": {'}=row;
  const lf=source.replaceAll('\r\n','\n');

@@ -131,9 +131,15 @@ const paths=(node,prefix='')=>{
  const path=prefix+'/'+node.name;return [[path,node],...children(node).flatMap(c=>paths(c,path))];
 };
 const focusFacePath='/SlayTheAbyss/deckPanel/cardFocus/face';
+const eventFacePath='/SlayTheAbyss/nodePanel/eventView/previewCard';
 const retiredChoiceFaces=new Set(['/SlayTheAbyss/choicePanel/card1/face','/SlayTheAbyss/choicePanel/card2/face']);
 function assertCardHostPaths(layout,cards){
- const original=cards.map(([path])=>path).filter(path=>path!==focusFacePath).sort();
+ const original=cards.map(([path])=>path).filter(path=>path!==focusFacePath&&path!==eventFacePath).sort();
+ const event=cards.filter(([path])=>path===eventFacePath);
+ assert.equal(event.length,1,'the approved event preview has exactly one face');
+ assert.strictEqual(event[0][1],child(child(child(layout,'nodePanel'),'eventView'),'previewCard'));
+ assert.equal(event[0][1].visible,false,'event preview starts closed');
+ assert(!all(event[0][1]).some(node=>node.kind==='cursorArea'),'event preview adds no input receiver');
  assert.equal(original.length+retiredChoiceFaces.size,38,'account for every original official card host');
  assert.deepEqual(original,originalCardHosts.filter(path=>!retiredChoiceFaces.has(path)),
   'retain every original card host outside the shared choice grid');

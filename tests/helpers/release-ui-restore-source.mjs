@@ -7,6 +7,7 @@ import {beforeStsFadeCi} from './sts-fade-ci-source.mjs';
 import {beforeCurrentReplayFixes} from './current-replay-fix-sources.mjs';
 import {authenticateUiEntrance,beforeUiEntranceWitness} from './ui-entrance-source.mjs';
 import {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';
+import {beforeStsDetailSource} from './release-sts-detail-source.mjs';
 import {beforeKnownMasterBackflowSource} from './master-backflow-source.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
@@ -116,8 +117,47 @@ function recordingLayoutInput(path,source){
  return prior;
 }
 export function beforeAuthenticatedRecordingStage(path,source,read){
- if(path==='src/lua/abyss_deck_ui.lua'&&beforeReleaseDeckPointer(path,source)!==source)
-  authenticateUiEntrance(owner=>read(owner,'utf8'));
+ const deckPath='src/lua/abyss_deck_ui.lua';
+ const deck=path===deckPath?beforeStsDetailSource(path,source):source;
+ const releasedDeck=path===deckPath&&beforeReleaseDeckPointer(path,deck)!==deck;
+ const rawRead=read,observed=new Map();
+ let entranceAuthenticated=false;
+ // Keep raw reads stable across both cohort admission and legacy projection.
+ const uniform=raw=>{
+  if(typeof raw!=='string')return false;
+  const lf=raw.replaceAll('\r\n','\n');
+  return !lf.includes('\r')&&(raw===lf||raw===lf.replaceAll('\n','\r\n'));
+ };
+ const rawOwner=(owner,encoding)=>{
+  const raw=rawRead(owner,encoding);
+  if(typeof raw!=='string'||(!owner.startsWith('src/')&&owner!=='config/architecture.json'))return raw;
+  const stable=uniform(raw)?raw.replaceAll('\r\n','\n'):raw;
+  if(observed.has(owner))assert.equal(stable,observed.get(owner),'recording UI linked owner changed: '+owner);
+  else observed.set(owner,stable);
+  return raw;
+ };
+ const authenticate=()=>{
+  if(entranceAuthenticated)return;
+  authenticateUiEntrance(owner=>{
+   const raw=rawOwner(owner,'utf8');
+   assert(uniform(raw),'recording UI linked owner identity: '+owner);
+   return raw;
+  });
+  entranceAuthenticated=true;
+ };
+ // Peel #1080 only for this deck owner, and only after checking the live
+ // entrance cohort against unprojected reads.
+ if(releasedDeck)authenticate();
+ read=(owner,encoding)=>{
+  const raw=rawOwner(owner,encoding);
+  if(owner!==deckPath)return raw;
+  if(releasedDeck)assert(uniform(raw)&&
+   raw.replaceAll('\r\n','\n')===source.replaceAll('\r\n','\n'),'recording UI linked owner changed: '+owner);
+  if(beforeStsDetailSource(owner,raw)!==raw)authenticate();
+  // Map-deck owns this conversion; retain raw custody until its linked check.
+  return raw;
+ };
+ if(releasedDeck)read(path,'utf8');
  const input=recordingRuntimeInput(path,source);
  if(input!==source){
   const live=read(path,'utf8');
