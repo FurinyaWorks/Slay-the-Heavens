@@ -22,7 +22,17 @@ export const mapLegendRows = [['event', '未知'], ['shop', '商人'], ['treasur
 export function mapGeometry(theme = loadMapTheme()) {
   const { floorGap, viewportHeight, bossNode, bossFloorLift } = theme.layout.map;
   const firstY = -308 + 60, top = -308 + viewportHeight;
-  return { bossInk: mapBossInk, floors: 17, generatedRows: 15, lanes: 7, maxNodes: 92, maxEdges: 126,
+  const lanes = theme.layout.map.columns;
+  const bossRoute = { lift: 72, pitch: 15, length: 9.5, sourceReserve: 24,
+    bossReserve: mapBossInk.size / 2 + 8, sharedSlots: 8, overflow: 0 };
+  // Bound even a route from every lane. A phase can only decrease this count.
+  for (let lane = 1; lane <= lanes; lane++) {
+    const dx = (lane - (lanes + 1) / 2) * theme.layout.map.columnGap;
+    const length = Math.hypot(dx, floorGap + bossFloorLift + bossRoute.lift);
+    const count = 1 + Math.floor((length - bossRoute.sourceReserve - bossRoute.bossReserve) / bossRoute.pitch);
+    bossRoute.overflow += Math.max(0, count - bossRoute.sharedSlots);
+  }
+  return { bossInk: mapBossInk, bossRoute, floors: 17, generatedRows: 15, lanes: 7, maxNodes: 92, maxEdges: 126,
     viewport: { left: -460, right: 440, bottom: -308, top },
     firstY, contentHeight: 17 * floorGap + 120,
     maxScroll: 17 * floorGap + 120 - viewportHeight, focusY: -72,

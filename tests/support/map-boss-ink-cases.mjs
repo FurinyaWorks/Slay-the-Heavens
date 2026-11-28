@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -9,6 +9,7 @@ import { buildLuaData, toLua } from '../../scripts/build-lua-data.mjs';
 import { buildUiTheme } from '../../scripts/build-ui-theme.mjs';
 import { loadMapTheme, mapBossInk, mapGeometry, mapLayout } from '../../scripts/map-ui-layout.mjs';
 import { applyV25MapLayout } from '../../scripts/v25-map-layout.mjs';
+import { beforeBossMapScroll } from '../helpers/boss-map-scroll-source.mjs';
 
 const require = createRequire(import.meta.url);
 const children = node => node.children ?? node.controls ?? [];
@@ -36,6 +37,15 @@ test('V25 Boss art has one bounded, noninteractive native pool and exactly six f
   assert.equal([...walk(plain)].filter(n => n.name === 'bossInkHost').length, 0);
   const v25 = applyV25MapLayout(plain, theme);
   const hosts = [...walk(v25)].filter(n => n.name === 'bossInkHost');
+  const mask = [...walk(v25)].find(n => n.name === 'bossViewport');
+  assert.equal(mask.children[0], hosts[0]);
+  assert.equal(mask.opacity, 0);
+  assert.equal(mask.mask, true);
+  assert.equal(mask.image, 100001);
+  assert.equal(mask.raycastTarget, false);
+  const overflow = [...walk(v25)].find(n => n.name === 'bossRouteOverflow');
+  assert.equal(overflow.children.length, mapGeometry(theme).bossRoute.overflow);
+  assert(overflow.children.every(n => !n.visible && n.raycastTarget === false));
   assert.equal(hosts.length, 1);
   assert.equal(hosts[0].visible, false);
   assert.equal(hosts[0].children.length, 20);
@@ -61,7 +71,7 @@ test('real map runtime paints all six identities on the same V25 controls and pr
     const result = spawnSync(process.execPath, [
       require.resolve('fengari-node-cli/src/lua-cli.js'), '-e', 'assert(loadfile(' + toLua(entry.replaceAll('\\','/')) + '))()',
     ], {
-      encoding: 'utf8', timeout: 35000,
+      encoding: 'utf8', timeout: 90000,
       env: { ...process.env, LUA_INIT:'', LUA_INIT_5_3:'', LUA_PATH: join(folder, '?.lua') + ';' + resolve('src/lua/?.lua'), LUA_PATH_5_3: join(folder, '?.lua') + ';' + resolve('src/lua/?.lua') },
     });
     assert.ifError(result.error);
@@ -70,6 +80,20 @@ test('real map runtime paints all six identities on the same V25 controls and pr
     assert.match(result.stdout, /BOSS_INK_RUNTIME_PASS/);
   } finally {
     rmSync(folder, { recursive: true, force: true });
+  }
+});
+
+test('Boss scroll replay only restores exact known live owners in uniform LF or CRLF', () => {
+  const paths = ['scripts/build-ui.mjs', 'scripts/map-ui-layout.mjs', 'scripts/v25-map-layout.mjs',
+    'src/lua/abyss_map_ui.lua', 'tests/helpers/chapter-battle-scene-source.mjs'];
+  for (const path of paths) {
+    const live = readFileSync(path, 'utf8').replaceAll('\r\n', '\n');
+    const prior = beforeBossMapScroll(path, live);
+    assert.notEqual(prior, live, path);
+    assert.deepEqual(beforeBossMapScroll(path, Buffer.from(live)), Buffer.from(prior));
+    assert.equal(beforeBossMapScroll(path, live.replaceAll('\n', '\r\n')), prior.replaceAll('\n', '\r\n'));
+    for (const mutated of [prior, live+'\n', live.replace('\n', '\r\n'), Buffer.concat([Buffer.from(live), Buffer.of(255)])])
+      assert.equal(beforeBossMapScroll(path, mutated), mutated, 'unknown raw source must not project: '+path);
   }
 });
 
@@ -92,23 +116,27 @@ local function control(spec)
 end
 local root=control({children=require('abyss_map_controls').controls})
 local panel=root:GetChild('stage'):GetChild('mapPanel')
-local host=assert(panel:GetChild('bossInkHost'))
+local mask=assert(panel:GetChild('bossViewport'))
+local host=assert(mask:GetChild('bossInkHost'))
+local fittedRing=assert(mask:GetChild('bossRing'))
+local overflow=assert(panel:GetChild('bossRouteOverflow'))
 local function lookup(name)
     for _,group in pairs(panel.children) do if group:GetChild(name) then return group:GetChild(name) end end
 end
 local function box(index) return assert(lookup('node'..index)) end
-local map=Map.generate(require('abyss_data'),42)
+local map=Map.generate(require('abyss_data'),16)
 local bossIndex
 for i,n in ipairs(map.nodes) do if n.type=='boss' then bossIndex=i end end
 local boss=box(assert(bossIndex))
 local bossHit,bossRing,bossIcon=boss:GetChild('hit'),boss:GetChild('ring'),boss:GetChild('icon')
 local id=expected[1][1]
 local callbackCalls=0
-local ui=UI.new(root,map,function(node) callbackCalls=callbackCalls+1;return Map.choose(map,node.id) end,'click',{
+local options={
     cursor={CursorDown='down',CursorUp='up',CursorEnter='enter',CursorExit='exit'},
     imageSource='static',color=function(r,g,b,a)return{r=r,g=g,b=b,a=a}end,
     bossName=function()return id end,
-})
+}
+local ui=UI.new(root,map,function(node) callbackCalls=callbackCalls+1;return Map.choose(map,node.id) end,'click',options)
 assert(not host.visible,'head of map must not show boss art')
 assert(ui:setScroll(99999))
 assert(boss.visible,'seed must expose the boss at maximum scroll')
@@ -121,7 +149,7 @@ local function ordinary()
         local b=box(i)
         if b.visible and node.type~='boss' then
             local icon,hit,ring=b:GetChild('icon'),b:GetChild('hit'),b:GetChild('ring')
-            assert(icon.visible and icon.image==Theme.icon.node[node.type],'regular node changed: '..node.type)
+            assert(icon.visible and icon.image==Theme.icon.node[node.type],'regular node identity changed: '..node.type)
             lines[#lines+1]=table.concat({node.id,b.x,b.y,b.w,b.h,icon.image,icon.w,icon.h,tostring(hit.visible),tostring(ring.visible)},':')
         end
     end
@@ -133,6 +161,20 @@ local function ordinary()
     return table.concat(lines,'|')
 end
 local ordinaryBefore=ordinary()
+local lockedInk,activeInk={r=87,g=87,b=87},{r=23,g=33,b=43}
+local function matchesInk(actual,ink)
+    return actual.r==ink.r and actual.g==ink.g and actual.b==ink.b and actual.a==255
+end
+local ordinaryCount=0
+for _,edge in pairs(panel.children) do for name,control in pairs(edge.children) do
+    if name:match('^edge%d+$') and control.visible then
+        for _,mark in pairs(control.children) do if mark.visible then
+            assert(matchesInk(mark.imageColor,lockedInk),'ordinary route must use the original steady locked ink')
+            ordinaryCount=ordinaryCount+1
+        end end
+    end
+end end
+assert(ordinaryCount>20)
 local function bossDashes()
     local edge, found=0, {}
     local view,byId=Map.view(map),{}
@@ -144,23 +186,74 @@ local function bossDashes()
             if target.type=='boss' then found[#found+1]=assert(lookup('edge'..edge)) end
         end
     end end
-    assert(#found>1)
+    assert(#found==6,'seed 16 must exercise six real incoming edges')
     return found
 end
-for _,edge in ipairs(bossDashes()) do
-    assert(edge.visible,'visible fitted Boss lost an incoming route')
-    local count=0
-    for _,dash in pairs(edge.children) do if dash.visible then
-        local ink=assert(dash.imageColor)
-        assert(ink.r==35 and ink.g==50 and ink.b==55 and ink.a==214,'untaken terminal route ink diverged from the approved dark ink')
-        count=count+1
-    end end
-    assert(count>1)
+local function strokes()
+    local result={}
+    local function add(group)
+        for _,dash in pairs(group.children) do if dash.visible then
+            local ink=assert(dash.imageColor)
+            assert(matchesInk(ink,lockedInk),'scroll changed the shared locked route ink')
+            result[#result+1]={x=dash.x,y=dash.y+ui.scroll,w=dash.w,h=dash.h,angle=dash.localRotationZ}
+        end end
+    end
+    for _,edge in ipairs(bossDashes()) do if edge.visible then add(edge) end end
+    add(overflow)
+    return result
 end
+local full=strokes()
+assert(#full>60 and #full<=6*Layout.bossRoute.sharedSlots+Layout.bossRoute.overflow)
+for _,edge in ipairs(bossDashes()) do assert(edge.visible,'maximum scroll lost a real incoming route') end
+local function near(a,b) return math.abs(a-b)<1e-5 end
+local function verifySweep()
+    local maxScroll,bossWorldY=ui.scroll,boss.y+ui.scroll
+    local routeOnly,partial=false,false
+    local function sample(scroll)
+        assert(ui:setScroll(scroll))
+        local y=bossWorldY-ui.scroll
+        local r=Layout.bossInk.size/2
+        assert(host.visible==(y-r<Layout.viewport.top),'fitted mask visibility changed at the wrong world position')
+        assert(not bossIcon.visible,'legacy Boss glyph was enabled during scroll')
+        if host.visible then
+            assert(near(host.y+mask.y,y))
+            if y+r>Layout.viewport.top then partial=true end
+        end
+        local visible=strokes()
+        if not host.visible and #visible>0 then routeOnly=true end
+        for _,mark in ipairs(visible) do
+            assert(mark.w>0 and mark.w<=Layout.bossRoute.length+1e-5 and mark.h==UI.pathWidth(false,false))
+            if near(mark.w,Layout.bossRoute.length) then
+                local fixed=false
+                for _,ref in ipairs(full) do
+                    if near(mark.x,ref.x) and near(mark.y,ref.y) and near(mark.angle,ref.angle) then fixed=true;break end
+                end
+                assert(fixed,'fully visible stroke moved in world space')
+            end
+        end
+        for _,ref in ipairs(full) do
+            local dy=math.abs(math.sin(ref.angle*math.pi/180))*ref.w/2+ref.h/2
+            if ref.y-ui.scroll+dy<=Layout.viewport.top and ref.y-ui.scroll-dy>=Layout.viewport.bottom then
+                local drawn=false
+                for _,mark in ipairs(visible) do
+                    if near(mark.x,ref.x) and near(mark.y,ref.y) and near(mark.angle,ref.angle) then drawn=true;break end
+                end
+                assert(drawn,'an in-bounds real Boss dash was dropped')
+            end
+        end
+    end
+    for n=0,100 do sample(maxScroll-n*3) end
+    for n=99,0,-1 do sample(maxScroll-n*3) end
+    assert(routeOnly and partial,'sweep must cover clipped art and routes with Boss fully outside')
+    local writes=slots[1].writes
+    for _=1,120 do assert(ui:update(1/60)) end
+    assert(slots[1].writes==writes and #strokes()==#full,'static frames repainted or lost Boss art/routes')
+end
+verifySweep()
 for _,row in ipairs(expected) do
     id=row[1];ui:render()
     assert(host.visible and not bossIcon.visible)
-    assert(host.x==boss.x and host.y==boss.y)
+    assert(near(host.x+mask.x,boss.x) and near(host.y+mask.y,boss.y))
     assert(boss:GetChild('hit')==bossHit and boss:GetChild('ring')==bossRing)
     assert(not bossRing.visible and not bossHit.visible,'locked Boss ring/hit state changed')
     local art=Layout.bossInk.variants[id]
@@ -190,7 +283,7 @@ id=expected[1][1];ui:render()
 local maxScroll,maxY=ui.scroll,boss.y
 local atClip=Layout.viewport.top-Layout.bossInk.size/2+3
 assert(ui:setScroll(maxScroll-(atClip-maxY)))
-assert(boss.visible and not host.visible and bossIcon.visible,'near viewport edge should show stock glyph, not hide a selectable node')
+assert(host.visible and not bossIcon.visible,'partially visible fitted Boss must keep its approved ink')
 assert(boss:GetChild('hit')==bossHit and boss:GetChild('ring')==bossRing)
 assert(ui:setScroll(99999));assert(host.visible)
 local savedAct=map.act
@@ -208,10 +301,36 @@ while Map.available(map)[1].type~='boss' do
     assert(Map.choose(map,Map.available(map)[1].id))
 end
 ui:render();ui:setScroll(99999);ui:setNavigationEnabled(true)
+local reachable=0
+for _,edge in ipairs(bossDashes()) do if edge.visible then
+    for _,mark in pairs(edge.children) do if mark.visible and matchesInk(mark.imageColor,activeInk) then
+        assert(mark.h==UI.pathWidth(false,true));reachable=reachable+1
+    end end
+end end
+assert(reachable>0,'available Boss uses the same ink and width as an available regular route')
 assert(host.visible and bossHit.visible and not bossRing.visible)
 assert(bossHit.w==Theme.layout.map.bossNode and bossHit.h==Theme.layout.map.bossNode)
+local lastScroll,bossY=ui.scroll,boss.y
+assert(ui:setScroll(lastScroll-(Layout.viewport.top-bossY)))
+assert(bossHit.visible and near(bossHit.h,Theme.layout.map.bossNode/2))
+assert(near(boss.y+bossHit.y+bossHit.h/2,Layout.viewport.top))
+assert(ui:setScroll(lastScroll-(Layout.viewport.top+Theme.layout.map.bossNode/2+1-bossY)))
+assert(host.visible and not bossHit.visible and not bossHit.listeners.click(),'clipped ink fringe must not accept input')
+assert(ui:setScroll(lastScroll))
 assert(bossHit.listeners.click())
 assert(callbackCalls==1 and map.currentNodeId==map.nodes[bossIndex].id)
-assert(host.visible and bossRing.visible and not bossHit.visible and not bossIcon.visible)
+assert(host.visible and fittedRing.visible and not bossRing.visible and not bossHit.visible and not bossIcon.visible)
+local nextMap=Map.generate(require('abyss_data'),46,2)
+map=nextMap; id='Champ'; ui.map=map;ui:render()
+assert(not host.visible and not fittedRing.visible,'chapter replacement leaked old Boss art/ring')
+assert(ui:setScroll(99999) and host.visible and slots[1].image==Layout.bossInk.variants.Champ[1][1])
+local mobileRoot=control({children=require('abyss_map_controls').controls})
+local mobileOptions={hudTop=168}
+for key,value in pairs(options)do mobileOptions[key]=value end
+local mobile=UI.new(mobileRoot,map,function()error('unexpected mobile choose')end,'click',mobileOptions)
+assert(mobile:setScroll(99999))
+local mobileMask=mobileRoot:GetChild('stage'):GetChild('mapPanel'):GetChild('bossViewport')
+assert(mobileMask.y+mobileMask.h/2==168 and mobileMask.y-mobileMask.h/2==Layout.viewport.bottom)
+assert(mobileMask:GetChild('bossInkHost').visible and near(mobileMask:GetChild('bossInkHost').y+mobileMask.y,78))
 print('BOSS_INK_RUNTIME_PASS')
 `;

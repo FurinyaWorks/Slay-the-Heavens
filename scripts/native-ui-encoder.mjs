@@ -4,11 +4,19 @@ import {registerHooks} from 'node:module';
 import {resolve,join} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {withNativeXyzRotations} from './native-ui-rotations.mjs';
+import {isNativeRectMask} from './native-image-mask.mjs';
 
 const anchor='return checkClient({mapPath:file,scripts},{listClientScripts,listComponents,listSignals,signalWords,';
 const replacement='return checkClient({mapPath:file,scripts},{listClientScripts:a=>$abyssNativeCheckScripts(a,{container,fields,one}),listComponents,listSignals,signalWords,';
 const helperUrl=new URL('./native-client-check.mjs',import.meta.url);
 const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
+
+export function withNativeRectMaskParents(source){
+ if(!source.includes('export function clientControlRecord('))return source;
+ const guard="if(c.children?.length&&c.kind!=='container'&&c.kind!=='presetButton')";
+ if(source.split(guard).length!==2)throw Error('Native rectangular mask parent guard changed');
+ return source.replace(guard, guard.slice(0,-1)+`&&!(${isNativeRectMask.toString()})(c))`);
+}
 
 // Match the native gallery mode at component 96/84/501. Retain explicit Basic
 // as field zero and leave the field absent when a control omits its image type.
@@ -54,7 +62,7 @@ export async function loadNativeUiEncoder(toolRoot){
  const isolatedHelper=new URL(helperUrl);isolatedHelper.searchParams.set('abyss-native-checker',randomUUID());
  const rotationAdapter=withNativeXyzRotations(source.replace(anchor,replacement));
  const imageTypeSource=withNativeImageTypes(rotationAdapter.source),galleryImageTypes=imageTypeSource!==rotationAdapter.source;
- const transformed=`import {checkScripts as $abyssNativeCheckScripts} from ${JSON.stringify(isolatedHelper.href)};\n`+imageTypeSource;
+ const transformed=`import {checkScripts as $abyssNativeCheckScripts} from ${JSON.stringify(isolatedHelper.href)};\n`+withNativeRectMaskParents(imageTypeSource);
  const isolated=pathToFileURL(sourcePath);isolated.searchParams.set('abyss-native-ui-encoder',randomUUID());
  const sourceSha256=digest(original),helperSha256=digest(helper);let intercepted=false,helperIntercepted=false;
  const hooks=registerHooks({load(url,context,nextLoad){
