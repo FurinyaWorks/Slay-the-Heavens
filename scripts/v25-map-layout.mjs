@@ -1,4 +1,4 @@
-import { mapLegendRows } from './map-ui-layout.mjs';
+import { mapBossInkHost, mapLegendRows } from './map-ui-layout.mjs';
 
 // Independent native presentation from the authorized V25 map. Route generation,
 // graph pools, clipping, scrolling, RNG and command ownership remain untouched.
@@ -166,5 +166,5 @@ export function applyV25MapLayout(layout,theme){
  }
  const background=groups[0].children;
  background.splice(background.indexOf(returnShade),1);
- panel.children.unshift(paper(theme,returnShade));return layout;
+ panel.children.unshift(paper(theme,returnShade),mapBossInkHost());return layout;
 }

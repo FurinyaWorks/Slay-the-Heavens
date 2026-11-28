@@ -4,6 +4,15 @@ import { pathToFileURL } from 'node:url';
 import { toLua } from './build-lua-data.mjs';
 import { nativeFontSize } from './native-ui-theme.mjs';
 
+// Approved 20-control ink master, shared by the layout writer and map runtime.
+export const mapBossInk = JSON.parse(readFileSync(new URL('../data/presentation/map-boss-ink.json', import.meta.url), 'utf8'));
+export function mapBossInkHost() {
+  const { cap, size } = mapBossInk;
+  return { name:'bossInkHost',kind:'container',position:[0,0],size:[size,size],visible:false,
+    children:Array.from({length:cap},(_,i)=>({name:'ink'+String(i).padStart(2,'0'),kind:'image',
+      position:[0,0],size:[1,1],image:100001,colour:'#233237',visible:false,raycastTarget:false})) };
+}
+
 export const loadMapTheme = () => JSON.parse(readFileSync('data/presentation/ui_theme.json', 'utf8'));
 export const mapLegendRows = [['event', '未知'], ['shop', '商人'], ['treasure', '宝箱'],
   ['camp', '休息'], ['combat', '敌人'], ['elite', '精英']];
@@ -13,7 +22,7 @@ export const mapLegendRows = [['event', '未知'], ['shop', '商人'], ['treasur
 export function mapGeometry(theme = loadMapTheme()) {
   const { floorGap, viewportHeight, bossNode, bossFloorLift } = theme.layout.map;
   const firstY = -308 + 60, top = -308 + viewportHeight;
-  return { floors: 17, generatedRows: 15, lanes: 7, maxNodes: 92, maxEdges: 126,
+  return { bossInk: mapBossInk, floors: 17, generatedRows: 15, lanes: 7, maxNodes: 92, maxEdges: 126,
     viewport: { left: -460, right: 440, bottom: -308, top },
     firstY, contentHeight: 17 * floorGap + 120,
     maxScroll: 17 * floorGap + 120 - viewportHeight, focusY: -72,

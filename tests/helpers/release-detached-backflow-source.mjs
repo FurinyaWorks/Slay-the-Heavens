@@ -175,6 +175,30 @@ const owners=Object.freeze({
  }
 });
 
+// The detached map reader first restores the exact pre-ink helper.
+const bossMapDeckHelper=Object.freeze({
+  "current": {
+    "sha256": "708f462445b4dfbb7bbe827f783bcff7b0b35f79939f88bf1eadfbac2c03af70",
+    "gitBlob": "7c2c418130317de9a8ad39fddf94146a33078a24"
+  },
+  "previous": {
+    "sha256": "9086aca76fdf24939d374d94d6150dbebecc33da93bdfc300e4b2196a5936a45",
+    "gitBlob": "f7a5e6f10bf5884f12fe039fda7bd350dce7a36e"
+  },
+  "hunks": [
+    {
+      "at": 8,
+      "before": "import {beforeLoadingRecoverySource} from './loading-recovery-source.mjs';\nimport {beforeHotfixMapDeckHelperSource} from './hotfix-map-deck-helper-source.mjs';\nimport {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';\n",
+      "after": "import {beforeLoadingRecoverySource} from './loading-recovery-source.mjs';\nimport {beforeHotfixMapDeckHelperSource} from './hotfix-map-deck-helper-source.mjs';\nimport {beforeReleaseClosureFixture} from './release-closure-fixture-source.mjs';\nimport {beforeReleaseDeckPointer} from './release-deck-pointer-source.mjs';\n"
+    },
+    {
+      "at": 180,
+      "before": " const deckPath='src/lua/abyss_deck_ui.lua';\n const rawRead=read;\n source=path===deckPath?beforeReleaseDeckPointer(path,source):source;\n read=(owner,...args)=>owner===deckPath?beforeReleaseDeckPointer(owner,rawRead(owner,...args)):rawRead(owner,...args);\n  if(assertProductionMapDeckOwners(path,source,read)&&path==='src/lua/abyss_map_ui.lua'){\n    const prior=files[path].before.source;",
+      "after": " const deckPath='src/lua/abyss_deck_ui.lua';\n const rawRead=read;\n const mapPath='src/lua/abyss_map_ui.lua';\n const beforeOwner=(owner,raw)=>owner===deckPath?beforeReleaseDeckPointer(owner,raw):\n  owner===mapPath?beforeReleaseClosureFixture(owner,raw):raw;\n const liveSource=source;\n source=beforeOwner(path,source);\n if(path===mapPath&&source!==liveSource){\n  const live=rawRead(path,'utf8');\n  assert(typeof live==='string'&&live.replaceAll('\\r\\n','\\n')===liveSource.replaceAll('\\r\\n','\\n')\n   &&beforeOwner(path,live)!==live,'map deck linked owner identity: '+path);\n }\n read=(owner,...args)=>beforeOwner(owner,rawRead(owner,...args));\n  if(assertProductionMapDeckOwners(path,source,read)&&path==='src/lua/abyss_map_ui.lua'){\n    const prior=files[path].before.source;"
+    }
+  ]
+});
+
 // The current detached caller keeps the complete reviewed entrance reader and its inputs.
 export const currentDetachedInputs=Object.freeze({
  'tests/fixtures/develop-release-vocabulary-prior.json.gz':'2b3d606fc142f2c8c5cfaaff386c70f6e1f741f24fbc1879b78399b7c477e914',
@@ -183,7 +207,7 @@ export const currentDetachedInputs=Object.freeze({
  'tests/helpers/develop-release-backflow-source.mjs':'1ef1001a3f7473408dfe3f4f20933d87797612575179834ea271f2cfec7181f2',
  'tests/helpers/develop-release-vocabulary-source.mjs':'39c2ba9ecd776c5a7e3e485639c0d9a2acd1b9a8732e9621735fa99cd0466e56',
  'tests/helpers/master-backflow-source.mjs':'308c6ef6ac8987b9becc4ead9f3a1efaa2c3c20ea8a697bdf26f6233fa71b8ac',
- 'tests/helpers/release-closure-fixture-source.mjs':'11e87c689c1e3d77444e18923e0c1ff9abe85c2aa90992c81979978389fb6fe7',
+ 'tests/helpers/release-closure-fixture-source.mjs':'2f87eb9435488abe9c2ee5e4430a3c27dfbd9b66ecca4d84c5fe7282b4ce7a05',
  'tests/helpers/release-deck-pointer-source.mjs':'a1cfebcea1c53c017315a9762ba2d9509d395218b358a500d7ca22fe565dec38',
  'tests/helpers/release-entrance-owner-source.mjs':'970a41e91888711768d917ab2970d069ec891aea4f098f3930b1b5d04c87a30a',
  'tests/helpers/release-metadata-source.mjs':'5897d9d479841a5fa7fe1f86925fa7daedd06a8facdc7277247f2ac376610cf8',
@@ -198,7 +222,15 @@ export const currentDetachedInputs=Object.freeze({
 
 export function beforeDetachedReleaseBackflow(path,raw){
  if(!Object.hasOwn(owners,path))return raw;
- const source=raw.toString('utf8'),lf=source.replaceAll('\r\n','\n');
+ let source=raw.toString('utf8'),lf=source.replaceAll('\r\n','\n');
+ if(path==='tests/helpers/release-map-deck-source.mjs'&&exactSourceMatches(lf,bossMapDeckHelper.current)){
+  assert(raw.equals(Buffer.from(source))&&(source===lf||source===lf.replaceAll('\n','\r\n')),
+   'uniform detached Boss map owner');
+  const {current,previous,hunks}=bossMapDeckHelper;
+  const prior=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,lf);
+  assert(exactSourceMatches(prior,previous),'exact pre-ink detached map deck helper');
+  raw=Buffer.from(prior);source=lf=prior;
+ }
  const {current,previous,hunks}=owners[path];
  if(!exactSourceMatches(lf,current))return raw;
  assert(raw.equals(Buffer.from(source))&&(source===lf||source===lf.replaceAll('\n','\r\n')),

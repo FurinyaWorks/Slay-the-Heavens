@@ -129,6 +129,7 @@ import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {beforeAuthenticatedRecordingStage} from './helpers/release-ui-restore-source.mjs';
 import {beforeUiEntrance} from './helpers/ui-entrance-source.mjs';
+import './support/map-boss-ink-cases.mjs';
 test('recording historical continuation accepts exact owners and rejects stale, drifted or mixed reads',()=>{
  const {files}=JSON.parse(gunzipSync(readFileSync('tests/helpers/recording-0401-source.json.gz')));
  for(const [path,row] of Object.entries(files)){

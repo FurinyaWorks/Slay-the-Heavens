@@ -35,6 +35,113 @@ export const selectionRawEntranceReplay=Object.freeze({
 // Current Host checks exercise production. Historical Host and CI replays
 // preserve the exact earlier test sources from the production backflow.
 const fixtures=Object.freeze({
+ // Boss map ink projects exact production successors into their pre-ink historical views.
+ "scripts/map-ui-layout.mjs": {
+   "current": {
+     "sha256": "b88140d80cd34d8d6c668df1f787864a59c4d8c5b5e1c945a0fb0eb7baea0ed5",
+     "gitBlob": "3cf04a55f79bd3fe8bc4281ddc9349ad374c64a2"
+   },
+   "previous": {
+     "sha256": "964ff48081623210a296085dfa891fc6c4dfbbe7d1dc83d1f362001a330fbce6",
+     "gitBlob": "d78dc0a8166e353a9d87e239b3b390c6e21e4e45"
+   },
+   "hunks": [
+     {
+       "at": 3,
+       "before": "import { toLua } from './build-lua-data.mjs';\nimport { nativeFontSize } from './native-ui-theme.mjs';\n\nexport const loadMapTheme = () => JSON.parse(readFileSync('data/presentation/ui_theme.json', 'utf8'));",
+       "after": "import { toLua } from './build-lua-data.mjs';\nimport { nativeFontSize } from './native-ui-theme.mjs';\n\n// Approved 20-control ink master, shared by the layout writer and map runtime.\nexport const mapBossInk = JSON.parse(readFileSync(new URL('../data/presentation/map-boss-ink.json', import.meta.url), 'utf8'));\nexport function mapBossInkHost() {\n  const { cap, size } = mapBossInk;\n  return { name:'bossInkHost',kind:'container',position:[0,0],size:[size,size],visible:false,\n    children:Array.from({length:cap},(_,i)=>({name:'ink'+String(i).padStart(2,'0'),kind:'image',\n      position:[0,0],size:[1,1],image:100001,colour:'#233237',visible:false,raycastTarget:false})) };\n}\n\nexport const loadMapTheme = () => JSON.parse(readFileSync('data/presentation/ui_theme.json', 'utf8'));"
+     },
+     {
+       "at": 22,
+       "before": "  const { floorGap, viewportHeight, bossNode, bossFloorLift } = theme.layout.map;\n  const firstY = -308 + 60, top = -308 + viewportHeight;\n  return { floors: 17, generatedRows: 15, lanes: 7, maxNodes: 92, maxEdges: 126,\n    viewport: { left: -460, right: 440, bottom: -308, top },\n    firstY, contentHeight: 17 * floorGap + 120,",
+       "after": "  const { floorGap, viewportHeight, bossNode, bossFloorLift } = theme.layout.map;\n  const firstY = -308 + 60, top = -308 + viewportHeight;\n  return { bossInk: mapBossInk, floors: 17, generatedRows: 15, lanes: 7, maxNodes: 92, maxEdges: 126,\n    viewport: { left: -460, right: 440, bottom: -308, top },\n    firstY, contentHeight: 17 * floorGap + 120,"
+     }
+   ]
+ },
+ "scripts/v25-map-layout.mjs": {
+   "current": {
+     "sha256": "f289878acc7e9359e39141da685877379d6a3045d181b8e9c4640a95d56dbb59",
+     "gitBlob": "a0680581fc3e8cec884e2f855f1e147f4d80943b"
+   },
+   "previous": {
+     "sha256": "1c9089e24d1a857a5824035c16fe3125cb3b592b3f994a0b8f903b14516c8cba",
+     "gitBlob": "34984681b1666bd5ec8d83b7b8c5165faaf2f4fa"
+   },
+   "hunks": [
+     {
+       "at": 0,
+       "before": "import { mapLegendRows } from './map-ui-layout.mjs';\n\n// Independent native presentation from the authorized V25 map. Route generation,",
+       "after": "import { mapBossInkHost, mapLegendRows } from './map-ui-layout.mjs';\n\n// Independent native presentation from the authorized V25 map. Route generation,"
+     },
+     {
+       "at": 166,
+       "before": " const background=groups[0].children;\n background.splice(background.indexOf(returnShade),1);\n panel.children.unshift(paper(theme,returnShade));return layout;\n}\n",
+       "after": " const background=groups[0].children;\n background.splice(background.indexOf(returnShade),1);\n panel.children.unshift(paper(theme,returnShade),mapBossInkHost());return layout;\n}\n"
+     }
+   ]
+ },
+ "src/lua/abyss_map_ui.lua": {
+   "current": {
+     "sha256": "b69bea854d53da119afd9ea0e8f28fca7d7b984600e3e4b0cedabaab046cb8e8",
+     "gitBlob": "362d8add52d1c401c594850d58ffe263e1d6fa42"
+   },
+   "previous": {
+     "sha256": "645764d987cb57f2cf57db066eeb3e99de967d248b9efabbd3cf65269e7dd379",
+     "gitBlob": "12e42d8d0abe7607b8526d7b89b2e2fc80c92ced"
+   },
+   "hunks": [
+     {
+       "at": 71,
+       "before": "    local sway=math.sin(2*math.pi*t)*math.sin(math.pi*t)*(seed%3-1)\n    return x1+(x2-x1)*t+bend*4*t*(1-t)+sway,y1+(y2-y1)*t\nend\nfunction M.roomInk(node, state, currentFloor)",
+       "after": "    local sway=math.sin(2*math.pi*t)*math.sin(math.pi*t)*(seed%3-1)\n    return x1+(x2-x1)*t+bend*4*t*(1-t)+sway,y1+(y2-y1)*t\nend\n-- All artwork shares a bottom docking region. The approved projected\n-- badge contour is 68.20 px deep at the centre and 63.82 px at either\n-- 16 px port (1.46 \u00d7 the fitting canvas). Between those points the\n-- conservative envelope is the lower of the circular edge and the\n-- bottom tip's diagonal. Extra incoming edges share the same span.\nfunction M.bossRoutePort(rank,count,width)\n    local dx = count <= 1 and 0 or ((rank-1)/(count-1)*2-1)*16\n    local ax=math.abs(dx)\n    local depth=math.max(math.sqrt((63.51)^2-ax*ax),68.20-ax*.27375)\n    return dx,depth+math.max(2.5,width/2+.5)\nend\nfunction M.bossRoutePoint(x1,y1,x2,y2,t)\n    local u,dx,dy=1-t,x2-x1,y2-y1\n    local w1,w2,w3=u*u*u,3*u*u*t,3*u*t*t\n    local w4=t*t*t\n    return w1*x1+w2*(x1+dx*.26)+(w3+w4)*x2,\n        w1*y1+w2*(y1+dy*.18)+w3*(y2-dy*.63)+w4*y2\nend\n-- Clip the actual dash chords rather than linearising the curved path\n-- across a scroll boundary. The viewport remains the existing map viewport.\nfunction M.clipBossDash(x1,y1,x2,y2,left,bottom,right,top)\n    local first,last=0,1\n    local function clip(v,d,lo,hi)\n        if math.abs(d)<1e-9 then return v>=lo and v<=hi end\n        local a,b=(lo-v)/d,(hi-v)/d\n        if a>b then a,b=b,a end\n        first,last=math.max(first,a),math.min(last,b)\n        return last>first\n    end\n    local dx,dy=x2-x1,y2-y1\n    if not clip(x1,dx,left,right) or not clip(y1,dy,bottom,top) then return end\n    return x1+first*dx,y1+first*dy,x1+last*dx,y1+last*dy\nend\nfunction M.roomInk(node, state, currentFloor)"
+     },
+     {
+       "at": 345,
+       "before": "    local embedded = options.embedded == true\n    local stage,backdrop,panel=mapControls(root,embedded)\n    -- The title host binds real owners only after Start succeeds.\n    local initialChapter = map ~= nil and assert(chapterFor(map), \"invalid map chapter context\") or nil",
+       "after": "    local embedded = options.embedded == true\n    local stage,backdrop,panel=mapControls(root,embedded)\n    local bossHost = panel:GetChild(\"bossInkHost\")\n    local function fittedBoss(bossName)\n        return bossHost and MapLayout.bossInk and MapLayout.bossInk.variants[bossName]\n    end\n    local function bossInkInBounds(x,y)\n        local r,v = MapLayout.bossInk.size / 2,Layout.viewport\n        return x-r >= v.left and x+r <= v.right and y-r >= v.bottom and y+r <= v.top\n    end\n    local inkSlots, inkColours, paintedBossInk\n    local function paintBossInk(art, fx)\n        if art ~= paintedBossInk then\n            if not inkSlots then\n                inkSlots, inkColours = {}, {}\n                for i = 1, MapLayout.bossInk.cap do\n                    inkSlots[i] = child(bossHost, string.format(\"ink%02d\", i - 1))\n                end\n                for i, c in ipairs(MapLayout.bossInk.palette) do inkColours[i] = colour(c[1],c[2],c[3],255) end\n            end\n            for i, image in ipairs(inkSlots) do\n                local shape = art[i]\n                if shape then\n                    image:SetImage(imageSource,shape[1])\n                    image.imageColor = inkColours[shape[2]]\n                    image:SetAnchoredPosition(shape[3],shape[4])\n                    image:SetSizeDelta(shape[5],shape[6])\n                    image:SetLocalRotation(shape[7],shape[8],shape[9])\n                end\n                image:SetVisible(shape ~= nil)\n            end\n            paintedBossInk = art\n        end\n        bossHost:SetAnchoredPosition(fx.x,fx.y)\n        bossHost:SetVisible(true)\n    end\n\n    -- The title host binds real owners only after Start succeeds.\n    local initialChapter = map ~= nil and assert(chapterFor(map), \"invalid map chapter context\") or nil"
+     },
+     {
+       "at": 431,
+       "before": "    local visual = Theme.layout.map.presentation\n    -- STS MapEdge/MapRoomNode contract: taken ink, reachable bright, unreachable recessive.\n    local pathColours = {\n        taken = pathColour(Theme.color.node.pathTaken, visual.takenOpacity),",
+       "after": "    local visual = Theme.layout.map.presentation\n    -- STS MapEdge/MapRoomNode contract: taken ink, reachable bright, unreachable recessive.\n    local bossRouteInk = colour(35,50,55,214)\n    local pathColours = {\n        taken = pathColour(Theme.color.node.pathTaken, visual.takenOpacity),"
+     },
+     {
+       "at": 487,
+       "before": "    end\n\n    local function line(control, source, target, taken, reachable, far, currentNodeId)\n        local x1, y1 = position(source)\n        local x2, y2 = position(target)",
+       "after": "    end\n\n    local function paintBossRoute(control,firstDash,source,x1,y1,x2,y2,port,width,ink,currentNodeId)\n        local View=Layout.viewport\n        local dx,drop=M.bossRoutePort(port.rank,port.count,width)\n        local sourceInset,sourceOffset=routeInset(source,currentNodeId)\n        local rise=roomState(source,currentNodeId)=='locked' and 12 or math.max(12,sourceInset)\n        x2,y2,y1=x2+dx,y2-drop,y1+sourceOffset+rise\n        if y2<=y1 then control:SetVisible(false);return end\n        local count=clamp(math.ceil(math.sqrt((x2-x1)^2+(y2-y1)^2)/17),3,8)\n        local margin=width/2\n        local any=false\n        -- Existing route container and eight authored image slots only.\n        -- In local stage coordinates the same geometry scales with mobile/PC.\n        local cx,cy=clamp((x1+x2)/2,View.left,View.right),clamp((y1+y2)/2,View.bottom+margin,View.top-margin)\n        control:SetAnchoredPosition(cx,cy)\n        control:SetSizeDelta(1,width)\n        control.localRotationZ=0\n        for i=1,8 do\n            local dash=i==1 and firstDash or child(control,'routeInk'..i)\n            local ax,ay,bx,by\n            if i<=count then\n                local sx,sy=M.bossRoutePoint(x1,y1,x2,y2,(i-1)/(count-.30))\n                local ex,ey=M.bossRoutePoint(x1,y1,x2,y2,(i-.30)/(count-.30))\n                ax,ay,bx,by=M.clipBossDash(sx,sy,ex,ey,View.left+margin,View.bottom+margin,View.right-margin,View.top-margin)\n            end\n            dash:SetVisible(ax~=nil)\n            if ax then\n                any=true\n                dash:SetAnchoredPosition((ax+bx)/2-cx,(ay+by)/2-cy)\n                dash:SetSizeDelta(math.sqrt((bx-ax)^2+(by-ay)^2),width)\n                dash.localRotationZ=math.atan(by-ay,bx-ax)*180/math.pi\n                dash.imageColor=ink\n            end\n        end\n        control:SetVisible(any)\n    end\n\n    local function line(control, source, target, taken, reachable, far, currentNodeId,bossPort)\n        local x1, y1 = position(source)\n        local x2, y2 = position(target)"
+     },
+     {
+       "at": 529,
+       "before": "        if y2 + padding < Layout.viewport.bottom or y1 - padding > Layout.viewport.top then control:SetVisible(false) return end\n        local firstDash = control:GetChild('routeInk1')\n        local fullLength\n        fullLength, x1, y1, x2, y2 = trimRoute(source,target,currentNodeId,firstDash,x1,y1,x2,y2)",
+       "after": "        if y2 + padding < Layout.viewport.bottom or y1 - padding > Layout.viewport.top then control:SetVisible(false) return end\n        local firstDash = control:GetChild('routeInk1')\n        if firstDash and bossPort and bossInkInBounds(x2,y2) then\n            local width=M.pathWidth(taken,reachable)\n            local ink=taken and pathColours.taken or reachable and pathColours.next or bossRouteInk\n            return paintBossRoute(control,firstDash,source,x1,y1,x2,y2,bossPort,width,ink,currentNodeId)\n        end\n        local fullLength\n        fullLength, x1, y1, x2, y2 = trimRoute(source,target,currentNodeId,firstDash,x1,y1,x2,y2)"
+     },
+     {
+       "at": 561,
+       "before": "    local function hideInvalidChapter()\n        cancelDrag()\n        self.navigationEnabled, self.slots, self.breathing = false, {}, {}\n        at(\"title\").text, at(\"notice\").text = \"\", \"\u5730\u56fe\u7ae0\u8282\u4fe1\u606f\u65e0\u6548 \u00b7 \u8bf7\u91cd\u65b0\u542f\u7a0b\"",
+       "after": "    local function hideInvalidChapter()\n        cancelDrag()\n        if bossHost then bossHost:SetVisible(false) end\n        self.navigationEnabled, self.slots, self.breathing = false, {}, {}\n        at(\"title\").text, at(\"notice\").text = \"\", \"\u5730\u56fe\u7ae0\u8282\u4fe1\u606f\u65e0\u6548 \u00b7 \u8bf7\u91cd\u65b0\u542f\u7a0b\""
+     },
+     {
+       "at": 594,
+       "before": "        at('notice'):SetVisible(at('notice').text~='')\n    end\n    local function paintMapEdges(current, nodes, taken)\n        local edge = 0\n        for _, node in ipairs(current.nodes) do for _, id in ipairs(node.nextIds) do",
+       "after": "        at('notice'):SetVisible(at('notice').text~='')\n    end\n    local function paintMapEdges(current, nodes, taken, bossName)\n        local ports={}\n        if fittedBoss(bossName) then\n            local docks={}\n            for _,source in ipairs(current.nodes) do\n                for _,targetId in ipairs(source.nextIds) do\n                    local target=nodes[targetId]\n                    if target and target.type=='boss' and target.roomKind~='boss_treasure' then\n                        local from=docks[targetId] or {}\n                        docks[targetId]=from\n                        from[#from+1]=source\n                    end\n                end\n            end\n            for targetId,from in pairs(docks) do\n                table.sort(from,function(a,b)\n                    if a.lane==b.lane then return tostring(a.id)<tostring(b.id) end\n                    return a.lane<b.lane\n                end)\n                for i,source in ipairs(from) do ports[source.id..':'..targetId]={rank=i,count=#from} end\n            end\n        end\n        local edge = 0\n        for _, node in ipairs(current.nodes) do for _, id in ipairs(node.nextIds) do"
+     },
+     {
+       "at": 622,
+       "before": "                edge = edge + 1\n                assert(edge <= Layout.maxEdges, \"map UI edge capacity exceeded\")\n                line(at(\"edge\" .. edge), node, target, taken[node.id .. \":\" .. id], node.id == current.currentNodeId and target.available, M.isFar(target.floor, current.floor), current.currentNodeId)\n            end\n        end end\n        for i = edge + 1, Layout.maxEdges do at(\"edge\" .. i):SetVisible(false) end\n    end\n    local function paintVisibleRoom(i, node, fx, floor, bossName)\n        local box, state, size = fx.box, fx.state, fx.size",
+       "after": "                edge = edge + 1\n                assert(edge <= Layout.maxEdges, \"map UI edge capacity exceeded\")\n                line(at(\"edge\" .. edge), node, target, taken[node.id .. \":\" .. id], node.id == current.currentNodeId and target.available, M.isFar(target.floor, current.floor), current.currentNodeId,ports[node.id..\":\"..id])\n            end\n        end end\n        for i = edge + 1, Layout.maxEdges do at(\"edge\" .. i):SetVisible(false) end\n    end\n    local bossInkVisible\n    local function paintVisibleRoom(i, node, fx, floor, bossName)\n        local box, state, size = fx.box, fx.state, fx.size"
+     },
+     {
+       "at": 645,
+       "before": "        end\n        local iconId = fx.boss and Theme.icon.mapBoss[bossName] or Theme.icon.node[node.type]\n        icon:SetImage(imageSource, iconId)\n        -- color: NOT_TAKEN for locked rooms, AVAILABLE ink for taken/current/available.\n        fx.colour = colour",
+       "after": "        end\n        local iconId = fx.boss and Theme.icon.mapBoss[bossName] or Theme.icon.node[node.type]\n        local fit = fx.boss and fittedBoss(bossName)\n        local showFit = fit and bossInkInBounds(fx.x,fx.y)\n        icon:SetVisible(not showFit)\n        if showFit then\n            paintBossInk(fit, fx)\n            bossInkVisible = true\n        else\n            icon:SetImage(imageSource, iconId)\n        end\n        -- color: NOT_TAKEN for locked rooms, AVAILABLE ink for taken/current/available.\n        fx.colour = colour"
+     },
+     {
+       "at": 717,
+       "before": "        self.slots, self.breathing = {}, {}\n        paintMapHeader(current, chapter)\n        paintMapEdges(current, nodes, taken)\n        assert(#current.nodes <= Layout.maxNodes, \"map UI node capacity exceeded\")\n        self.activeFx = {}\n        local bossName = options.bossName and options.bossName(self.map)\n        for i = 1, Layout.maxNodes do paintMapRoom(i, current, bossName) end\n        self:update(0)\n    end",
+       "after": "        self.slots, self.breathing = {}, {}\n        paintMapHeader(current, chapter)\n        local bossName = options.bossName and options.bossName(self.map)\n        paintMapEdges(current, nodes, taken, bossName)\n        assert(#current.nodes <= Layout.maxNodes, \"map UI node capacity exceeded\")\n        self.activeFx = {}\n        bossInkVisible = false\n        for i = 1, Layout.maxNodes do paintMapRoom(i, current, bossName) end\n        if bossHost and not bossInkVisible then bossHost:SetVisible(false) end\n        self:update(0)\n    end"
+     }
+   ]
+ },
  "scripts/official-run-layout.mjs": {
   "current": {
    "sha256": "05e16b702cb588050cd3f0703ee73398f01026d6fb19f2b5809e43cf7f8e5cfc",
@@ -1968,6 +2075,25 @@ const rosterLegacyBridgeFixture=Object.freeze({
  ]
 });
 
+// Preserve the base V25 test module before replaying its earlier archived inputs.
+const bossMapLayoutFixture=Object.freeze({
+  "current": {
+    "sha256": "af762f9bceb93dc06f2b9ca95a5c0346402783ca2c83090142e98146d77428f8",
+    "gitBlob": "4c9e793ca91276e76cd6b0e6a6681eb6d11e4aa6"
+  },
+  "previous": {
+    "sha256": "00dd0b2a7c03c35ee2410952030afd5b7818f0b92688815aa988255988c4990b",
+    "gitBlob": "8a51496ab15aae494f32a11da371bcfbe85599f2"
+  },
+  "hunks": [
+    {
+      "at": 129,
+      "before": "import {beforeAuthenticatedRecordingStage} from './helpers/release-ui-restore-source.mjs';\nimport {beforeUiEntrance} from './helpers/ui-entrance-source.mjs';\ntest('recording historical continuation accepts exact owners and rejects stale, drifted or mixed reads',()=>{\n const {files}=JSON.parse(gunzipSync(readFileSync('tests/helpers/recording-0401-source.json.gz')));",
+      "after": "import {beforeAuthenticatedRecordingStage} from './helpers/release-ui-restore-source.mjs';\nimport {beforeUiEntrance} from './helpers/ui-entrance-source.mjs';\nimport './support/map-boss-ink-cases.mjs';\ntest('recording historical continuation accepts exact owners and rejects stale, drifted or mixed reads',()=>{\n const {files}=JSON.parse(gunzipSync(readFileSync('tests/helpers/recording-0401-source.json.gz')));"
+    }
+  ]
+});
+
 export function beforeReleaseClosureFixture(path,raw,{reviewedBuild=false}={}){
  // Current integration authenticates the live delivery owner through its own archive.
  if(path==='scripts/verify-delivery.mjs'&&!reviewedBuild)return raw;
@@ -1977,6 +2103,12 @@ export function beforeReleaseClosureFixture(path,raw,{reviewedBuild=false}={}){
  if(typeof source!=='string'||Buffer.isBuffer(raw)&&!Buffer.from(source).equals(raw))return raw;
  const normalized=source.replaceAll('\r\n','\n');
  if(normalized.includes('\r')||source!==normalized&&source!==normalized.replaceAll('\n','\r\n'))return raw;
+ if(path==='tests/v25-map-layout.test.mjs'&&exactSourceMatches(source,bossMapLayoutFixture.current)){
+  const {current,previous,hunks}=bossMapLayoutFixture;
+  const predecessor=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,hunks},path,source);
+  assert(exactSourceMatches(predecessor,previous),'exact pre-ink V25 map test fixture');
+  source=source===normalized?predecessor:predecessor.replaceAll('\r\n','\n').replaceAll('\n','\r\n');
+ }
  if(path===rosterLegacyBridgeFixture.path&&exactSourceMatches(source,rosterLegacyBridgeFixture.current)){
   const {current,hunks}=rosterLegacyBridgeFixture;
   const previous=fixtures[path].current;
