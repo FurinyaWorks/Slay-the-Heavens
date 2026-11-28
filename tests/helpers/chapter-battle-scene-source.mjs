@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import {restoreExactFixtureHunks} from './exact-fixture-hunks.mjs';
 import {exactSourceMatches} from './source-fingerprint.mjs';
 import {beforeBossMapScroll,bossMapScrollIdentity} from './boss-map-scroll-source.mjs';
+import {beforeReleaseEnemyClearance,releaseEnemyClearanceIdentity,releaseEnemyClearanceStage} from './release-enemy-clearance-source.mjs';
 import {beforeProductionReadingBackflow,productionReadingBackflowOwns} from './master-backflow-source.mjs';
 
 const projections = {
@@ -823,6 +824,7 @@ function uniformReadingSource(source) {
 }
 
 function readingScopeIdentity(path,source) {
+  source=beforeReleaseEnemyClearance(path,source);
   if (!Object.hasOwn(cardReadingScopeProjections,path) || !uniformReadingSource(source)) return;
   source=beforeProductionReadingBackflow(path,source);
   const row=cardReadingScopeProjections[path];
@@ -833,7 +835,8 @@ function readingScopeIdentity(path,source) {
 export function assertCurrentCardReadingScope(path,source) {
   if (Object.hasOwn(cardReadingScopeProjections,path)) {
     if (productionReadingBackflowOwns(path)) {
-      assert(beforeProductionReadingBackflow(path,source)!==source,'fresh complete integration source: ' + path);
+      const input=beforeReleaseEnemyClearance(path,source);
+      assert(beforeProductionReadingBackflow(path,input)!==input,'fresh complete integration source: ' + path);
     }
     assert(readingScopeIdentity(path,source)==='current','fresh complete integration source: ' + path);
   }
@@ -841,6 +844,7 @@ export function assertCurrentCardReadingScope(path,source) {
 }
 
 export function beforeCardReadingScope(path,source) {
+  source=beforeReleaseEnemyClearance(path,source);
   if (readingScopeIdentity(path,source)!=='current') return source;
   source=beforeProductionReadingBackflow(path,source);
   const row=cardReadingScopeProjections[path];
@@ -890,7 +894,8 @@ export function chapterSceneCurrentRead(read, copier) {
       const source = Buffer.isBuffer(raw) ? raw.toString('utf8') : raw;
       const {afterSha256:sha256, afterBlob:gitBlob} = binding;
       assertCurrentCardReadingScope(path,source);
-      assert(matches(beforeProductionReadingBackflow(path,source),{sha256,gitBlob}), 'fresh complete integration source: ' + path);
+      assert(matches(beforeProductionReadingBackflow(path,beforeReleaseEnemyClearance(path,source)),{sha256,gitBlob}),
+        'fresh complete integration source: ' + path);
     }
     return raw;
   }
@@ -899,32 +904,54 @@ export function chapterSceneCurrentRead(read, copier) {
 }
 
 export function chapterBattleSceneReader(path, source, read) {
-  const handSource = beforeResponsiveHand(path, source);
-  const hand = handSource !== source ? responsiveHandProjections[path] : undefined;
+  const releaseSource = beforeReleaseEnemyClearance(path,source);
+  const clearanceIdentity = releaseSource!==source ? releaseEnemyClearanceIdentity(path) : undefined;
+  const stage = releaseEnemyClearanceStage(path,source);
+  const handSource = beforeResponsiveHand(path, releaseSource);
+  const hand = handSource !== releaseSource ? responsiveHandProjections[path] : undefined;
   const layoutPath='src/lua/abyss_battle_card_layout.lua';
-  const readingScope = readingScopeIdentity(path,source) ?? (hand && readingScopeIdentity(layoutPath,read(layoutPath,'utf8')));
+  let readingScope = readingScopeIdentity(path,source);
+  if (!readingScope && hand) {
+    const layoutSource=read(layoutPath,'utf8');
+    if (stage) assert.equal(releaseEnemyClearanceStage(layoutPath,layoutSource),stage,
+      'combined linked owner identity: ' + layoutPath + ' during Release enemy clearance validation');
+    readingScope=readingScopeIdentity(layoutPath,layoutSource);
+  }
   if (hand) assert(readingScope,'combined linked owner identity: ' + layoutPath + ' changed during card reading validation');
   const before = beforeChapterBattleScene(path, source);
   const row = Object.hasOwn(projections, path) ? projections[path] : undefined;
   const candidate = row && {sha256: row.afterSha256, gitBlob: row.afterBlob};
   const predecessor = row && {sha256: row.beforeSha256, gitBlob: row.beforeBlob};
   const bossMaskSource=path==='scripts/build-ui.mjs'&&beforeBossMapScroll(path,source)!==source;
-  const expected = bossMaskSource ? bossMapScrollIdentity(path)
+  const expected = clearanceIdentity ?? (bossMaskSource ? bossMapScrollIdentity(path)
     : hand ? {sha256: hand.afterSha256, gitBlob: hand.afterBlob}
-    : before !== handSource ? candidate : matches(handSource, predecessor) ? predecessor : undefined;
+    : before !== handSource ? candidate : matches(handSource, predecessor) ? predecessor : undefined);
   const assertReadingScope = (owner,live) => {
     assert(readingScopeIdentity(owner,live)===readingScope,
       'combined linked owner identity: ' + owner + ' changed during card reading validation');
   };
+  const observed = new Map();
+  if (clearanceIdentity) observed.set(path,source.replaceAll('\r\n','\n'));
   function readOwner(owner, ...args) {
     const live = read(owner, ...args);
+    const ownerIdentity=releaseEnemyClearanceIdentity(owner);
+    if (ownerIdentity) {
+      const text=typeof live==='string'&&live.replaceAll('\r\n','\n');
+      const value=text&&(live===text||live===text.replaceAll('\n','\r\n'))?text:live;
+      if (observed.has(owner)) assert.equal(value,observed.get(owner),
+        'combined linked owner identity: ' + owner + ' changed during Release enemy clearance validation');
+      else observed.set(owner,value);
+    }
     const linkedHand = hand && Object.hasOwn(responsiveHandProjections, owner) && responsiveHandProjections[owner];
     const linkedScope = Object.hasOwn(cardReadingScopeProjections,owner);
+    if (stage && ownerIdentity && (readingScope && linkedScope || linkedHand))
+      assert.equal(releaseEnemyClearanceStage(owner,live),stage,
+        'combined linked owner identity: ' + owner + ' during Release enemy clearance validation');
     if (readingScope && linkedScope) assertReadingScope(owner,live);
-    if (linkedHand && !linkedScope) assert(matches(live, {sha256: linkedHand.afterSha256, gitBlob: linkedHand.afterBlob}),
+    if (linkedHand && !linkedScope) assert(matches(beforeReleaseEnemyClearance(owner,live), {sha256: linkedHand.afterSha256, gitBlob: linkedHand.afterBlob}),
       'combined linked owner identity: ' + owner + ' changed during responsive hand validation');
     const prior = beforeChapterBattleScene(owner, live);
-    if (owner === path && !readingScope && (expected || prior !== live)) {
+    if (owner === path && (clearanceIdentity || !readingScope && (expected || prior !== live))) {
       assert(matches(live, expected),
         'combined linked owner identity: ' + path + ' changed during chapter scene validation');
     }

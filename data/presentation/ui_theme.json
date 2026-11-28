@@ -14,6 +14,11 @@
     "quit": [-450,-234,280,56]
   },
   "officialAssets": {
+    "refinedBattlePlacement": {
+      "hand": { "y": -320, "arcDrop": 10, "overhang": 112, "restHitOnly": true },
+      "enemyHealthGap": 2,
+      "enemyPowerFloorY": -204
+    },
     "energyOrb": {
       "reference": "Owner STS1 screenshots 2026-11-21: 3/3 bright, 0/4 muted; keep complete material and readable numeral",
       "charged": {

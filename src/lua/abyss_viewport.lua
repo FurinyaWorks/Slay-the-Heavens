@@ -55,6 +55,25 @@ function M.handFocus(baseY)
     return math.max(baseY + Theme.motion.hoverLift, floor)
 end
 
+function M.handHit(y, angle, scale, target)
+    local radians = target.restAngle * math.pi / 180
+    local c,s = math.abs(math.cos(radians)),math.abs(math.sin(radians))
+    local restH = (cardHeight*c+cardWidth*s)/2
+    local low,high = target.baseY-restH,target.baseY+restH
+    local hotScale = Theme.motion.hoverScale
+    -- Only the focused card owns its expanded vertical lane in the grounded
+    -- profile. An idle card's transparent receiver must leave powers reachable.
+    if target.hot or not hand.restHitOnly then
+        local hotY,hotH = M.handFocus(target.baseY),cardHeight*hotScale/2
+        low,high = math.min(low,hotY-hotH),math.max(high,hotY+hotH)
+    end
+    local dy,a = (low+high)/2-y,angle*math.pi/180
+    -- Adjacent hand centres retain disjoint horizontal input lanes.
+    local width = math.max(cardWidth*c+cardHeight*s,cardWidth*hotScale)
+    return math.sin(a)*dy/scale,math.cos(a)*dy/scale,
+        math.min(width,target.hitWidth or width)/scale,(high-low)/scale
+end
+
 -- Keep the authored launch/landing offset inside each icon at 16:9. The
 -- generated native anchors determine how both the icon and its motion move.
 function M.pileLayout(panel)

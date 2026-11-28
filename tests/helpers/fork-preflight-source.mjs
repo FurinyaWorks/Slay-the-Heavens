@@ -1,5 +1,6 @@
 import {beforeDetachedReleaseBackflow,beforeSharedReleaseRuntimeReplay} from './release-detached-backflow-source.mjs';
 import {beforeBossMapScroll} from './boss-map-scroll-source.mjs';
+import {beforeReleaseEnemyClearance} from './release-enemy-clearance-source.mjs';
 import {beforeKnownMasterBackflowSource,beforeMasterBackflowSource,productionReadingBackflowOwns} from './master-backflow-source.mjs';
 import {beforeReleaseClosureFixture} from './release-closure-fixture-source.mjs';
 import {beforePosixDeadlineWorkflow,beforeWindowsDeadlineWorkflow} from './auto-merge-workflow.mjs';
@@ -1567,6 +1568,7 @@ function beforeIntegrationSuccessor(path,source){
  return source.includes('\r\n')?prior.source.replaceAll('\n','\r\n'):prior.source;
 }
 // Verify the live replay helpers before restoring their reviewed predecessors.
+const clearanceChapterHelper='tests/helpers/chapter-battle-scene-source.mjs';
 const responsiveReplayHelpers=Object.freeze({
  [integratedFixture]:sessionMenuIntegratedIdentity,
  [relicCloseoutInventoryFixture.path]:relicCloseoutInventoryIdentity,
@@ -1582,9 +1584,10 @@ function responsiveReplayCurrentRead(read){
    const source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
    const error=path===integratedFixture||path===relicCloseoutInventoryFixture.path
     ?'fresh complete integration source: ':'fresh responsive replay helper: ';
-   const chapter=path==='tests/helpers/chapter-battle-scene-source.mjs';
-   const prior=chapter?beforeBossMapScroll(path,source):source;
-   assert((!chapter||prior!==source)&&exactCheckoutSource(prior,responsiveReplayHelpers[path]),error+path);
+   const chapter=path===clearanceChapterHelper;
+   const clearancePrior=chapter?beforeReleaseEnemyClearance(path,source):source;
+   const prior=chapter?beforeBossMapScroll(path,clearancePrior):source;
+   assert((!chapter||clearancePrior!==source&&prior!==clearancePrior)&&exactCheckoutSource(prior,responsiveReplayHelpers[path]),error+path);
   }
   return raw;
  };
@@ -1608,7 +1611,8 @@ export function currentReviewedSelectionRead(read){
   try{
    const live=read(path,encoding);
    const text=Buffer.isBuffer(live)?live.toString('utf8'):live;
-   const selection=productionReadingBackflowOwns(path)||beforeSelectionReceiptSource(path,text)!==text||beforeOfficialCharacterBackflow(path,text)!==text;
+   // Check the live chapter receipt before the master reader can strip the clearance successor.
+   const selection=path===clearanceChapterHelper||productionReadingBackflowOwns(path)||beforeSelectionReceiptSource(path,text)!==text||beforeOfficialCharacterBackflow(path,text)!==text;
    source=selection?live:beforeMasterBackflowSource(path,live);
   }
   catch(cause){

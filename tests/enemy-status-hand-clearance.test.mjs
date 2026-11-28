@@ -9,6 +9,26 @@ import {buildUI} from '../scripts/build-ui.mjs';
 import {buildLuaData,luaString} from '../scripts/build-lua-data.mjs';
 const require=createRequire(import.meta.url);
 
+test('refined Release keeps resting cards and their receivers clear of Guardian powers and legal encounters',t=>{
+ const base=resolve('.artifacts/test-tmp');mkdirSync(base,{recursive:true});
+ const out=mkdtempSync(join(base,'refined-status-clearance-'));t.after(()=>rmSync(out,{recursive:true,force:true}));
+ buildLuaData('data',join(out,'abyss_data.lua'));
+ buildUI(out,undefined,{officialAssets:true,refinedReleaseMonsterArt:true,nativePageLifecycle:true,experimentalCharacters:false});
+ const lua=require.resolve('fengari-node-cli/src/lua-cli.js');
+ const path=out.replaceAll('\\','/')+'/?.lua;./src/lua/?.lua;;';
+ const env={...process.env,LUA_PATH:path,LUA_PATH_5_3:path,LUA_INIT:'',LUA_INIT_5_3:''};
+ for(const [fixture,marker] of [
+  ['release_guardian_clearance','RELEASE_GUARDIAN_CLEARANCE_PASS'],
+  ['release_enemy_clearance_matrix','RELEASE_ENEMY_CLEARANCE_MATRIX_PASS'],
+ ]){
+  const result=spawnSync(process.execPath,[lua,'-e',`dofile('tests/lua/support/${fixture}.lua')`],{env,encoding:'utf8',timeout:60_000});
+  assert.ifError(result.error);
+  assert.equal(result.status,0,result.stdout+result.stderr);
+  assert.ok(result.stdout.includes(marker),result.stdout);
+  t.diagnostic(result.stdout.split('\n').filter(line=>line.startsWith('GUARDIAN_CLEARANCE ')||line.includes(marker)).join('\n'));
+ }
+});
+
 test('real official enemy writer keeps two complete power rows above every resting hand and fits tall bodies/targets below HUD',t=>{
  const base=resolve('.artifacts/test-tmp');mkdirSync(base,{recursive:true});
  const out=mkdtempSync(join(base,'enemy-status-clearance-'));t.after(()=>rmSync(out,{recursive:true,force:true}));

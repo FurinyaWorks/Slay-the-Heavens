@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@Furinya'
 created_date: '2026-11-25 21:02'
-updated_date: '2026-11-26 03:52'
+updated_date: '2026-11-28 08:04'
 labels:
   - v2.2.0
   - release-scope
@@ -79,4 +79,6 @@ Owner 复看阶段图后再次指出地面怪物仍有浮空感。以实际主�
 独立目读冠军在 339b 石面的 19.5:9 和 21:9 单支撑草稿，前靴轻搭而后靴承重，实际攻击造成 12 伤，影与立绘按原矩阵回位。96 形面和 3012 可见节点保持。原始清单 SHA-256 392a86153dcd57772f5feda51d0d2ea8fdd736554d90aafc8473c7f2db7da613。新几何仍须独立原图与同身份掩膜批准，正式素材未变。
 
 普通地面敌人与两幕接地源码经 #1007 合入 e483c6a1，19 个 Lua 的 Hosted 原门禁与 Advisory 通过。冠军新姿态为已局部独审的试制，正式原图及新 Alpha 掩膜仍待登记。最终正式候选依旧需要两幕和各设备同包验收。
+
+v2.2.0 P1 手牌遮挡热修。精绘接地分支首次回归于 #1007。生产提交 c28b0221422fe38fe26bd115007bdc24551e0d7e 以固定手牌扇形和共享热区修复。正式配置覆盖 42 种精绘怪物、2,428 种阵容和 63,400 个几何组合，Beyond Simulator 已捕获 PC 和移动 A/B。报告在 docs/evidence/v2.2.0-battle-clearance/README.md。官方实机留待最终同包验收。
 <!-- SECTION:NOTES:END -->
