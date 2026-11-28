@@ -368,8 +368,12 @@ function readOfficialCalibrationReceipt(path,digest,readCurrent){
  const prior=row.predecessors[digest];
  if(row.currentPath!==path)assert.throws(()=>readCurrent(path,'utf8'),{code:'ENOENT'},'retired official receipt input reappeared: '+path);
  const live=readCurrent(row.currentPath,'utf8');
+ // The reviewed #1064 inverse authenticates both map successors without
+ // changing the bytes used by live Full or other receipt readers.
+ const mapOwner=['src/lua/abyss_map_ui.lua','scripts/map-ui-layout.mjs','scripts/v25-map-layout.mjs'].includes(row.currentPath);
  const current=row.currentPath==='scripts/deck-ui-layout.mjs'?beforeRunHudDeckLabel(live):
-  row.currentPath==='src/lua/abyss_viewport.lua'?beforeCardReadingScope(row.currentPath,live):live;
+  row.currentPath==='src/lua/abyss_viewport.lua'?beforeCardReadingScope(row.currentPath,live):
+  mapOwner?beforeReleaseClosureFixture(row.currentPath,live):live;
  const source=matches(current,row.current)?current:readReleaseEntrancePredecessor(row.currentPath,current,readCurrent);
  assert(matches(source,row.current),'current official receipt input changed: '+row.currentPath);
  const normalized=lf(source);
