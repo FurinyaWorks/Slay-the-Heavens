@@ -180,6 +180,21 @@ function jadeAqueductGallery() {
   ];
 }
 
+export function collectorThrone(theme) {
+  // The Collector's wardrobe reaches screen y≈275 at its source offset.
+  // Rest the matte's contact ellipse on the seat and root the plinth in the paving.
+  const shapes = [
+    poly('CollectorThroneFooting', [[913, 483], [944, 460], [1068, 459], [1119, 485]], '#303A37'),
+    poly('CollectorThronePillar', [[945, 287], [1053, 287], [1063, 470], [940, 473]], '#495044'),
+    poly('CollectorThroneWestRoot', [[955, 330], [951, 460], [916, 483]], '#5C624F'),
+    poly('CollectorThroneEastRoot', [[1044, 316], [1065, 471], [1113, 484]], '#3A4240'),
+    poly('CollectorThroneSeat', [[928, 283], [947, 270], [1051, 270], [1071, 283]], '#79725B'),
+    rect('CollectorThroneSeatLip', 928, 283, 143, 11, '#505847'),
+    line('CollectorThroneInlay', [[939, 287], [1061, 287]], '#9F8559', 2, .85),
+  ];
+  return shapes.flatMap(shape => nativeShape(shape, theme, {earSelection: 'balanced'}));
+}
+
 const group = (name, children) =>
   ({name, kind: 'container', position: [0, 0], size: [paintWidth, sceneHeight], children});
 

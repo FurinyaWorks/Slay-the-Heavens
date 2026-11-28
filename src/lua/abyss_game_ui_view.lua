@@ -612,8 +612,10 @@ function M.syncOfficialBattleScene(root,self,platform)
             if chapterScene then
                 if visible then
                     local floor=math.max(1,run and run.floor or 1)
-                    local chapter=Acts.forFloor(floor)
-                    chapterScene(math.min(2,chapter))
+                    local act=Acts.forFloor(floor)
+                    local scene=math.min(2,act)
+                    if scene==2 and run.encounterId=='act2_collector' then scene=3 end
+                    chapterScene(scene)
                 end
                 return
             end

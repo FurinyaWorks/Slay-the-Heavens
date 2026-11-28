@@ -7,17 +7,21 @@ import {exactSourceMatches} from './source-fingerprint.mjs';
 const owners=Object.freeze({
  "tests/helpers/master-backflow-source.mjs": {
   "current": {
-   "sha256": "886502cd0195065eceb0314e9f9f37e2107a054ec436f0e5f2fc1ed1a0020478",
-   "gitBlob": "a625d7681975a6ae2f700bf12e239a7d56a0545e"
+   "sha256": "84dcbebcb6baafef715c1e20cd813f1ae1045b347519eeb05200996379dc76b5",
+   "gitBlob": "b8d96da532e84311db0399d550b08ed432fe447b"
   },
   "previous": {
    "sha256": "308c6ef6ac8987b9becc4ead9f3a1efaa2c3c20ea8a697bdf26f6233fa71b8ac",
    "gitBlob": "c0558789e0465672ef86866b3ac1f4a4708f6412"
   },
   "hunks": [{
+   "at": 40,
+   "before": "  ['src/lua/abyss_game_ui_view.lua', ['b64cc28d1242af7fd219d1ccce46c9a043f42e3f602772e775896f3ea28fdf84', 'd865b4d6b0d4e8b6043b9e84f6a595b2d7f78bc6']],",
+   "after": "  ['src/lua/abyss_game_ui_view.lua', ['817eb3428c3fc0bb081a11015212520f445f018368c2028a8c5e4216747eb178', '94addcbe13c7dd643469e0c1bf33062ed27a8a7a']],"
+  }, {
    "at": 57,
    "before": "  ['tests/official-assets-legibility.test.mjs', ['ae2dbaa19e903e2e36374ffc92b0aede106bf8e4ce3afc055eedd3b70c7da844', '5a3a3b9b240f86244664b5f9a7b1fe26112c7f59']],",
-   "after": "  ['tests/official-assets-legibility.test.mjs', ['6a97d673835813f71ed91fb09a3b315a448640e1b6d69d4ad759978f1b1e8f8f', '9a382ef49c41922e5f26b4a48e29a1b7c1909832']],"
+   "after": "  ['tests/official-assets-legibility.test.mjs', ['0649464990d270f88312779533ac2eeb77507f970d19a8002c7a13f3e9b00bfb', 'f5e64d0859d806078369bcd2297052ea3a351fc4']],"
   }]
  },
  "tests/helpers/develop-release-backflow-source.mjs": {
@@ -221,7 +225,7 @@ export const currentDetachedInputs=Object.freeze({
  'tests/fixtures/selection-portrait-recovery-source.json.gz':'a24db4522db31669259bec007f6ab458419ea8b20abcd8a45dc37c29f3270e79',
  'tests/helpers/develop-release-backflow-source.mjs':'1ef1001a3f7473408dfe3f4f20933d87797612575179834ea271f2cfec7181f2',
  'tests/helpers/develop-release-vocabulary-source.mjs':'39c2ba9ecd776c5a7e3e485639c0d9a2acd1b9a8732e9621735fa99cd0466e56',
- 'tests/helpers/master-backflow-source.mjs':'886502cd0195065eceb0314e9f9f37e2107a054ec436f0e5f2fc1ed1a0020478',
+ 'tests/helpers/master-backflow-source.mjs':'84dcbebcb6baafef715c1e20cd813f1ae1045b347519eeb05200996379dc76b5',
  'tests/helpers/release-closure-fixture-source.mjs':'2f87eb9435488abe9c2ee5e4430a3c27dfbd9b66ecca4d84c5fe7282b4ce7a05',
  'tests/helpers/release-deck-pointer-source.mjs':'a1cfebcea1c53c017315a9762ba2d9509d395218b358a500d7ca22fe565dec38',
  'tests/helpers/release-entrance-owner-source.mjs':'970a41e91888711768d917ab2970d069ec891aea4f098f3930b1b5d04c87a30a',

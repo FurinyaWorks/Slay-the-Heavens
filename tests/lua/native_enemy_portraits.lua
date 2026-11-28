@@ -2,7 +2,9 @@ local monsterControl=dofile('tests/lua/support/monster_control_fixture.lua')
 -- Source-level native UIImage SetImage coverage, not official-device evidence.
 local C,Theme=require('abyss_combat'),require('abyss_theme')
 local EnemyView=require('abyss_battle_enemy_view')
+local EncounterQueue=require('abyss_encounter_queue')
 local PowerSurfaces=require('abyss_monster_power_surfaces')
+local Run=require('abyss_run')
 local SourceGeometry=require('abyss_monster_source_geometry')
 local Summons=require('abyss_act2_summons')
 local ground=Theme.layout.enemyRow.groundContact
@@ -24,7 +26,7 @@ local twoShadows={blue_guard=true,red_guard=true,taskmaster=true,raven_adept=tru
     sneaky_gremlin=true,shield_gremlin=true,mad_gremlin=true,lagavulin=true,guardian=true,
     shelled_parasite=true,snecko=true,automaton=true}
 -- Ground clearance in the fixed official layout before the contact change.
-local hoveringBottom={sentry=-26,hexaghost=-26,spheric_guardian=-26,book_of_stabbing=-68/3,collector=64,bronze_orb=-26}
+local hoveringBottom={sentry=-26,hexaghost=-26,spheric_guardian=-26,book_of_stabbing=-68/3,bronze_orb=-26}
 local expected={
     looter=112030,
     guardian=112046,
@@ -119,10 +121,40 @@ local function checkGround(actor,box)
         end
     else
         assert(not g.groundY and not g.footprints,id..' altitude must stay free of ground contact')
-        if not actor.sourcePosition then
+        if id=='collector' then
+            near(box.x,360,id..' pose X');near(box.y,164.5,id..' pose Y')
+            near(box:GetChild('hit').y+box.y,143.884615384615,id..' world target Y')
+            near(box:GetChild('hpFill').y+box.y,31.384615384615,id..' world HP Y')
+            near(box:GetChild('intentIcon').y+box.y,289,id..' world intent Y')
+        elseif not actor.sourcePosition then
             near(g.y-g.portrait/2,hoveringBottom[id] or -26,id..' original altitude')
         end
     end
+end
+local function recordScene(scene)
+    local data=require('abyss_chapter_battle_scene_data')
+    local slots,writes={},0
+    local function track(control,method)
+        local original=assert(control[method],method)
+        control[method]=function(self,...)
+            writes=writes+1
+            return original(self,...)
+        end
+    end
+    local function fill()writes=writes+1 end
+    track(scene,'SetVisible')
+    for _,batch in pairs(scene.children)do
+        for name,slot in pairs(batch.children)do
+            local index=tonumber(name:match('%d+'))
+            slots[index]=slot
+            slot.imageId=(data.rows[1][index] or data.rows[2][index])[1]
+            slot.SetFillHorizontal,slot.SetFillUnused=fill,fill
+            for _,method in ipairs({'SetImage','SetVisible','SetPivot','SetLocalScale','SetLocalRotation','SetSizeDelta','SetAnchoredPosition'})do
+                track(slot,method)
+            end
+        end
+    end
+    return {slots=slots,rows=data.rows,writes=function()return writes end}
 end
 local function setupRelease()
     local data=require('abyss_monster_art_data')
@@ -143,14 +175,16 @@ local function setupRelease()
         return box
     end
     local root=F.Viewport.apply(F.control({children=F.Layout}),1280,720)
+    local panel=root:GetChild('battlePanel')
+    local scene=recordScene(panel:GetChild('chapterBattleScene'))
     local host=F.GameUI.new(root,F.Data,F.Presentation,'click',{seed=1,prologue=false,imageSource='static',
-        color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end,monsterActors=api})
+        color=function(r,g,b,a)return {r=r,g=g,b=b,a=a}end,monsterActors=api,imageFillRight=3})
     root.ui=host
-    assert(F.start(host));assert(require('abyss_run').startCombat(host.run,'raven_adept_solo'))
-    return host,host.battleUI,root:GetChild('battlePanel')
+    assert(F.start(host));assert(Run.startCombat(host.run,'raven_adept_solo'))
+    return host,host.battleUI,panel,scene
 end
 local setup=ground and setupRelease or H.setup
-local host,_,panel=setup({'defend'},{'raven_adept'})
+local host,_,panel,scene=setup({'defend'},{'raven_adept'})
 local catalog=host.run.combat.catalog.enemies
 local ids={}
 for _,definition in ipairs(F.Data.enemies.enemies)do ids[#ids+1]=definition.id end
@@ -161,7 +195,8 @@ assert(#ids==42,'all two-act definitions including bosses and summons')
 if ground then
     local classification=assert(ground.classification,'refined chapter release requires explicit stance for all 42 monsters')
     for _,id in ipairs(ids)do
-        local class=soleRows[id] and 'grounded' or hoveringBottom[id] and 'hovering' or id=='byrd' and 'flight'
+        local class=soleRows[id] and 'grounded' or hoveringBottom[id] and 'hovering'
+            or id=='byrd' and 'flight' or id=='collector' and 'perched'
         assert(class and classification[id]==class,id..' must have its authored stance')
         if soleRows[id] then near(ground.feet[id],soleRows[id]/106,id..' authored sole row')
         else assert(ground.feet[id]==nil and ground.footprints[id]==nil,id..' must not use a static contact')end
@@ -190,6 +225,46 @@ for first=1,#ids,5 do
 end
 local count=0;for id in pairs(expected)do assert(seen[id],id);count=count+1 end
 assert(count==42)
+local function checkCollectorScene()
+    local run=host.run
+    run.floor,run.act,run.encounters=33,2,EncounterQueue.new(run.runSeed,2)
+    local function startBoss(name,encounterId)
+        run.phase,run.nodeFlow='map',nil
+        run.bossInitialization={profile='source-history',bossList={name}}
+        assert(Run.startRoomCombat(run,'boss'))
+        assert(run.encounterId==encounterId)
+        host:refresh()
+    end
+    local function checkScene(index)
+        for i,row in ipairs(scene.rows[index])do
+            local slot=scene.slots[i]
+            assert(slot.visible==not not row,'chapter slot visibility '..i)
+            if row then
+                assert(slot.imageId==row[1],'chapter slot image '..i)
+                near(slot.x,row[2],'chapter slot X '..i);near(slot.y,row[3],'chapter slot Y '..i)
+                near(slot.sizeDeltaX,row[4],'chapter slot width '..i);near(slot.sizeDeltaY,row[5],'chapter slot height '..i)
+                local color=slot.imageColor
+                assert(color.r==row[12] and color.g==row[13] and color.b==row[14] and color.a==row[15],'chapter slot tint '..i)
+            end
+        end
+    end
+    assert(#scene.slots==250,'Collector must reuse the bounded chapter pool')
+    startBoss('Automaton','act2_automaton');checkScene(2)
+    startBoss('Collector','act2_collector');checkScene(3)
+    local collector=run.combat.enemies[1]
+    checkGround(collector,monsterControl(panel,'enemy1'))
+    local writes=scene.writes()
+    host:refresh();host:update(.05)
+    assert(scene.writes()==writes,'Collector refresh/tick repeats no chapter writes')
+    Summons.torches(C,run.combat,collector,false);host:refresh()
+    assert(run.combat.enemies[3]==collector and scene.writes()==writes,'summon reordering keeps the existing throne')
+    collector.hp=0;host:refresh()
+    assert(scene.writes()==writes,'Collector death keeps its throne for the rest of the encounter')
+    startBoss('Automaton','act2_automaton');checkScene(2)
+    assert(scene.writes()>writes,'next Act II encounter repaints the ordinary arena')
+    writes=scene.writes();host:refresh()
+    assert(scene.writes()==writes,'ordinary Act II refresh also repeats no chapter writes')
+end
 -- Boss summons exercise the move-specific constructors and source insertion order.
 for _,scenario in ipairs({
     {{'collector'},function(battle)Summons.torches(C,battle,battle.enemies[1],false)end,
@@ -243,6 +318,7 @@ if ground then
                 formation[1]..' rendered formation depth')
         end
     end
+    checkCollectorScene()
     print('LUA_RELEASE_ENEMY_CONTACT_PASS 42 classes + measured geometry + formations + summons')
 end
 -- Missing portrait mappings keep the tier fallback on a legal source actor.

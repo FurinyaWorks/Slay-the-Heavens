@@ -1,4 +1,4 @@
-import {candidateBattleScene, groundY, paintWidth, sceneHeight} from './v220-battle-scene-geometry.mjs';
+import {candidateBattleScene, collectorThrone, groundY, paintWidth, sceneHeight} from './v220-battle-scene-geometry.mjs';
 import {refinedReleaseMonsterIds} from './refined-release-monsters.mjs';
 
 const batchSize = 60;
@@ -36,7 +36,7 @@ const sourceAltitudeStances = Object.freeze({
   sentry: 'hovering', hexaghost: 'hovering', spheric_guardian: 'hovering',
   book_of_stabbing: 'hovering', bronze_orb: 'hovering',
   // Collector sits above the room's floor on its throne in the source battle.
-  collector: 'hovering',
+  collector: 'perched',
   // EnemyView and ByrdTrial resolve the landing pose when Flight is depleted.
   byrd: 'flight',
 });
@@ -75,9 +75,8 @@ export function applyChapterBattlePlacement(theme) {
   layout.battleNotice.position = [0, 252];
 }
 
-function paintRows(slots, act) {
-  return slots.map(pair => {
-    const image = pair[act];
+function paintRows(slots) {
+  return slots.map(image => {
     if (!image) return false;
     const [x, y] = image.position;
     const [r, g, b] = image.colour.slice(1).match(/../g).map(value => parseInt(value, 16));
@@ -114,6 +113,19 @@ function sharedPaintSlots(first, second) {
   return slots;
 }
 
+function collectorPaintSlots(gallery, theme) {
+  const throne = collectorThrone(theme);
+  let next = 0;
+  const slots = gallery.map(image => {
+    if (next === throne.length || !image || !/^(WestBreak|EastBreak|WestNearDebris|EastNearDebris)/.test(image.name)) return image;
+    const piece = throne[next++];
+    if (isBasicShape(piece) !== isBasicShape(image)) throw Error('Collector throne renderer family differs');
+    return piece;
+  });
+  if (next !== throne.length) throw Error('Collector throne exceeds the gallery decoration slots');
+  return slots;
+}
+
 export function chapterBattleScenes(theme) {
   const scenes = [candidateBattleScene(1, theme), candidateBattleScene(2, theme)];
   const paintSlots = sharedPaintSlots(images(scenes[0]), images(scenes[1]));
@@ -135,7 +147,8 @@ export function chapterBattleScenes(theme) {
     }),
   }));
   const scene = {...scenes[0], name: chapterBattleSceneHost, children: batches};
-  return {scene, rows: [paintRows(paintSlots, 0), paintRows(paintSlots, 1)], slotCount, batchSize};
+  const [actOne, gallery] = [0, 1].map(act => paintSlots.map(pair => pair[act]));
+  return {scene, rows: [actOne, gallery, collectorPaintSlots(gallery, theme)].map(paintRows), slotCount, batchSize};
 }
 
 export function applyChapterBattleScene(layout, chapterScenes, theme) {
