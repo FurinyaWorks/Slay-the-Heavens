@@ -8,6 +8,7 @@ local Theme=require('abyss_theme')
 local F=dofile('tests/lua/support/game_ui_fixture.lua')
 local BattleUI=require('abyss_battle_ui')
 local Frozen=dofile('tests/lua/support/frozen_display_877c4af.lua')
+local HistoricalCopy=dofile('tests/lua/support/phase_four_frozen_copy.lua')
 local cases=0
 local function eq(a,b)assert(a==b,tostring(a)..' ~= '..tostring(b))end
 local function test(name,fn)fn();cases=cases+1;print('ok phase_four_presentation '..cases..' - '..name)end
@@ -186,15 +187,16 @@ test('all phase-four effects are validated even if arbitrary card text is suppli
  end
 end)
 test('877c4af frozen inputs replay the unchanged 165-card and eleven-auxiliary display hash',function()
- local manifest='accuracy acrobatics adrenaline after_image anger backflip backstab ball_lightning bane barrage barricade bash battle_trance beam_cell berserk biased_cognition blade_dance bloodletting bludgeon body_slam boot_sequence bouncing_flask bowling_bash brilliance brutality burn burning_pact calculated_exchange caltrops capacitor carnage carve_reality catalyst charge_battery clash cleave cloak_and_dagger clothesline cold_snap combust compile_driver consecrate consume coolheaded core_surge corruption crescendo crush_joints cut_through_fate dagger_spray dagger_throw dark_embrace darkness dazed deadly_poison deceive_reality defend defend_blue defend_green defend_purple deflect defragment demon_form devotion disarm dodge_and_roll double_energy dropkick dualcast electrodynamics empty_body empty_fist empty_mind entrench envenom eruption evaluate eviscerate feel_no_pain flex flying_knee flying_sleeves follow_up footwork ftl fusion ghostly_armor glacier go_for_the_eyes grand_finale halt heat_sinks heavy_blade heel_hook hemokinesis hyperbeam impervious infinite_blades inflame inner_peace insight iron_wave just_lucky leap loop mental_fortress metallicize miracle neutralize nirvana noxious_fumes offering outmaneuver overclock perfected_strike perseverance poisoned_stab pommel_strike power_through prepared prostrate protect pummel quick_slash rage rainbow rampage reaper reflex regret reinforced_body reprogram riddle_with_holes rupture rushdown safety sanctity sands_of_time sash_whip scrawl seeing_red sentinel shiv shockwave shrug_it_off signature_move slice slimed smite sneaky_strike spot_weakness storm strike strike_blue strike_green strike_purple sucker_punch survivor sweeping_beam tactician third_eye thousand_cuts thunderclap tranquility true_grit turbo twin_strike uppercut vigilance void warcry whirlwind windmill_strike worship wound zap'
+ local manifest='accuracy acrobatics adrenaline after_image anger backflip backstab ball_lightning bane barrage barricade bash battle_trance beam_cell berserk biased_cognition blade_dance bloodletting bludgeon body_slam boot_sequence bouncing_flask bowling_bash brilliance brutality burn burning_pact calculated_gamble caltrops capacitor carnage carve_reality catalyst charge_battery clash cleave cloak_and_dagger clothesline cold_snap combust compile_driver consecrate consume coolheaded core_surge corruption crescendo crush_joints cut_through_fate dagger_spray dagger_throw dark_embrace darkness dazed deadly_poison deceive_reality defend defend_blue defend_green defend_purple deflect defragment demon_form devotion disarm dodge_and_roll double_energy dropkick dualcast electrodynamics empty_body empty_fist empty_mind entrench envenom eruption evaluate eviscerate feel_no_pain flex flying_knee flying_sleeves follow_up footwork ftl fusion ghostly_armor glacier go_for_the_eyes grand_finale halt heat_sinks heavy_blade heel_hook hemokinesis hyperbeam impervious infinite_blades inflame inner_peace insight iron_wave just_lucky leap loop mental_fortress metallicize miracle neutralize nirvana noxious_fumes offering outmaneuver overclock perfected_strike perseverance poisoned_stab pommel_strike power_through prepared prostrate protect pummel quick_slash rage rainbow rampage reaper reflex regret reinforced_body reprogram riddle_with_holes rupture rushdown safety sanctity sands_of_time sash_whip scrawl seeing_red sentinel shiv shockwave shrug_it_off signature_move slice slimed smite sneaky_strike spot_weakness storm strike strike_blue strike_green strike_purple sucker_punch survivor sweeping_beam tactician third_eye thousand_cuts thunderclap tranquility true_grit turbo twin_strike uppercut vigilance void warcry whirlwind windmill_strike worship wound zap'
  local historical=C.copy(Data);historical.cards=C.copy(Frozen.cards);eq(#historical.cards.cards,40)
  local all={};for _,id in ipairs({'ironclad','silent','defect','watcher'})do
   local data=prepared(id,historical);local p=P.prepare(Frozen.existing,data);for _,c in ipairs(data.cards.cards)do all[c.id]=p[c.id]end
  end
+ assert(not all.calculated_gamble,'historical identity must not reappear in current prepared inputs')
  local hash,n=0.0,0
  for id in manifest:gmatch('%S+')do
-  local c=assert(all[id]);n=n+1
-  local text=table.concat({id,c.name,c.text,c.upgradeText,c.combatText or '',c.upgradeCombatText or '',c.cost,c.upgradeCost,c.type},'\0')..'\1'
+  local c=assert(all[HistoricalCopy.currentId(id)],id);n=n+1
+  local text=HistoricalCopy.archiveRow(id,c)
   for i=1,#text do hash=(hash*131.0+text:byte(i))%2147483647 end
  end
  eq(n,176);eq(hash,780875649) -- captured from the independent frozen sts-triggers adapter/data.

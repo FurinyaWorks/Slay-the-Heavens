@@ -418,7 +418,15 @@ test("player and every enemy show status icons, stacks and full current effects"
         tap({"statusInfo", "hit"})
         tap({"enemy3", "statusRow", "hit"})
         local compact, tips = readPowers(panel)
-        assert(#tips == 1 and compact:find(row.name, 1, true) and compact:find(row.text, 1, true), id)
+        assert(#tips == 1, id)
+        if id == "strength" then
+            -- The full reader uses #981's sentence; the compact reader keeps the signed per-hit value.
+            eq(row.name, "力量")
+            eq(row.text, "攻击伤害提升 5 点。")
+            assert(compact:find("力量 5", 1, true) and compact:find("普通攻击每段伤害 +5", 1, true), compact)
+        else
+            assert(compact:find(row.name, 1, true) and compact:find(row.text, 1, true), id)
+        end
         panel:GetChild("statusDismiss").click()
     end
 end)
