@@ -1,5 +1,5 @@
 import {beforeMapRoomReplayCohort} from './develop-replay-merge-source.mjs';
-import {beforeSharedReleaseRuntimeReplay} from './release-detached-backflow-source.mjs';
+import {beforeDetachedReleaseBackflow,beforeSharedReleaseRuntimeReplay} from './release-detached-backflow-source.mjs';
 import {readStsDetailOwners} from './release-sts-detail-source.mjs';
 import {beforeMapNodeVisualsLineEndings} from './input-retirement-sts-binding.mjs';
 import {readCloseoutLuaVocabularyReceipt} from './closeout-lua-vocabulary-source.mjs';
@@ -798,7 +798,7 @@ export function readCalibrationReceiptInput(path,digest,read,readCurrent=readFil
  else{
   const raw=beforeCurrentHistoricalStsSource(path,readCurrent(path,'utf8'));
   let current=raw;
-  if(path===colorlessReceiptPath)current=beforeColorlessReceipt(raw,row.current);
+  if(path===colorlessReceiptPath&&typeof raw==='string')current=beforeColorlessReceipt(beforeDetachedReleaseBackflow(path,Buffer.from(raw)).toString('utf8'),row.current);
   if(path==='tests/helpers/combined-epoch/source-epoch-runtime.mjs'||path==='tests/helpers/copy-integration-source-closure.mjs'||
      path==='tests/helpers/round3-catalog-source-inverse.mjs'){
    current=beforeMapRoomReplayCohort(path,raw);

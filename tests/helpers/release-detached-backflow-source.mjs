@@ -438,6 +438,32 @@ function beforePowerShopFacade(path,raw){
  return Buffer.from(source===lf?prior:prior.replaceAll('\n','\r\n'));
 }
 
+const colorlessFacade=Object.freeze({
+ "path": "tests/helpers/colorless-catalog-source-inverse.mjs",
+ "beforeSha256": "ca654dba3b490f2d5f857933931992d1b72b346df246165499631cca7f6f717d",
+ "beforeBlob": "94c5af24ef7e9e76b53116e97fc55d25d353f482",
+ "afterSha256": "b62d81b75333473aa9ffdef355389be0a6b8f332247c704a4f6ae210c94f3365",
+ "afterBlob": "748bf85187b272846bff8e70cf195317dc31002d",
+ "hunks": [
+  {
+   "at": 5,
+   "before": "import {readFileSync} from 'node:fs';\nconst live=p=>readFileSync(new URL('../../'+p,import.meta.url),'utf8');\nconst descriptionPath='src/lua/abyss_colorless_cards.lua';\nexport function preColorlessCatalogSource(path,source,{readSource=live}={}){\n if(!Object.hasOwn(colorlessCatalogSourceProof.files[path]??{},'beforeSource'))return source;\n readSource=readers.get(readSource)??readSource;\n const projected=sourceEpoch.preCombinedSource(path,source,{target:'colorless',readSource});",
+   "after": "import {readFileSync} from 'node:fs';\nimport assert from 'node:assert/strict';\nimport {beforeStsDetailSource} from './release-sts-detail-source.mjs';\nimport {architectureSourceFormat} from './architecture-source-format.mjs';\nconst live=p=>readFileSync(new URL('../../'+p,import.meta.url),'utf8');\nconst architecturePath='config/architecture.json';\nfunction normalizePrimaryConfig(path,source){\n // Preserve the original token-only primary-input allowance for the exact\n // #1080 release successor. Linked reads still authenticate raw owner bytes.\n if(path!==architecturePath||typeof source!=='string'||beforeStsDetailSource(path,source)!==source)return source;\n const lf=source.replaceAll('\\r\\n','\\n');\n if(lf.includes('\\r')||source!==lf&&source!==lf.replaceAll('\\n','\\r\\n'))return source;\n try{\n  const input=architectureSourceFormat(path,source);\n  if(!input.tokensEqual)return source;\n  const raw=live(path);\n  if(beforeStsDetailSource(path,raw)===raw)return source;\n  const custody=architectureSourceFormat(path,raw);\n  return custody.tokensEqual&&input.formatted===custody.formatted?raw:source;\n }catch{return source;}\n}\nconst descriptionPath='src/lua/abyss_colorless_cards.lua';\nexport function preColorlessCatalogSource(path,source,{readSource=live}={}){\n if(!Object.hasOwn(colorlessCatalogSourceProof.files[path]??{},'beforeSource'))return source;\n readSource=readers.get(readSource)??readSource;\n const input=normalizePrimaryConfig(path,source);\n if(input!==source&&typeof readSource==='function'){\n  const raw=readSource,current=input.replaceAll('\\r\\n','\\n');\n  const strictRead=owner=>{\n   const value=raw(owner);\n   if(owner===architecturePath)\n    assert(value===current||value===current.replaceAll('\\n','\\r\\n'),\n     'Colorless catalog linked owner identity: '+owner);\n   return value;\n  };\n  // Establish freshness even if a legacy reader does not request this path,\n  // and keep enforcing the same raw identity on every downstream reread.\n  strictRead(path);readSource=strictRead;\n }\n const projected=sourceEpoch.preCombinedSource(path,input,{target:'colorless',readSource});"
+  }
+ ]
+});
+function beforeColorlessFacade(path,raw){
+ if(path!==colorlessFacade.path)return raw;
+ const source=raw.toString('utf8'),lf=source.replaceAll('\r\n','\n');
+ if(!raw.equals(Buffer.from(source))||lf.includes('\r')||
+  source!==lf&&source!==lf.replaceAll('\n','\r\n')||
+  !exactSourceMatches(lf,{sha256:colorlessFacade.afterSha256,gitBlob:colorlessFacade.afterBlob}))return raw;
+ const prior=restoreExactFixtureHunks(colorlessFacade,path,lf);
+ assert(exactSourceMatches(prior,{sha256:colorlessFacade.beforeSha256,gitBlob:colorlessFacade.beforeBlob}),
+  'exact pre-STS Colorless facade');
+ return Buffer.from(source===lf?prior:prior.replaceAll('\n','\r\n'));
+}
+
 const recordingReplay=Object.freeze({
  "path": "tests/helpers/release-ui-restore-source.mjs",
  "beforeSha256": "9f56948b5d5f76f31c1780a27f6e1993d637a95de3ac2bafd19dacad2cbb0618",
@@ -516,7 +542,7 @@ function beforeMapDeckDetailReplay(path,raw){
 }
 
 export function beforeDetachedReleaseBackflow(path,raw){
- raw=beforeMapDeckDetailReplay(path,raw);
+ raw=beforeColorlessFacade(path,beforeMapDeckDetailReplay(path,raw));
  raw=beforePowerShopFacade(path,beforeRecordingReplay(path,raw));
  raw=beforeStsDetailCloseout(path,beforeStsDetailRuntime(path,beforeReleaseEnemyClearance(path,raw)));
  if(path==='tests/helpers/chapter-battle-scene-source.mjs')return beforeBossMapScroll(path,raw);
