@@ -1,3 +1,5 @@
+import {beforeDetachedReleaseBackflow,beforeSharedReleaseRuntimeReplay} from './release-detached-backflow-source.mjs';
+import {beforeBossMapScroll} from './boss-map-scroll-source.mjs';
 import {beforeKnownMasterBackflowSource,beforeMasterBackflowSource,productionReadingBackflowOwns} from './master-backflow-source.mjs';
 import {beforeReleaseClosureFixture} from './release-closure-fixture-source.mjs';
 import {beforePosixDeadlineWorkflow,beforeWindowsDeadlineWorkflow} from './auto-merge-workflow.mjs';
@@ -1541,6 +1543,7 @@ function beforeReleaseScriptStaticGate(path,source){
  return source.includes('\r\n')?prior.replaceAll('\n','\r\n'):prior;
 }
 export function beforeReviewedBuildInput(path,source,read){
+ if(bossMaskRecordedOwners.has(path))source=beforeBossMapScroll(path,source);
  if(path==='scripts/official-assets-campaign.lua'||path==='scripts/verify-delivery.mjs')
   source=beforeReleaseClosureFixture(path,source,{reviewedBuild:true});
  source=beforeForkPush(path,source);
@@ -1570,14 +1573,18 @@ const responsiveReplayHelpers=Object.freeze({
  'tests/helpers/chapter-battle-scene-source.mjs':['7888616f2fbc3f59b3545eb5441069380b453b91c80a7a3d4513e59193fa5696','28b2c25290691844c986dba49fb982eb326b8ba3'],
  'tests/helpers/rebased-release-source.mjs':['b1e42ded7f05f580fb25ab0417ccd8db45832f5e9e50db83a38d6aaa2767dc20','4b22a3e61459334c6d85b247ea188976313d549e'],
 });
+const bossMaskRecordedOwners=new Set(['scripts/native-ui-encoder.mjs','tests/native-candidate-audit.test.mjs','tests/native-client-check.test.mjs']);
 function responsiveReplayCurrentRead(read){
  return (path,...args)=>{
   const raw=read(path,...args);
+  if(bossMaskRecordedOwners.has(path))assert.notEqual(beforeBossMapScroll(path,raw),raw,'fresh Boss mask replay owner: '+path);
   if(Object.hasOwn(responsiveReplayHelpers,path)){
    const source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
    const error=path===integratedFixture||path===relicCloseoutInventoryFixture.path
     ?'fresh complete integration source: ':'fresh responsive replay helper: ';
-   assert(exactCheckoutSource(source,responsiveReplayHelpers[path]),error+path);
+   const chapter=path==='tests/helpers/chapter-battle-scene-source.mjs';
+   const prior=chapter?beforeBossMapScroll(path,source):source;
+   assert((!chapter||prior!==source)&&exactCheckoutSource(prior,responsiveReplayHelpers[path]),error+path);
   }
   return raw;
  };
@@ -1674,7 +1681,7 @@ function cursesReceiptCurrentRead(read){
 export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  const replayRead=cursesReceiptCurrentRead(responsiveReplayCurrentRead(currentAssetLedgerRead(currentReviewedSelectionRead(checkedSelectionReceiptRead(read)))));
  for(const path of Object.keys(cursesReceiptSources))replayRead(path,'utf8');
- for(const path of Object.keys(responsiveReplayHelpers))replayRead(path,'utf8');
+ for(const path of [...Object.keys(responsiveReplayHelpers),...bossMaskRecordedOwners])replayRead(path,'utf8');
  // The chapter guard consumes its exact reviewed predecessor. Current
  // consumers still read and authenticate the new fixture at every read.
  const rawRead=actorAlphaCurrentRead(chapterEvidenceCurrentRead(replayRead,selectionCopierReceipt));
@@ -1696,10 +1703,23 @@ export function assertIntegrationSuccessorsCurrent(read=readFileSync){
  assertNativeFixturesCurrent(liveRead);
  assertNativeFlowFixturesCurrent(liveRead);
  read=(path,encoding)=>{
-  const raw=liveRead(path,encoding);
+  let raw=liveRead(path,encoding);
   // Raw production owners reach their own fresh admission guard unchanged.
   // Only CI and helper receipts need the pure historical source projections.
   if(path.startsWith('src/')||path==='config/architecture.json')return raw;
+  if(path===epochReplayRuntimePath){
+   const verified=beforeDetachedReleaseBackflow(path,Buffer.from(raw,'utf8')).toString('utf8');
+   assert.notEqual(verified,raw,'fresh Release runtime successor: '+path);
+   const prior=beforeSharedReleaseRuntimeReplay(path,raw);
+   assert.notEqual(raw,prior,'fresh complete integration source: '+path);
+   raw=prior;
+  }
+  if(path==='tests/helpers/closeout-source-epoch.mjs'){
+   const prior=beforeDetachedReleaseBackflow(path,Buffer.from(raw,'utf8')).toString('utf8');
+   assert.notEqual(prior,raw,'fresh Release closeout successor: '+path);
+   raw=beforeReleaseClosureFixture(path,prior);
+   assert.notEqual(raw,prior,'exact reward-title closeout predecessor: '+path);
+  }
   const historical=beforeBattlePeriphery(path,beforeChapterBattleScene(path,raw));
   return beforeCalibrationReplay(path,beforeCurrentReplayFixes(path,beforeUiEntranceWitness(path,beforeCurrentReplayCopier(path,historical))));
  };
@@ -1824,6 +1844,13 @@ export function beforePreflightSource(path,source,view='prior',read=readFileSync
  }
  // The checked Selection receipt owns its boundary. Other linked production
  // owners retain their live bytes for the scope that authenticates them.
+ // The approved mask encoder and its tests keep exact pre-scroll views.
+ if(bossMaskRecordedOwners.has(path))source=beforeBossMapScroll(path,source);
+ if(path===epochReplayRuntimePath)source=beforeSharedReleaseRuntimeReplay(path,source);
+ if(path==='tests/helpers/closeout-source-epoch.mjs'&&typeof source==='string'){
+  const prior=beforeDetachedReleaseBackflow(path,Buffer.from(source,'utf8')).toString('utf8');
+  source=beforeReleaseClosureFixture(path,prior);
+ }
  const selection=beforeSelectionReceiptSource(path,source);
  if(selection!==source)source=selection;
  else if(typeof path==='string'&&!path.startsWith('src/')&&path!=='config/architecture.json')

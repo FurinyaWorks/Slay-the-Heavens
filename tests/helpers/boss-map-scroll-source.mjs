@@ -233,6 +233,72 @@ const changes = {
    }
   ]
  },
+ "scripts/native-ui-encoder.mjs": {
+  "current": {
+   "sha256": "fcec8f67e768c2b3cef1b59b84b00033286db1d9276d671342b9e28e4ce87105",
+   "gitBlob": "e769c1ee48ed2768c938b366880bd8ea5b33bc14"
+  },
+  "previous": {
+   "sha256": "b4ebdcb90fd3528d3ce31dce90a5b8a9f685972dca54ee9092a71a9fcc64bbb2",
+   "gitBlob": "b46332087397d110a42caf2919f534728fc6880c"
+  },
+  "hunks": [
+   {
+    "at": 6,
+    "count": 2,
+    "before": ""
+   },
+   {
+    "at": 12,
+    "count": 8,
+    "before": ""
+   },
+   {
+    "at": 64,
+    "count": 1,
+    "before": " const transformed=`import {checkScripts as $abyssNativeCheckScripts} from ${JSON.stringify(isolatedHelper.href)};\\n`+imageTypeSource;"
+   }
+  ]
+ },
+ "tests/native-candidate-audit.test.mjs": {
+  "current": {
+   "sha256": "b80381834ac7b56f74bcf7eb9738ad34393f65f03466c00992913733af6f3f5a",
+   "gitBlob": "bd6fc73a50545040b269d338326d6096f6eb5d92"
+  },
+  "previous": {
+   "sha256": "44b6f12a4953724a60e8a16de2581e82953e9828045f194826b70a2ff8a09cfd",
+   "gitBlob": "80eb64441bcdc9a26c85c6d0ed29f9eefeee97a0"
+  },
+  "hunks": [
+   {
+    "at": 4,
+    "count": 1,
+    "before": "import { withNativeImageTypes } from '../scripts/native-ui-encoder.mjs';"
+   },
+   {
+    "at": 393,
+    "count": 16,
+    "before": ""
+   }
+  ]
+ },
+ "tests/native-client-check.test.mjs": {
+  "current": {
+   "sha256": "9c49ea29a189a0129efa46b51202a7784f4912098916948e0c476de27e045ffa",
+   "gitBlob": "fcebc9aa044ab37ac9faa448f27768cfdafba455"
+  },
+  "previous": {
+   "sha256": "f98f60994e5e6d5eb7199baf27d9b6424f55e26323a8d0dcc3dc26bed16106c4",
+   "gitBlob": "e4167e8ad67e001b6a6ca6e4812b9a3f4bc80fd9"
+  },
+  "hunks": [
+   {
+    "at": 144,
+    "count": 2,
+    "before": " const oldSource=\"export function checkScripts(){return {scripts:[{name:'cached-A'}]};}\\n\";"
+   }
+  ]
+ },
  "tests/helpers/chapter-battle-scene-source.mjs": {
   "current": {
    "sha256": "e98323fd66d7fc37158c09b35f205035a05b0800b10bf2835f5ff6262d71880a",
