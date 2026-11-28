@@ -1350,7 +1350,7 @@ function beforeCalibrationReplayOwner(path,source){
  source=beforeReviewedStsFeedbackFixture(path,beforeReviewedStsStyleFixture(path,source));
  source=beforeReviewedOfficialAssetReplay(path,beforeSelectionReceiptSource(path,source));
  source=beforeBattleSceneCopyClosure(path,source);
- if(path===integratedFixture)source=beforeChapterBattleScene(path,beforeRelicCloseoutIntegratedFixture(path,source));
+ if(path===integratedFixture)source=beforeChapterBattleScene(path,beforeRelicCloseoutIntegratedFixture(path,beforeReleaseClosureFixture(path,beforeV25DeadlineIntegrated(path,source))));
  source=beforeVisualLegibility(path,source);
  if(!calibrationReplayPaths.includes(path))return source;
  if(!calibrationReplayPredecessor){
@@ -1588,6 +1588,18 @@ const responsiveReplayHelpers=Object.freeze({
  'tests/helpers/rebased-release-source.mjs':['b1e42ded7f05f580fb25ab0417ccd8db45832f5e9e50db83a38d6aaa2767dc20','4b22a3e61459334c6d85b247ea188976313d549e'],
 });
 const bossMaskRecordedOwners=new Set(['scripts/native-ui-encoder.mjs','tests/native-candidate-audit.test.mjs','tests/native-client-check.test.mjs']);
+// The isolated Windows ownership replay has one updated test deadline.
+const v25DeadlineIntegratedSuccessor=['2f7542fdeebd2b7fa58080883efa3d40f52bfc59199bc5a6f6711c86a6df76b0', '88a42e54559e7fe5c900d0f00439755a9cd57d64'];
+const v25DeadlineIntegratedPredecessor=['9c84837be60110e8d91ed0c7ddf8df465cff11b23295fec04d71b1cf0dd6cbcf', '04548b60bcde99259cd999c6f1a8cf838ad11e2d'];
+function beforeV25DeadlineIntegrated(path,source){
+ if(path!==integratedFixture||!exactCheckoutSource(source,v25DeadlineIntegratedSuccessor))return source;
+ const owner="sha256:'c2406175c4de2016e35de7fa87bef7f91316fba7b2d0747af8a6f95ee9e64407',gitBlob:'dc140e606011c4e4b0948544373f113deb7b6d8b',";
+ const priorOwner="sha256:'f94b0534b4bd8468bf1a6bc76936b7d0264d8ce0e96d635f13a9d213034d04bb',gitBlob:'f8f3e90f9924902353cbe8c159b26f6123994745',";
+ assert.equal(source.split(owner).length,2,'exact V25 deadline evidence binding');
+ const prior=source.replace(owner,priorOwner);
+ assert(exactCheckoutSource(prior,v25DeadlineIntegratedPredecessor),'exact pre-deadline integration source');
+ return prior;
+}
 function responsiveReplayCurrentRead(read){
  return (path,...args)=>{
   const raw=read(path,...args);
@@ -1598,7 +1610,9 @@ function responsiveReplayCurrentRead(read){
     ?'fresh complete integration source: ':'fresh responsive replay helper: ';
    const chapter=path===clearanceChapterHelper;
    const clearancePrior=chapter?beforeReleaseEnemyClearance(path,source):source;
-   const prior=chapter?beforeBossMapScroll(path,clearancePrior):source;
+   const predecessor=beforeV25DeadlineIntegrated(path,source);
+   const prior=chapter?beforeBossMapScroll(path,clearancePrior):path===integratedFixture?beforeReleaseClosureFixture(path,predecessor):source;
+   if(path===integratedFixture)assert(predecessor!==source,error+path);
    assert((!chapter||clearancePrior!==source&&prior!==clearancePrior)&&exactCheckoutSource(prior,responsiveReplayHelpers[path]),error+path);
   }
   return raw;
@@ -1610,7 +1624,7 @@ export function chapterEvidenceCurrentRead(read,copier){
   const raw=currentRead(path,encoding);
   if(path!==integratedFixture)return raw;
   const source=Buffer.isBuffer(raw)?raw.toString('utf8'):raw;
-  const prior=beforeRelicCloseoutIntegratedFixture(path,source);
+  const prior=beforeRelicCloseoutIntegratedFixture(path,beforeReleaseClosureFixture(path,beforeV25DeadlineIntegrated(path,source)));
   return Buffer.isBuffer(raw)?Buffer.from(prior):prior;
  },copier);
  return (path,...args)=>(path===integratedFixture?currentRead:chapterRead)(path,...args);
@@ -1889,14 +1903,14 @@ export function beforePreflightSource(path,source,view='prior',read=readFileSync
   source=beforeKnownMasterBackflowSource(path,source);
  source=beforeShopPotionFixture(path,beforeCursesReceiptFixture(path,source));
  source=beforeRelicCloseoutInventoryFixture(path,source);
- const integratedPrior=beforeRelicCloseoutIntegratedFixture(path,source);
+ const integratedPrior=beforeRelicCloseoutIntegratedFixture(path,beforeV25DeadlineIntegrated(path,source));
  if(integratedPrior!==source){
   source=integratedPrior;
   const liveRead=read;
   read=(owner,encoding)=>{
    const raw=liveRead(owner,encoding);
    if(owner!==integratedFixture)return raw;
-   const input=beforeReleaseClosureFixture(owner,raw);
+   const input=beforeReleaseClosureFixture(owner,beforeV25DeadlineIntegrated(owner,raw));
    assert(exactCheckoutSource(input,sessionMenuIntegratedIdentity),'fresh complete integration source: '+owner);
    return beforeRelicCloseoutIntegratedFixture(owner,input);
   };

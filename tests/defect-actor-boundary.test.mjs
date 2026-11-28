@@ -13,6 +13,8 @@ import {entranceInventory} from './helpers/ui-entrance-source.mjs';
 import {reviewedRenamedStsStyleRead,reviewedStsStyleInventory} from './helpers/reviewed-selection-current-source.mjs';
 import {actorFocusAdded,assertActorFocusInventory,deckPagesAdded,stasisUpgradeAddedPaths} from './helpers/develop-release-backflow-source.mjs';
 import {beforeCombatEvents,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';
+import {readStsDetailOwners} from './helpers/release-sts-detail-source.mjs';
+import {exactSourceMatches} from './helpers/source-fingerprint.mjs';
 const require=createRequire(import.meta.url),luaparse=require('luaparse');
 const utility='src/lua/abyss_defect_utility_cards.lua',queued='src/lua/abyss_combat_queued_play.lua';
 const fixture='tests/lua/defect_utility_build.lua',protocol='tests/lua/support/m9_combat_protocol_baseline.lua';
@@ -21,16 +23,33 @@ const actorRead=currentDefectActorReader(read);
 // These two original capability-policy contracts describe the complete cb
 // runtime, before StS adds a UI-only owner. Authenticate the entire live input
 // before materializing that explicit view; never filter arbitrary live modules.
+// Only the three UI modules admitted by #1080 are absent from the older
+// Actor/Focus graph. Authenticate their complete live bytes before omission.
+const detailUiOwners=Object.freeze({
+ 'src/lua/abyss_card_browse_preview.lua':{sha256:'e0d1d3262f93251bc47681cd25713a4532b2552d11f55cc6e3c2e8297d11c5bb',gitBlob:'54c7d8fb78276b57017e91470f3129be02ad1e29'},
+ 'src/lua/abyss_card_keyword_tip.lua':{sha256:'291991d574c7056c675ee90f217d81c3b546da865b56fc71fdaed3cfd60a1a9a',gitBlob:'fae7fb2fe4338beb16ef59180d0db7784e0d2a48'},
+ 'src/lua/abyss_node_ui_card_inspection.lua':{sha256:'51cc94804f4a33bdc43be23510a060e1c4acdaa222082e3ecafcc7fa268787ee',gitBlob:'1bcdf13d9ca0f434c23cd9a0a874b5a33953dfb1'},
+});
+function beforeDetailUiInventory(paths,read){
+ for(const [path,owner] of Object.entries(detailUiOwners)){
+  assert(paths.filter(current=>current===path).length===1,'complete live STS detail UI inventory: '+path);
+  const source=read(path),lf=source.replaceAll('\r\n','\n');
+  assert((source===lf||source===lf.replaceAll('\n','\r\n'))&&exactSourceMatches(source,owner),'fresh STS detail UI owner: '+path);
+ }
+ return paths.filter(path=>!Object.hasOwn(detailUiOwners,path));
+}
 function capabilityPreStyle(raw=discoverSources()){
  const config='config/architecture.json',live={...raw,[config]:read(config)},proof=sourceEpoch.proof;
  const readLive=path=>Object.hasOwn(live,path)?live[path]:read(path);
- const liveInventory=reviewedStsStyleInventory(Object.keys(live),readLive);
- const readRenamed=reviewedRenamedStsStyleRead(readLive);
+ const readBeforeDetails=readStsDetailOwners(readLive);
+ const inventory=beforeDetailUiInventory(Object.keys(raw),readLive);
+ const liveInventory=reviewedStsStyleInventory([...inventory,config],readBeforeDetails);
+ const readRenamed=reviewedRenamedStsStyleRead(readBeforeDetails);
  const expected=[...Object.keys(proof.current),...actorFocusAdded,...stasisUpgradeAddedPaths,...deckPagesAdded];
  assert(expected.includes(retiredControllerPath),'preStyle inventory includes the historical controller');
  assert.deepEqual(entranceInventory(liveInventory,readRenamed),[...expected.filter(path=>path!==retiredControllerPath),pointerInputPath].sort(),'complete live source inventory before preStyle');
- assertActorFocusInventory(Object.keys(raw),readLive);
- const readPreStyle=actorFocusPreStyleReader(readLive);
+ assertActorFocusInventory(inventory,readBeforeDetails);
+ const readPreStyle=actorFocusPreStyleReader(readBeforeDetails);
  for(const [path,binding]of Object.entries(proof.current)){
   assert.equal(readPreStyle(path,binding.source),binding.source,'live preStyle input identity: '+path);
  }
@@ -157,6 +176,18 @@ test('all original 345 modules plus the admitted idle retain complete graphs and
  }
  const extra={...discoverSources(),'src/lua/unregistered_style_owner.lua':'return {}\n'};
  assert.throws(()=>capabilityPreStyle(extra),/complete live source inventory/,'preStyle must reject rather than drop unknown live source owners');
+ for(const path of Object.keys(detailUiOwners)){
+  const checked=discoverSources();
+  const raw=checked[path];
+  checked[path]=raw.replaceAll('\n','\r\n');
+  assert.equal(beforeDetailUiInventory(Object.keys(checked),p=>checked[p]).includes(path),false,'exact CRLF UI successor: '+path);
+  checked[path]=raw.replace('\n','\r\n');
+  assert.throws(()=>capabilityPreStyle(checked),{message:'fresh STS detail UI owner: '+path},'reject mixed EOL before dropping a named module');
+  checked[path]=raw+'\n-- drift';
+  assert.throws(()=>capabilityPreStyle(checked),{message:'fresh STS detail UI owner: '+path},'reject drift before dropping a named module');
+  delete checked[path];
+  assert.throws(()=>capabilityPreStyle(checked),{message:'complete live STS detail UI inventory: '+path},'reject absent live owner');
+ }
 });
 
 test('original 52 scenarios preserve complete return, error, state and alias graphs in independent VMs',()=>{

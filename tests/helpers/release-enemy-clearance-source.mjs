@@ -398,6 +398,44 @@ const stsDetailLedger={
 };
 const stsDetailOutsideArchive=Object.freeze({
  [stsDetailLedger.path]:stsDetailLedger,
+ "tests/defect-actor-boundary.test.mjs":{
+ "path": "tests/defect-actor-boundary.test.mjs",
+ "current": {
+  "sha256": "81122eb0471b51424fc805adff076ffb53aa574cfd66c5852e90eaf75fba1cc3",
+  "gitBlob": "8bc3e1e3b77e0859230f3b2f0f006083396ce66e"
+ },
+ "previous": {
+  "sha256": "a73f32bd0a1702a2c4b6461433b173d0f4ac3cb382d1f55807ae480dd64fe3d7",
+  "gitBlob": "fe9e70589091324fd406113a57feb18eb684c3c8"
+ },
+ "hunks": [
+  {
+   "at": 14,
+   "before": "import {beforeCombatEvents,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';\nconst require=createRequire(import.meta.url),luaparse=require('luaparse');",
+   "after": "import {beforeCombatEvents,pointerInputPath,retiredControllerPath} from './helpers/input-retirement-source.mjs';\nimport {readStsDetailOwners} from './helpers/release-sts-detail-source.mjs';\nimport {exactSourceMatches} from './helpers/source-fingerprint.mjs';\nconst require=createRequire(import.meta.url),luaparse=require('luaparse');"
+  },
+  {
+   "at": 24,
+   "before": "// before materializing that explicit view; never filter arbitrary live modules.\nfunction capabilityPreStyle(raw=discoverSources()){",
+   "after": "// before materializing that explicit view; never filter arbitrary live modules.\n// Only the three UI modules admitted by #1080 are absent from the older\n// Actor/Focus graph. Authenticate their complete live bytes before omission.\nconst detailUiOwners=Object.freeze({\n 'src/lua/abyss_card_browse_preview.lua':{sha256:'e0d1d3262f93251bc47681cd25713a4532b2552d11f55cc6e3c2e8297d11c5bb',gitBlob:'54c7d8fb78276b57017e91470f3129be02ad1e29'},\n 'src/lua/abyss_card_keyword_tip.lua':{sha256:'291991d574c7056c675ee90f217d81c3b546da865b56fc71fdaed3cfd60a1a9a',gitBlob:'fae7fb2fe4338beb16ef59180d0db7784e0d2a48'},\n 'src/lua/abyss_node_ui_card_inspection.lua':{sha256:'51cc94804f4a33bdc43be23510a060e1c4acdaa222082e3ecafcc7fa268787ee',gitBlob:'1bcdf13d9ca0f434c23cd9a0a874b5a33953dfb1'},\n});\nfunction beforeDetailUiInventory(paths,read){\n for(const [path,owner] of Object.entries(detailUiOwners)){\n  assert(paths.filter(current=>current===path).length===1,'complete live STS detail UI inventory: '+path);\n  const source=read(path),lf=source.replaceAll('\\r\\n','\\n');\n  assert((source===lf||source===lf.replaceAll('\\n','\\r\\n'))&&exactSourceMatches(source,owner),'fresh STS detail UI owner: '+path);\n }\n return paths.filter(path=>!Object.hasOwn(detailUiOwners,path));\n}\nfunction capabilityPreStyle(raw=discoverSources()){"
+  },
+  {
+   "at": 42,
+   "before": " const readLive=path=>Object.hasOwn(live,path)?live[path]:read(path);\n const liveInventory=reviewedStsStyleInventory(Object.keys(live),readLive);\n const readRenamed=reviewedRenamedStsStyleRead(readLive);\n const expected=[...Object.keys(proof.current),...actorFocusAdded,...stasisUpgradeAddedPaths,...deckPagesAdded];",
+   "after": " const readLive=path=>Object.hasOwn(live,path)?live[path]:read(path);\n const readBeforeDetails=readStsDetailOwners(readLive);\n const inventory=beforeDetailUiInventory(Object.keys(raw),readLive);\n const liveInventory=reviewedStsStyleInventory([...inventory,config],readBeforeDetails);\n const readRenamed=reviewedRenamedStsStyleRead(readBeforeDetails);\n const expected=[...Object.keys(proof.current),...actorFocusAdded,...stasisUpgradeAddedPaths,...deckPagesAdded];"
+  },
+  {
+   "at": 49,
+   "before": " assert.deepEqual(entranceInventory(liveInventory,readRenamed),[...expected.filter(path=>path!==retiredControllerPath),pointerInputPath].sort(),'complete live source inventory before preStyle');\n assertActorFocusInventory(Object.keys(raw),readLive);\n const readPreStyle=actorFocusPreStyleReader(readLive);\n for(const [path,binding]of Object.entries(proof.current)){",
+   "after": " assert.deepEqual(entranceInventory(liveInventory,readRenamed),[...expected.filter(path=>path!==retiredControllerPath),pointerInputPath].sort(),'complete live source inventory before preStyle');\n assertActorFocusInventory(inventory,readBeforeDetails);\n const readPreStyle=actorFocusPreStyleReader(readBeforeDetails);\n for(const [path,binding]of Object.entries(proof.current)){"
+  },
+  {
+   "at": 177,
+   "before": " assert.throws(()=>capabilityPreStyle(extra),/complete live source inventory/,'preStyle must reject rather than drop unknown live source owners');\n});",
+   "after": " assert.throws(()=>capabilityPreStyle(extra),/complete live source inventory/,'preStyle must reject rather than drop unknown live source owners');\n for(const path of Object.keys(detailUiOwners)){\n  const checked=discoverSources();\n  const raw=checked[path];\n  checked[path]=raw.replaceAll('\\n','\\r\\n');\n  assert.equal(beforeDetailUiInventory(Object.keys(checked),p=>checked[p]).includes(path),false,'exact CRLF UI successor: '+path);\n  checked[path]=raw.replace('\\n','\\r\\n');\n  assert.throws(()=>capabilityPreStyle(checked),{message:'fresh STS detail UI owner: '+path},'reject mixed EOL before dropping a named module');\n  checked[path]=raw+'\\n-- drift';\n  assert.throws(()=>capabilityPreStyle(checked),{message:'fresh STS detail UI owner: '+path},'reject drift before dropping a named module');\n  delete checked[path];\n  assert.throws(()=>capabilityPreStyle(checked),{message:'complete live STS detail UI inventory: '+path},'reject absent live owner');\n }\n});"
+  }
+ ]
+},
  ['tests/helpers/menu-red-ci-source.mjs']:{
   path:'tests/helpers/menu-red-ci-source.mjs',
   current:{sha256:'9a6b8c49884d22569429633f6bf26c352637f2dc7e2d3aafa27c95798249391a',gitBlob:'f54bf1ee6a6b22d6628b5839437378e5814b6598'},
@@ -419,7 +457,7 @@ function beforeStsDetailFixture(path,source){
  if(lf.includes('\r')||source!==lf&&source!==lf.replaceAll('\n','\r\n'))return source;
  const after=lf.split('\n').slice(at,at+count).join('\n');
  const prior=restoreExactFixtureHunks({path,beforeSha256:previous.sha256,afterSha256:current.sha256,
-  hunks:[{at,before,after}]},path,lf);
+  hunks:row.hunks??[{at,before,after}]},path,lf);
  assert(exactSourceMatches(prior,previous),'exact pre-STS detail fixture: '+path);
  return source===lf?prior:prior.replaceAll('\n','\r\n');
 }
